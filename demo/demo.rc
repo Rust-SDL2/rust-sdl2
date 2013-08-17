@@ -1,0 +1,9 @@
+extern mod sdl2;
+
+mod video;
+
+fn main() {
+	#[main];
+
+	video::main();
+}

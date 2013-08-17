@@ -8,5 +8,5 @@
 #[crate_type = "lib"];
 
 pub use sdl::*;
-
+pub mod video;
 pub mod sdl;
