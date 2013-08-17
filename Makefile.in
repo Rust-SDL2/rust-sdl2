@@ -1,0 +1,54 @@
+VPATH=%VPATH%
+
+RUSTC ?= rustc
+RUSTFLAGS ?= --cfg image --cfg mixer
+SDL_PREFIX ?= /usr/local/lib
+AR ?= ar
+CHMOD ?= chmod
+CP ?= cp
+LD ?= ld
+MV ?= mv
+RM ?= rm
+
+RUST_SRC = $(shell find $(VPATH)/src/. -type f -name '*.rs')
+
+.PHONY: all
+all: libsdl.dummy
+
+UNAME=$(shell uname)
+
+ifeq ($(UNAME),Darwin)
+SDLXMAIN=libSDLXmain.a
+
+ifeq (%SDL_MODE%,framework)
+RUSTFLAGS+=--cfg mac_framework
+else
+RUSTFLAGS+=--cfg mac_dylib
+endif
+
+else
+SDLXMAIN=
+endif
+
+libsdl.dummy: src/sdl.rc $(RUST_SRC) $(SDLXMAIN)
+	$(RUSTC) $(RUSTFLAGS) $< -o $@
+	touch $@
+
+demos: demo/demo.rc libsdl.dummy
+	$(RUSTC) -L . $< -o $@
+
+# Darwin-specific hack to change the name of `main` to `SDLX_main`
+$(SDLXMAIN): $(SDL_PREFIX)/libSDLmain.a
+	$(CP) $< $@
+	$(AR) -x $@ SDLMain.o || $(RM) -f $@
+	$(LD) -r SDLMain.o -o SDLXMain.o -alias _main _SDLX_main -unexported_symbol main || $(RM) -f $@
+	$(MV) SDLXMain.o SDLMain.o || $(RM) -f $@
+	$(CHMOD) u+w $@ || $(RM) -f $@
+	$(AR) -r $@ SDLMain.o || $(RM) -f $@
+
+demo: demos
+	./demos
+
+.PHONY: clean
+clean:
+	rm -f sdl-test *.so *.dylib *.dll *.dummy demos
