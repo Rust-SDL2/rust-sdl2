@@ -1,4 +1,4 @@
-VPATH=%VPATH%
+VPATH=/home/tony/Projects/rust-sdl2
 
 RUSTC ?= rustc
 RUSTFLAGS ?= --cfg image --cfg mixer
@@ -13,7 +13,7 @@ RM ?= rm
 RUST_SRC = $(shell find $(VPATH)/src/. -type f -name '*.rs')
 
 .PHONY: all
-all: libsdl.dummy
+all: libsdl2.dummy
 
 UNAME=$(shell uname)
 
@@ -30,7 +30,7 @@ else
 SDLXMAIN=
 endif
 
-libsdl.dummy: src/sdl2.rc $(RUST_SRC) $(SDLXMAIN)
+libsdl2.dummy: src/sdl2.rc $(RUST_SRC) $(SDLXMAIN)
 	$(RUSTC) $(RUSTFLAGS) $< -o $@
 	touch $@
 
