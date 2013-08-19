@@ -27,6 +27,10 @@ pub mod ll {
         driverdata: *c_void
     }
 
+    pub type SDL_WindowPos = c_int;
+    pub static SDL_WINDOWPOS_CENTERED: SDL_WindowPos = 0x2FFF0000;
+    pub static SDL_WINDOWPOS_UNDEFINED: SDL_WindowPos = 0x1FFF0000;
+
     pub enum SDL_WindowFlags {
         SDL_WINDOW_FULLSCREEN = 0x00000001,
         SDL_WINDOW_OPENGL = 0x00000002,
@@ -304,6 +308,13 @@ pub enum WindowFlags {
 }
 
 #[deriving(Eq)]
+pub enum WindowPos {
+    PosUndefined,
+    PosCentered,
+    Positioned(int)
+}
+
+#[deriving(Eq)]
 pub struct Window {
     raw: *ll::SDL_Window
 }
@@ -316,12 +327,28 @@ impl Drop for Window {
     }
 }
 
+fn unwrap_windowpos (pos: WindowPos) -> ll::SDL_WindowPos {
+    match pos {
+        PosUndefined => ll::SDL_WINDOWPOS_UNDEFINED,
+        PosCentered => ll::SDL_WINDOWPOS_CENTERED, 
+        Positioned(x) => x as ll::SDL_WindowPos
+    }
+}
+
 impl Window {
-    pub fn new(title: &str, x: int, y: int, width: int, height: int, window_flags: &[WindowFlags]) -> Result<~Window, ~str> {
+    pub fn new(title: &str, x: WindowPos, y: WindowPos, width: int, height: int, window_flags: &[WindowFlags]) -> Result<~Window, ~str> {
         let flags = window_flags.iter().fold(0u32, |flags, flag| { flags | *flag as u32 });
+
         unsafe {
             let raw = do title.with_c_str |buff| {
-                ll::SDL_CreateWindow(buff, x as c_int, y as c_int, width as c_int, height as c_int, flags) //FIXME: x and y are optional?
+                ll::SDL_CreateWindow(
+                    buff,
+                    unwrap_windowpos(x),
+                    unwrap_windowpos(y),
+                    width as c_int,
+                    height as c_int,
+                    flags
+                )
             };
 
             if raw == ptr::null() {
