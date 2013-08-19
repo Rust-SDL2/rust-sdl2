@@ -1,4 +1,4 @@
-use std::libc::c_int;
+use std::libc::{c_int, uint32_t};
 use std::ptr;
 use std::rand;
 use std::rand::RngUtil;
@@ -232,6 +232,45 @@ pub mod ll {
 }
 
 #[deriving(Eq)]
+pub struct DisplayMode {
+    format: u32,
+    w: int,
+    h: int,
+    refresh_rate: int
+}
+
+impl DisplayMode {
+
+    pub fn new(format: u32, w: int, h: int, refresh_rate: int) -> DisplayMode {
+        DisplayMode {
+            format: format,
+            w: w,
+            h: h,
+            refresh_rate: refresh_rate
+        }
+    }
+
+    pub fn from_ll(raw: &ll::SDL_DisplayMode) -> DisplayMode {
+        DisplayMode::new(
+            raw.format as u32,
+            raw.w as int,
+            raw.h as int,
+            raw.refresh_rate as int
+        )
+    }
+
+    pub fn to_ll(&self) -> ll::SDL_DisplayMode {
+        ll::SDL_DisplayMode {
+            format: self.format as uint32_t,
+            w: self.w as c_int,
+            h: self.h as c_int,
+            refresh_rate: self.refresh_rate as c_int,
+            driverdata: ptr::null()
+        }
+    }
+}
+
+#[deriving(Eq)]
 pub enum Color {
     RGB(u8, u8, u8),
     RGBA(u8, u8, u8, u8)
@@ -365,16 +404,16 @@ pub fn get_num_video_displays() -> Result<int, ~str> {
     }
 }
 
-pub fn get_display_name(id: int) -> ~str {
+pub fn get_display_name(display_index: int) -> ~str {
     unsafe {
-        let cstr = ll::SDL_GetDisplayName(id as c_int);
+        let cstr = ll::SDL_GetDisplayName(display_index as c_int);
         str::raw::from_c_str(cast::transmute_copy(&cstr))
     }
 }
 
-pub fn get_display_bounds(id: int) -> Result<Rect, ~str> {
+pub fn get_display_bounds(display_index: int) -> Result<Rect, ~str> {
     let out: Rect = Rect::new(0, 0, 0, 0);
-    let result = unsafe { ll::SDL_GetDisplayBounds(id as c_int, &out) == 0 };
+    let result = unsafe { ll::SDL_GetDisplayBounds(display_index as c_int, &out) == 0 };
 
     if result {
         Ok(out)
@@ -383,11 +422,81 @@ pub fn get_display_bounds(id: int) -> Result<Rect, ~str> {
     }
 }
 
-pub fn get_num_display_modes(id: int) -> Result<int, ~str> {
-    let result = unsafe { ll::SDL_GetNumDisplayModes(id as c_int) };
+pub fn get_num_display_modes(display_index: int) -> Result<int, ~str> {
+    let result = unsafe { ll::SDL_GetNumDisplayModes(display_index as c_int) };
     if result < 0 {
         Err(get_error())
     } else {
         Ok(result as int)
+    }
+}
+
+pub fn get_display_mode(display_index: int, mode_index: int) -> Result<~DisplayMode, ~str> {
+    let display_mode = ll::SDL_DisplayMode {
+        format: 0,
+        w: 0,
+        h: 0,
+        refresh_rate: 0,
+        driverdata: ptr::null()
+    };
+    let result = unsafe { ll::SDL_GetDisplayMode(display_index as c_int, mode_index as c_int, &display_mode) == 0};
+
+    if result {
+        Ok(~DisplayMode::from_ll(&display_mode))
+    } else {
+        Err(get_error())
+    }
+}
+
+pub fn get_desktop_display_mode(display_index: int) -> Result<~DisplayMode, ~str> {
+    let display_mode = ll::SDL_DisplayMode {
+        format: 0,
+        w: 0,
+        h: 0,
+        refresh_rate: 0,
+        driverdata: ptr::null()
+    };
+    let result = unsafe { ll::SDL_GetDesktopDisplayMode(display_index as c_int, &display_mode) == 0};
+
+    if result {
+        Ok(~DisplayMode::from_ll(&display_mode))
+    } else {
+        Err(get_error())
+    }
+}
+
+pub fn get_current_display_mode(display_index: int) -> Result<~DisplayMode, ~str> {
+    let display_mode = ll::SDL_DisplayMode {
+        format: 0,
+        w: 0,
+        h: 0,
+        refresh_rate: 0,
+        driverdata: ptr::null()
+    };
+    let result = unsafe { ll::SDL_GetCurrentDisplayMode(display_index as c_int, &display_mode) == 0};
+
+    if result {
+        Ok(~DisplayMode::from_ll(&display_mode))
+    } else {
+        Err(get_error())
+    }
+}
+
+pub fn get_closest_display_mode(display_index: int, mode: &DisplayMode) -> Result<~DisplayMode, ~str> {
+    let input = mode.to_ll();
+    let out = ll::SDL_DisplayMode {
+        format: 0,
+        w: 0,
+        h: 0,
+        refresh_rate: 0,
+        driverdata: ptr::null()
+    };
+
+    let result = unsafe { ll::SDL_GetClosestDisplayMode(display_index as c_int, &input, &out) };
+
+    if result == ptr::null() {
+        Err(get_error())
+    } else {
+        Ok(~DisplayMode::from_ll(&out))
     }
 }
