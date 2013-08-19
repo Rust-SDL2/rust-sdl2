@@ -5,11 +5,11 @@ use std::rand;
 use std::rand::RngUtil;
 use std::vec;
 
-use Rect;
+use rect::Rect;
 use get_error;
 
 pub mod ll {
-    use Rect;
+    use rect::Rect;
 
     use std::libc::{c_void, c_uint, c_int, c_float, c_char, c_schar, c_uchar, uint8_t, uint16_t};
     use std::libc::{uint32_t, int32_t};

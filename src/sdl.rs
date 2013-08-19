@@ -64,29 +64,6 @@ pub mod ll {
 }
 
 #[deriving(Eq)]
-pub struct Rect {
-    x: i16,
-    y: i16,
-    w: u16,
-    h: u16
-}
-
-pub fn Rect(x: i16, y: i16, w: u16, h: u16) -> Rect {
-    Rect { x: x, y: y, w: w, h: h }
-}
-
-impl Rect {
-    pub fn new(x: i16, y: i16, w: u16, h: u16) -> Rect {
-        Rect {
-            x: x,
-            y: y,
-            w: w,
-            h: h
-        }
-    }
-}
-
-#[deriving(Eq)]
 pub enum InitFlag {
     InitTimer = ll::SDL_INIT_TIMER as int,
     InitAudio = ll::SDL_INIT_AUDIO as int,
