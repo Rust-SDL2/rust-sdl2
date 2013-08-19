@@ -13,12 +13,12 @@ RM ?= rm
 RUST_SRC = $(shell find $(VPATH)/src/. -type f -name '*.rs')
 
 .PHONY: all
-all: libsdl.dummy
+all: libsdl2.dummy
 
 UNAME=$(shell uname)
 
-ifeq ($(UNAME),Darwin)
-SDLXMAIN=libSDLXmain.a
+#ifeq ($(UNAME),Darwin)
+#SDLXMAIN=libSDLXmain.a
 
 ifeq (%SDL_MODE%,framework)
 RUSTFLAGS+=--cfg mac_framework
@@ -26,11 +26,11 @@ else
 RUSTFLAGS+=--cfg mac_dylib
 endif
 
-else
-SDLXMAIN=
-endif
+#else
+#SDLXMAIN=
+##endif
 
-libsdl.dummy: src/sdl2.rc $(RUST_SRC) $(SDLXMAIN)
+libsdl2.dummy: src/sdl2.rc $(RUST_SRC) $(SDLXMAIN)
 	$(RUSTC) $(RUSTFLAGS) $< -o $@
 	touch $@
 
@@ -38,13 +38,13 @@ demos: demo/demo.rc libsdl2.dummy
 	$(RUSTC) -L . $< -o $@
 
 # Darwin-specific hack to change the name of `main` to `SDLX_main`
-$(SDLXMAIN): $(SDL_PREFIX)/libSDLmain.a
-	$(CP) $< $@
-	$(AR) -x $@ SDLMain.o || $(RM) -f $@
-	$(LD) -r SDLMain.o -o SDLXMain.o -alias _main _SDLX_main -unexported_symbol main || $(RM) -f $@
-	$(MV) SDLXMain.o SDLMain.o || $(RM) -f $@
-	$(CHMOD) u+w $@ || $(RM) -f $@
-	$(AR) -r $@ SDLMain.o || $(RM) -f $@
+#$(SDLXMAIN): $(SDL_PREFIX)/libSDLmain.a
+#	$(CP) $< $@
+#	$(AR) -x $@ SDLMain.o || $(RM) -f $@
+#	$(LD) -r SDLMain.o -o SDLXMain.o -alias _main _SDLX_main -unexported_symbol main || $(RM) -f $@
+#	$(MV) SDLXMain.o SDLMain.o || $(RM) -f $@
+#	$(CHMOD) u+w $@ || $(RM) -f $@
+#	$(AR) -r $@ SDLMain.o || $(RM) -f $@
 
 demo: demos
 	./demos
