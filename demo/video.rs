@@ -1,7 +1,3 @@
-use std::i16;
-use std::rand::RngUtil;
-use std::rand;
-
 use sdl2;
 
 pub fn main() {
@@ -11,5 +7,14 @@ pub fn main() {
         Ok(window) => window,
         Err(err) => fail!(fmt!("failed to create window: %s", err))
     };
+
+    let renderer = match sdl2::render::Renderer::from_window(window, sdl2::render::DriverAuto, [sdl2::render::Accelerated]) {
+        Ok(renderer) => renderer,
+        Err(err) => fail!(fmt!("failed to create renderer: %s", err))
+    };
+
+    renderer.set_draw_color(sdl2::video::RGB(255, 0, 0));
+    renderer.clear();
+    renderer.present();
     sdl2::quit();
 }

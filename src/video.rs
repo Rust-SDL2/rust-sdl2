@@ -1,18 +1,15 @@
-use std::cast;
-use std::libc::{c_int, c_float};
+use std::libc::c_int;
 use std::ptr;
 use std::rand;
 use std::rand::RngUtil;
-use std::vec;
 
-use rect::Rect;
 use get_error;
 
 pub mod ll {
     use rect::Rect;
 
-    use std::libc::{c_void, c_uint, c_int, c_float, c_char, c_schar, c_uchar, uint8_t, uint16_t};
-    use std::libc::{uint32_t, int32_t};
+    use std::libc::{c_void, c_int, c_float, c_char, uint8_t, uint16_t};
+    use std::libc::{uint32_t};
 
     pub type SDL_Rect = Rect;
     pub type SDL_bool = c_int;
@@ -486,7 +483,7 @@ fn unwrap_pixel_format(fmt: &PixelFormat) -> ll::SDL_PixelFormat {
         colorkey: fmt.color_key,
         alpha: fmt.alpha
     }
-}
+}*/
 
 #[deriving(Eq)]
 pub enum Color {
@@ -501,7 +498,7 @@ impl rand::Rand for Color {
     }
 }
 
-impl Color {
+/*impl Color {    
     pub fn from_mapped(bit: u32, fmt: *ll::SDL_PixelFormat) -> Color {
         let r = 0;
         let g = 0;
@@ -542,8 +539,8 @@ impl Color {
             }
         }
     }
-}
-
+}*/
+/*
 #[deriving(Eq)]
 pub enum SurfaceFlag {
     SWSurface = 0x00000000,

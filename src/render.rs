@@ -1,3 +1,8 @@
+use video;
+use get_error;
+use std::ptr;
+use std::libc::c_int;
+
 pub mod ll {
 
     use std::libc::{c_int, c_char, c_void, c_float, c_double};
@@ -112,5 +117,74 @@ pub mod ll {
         pub fn SDL_DestroyRenderer(renderer: *SDL_Renderer);
         pub fn SDL_GL_BindTexture(texture: *SDL_Texture, texw: *c_float, texh: *c_float) -> c_int;
         pub fn SDL_GL_UnbindTexture(texture: *SDL_Texture) -> c_int;
+    }
+}
+
+pub enum RenderDriverIndex {
+    DriverAuto,
+    DriverIndex(int)
+}
+
+#[deriving(Eq)]
+pub enum RendererFlags {
+    Software = ll::SDL_RENDERER_SOFTWARE as int,
+    Accelerated = ll::SDL_RENDERER_ACCELERATED as int,
+    PresentVSync = ll::SDL_RENDERER_PRESENTVSYNC as int,
+    TargetTexture = ll::SDL_RENDERER_TARGETTEXTURE as int
+}
+
+#[deriving(Eq)]
+pub struct Renderer {
+    raw: *ll::SDL_Renderer,
+    parent: Either<~video::Window, ~video::Surface>,
+    owned: bool
+}
+
+impl Drop for Renderer {
+    fn drop(&self) {
+        if self.owned {
+            unsafe {
+                ll::SDL_DestroyRenderer(self.raw);
+            }
+        }
+    }
+}
+
+impl Renderer {
+    pub fn from_window(window: ~video::Window, index: RenderDriverIndex, renderer_flags: &[RendererFlags]) -> Result<~Renderer, ~str> {
+        let flags = renderer_flags.iter().fold(0u32, |flags, flag| { flags | *flag as u32 });
+        let index = match index {
+            DriverAuto => -1,
+            DriverIndex(x) => x
+        };
+
+        let raw = unsafe {
+            ll::SDL_CreateRenderer(window.raw, index as c_int, flags)
+        };
+
+        if raw == ptr::null() {
+            Err(get_error())
+        } else {
+            Ok(~Renderer{ raw: raw, parent: Left(window), owned: true,})
+        }
+    }
+
+    pub fn set_draw_color(&self, color: video::Color) -> bool {
+        match color {
+            video::RGB(r, g, b) => {
+                unsafe { ll::SDL_SetRenderDrawColor(self.raw, r, g, b, 255) == 0 }
+            },
+            video::RGBA(r, g, b, a) => {
+                unsafe { ll::SDL_SetRenderDrawColor(self.raw, r, g, b, a) == 0 }
+            }
+        }
+    }
+
+    pub fn clear(&self) -> bool {
+        unsafe { ll::SDL_RenderClear(self.raw) == 0 }
+    }
+
+    pub fn present(&self) {
+        unsafe { ll::SDL_RenderPresent(self.raw) }
     }
 }

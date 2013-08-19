@@ -1,6 +1,5 @@
 use std::cast;
 use std::str;
-use std::c_str;
 
 // Setup linking for all targets.
 #[cfg(target_os="macos")]
