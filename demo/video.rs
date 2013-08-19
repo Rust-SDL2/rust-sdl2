@@ -16,5 +16,6 @@ pub fn main() {
     renderer.set_draw_color(sdl2::video::RGB(255, 0, 0));
     renderer.clear();
     renderer.present();
+    sdl2::timer::delay(5000);
     sdl2::quit();
 }

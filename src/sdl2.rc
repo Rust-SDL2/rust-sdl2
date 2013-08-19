@@ -10,5 +10,6 @@
 pub use sdl::*;
 pub mod rect;
 pub mod video;
+pub mod timer;
 pub mod render;
 pub mod sdl;
