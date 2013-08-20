@@ -175,6 +175,16 @@ pub mod ll {
     }
 }
 
+fn empty_sdl_display_mode() -> ll::SDL_DisplayMode {
+    ll::SDL_DisplayMode {
+        format: 0,
+        w: 0,
+        h: 0,
+        refresh_rate: 0,
+        driverdata: ptr::null()
+    }
+}
+
 #[deriving(Eq)]
 pub struct DisplayMode {
     format: u32,
@@ -238,6 +248,15 @@ pub enum WindowPos {
     Positioned(int)
 }
 
+fn unwrap_windowpos (pos: WindowPos) -> ll::SDL_WindowPos {
+    match pos {
+        PosUndefined => ll::SDL_WINDOWPOS_UNDEFINED,
+        PosCentered => ll::SDL_WINDOWPOS_CENTERED, 
+        Positioned(x) => x as ll::SDL_WindowPos
+    }
+}
+
+
 #[deriving(Eq)]
 pub struct Window {
     raw: *ll::SDL_Window,
@@ -251,14 +270,6 @@ impl Drop for Window {
                 ll::SDL_DestroyWindow(self.raw);
             }
         }
-    }
-}
-
-fn unwrap_windowpos (pos: WindowPos) -> ll::SDL_WindowPos {
-    match pos {
-        PosUndefined => ll::SDL_WINDOWPOS_UNDEFINED,
-        PosCentered => ll::SDL_WINDOWPOS_CENTERED, 
-        Positioned(x) => x as ll::SDL_WindowPos
     }
 }
 
@@ -285,6 +296,82 @@ impl Window {
             }
         }
     }
+
+    pub fn get_display_index(&self) -> Result<int, ~str> {
+        let result = unsafe { ll::SDL_GetWindowDisplayIndex(self.raw) };
+        if result < 0 {
+            return Err(get_error())
+        } else {
+            Ok(result as int)
+        }
+    }
+
+    pub fn set_display_mode(&self, display_mode: Option<DisplayMode>) -> bool {
+        return unsafe { 
+            ll::SDL_SetWindowDisplayMode(
+                self.raw,
+                match display_mode {
+                    Some(ref mode) => cast::transmute(&mode.to_ll()),
+                    None => ptr::null() 
+                }
+            ) == 0 
+        }
+    }
+
+    pub fn get_display_mode(&self, display_mode: &DisplayMode) -> Result<~DisplayMode, ~str> {
+        let dm = empty_sdl_display_mode();
+
+        let result = unsafe { 
+            ll::SDL_GetWindowDisplayMode(
+                self.raw,
+                &display_mode.to_ll()
+            ) == 0 
+        };
+
+        if result {
+            Ok(~DisplayMode::from_ll(&dm))
+        } else {
+            Err(get_error())
+        }
+    }
+
+    /*pub fn SDL_GetWindowPixelFormat(window: *SDL_Window) -> uint32_t;
+    pub fn SDL_CreateWindow(title: *c_char, x: c_int, y: c_int, w: c_int, h: c_int, flags: uint32_t) -> *SDL_Window;
+    pub fn SDL_CreateWindowFrom(data: *c_void) -> *SDL_Window;
+    pub fn SDL_GetWindowID(window: *SDL_Window) -> uint32_t;
+    pub fn SDL_GetWindowFromID(id: uint32_t) -> *SDL_Window;
+    pub fn SDL_GetWindowFlags(window: *SDL_Window) -> uint32_t;
+    pub fn SDL_SetWindowTitle(window: *SDL_Window, title: *c_char);
+    pub fn SDL_GetWindowTitle(window: *SDL_Window) -> *c_char;
+    pub fn SDL_SetWindowIcon(window: *SDL_Window, icon: *SDL_Surface);
+    pub fn SDL_SetWindowData(window: *SDL_Window, name: *c_char, userdata: *c_void) -> *c_void;
+    pub fn SDL_GetWindowData(window: *SDL_Window, name: *c_char) -> *c_void;
+    pub fn SDL_SetWindowPosition(window: *SDL_Window, x: c_int, y: c_int);
+    pub fn SDL_GetWindowPosition(window: *SDL_Window, x: *c_int, y: *c_int);
+    pub fn SDL_SetWindowSize(window: *SDL_Window, w: c_int, h: c_int);
+    pub fn SDL_GetWindowSize(window: *SDL_Window, w: *c_int, h: *c_int);
+    pub fn SDL_SetWindowMinimumSize(window: *SDL_Window, min_w: c_int, min_h: c_int);
+    pub fn SDL_GetWindowMinimumSize(window: *SDL_Window, w: *c_int, h: *c_int);
+    pub fn SDL_SetWindowMaximumSize(window: *SDL_Window, max_w: c_int, max_h: c_int);
+    pub fn SDL_GetWindowMaximumSize(window: *SDL_Window, w: *c_int, h: *c_int);
+    pub fn SDL_SetWindowBordered(window: *SDL_Window, bordered: SDL_bool);
+    pub fn SDL_ShowWindow(window: *SDL_Window);
+    pub fn SDL_HideWindow(window: *SDL_Window);
+    pub fn SDL_RaiseWindow(window: *SDL_Window);
+    pub fn SDL_MaximizeWindow(window: *SDL_Window);
+    pub fn SDL_MinimizeWindow(window: *SDL_Window);
+    pub fn SDL_RestoreWindow(window: *SDL_Window);
+    pub fn SDL_SetWindowFullscreen(window: *SDL_Window, flags: uint32_t) -> c_int;
+    pub fn SDL_GetWindowSurface(window: *SDL_Window) -> *SDL_Surface;
+    pub fn SDL_UpdateWindowSurface(window: *SDL_Window) -> c_int;
+    pub fn SDL_UpdateWindowSurfaceRects(window: *SDL_Window, rects: *SDL_Rect, numrects: c_int) -> c_int;
+    pub fn SDL_SetWindowGrab(window: *SDL_Window, grabbed: SDL_bool);
+    pub fn SDL_GetWindowGrab(window: *SDL_Window) -> SDL_bool;
+    pub fn SDL_SetWindowBrightness(window: *SDL_Window, brightness: float) -> c_int;
+    pub fn SDL_GetWindowBrightness(window: *SDL_Window) -> c_float;
+    pub fn SDL_SetWindowGammaRamp(window: *SDL_Window, red: *uint16_t, green: *uint16_t, blue: *uint16_t) -> c_int;
+    pub fn SDL_GetWindowGammaRamp(window: *SDL_Window, red: *uint16_t, green: *uint16_t, blue: *uint16_t) -> c_int;
+    pub fn SDL_DestroyWindow(window: *SDL_Window);*/
 }
 
 pub fn get_num_video_drivers() -> Result<int, ~str> {
@@ -357,51 +444,33 @@ pub fn get_num_display_modes(display_index: int) -> Result<int, ~str> {
 }
 
 pub fn get_display_mode(display_index: int, mode_index: int) -> Result<~DisplayMode, ~str> {
-    let display_mode = ll::SDL_DisplayMode {
-        format: 0,
-        w: 0,
-        h: 0,
-        refresh_rate: 0,
-        driverdata: ptr::null()
-    };
-    let result = unsafe { ll::SDL_GetDisplayMode(display_index as c_int, mode_index as c_int, &display_mode) == 0};
+    let dm = empty_sdl_display_mode();
+    let result = unsafe { ll::SDL_GetDisplayMode(display_index as c_int, mode_index as c_int, &dm) == 0};
 
     if result {
-        Ok(~DisplayMode::from_ll(&display_mode))
+        Ok(~DisplayMode::from_ll(&dm))
     } else {
         Err(get_error())
     }
 }
 
 pub fn get_desktop_display_mode(display_index: int) -> Result<~DisplayMode, ~str> {
-    let display_mode = ll::SDL_DisplayMode {
-        format: 0,
-        w: 0,
-        h: 0,
-        refresh_rate: 0,
-        driverdata: ptr::null()
-    };
-    let result = unsafe { ll::SDL_GetDesktopDisplayMode(display_index as c_int, &display_mode) == 0};
+    let dm = empty_sdl_display_mode();
+    let result = unsafe { ll::SDL_GetDesktopDisplayMode(display_index as c_int, &dm) == 0};
 
     if result {
-        Ok(~DisplayMode::from_ll(&display_mode))
+        Ok(~DisplayMode::from_ll(&dm))
     } else {
         Err(get_error())
     }
 }
 
 pub fn get_current_display_mode(display_index: int) -> Result<~DisplayMode, ~str> {
-    let display_mode = ll::SDL_DisplayMode {
-        format: 0,
-        w: 0,
-        h: 0,
-        refresh_rate: 0,
-        driverdata: ptr::null()
-    };
-    let result = unsafe { ll::SDL_GetCurrentDisplayMode(display_index as c_int, &display_mode) == 0};
+    let dm = empty_sdl_display_mode();
+    let result = unsafe { ll::SDL_GetCurrentDisplayMode(display_index as c_int, &dm) == 0};
 
     if result {
-        Ok(~DisplayMode::from_ll(&display_mode))
+        Ok(~DisplayMode::from_ll(&dm))
     } else {
         Err(get_error())
     }
@@ -409,13 +478,7 @@ pub fn get_current_display_mode(display_index: int) -> Result<~DisplayMode, ~str
 
 pub fn get_closest_display_mode(display_index: int, mode: &DisplayMode) -> Result<~DisplayMode, ~str> {
     let input = mode.to_ll();
-    let out = ll::SDL_DisplayMode {
-        format: 0,
-        w: 0,
-        h: 0,
-        refresh_rate: 0,
-        driverdata: ptr::null()
-    };
+    let out = empty_sdl_display_mode();
 
     let result = unsafe { ll::SDL_GetClosestDisplayMode(display_index as c_int, &input, &out) };
 
