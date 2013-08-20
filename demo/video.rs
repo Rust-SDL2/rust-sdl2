@@ -13,7 +13,7 @@ pub fn main() {
         Err(err) => fail!(fmt!("failed to create renderer: %s", err))
     };
 
-    renderer.set_draw_color(sdl2::video::RGB(255, 0, 0));
+    renderer.set_draw_color(sdl2::pixels::RGB(255, 0, 0));
     renderer.clear();
     renderer.present();
     sdl2::timer::delay(5000);

@@ -1,5 +1,6 @@
 use video;
 use surface;
+use pixels;
 use get_error;
 use std::ptr;
 use std::libc::c_int;
@@ -170,12 +171,12 @@ impl Renderer {
         }
     }
 
-    pub fn set_draw_color(&self, color: video::Color) -> bool {
+    pub fn set_draw_color(&self, color: pixels::Color) -> bool {
         match color {
-            video::RGB(r, g, b) => {
+            pixels::RGB(r, g, b) => {
                 unsafe { ll::SDL_SetRenderDrawColor(self.raw, r, g, b, 255) == 0 }
             },
-            video::RGBA(r, g, b, a) => {
+            pixels::RGBA(r, g, b, a) => {
                 unsafe { ll::SDL_SetRenderDrawColor(self.raw, r, g, b, a) == 0 }
             }
         }

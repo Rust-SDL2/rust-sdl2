@@ -1,5 +1,5 @@
 pub mod ll {
-    use video::ll::SDL_PixelFormat;
+    use pixels::ll::SDL_PixelFormat;
     use rect::Rect;
     use std::libc::{c_int, c_void, uint32_t};
     pub type SDL_Rect = Rect;
