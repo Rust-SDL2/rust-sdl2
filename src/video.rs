@@ -11,6 +11,7 @@ use get_error;
 
 pub mod ll {
     use rect::Rect;
+    use surface::ll::SDL_Surface;
 
     use std::libc::{c_void, c_int, c_float, c_char, uint8_t, uint16_t};
     use std::libc::{uint32_t};
@@ -19,6 +20,8 @@ pub mod ll {
     pub type SDL_bool = c_int;
 
     //SDL_video.h
+    pub struct SDL_Window;
+
     pub struct SDL_DisplayMode
     {
         format: uint32_t,
@@ -98,25 +101,6 @@ pub mod ll {
         SDL_GL_CONTEXT_PROFILE_CORE = 0x0001,
         SDL_GL_CONTEXT_PROFILE_COMPATIBILITY = 0x0002,
         SDL_GL_CONTEXT_PROFILE_ES = 0x0004
-    }
-
-    //SDL_surface.h
-    pub struct SDL_Window;
-    pub struct SDL_BlitMap;
-
-    pub struct SDL_Surface {
-        flags: uint32_t,
-        format: *SDL_PixelFormat,
-        w: c_int,
-        h: c_int,
-        pitch: c_int,
-        pixels: *c_void,
-        userdata: *c_void,
-        locked: c_int,
-        lock_data: *c_void,
-        clip_rect: SDL_Rect,
-        map: *SDL_BlitMap,
-        refcount: c_int
     }
 
     //SDL_pixels.h
@@ -281,12 +265,6 @@ impl rand::Rand for Color {
         if rng.gen() { RGBA(rng.gen(), rng.gen(), rng.gen(), rng.gen()) }
         else { RGB(rng.gen(), rng.gen(), rng.gen()) }
     }
-}
-
-#[deriving(Eq)]
-pub struct Surface {
-    raw: *ll::SDL_Surface,
-    owned: bool
 }
 
 #[deriving(Eq)]

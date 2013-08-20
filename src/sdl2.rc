@@ -9,6 +9,7 @@
 
 pub use sdl::*;
 pub mod rect;
+pub mod surface;
 pub mod video;
 pub mod timer;
 pub mod render;

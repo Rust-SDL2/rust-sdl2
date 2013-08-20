@@ -1,4 +1,5 @@
 use video;
+use surface;
 use get_error;
 use std::ptr;
 use std::libc::c_int;
@@ -10,7 +11,7 @@ pub mod ll {
     use rect::Rect;
     use rect::Point;
 
-    use video::ll::SDL_Surface;
+    use surface::ll::SDL_Surface;
     use video::ll::SDL_Window;
 
     pub type SDL_Rect = Rect;
@@ -136,7 +137,7 @@ pub enum RendererFlags {
 #[deriving(Eq)]
 pub struct Renderer {
     raw: *ll::SDL_Renderer,
-    parent: Either<~video::Window, ~video::Surface>,
+    parent: Either<~video::Window, ~surface::Surface>,
     owned: bool
 }
 
