@@ -4,7 +4,7 @@ Bindings for SDL2 in Rust
 
 Rust-SDL2 is a library for talking to the new SDL2.0 libraries from Rust. Low-level C components are wrapped in Rust code to make them more idiomatic and abstract away inappropriate manual memory management.
 
-In addition, it provides optional APIs to a number of common SDL extension libraries.
+Rust-SDL2 is still in very early stages of development, and probably won't work for a little while.
 
 Rust-SDL2 uses the MIT license.
 
