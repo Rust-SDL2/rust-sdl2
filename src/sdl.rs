@@ -43,23 +43,21 @@ pub mod ll {
     pub static SDL_INIT_NOPARACHUTE: SDL_InitFlag = 0x00100000;
     pub static SDL_INIT_EVERYTHING: SDL_InitFlag = 0x0000FFFF;
 
-    extern {
-        //SDL_error.h
-        pub fn SDL_ClearError();
-        pub fn SDL_Error(code: SDL_errorcode) -> c_int;
-        pub fn SDL_SetError(fmt: *c_schar) -> c_int;
-        pub fn SDL_GetError() -> *c_schar;
+    //SDL_error.h
+    externfn!(fn SDL_ClearError())
+    externfn!(fn SDL_Error(code: SDL_errorcode) -> c_int)
+    externfn!(fn SDL_SetError(fmt: *c_schar) -> c_int)
+    externfn!(fn SDL_GetError() -> *c_schar)
 
-        //SDL.h
-        pub fn SDL_Init(flags: uint32_t) -> c_int;
-        pub fn SDL_InitSubSystem(flags: SDL_InitFlag) -> c_int;
-        pub fn SDL_QuitSubSystem(flags: SDL_InitFlag);
-        pub fn SDL_WasInit(flags: SDL_InitFlag) -> SDL_InitFlag;
-        pub fn SDL_Quit();
+    //SDL.h
+    externfn!(fn SDL_Init(flags: uint32_t) -> c_int)
+    externfn!(fn SDL_InitSubSystem(flags: SDL_InitFlag) -> c_int)
+    externfn!(fn SDL_QuitSubSystem(flags: SDL_InitFlag))
+    externfn!(fn SDL_WasInit(flags: SDL_InitFlag) -> SDL_InitFlag)
+    externfn!(fn SDL_Quit())
 
-        //SDL_timer.h
-        pub fn SDL_GetTicks() -> uint32_t;
-    }
+    //SDL_timer.h
+    externfn!(fn SDL_GetTicks() -> uint32_t)
 }
 
 #[deriving(Eq)]
