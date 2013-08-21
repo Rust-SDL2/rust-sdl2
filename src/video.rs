@@ -239,6 +239,29 @@ pub enum WindowFlags {
     Foreign = ll::SDL_WINDOW_FOREIGN as int
 }
 
+fn wrap_window_flags(bitflags: u32) -> ~[WindowFlags] {
+    let flags = [
+        Fullscreen,
+        OpenGL,
+        Shown,
+        Hidden,
+        Borderless,
+        Resizable,
+        Minimized,
+        Maximized,
+        InputGrabbed,
+        InputFocus,
+        MouseFocus,
+        FullscreenDesktop,
+        Foreign
+    ];
+
+    do flags.iter().filter_map |&flag| {
+        if bitflags & (flag as u32) != 0 { Some(flag) }
+        else { None }
+    }.collect()
+}
+
 #[deriving(Eq)]
 pub enum WindowPos {
     PosUndefined,
@@ -295,6 +318,15 @@ impl Window {
         }
     }
 
+    pub fn from_id(id: u32) -> Result<~Window, ~str> {
+        let raw = unsafe { ll::SDL_GetWindowFromID(id) };
+        if raw == ptr::null() {
+            Err(get_error())
+        } else {
+            Ok(~Window{ raw: raw, owned: false})
+        }
+    }
+
     pub fn get_display_index(&self) -> Result<int, ~str> {
         let result = unsafe { ll::SDL_GetWindowDisplayIndex(self.raw) };
         if result < 0 {
@@ -333,14 +365,31 @@ impl Window {
         }
     }
 
-    /*pub fn SDL_GetWindowPixelFormat(window: *SDL_Window) -> uint32_t;
-    pub fn SDL_CreateWindow(title: *c_char, x: c_int, y: c_int, w: c_int, h: c_int, flags: uint32_t) -> *SDL_Window;
-    pub fn SDL_CreateWindowFrom(data: *c_void) -> *SDL_Window;
-    pub fn SDL_GetWindowID(window: *SDL_Window) -> uint32_t;
-    pub fn SDL_GetWindowFromID(id: uint32_t) -> *SDL_Window;
-    pub fn SDL_GetWindowFlags(window: *SDL_Window) -> uint32_t;
-    pub fn SDL_SetWindowTitle(window: *SDL_Window, title: *c_char);
-    pub fn SDL_GetWindowTitle(window: *SDL_Window) -> *c_char;
+    /*pub fn SDL_GetWindowPixelFormat(window: *SDL_Window) -> uint32_t; */ //TODO: Implement me!
+
+    pub fn get_id(&self) -> u32 {
+        unsafe { ll::SDL_GetWindowID(self.raw) }
+    }
+
+    pub fn get_flags(&self) -> ~[WindowFlags] {
+        let raw = unsafe { ll::SDL_GetWindowFlags(self.raw) };
+        wrap_window_flags(raw) 
+    }
+
+    pub fn set_title(&self, title: &str) {
+        do title.with_c_str |buff| {
+            unsafe { ll::SDL_SetWindowTitle(self.raw, buff) }
+        }
+    }
+    
+    pub fn get_title(&self) -> ~str {
+        unsafe {
+            let cstr = ll::SDL_GetWindowTitle(self.raw);
+            str::raw::from_c_str(cast::transmute_copy(&cstr))
+        }
+    }
+
+    /*
     pub fn SDL_SetWindowIcon(window: *SDL_Window, icon: *SDL_Surface);
     pub fn SDL_SetWindowData(window: *SDL_Window, name: *c_char, userdata: *c_void) -> *c_void;
     pub fn SDL_GetWindowData(window: *SDL_Window, name: *c_char) -> *c_void;
