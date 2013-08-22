@@ -1,9 +1,11 @@
-use std::libc::{c_int, uint32_t};
+use std::libc::{c_int, c_float, uint32_t};
 use std::ptr;
 use std::str;
 use std::cast;
+use std::vec;
 
 use rect::Rect;
+use surface::Surface;
 
 use get_error;
 
@@ -149,7 +151,7 @@ pub mod ll {
     externfn!(fn SDL_UpdateWindowSurfaceRects(window: *SDL_Window, rects: *SDL_Rect, numrects: c_int) -> c_int)
     externfn!(fn SDL_SetWindowGrab(window: *SDL_Window, grabbed: SDL_bool))
     externfn!(fn SDL_GetWindowGrab(window: *SDL_Window) -> SDL_bool)
-    externfn!(fn SDL_SetWindowBrightness(window: *SDL_Window, brightness: float) -> c_int)
+    externfn!(fn SDL_SetWindowBrightness(window: *SDL_Window, brightness: c_float) -> c_int)
     externfn!(fn SDL_GetWindowBrightness(window: *SDL_Window) -> c_float)
     externfn!(fn SDL_SetWindowGammaRamp(window: *SDL_Window, red: *uint16_t, green: *uint16_t, blue: *uint16_t) -> c_int)
     externfn!(fn SDL_GetWindowGammaRamp(window: *SDL_Window, red: *uint16_t, green: *uint16_t, blue: *uint16_t) -> c_int)
@@ -238,6 +240,14 @@ pub enum WindowFlags {
     FullscreenDesktop = ll::SDL_WINDOW_FULLSCREEN_DESKTOP as int,
     Foreign = ll::SDL_WINDOW_FOREIGN as int
 }
+
+#[deriving(Eq)]
+pub enum FullscreenType {
+    FTOff = 0,
+    FTTrue = Fullscreen as int,
+    FTDesktop = FullscreenDesktop as int
+}
+
 
 fn wrap_window_flags(bitflags: u32) -> ~[WindowFlags] {
     let flags = [
@@ -389,36 +399,129 @@ impl Window {
         }
     }
 
+    pub fn set_icon(&self, icon: &Surface) {
+        unsafe { ll::SDL_SetWindowIcon(self.raw, icon.raw) }
+    }
+
     /*
-    pub fn SDL_SetWindowIcon(window: *SDL_Window, icon: *SDL_Surface);
-    pub fn SDL_SetWindowData(window: *SDL_Window, name: *c_char, userdata: *c_void) -> *c_void;
+    pub fn SDL_SetWindowData(window: *SDL_Window, name: *c_char, userdata: *c_void) -> *c_void; //TODO: Figure out what this does
     pub fn SDL_GetWindowData(window: *SDL_Window, name: *c_char) -> *c_void;
-    pub fn SDL_SetWindowPosition(window: *SDL_Window, x: c_int, y: c_int);
-    pub fn SDL_GetWindowPosition(window: *SDL_Window, x: *c_int, y: *c_int);
-    pub fn SDL_SetWindowSize(window: *SDL_Window, w: c_int, h: c_int);
-    pub fn SDL_GetWindowSize(window: *SDL_Window, w: *c_int, h: *c_int);
-    pub fn SDL_SetWindowMinimumSize(window: *SDL_Window, min_w: c_int, min_h: c_int);
-    pub fn SDL_GetWindowMinimumSize(window: *SDL_Window, w: *c_int, h: *c_int);
-    pub fn SDL_SetWindowMaximumSize(window: *SDL_Window, max_w: c_int, max_h: c_int);
-    pub fn SDL_GetWindowMaximumSize(window: *SDL_Window, w: *c_int, h: *c_int);
-    pub fn SDL_SetWindowBordered(window: *SDL_Window, bordered: SDL_bool);
-    pub fn SDL_ShowWindow(window: *SDL_Window);
-    pub fn SDL_HideWindow(window: *SDL_Window);
-    pub fn SDL_RaiseWindow(window: *SDL_Window);
-    pub fn SDL_MaximizeWindow(window: *SDL_Window);
-    pub fn SDL_MinimizeWindow(window: *SDL_Window);
-    pub fn SDL_RestoreWindow(window: *SDL_Window);
-    pub fn SDL_SetWindowFullscreen(window: *SDL_Window, flags: uint32_t) -> c_int;
-    pub fn SDL_GetWindowSurface(window: *SDL_Window) -> *SDL_Surface;
-    pub fn SDL_UpdateWindowSurface(window: *SDL_Window) -> c_int;
-    pub fn SDL_UpdateWindowSurfaceRects(window: *SDL_Window, rects: *SDL_Rect, numrects: c_int) -> c_int;
-    pub fn SDL_SetWindowGrab(window: *SDL_Window, grabbed: SDL_bool);
-    pub fn SDL_GetWindowGrab(window: *SDL_Window) -> SDL_bool;
-    pub fn SDL_SetWindowBrightness(window: *SDL_Window, brightness: float) -> c_int;
-    pub fn SDL_GetWindowBrightness(window: *SDL_Window) -> c_float;
+    */
+
+    pub fn set_position(&self, x: WindowPos, y: WindowPos) {
+        unsafe { ll::SDL_SetWindowPosition(self.raw, unwrap_windowpos(x), unwrap_windowpos(y)) }
+    }
+
+    pub fn get_position(&self) -> (int, int) {
+        let x: c_int = 0;
+        let y: c_int = 0;
+        unsafe { ll::SDL_GetWindowPosition(self.raw, &x, &y) };
+        (x as int, y as int)
+    }
+
+    pub fn set_size(&self, w: int, h: int) {
+        unsafe { ll::SDL_SetWindowSize(self.raw, w as c_int, h as c_int) }
+    }
+
+    pub fn get_size(&self) -> (int, int) {
+        let w: c_int = 0;
+        let h: c_int = 0;
+        unsafe { ll::SDL_GetWindowSize(self.raw, &w, &h) };
+        (w as int, h as int)
+    }
+
+    pub fn set_minimum_size(&self, w: int, h: int) {
+        unsafe { ll::SDL_SetWindowMinimumSize(self.raw, w as c_int, h as c_int) }
+    }
+
+    pub fn get_minimum_size(&self) -> (int, int) {
+        let w: c_int = 0;
+        let h: c_int = 0;
+        unsafe { ll::SDL_GetWindowMinimumSize(self.raw, &w, &h) };
+        (w as int, h as int)
+    }
+
+    pub fn set_maximum_size(&self, w: int, h: int) {
+        unsafe { ll::SDL_SetWindowMaximumSize(self.raw, w as c_int, h as c_int) }
+    }
+
+    pub fn get_maximum_size(&self) -> (int, int) {
+        let w: c_int = 0;
+        let h: c_int = 0;
+        unsafe { ll::SDL_GetWindowMaximumSize(self.raw, &w, &h) };
+        (w as int, h as int)
+    }
+
+    pub fn set_bordered(&self, bordered: bool) {
+        unsafe { ll::SDL_SetWindowBordered(self.raw, if bordered { 1 } else { 0 }) }
+    }
+
+    pub fn show(&self) {
+        unsafe { ll::SDL_ShowWindow(self.raw) }
+    }
+
+    pub fn hide(&self) {
+        unsafe { ll::SDL_HideWindow(self.raw) }
+    }
+
+    pub fn raise(&self) {
+        unsafe { ll::SDL_RaiseWindow(self.raw) }
+    }
+
+    pub fn maximize(&self) {
+        unsafe { ll::SDL_MaximizeWindow(self.raw) }
+    }
+
+    pub fn minimize(&self) {
+        unsafe { ll::SDL_MinimizeWindow(self.raw) }
+    }
+
+    pub fn restore(&self) {
+        unsafe { ll::SDL_RestoreWindow(self.raw) }
+    }
+
+    pub fn set_fullscreen(&self, fullscreen_type: FullscreenType) -> bool {
+        unsafe { ll::SDL_SetWindowFullscreen(self.raw, fullscreen_type as uint32_t) == 0 }
+    }
+
+    pub fn get_surface(&self) -> Result<~Surface, ~str> {
+        let raw = unsafe { ll::SDL_GetWindowSurface(self.raw) };
+
+        if raw == ptr::null() {
+            Err(get_error())
+        } else {
+            Ok(~Surface {raw: raw, owned: false}) //Docs say that it releases with the window
+        }
+    }
+
+    pub fn update_surface(&self) -> bool {
+        unsafe { ll::SDL_UpdateWindowSurface(self.raw) == 0 }
+    }
+
+    pub fn update_surface_rects(&self, rects: &[Rect]) -> bool {
+        unsafe { ll::SDL_UpdateWindowSurfaceRects(self.raw, cast::transmute(vec::raw::to_ptr(rects)), rects.len() as c_int) == 0}
+    }
+
+    pub fn set_grab(&self, grabbed: bool) {
+        unsafe { ll::SDL_SetWindowGrab(self.raw, if grabbed { 1 } else { 0 }) }
+    }
+
+    pub fn get_grab(&self) -> bool {
+        unsafe { ll::SDL_GetWindowGrab(self.raw) == 1 }
+    }
+
+    pub fn set_brightness(&self, brightness: float) -> bool {
+        unsafe { ll::SDL_SetWindowBrightness(self.raw, brightness as c_float) == 0 }
+    }
+
+    pub fn get_brightness(&self) -> float {
+        unsafe { ll::SDL_GetWindowBrightness(self.raw) as float }
+    }
+
+    /*
     pub fn SDL_SetWindowGammaRamp(window: *SDL_Window, red: *uint16_t, green: *uint16_t, blue: *uint16_t) -> c_int;
     pub fn SDL_GetWindowGammaRamp(window: *SDL_Window, red: *uint16_t, green: *uint16_t, blue: *uint16_t) -> c_int;
-    pub fn SDL_DestroyWindow(window: *SDL_Window);*/
+    */
 }
 
 pub fn get_num_video_drivers() -> Result<int, ~str> {
