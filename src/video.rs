@@ -547,6 +547,11 @@ impl Window {
             Err(get_error())
         }
     }
+    /*
+    externfn!(fn SDL_GL_CreateContext(window: *SDL_Window) -> SDL_GLContext)
+    externfn!(fn SDL_GL_MakeCurrent(window: *SDL_Window, context: SDL_GLContext) -> c_int)
+    externfn!(fn SDL_GL_SwapWindow(window: *SDL_Window))
+    */
 }
 
 pub fn get_num_video_drivers() -> Result<int, ~str> {
@@ -663,3 +668,28 @@ pub fn get_closest_display_mode(display_index: int, mode: &DisplayMode) -> Resul
         Ok(~DisplayMode::from_ll(&out))
     }
 }
+
+pub fn is_screen_saver_enabled() -> bool {
+    unsafe { ll::SDL_IsScreenSaverEnabled() == 1 }
+}
+
+pub fn enable_screen_saver() {
+    unsafe { ll::SDL_EnableScreenSaver() }
+}
+
+pub fn disable_screen_saver() {
+    unsafe { ll::SDL_EnableScreenSaver() }
+}
+
+/*
+    externfn!(fn SDL_GL_LoadLibrary(path: *c_char) -> c_int)
+    externfn!(fn SDL_GL_GetProcAddress(proc: *c_char))
+    externfn!(fn SDL_GL_UnloadLibrary())
+    externfn!(fn SDL_GL_ExtensionSupported(extension: *c_char) -> SDL_bool)
+    externfn!(fn SDL_GL_SetAttribute(attr: SDL_GLattr, value: c_int) -> c_int)
+    externfn!(fn SDL_GL_GetAttribute(attr: SDL_GLattr, value: *c_int) -> c_int)
+    externfn!(fn SDL_GL_GetCurrentWindow() -> *SDL_Window)
+    externfn!(fn SDL_GL_GetCurrentContext() -> SDL_GLContext)
+    externfn!(fn SDL_GL_SetSwapInterval(interval: c_int) -> c_int)
+    externfn!(fn SDL_GL_GetSwapInterval() -> c_int)
+    externfn!(fn SDL_GL_DeleteContext(context: SDL_GLContext))*/
