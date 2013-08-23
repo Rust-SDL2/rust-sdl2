@@ -518,10 +518,35 @@ impl Window {
         unsafe { ll::SDL_GetWindowBrightness(self.raw) as float }
     }
 
-    /*
-    pub fn SDL_SetWindowGammaRamp(window: *SDL_Window, red: *uint16_t, green: *uint16_t, blue: *uint16_t) -> c_int;
-    pub fn SDL_GetWindowGammaRamp(window: *SDL_Window, red: *uint16_t, green: *uint16_t, blue: *uint16_t) -> c_int;
-    */
+    pub fn set_gamma_ramp(&self, red: Option<&[u16, ..256]>, green: Option<&[u16, ..256]>, blue: Option<&[u16, ..256]>) -> bool {
+        unsafe {
+            let unwrapped_red = match red {
+                Some(values) => cast::transmute(vec::raw::to_ptr(*values)),
+                None => ptr::null()
+            };
+            let unwrapped_green = match green {
+                Some(values) => cast::transmute(vec::raw::to_ptr(*values)),
+                None => ptr::null()
+            };
+            let unwrapped_blue = match blue {
+                Some(values) => cast::transmute(vec::raw::to_ptr(*values)),
+                None => ptr::null()
+            };
+            ll::SDL_SetWindowGammaRamp(self.raw, unwrapped_red, unwrapped_green, unwrapped_blue) == 0
+        }
+    }
+
+    pub fn get_gamma_ramp(&self) -> Result<(~[u16], ~[u16], ~[u16]), ~str> {
+        let red: ~[u16] = vec::with_capacity(256);
+        let green: ~[u16] = vec::with_capacity(256);
+        let blue: ~[u16] = vec::with_capacity(256);
+        let result = unsafe {ll::SDL_GetWindowGammaRamp(self.raw, cast::transmute(vec::raw::to_ptr(red)), cast::transmute(vec::raw::to_ptr(green)), cast::transmute(vec::raw::to_ptr(blue))) == 0};
+        if result {
+            Ok((red, green, blue))
+        } else {
+            Err(get_error())
+        }
+    }
 }
 
 pub fn get_num_video_drivers() -> Result<int, ~str> {
