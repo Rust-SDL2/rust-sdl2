@@ -71,29 +71,29 @@ pub mod ll {
     pub type SDL_GLContext = *c_void;
 
     pub enum SDL_GLattr {
-        SDL_GL_RED_SIZE,
-        SDL_GL_GREEN_SIZE,
-        SDL_GL_BLUE_SIZE,
-        SDL_GL_ALPHA_SIZE,
-        SDL_GL_BUFFER_SIZE,
-        SDL_GL_DOUBLEBUFFER,
-        SDL_GL_DEPTH_SIZE,
-        SDL_GL_STENCIL_SIZE,
-        SDL_GL_ACCUM_RED_SIZE,
-        SDL_GL_ACCUM_GREEN_SIZE,
-        SDL_GL_ACCUM_BLUE_SIZE,
-        SDL_GL_ACCUM_ALPHA_SIZE,
-        SDL_GL_STEREO,
-        SDL_GL_MULTISAMPLEBUFFERS,
-        SDL_GL_MULTISAMPLESAMPLES,
-        SDL_GL_ACCELERATED_VISUAL,
-        SDL_GL_RETAINED_BACKING,
-        SDL_GL_CONTEXT_MAJOR_VERSION,
-        SDL_GL_CONTEXT_MINOR_VERSION,
-        SDL_GL_CONTEXT_EGL,
-        SDL_GL_CONTEXT_FLAGS,
-        SDL_GL_CONTEXT_PROFILE_MASK,
-        SDL_GL_SHARE_WITH_CURRENT_CONTEXT
+        SDL_GL_RED_SIZE = 0,
+        SDL_GL_GREEN_SIZE = 1,
+        SDL_GL_BLUE_SIZE = 2,
+        SDL_GL_ALPHA_SIZE = 3,
+        SDL_GL_BUFFER_SIZE = 4,
+        SDL_GL_DOUBLEBUFFER = 5,
+        SDL_GL_DEPTH_SIZE = 6,
+        SDL_GL_STENCIL_SIZE = 7,
+        SDL_GL_ACCUM_RED_SIZE = 8,
+        SDL_GL_ACCUM_GREEN_SIZE = 9,
+        SDL_GL_ACCUM_BLUE_SIZE = 10,
+        SDL_GL_ACCUM_ALPHA_SIZE = 11,
+        SDL_GL_STEREO = 12,
+        SDL_GL_MULTISAMPLEBUFFERS = 13,
+        SDL_GL_MULTISAMPLESAMPLES = 14,
+        SDL_GL_ACCELERATED_VISUAL = 15,
+        SDL_GL_RETAINED_BACKING = 16,
+        SDL_GL_CONTEXT_MAJOR_VERSION = 17,
+        SDL_GL_CONTEXT_MINOR_VERSION = 18,
+        SDL_GL_CONTEXT_EGL = 19,
+        SDL_GL_CONTEXT_FLAGS = 20,
+        SDL_GL_CONTEXT_PROFILE_MASK = 21,
+        SDL_GL_SHARE_WITH_CURRENT_CONTEXT = 22
     }
 
     pub enum SDL_GLprofile {
@@ -163,8 +163,8 @@ pub mod ll {
     externfn!(fn SDL_GL_GetProcAddress(proc: *c_char))
     externfn!(fn SDL_GL_UnloadLibrary())
     externfn!(fn SDL_GL_ExtensionSupported(extension: *c_char) -> SDL_bool)
-    externfn!(fn SDL_GL_SetAttribute(attr: SDL_GLattr, value: c_int) -> c_int)
-    externfn!(fn SDL_GL_GetAttribute(attr: SDL_GLattr, value: *c_int) -> c_int)
+    externfn!(fn SDL_GL_SetAttribute(attr: c_int, value: c_int) -> c_int) //attr should be SDL_GLAttr
+    externfn!(fn SDL_GL_GetAttribute(attr: c_int, value: *c_int) -> c_int) //attr should be SDL_GLAttr
     externfn!(fn SDL_GL_CreateContext(window: *SDL_Window) -> SDL_GLContext)
     externfn!(fn SDL_GL_MakeCurrent(window: *SDL_Window, context: SDL_GLContext) -> c_int)
     externfn!(fn SDL_GL_GetCurrentWindow() -> *SDL_Window)
@@ -173,6 +173,33 @@ pub mod ll {
     externfn!(fn SDL_GL_GetSwapInterval() -> c_int)
     externfn!(fn SDL_GL_SwapWindow(window: *SDL_Window))
     externfn!(fn SDL_GL_DeleteContext(context: SDL_GLContext))
+}
+
+#[deriving(Eq)]
+pub enum GLAttr {
+    GLRedSize = ll::SDL_GL_RED_SIZE as int,
+    GLGreenSize = ll::SDL_GL_GREEN_SIZE as int,
+    GLBlueSize = ll::SDL_GL_BLUE_SIZE as int,
+    GLAlphaSize = ll::SDL_GL_ALPHA_SIZE as int,
+    GLBufferSize = ll::SDL_GL_BUFFER_SIZE as int,
+    GLDoubleBuffer = ll::SDL_GL_DOUBLEBUFFER as int,
+    GLDepthSize = ll::SDL_GL_DEPTH_SIZE as int,
+    GLStencilSize = ll::SDL_GL_STENCIL_SIZE as int,
+    GLAccumRedSize = ll::SDL_GL_ACCUM_RED_SIZE as int,
+    GLAccumGreenSize = ll::SDL_GL_ACCUM_GREEN_SIZE as int,
+    GLAccumBlueSize = ll::SDL_GL_ACCUM_BLUE_SIZE as int,
+    GLAccumAlphaSize = ll::SDL_GL_ACCUM_ALPHA_SIZE as int,
+    GLStereo = ll::SDL_GL_STEREO as int,
+    GLMultiSampleBuffers = ll::SDL_GL_MULTISAMPLEBUFFERS as int,
+    GLMultiSampleSamples = ll::SDL_GL_MULTISAMPLESAMPLES as int,
+    GLAcceleratedVisual = ll::SDL_GL_ACCELERATED_VISUAL as int,
+    GLRetailedBacking = ll::SDL_GL_RETAINED_BACKING as int,
+    GLContextMajorVersion = ll::SDL_GL_CONTEXT_MAJOR_VERSION as int,
+    GLContextMinorVersion = ll::SDL_GL_CONTEXT_MINOR_VERSION as int,
+    GLContextEGL = ll::SDL_GL_CONTEXT_EGL as int,
+    GLContextFlags = ll::SDL_GL_CONTEXT_FLAGS as int,
+    GLContextProfileMask = ll::SDL_GL_CONTEXT_PROFILE_MASK as int,
+    GLShareWithCurrentContext = ll::SDL_GL_SHARE_WITH_CURRENT_CONTEXT as int
 }
 
 fn empty_sdl_display_mode() -> ll::SDL_DisplayMode {
@@ -284,6 +311,22 @@ fn unwrap_windowpos (pos: WindowPos) -> ll::SDL_WindowPos {
         PosUndefined => ll::SDL_WINDOWPOS_UNDEFINED,
         PosCentered => ll::SDL_WINDOWPOS_CENTERED, 
         Positioned(x) => x as ll::SDL_WindowPos
+    }
+}
+
+#[deriving(Eq)]
+pub struct GLContext {
+    raw: ll::SDL_GLContext,
+    owned: bool
+}
+
+impl Drop for GLContext {
+    fn drop(&self) {
+        if self.owned {
+            unsafe {
+                ll::SDL_GL_DeleteContext(self.raw)
+            }
+        }
     }
 }
 
@@ -547,11 +590,23 @@ impl Window {
             Err(get_error())
         }
     }
-    /*
-    externfn!(fn SDL_GL_CreateContext(window: *SDL_Window) -> SDL_GLContext)
-    externfn!(fn SDL_GL_MakeCurrent(window: *SDL_Window, context: SDL_GLContext) -> c_int)
-    externfn!(fn SDL_GL_SwapWindow(window: *SDL_Window))
-    */
+
+    pub fn gl_create_context(&self) -> Result<~GLContext, ~str> {
+        let result = unsafe { ll::SDL_GL_CreateContext(self.raw) };
+        if result == ptr::null() {
+            Err(get_error())
+        } else {
+            Ok(~GLContext{raw: result, owned: true})
+        }
+    }
+
+    pub fn gl_make_current(&self, context: &GLContext) -> bool {
+        unsafe { ll::SDL_GL_MakeCurrent(self.raw, context.raw) == 0 }
+    }
+
+    pub fn gl_swap_window(&self) {
+        unsafe { ll::SDL_GL_SwapWindow(self.raw) }
+    }
 }
 
 pub fn get_num_video_drivers() -> Result<int, ~str> {
@@ -678,18 +733,59 @@ pub fn enable_screen_saver() {
 }
 
 pub fn disable_screen_saver() {
-    unsafe { ll::SDL_EnableScreenSaver() }
+    unsafe { ll::SDL_DisableScreenSaver() }
 }
 
+//Not entirely sure how the following are suppost to act
 /*
     externfn!(fn SDL_GL_LoadLibrary(path: *c_char) -> c_int)
     externfn!(fn SDL_GL_GetProcAddress(proc: *c_char))
     externfn!(fn SDL_GL_UnloadLibrary())
-    externfn!(fn SDL_GL_ExtensionSupported(extension: *c_char) -> SDL_bool)
-    externfn!(fn SDL_GL_SetAttribute(attr: SDL_GLattr, value: c_int) -> c_int)
-    externfn!(fn SDL_GL_GetAttribute(attr: SDL_GLattr, value: *c_int) -> c_int)
-    externfn!(fn SDL_GL_GetCurrentWindow() -> *SDL_Window)
-    externfn!(fn SDL_GL_GetCurrentContext() -> SDL_GLContext)
-    externfn!(fn SDL_GL_SetSwapInterval(interval: c_int) -> c_int)
-    externfn!(fn SDL_GL_GetSwapInterval() -> c_int)
-    externfn!(fn SDL_GL_DeleteContext(context: SDL_GLContext))*/
+*/
+
+pub fn gl_extension_supported(extension: &str) -> bool {
+    do extension.with_c_str |buff| {
+        unsafe {ll::SDL_GL_ExtensionSupported(buff) == 1 }
+    }
+}
+
+pub fn gl_set_attribute(attr: GLAttr, value: int) -> bool {
+    unsafe { ll::SDL_GL_SetAttribute(attr as c_int, value as c_int) == 0 }
+}
+
+pub fn gl_get_attribute(attr: GLAttr) -> Result<int, ~str> {
+    let out: c_int = 0;
+
+    let result = unsafe { ll::SDL_GL_GetAttribute(attr as c_int, &out) } == 0;
+    if result {
+        Ok(out as int)
+    } else {
+        Err(get_error())
+    }
+}
+
+pub fn gl_get_current_window() -> Result<~Window, ~str> {
+    let raw = unsafe { ll::SDL_GL_GetCurrentWindow() };
+    if raw == ptr::null() {
+        Err(get_error())
+    } else {
+        Ok(~Window{ raw: raw, owned: false })
+    }
+}
+
+pub fn gl_get_current_context() -> Result<~GLContext, ~str> {
+    let raw = unsafe { ll::SDL_GL_GetCurrentContext() };
+    if raw == ptr::null() {
+        Err(get_error())
+    } else {
+        Ok(~GLContext{ raw: raw, owned: false })
+    }
+}
+
+pub fn gl_set_swap_interval(interval: int) -> bool {
+    unsafe { ll::SDL_GL_SetSwapInterval(interval as c_int) == 0 }
+}
+
+pub fn gl_get_swap_interval() -> int {
+    unsafe { ll::SDL_GL_GetSwapInterval() as int }
+}
