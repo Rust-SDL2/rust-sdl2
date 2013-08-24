@@ -6,6 +6,7 @@ use std::vec;
 
 use rect::Rect;
 use surface::Surface;
+use pixels;
 
 use get_error;
 
@@ -163,8 +164,8 @@ pub mod ll {
     externfn!(fn SDL_GL_GetProcAddress(proc: *c_char))
     externfn!(fn SDL_GL_UnloadLibrary())
     externfn!(fn SDL_GL_ExtensionSupported(extension: *c_char) -> SDL_bool)
-    externfn!(fn SDL_GL_SetAttribute(attr: c_int, value: c_int) -> c_int) //attr should be SDL_GLAttr
-    externfn!(fn SDL_GL_GetAttribute(attr: c_int, value: *c_int) -> c_int) //attr should be SDL_GLAttr
+    externfn!(fn SDL_GL_SetAttribute(attr: SDL_GLattr, value: c_int) -> c_int)
+    externfn!(fn SDL_GL_GetAttribute(attr: SDL_GLattr, value: *c_int) -> c_int)
     externfn!(fn SDL_GL_CreateContext(window: *SDL_Window) -> SDL_GLContext)
     externfn!(fn SDL_GL_MakeCurrent(window: *SDL_Window, context: SDL_GLContext) -> c_int)
     externfn!(fn SDL_GL_GetCurrentWindow() -> *SDL_Window)
@@ -418,7 +419,9 @@ impl Window {
         }
     }
 
-    /*pub fn SDL_GetWindowPixelFormat(window: *SDL_Window) -> uint32_t; */ //TODO: Implement me!
+    pub fn get_window_pixel_format(&self) -> pixels::PixelFormatFlag {
+        unsafe{ cast::transmute(ll::SDL_GetWindowPixelFormat(self.raw) as u64) }
+    }
 
     pub fn get_id(&self) -> u32 {
         unsafe { ll::SDL_GetWindowID(self.raw) }
@@ -750,13 +753,13 @@ pub fn gl_extension_supported(extension: &str) -> bool {
 }
 
 pub fn gl_set_attribute(attr: GLAttr, value: int) -> bool {
-    unsafe { ll::SDL_GL_SetAttribute(attr as c_int, value as c_int) == 0 }
+    unsafe { ll::SDL_GL_SetAttribute(cast::transmute(attr as u64), value as c_int) == 0 }
 }
 
 pub fn gl_get_attribute(attr: GLAttr) -> Result<int, ~str> {
     let out: c_int = 0;
 
-    let result = unsafe { ll::SDL_GL_GetAttribute(attr as c_int, &out) } == 0;
+    let result = unsafe { ll::SDL_GL_GetAttribute(cast::transmute(attr as u64), &out) } == 0;
     if result {
         Ok(out as int)
     } else {
