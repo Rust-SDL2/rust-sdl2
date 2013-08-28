@@ -12,7 +12,7 @@ pub mod ll {
         a: uint8_t,
     }
 
-    pub struct SDL_Pallette {
+    pub struct SDL_Palette {
         ncolors: c_int,
         colors: *SDL_Color,
         version: uint32_t,
@@ -21,7 +21,7 @@ pub mod ll {
 
     pub struct SDL_PixelFormat {
         format: SDL_PixelFormatFlag,
-        palette: *SDL_Pallette,
+        palette: *SDL_Palette,
         BitsPerPixel: uint8_t,
         BytesPerPixel: uint8_t,
         padding: [uint8_t, ..2],
