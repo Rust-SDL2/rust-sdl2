@@ -3,6 +3,8 @@ use rect::Rect;
 use get_error;
 use std::ptr;
 use std::libc::c_int;
+use pixels;
+use rwops;
 
 pub mod ll {
     use pixels::ll::SDL_PixelFormat;
@@ -132,7 +134,6 @@ impl Surface {
             h: self.get_height() as i32
         }
     }
-    //externfn!(fn SDL_SetSurfacePalette(surface: *SDL_Surface, palette: *SDL_Palette) -> c_int)
 
 
     pub fn lock(&self) -> bool {
@@ -155,9 +156,40 @@ impl Surface {
         unsafe { ll::SDL_UnlockSurface(self.raw); }
     }
 
-    /*externfn!(fn SDL_LoadBMP_RW(src: *SDL_RWops, freesrc: c_int) ->  *SDL_Surface)
-    externfn!(fn SDL_SaveBMP_RW(surface: *SDL_Surface, dst: *SDL_RWops, freedst: c_int) -> c_int)
-    externfn!(fn SDL_SetSurfaceRLE(surface: *SDL_Surface, flag: c_int) -> c_int)
+    pub fn from_bmp(path: &Path) -> Result<~Surface, ~str> {
+        let raw = unsafe {
+            ll::SDL_LoadBMP_RW(rwops::ll::SDL_RWFromFile(path.to_c_str().unwrap(), "rb".to_c_str().unwrap()), 1)
+        };
+
+        if raw.is_null() { Err(get_error()) }
+        else { Ok(~Surface{raw: raw, owned: true}) }
+    }
+
+    pub fn save_bmp(&self, path: &Path) -> bool {
+		unsafe {
+        	ll::SDL_SaveBMP_RW(self.raw, rwops::ll::SDL_RWFromFile(path.to_c_str().unwrap(), "wb".to_c_str().unwrap()), 1) == 0
+		}
+    }
+
+    pub fn set_palette(&self, palette: &pixels::Palette) -> bool {
+        unsafe {
+            ll::SDL_SetSurfacePalette(self.raw, palette.raw) == 0
+        }
+    }
+
+    pub fn enable_RLE(&self) -> bool {
+        unsafe {
+            ll::SDL_SetSurfaceRLE(self.raw, 1) == 0
+        }
+    }
+
+    pub fn disable_RLE(&self) -> bool {
+        unsafe {
+            ll::SDL_SetSurfaceRLE(self.raw, 0) == 0
+        }
+    }
+
+    /*
     externfn!(fn SDL_SetColorKey(surface: *SDL_Surface, flag: c_int, key: uint32_t) -> c_int)
     externfn!(fn SDL_GetColorKey(surface: *SDL_Surface, key: *uint32_t) -> c_int)
     externfn!(fn SDL_SetSurfaceColorMod(surface: *SDL_Surface, r: uint8_t, g: uint8_t, b: uint8_t) -> c_int)

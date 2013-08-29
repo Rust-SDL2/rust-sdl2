@@ -1,5 +1,5 @@
 pub mod ll {
-    use std::libc::{c_uchar, uint8_t, uint32_t};
+    use std::libc::{c_uchar, uint8_t, uint32_t, c_schar};
 
     struct SDL_RWops_Anon {
         data: [c_uchar, ..24],
@@ -14,4 +14,6 @@ pub mod ll {
         _type: uint32_t,
         hidden: SDL_RWops_Anon
     }
+
+    externfn!(fn SDL_RWFromFile(file: *c_schar, mode: *c_schar) -> *SDL_RWops)
 }

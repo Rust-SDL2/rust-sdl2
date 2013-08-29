@@ -79,6 +79,10 @@ pub mod ll {
     pub static SDL_PIXELFORMAT_UYVY: SDL_PixelFormatFlag = 0x59565955;
     pub static SDL_PIXELFORMAT_YVYU: SDL_PixelFormatFlag = 0x55595659;
 }
+#[deriving(Eq)]
+pub struct Palette {
+    raw: *ll::SDL_Palette
+}
 
 #[deriving(Eq)]
 pub enum Color {
