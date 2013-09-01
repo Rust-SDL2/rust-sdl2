@@ -151,6 +151,14 @@ pub struct RendererInfo {
     max_texture_height: int
 }
 
+#[deriving(Eq)]
+pub enum BlendMode {
+    BlendNone = ll::SDL_BLENDMODE_NONE as int,
+    BlendBlend = ll::SDL_BLENDMODE_BLEND as int,
+    BlendAdd = ll::SDL_BLENDMODE_ADD as int,
+    BlendMod = ll::SDL_BLENDMODE_MOD as int
+}
+
 impl RendererInfo {
     pub fn from_ll(info: &ll::SDL_RendererInfo) -> ~RendererInfo {
 
@@ -195,19 +203,6 @@ impl Drop for Renderer {
             unsafe {
                 ll::SDL_DestroyRenderer(self.raw);
             }
-        }
-    }
-}
-
-#[deriving(Eq)]
-pub struct Texture {
-    raw: *ll::SDL_Texture
-}
-
-impl Drop for Texture {
-    fn drop(&self) {
-        unsafe {
-            ll::SDL_DestroyTexture(self.raw);
         }
     }
 }
@@ -315,6 +310,103 @@ impl Renderer {
     }
 }
 
+pub struct TextureQuery {
+    format: pixels::PixelFormatFlag,
+    access: TextureAccess,
+    width: int,
+    height: int
+}
+
+#[deriving(Eq)]
+pub struct Texture {
+    raw: *ll::SDL_Texture
+}
+
+impl Drop for Texture {
+    fn drop(&self) {
+        unsafe {
+            ll::SDL_DestroyTexture(self.raw);
+        }
+    }
+}
+
+impl Texture {
+
+    pub fn query(&self) -> Result<~TextureQuery, ~str> {
+        let format: uint32_t = 0;
+        let access: c_int = 0;
+        let width: c_int = 0;
+        let height: c_int = 0;
+
+        let result = unsafe { ll::SDL_QueryTexture(self.raw, &format, &access, &width, &height) == 0 };
+        if result {
+            unsafe {
+                Ok(~TextureQuery {
+                   format: cast::transmute(format as i64),
+                   access: cast::transmute(access as i64), 
+                   width: width as int,
+                   height: height as int
+                })
+            }
+        } else {
+            Err(get_error())
+        }
+    }
+
+    pub fn set_color_mod(&self, red: u8, green: u8, blue: u8) -> bool {
+        unsafe { ll::SDL_SetTextureColorMod(self.raw, red, green, blue) == 0 }
+    }
+
+    pub fn get_color_mod(&self) -> Result<(u8, u8, u8), ~str> {
+        let r = 0;
+        let g = 0;
+        let b = 0;
+        let result = unsafe { ll::SDL_GetTextureColorMod(self.raw, &r, &g, &b) == 0 };
+
+        if result {
+            Ok((r, g, b))
+        } else {
+            Err(get_error())
+        }
+    }
+
+    pub fn set_alpha_mod(&self, alpha: u8) -> bool {
+        unsafe { ll::SDL_SetTextureAlphaMod(self.raw, alpha) == 0 }
+    }
+
+    pub fn get_alpha_mod(&self) -> Result<u8, ~str> {
+        let alpha = 0;
+        let result = unsafe { ll::SDL_GetTextureAlphaMod(self.raw, &alpha) == 0 };
+
+        if result {
+            Ok(alpha)
+        } else {
+            Err(get_error())
+        }
+    }
+
+    pub fn set_blend_mode(&self, blend: BlendMode) -> bool {
+        unsafe { ll::SDL_SetTextureBlendMode(self.raw, cast::transmute(blend)) == 0}
+    }
+
+    pub fn get_blend_mode(&self) -> Result<BlendMode, ~str> {
+        let blend: i64 = 0;
+        let result = unsafe { ll::SDL_GetTextureBlendMode(self.raw, &cast::transmute(blend)) == 0 };
+        if result {
+            unsafe {
+                Ok(cast::transmute(blend))
+            }
+        } else {
+            Err(get_error())
+        }
+    }
+    /*
+    externfn!(fn SDL_UpdateTexture(texture: *SDL_Texture, rect: *SDL_Rect, pixels: *c_void, pitch: c_int) -> c_int)
+    externfn!(fn SDL_LockTexture(texture: *SDL_Texture, rect: *SDL_Rect, pixels: **c_void, pitch: *c_int) -> c_int)
+    externfn!(fn SDL_UnlockTexture(texture: *SDL_Texture))*/
+}
+
+
 pub fn get_num_render_drivers() -> Result<int, ~str> {
     let result = unsafe { ll::SDL_GetNumRenderDrivers() };
     if result > 0 {
@@ -345,16 +437,6 @@ pub fn get_render_driver_info(index: int) -> Result<~RendererInfo, ~str> {
     externfn!(fn SDL_GetRenderer(window: *SDL_Window) -> *SDL_Renderer)
 */
 /*
-    externfn!(fn SDL_QueryTexture(texture: *SDL_Texture, format: *uint32_t, access: *c_int, w: *c_int, h: *c_int) -> c_int)
-    externfn!(fn SDL_SetTextureColorMod(texture: *SDL_Texture, r: uint8_t, g: uint8_t, b: uint8_t) -> c_int)
-    externfn!(fn SDL_GetTextureColorMod(texture: *SDL_Texture, r: *uint8_t, g: *uint8_t, b: *uint8_t) -> c_int)
-    externfn!(fn SDL_SetTextureAlphaMod(texture: *SDL_Texture, alpha: uint8_t) -> c_int)
-    externfn!(fn SDL_GetTextureAlphaMod(texture: *SDL_Texture, alpha: *uint8_t) -> c_int)
-    externfn!(fn SDL_SetTextureBlendMode(texture: *SDL_Texture, blendMode: SDL_BlendMode) -> c_int)
-    externfn!(fn SDL_GetTextureBlendMode(texture: *SDL_Texture, blendMode: *SDL_BlendMode) -> c_int)
-    externfn!(fn SDL_UpdateTexture(texture: *SDL_Texture, rect: *SDL_Rect, pixels: *c_void, pitch: c_int) -> c_int)
-    externfn!(fn SDL_LockTexture(texture: *SDL_Texture, rect: *SDL_Rect, pixels: **c_void, pitch: *c_int) -> c_int)
-    externfn!(fn SDL_UnlockTexture(texture: *SDL_Texture))
     externfn!(fn SDL_RenderTargetSupported(renderer: *SDL_Renderer) -> SDL_bool)
     externfn!(fn SDL_SetRenderTarget(renderer: *SDL_Renderer, texture: *SDL_Texture) -> c_int)
     externfn!(fn SDL_GetRenderTarget(renderer: *SDL_Renderer) -> *SDL_Texture)
