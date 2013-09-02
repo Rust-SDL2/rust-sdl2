@@ -6,6 +6,8 @@ use std::ptr;
 use std::libc::{c_int, uint32_t};
 use std::str;
 use std::cast;
+use rect::Rect;
+use std::vec;
 
 pub mod ll {
 
@@ -400,8 +402,18 @@ impl Texture {
             Err(get_error())
         }
     }
+
+    pub fn update(&self, rect: Option<Rect>, pixel_data: &[u8], pitch: int) -> bool {
+        unsafe { 
+            let actual_rect = match rect {
+                Some(rect) => cast::transmute(&rect),
+                None => ptr::null()
+            };
+
+            ll::SDL_UpdateTexture(self.raw, actual_rect, cast::transmute(vec::raw::to_ptr(pixel_data)), pitch as c_int) == 0
+        }
+    }
     /*
-    externfn!(fn SDL_UpdateTexture(texture: *SDL_Texture, rect: *SDL_Rect, pixels: *c_void, pitch: c_int) -> c_int)
     externfn!(fn SDL_LockTexture(texture: *SDL_Texture, rect: *SDL_Rect, pixels: **c_void, pitch: *c_int) -> c_int)
     externfn!(fn SDL_UnlockTexture(texture: *SDL_Texture))*/
 }
