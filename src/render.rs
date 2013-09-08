@@ -298,7 +298,7 @@ impl Renderer {
         if result == ptr::null() {
             Err(get_error())
         } else {
-            Ok(~Texture { raw: result } )
+            Ok(~Texture { raw: result, owned: true } )
         }
     }
 
@@ -307,9 +307,63 @@ impl Renderer {
         if result == ptr::null() {
             Err(get_error())
         } else {
-            Ok(~Texture { raw: result } )
+            Ok(~Texture { raw: result, owned: true } )
         }
     }
+
+    pub fn render_target_supported(&self) -> bool {
+        unsafe { ll::SDL_RenderTargetSupported(self.raw) == 1 }
+    }
+
+    pub fn set_render_target(&self, texture: Option<&Texture>) -> bool {
+        unsafe { 
+            let actual_texture = match texture {
+                Some(texture) => cast::transmute(texture.raw),
+                None => ptr::null()
+            };
+            ll::SDL_SetRenderTarget(self.raw, actual_texture) == 0
+        }
+    }
+
+    pub fn get_render_target(&self) -> Result<~Texture, ~str> {
+        let raw = unsafe { ll::SDL_GetRenderTarget(self.raw) };
+
+        if raw == ptr::null() {
+            Err(get_error())
+        } else {
+            Ok(~Texture{
+                raw: raw,
+                owned: false
+            })
+        }
+    }
+    /*
+    externfn!(fn SDL_RenderSetLogicalSize(renderer: *SDL_Renderer, w: c_int, h: c_int) -> c_int)
+    externfn!(fn SDL_RenderGetLogicalSize(renderer: *SDL_Renderer, w: *c_int, h: *c_int))
+    externfn!(fn SDL_RenderSetViewport(renderer: *SDL_Renderer, rect: *SDL_Rect) -> c_int)
+    externfn!(fn SDL_RenderGetViewport(renderer: *SDL_Renderer, rect: *SDL_Rect))
+    externfn!(fn SDL_RenderSetClipRect(renderer: *SDL_Renderer, rect: *SDL_Rect) -> c_int)
+    externfn!(fn SDL_RenderGetClipRect(renderer: *SDL_Renderer, rect: *SDL_Rect))
+    externfn!(fn SDL_RenderSetScale(renderer: *SDL_Renderer, scaleX: c_float, scaleY: c_float) -> c_int)
+    externfn!(fn SDL_RenderGetScale(renderer: *SDL_Renderer, scaleX: *c_float, scaleY: *c_float))
+    externfn!(fn SDL_SetRenderDrawColor(renderer: *SDL_Renderer, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) -> c_int)
+    externfn!(fn SDL_GetRenderDrawColor(renderer: *SDL_Renderer, r: *uint8_t, g: *uint8_t, b: *uint8_t, a: *uint8_t) -> c_int)
+    externfn!(fn SDL_SetRenderDrawBlendMode(renderer: *SDL_Renderer, blendMode: SDL_BlendMode) -> c_int)
+    externfn!(fn SDL_GetRenderDrawBlendMode(renderer: *SDL_Renderer, blendMode: *SDL_BlendMode) -> c_int)
+    externfn!(fn SDL_RenderClear(renderer: *SDL_Renderer) -> c_int)
+    externfn!(fn SDL_RenderDrawPoint(renderer: *SDL_Renderer, x: c_int, y: c_int) -> c_int)
+    externfn!(fn SDL_RenderDrawPoints(renderer: *SDL_Renderer, Points: *SDL_Point, count: c_int) -> c_int)
+    externfn!(fn SDL_RenderDrawLine(renderer: *SDL_Renderer, x1: c_int, y1: c_int, x2: c_int, y2: c_int) -> c_int)
+    externfn!(fn SDL_RenderDrawLines(renderer: *SDL_Renderer, Points: *SDL_Point, count: c_int) -> c_int)
+    externfn!(fn SDL_RenderDrawRect(renderer: *SDL_Renderer, rect: *SDL_Rect) -> c_int)
+    externfn!(fn SDL_RenderDrawRects(renderer: *SDL_Renderer, rects: *SDL_Rect, count: c_int) -> c_int)
+    externfn!(fn SDL_RenderFillRect(renderer: *SDL_Renderer, rect: *SDL_Rect) -> c_int)
+    externfn!(fn SDL_RenderFillRects(renderer: *SDL_Renderer, rects: *SDL_Rect, count: c_int) -> c_int)
+    externfn!(fn SDL_RenderCopy(renderer: *SDL_Renderer, texture: *SDL_Texture, srcrect: *SDL_Rect, dstrect: *SDL_Rect) -> c_int)
+    externfn!(fn SDL_RenderCopyEx(renderer: *SDL_Renderer, texture: *SDL_Texture, srcrect: *SDL_Rect, dstrect: *SDL_Rect, angle: c_double, center: *SDL_Point, flip: SDL_RendererFlip) -> c_int)
+    externfn!(fn SDL_RenderReadPixels(renderer: *SDL_Renderer, rect: *SDL_Rect, format: uint32_t, pixels: *c_void, pitch: c_int) -> c_int)
+    externfn!(fn SDL_RenderPresent(renderer: *SDL_Renderer))
+    */
 }
 
 pub struct TextureQuery {
@@ -321,13 +375,16 @@ pub struct TextureQuery {
 
 #[deriving(Eq)]
 pub struct Texture {
-    raw: *ll::SDL_Texture
+    raw: *ll::SDL_Texture,
+    owned: bool
 }
 
 impl Drop for Texture {
     fn drop(&self) {
-        unsafe {
-            ll::SDL_DestroyTexture(self.raw);
+        if self.owned {
+            unsafe {
+                ll::SDL_DestroyTexture(self.raw);
+            }
         }
     }
 }
@@ -413,9 +470,16 @@ impl Texture {
             ll::SDL_UpdateTexture(self.raw, actual_rect, cast::transmute(vec::raw::to_ptr(pixel_data)), pitch as c_int) == 0
         }
     }
+
+    //TODO: Figure out how big pixels ends up
     /*
     externfn!(fn SDL_LockTexture(texture: *SDL_Texture, rect: *SDL_Rect, pixels: **c_void, pitch: *c_int) -> c_int)
     externfn!(fn SDL_UnlockTexture(texture: *SDL_Texture))*/
+
+/*
+    externfn!(fn SDL_GL_BindTexture(texture: *SDL_Texture, texw: *c_float, texh: *c_float) -> c_int)
+    externfn!(fn SDL_GL_UnbindTexture(texture: *SDL_Texture) -> c_int)
+*/
 }
 
 
@@ -447,38 +511,4 @@ pub fn get_render_driver_info(index: int) -> Result<~RendererInfo, ~str> {
 
 /*
     externfn!(fn SDL_GetRenderer(window: *SDL_Window) -> *SDL_Renderer)
-*/
-/*
-    externfn!(fn SDL_RenderTargetSupported(renderer: *SDL_Renderer) -> SDL_bool)
-    externfn!(fn SDL_SetRenderTarget(renderer: *SDL_Renderer, texture: *SDL_Texture) -> c_int)
-    externfn!(fn SDL_GetRenderTarget(renderer: *SDL_Renderer) -> *SDL_Texture)
-    externfn!(fn SDL_RenderSetLogicalSize(renderer: *SDL_Renderer, w: c_int, h: c_int) -> c_int)
-    externfn!(fn SDL_RenderGetLogicalSize(renderer: *SDL_Renderer, w: *c_int, h: *c_int))
-    externfn!(fn SDL_RenderSetViewport(renderer: *SDL_Renderer, rect: *SDL_Rect) -> c_int)
-    externfn!(fn SDL_RenderGetViewport(renderer: *SDL_Renderer, rect: *SDL_Rect))
-    externfn!(fn SDL_RenderSetClipRect(renderer: *SDL_Renderer, rect: *SDL_Rect) -> c_int)
-    externfn!(fn SDL_RenderGetClipRect(renderer: *SDL_Renderer, rect: *SDL_Rect))
-    externfn!(fn SDL_RenderSetScale(renderer: *SDL_Renderer, scaleX: c_float, scaleY: c_float) -> c_int)
-    externfn!(fn SDL_RenderGetScale(renderer: *SDL_Renderer, scaleX: *c_float, scaleY: *c_float))
-    externfn!(fn SDL_SetRenderDrawColor(renderer: *SDL_Renderer, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) -> c_int)
-    externfn!(fn SDL_GetRenderDrawColor(renderer: *SDL_Renderer, r: *uint8_t, g: *uint8_t, b: *uint8_t, a: *uint8_t) -> c_int)
-    externfn!(fn SDL_SetRenderDrawBlendMode(renderer: *SDL_Renderer, blendMode: SDL_BlendMode) -> c_int)
-    externfn!(fn SDL_GetRenderDrawBlendMode(renderer: *SDL_Renderer, blendMode: *SDL_BlendMode) -> c_int)
-    externfn!(fn SDL_RenderClear(renderer: *SDL_Renderer) -> c_int)
-    externfn!(fn SDL_RenderDrawPoint(renderer: *SDL_Renderer, x: c_int, y: c_int) -> c_int)
-    externfn!(fn SDL_RenderDrawPoints(renderer: *SDL_Renderer, Points: *SDL_Point, count: c_int) -> c_int)
-    externfn!(fn SDL_RenderDrawLine(renderer: *SDL_Renderer, x1: c_int, y1: c_int, x2: c_int, y2: c_int) -> c_int)
-    externfn!(fn SDL_RenderDrawLines(renderer: *SDL_Renderer, Points: *SDL_Point, count: c_int) -> c_int)
-    externfn!(fn SDL_RenderDrawRect(renderer: *SDL_Renderer, rect: *SDL_Rect) -> c_int)
-    externfn!(fn SDL_RenderDrawRects(renderer: *SDL_Renderer, rects: *SDL_Rect, count: c_int) -> c_int)
-    externfn!(fn SDL_RenderFillRect(renderer: *SDL_Renderer, rect: *SDL_Rect) -> c_int)
-    externfn!(fn SDL_RenderFillRects(renderer: *SDL_Renderer, rects: *SDL_Rect, count: c_int) -> c_int)
-    externfn!(fn SDL_RenderCopy(renderer: *SDL_Renderer, texture: *SDL_Texture, srcrect: *SDL_Rect, dstrect: *SDL_Rect) -> c_int)
-    externfn!(fn SDL_RenderCopyEx(renderer: *SDL_Renderer, texture: *SDL_Texture, srcrect: *SDL_Rect, dstrect: *SDL_Rect, angle: c_double, center: *SDL_Point, flip: SDL_RendererFlip) -> c_int)
-    externfn!(fn SDL_RenderReadPixels(renderer: *SDL_Renderer, rect: *SDL_Rect, format: uint32_t, pixels: *c_void, pitch: c_int) -> c_int)
-    externfn!(fn SDL_RenderPresent(renderer: *SDL_Renderer))
-    externfn!(fn SDL_DestroyTexture(texture: *SDL_Texture))
-    externfn!(fn SDL_DestroyRenderer(renderer: *SDL_Renderer))
-    externfn!(fn SDL_GL_BindTexture(texture: *SDL_Texture, texw: *c_float, texh: *c_float) -> c_int)
-    externfn!(fn SDL_GL_UnbindTexture(texture: *SDL_Texture) -> c_int)
 */
