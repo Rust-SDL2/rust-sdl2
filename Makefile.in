@@ -17,13 +17,15 @@ all: libsdl2.dummy
 
 UNAME=$(shell uname)
 
-ifeq (%SDL_MODE%,framework)
-RUSTFLAGS+=--cfg mac_framework
-else
-RUSTFLAGS+=--cfg mac_dylib
+ifeq ($(UNAME),Darwin)
+  ifeq (%SDL_MODE%,framework)
+    RUSTFLAGS+=--cfg mac_framework
+  else
+    RUSTFLAGS+=--cfg mac_dylib
+  endif
 endif
 
-libsdl2.dummy: src/sdl2.rc $(RUST_SRC) $(SDLXMAIN)
+libsdl2.dummy: src/sdl2.rc $(RUST_SRC)
 	$(RUSTC) $(RUSTFLAGS) $< -o $@
 	touch $@
 
@@ -35,4 +37,6 @@ demo: demos
 
 .PHONY: clean
 clean:
-	rm -f sdl-test *.so *.dylib *.dll *.dummy demos
+	rm -f *.so *.dylib *.dll *.dummy demos
+	rm -rf *.dSYM
+
