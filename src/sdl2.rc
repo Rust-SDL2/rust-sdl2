@@ -8,6 +8,7 @@
 #[crate_type = "lib"];
 
 pub use sdl::*;
+pub mod event;
 pub mod rect;
 pub mod surface;
 pub mod pixels;

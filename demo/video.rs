@@ -16,6 +16,16 @@ pub fn main() {
     renderer.set_draw_color(sdl2::pixels::RGB(255, 0, 0));
     renderer.clear();
     renderer.present();
-    sdl2::timer::delay(5000);
+
+    'main : loop {
+        'event : loop {
+            match sdl2::event::poll_event() {
+                sdl2::event::QuitEvent => break 'main,
+                sdl2::event::NoEvent => break 'event,
+                _ => {}
+            }
+        }
+    }
+
     sdl2::quit();
 }
