@@ -8,7 +8,17 @@
 #[crate_type = "lib"];
 
 pub use sdl::*;
+#[path = "generated/keycode.rs"]
+pub mod keycode;
+#[path = "generated/scancode.rs"]
+pub mod scancode;
+
 pub mod event;
+pub mod gesture;
+pub mod touch;
+pub mod joystick;
+pub mod keyboard;
+pub mod mouse;
 pub mod rect;
 pub mod surface;
 pub mod pixels;

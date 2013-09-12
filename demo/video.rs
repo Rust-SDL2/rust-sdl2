@@ -20,8 +20,12 @@ pub fn main() {
     'main : loop {
         'event : loop {
             match sdl2::event::poll_event() {
-                sdl2::event::QuitEvent => break 'main,
-                sdl2::event::NoEvent => break 'event,
+                sdl2::event::QuitEvent(_) => break 'main,
+                sdl2::event::KeyDownEvent(_, _, key, _, _) => {
+                    if key == sdl2::keycode::EscapeKey {
+                        break 'main
+                    }
+                }
                 _ => {}
             }
         }
