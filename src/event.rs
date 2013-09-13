@@ -1,8 +1,7 @@
 use std::cast;
-use std::libc::c_int;
+use std::libc::{c_int, c_void};
 use std::num::IntConvertible;
 use std::str;
-use std::vec;
 
 use controller;
 use controller::{ControllerAxis, ControllerButton};
@@ -402,10 +401,6 @@ pub mod ll {
         pub fn drop(&self) -> *SDL_DropEvent {
             unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
         }
-
-        pub fn padding(&self) -> *[uint8_t, ..56u] {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
-        }
     }
 
     pub type SDL_eventaction = c_uint;
@@ -415,6 +410,7 @@ pub mod ll {
     pub type SDL_EventFilter =
         extern "C" fn(arg1: *c_void, arg2: *SDL_Event) -> c_int;
 
+    externfn!(fn SDL_free(mem: *c_void))
     externfn!(fn SDL_PumpEvents())
     externfn!(fn SDL_PeepEvents(events: &[SDL_Event], numevents: c_int,
                                 action: SDL_eventaction, minType: uint32_t,
@@ -487,8 +483,8 @@ pub enum EventType {
     DollarRecordEventType = ll::SDL_DOLLARRECORD,
     MultiGestureEventType = ll::SDL_MULTIGESTURE,
 
-    // TODO: ClipboardUpdateEventType = ll::SDL_CLIPBOARDUPDATE,
-    // TODO: DropFileEventType = ll::SDL_DROPFILE,
+    ClipboardUpdateEventType = ll::SDL_CLIPBOARDUPDATE,
+    DropFileEventType = ll::SDL_DROPFILE,
 
     UserEventType = ll::SDL_USEREVENT,
     LastEventType = ll::SDL_LASTEVENT,
@@ -559,8 +555,8 @@ pub enum Event {
     DollarRecordEvent(uint, i64, i64, uint, float, float, float),
     MultiGestureEvent(uint, i64, float, float, float, float, uint),
 
-    // TODO: ClipboardUpdateEvent
-    // TODO: DropFileEvent
+    ClipboardUpdateEvent(uint),
+    DropFileEvent(uint, ~str),
 
     UserEvent(uint, ~video::Window, int),
 }
@@ -687,17 +683,9 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
                     Ok(window) => window,
                 };
 
-                // FIXME: This seems really poorly done
-                let mut text: ~[u8] = vec::with_capacity(32);
-                for c in event.text.iter() {
-                    if *c == 0 {
-                        break;
-                    }
-                    text.push(c.clone() as u8);
-                }
+                let text = str::from_utf8_owned(event.text.iter().take_while(|b| (**b) != 0i8).map(|b| b.to_u8()).collect::<~[u8]>());
 
-                TextEditingEvent(event.timestamp as uint, window,
-                                 str::from_utf8(text),
+                TextEditingEvent(event.timestamp as uint, window, text,
                                  event.start as int, event.length as int)
             }
             TextInputEventType => {
@@ -711,17 +699,9 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
                     Ok(window) => window,
                 };
 
-                // FIXME: This seems really poorly done
-                let mut text: ~[u8] = vec::with_capacity(32);
-                for c in event.text.iter() {
-                    if *c == 0 {
-                        break;
-                    }
-                    text.push(c.clone() as u8);
-                }
+                let text = str::from_utf8_owned(event.text.iter().take_while(|b| (**b) != 0i8).map(|b| b.to_u8()).collect::<~[u8]>());
 
-                TextInputEvent(event.timestamp as uint, window,
-                               str::from_utf8(text))
+                TextInputEvent(event.timestamp as uint, window, text)
             }
 
             MouseMotionEventType => {
@@ -965,6 +945,23 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
                                   event.y as float, event.numFingers as uint)
             }
 
+            ClipboardUpdateEventType => {
+                let event = raw.common();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                ClipboardUpdateEvent(event.timestamp as uint)
+            }
+            DropFileEventType => {
+                let event = raw.drop();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                let text = str::raw::from_c_str(event.file);
+                ll::SDL_free(event.file as *c_void);
+
+                DropFileEvent(event.timestamp as uint, text)
+            }
             // TODO: All the touch events
 
             UserEventType => {
