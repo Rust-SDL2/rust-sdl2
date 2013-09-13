@@ -337,9 +337,21 @@ impl Renderer {
             })
         }
     }
+
+    pub fn set_logical_size(&self, width: int, height: int) -> bool {
+        unsafe { ll::SDL_RenderSetLogicalSize(self.raw, width as c_int, height as c_int) == 0 }
+    }
+
+    pub fn get_logical_size(&self) -> (int, int) {
+
+        let width: c_int = 0;
+        let height: c_int = 0;
+
+        unsafe { ll::SDL_RenderGetLogicalSize(self.raw, &width, &height) };
+
+        (width as int, height as int)
+    }
     /*
-    externfn!(fn SDL_RenderSetLogicalSize(renderer: *SDL_Renderer, w: c_int, h: c_int) -> c_int)
-    externfn!(fn SDL_RenderGetLogicalSize(renderer: *SDL_Renderer, w: *c_int, h: *c_int))
     externfn!(fn SDL_RenderSetViewport(renderer: *SDL_Renderer, rect: *SDL_Rect) -> c_int)
     externfn!(fn SDL_RenderGetViewport(renderer: *SDL_Renderer, rect: *SDL_Rect))
     externfn!(fn SDL_RenderSetClipRect(renderer: *SDL_Renderer, rect: *SDL_Rect) -> c_int)
