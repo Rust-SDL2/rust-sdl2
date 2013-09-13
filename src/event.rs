@@ -4,6 +4,8 @@ use std::num::IntConvertible;
 use std::str;
 use std::vec;
 
+use controller;
+use controller::{ControllerAxis, ControllerButton};
 use joystick;
 use joystick::HatState;
 use keyboard;
@@ -471,12 +473,12 @@ pub enum EventType {
     JoyDeviceAddedEventType = ll::SDL_JOYDEVICEADDED,
     JoyDeviceRemovedEventType = ll::SDL_JOYDEVICEREMOVED,
 
-    // TODO: ControllerAxisMotionEventType = ll::SDL_CONTROLLERAXISMOTION,
-    // TODO: ControllerButtonDownEventType = ll::SDL_CONTROLLERBUTTONDOWN,
-    // TODO: ControllerButtonUpEventType = ll::SDL_CONTROLLERBUTTONUP,
-    // TODO: ControllerDeviceAddedEventType = ll::SDL_CONTROLLERDEVICEADDED,
-    // TODO: ControllerDeviceRemovedEventType = ll::SDL_CONTROLLERDEVICEREMOVED,
-    // TODO: ControllerDeviceRemappedEventType = ll::SDL_CONTROLLERDEVICEREMAPPED,
+    ControllerAxisMotionEventType = ll::SDL_CONTROLLERAXISMOTION,
+    ControllerButtonDownEventType = ll::SDL_CONTROLLERBUTTONDOWN,
+    ControllerButtonUpEventType = ll::SDL_CONTROLLERBUTTONUP,
+    ControllerDeviceAddedEventType = ll::SDL_CONTROLLERDEVICEADDED,
+    ControllerDeviceRemovedEventType = ll::SDL_CONTROLLERDEVICEREMOVED,
+    ControllerDeviceRemappedEventType = ll::SDL_CONTROLLERDEVICEREMAPPED,
 
     // TODO: FingerDownEventType = ll:SDL_FINGERDOWN,
     // TODO: FingerUpEventType = ll::SDL_FINGERUP,
@@ -543,12 +545,12 @@ pub enum Event {
     JoyDeviceAddedEvent(uint, int),
     JoyDeviceRemovedEvent(uint, int),
 
-    // TODO: ControllerAxisMotionEvent
-    // TODO: ControllerButtonDownEvent
-    // TODO: ControllerButtonUpEvent
-    // TODO: ControllerDeviceAddedEvent
-    // TODO: ControllerDeviceRemovedEvent
-    // TODO: ControllerDeviceRemappedEvent
+    ControllerAxisMotionEvent(uint, int, ControllerAxis, i16),
+    ControllerButtonDownEvent(uint, int, ControllerButton),
+    ControllerButtonUpEvent(uint, int, ControllerButton),
+    ControllerDeviceAddedEvent(uint, int),
+    ControllerDeviceRemovedEvent(uint, int),
+    ControllerDeviceRemappedEvent(uint, int),
 
     // TODO: FingerDownEvent
     // TODO: FingerUpEvent
@@ -845,7 +847,60 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
                                       event.which as int)
             }
 
-            // TODO: All the controller and touch events
+            ControllerAxisMotionEventType => {
+                let event = raw.caxis();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+                let axis = controller::wrap_controller_axis(event.axis);
+
+                ControllerAxisMotionEvent(event.timestamp as uint,
+                                          event.which as int,
+                                          axis, event.value)
+            }
+            ControllerButtonDownEventType => {
+                let event = raw.cbutton();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+                let button = controller::wrap_controller_button(event.button);
+
+                ControllerButtonDownEvent(event.timestamp as uint,
+                                          event.which as int, button)
+            }
+            ControllerButtonUpEventType => {
+                let event = raw.cbutton();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+                let button = controller::wrap_controller_button(event.button);
+
+                ControllerButtonUpEvent(event.timestamp as uint,
+                                        event.which as int, button)
+            }
+            ControllerDeviceAddedEventType => {
+                let event = raw.cdevice();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                ControllerDeviceAddedEvent(event.timestamp as uint,
+                                           event.which as int)
+            }
+            ControllerDeviceRemovedEventType => {
+                let event = raw.cdevice();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                ControllerDeviceRemovedEvent(event.timestamp as uint,
+                                             event.which as int)
+            }
+            ControllerDeviceRemappedEventType => {
+                let event = raw.cdevice();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                ControllerDeviceRemappedEvent(event.timestamp as uint,
+                                              event.which as int)
+            }
+
+            // TODO: All the touch events
 
             UserEventType => {
                 let event = raw.user();
