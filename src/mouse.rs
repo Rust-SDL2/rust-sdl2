@@ -63,3 +63,27 @@ pub enum MouseState {
     X1MouseState,
     X2MouseState,
 }
+
+pub fn wrap_mouse(bitflags: u8) -> Mouse {
+    match bitflags {
+        1 => LeftMouse,
+        2 => MiddleMouse,
+        3 => RightMouse,
+        4 => X1Mouse,
+        5 => X2Mouse,
+        _ => fail!(~"unhandled mouse type")
+    }
+}
+
+pub fn wrap_mouse_state(bitflags: u32) -> ~[MouseState] {
+    let flags = [LeftMouseState,
+        MiddleMouseState,
+        RightMouseState,
+        X1MouseState,
+        X2MouseState];
+
+    do flags.iter().filter_map |&flag| {
+        if bitflags & (flag as u32) != 0 { Some(flag) }
+        else { None }
+    }.collect()
+}

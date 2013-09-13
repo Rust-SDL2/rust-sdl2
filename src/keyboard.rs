@@ -53,3 +53,24 @@ pub enum Mod {
      ModeMod = 0x4000,
      ReservedMod = 0x8000
 }
+
+pub fn wrap_mod_state(bitflags: ll::SDL_Keymod) -> ~[Mod] {
+    let flags = [NoMod,
+        LShiftMod,
+        RShiftMod,
+        LCtrlMod,
+        RCtrlMod,
+        LAltMod,
+        RAltMod,
+        LGuiMod,
+        RGuiMod,
+        NumMod,
+        CapsMod,
+        ModeMod,
+        ReservedMod];
+
+    do flags.iter().filter_map |&flag| {
+        if bitflags & (flag as ll::SDL_Keymod) != 0 { Some(flag) }
+        else { None }
+    }.collect()
+}

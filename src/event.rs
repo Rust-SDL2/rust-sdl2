@@ -1,11 +1,15 @@
 use std::cast;
 use std::libc::c_int;
 use std::num::IntConvertible;
+use std::str;
+use std::vec;
 use video;
-use keyboard::*;
+use keyboard;
+use keyboard::Mod;
 use keyboard::ll::SDL_Keymod;
-use keycode::*;
-use mouse::*;
+use keycode::KeyCode;
+use mouse;
+use mouse::{Mouse, MouseState};
 use scancode::ScanCode;
 
 pub mod ll {
@@ -449,8 +453,8 @@ pub enum EventType {
 
     KeyDownEventType = ll::SDL_KEYDOWN,
     KeyUpEventType = ll::SDL_KEYUP,
-    // TODO: TextEditingEventType = ll::SDL_TEXTEDITING,
-    // TODO: TextInputEventType = ll::SDL_INPUT,
+    TextEditingEventType = ll::SDL_TEXTEDITING,
+    TextInputEventType = ll::SDL_TEXTINPUT,
 
     MouseMotionEventType = ll::SDL_MOUSEMOTION,
     MouseButtonDownEventType = ll::SDL_MOUSEBUTTONDOWN,
@@ -520,8 +524,8 @@ pub enum Event {
 
     KeyDownEvent(uint, ~video::Window, KeyCode, ScanCode, ~[Mod]),
     KeyUpEvent(uint, ~video::Window, KeyCode, ScanCode, ~[Mod]),
-    // TODO: TextEditingEvent
-    // TODO: TextInputEvent
+    TextEditingEvent(uint, ~video::Window, ~str, int, int),
+    TextInputEvent(uint, ~video::Window, ~str),
 
     MouseMotionEvent(uint, ~video::Window, uint, ~[MouseState], int, int,
                      int, int),
@@ -583,6 +587,13 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
 
                 AppTerminatingEvent(event.timestamp as uint)
             }
+            AppLowMemoryEventType => {
+                let event = raw.common();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                AppLowMemoryEvent(event.timestamp as uint)
+            }
             AppWillEnterBackgroundEventType => {
                 let event = raw.common();
                 let event = if event.is_null() { return NoEvent; }
@@ -643,7 +654,7 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
                 KeyDownEvent(event.timestamp as uint, window,
                              IntConvertible::from_int(event.keysym.sym as int),
                              IntConvertible::from_int(event.keysym.scancode as int),
-                             wrap_mod_state(event.keysym._mod as SDL_Keymod))
+                             keyboard::wrap_mod_state(event.keysym._mod as SDL_Keymod))
             }
             KeyUpEventType => {
                 let event = raw.key();
@@ -659,10 +670,55 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
                 KeyUpEvent(event.timestamp as uint, window,
                            IntConvertible::from_int(event.keysym.sym as int),
                            IntConvertible::from_int(event.keysym.scancode as int),
-                           wrap_mod_state(event.keysym._mod as SDL_Keymod))
+                           keyboard::wrap_mod_state(event.keysym._mod as SDL_Keymod))
             }
-            // TODO: TextEditingEventType
-            // TODO: TextInputEventType
+            TextEditingEventType => {
+                let event = raw.edit();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                let window = video::Window::from_id(event.windowID);
+                let window = match window {
+                    Err(_) => return NoEvent,
+                    Ok(window) => window,
+                };
+
+                // FIXME: This seems really poorly done
+                let mut text: ~[u8] = vec::with_capacity(32);
+                for c in event.text.iter() {
+                    if *c == 0 {
+                        break;
+                    }
+                    text.push(c.clone() as u8);
+                }
+
+                TextEditingEvent(event.timestamp as uint, window,
+                                 str::from_utf8(text),
+                                 event.start as int, event.length as int)
+            }
+            TextInputEventType => {
+                let event = raw.text();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                let window = video::Window::from_id(event.windowID);
+                let window = match window {
+                    Err(_) => return NoEvent,
+                    Ok(window) => window,
+                };
+
+                // FIXME: This seems really poorly done
+                let mut text: ~[u8] = vec::with_capacity(32);
+                for c in event.text.iter() {
+                    if *c == 0 {
+                        break;
+                    }
+                    text.push(c.clone() as u8);
+                }
+
+                TextInputEvent(event.timestamp as uint, window,
+                               str::from_utf8(text))
+            }
 
             MouseMotionEventType => {
                 let event = raw.motion();
@@ -677,7 +733,7 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
 
                 MouseMotionEvent(event.timestamp as uint, window,
                                  event.which as uint,
-                                 wrap_mouse_state(event.state),
+                                 mouse::wrap_mouse_state(event.state),
                                  event.x as int, event.y as int,
                                  event.xrel as int, event.yrel as int)
             }
@@ -694,7 +750,7 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
 
                 MouseButtonDownEvent(event.timestamp as uint, window,
                                      event.which as uint,
-                                     wrap_mouse(event.button),
+                                     mouse::wrap_mouse(event.button),
                                      event.x as int, event.y as int)
             }
             MouseButtonUpEventType => {
@@ -710,7 +766,7 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
 
                 MouseButtonUpEvent(event.timestamp as uint, window,
                                    event.which as uint,
-                                   wrap_mouse(event.button),
+                                   mouse::wrap_mouse(event.button),
                                    event.x as int, event.y as int)
             }
             MouseWheelEventType => {
@@ -744,7 +800,10 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
 
                 UserEvent(event.timestamp as uint, window, event.code as int)
             }
-            _ => NoEvent
+
+            FirstEventType => NoEvent,
+            LastEventType => NoEvent,
+            //_ => NoEvent
         }
     }
 }
@@ -767,51 +826,6 @@ fn wrap_window_event_id(id: u8) -> WindowEventId {
         14 => CloseWindowEventId,
         _  => NoneWindowEventId
     }
-}
-
-fn wrap_mouse(bitflags: u8) -> Mouse {
-    match bitflags {
-        1 => LeftMouse,
-        2 => MiddleMouse,
-        3 => RightMouse,
-        4 => X1Mouse,
-        5 => X2Mouse,
-        _ => fail!(~"unhandled mouse type")
-    }
-}
-
-fn wrap_mouse_state(bitflags: u32) -> ~[MouseState] {
-    let flags = [LeftMouseState,
-        MiddleMouseState,
-        RightMouseState,
-        X1MouseState,
-        X2MouseState];
-
-    do flags.iter().filter_map |&flag| {
-        if bitflags & (flag as u32) != 0 { Some(flag) }
-        else { None }
-    }.collect()
-}
-
-fn wrap_mod_state(bitflags: SDL_Keymod) -> ~[Mod] {
-    let flags = [NoMod,
-        LShiftMod,
-        RShiftMod,
-        LCtrlMod,
-        RCtrlMod,
-        LAltMod,
-        RAltMod,
-        LGuiMod,
-        RGuiMod,
-        NumMod,
-        CapsMod,
-        ModeMod,
-        ReservedMod];
-
-    do flags.iter().filter_map |&flag| {
-        if bitflags & (flag as SDL_Keymod) != 0 { Some(flag) }
-        else { None }
-    }.collect()
 }
 
 fn null_event() -> ll::SDL_Event {
