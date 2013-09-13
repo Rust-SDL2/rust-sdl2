@@ -1,5 +1,5 @@
 use std::cast;
-use std::libc::{c_int, c_void};
+use std::libc::{c_int, c_void, uint32_t};
 use std::num::IntConvertible;
 use std::str;
 
@@ -408,13 +408,13 @@ pub mod ll {
     pub static SDL_PEEKEVENT: SDL_eventaction = 1;
     pub static SDL_GETEVENT: SDL_eventaction = 2;
     pub type SDL_EventFilter =
-        extern "C" fn(arg1: *c_void, arg2: *SDL_Event) -> c_int;
+        extern "C" fn(userdata: *c_void, event: *SDL_Event) -> c_int;
 
     externfn!(fn SDL_free(mem: *c_void))
     externfn!(fn SDL_PumpEvents())
-    externfn!(fn SDL_PeepEvents(events: &[SDL_Event], numevents: c_int,
+    /*externfn!(fn SDL_PeepEvents(events: &[SDL_Event], numevents: c_int,
                                 action: SDL_eventaction, minType: uint32_t,
-                                maxType: uint32_t) -> c_int)
+                                maxType: uint32_t) -> c_int)*/
     externfn!(fn SDL_HasEvent(_type: uint32_t) -> SDL_bool)
     externfn!(fn SDL_HasEvents(minType: uint32_t, maxType: uint32_t) ->
               SDL_bool)
@@ -424,17 +424,17 @@ pub mod ll {
     externfn!(fn SDL_WaitEvent(event: *SDL_Event) -> c_int)
     externfn!(fn SDL_WaitEventTimeout(event: *SDL_Event, timeout: c_int) ->
               c_int)
-    externfn!(fn SDL_PushEvent(event: *SDL_Event) -> c_int)
+    /*externfn!(fn SDL_PushEvent(event: *SDL_Event) -> c_int)*/
     externfn!(fn SDL_SetEventFilter(filter: SDL_EventFilter,
                                     userdata: *c_void))
-    externfn!(fn SDL_GetEventFilter(filter: *SDL_EventFilter,
-                                    userdata: **c_void) -> SDL_bool)
+    /*externfn!(fn SDL_GetEventFilter(filter: *SDL_EventFilter,
+                                    userdata: **c_void) -> SDL_bool)*/
     externfn!(fn SDL_AddEventWatch(filter: SDL_EventFilter, userdata: *c_void))
     externfn!(fn SDL_DelEventWatch(filter: SDL_EventFilter, userdata: *c_void))
     externfn!(fn SDL_FilterEvents(filter: SDL_EventFilter, userdata: *c_void))
     externfn!(fn SDL_EventState(_type: uint32_t, state: SDL_EventState) ->
               SDL_EventState)
-    externfn!(fn SDL_RegisterEvents(numevents: c_int) -> uint32_t)
+    /*externfn!(fn SDL_RegisterEvents(numevents: c_int) -> uint32_t)*/
 }
 
 pub enum EventType {
@@ -1013,6 +1013,22 @@ pub fn pump_events() {
     unsafe { ll::SDL_PumpEvents(); }
 }
 
+pub fn has_event(_type: EventType) -> bool {
+    unsafe { ll::SDL_HasEvent(_type as uint32_t ) == 1 }
+}
+
+pub fn has_events(min: EventType, max: EventType) -> bool {
+    unsafe { ll::SDL_HasEvents(min as uint32_t, max as uint32_t) == 1 }
+}
+
+pub fn flush_event(_type: EventType) {
+    unsafe { ll::SDL_FlushEvent(_type as uint32_t) }
+}
+
+pub fn flush_events(min: EventType, max: EventType) {
+    unsafe { ll::SDL_FlushEvents(min as uint32_t, max as uint32_t) }
+}
+
 pub fn poll_event() -> Event {
     pump_events();
 
@@ -1021,4 +1037,57 @@ pub fn poll_event() -> Event {
 
     if success { wrap_event(raw) }
     else { NoEvent }
+}
+
+pub fn wait_event() -> Event {
+    let raw = null_event();
+    let success = unsafe { ll::SDL_WaitEvent(&raw) == 1 as c_int };
+
+    if success { wrap_event(raw) }
+    else { NoEvent }
+}
+
+pub fn wait_event_timeout(timeout: int) -> Event {
+    let raw = null_event();
+    let success = unsafe { ll::SDL_WaitEventTimeout(&raw, timeout as c_int) ==
+                           1 as c_int };
+
+    if success { wrap_event(raw) }
+    else { NoEvent }
+}
+
+extern "C" fn event_filter_wrapper(userdata: *c_void, event: *ll::SDL_Event) -> c_int {
+    let filter: extern fn(event: Event) -> bool = unsafe { cast::transmute(userdata) };
+    if event.is_null() { 1 }
+    else { filter(wrap_event(unsafe { *event })) as c_int }
+}
+
+pub fn set_event_filter(filter_func: extern fn(event: Event) -> bool) {
+    unsafe { ll::SDL_SetEventFilter(event_filter_wrapper,
+                                    cast::transmute(filter_func)) }
+}
+
+pub fn add_event_watch(filter_func: extern fn(event: Event) -> bool) {
+    unsafe { ll::SDL_AddEventWatch(event_filter_wrapper,
+                                   cast::transmute(filter_func)) }
+}
+
+pub fn delete_event_watch(filter_func: extern fn(event: Event) -> bool) {
+    unsafe { ll::SDL_DelEventWatch(event_filter_wrapper,
+                                   cast::transmute(filter_func)) }
+}
+
+pub fn filter_events(filter_func: extern fn(event: Event) -> bool) {
+    unsafe { ll::SDL_FilterEvents(event_filter_wrapper,
+                                  cast::transmute(filter_func)) }
+}
+
+pub fn set_event_state(_type: EventType, state: bool) {
+    unsafe { ll::SDL_EventState(_type as uint32_t,
+                                state as ll::SDL_EventState); }
+}
+
+pub fn get_event_state(_type: EventType) -> bool {
+    unsafe { ll::SDL_EventState(_type as uint32_t, ll::SDL_QUERY)
+             == ll::SDL_ENABLE }
 }
