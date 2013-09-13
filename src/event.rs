@@ -3,7 +3,9 @@ use std::libc::c_int;
 use std::num::IntConvertible;
 use std::str;
 use std::vec;
-use video;
+
+use joystick;
+use joystick::HatState;
 use keyboard;
 use keyboard::Mod;
 use keyboard::ll::SDL_Keymod;
@@ -11,6 +13,7 @@ use keycode::KeyCode;
 use mouse;
 use mouse::{Mouse, MouseState};
 use scancode::ScanCode;
+use video;
 
 pub mod ll {
     use std::cast;
@@ -18,7 +21,6 @@ pub mod ll {
                     int32_t, uint8_t, uint16_t, uint32_t};
     use std::ptr;
     use gesture::ll::SDL_GestureID;
-    use joystick::ll::SDL_JoystickID;
     use keyboard::ll::SDL_Keysym;
     use touch::ll::SDL_FingerID;
     use touch::ll::SDL_TouchID;
@@ -157,7 +159,7 @@ pub mod ll {
     pub struct SDL_JoyAxisEvent {
         _type: uint32_t,
         timestamp: uint32_t,
-        which: SDL_JoystickID,
+        which: int32_t,
         axis: uint8_t,
         padding1: uint8_t,
         padding2: uint8_t,
@@ -169,7 +171,7 @@ pub mod ll {
     pub struct SDL_JoyBallEvent {
         _type: uint32_t,
         timestamp: uint32_t,
-        which: SDL_JoystickID,
+        which: int32_t,
         ball: uint8_t,
         padding1: uint8_t,
         padding2: uint8_t,
@@ -181,7 +183,7 @@ pub mod ll {
     pub struct SDL_JoyHatEvent {
         _type: uint32_t,
         timestamp: uint32_t,
-        which: SDL_JoystickID,
+        which: int32_t,
         hat: uint8_t,
         value: uint8_t,
         padding1: uint8_t,
@@ -191,7 +193,7 @@ pub mod ll {
     pub struct SDL_JoyButtonEvent {
         _type: uint32_t,
         timestamp: uint32_t,
-        which: SDL_JoystickID,
+        which: int32_t,
         button: uint8_t,
         state: uint8_t,
         padding1: uint8_t,
@@ -207,7 +209,7 @@ pub mod ll {
     pub struct SDL_ControllerAxisEvent {
         _type: uint32_t,
         timestamp: uint32_t,
-        which: SDL_JoystickID,
+        which: int32_t,
         axis: uint8_t,
         padding1: uint8_t,
         padding2: uint8_t,
@@ -219,7 +221,7 @@ pub mod ll {
     pub struct SDL_ControllerButtonEvent {
         _type: uint32_t,
         timestamp: uint32_t,
-        which: SDL_JoystickID,
+        which: int32_t,
         button: uint8_t,
         state: uint8_t,
         padding1: uint8_t,
@@ -461,13 +463,13 @@ pub enum EventType {
     MouseButtonUpEventType = ll::SDL_MOUSEBUTTONUP,
     MouseWheelEventType = ll::SDL_MOUSEWHEEL,
 
-    // TODO: JoyAxisMotionEventType = ll::SDL_JOYAXISMOTION,
-    // TODO: JoyBallMotionEventType = ll::SDL_JOYBALLMOTION,
-    // TODO: JoyHatMotionEventType = ll::SDL_JOYHATMOTION,
-    // TODO: JoyButtonDownEventType = ll::SDL_JOYBUTTONDOWN,
-    // TODO: JoyButtonUpEventType = ll::SDL_JOYBUTTONUP,
-    // TODO: JoyDeviceAddedEventType = ll::SDL_JOYDEVICEADDED,
-    // TODO: JoyDeviceRemovedEventType = ll::SDL_JOYDEVICEREMOVED,
+    JoyAxisMotionEventType = ll::SDL_JOYAXISMOTION,
+    JoyBallMotionEventType = ll::SDL_JOYBALLMOTION,
+    JoyHatMotionEventType = ll::SDL_JOYHATMOTION,
+    JoyButtonDownEventType = ll::SDL_JOYBUTTONDOWN,
+    JoyButtonUpEventType = ll::SDL_JOYBUTTONUP,
+    JoyDeviceAddedEventType = ll::SDL_JOYDEVICEADDED,
+    JoyDeviceRemovedEventType = ll::SDL_JOYDEVICEREMOVED,
 
     // TODO: ControllerAxisMotionEventType = ll::SDL_CONTROLLERAXISMOTION,
     // TODO: ControllerButtonDownEventType = ll::SDL_CONTROLLERBUTTONDOWN,
@@ -533,13 +535,13 @@ pub enum Event {
     MouseButtonUpEvent(uint, ~video::Window, uint, Mouse, int, int),
     MouseWheelEvent(uint, ~video::Window, uint, int, int),
 
-    // TODO: JoyAxisMotionEvent
-    // TODO: JoyBallMotionEvent
-    // TODO: JoyHatMotionEvent
-    // TODO: JoyButtonDownEvent
-    // TODO: JoyButtonUpEvent
-    // TODO: JoyDeviceAddedEvent
-    // TODO: JoyDeviceRemovedEvent
+    JoyAxisMotionEvent(uint, int, int, i16),
+    JoyBallMotionEvent(uint, int, i16, i16),
+    JoyHatMotionEvent(uint, int, int, ~[HatState]),
+    JoyButtonDownEvent(uint, int, int),
+    JoyButtonUpEvent(uint, int, int),
+    JoyDeviceAddedEvent(uint, int),
+    JoyDeviceRemovedEvent(uint, int),
 
     // TODO: ControllerAxisMotionEvent
     // TODO: ControllerButtonDownEvent
@@ -785,7 +787,65 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
                                 event.y as int)
             }
 
-            // TODO: All the joystick, controller, and touch events
+            JoyAxisMotionEventType => {
+                let event = raw.jaxis();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                JoyAxisMotionEvent(event.timestamp as uint, event.which as int,
+                                   event.axis as int, event.value)
+            }
+            JoyBallMotionEventType => {
+                let event = raw.jball();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                JoyBallMotionEvent(event.timestamp as uint, event.which as int,
+                                   event.xrel, event.yrel)
+            }
+            JoyHatMotionEventType => {
+                let event = raw.jhat();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                JoyHatMotionEvent(event.timestamp as uint, event.which as int,
+                                  event.hat as int,
+                                  joystick::wrap_hat_state(event.value))
+            }
+            JoyButtonDownEventType => {
+                let event = raw.jbutton();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                JoyButtonDownEvent(event.timestamp as uint, event.which as int,
+                                   event.button as int)
+            }
+            JoyButtonUpEventType => {
+                let event = raw.jbutton();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                JoyButtonUpEvent(event.timestamp as uint, event.which as int,
+                                 event.button as int)
+            }
+            JoyDeviceAddedEventType => {
+                let event = raw.jdevice();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                JoyDeviceAddedEvent(event.timestamp as uint,
+                                    event.which as int)
+            }
+            JoyDeviceRemovedEventType => {
+                let event = raw.jdevice();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                JoyDeviceRemovedEvent(event.timestamp as uint,
+                                      event.which as int)
+            }
+
+            // TODO: All the controller and touch events
 
             UserEventType => {
                 let event = raw.user();
