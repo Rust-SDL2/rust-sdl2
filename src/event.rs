@@ -480,12 +480,12 @@ pub enum EventType {
     ControllerDeviceRemovedEventType = ll::SDL_CONTROLLERDEVICEREMOVED,
     ControllerDeviceRemappedEventType = ll::SDL_CONTROLLERDEVICEREMAPPED,
 
-    // TODO: FingerDownEventType = ll:SDL_FINGERDOWN,
-    // TODO: FingerUpEventType = ll::SDL_FINGERUP,
-    // TODO: FingerMotionEventType = ll::SDL_FINGERMOTION,
-    // TODO: DollarGestureEventType = ll::SDL_DOLLARGESTURE,
-    // TODO: DollarRecordEventType = ll::SDL_DOLLARRECORD,
-    // TODO: MultiGestureEventType = ll::SDL_MULTIGESTURE,
+    FingerDownEventType = ll::SDL_FINGERDOWN,
+    FingerUpEventType = ll::SDL_FINGERUP,
+    FingerMotionEventType = ll::SDL_FINGERMOTION,
+    DollarGestureEventType = ll::SDL_DOLLARGESTURE,
+    DollarRecordEventType = ll::SDL_DOLLARRECORD,
+    MultiGestureEventType = ll::SDL_MULTIGESTURE,
 
     // TODO: ClipboardUpdateEventType = ll::SDL_CLIPBOARDUPDATE,
     // TODO: DropFileEventType = ll::SDL_DROPFILE,
@@ -552,12 +552,12 @@ pub enum Event {
     ControllerDeviceRemovedEvent(uint, int),
     ControllerDeviceRemappedEvent(uint, int),
 
-    // TODO: FingerDownEvent
-    // TODO: FingerUpEvent
-    // TODO: FingerMotionEvent
-    // TODO: DollarGestureEvent
-    // TODO: DollarRecordEvent
-    // TODO: MultiGestureEvent
+    FingerDownEvent(uint, i64, i64, float, float, float, float, float),
+    FingerUpEvent(uint, i64, i64, float, float, float, float, float),
+    FingerMotionEvent(uint, i64, i64, float, float, float, float, float),
+    DollarGestureEvent(uint, i64, i64, uint, float, float, float),
+    DollarRecordEvent(uint, i64, i64, uint, float, float, float),
+    MultiGestureEvent(uint, i64, float, float, float, float, uint),
 
     // TODO: ClipboardUpdateEvent
     // TODO: DropFileEvent
@@ -898,6 +898,71 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
 
                 ControllerDeviceRemappedEvent(event.timestamp as uint,
                                               event.which as int)
+            }
+
+            FingerDownEventType => {
+                let event = raw.tfinger();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                FingerDownEvent(event.timestamp as uint, event.touchId as i64,
+                                event.fingerId as i64, event.x as float,
+                                event.y as float, event.dx as float,
+                                event.dy as float, event.pressure as float)
+            }
+            FingerUpEventType => {
+                let event = raw.tfinger();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                FingerUpEvent(event.timestamp as uint, event.touchId as i64,
+                              event.fingerId as i64, event.x as float,
+                              event.y as float, event.dx as float,
+                              event.dy as float, event.pressure as float)
+            }
+            FingerMotionEventType => {
+                let event = raw.tfinger();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                FingerMotionEvent(event.timestamp as uint,
+                                  event.touchId as i64, event.fingerId as i64,
+                                  event.x as float, event.y as float,
+                                  event.dx as float, event.dy as float,
+                                  event.pressure as float)
+            }
+            DollarGestureEventType => {
+                let event = raw.dgesture();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                DollarGestureEvent(event.timestamp as uint,
+                                   event.touchId as i64,
+                                   event.gestureId as i64,
+                                   event.numFingers as uint,
+                                   event.error as float, event.x as float,
+                                   event.y as float)
+            }
+            DollarRecordEventType => {
+                let event = raw.dgesture();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                DollarRecordEvent(event.timestamp as uint,
+                                  event.touchId as i64, event.gestureId as i64,
+                                  event.numFingers as uint,
+                                  event.error as float, event.x as float,
+                                  event.y as float)
+            }
+            MultiGestureEventType => {
+                let event = raw.mgesture();
+                let event = if event.is_null() { return NoEvent; }
+                            else { *event };
+
+                MultiGestureEvent(event.timestamp as uint,
+                                  event.touchId as i64, event.dTheta as float,
+                                  event.dDist as float, event.x as float,
+                                  event.y as float, event.numFingers as uint)
             }
 
             // TODO: All the touch events
