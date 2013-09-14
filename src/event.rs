@@ -558,7 +558,7 @@ pub enum Event {
     ClipboardUpdateEvent(uint),
     DropFileEvent(uint, ~str),
 
-    UserEvent(uint, ~video::Window, int),
+    UserEvent(uint, ~video::Window, uint, int),
 }
 
 impl Event {
@@ -962,9 +962,16 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
 
                 DropFileEvent(event.timestamp as uint, text)
             }
-            // TODO: All the touch events
 
-            UserEventType => {
+            FirstEventType => NoEvent,
+
+            // If we have no other match and the event type is >= 32768
+            // this is a user event
+            _ => {
+                if raw_type < 32768 {
+                    return NoEvent;
+                }
+
                 let event = raw.user();
                 let event = if event.is_null() { return NoEvent; }
                             else { *event };
@@ -975,12 +982,9 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
                     Ok(window) => window,
                 };
 
-                UserEvent(event.timestamp as uint, window, event.code as int)
+                UserEvent(event.timestamp as uint, window, raw_type as uint,
+                          event.code as int)
             }
-
-            FirstEventType => NoEvent,
-            LastEventType => NoEvent,
-            //_ => NoEvent
         }
     }
 }
