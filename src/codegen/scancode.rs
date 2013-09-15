@@ -278,12 +278,14 @@ pub fn generate(output_dir: &Path) {
     out.write_str("// This automatically generated file is used as sdl2::scancode.
 
 use std::num::IntConvertible;
+use std::to_bytes::IterBytes;
 
+#[deriving(IterBytes)]
 #[deriving(Eq)]
 pub enum ScanCode {
 ");
     for &entry in entries.iter() {
-        out.write_str(fmt!("    %s = %u,\n", entry.padded_ident(), entry.code));
+        out.write_str(fmt!("    %s = %u_u,\n", entry.padded_ident(), entry.code));
     }
 
     out.write_str("
@@ -310,7 +312,7 @@ impl IntConvertible for ScanCode {
 
     /// Get a *registered* scan code.
     ///
-    /// This will fail if an unknown code is passed.
+    /// This will return UnknownScanCode if an unknown code is passed.
     ///
     /// For example, `from_int(4)` will return `AScanCode`.
     fn from_int(n: int) -> ScanCode {
@@ -320,7 +322,7 @@ impl IntConvertible for ScanCode {
         out.write_str(fmt!("            %u => %s,\n", entry.code, entry.ident()));
     }
     out.write_str("
-            _   => { fail!(fmt!(\"No registered scan code %d\", n)); }
+            _   => { UnknownScanCode }
         }
     }
 }");

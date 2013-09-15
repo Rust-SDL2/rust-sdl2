@@ -172,12 +172,12 @@ pub fn wrap_mouse_state(bitflags: u32) -> ~[MouseState] {
     }.collect()
 }
 
-pub fn get_mouse_focus() -> Result<~video::Window, ~str> {
+pub fn get_mouse_focus() -> Option<~video::Window> {
     let raw = unsafe { ll::SDL_GetMouseFocus() };
     if raw == ptr::null() {
-        Err(get_error())
+        None
     } else {
-        Ok(~video::Window{ raw: raw, owned: false })
+        Some(~video::Window{ raw: raw, owned: false })
     }
 }
 
