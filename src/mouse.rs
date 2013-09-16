@@ -1,3 +1,9 @@
+use std::ptr;
+use std::vec;
+
+use get_error;
+use surface;
+use video;
 
 pub mod ll {
     use std::libc::{c_int, c_uint, c_void, uint8_t, uint32_t};
@@ -47,6 +53,84 @@ pub mod ll {
 }
 
 #[deriving(Eq)]
+pub enum SystemCursor {
+    ArrowCursor = ll::SDL_SYSTEM_CURSOR_ARROW,
+    IBeamCursor = ll::SDL_SYSTEM_CURSOR_IBEAM,
+    WaitCursor = ll::SDL_SYSTEM_CURSOR_WAIT,
+    CrosshairCursor = ll::SDL_SYSTEM_CURSOR_CROSSHAIR,
+    WaitArrowCursor = ll::SDL_SYSTEM_CURSOR_WAITARROW,
+    SizeNWSECursor = ll::SDL_SYSTEM_CURSOR_SIZENWSE,
+    SizeNESWCursor = ll::SDL_SYSTEM_CURSOR_SIZENESW,
+    SizeWECursor = ll::SDL_SYSTEM_CURSOR_SIZEWE,
+    SizeNSCursor = ll::SDL_SYSTEM_CURSOR_SIZENS,
+    SizeAllCursor = ll::SDL_SYSTEM_CURSOR_SIZEALL,
+    NoCursor = ll::SDL_SYSTEM_CURSOR_NO,
+    HandCursor = ll::SDL_SYSTEM_CURSOR_HAND,
+}
+
+#[deriving(Eq)]
+pub struct Cursor {
+    raw: *ll::SDL_Cursor,
+    owned: bool
+}
+
+impl Drop for Cursor {
+    fn drop(&self) {
+        if self.owned {
+            unsafe {
+                ll::SDL_FreeCursor(self.raw);
+            }
+        }
+    }
+}
+
+impl Cursor {
+    pub fn new(data: &[u8], mask: &[u8], width: int, height: int, hot_x: int, hot_y: int) -> Result<~Cursor, ~str> {
+        unsafe {
+            let raw = ll::SDL_CreateCursor(vec::raw::to_ptr(data),
+                                           vec::raw::to_ptr(mask),
+                                           width as i32, height as i32,
+                                           hot_x as i32, hot_y as i32);
+
+            if raw == ptr::null() {
+                Err(get_error())
+            } else {
+                Ok(~Cursor{ raw: raw, owned: true })
+            }
+        }
+    }
+
+    pub fn from_surface(surface: surface::Surface, hot_x: int, hot_y: int) -> Result<~Cursor, ~str> {
+        unsafe {
+            let raw = ll::SDL_CreateColorCursor(surface.raw, hot_x as i32,
+                                                hot_y as i32);
+
+            if raw == ptr::null() {
+                Err(get_error())
+            } else {
+                Ok(~Cursor{ raw: raw, owned: true })
+            }
+        }
+    }
+
+    pub fn from_system(cursor: SystemCursor) -> Result<~Cursor, ~str> {
+        unsafe {
+            let raw = ll::SDL_CreateSystemCursor(cursor as u32);
+
+            if raw == ptr::null() {
+                Err(get_error())
+            } else {
+                Ok(~Cursor{ raw: raw, owned: true })
+            }
+        }
+    }
+
+    pub fn set(&self) {
+        unsafe { ll::SDL_SetCursor(self.raw); }
+    }
+}
+
+#[deriving(Eq)]
 pub enum Mouse {
     LeftMouse,
     MiddleMouse,
@@ -58,10 +142,10 @@ pub enum Mouse {
 #[deriving(Eq)]
 pub enum MouseState {
     LeftMouseState = 1,
-    MiddleMouseState,
-    RightMouseState,
-    X1MouseState,
-    X2MouseState,
+    MiddleMouseState = 2,
+    RightMouseState = 4,
+    X1MouseState = 8,
+    X2MouseState = 16,
 }
 
 pub fn wrap_mouse(bitflags: u8) -> Mouse {
@@ -86,4 +170,69 @@ pub fn wrap_mouse_state(bitflags: u32) -> ~[MouseState] {
         if bitflags & (flag as u32) != 0 { Some(flag) }
         else { None }
     }.collect()
+}
+
+pub fn get_mouse_focus() -> Option<~video::Window> {
+    let raw = unsafe { ll::SDL_GetMouseFocus() };
+    if raw == ptr::null() {
+        None
+    } else {
+        Some(~video::Window{ raw: raw, owned: false })
+    }
+}
+
+pub fn get_mouse_state() -> (~[MouseState], int, int) {
+    let x = 0;
+    let y = 0;
+    let raw = unsafe { ll::SDL_GetMouseState(&x, &y) };
+
+    return (wrap_mouse_state(raw), x as int, y as int);
+}
+
+pub fn get_relative_mouse_state() -> (~[MouseState], int, int) {
+    let x = 0;
+    let y = 0;
+    let raw = unsafe { ll::SDL_GetRelativeMouseState(&x, &y) };
+
+    return (wrap_mouse_state(raw), x as int, y as int);
+}
+
+pub fn warp_mouse_in_window(window: &video::Window, x: i32, y: i32) {
+    unsafe { ll::SDL_WarpMouseInWindow(window.raw, x, y); }
+}
+
+pub fn set_relative_mouse_mode(on: bool) {
+    unsafe { ll::SDL_SetRelativeMouseMode(on as i32); }
+}
+
+pub fn get_relative_mouse_mode() -> bool {
+    unsafe { ll::SDL_GetRelativeMouseMode() == 1 }
+}
+
+pub fn get_cursor() -> Option<~Cursor> {
+    let raw = unsafe { ll::SDL_GetCursor() };
+
+    if raw == ptr::null() {
+        None
+    } else {
+        Some(~Cursor { raw: raw, owned: false })
+    }
+}
+
+pub fn get_default_cursor() -> Option<~Cursor> {
+    let raw = unsafe { ll::SDL_GetDefaultCursor() };
+
+    if raw == ptr::null() {
+        None
+    } else {
+        Some(~Cursor { raw: raw, owned: false })
+    }
+}
+
+pub fn is_cursor_showing() -> bool {
+    unsafe { ll::SDL_ShowCursor(ll::SDL_QUERY) == 1 }
+}
+
+pub fn show_cursor(show: bool) {
+    unsafe { ll::SDL_ShowCursor(show as i32); }
 }
