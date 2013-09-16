@@ -3,7 +3,7 @@ use surface;
 use pixels;
 use get_error;
 use std::ptr;
-use std::libc::{c_int, uint32_t};
+use std::libc::{c_int, uint32_t, c_float};
 use std::str;
 use std::cast;
 use rect::Rect;
@@ -351,13 +351,48 @@ impl Renderer {
 
         (width as int, height as int)
     }
+
+    pub fn set_viewport(&self, rect: &Rect) -> bool {
+        unsafe { ll::SDL_RenderSetViewport(self.raw, rect) == 0 }
+    }
+
+    pub fn get_viewport(&self) -> Rect {
+        let rect = Rect{
+            x: 0,
+            y: 0,
+            w: 0,
+            h: 0
+        };
+        unsafe { ll::SDL_RenderGetViewport(self.raw, &rect) };
+        rect
+    }
+
+    pub fn set_clip_rect(&self, rect: &Rect) -> bool {
+        unsafe { ll::SDL_RenderSetClipRect(self.raw, rect) == 0 }
+    }
+
+    pub fn get_clip_rect(&self) -> Rect {
+        let rect = Rect{
+            x: 0,
+            y: 0,
+            w: 0,
+            h: 0
+        };
+        unsafe { ll::SDL_RenderGetClipRect(self.raw, &rect) };
+        rect
+    }
+
+    pub fn set_scale(&self, scale_x: float, scale_y: float) -> bool {
+        unsafe { ll::SDL_RenderSetScale(self.raw, scale_x as c_float, scale_y as c_float) == 0 }
+    }
+
+    pub fn get_scale(&self) -> (float, float) {
+        let scale_x: c_float = 0.0;
+        let scale_y: c_float = 0.0;
+        unsafe { ll::SDL_RenderGetScale(self.raw, &scale_x, &scale_y) };
+        (scale_x as float, scale_y as float)
+    }
     /*
-    externfn!(fn SDL_RenderSetViewport(renderer: *SDL_Renderer, rect: *SDL_Rect) -> c_int)
-    externfn!(fn SDL_RenderGetViewport(renderer: *SDL_Renderer, rect: *SDL_Rect))
-    externfn!(fn SDL_RenderSetClipRect(renderer: *SDL_Renderer, rect: *SDL_Rect) -> c_int)
-    externfn!(fn SDL_RenderGetClipRect(renderer: *SDL_Renderer, rect: *SDL_Rect))
-    externfn!(fn SDL_RenderSetScale(renderer: *SDL_Renderer, scaleX: c_float, scaleY: c_float) -> c_int)
-    externfn!(fn SDL_RenderGetScale(renderer: *SDL_Renderer, scaleX: *c_float, scaleY: *c_float))
     externfn!(fn SDL_SetRenderDrawColor(renderer: *SDL_Renderer, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) -> c_int)
     externfn!(fn SDL_GetRenderDrawColor(renderer: *SDL_Renderer, r: *uint8_t, g: *uint8_t, b: *uint8_t, a: *uint8_t) -> c_int)
     externfn!(fn SDL_SetRenderDrawBlendMode(renderer: *SDL_Renderer, blendMode: SDL_BlendMode) -> c_int)
