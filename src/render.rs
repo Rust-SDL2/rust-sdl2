@@ -6,6 +6,7 @@ use std::ptr;
 use std::libc::{c_int, uint32_t, c_float};
 use std::str;
 use std::cast;
+use rect::Point;
 use rect::Rect;
 use std::vec;
 
@@ -272,6 +273,19 @@ impl Renderer {
         }
     }
 
+    pub fn get_draw_color(&self) -> Result<pixels::Color, ~str> {
+        let r: u8 = 0;
+        let g: u8 = 0;
+        let b: u8 = 0;
+        let a: u8 = 0;
+        let result = unsafe { ll::SDL_GetRenderDrawColor(self.raw, &r, &g, &b, &a) == 0 };
+        if result {
+            Ok(pixels::RGBA(r, g, b, a))
+        } else {
+            Err(get_error())
+        }
+    }
+
     pub fn clear(&self) -> bool {
         unsafe { ll::SDL_RenderClear(self.raw) == 0 }
     }
@@ -392,15 +406,22 @@ impl Renderer {
         unsafe { ll::SDL_RenderGetScale(self.raw, &scale_x, &scale_y) };
         (scale_x as float, scale_y as float)
     }
+
+    pub fn draw_point(&self, point: Point) -> bool {
+        unsafe { ll::SDL_RenderDrawPoint(self.raw, point.x, point.y) == 0 }
+    }
+
+    pub fn draw_points(&self, points: ~[Point]) -> bool {
+        unsafe {
+            ll::SDL_RenderDrawPoints(self.raw, cast::transmute(vec::raw::to_ptr(points)), points.len() as c_int) == 0
+        }
+    }
+
+    pub fn draw_line(&self, start: Point, end: Point) -> bool {
+        unsafe { ll::SDL_RenderDrawLine(self.raw, start.x, start.y, end.x, end.y) == 0 }
+    }
+
     /*
-    externfn!(fn SDL_SetRenderDrawColor(renderer: *SDL_Renderer, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) -> c_int)
-    externfn!(fn SDL_GetRenderDrawColor(renderer: *SDL_Renderer, r: *uint8_t, g: *uint8_t, b: *uint8_t, a: *uint8_t) -> c_int)
-    externfn!(fn SDL_SetRenderDrawBlendMode(renderer: *SDL_Renderer, blendMode: SDL_BlendMode) -> c_int)
-    externfn!(fn SDL_GetRenderDrawBlendMode(renderer: *SDL_Renderer, blendMode: *SDL_BlendMode) -> c_int)
-    externfn!(fn SDL_RenderClear(renderer: *SDL_Renderer) -> c_int)
-    externfn!(fn SDL_RenderDrawPoint(renderer: *SDL_Renderer, x: c_int, y: c_int) -> c_int)
-    externfn!(fn SDL_RenderDrawPoints(renderer: *SDL_Renderer, Points: *SDL_Point, count: c_int) -> c_int)
-    externfn!(fn SDL_RenderDrawLine(renderer: *SDL_Renderer, x1: c_int, y1: c_int, x2: c_int, y2: c_int) -> c_int)
     externfn!(fn SDL_RenderDrawLines(renderer: *SDL_Renderer, Points: *SDL_Point, count: c_int) -> c_int)
     externfn!(fn SDL_RenderDrawRect(renderer: *SDL_Renderer, rect: *SDL_Rect) -> c_int)
     externfn!(fn SDL_RenderDrawRects(renderer: *SDL_Renderer, rects: *SDL_Rect, count: c_int) -> c_int)
@@ -409,7 +430,6 @@ impl Renderer {
     externfn!(fn SDL_RenderCopy(renderer: *SDL_Renderer, texture: *SDL_Texture, srcrect: *SDL_Rect, dstrect: *SDL_Rect) -> c_int)
     externfn!(fn SDL_RenderCopyEx(renderer: *SDL_Renderer, texture: *SDL_Texture, srcrect: *SDL_Rect, dstrect: *SDL_Rect, angle: c_double, center: *SDL_Point, flip: SDL_RendererFlip) -> c_int)
     externfn!(fn SDL_RenderReadPixels(renderer: *SDL_Renderer, rect: *SDL_Rect, format: uint32_t, pixels: *c_void, pitch: c_int) -> c_int)
-    externfn!(fn SDL_RenderPresent(renderer: *SDL_Renderer))
     */
 }
 
