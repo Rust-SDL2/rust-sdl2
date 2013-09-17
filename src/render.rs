@@ -612,28 +612,28 @@ impl Texture {
     externfn!(fn SDL_UnlockTexture(texture: *SDL_Texture))*/
 
     pub fn gl_bind_texture(&self) -> Result<(float, float), ~str> {
-        let texw: c_float = 0;
-        let texh: c_float = 0;
+        let texw: c_float = 0.0;
+        let texh: c_float = 0.0;
 
         let result = unsafe {
             ll::SDL_GL_BindTexture(self.raw, &texw, &texh) == 0
         };
 
         if result {
-            Ok(texw as float, texh as float)
+            Ok((texw as float, texh as float))
         } else {
             Err(~"Operation not supported")
         }
     }
 
     pub fn gl_unbind_texture(&self) -> bool {
-        unsafe { ll::SDL_GL_UnbindTexture(self.raw) = 0 }
+        unsafe { ll::SDL_GL_UnbindTexture(self.raw) == 0 }
     }
 
     pub fn gl_with_bind<R>(&self, f: &fn(tex_w: float, tex_h: float) -> R) -> R {
         unsafe {
-            let texw: c_float = 0;
-            let texh: c_float = 0;
+            let texw: c_float = 0.0;
+            let texh: c_float = 0.0;
             if ll::SDL_GL_BindTexture(self.raw, &texw, &texh) != 0 { fail!(~"could not bind texture"); }
             let rv = f(texw as float, texh as float);
             ll::SDL_GL_UnbindTexture(self.raw);
