@@ -611,10 +611,35 @@ impl Texture {
     externfn!(fn SDL_LockTexture(texture: *SDL_Texture, rect: *SDL_Rect, pixels: **c_void, pitch: *c_int) -> c_int)
     externfn!(fn SDL_UnlockTexture(texture: *SDL_Texture))*/
 
-/*
-    externfn!(fn SDL_GL_BindTexture(texture: *SDL_Texture, texw: *c_float, texh: *c_float) -> c_int)
-    externfn!(fn SDL_GL_UnbindTexture(texture: *SDL_Texture) -> c_int)
-*/
+    pub fn gl_bind_texture(&self) -> Result<(float, float), ~str> {
+        let texw: c_float = 0;
+        let texh: c_float = 0;
+
+        let result = unsafe {
+            ll::SDL_GL_BindTexture(self.raw, &texw, &texh) == 0
+        };
+
+        if result {
+            Ok(texw as float, texh as float)
+        } else {
+            Err(~"Operation not supported")
+        }
+    }
+
+    pub fn gl_unbind_texture(&self) -> bool {
+        unsafe { ll::SDL_GL_UnbindTexture(self.raw) = 0 }
+    }
+
+    pub fn gl_with_bind<R>(&self, f: &fn(tex_w: float, tex_h: float) -> R) -> R {
+        unsafe {
+            let texw: c_float = 0;
+            let texh: c_float = 0;
+            if ll::SDL_GL_BindTexture(self.raw, &texw, &texh) != 0 { fail!(~"could not bind texture"); }
+            let rv = f(texw as float, texh as float);
+            ll::SDL_GL_UnbindTexture(self.raw);
+            rv
+        }
+    }
 }
 
 
