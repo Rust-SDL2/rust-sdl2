@@ -3,7 +3,7 @@ use surface;
 use pixels;
 use get_error;
 use std::ptr;
-use std::libc::{c_int, uint32_t, c_float};
+use std::libc::{c_int, uint32_t, c_float, c_double};
 use std::str;
 use std::cast;
 use rect::Point;
@@ -160,6 +160,13 @@ pub enum BlendMode {
     BlendBlend = ll::SDL_BLENDMODE_BLEND as int,
     BlendAdd = ll::SDL_BLENDMODE_ADD as int,
     BlendMod = ll::SDL_BLENDMODE_MOD as int
+}
+
+#[deriving(Eq)]
+pub enum RendererFlip {
+    FlipNone = ll::SDL_FLIP_NONE as int,
+    FlipHorizontal = ll::SDL_FLIP_HORIZONTAL as int,
+    FlipVertical = ll::SDL_FLIP_VERTICAL as int,
 }
 
 impl RendererInfo {
@@ -411,7 +418,7 @@ impl Renderer {
         unsafe { ll::SDL_RenderDrawPoint(self.raw, point.x, point.y) == 0 }
     }
 
-    pub fn draw_points(&self, points: ~[Point]) -> bool {
+    pub fn draw_points(&self, points: &[Point]) -> bool {
         unsafe {
             ll::SDL_RenderDrawPoints(self.raw, cast::transmute(vec::raw::to_ptr(points)), points.len() as c_int) == 0
         }
@@ -421,14 +428,75 @@ impl Renderer {
         unsafe { ll::SDL_RenderDrawLine(self.raw, start.x, start.y, end.x, end.y) == 0 }
     }
 
+    pub fn draw_lines(&self, points: &[Point]) -> bool {
+        unsafe {
+            ll::SDL_RenderDrawLines(self.raw, cast::transmute(vec::raw::to_ptr(points)), points.len() as c_int) == 0
+        }
+    }
+
+    pub fn draw_rect(&self, rect: &Rect) -> bool {
+        unsafe { ll::SDL_RenderDrawRect(self.raw, rect) == 0 }
+    }
+
+    pub fn draw_rects(&self, rects: &[Rect]) -> bool {
+        unsafe {
+            ll::SDL_RenderDrawRects(self.raw, cast::transmute(vec::raw::to_ptr(rects)), rects.len() as c_int) == 0
+        }
+    }
+
+    pub fn fill_rect(&self, rect: &Rect) -> bool {
+        unsafe { ll::SDL_RenderFillRect(self.raw, rect) == 0 }
+    }
+
+    pub fn fill_rects(&self, rects: &[Rect]) -> bool {
+        unsafe {
+            ll::SDL_RenderFillRects(self.raw, cast::transmute(vec::raw::to_ptr(rects)), rects.len() as c_int) == 0
+        }
+    }
+
+    pub fn copy(&self, texture: &Texture, src: Option<&Rect>, dst: Option<&Rect>) -> bool {
+        unsafe {
+            ll::SDL_RenderCopy(
+                self.raw,
+                texture.raw,
+                match src {
+                    Some(ref rect) => cast::transmute(rect),
+                    None => ptr::null() 
+                },
+                match dst {
+                    Some(ref rect) => cast::transmute(rect),
+                    None => ptr::null() 
+                }
+            ) == 0
+        }
+    }
+
+    //TODO: Check whether RendererFlip is supposed to be combinable
+    pub fn copy_ex(&self, texture: &Texture, src: Option<&Rect>, dst: Option<&Rect>, angle: f64, center: Option<Point>, flip: RendererFlip) -> bool {
+        unsafe {
+            ll::SDL_RenderCopyEx(
+                self.raw,
+                texture.raw,
+                match src {
+                    Some(ref rect) => cast::transmute(rect),
+                    None => ptr::null() 
+                },
+                match dst {
+                    Some(ref rect) => cast::transmute(rect),
+                    None => ptr::null() 
+                },
+                angle as c_double,
+                match center {
+                    Some(ref point) => cast::transmute(&point),
+                    None => ptr::null() 
+                },
+                cast::transmute(flip)
+            ) == 0
+        }
+    }
+
+    //TODO: Figure out how big the Pixels array is supposed to be
     /*
-    externfn!(fn SDL_RenderDrawLines(renderer: *SDL_Renderer, Points: *SDL_Point, count: c_int) -> c_int)
-    externfn!(fn SDL_RenderDrawRect(renderer: *SDL_Renderer, rect: *SDL_Rect) -> c_int)
-    externfn!(fn SDL_RenderDrawRects(renderer: *SDL_Renderer, rects: *SDL_Rect, count: c_int) -> c_int)
-    externfn!(fn SDL_RenderFillRect(renderer: *SDL_Renderer, rect: *SDL_Rect) -> c_int)
-    externfn!(fn SDL_RenderFillRects(renderer: *SDL_Renderer, rects: *SDL_Rect, count: c_int) -> c_int)
-    externfn!(fn SDL_RenderCopy(renderer: *SDL_Renderer, texture: *SDL_Texture, srcrect: *SDL_Rect, dstrect: *SDL_Rect) -> c_int)
-    externfn!(fn SDL_RenderCopyEx(renderer: *SDL_Renderer, texture: *SDL_Texture, srcrect: *SDL_Rect, dstrect: *SDL_Rect, angle: c_double, center: *SDL_Point, flip: SDL_RendererFlip) -> c_int)
     externfn!(fn SDL_RenderReadPixels(renderer: *SDL_Renderer, rect: *SDL_Rect, format: uint32_t, pixels: *c_void, pitch: c_int) -> c_int)
     */
 }
