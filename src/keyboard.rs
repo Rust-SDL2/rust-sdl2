@@ -1,3 +1,13 @@
+use std::hashmap::HashMap;
+use std::num::IntConvertible;
+use std::ptr;
+use std::str;
+use std::vec;
+
+use keycode::KeyCode;
+use rect::Rect;
+use scancode::ScanCode;
+use video::Window;
 
 pub mod ll {
     use std::libc::{c_int, c_schar, c_uint, int32_t, uint8_t, uint16_t,
@@ -73,4 +83,109 @@ pub fn wrap_mod_state(bitflags: ll::SDL_Keymod) -> ~[Mod] {
         if bitflags & (flag as ll::SDL_Keymod) != 0 { Some(flag) }
         else { None }
     }.collect()
+}
+
+pub fn get_keyboard_focus() -> Option<~Window> {
+    let raw = unsafe { ll::SDL_GetKeyboardFocus() };
+    if raw == ptr::null() {
+        None
+    } else {
+        Some(~Window{ raw: raw, owned: false })
+    }
+}
+
+pub fn get_keyboard_state() -> ~HashMap<ScanCode, bool> {
+    let mut state: ~HashMap<ScanCode, bool> = ~HashMap::new();
+    let count = 0;
+
+    let raw = unsafe { vec::raw::from_buf_raw(ll::SDL_GetKeyboardState(&count),
+                                              count as uint) };
+
+    let mut current = 0;
+    while current < raw.len() {
+        state.insert(IntConvertible::from_int(current as int),
+                     raw[current] == 1);
+        current += 1;
+    }
+
+    return state;
+}
+
+pub fn get_mod_state() -> ~[Mod] {
+    unsafe { wrap_mod_state(ll::SDL_GetModState()) }
+}
+
+pub fn set_mod_state(flags: &[Mod]) {
+    let mut state = 0;
+    for flag in flags.iter() {
+        state |= *flag as ll::SDL_Keymod;
+    }
+
+    unsafe { ll::SDL_SetModState(state); }
+}
+
+pub fn get_key_from_scancode(scancode: ScanCode) -> KeyCode {
+    unsafe {
+        IntConvertible::from_int(ll::SDL_GetKeyFromScancode(scancode.code()
+                                                            as u32) as int)
+    }
+}
+
+pub fn get_scancode_from_key(key: KeyCode) -> ScanCode {
+    unsafe {
+        IntConvertible::from_int(ll::SDL_GetScancodeFromKey(key.code())
+                                 as int)
+    }
+}
+
+pub fn get_scancode_name(scancode: ScanCode) -> ~str {
+    unsafe {
+        str::raw::from_c_str(ll::SDL_GetScancodeName(scancode.code() as u32))
+    }
+}
+
+pub fn get_scancode_from_name(name: &str) -> ScanCode {
+    unsafe {
+        do name.with_c_str |name| {
+            IntConvertible::from_int(ll::SDL_GetScancodeFromName(name) as int)
+        }
+    }
+}
+
+pub fn get_key_name(key: KeyCode) -> ~str {
+    unsafe {
+        str::raw::from_c_str(ll::SDL_GetKeyName(key.code()))
+    }
+}
+
+pub fn get_key_from_name(name: &str) -> KeyCode {
+    unsafe {
+        do name.with_c_str |name| {
+            IntConvertible::from_int(ll::SDL_GetKeyFromName(name) as int)
+        }
+    }
+}
+
+pub fn start_text_input() {
+    unsafe { ll::SDL_StartTextInput(); }
+}
+
+pub fn is_text_input_active() -> bool {
+    unsafe { ll::SDL_IsTextInputActive() == 1 }
+}
+
+pub fn stop_text_input() {
+    unsafe { ll::SDL_StopTextInput(); }
+}
+
+pub fn set_text_input_rect(rect: &Rect) {
+    unsafe { ll::SDL_SetTextInputRect(rect); }
+}
+
+pub fn has_screen_keyboard_support() -> bool {
+    unsafe { ll::SDL_HasScreenKeyboardSupport() == 1 }
+}
+
+pub fn is_screen_keyboard_shown(window: &Window) -> bool {
+    unsafe { ll::SDL_IsScreenKeyboardShown(window.raw) == 1 }
 }
