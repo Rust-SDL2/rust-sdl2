@@ -161,7 +161,7 @@ pub mod ll {
     externfn!(fn SDL_EnableScreenSaver())
     externfn!(fn SDL_DisableScreenSaver())
     externfn!(fn SDL_GL_LoadLibrary(path: *c_char) -> c_int)
-    externfn!(fn SDL_GL_GetProcAddress(proc: *c_char))
+    externfn!(fn SDL_GL_GetProcAddress(proc: *c_char) -> Option<extern "C" fn()>)
     externfn!(fn SDL_GL_UnloadLibrary())
     externfn!(fn SDL_GL_ExtensionSupported(extension: *c_char) -> SDL_bool)
     externfn!(fn SDL_GL_SetAttribute(attr: SDL_GLattr, value: c_int) -> c_int)
@@ -322,7 +322,7 @@ pub struct GLContext {
 }
 
 impl Drop for GLContext {
-    fn drop(&self) {
+    fn drop(&mut self) {
         if self.owned {
             unsafe {
                 ll::SDL_GL_DeleteContext(self.raw)
@@ -339,7 +339,7 @@ pub struct Window {
 }
 
 impl Drop for Window {
-    fn drop(&self) {
+    fn drop(&mut self) {
         if self.owned {
             unsafe {
                 ll::SDL_DestroyWindow(self.raw);
@@ -739,16 +739,33 @@ pub fn disable_screen_saver() {
     unsafe { ll::SDL_DisableScreenSaver() }
 }
 
-//Not entirely sure how the following are suppost to act
-/*
-    externfn!(fn SDL_GL_LoadLibrary(path: *c_char) -> c_int)
-    externfn!(fn SDL_GL_GetProcAddress(proc: *c_char))
-    externfn!(fn SDL_GL_UnloadLibrary())
-*/
+pub fn gl_load_library(path: &str) -> Result<(), ~str> {
+    unsafe {
+        do path.with_c_str |path| {
+            if ll::SDL_GL_LoadLibrary(path) == 0 {
+                Ok(())
+            } else {
+                Err(get_error())
+            }
+        }
+    }
+}
+
+pub fn gl_unload_library() {
+    unsafe { ll::SDL_GL_UnloadLibrary(); }
+}
+
+pub fn gl_get_proc_address(procname: &str) -> Option<extern "C" fn()> {
+    unsafe {
+        do procname.with_c_str |procname| {
+            ll::SDL_GL_GetProcAddress(procname)
+        }
+    }
+}
 
 pub fn gl_extension_supported(extension: &str) -> bool {
     do extension.with_c_str |buff| {
-        unsafe {ll::SDL_GL_ExtensionSupported(buff) == 1 }
+        unsafe { ll::SDL_GL_ExtensionSupported(buff) == 1 }
     }
 }
 
