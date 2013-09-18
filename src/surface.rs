@@ -87,7 +87,7 @@ pub struct Surface {
 }
 
 impl Drop for Surface {
-    fn drop(&self) {
+    fn drop(&mut self) {
         if self.owned {
             unsafe {
                 ll::SDL_FreeSurface(self.raw);
