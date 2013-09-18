@@ -208,7 +208,7 @@ pub struct Renderer {
 }
 
 impl Drop for Renderer {
-    fn drop(&self) {
+    fn drop(&mut self) {
         if self.owned {
             unsafe {
                 ll::SDL_DestroyRenderer(self.raw);
@@ -515,7 +515,7 @@ pub struct Texture {
 }
 
 impl Drop for Texture {
-    fn drop(&self) {
+    fn drop(&mut self) {
         if self.owned {
             unsafe {
                 ll::SDL_DestroyTexture(self.raw);

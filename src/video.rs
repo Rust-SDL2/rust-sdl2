@@ -322,7 +322,7 @@ pub struct GLContext {
 }
 
 impl Drop for GLContext {
-    fn drop(&self) {
+    fn drop(&mut self) {
         if self.owned {
             unsafe {
                 ll::SDL_GL_DeleteContext(self.raw)
@@ -339,7 +339,7 @@ pub struct Window {
 }
 
 impl Drop for Window {
-    fn drop(&self) {
+    fn drop(&mut self) {
         if self.owned {
             unsafe {
                 ll::SDL_DestroyWindow(self.raw);

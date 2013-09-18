@@ -75,7 +75,7 @@ pub struct Cursor {
 }
 
 impl Drop for Cursor {
-    fn drop(&self) {
+    fn drop(&mut self) {
         if self.owned {
             unsafe {
                 ll::SDL_FreeCursor(self.raw);
