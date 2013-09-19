@@ -454,17 +454,17 @@ impl Renderer {
         }
     }
 
-    pub fn copy(&self, texture: &Texture, src: Option<&Rect>, dst: Option<&Rect>) -> bool {
+    pub fn copy(&self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>) -> bool {
         unsafe {
             ll::SDL_RenderCopy(
                 self.raw,
                 texture.raw,
                 match src {
-                    Some(ref rect) => cast::transmute(rect),
+                    Some(rect) => cast::transmute(&rect),
                     None => ptr::null() 
                 },
                 match dst {
-                    Some(ref rect) => cast::transmute(rect),
+                    Some(rect) => cast::transmute(&rect),
                     None => ptr::null() 
                 }
             ) == 0
@@ -472,22 +472,22 @@ impl Renderer {
     }
 
     //TODO: Check whether RendererFlip is supposed to be combinable
-    pub fn copy_ex(&self, texture: &Texture, src: Option<&Rect>, dst: Option<&Rect>, angle: f64, center: Option<Point>, flip: RendererFlip) -> bool {
+    pub fn copy_ex(&self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>, angle: f64, center: Option<Point>, flip: RendererFlip) -> bool {
         unsafe {
             ll::SDL_RenderCopyEx(
                 self.raw,
                 texture.raw,
                 match src {
-                    Some(ref rect) => cast::transmute(rect),
+                    Some(rect) => cast::transmute(&rect),
                     None => ptr::null() 
                 },
                 match dst {
-                    Some(ref rect) => cast::transmute(rect),
+                    Some(rect) => cast::transmute(&rect),
                     None => ptr::null() 
                 },
                 angle as c_double,
                 match center {
-                    Some(ref point) => cast::transmute(&point),
+                    Some(point) => cast::transmute(&point),
                     None => ptr::null() 
                 },
                 cast::transmute(flip)
