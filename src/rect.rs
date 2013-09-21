@@ -4,12 +4,14 @@ use std::ptr;
 use std::vec;
 
 #[deriving(Eq)]
+#[deriving(Clone)]
 pub struct Point{
     x: i32,
     y: i32
 }
 
 #[deriving(Eq)]
+#[deriving(Clone)]
 pub struct Rect {
     x: i32,
     y: i32,
@@ -115,8 +117,8 @@ impl Rect {
     }
 
     pub fn intersect_line(&self, start: &Point, end: &Point) -> Option<(Point, Point)> {
-        let out_start: Point = *start.clone();
-        let out_end: Point = *end.clone();
+        let out_start: Point = start.clone();
+        let out_end: Point = end.clone();
 
         let result = unsafe {
             ll::SDL_IntersectRectAndLine(self, &out_start.x, &out_start.y, &out_end.x, &out_end.y) == 0
