@@ -16,7 +16,7 @@ If you want a library compatible with earlier versions of SDL, please see https:
 * *SDL2.0  development libraries* - install through your favourite package management tool, or via http://www.libsdl.org/
 
 # Installation
-Clone this repo, run `./configure`, and then `make`. To see an example of the code in use, *make demos*.
+Clone this repo run `make`. To see an example of the code in use, *make demos*.
 
 # Demo
 
@@ -34,4 +34,4 @@ Or you could instead just use
 > make demo
 
 # When things go wrong
-Rust, and Rust-SDL2, are both still heavily in development, and you may run into teething issues when using this. Before panicking, check that you're using the latest Master branch of Rust, check that you've updated Rust-SDL2 to the latest version, and run `make clean` and `./configure`. If that fails, please let us know on the issue tracker.
+Rust, and Rust-SDL2, are both still heavily in development, and you may run into teething issues when using this. Before panicking, check that you're using the latest Master branch of Rust, check that you've updated Rust-SDL2 to the latest version, and run `make clean`. If that fails, please let us know on the issue tracker.
