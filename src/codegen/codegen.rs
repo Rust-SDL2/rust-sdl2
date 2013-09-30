@@ -21,13 +21,13 @@ fn main() {
                 ~"keycode.rs" => keycode::generate(&output_dir),
                 ~"scancode.rs" => scancode::generate(&output_dir),
                 s => {
-                    printfln!("unknown thing-to-generate '%s'", s);
+                    println!("unknown thing-to-generate '{}'", s);
                     os::set_exit_status(1);
                 }
             }
         },
         _ => {
-            printfln!("usage: %s [keycode|scancode].rs destdir", args[0]);
+            println!("usage: {} [keycode|scancode].rs destdir", args[0]);
             os::set_exit_status(1);
         }
     }

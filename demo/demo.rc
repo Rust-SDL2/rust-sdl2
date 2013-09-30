@@ -1,12 +1,10 @@
 extern mod sdl2;
 
-use std::libc;
-
 mod video;
 
-#[no_mangle]
-pub extern fn SDL_main(_argc: u32, _argv: **libc::c_char) {
-    main();
+#[start]
+fn start(argc: int, argv: **u8) -> int {
+    std::rt::start_on_main_thread(argc, argv, main)
 }
 
 #[main]
