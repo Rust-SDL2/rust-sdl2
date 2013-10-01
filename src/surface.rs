@@ -189,11 +189,38 @@ impl Surface {
         }
     }
 
-    /*
+    /* //TODO: Figure out how to safely turn Color(RGB) into the pixel using the right format
     externfn!(fn SDL_SetColorKey(surface: *SDL_Surface, flag: c_int, key: uint32_t) -> c_int)
     externfn!(fn SDL_GetColorKey(surface: *SDL_Surface, key: *uint32_t) -> c_int)
-    externfn!(fn SDL_SetSurfaceColorMod(surface: *SDL_Surface, r: uint8_t, g: uint8_t, b: uint8_t) -> c_int)
-    externfn!(fn SDL_GetSurfaceColorMod(surface: *SDL_Surface, r: *uint8_t, g: *uint8_t, b: *uint8_t ) -> c_int)
+    */
+    
+    pub fn set_color_mod(&self, color: pixels::Color) -> bool {
+        let (r, g, b) = match color {
+            pixels::RGB(r, g, b) => (r, g, b),
+            pixels::RGBA(r, g, b, _) => (r, g, b)
+        };
+
+        unsafe {
+            ll::SDL_SetSurfaceColorMod(self.raw, r, g, b) == 0
+        }
+    }
+
+    pub fn get_color_mod(&self) -> Result<pixels::Color, ~str> {
+        let r: u8 = 0;
+        let g: u8 = 0;
+        let b: u8 = 0;
+
+        let result = unsafe {
+            ll::SDL_GetSurfaceColorMod(self.raw, &r, &g, &b) == 0
+        };
+
+        if result {
+            Ok(pixels::RGB(r,g,b))
+        } else {
+            Err(get_error())
+        }
+    }
+    /*
     externfn!(fn SDL_SetSurfaceAlphaMod(surface: *SDL_Surface, alpha: uint8_t) -> c_int)
     externfn!(fn SDL_GetSurfaceAlphaMod(surface: *SDL_Surface, alpha: *uint8_t ) -> c_int)
     externfn!(fn SDL_SetSurfaceBlendMode(surface: *SDL_Surface, blendMode: SDL_BlendMode) -> c_int)

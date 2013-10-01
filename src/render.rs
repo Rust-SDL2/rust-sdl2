@@ -670,5 +670,6 @@ pub fn get_render_driver_info(index: int) -> Result<~RendererInfo, ~str> {
 }
 
 /*
+    //TODO: Figure out how to support this with our current struct format
     externfn!(fn SDL_GetRenderer(window: *SDL_Window) -> *SDL_Renderer)
 */
