@@ -10,6 +10,10 @@ Rust-SDL2 uses the MIT license.
 
 If you want a library compatible with earlier versions of SDL, please see https://github.com/brson/rust-sdl
 
+## Where are SDL_image, SDL_mixer, and SDL_ttf?
+
+I plan for these to live outside of this repo. So far, they haven't been written - so feel free to take command and have a go at writing bindings for them!
+
 # Requirements
 
 * *Rust* - we currently compile against the *Master* branch. The releases on http://www.rust-lang.org tend to not work.
