@@ -556,12 +556,12 @@ impl Window {
         unsafe { ll::SDL_GetWindowGrab(self.raw) == 1 }
     }
 
-    pub fn set_brightness(&self, brightness: float) -> bool {
+    pub fn set_brightness(&self, brightness: f64) -> bool {
         unsafe { ll::SDL_SetWindowBrightness(self.raw, brightness as c_float) == 0 }
     }
 
-    pub fn get_brightness(&self) -> float {
-        unsafe { ll::SDL_GetWindowBrightness(self.raw) as float }
+    pub fn get_brightness(&self) -> f64 {
+        unsafe { ll::SDL_GetWindowBrightness(self.raw) as f64 }
     }
 
     pub fn set_gamma_ramp(&self, red: Option<&[u16, ..256]>, green: Option<&[u16, ..256]>, blue: Option<&[u16, ..256]>) -> bool {

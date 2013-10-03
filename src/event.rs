@@ -548,12 +548,12 @@ pub enum Event {
     ControllerDeviceRemovedEvent(uint, int),
     ControllerDeviceRemappedEvent(uint, int),
 
-    FingerDownEvent(uint, i64, i64, float, float, float, float, float),
-    FingerUpEvent(uint, i64, i64, float, float, float, float, float),
-    FingerMotionEvent(uint, i64, i64, float, float, float, float, float),
-    DollarGestureEvent(uint, i64, i64, uint, float, float, float),
-    DollarRecordEvent(uint, i64, i64, uint, float, float, float),
-    MultiGestureEvent(uint, i64, float, float, float, float, uint),
+    FingerDownEvent(uint, i64, i64, f64, f64, f64, f64, f64),
+    FingerUpEvent(uint, i64, i64, f64, f64, f64, f64, f64),
+    FingerMotionEvent(uint, i64, i64, f64, f64, f64, f64, f64),
+    DollarGestureEvent(uint, i64, i64, uint, f64, f64, f64),
+    DollarRecordEvent(uint, i64, i64, uint, f64, f64, f64),
+    MultiGestureEvent(uint, i64, f64, f64, f64, f64, uint),
 
     ClipboardUpdateEvent(uint),
     DropFileEvent(uint, ~str),
@@ -886,9 +886,9 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
                             else { *event };
 
                 FingerDownEvent(event.timestamp as uint, event.touchId as i64,
-                                event.fingerId as i64, event.x as float,
-                                event.y as float, event.dx as float,
-                                event.dy as float, event.pressure as float)
+                                event.fingerId as i64, event.x as f64,
+                                event.y as f64, event.dx as f64,
+                                event.dy as f64, event.pressure as f64)
             }
             FingerUpEventType => {
                 let event = raw.tfinger();
@@ -896,9 +896,9 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
                             else { *event };
 
                 FingerUpEvent(event.timestamp as uint, event.touchId as i64,
-                              event.fingerId as i64, event.x as float,
-                              event.y as float, event.dx as float,
-                              event.dy as float, event.pressure as float)
+                              event.fingerId as i64, event.x as f64,
+                              event.y as f64, event.dx as f64,
+                              event.dy as f64, event.pressure as f64)
             }
             FingerMotionEventType => {
                 let event = raw.tfinger();
@@ -907,9 +907,9 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
 
                 FingerMotionEvent(event.timestamp as uint,
                                   event.touchId as i64, event.fingerId as i64,
-                                  event.x as float, event.y as float,
-                                  event.dx as float, event.dy as float,
-                                  event.pressure as float)
+                                  event.x as f64, event.y as f64,
+                                  event.dx as f64, event.dy as f64,
+                                  event.pressure as f64)
             }
             DollarGestureEventType => {
                 let event = raw.dgesture();
@@ -920,8 +920,8 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
                                    event.touchId as i64,
                                    event.gestureId as i64,
                                    event.numFingers as uint,
-                                   event.error as float, event.x as float,
-                                   event.y as float)
+                                   event.error as f64, event.x as f64,
+                                   event.y as f64)
             }
             DollarRecordEventType => {
                 let event = raw.dgesture();
@@ -931,8 +931,8 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
                 DollarRecordEvent(event.timestamp as uint,
                                   event.touchId as i64, event.gestureId as i64,
                                   event.numFingers as uint,
-                                  event.error as float, event.x as float,
-                                  event.y as float)
+                                  event.error as f64, event.x as f64,
+                                  event.y as f64)
             }
             MultiGestureEventType => {
                 let event = raw.mgesture();
@@ -940,9 +940,9 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
                             else { *event };
 
                 MultiGestureEvent(event.timestamp as uint,
-                                  event.touchId as i64, event.dTheta as float,
-                                  event.dDist as float, event.x as float,
-                                  event.y as float, event.numFingers as uint)
+                                  event.touchId as i64, event.dTheta as f64,
+                                  event.dDist as f64, event.x as f64,
+                                  event.y as f64, event.numFingers as uint)
             }
 
             ClipboardUpdateEventType => {

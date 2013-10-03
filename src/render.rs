@@ -403,15 +403,15 @@ impl Renderer {
         rect
     }
 
-    pub fn set_scale(&self, scale_x: float, scale_y: float) -> bool {
+    pub fn set_scale(&self, scale_x: f64, scale_y: f64) -> bool {
         unsafe { ll::SDL_RenderSetScale(self.raw, scale_x as c_float, scale_y as c_float) == 0 }
     }
 
-    pub fn get_scale(&self) -> (float, float) {
+    pub fn get_scale(&self) -> (f64, f64) {
         let scale_x: c_float = 0.0;
         let scale_y: c_float = 0.0;
         unsafe { ll::SDL_RenderGetScale(self.raw, &scale_x, &scale_y) };
-        (scale_x as float, scale_y as float)
+        (scale_x as f64, scale_y as f64)
     }
 
     pub fn draw_point(&self, point: Point) -> bool {
@@ -611,7 +611,7 @@ impl Texture {
     externfn!(fn SDL_LockTexture(texture: *SDL_Texture, rect: *SDL_Rect, pixels: **c_void, pitch: *c_int) -> c_int)
     externfn!(fn SDL_UnlockTexture(texture: *SDL_Texture))*/
 
-    pub fn gl_bind_texture(&self) -> Result<(float, float), ~str> {
+    pub fn gl_bind_texture(&self) -> Result<(f64, f64), ~str> {
         let texw: c_float = 0.0;
         let texh: c_float = 0.0;
 
@@ -620,7 +620,7 @@ impl Texture {
         };
 
         if result {
-            Ok((texw as float, texh as float))
+            Ok((texw as f64, texh as f64))
         } else {
             Err(~"Operation not supported")
         }
@@ -630,12 +630,12 @@ impl Texture {
         unsafe { ll::SDL_GL_UnbindTexture(self.raw) == 0 }
     }
 
-    pub fn gl_with_bind<R>(&self, f: &fn(tex_w: float, tex_h: float) -> R) -> R {
+    pub fn gl_with_bind<R>(&self, f: &fn(tex_w: f64, tex_h: f64) -> R) -> R {
         unsafe {
             let texw: c_float = 0.0;
             let texh: c_float = 0.0;
             if ll::SDL_GL_BindTexture(self.raw, &texw, &texh) != 0 { fail!(~"could not bind texture"); }
-            let rv = f(texw as float, texh as float);
+            let rv = f(texw as f64, texh as f64);
             ll::SDL_GL_UnbindTexture(self.raw);
             rv
         }
