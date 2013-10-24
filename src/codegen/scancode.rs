@@ -285,7 +285,7 @@ use std::to_bytes::IterBytes;
 pub enum ScanCode {
 ");
     for &entry in entries.iter() {
-        out.write_str(fmt!("    %s = %u_u,\n", entry.padded_ident(), entry.code));
+        out.write_str(format!("    {} = {},\n", entry.padded_ident(), entry.code));
     }
 
     out.write_str("
@@ -297,7 +297,7 @@ impl ScanCode {
         match *self {
 ");
     for &entry in entries.iter() {
-        out.write_str(fmt!("            %s => %u,\n", entry.padded_ident(), entry.code));
+        out.write_str(format!("            {} => {},\n", entry.padded_ident(), entry.code));
     }
     out.write_str("
         }
@@ -319,7 +319,7 @@ impl IntConvertible for ScanCode {
         match n {
 ");
     for &entry in entries.iter() {
-        out.write_str(fmt!("            %u => %s,\n", entry.code, entry.ident()));
+        out.write_str(format!("            {} => {},\n", entry.code, entry.ident()));
     }
     out.write_str("
             _   => { UnknownScanCode }

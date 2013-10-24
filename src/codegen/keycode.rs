@@ -278,7 +278,7 @@ use std::to_bytes::IterBytes;
 pub enum KeyCode {
 ");
     for &entry in entries.iter() {
-        out.write_str(fmt!("    %s = %u_i,\n", entry.padded_ident(), entry.code));
+        out.write_str(format!("    {} = {},\n", entry.padded_ident(), entry.code));
     }
 
     out.write_str("
@@ -290,7 +290,7 @@ impl KeyCode {
         match *self {
 ");
     for &entry in entries.iter() {
-        out.write_str(fmt!("            %s => %u,\n", entry.padded_ident(), entry.code));
+        out.write_str(format!("            {} => {},\n", entry.padded_ident(), entry.code));
     }
     out.write_str("
         }
@@ -312,7 +312,7 @@ impl IntConvertible for KeyCode {
         match n {
 ");
     for &entry in entries.iter() {
-        out.write_str(fmt!("            %u => %s,\n", entry.code, entry.ident()));
+        out.write_str(format!("            {} => {},\n", entry.code, entry.ident()));
     }
     out.write_str("
             _   => { UnknownKey }

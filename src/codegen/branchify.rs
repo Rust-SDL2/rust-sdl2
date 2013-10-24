@@ -73,9 +73,9 @@ macro_rules! branchify(
 /// :param end: the byte which marks the end of the sequence
 /// :param max_len: the maximum length a value may be before giving up and returning ``None``
 /// :param valid: the function call to if a byte ``b`` is valid
-/// :param unknown: the expression to call for an unknown value; in this string, ``%s`` will be
+/// :param unknown: the expression to call for an unknown value; in this string, ``{}`` will be
 ///         replaced with an expression (literal or non-literal) evaluating to a ``~str`` (it is
-///         ``%s`` only, not arbitrary format strings)
+///         ``{}`` only, not arbitrary format strings)
 pub fn generate_branchified_method(
         writer: @Writer,
         branches: &[ParseBranch],
@@ -89,7 +89,7 @@ pub fn generate_branchified_method(
     // Write Formatted
     macro_rules! wf(($($x:tt)*) => ({
         let indentstr = " ".repeat(indent * 4);
-        let s = fmt!($($x)*);
+        let s = format!($($x)*);
         writer.write(indentstr.as_bytes());
         writer.write(s.as_bytes());
         writer.write(bytes!("\n"));
@@ -98,42 +98,42 @@ pub fn generate_branchified_method(
     fn r(writer: @Writer, branch: &ParseBranch, prefix: &str, indent: uint, read_call: &str,
             end: &str, max_len: &str, valid: &str, unknown: &str) {
         for &c in branch.matches.iter() {
-            let next_prefix = fmt!("%s%c", prefix, c as char);
-            wf!("Some(b) if b == '%c' as u8 => match %s {", c as char, read_call);
+            let next_prefix = format!("{}{}", prefix, c as char);
+            wf!("Some(b) if b == '{}' as u8 => match {} \\{", c as char, read_call);
             for b in branch.children.iter() {
                 r(writer, b, next_prefix, indent + 1, read_call, end, max_len, valid, unknown);
             }
             match branch.result {
-                Some(ref result) => wf!("    Some(b) if b == SP => return Some(%s),", *result),
-                None => wf!("    Some(b) if b == SP => return Some(%s),",
-                                unknown.replace("%s", fmt!("~\"%s\"", next_prefix))),
+                Some(ref result) => wf!("    Some(b) if b == SP => return Some({}),", *result),
+                None => wf!("    Some(b) if b == SP => return Some({}),",
+                                unknown.replace("{}", format!("~\"{}\"", next_prefix))),
             }
-            wf!("    Some(b) if %s => (\"%s\", b),", valid, next_prefix);
+            wf!("    Some(b) if {} => (\"{}\", b),", valid, next_prefix);
             wf!("    _ => return None,");
-            wf!("},");
+            wf!("\\},");
         }
     }
-    wf!("let (s, next_byte) = match %s {", read_call);
+    wf!("let (s, next_byte) = match {} \\{", read_call);
     for b in branches.iter() {
         r(writer, b, "", indent + 1, read_call, end, max_len, valid, unknown);
     }
-    wf!("    Some(b) if %s => (\"\", b),", valid);
+    wf!("    Some(b) if {} => (\"\", b),", valid);
     wf!("    _ => return None,");
-    wf!("};");
+    wf!("\\};");
     wf!("// OK, that didn't pan out. Let's read the rest and see what we get.");
     wf!("let mut s = s.to_owned();");
     wf!("s.push_char(next_byte as char);");
-    wf!("loop {");
-    wf!("    match %s {", read_call);
-    wf!("        Some(b) if b == %s => return Some(%s),", end, unknown.replace("%s", "s"));
-    wf!("        Some(b) if %s => {", valid);
-    wf!("            if s.len() == %s {", max_len);
+    wf!("loop \\{");
+    wf!("    match {} \\{", read_call);
+    wf!("        Some(b) if b == {} => return Some({}),", end, unknown.replace("{}", "s"));
+    wf!("        Some(b) if {} => \\{", valid);
+    wf!("            if s.len() == {} \\{", max_len);
     wf!("                // Too long; bad request");
     wf!("                return None;");
-    wf!("            }");
+    wf!("            \\}");
     wf!("            s.push_char(b as char);");
-    wf!("        },");
+    wf!("        \\},");
     wf!("        _ => return None,");
-    wf!("    }");
-    wf!("}");
+    wf!("    \\}");
+    wf!("\\}");
 }
