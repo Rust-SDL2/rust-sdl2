@@ -270,10 +270,9 @@ pub fn generate(output_dir: &Path) {
     }
     out.write_str("// This automatically generated file is used as sdl2::keycode.
 
-use std::num::IntConvertible;
-use std::to_bytes::IterBytes;
+use std::num::FromPrimitive;
+use std::num::ToPrimitive;
 
-#[deriving(IterBytes)]
 #[deriving(Eq)]
 pub enum KeyCode {
 ");
@@ -297,26 +296,41 @@ impl KeyCode {
     }
 }
 
-impl IntConvertible for KeyCode {
+impl ToPrimitive for KeyCode {
     /// Equivalent to `self.code()`
-    fn to_int(&self) -> int {
-        self.code() as int
+");
+    let types = ~["i64", "u64", "int"];
+    for primitive_type in types.iter() {
+        out.write_str(format!("fn to_{}(&self) -> Option<{}> \\{
+            Some(self.code() as {})
+        \\}\n", *primitive_type, *primitive_type, *primitive_type))
     }
+
+out.write_str("
+}
+
+impl FromPrimitive for KeyCode {
 
     /// Get a *registered* key code.
     ///
     /// This will return UnknownKey if an unknown code is passed.
     ///
     /// For example, `from_int(13)` will return `ReturnKey`.
-    fn from_int(n: int) -> KeyCode {
-        match n {
 ");
-    for &entry in entries.iter() {
-        out.write_str(format!("            {} => {},\n", entry.code, entry.ident()));
-    }
-    out.write_str("
-            _   => { UnknownKey }
+    for primitive_type in types.iter() {
+        out.write_str(format!("
+    fn from_{}(n: {}) -> Option<KeyCode> \\{
+        match n \\{
+", *primitive_type, *primitive_type));
+        for &entry in entries.iter() {
+            out.write_str(format!("            {} => Some({}),\n", entry.code, entry.ident()));
         }
+        out.write_str("
+                _   => { Some(UnknownKey) }
+            }
+        }\n");
     }
+
+out.write_str("
 }");
 }

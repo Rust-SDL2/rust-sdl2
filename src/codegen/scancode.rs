@@ -277,10 +277,9 @@ pub fn generate(output_dir: &Path) {
     }
     out.write_str("// This automatically generated file is used as sdl2::scancode.
 
-use std::num::IntConvertible;
-use std::to_bytes::IterBytes;
+use std::num::FromPrimitive;
+use std::num::ToPrimitive;
 
-#[deriving(IterBytes)]
 #[deriving(Eq)]
 pub enum ScanCode {
 ");
@@ -304,26 +303,42 @@ impl ScanCode {
     }
 }
 
-impl IntConvertible for ScanCode {
+impl ToPrimitive for ScanCode {
+
     /// Equivalent to `self.code()`
-    fn to_int(&self) -> int {
-        self.code() as int
+");
+    let types = ~["i64", "u64", "int"];
+    for primitive_type in types.iter() {
+        out.write_str(format!("fn to_{}(&self) -> Option<{}> \\{
+            Some(self.code() as {})
+        \\}\n", *primitive_type, *primitive_type, *primitive_type))
     }
+
+out.write_str("
+}
+
+impl FromPrimitive for ScanCode {
 
     /// Get a *registered* scan code.
     ///
     /// This will return UnknownScanCode if an unknown code is passed.
     ///
     /// For example, `from_int(4)` will return `AScanCode`.
-    fn from_int(n: int) -> ScanCode {
-        match n {
 ");
-    for &entry in entries.iter() {
-        out.write_str(format!("            {} => {},\n", entry.code, entry.ident()));
-    }
-    out.write_str("
-            _   => { UnknownScanCode }
+    for primitive_type in types.iter() {
+        out.write_str(format!("
+    fn from_{}(n: {}) -> Option<ScanCode> \\{
+        match n \\{
+", *primitive_type, *primitive_type));
+        for &entry in entries.iter() {
+            out.write_str(format!("            {} => Some({}),\n", entry.code, entry.ident()));
         }
+        out.write_str("
+                _   => { Some(UnknownScanCode) }
+            }
+        }\n");
     }
+
+out.write_str("
 }");
 }

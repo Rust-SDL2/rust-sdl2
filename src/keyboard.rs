@@ -1,5 +1,5 @@
 use std::hashmap::HashMap;
-use std::num::IntConvertible;
+use std::num::FromPrimitive;
 use std::ptr;
 use std::str;
 use std::vec;
@@ -103,7 +103,7 @@ pub fn get_keyboard_state() -> ~HashMap<ScanCode, bool> {
 
     let mut current = 0;
     while current < raw.len() {
-        state.insert(IntConvertible::from_int(current as int),
+        state.insert(FromPrimitive::from_int(current as int),
                      raw[current] == 1);
         current += 1;
     }
@@ -126,14 +126,14 @@ pub fn set_mod_state(flags: &[Mod]) {
 
 pub fn get_key_from_scancode(scancode: ScanCode) -> KeyCode {
     unsafe {
-        IntConvertible::from_int(ll::SDL_GetKeyFromScancode(scancode.code()
+        FromPrimitive::from_int(ll::SDL_GetKeyFromScancode(scancode.code()
                                                             as u32) as int)
     }
 }
 
 pub fn get_scancode_from_key(key: KeyCode) -> ScanCode {
     unsafe {
-        IntConvertible::from_int(ll::SDL_GetScancodeFromKey(key.code())
+        FromPrimitive::from_int(ll::SDL_GetScancodeFromKey(key.code())
                                  as int)
     }
 }
@@ -147,7 +147,7 @@ pub fn get_scancode_name(scancode: ScanCode) -> ~str {
 pub fn get_scancode_from_name(name: &str) -> ScanCode {
     unsafe {
         do name.with_c_str |name| {
-            IntConvertible::from_int(ll::SDL_GetScancodeFromName(name) as int)
+            FromPrimitive::from_int(ll::SDL_GetScancodeFromName(name) as int)
         }
     }
 }
@@ -161,7 +161,7 @@ pub fn get_key_name(key: KeyCode) -> ~str {
 pub fn get_key_from_name(name: &str) -> KeyCode {
     unsafe {
         do name.with_c_str |name| {
-            IntConvertible::from_int(ll::SDL_GetKeyFromName(name) as int)
+            FromPrimitive::from_int(ll::SDL_GetKeyFromName(name) as int)
         }
     }
 }

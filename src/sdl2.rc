@@ -7,6 +7,8 @@
 #[license = "MIT"];
 #[crate_type = "lib"];
 
+#[feature(globs)];
+
 pub use sdl::*;
 #[path = "generated/keycode.rs"]
 pub mod keycode;

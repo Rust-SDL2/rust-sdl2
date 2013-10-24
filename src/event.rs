@@ -1,6 +1,6 @@
 use std::cast;
 use std::libc::{c_int, c_void, uint32_t};
-use std::num::IntConvertible;
+use std::num::FromPrimitive;
 use std::str;
 
 use controller;
@@ -652,8 +652,8 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
                 };
 
                 KeyDownEvent(event.timestamp as uint, window,
-                             IntConvertible::from_int(event.keysym.sym as int),
-                             IntConvertible::from_int(event.keysym.scancode as int),
+                             FromPrimitive::from_int(event.keysym.sym as int),
+                             FromPrimitive::from_int(event.keysym.scancode as int),
                              keyboard::wrap_mod_state(event.keysym._mod as SDL_Keymod))
             }
             KeyUpEventType => {
@@ -668,8 +668,8 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
                 };
 
                 KeyUpEvent(event.timestamp as uint, window,
-                           IntConvertible::from_int(event.keysym.sym as int),
-                           IntConvertible::from_int(event.keysym.scancode as int),
+                           FromPrimitive::from_int(event.keysym.sym as int),
+                           FromPrimitive::from_int(event.keysym.scancode as int),
                            keyboard::wrap_mod_state(event.keysym._mod as SDL_Keymod))
             }
             TextEditingEventType => {
