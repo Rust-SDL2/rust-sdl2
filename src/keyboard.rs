@@ -127,14 +127,14 @@ pub fn set_mod_state(flags: &[Mod]) {
 pub fn get_key_from_scancode(scancode: ScanCode) -> KeyCode {
     unsafe {
         FromPrimitive::from_int(ll::SDL_GetKeyFromScancode(scancode.code()
-                                                            as u32) as int)
+                                                            as u32) as int).unwrap()
     }
 }
 
 pub fn get_scancode_from_key(key: KeyCode) -> ScanCode {
     unsafe {
         FromPrimitive::from_int(ll::SDL_GetScancodeFromKey(key.code())
-                                 as int)
+                                 as int).unwrap()
     }
 }
 
@@ -147,7 +147,7 @@ pub fn get_scancode_name(scancode: ScanCode) -> ~str {
 pub fn get_scancode_from_name(name: &str) -> ScanCode {
     unsafe {
         do name.with_c_str |name| {
-            FromPrimitive::from_int(ll::SDL_GetScancodeFromName(name) as int)
+            FromPrimitive::from_int(ll::SDL_GetScancodeFromName(name) as int).unwrap()
         }
     }
 }
@@ -161,7 +161,7 @@ pub fn get_key_name(key: KeyCode) -> ~str {
 pub fn get_key_from_name(name: &str) -> KeyCode {
     unsafe {
         do name.with_c_str |name| {
-            FromPrimitive::from_int(ll::SDL_GetKeyFromName(name) as int)
+            FromPrimitive::from_int(ll::SDL_GetKeyFromName(name) as int).unwrap()
         }
     }
 }
