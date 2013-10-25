@@ -272,6 +272,7 @@ pub fn generate(output_dir: &Path) {
 
 use std::num::FromPrimitive;
 use std::num::ToPrimitive;
+use std::to_bytes::IterBytes;
 
 #[deriving(Eq)]
 pub enum KeyCode {
@@ -281,6 +282,14 @@ pub enum KeyCode {
     }
 
     out.write_str("
+}
+
+type Cb<'self> = &'self fn(buf: &[u8]) -> bool;
+impl IterBytes for KeyCode{
+
+    fn iter_bytes(&self, lsb0: bool, f: Cb) -> bool {
+        self.code().iter_bytes(lsb0, f)
+    }
 }
 
 impl KeyCode {

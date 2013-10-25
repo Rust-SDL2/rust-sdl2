@@ -652,8 +652,8 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
                 };
 
                 KeyDownEvent(event.timestamp as uint, window,
-                             FromPrimitive::from_int(event.keysym.sym as int),
-                             FromPrimitive::from_int(event.keysym.scancode as int),
+                             FromPrimitive::from_int(event.keysym.sym as int).unwrap(),
+                             FromPrimitive::from_int(event.keysym.scancode as int).unwrap(),
                              keyboard::wrap_mod_state(event.keysym._mod as SDL_Keymod))
             }
             KeyUpEventType => {
@@ -668,8 +668,8 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
                 };
 
                 KeyUpEvent(event.timestamp as uint, window,
-                           FromPrimitive::from_int(event.keysym.sym as int),
-                           FromPrimitive::from_int(event.keysym.scancode as int),
+                           FromPrimitive::from_int(event.keysym.sym as int).unwrap(),
+                           FromPrimitive::from_int(event.keysym.scancode as int).unwrap(),
                            keyboard::wrap_mod_state(event.keysym._mod as SDL_Keymod))
             }
             TextEditingEventType => {
