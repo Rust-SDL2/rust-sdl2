@@ -1,4 +1,5 @@
 extern mod extra;
+use std::rt::io::Writer;
 use super::get_writer;
 
 struct Key {
@@ -24,7 +25,7 @@ impl Key {
 static mut longest_ident: uint = 0;
 
 pub fn generate(output_dir: &Path) {
-    let out = get_writer(output_dir, "keycode.rs");
+    let mut out = get_writer(output_dir, "keycode.rs");
     let mut entries = [
         Key(0, "UnknownKey"),
         Key(13, "ReturnKey"),
@@ -268,7 +269,7 @@ pub fn generate(output_dir: &Path) {
     unsafe {
         longest_ident = entries.iter().map(|&key| key.ident().len()).max_by(|&i| i).unwrap();
     }
-    out.write_str("// This automatically generated file is used as sdl2::keycode.
+    out.write("// This automatically generated file is used as sdl2::keycode.
 
 use std::num::FromPrimitive;
 use std::num::ToPrimitive;
@@ -276,12 +277,12 @@ use std::to_bytes::IterBytes;
 
 #[deriving(Eq)]
 pub enum KeyCode {
-");
+".as_bytes());
     for &entry in entries.iter() {
-        out.write_str(format!("    {} = {},\n", entry.padded_ident(), entry.code));
+        out.write(format!("    {} = {},\n", entry.padded_ident(), entry.code).into_bytes());
     }
 
-    out.write_str("
+    out.write("
 }
 
 type Cb<'self> = &'self fn(buf: &[u8]) -> bool;
@@ -296,26 +297,26 @@ impl KeyCode {
     /// Get the code
     pub fn code(&self) -> i32 {
         match *self {
-");
+".as_bytes());
     for &entry in entries.iter() {
-        out.write_str(format!("            {} => {},\n", entry.padded_ident(), entry.code));
+        out.write(format!("            {} => {},\n", entry.padded_ident(), entry.code).into_bytes());
     }
-    out.write_str("
+    out.write("
         }
     }
 }
 
 impl ToPrimitive for KeyCode {
     /// Equivalent to `self.code()`
-");
+".as_bytes());
     let types = ~["i64", "u64", "int"];
     for primitive_type in types.iter() {
-        out.write_str(format!("fn to_{}(&self) -> Option<{}> \\{
+        out.write(format!("fn to_{}(&self) -> Option<{}> \\{
             Some(self.code() as {})
-        \\}\n", *primitive_type, *primitive_type, *primitive_type))
+        \\}\n", *primitive_type, *primitive_type, *primitive_type).into_bytes())
     }
 
-out.write_str("
+out.write("
 }
 
 impl FromPrimitive for KeyCode {
@@ -325,21 +326,22 @@ impl FromPrimitive for KeyCode {
     /// This will return UnknownKey if an unknown code is passed.
     ///
     /// For example, `from_int(13)` will return `ReturnKey`.
-");
+".as_bytes());
     for primitive_type in types.iter() {
-        out.write_str(format!("
+        out.write(format!("
     fn from_{}(n: {}) -> Option<KeyCode> \\{
         match n \\{
-", *primitive_type, *primitive_type));
+", *primitive_type, *primitive_type).into_bytes());
         for &entry in entries.iter() {
-            out.write_str(format!("            {} => Some({}),\n", entry.code, entry.ident()));
+            out.write(format!("            {} => Some({}),\n", entry.code, entry.ident()).into_bytes());
         }
-        out.write_str("
+        out.write("
                 _   => { Some(UnknownKey) }
             }
-        }\n");
+        }\n".as_bytes());
     }
 
-out.write_str("
-}");
+out.write("
+}".as_bytes());
+out.flush();
 }

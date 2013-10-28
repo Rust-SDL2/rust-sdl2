@@ -1,4 +1,5 @@
 extern mod extra;
+use std::rt::io::Writer;
 use super::get_writer;
 
 struct ScanCode {
@@ -24,7 +25,7 @@ impl ScanCode {
 static mut longest_ident: uint = 0;
 
 pub fn generate(output_dir: &Path) {
-    let out = get_writer(output_dir, "scancode.rs");
+    let mut out = get_writer(output_dir, "scancode.rs");
     let mut entries = [
         ScanCode(0, "UnknownScanCode"),
         ScanCode(4, "AScanCode"),
@@ -275,7 +276,7 @@ pub fn generate(output_dir: &Path) {
     unsafe {
         longest_ident = entries.iter().map(|&key| key.ident().len()).max_by(|&i| i).unwrap();
     }
-    out.write_str("// This automatically generated file is used as sdl2::scancode.
+    out.write("// This automatically generated file is used as sdl2::scancode.
 
 use std::num::FromPrimitive;
 use std::num::ToPrimitive;
@@ -283,12 +284,12 @@ use std::to_bytes::IterBytes;
 
 #[deriving(Eq)]
 pub enum ScanCode {
-");
+".as_bytes());
     for &entry in entries.iter() {
-        out.write_str(format!("    {} = {},\n", entry.padded_ident(), entry.code));
+        out.write(format!("    {} = {},\n", entry.padded_ident(), entry.code).into_bytes());
     }
 
-    out.write_str("
+    out.write("
 }
 
 
@@ -305,11 +306,11 @@ impl ScanCode {
     /// Get the code
     pub fn code(&self) -> i32 {
         match *self {
-");
+".as_bytes());
     for &entry in entries.iter() {
-        out.write_str(format!("            {} => {},\n", entry.padded_ident(), entry.code));
+        out.write(format!("            {} => {},\n", entry.padded_ident(), entry.code).into_bytes());
     }
-    out.write_str("
+    out.write("
         }
     }
 }
@@ -317,15 +318,15 @@ impl ScanCode {
 impl ToPrimitive for ScanCode {
 
     /// Equivalent to `self.code()`
-");
+".as_bytes());
     let types = ~["i64", "u64", "int"];
     for primitive_type in types.iter() {
-        out.write_str(format!("fn to_{}(&self) -> Option<{}> \\{
+        out.write(format!("fn to_{}(&self) -> Option<{}> \\{
             Some(self.code() as {})
-        \\}\n", *primitive_type, *primitive_type, *primitive_type))
+        \\}\n", *primitive_type, *primitive_type, *primitive_type).into_bytes())
     }
 
-out.write_str("
+out.write("
 }
 
 impl FromPrimitive for ScanCode {
@@ -335,21 +336,22 @@ impl FromPrimitive for ScanCode {
     /// This will return UnknownScanCode if an unknown code is passed.
     ///
     /// For example, `from_int(4)` will return `AScanCode`.
-");
+".as_bytes());
     for primitive_type in types.iter() {
-        out.write_str(format!("
+        out.write(format!("
     fn from_{}(n: {}) -> Option<ScanCode> \\{
         match n \\{
-", *primitive_type, *primitive_type));
+", *primitive_type, *primitive_type).into_bytes());
         for &entry in entries.iter() {
-            out.write_str(format!("            {} => Some({}),\n", entry.code, entry.ident()));
+            out.write(format!("            {} => Some({}),\n", entry.code, entry.ident()).into_bytes());
         }
-        out.write_str("
+        out.write("
                 _   => { Some(UnknownScanCode) }
             }
-        }\n");
+        }\n".as_bytes());
     }
 
-out.write_str("
-}");
+out.write("
+}".as_bytes());
+out.flush();
 }

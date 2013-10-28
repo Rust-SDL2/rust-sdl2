@@ -1,5 +1,8 @@
 #[macro_escape];
 
+use std::rt::io::buffered::BufferedWriter;
+use std::rt::io::file::FileStream;
+use std::rt::io::Writer;
 use std::str::CharIterator;
 
 struct ParseBranch {
@@ -77,7 +80,7 @@ macro_rules! branchify(
 ///         replaced with an expression (literal or non-literal) evaluating to a ``~str`` (it is
 ///         ``{}`` only, not arbitrary format strings)
 pub fn generate_branchified_method(
-        writer: @Writer,
+        writer: &mut BufferedWriter<FileStream>,
         branches: &[ParseBranch],
         indent: uint,
         read_call: &str,
@@ -95,7 +98,7 @@ pub fn generate_branchified_method(
         writer.write(bytes!("\n"));
     }))
 
-    fn r(writer: @Writer, branch: &ParseBranch, prefix: &str, indent: uint, read_call: &str,
+    fn r(writer: &mut BufferedWriter<FileStream>, branch: &ParseBranch, prefix: &str, indent: uint, read_call: &str,
             end: &str, max_len: &str, valid: &str, unknown: &str) {
         for &c in branch.matches.iter() {
             let next_prefix = format!("{}{}", prefix, c as char);

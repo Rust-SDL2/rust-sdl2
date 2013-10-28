@@ -1,7 +1,9 @@
 #[feature(macro_rules)];
-use std::io::{file_writer, Create, Truncate};
-use std::os;
 
+use std::os;
+use std::rt::io::buffered::BufferedWriter;
+use std::rt::io::file::{open, FileStream};
+use std::rt::io;
 pub mod branchify;
 pub mod keycode;
 pub mod scancode;
@@ -34,9 +36,9 @@ fn main() {
     }
 }
 
-pub fn get_writer(output_dir: &Path, filename: &str) -> @Writer {
-    match file_writer(&output_dir.join(filename), [Create, Truncate]) {
-        Ok(writer) => writer,
-        Err(msg) => fail!("Unable to write file: {}", msg),
+pub fn get_writer(output_dir: &Path, filename: &str) -> ~BufferedWriter<FileStream> {
+    match open(&output_dir.join(filename), io::Truncate, io::Write) {
+        Some(writer) => ~BufferedWriter::new(writer),
+        None => fail!("Unable to write file"),
     }
 }
