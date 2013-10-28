@@ -37,7 +37,7 @@ fn main() {
 }
 
 pub fn get_writer(output_dir: &Path, filename: &str) -> ~BufferedWriter<FileStream> {
-    match open(&output_dir.join(filename), io::Truncate, io::Write) {
+    match open(&output_dir.join(filename), io::CreateOrTruncate, io::Write) {
         Some(writer) => ~BufferedWriter::new(writer),
         None => fail!("Unable to write file"),
     }
