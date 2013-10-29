@@ -1,5 +1,9 @@
 # Rust-SDL2
+
+[![Build Status](https://travis-ci.org/AngryLawyer/rust-sdl2.png?branch=master)](https://travis-ci.org/AngryLawyer/rust-sdl2)
+
 Bindings for SDL2 in Rust
+
 # Overview
 
 Rust-SDL2 is a library for talking to the new SDL2.0 libraries from Rust. Low-level C components are wrapped in Rust code to make them more idiomatic and abstract away inappropriate manual memory management.
