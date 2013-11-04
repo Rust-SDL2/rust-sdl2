@@ -9,6 +9,7 @@ use std::cast;
 use rect::Point;
 use rect::Rect;
 use std::vec;
+use std::num::FromPrimitive;
 
 pub mod ll {
 
@@ -186,7 +187,7 @@ impl RendererInfo {
 
         unsafe {
             let texture_formats: ~[pixels::PixelFormatFlag] = do info.texture_formats.slice(0, info.num_texture_formats as uint).iter().map |&format| {
-                cast::transmute(format as i64)
+                FromPrimitive::from_i64(format as i64).unwrap()
             }.collect();
 
             ~RendererInfo {

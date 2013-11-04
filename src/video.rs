@@ -7,6 +7,7 @@ use std::vec;
 use rect::Rect;
 use surface::Surface;
 use pixels;
+use std::num::FromPrimitive;
 
 use get_error;
 
@@ -22,8 +23,7 @@ pub mod ll {
     //SDL_video.h
     pub struct SDL_Window;
 
-    pub struct SDL_DisplayMode
-    {
+    pub struct SDL_DisplayMode {
         format: uint32_t,
         w: c_int,
         h: c_int,
@@ -71,6 +71,7 @@ pub mod ll {
     
     pub type SDL_GLContext = *c_void;
 
+    #[deriving(FromPrimitive)]
     pub enum SDL_GLattr {
         SDL_GL_RED_SIZE = 0,
         SDL_GL_GREEN_SIZE = 1,
@@ -161,7 +162,7 @@ pub mod ll {
     externfn!(fn SDL_EnableScreenSaver())
     externfn!(fn SDL_DisableScreenSaver())
     externfn!(fn SDL_GL_LoadLibrary(path: *c_char) -> c_int)
-    externfn!(fn SDL_GL_GetProcAddress(proc: *c_char) -> Option<extern "C" fn()>)
+    //externfn!(fn SDL_GL_GetProcAddress(proc: *c_char) -> Option<extern "C" fn()>) //FIXME: What should the return type of this be?
     externfn!(fn SDL_GL_UnloadLibrary())
     externfn!(fn SDL_GL_ExtensionSupported(extension: *c_char) -> SDL_bool)
     externfn!(fn SDL_GL_SetAttribute(attr: SDL_GLattr, value: c_int) -> c_int)
@@ -420,7 +421,7 @@ impl Window {
     }
 
     pub fn get_window_pixel_format(&self) -> pixels::PixelFormatFlag {
-        unsafe{ cast::transmute(ll::SDL_GetWindowPixelFormat(self.raw) as u64) }
+        unsafe{ FromPrimitive::from_u64(ll::SDL_GetWindowPixelFormat(self.raw) as u64).unwrap() }
     }
 
     pub fn get_id(&self) -> u32 {
@@ -449,10 +450,8 @@ impl Window {
         unsafe { ll::SDL_SetWindowIcon(self.raw, icon.raw) }
     }
 
-    /*
-    pub fn SDL_SetWindowData(window: *SDL_Window, name: *c_char, userdata: *c_void) -> *c_void; //TODO: Figure out what this does
-    pub fn SDL_GetWindowData(window: *SDL_Window, name: *c_char) -> *c_void;
-    */
+    //pub fn SDL_SetWindowData(window: *SDL_Window, name: *c_char, userdata: *c_void) -> *c_void; //TODO: Figure out what this does
+    //pub fn SDL_GetWindowData(window: *SDL_Window, name: *c_char) -> *c_void;
 
     pub fn set_position(&self, x: WindowPos, y: WindowPos) {
         unsafe { ll::SDL_SetWindowPosition(self.raw, unwrap_windowpos(x), unwrap_windowpos(y)) }
@@ -755,13 +754,13 @@ pub fn gl_unload_library() {
     unsafe { ll::SDL_GL_UnloadLibrary(); }
 }
 
-pub fn gl_get_proc_address(procname: &str) -> Option<extern "C" fn()> {
+/*pub fn gl_get_proc_address(procname: &str) -> Option<extern "C" fn()> {
     unsafe {
         do procname.with_c_str |procname| {
             ll::SDL_GL_GetProcAddress(procname)
         }
     }
-}
+}*/
 
 pub fn gl_extension_supported(extension: &str) -> bool {
     do extension.with_c_str |buff| {
@@ -770,13 +769,13 @@ pub fn gl_extension_supported(extension: &str) -> bool {
 }
 
 pub fn gl_set_attribute(attr: GLAttr, value: int) -> bool {
-    unsafe { ll::SDL_GL_SetAttribute(cast::transmute(attr as u64), value as c_int) == 0 }
+    unsafe { ll::SDL_GL_SetAttribute(FromPrimitive::from_u64(attr as u64).unwrap(), value as c_int) == 0 }
 }
 
 pub fn gl_get_attribute(attr: GLAttr) -> Result<int, ~str> {
     let out: c_int = 0;
 
-    let result = unsafe { ll::SDL_GL_GetAttribute(cast::transmute(attr as u64), &out) } == 0;
+    let result = unsafe { ll::SDL_GL_GetAttribute(FromPrimitive::from_u64(attr as u64).unwrap(), &out) } == 0;
     if result {
         Ok(out as int)
     } else {

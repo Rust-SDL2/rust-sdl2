@@ -1,4 +1,5 @@
 use std::rand;
+use std::num::FromPrimitive;
 
 pub mod ll {
     use std::libc::{c_int, uint8_t, uint32_t};
@@ -96,7 +97,7 @@ impl rand::Rand for Color {
     }
 }
 
-#[deriving(Eq)]
+#[deriving(Eq, FromPrimitive)]
 pub enum PixelFormatFlag {
     Unknown = ll::SDL_PIXELFORMAT_UNKNOWN as int,
     Index1LSB = ll::SDL_PIXELFORMAT_INDEX1LSB as int,

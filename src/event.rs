@@ -437,6 +437,7 @@ pub mod ll {
     /*externfn!(fn SDL_RegisterEvents(numevents: c_int) -> uint32_t)*/
 }
 
+#[deriving(FromPrimitive)]
 pub enum EventType {
     FirstEventType = ll::SDL_FIRSTEVENT,
 
@@ -570,8 +571,8 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
         let raw_type = if raw_type.is_null() { return NoEvent; }
                        else { *raw_type };
 
-        // FIXME: This is incredibly hacky
-        let event_type: EventType = cast::transmute(raw_type as uint);
+        // FIXME: This should error-check 
+        let event_type: EventType = FromPrimitive::from_uint(raw_type as uint).unwrap();
         match event_type {
             QuitEventType => {
                 let event = raw.quit();
