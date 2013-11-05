@@ -2,8 +2,9 @@
 
 use std::os;
 use std::rt::io::buffered::BufferedWriter;
-use std::rt::io::file::{open, FileStream};
+use std::rt::io::{File, Writer};
 use std::rt::io;
+use std::rt::io::fs::mkdir_recursive;
 pub mod branchify;
 pub mod keycode;
 pub mod scancode;
@@ -18,7 +19,7 @@ fn main() {
         3 => {
             let output_dir = GenericPath::new(args[2].clone());
             // TODO: maybe not 0777?
-            os::make_dir(&output_dir, 0b111_111_111);
+            mkdir_recursive(&output_dir, 0b111_111_111);
 
             match args[1] {
                 ~"keycode.rs" => keycode::generate(&output_dir),
@@ -36,8 +37,8 @@ fn main() {
     }
 }
 
-pub fn get_writer(output_dir: &Path, filename: &str) -> ~BufferedWriter<FileStream> {
-    match open(&output_dir.join(filename), io::CreateOrTruncate, io::Write) {
+pub fn get_writer(output_dir: &Path, filename: &str) -> ~BufferedWriter<File> {
+    match File::open_mode(&output_dir.join(filename), io::Truncate, io::Write) {
         Some(writer) => ~BufferedWriter::new(writer),
         None => fail!("Unable to write file"),
     }
