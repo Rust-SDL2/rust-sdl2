@@ -65,6 +65,7 @@ pub mod ll {
     pub struct SDL_Texture;
 
     //SDL_blendmode.h
+    #[deriving(FromPrimitive)]
     pub enum SDL_BlendMode {
         SDL_BLENDMODE_NONE = 0x00000000,
         SDL_BLENDMODE_BLEND = 0x00000001,
@@ -131,7 +132,7 @@ pub enum RenderDriverIndex {
     DriverIndex(int)
 }
 
-#[deriving(Eq)]
+#[deriving(Eq, FromPrimitive)]
 pub enum TextureAccess {
     AccessStatic = ll::SDL_TEXTUREACCESS_STATIC as int, 
     AccessStreaming = ll::SDL_TEXTUREACCESS_STREAMING as int,
@@ -155,7 +156,7 @@ pub struct RendererInfo {
     max_texture_height: int
 }
 
-#[deriving(Eq)]
+#[deriving(Eq, FromPrimitive)]
 pub enum BlendMode {
     BlendNone = ll::SDL_BLENDMODE_NONE as int,
     BlendBlend = ll::SDL_BLENDMODE_BLEND as int,
@@ -537,8 +538,8 @@ impl Texture {
         if result {
             unsafe {
                 Ok(~TextureQuery {
-                   format: cast::transmute(format as i64),
-                   access: cast::transmute(access as i64), 
+                   format: FromPrimitive::from_i64(format as i64).unwrap(),
+                   access: FromPrimitive::from_i64(access as i64).unwrap(), 
                    width: width as int,
                    height: height as int
                 })
@@ -581,15 +582,15 @@ impl Texture {
     }
 
     pub fn set_blend_mode(&self, blend: BlendMode) -> bool {
-        unsafe { ll::SDL_SetTextureBlendMode(self.raw, cast::transmute(blend)) == 0}
+        unsafe { ll::SDL_SetTextureBlendMode(self.raw, FromPrimitive::from_i64(blend as i64).unwrap()) == 0}
     }
 
     pub fn get_blend_mode(&self) -> Result<BlendMode, ~str> {
         let blend: i64 = 0;
-        let result = unsafe { ll::SDL_GetTextureBlendMode(self.raw, &cast::transmute(blend)) == 0 };
+        let result = unsafe { ll::SDL_GetTextureBlendMode(self.raw, &FromPrimitive::from_i64(blend as i64).unwrap()) == 0 };
         if result {
             unsafe {
-                Ok(cast::transmute(blend))
+                Ok(FromPrimitive::from_i64(blend as i64).unwrap())
             }
         } else {
             Err(get_error())
