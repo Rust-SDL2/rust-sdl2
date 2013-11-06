@@ -536,14 +536,12 @@ impl Texture {
 
         let result = unsafe { ll::SDL_QueryTexture(self.raw, &format, &access, &width, &height) == 0 };
         if result {
-            unsafe {
-                Ok(~TextureQuery {
-                   format: FromPrimitive::from_i64(format as i64).unwrap(),
-                   access: FromPrimitive::from_i64(access as i64).unwrap(), 
-                   width: width as int,
-                   height: height as int
-                })
-            }
+            Ok(~TextureQuery {
+               format: FromPrimitive::from_i64(format as i64).unwrap(),
+               access: FromPrimitive::from_i64(access as i64).unwrap(), 
+               width: width as int,
+               height: height as int
+            })
         } else {
             Err(get_error())
         }
@@ -589,9 +587,7 @@ impl Texture {
         let blend: i64 = 0;
         let result = unsafe { ll::SDL_GetTextureBlendMode(self.raw, &FromPrimitive::from_i64(blend as i64).unwrap()) == 0 };
         if result {
-            unsafe {
-                Ok(FromPrimitive::from_i64(blend as i64).unwrap())
-            }
+            Ok(FromPrimitive::from_i64(blend as i64).unwrap())
         } else {
             Err(get_error())
         }
