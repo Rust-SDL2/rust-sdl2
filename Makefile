@@ -38,7 +38,7 @@ libsdl2.dummy: src/sdl2.rc $(RUST_SRC)
 	$(RUSTC) $(RUSTFLAGS) $< -o $@
 	touch $@
 
-demos: demo/demo.rc libsdl2.dummy
+demos: demo/demo.rc demo/video.rs libsdl2.dummy
 	$(RUSTC) -L . $< -o $@
 
 demo: demos
