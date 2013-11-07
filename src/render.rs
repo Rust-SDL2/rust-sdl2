@@ -55,6 +55,8 @@ pub mod ll {
         SDL_TEXTUREMODULATE_ALPHA = 0x00000002
     }
 
+    #[deriving(FromPrimitive)]
+    #[repr(C)]
     pub enum SDL_RendererFlip {
         SDL_FLIP_NONE = 0x00000000,
         SDL_FLIP_HORIZONTAL = 0x00000001,
@@ -66,6 +68,7 @@ pub mod ll {
 
     //SDL_blendmode.h
     #[deriving(FromPrimitive)]
+    #[repr(C)]
     pub enum SDL_BlendMode {
         SDL_BLENDMODE_NONE = 0x00000000,
         SDL_BLENDMODE_BLEND = 0x00000001,
@@ -492,7 +495,7 @@ impl Renderer {
                     Some(point) => cast::transmute(&point),
                     None => ptr::null() 
                 },
-                cast::transmute(flip)
+                FromPrimitive::from_i64(flip as i64).unwrap()
             ) == 0
         }
     }

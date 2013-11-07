@@ -72,6 +72,7 @@ pub mod ll {
     pub type SDL_GLContext = *c_void;
 
     #[deriving(FromPrimitive)]
+    #[repr(C)]
     pub enum SDL_GLattr {
         SDL_GL_RED_SIZE = 0,
         SDL_GL_GREEN_SIZE = 1,

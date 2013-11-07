@@ -1,5 +1,4 @@
 use std::rand;
-use std::num::FromPrimitive;
 
 pub mod ll {
     use std::libc::{c_int, uint8_t, uint32_t};
