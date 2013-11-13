@@ -15,5 +15,7 @@ pub mod ll {
         hidden: SDL_RWops_Anon
     }
 
-    externfn!(fn SDL_RWFromFile(file: *c_schar, mode: *c_schar) -> *SDL_RWops)
+    extern "C" {
+        pub fn SDL_RWFromFile(file: *c_schar, mode: *c_schar) -> *SDL_RWops;
+    }
 }

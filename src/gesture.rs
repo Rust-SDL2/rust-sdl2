@@ -6,11 +6,12 @@ pub mod ll {
 
     pub type SDL_GestureID = int64_t;
 
-    externfn!(fn SDL_RecordGesture(touchId: SDL_TouchID) -> c_int)
-    externfn!(fn SDL_SaveAllDollarTemplates(src: *SDL_RWops) -> c_int)
-    externfn!(fn SDL_SaveDollarTemplate(gestureId: SDL_GestureID,
-                                        src: *SDL_RWops) -> c_int)
-    externfn!(fn SDL_LoadDollarTemplates(touchId: SDL_TouchID, src: *SDL_RWops)
-              -> c_int)
+
+    extern "C" {
+        pub fn SDL_RecordGesture(touchId: SDL_TouchID) -> c_int;
+        pub fn SDL_SaveAllDollarTemplates(src: *SDL_RWops) -> c_int;
+        pub fn SDL_SaveDollarTemplate(gestureId: SDL_GestureID, src: *SDL_RWops) -> c_int;
+        pub fn SDL_LoadDollarTemplates(touchId: SDL_TouchID, src: *SDL_RWops) -> c_int;
+    }
 }
 

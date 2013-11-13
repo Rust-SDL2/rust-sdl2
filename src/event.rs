@@ -410,31 +410,32 @@ pub mod ll {
     pub type SDL_EventFilter =
         extern "C" fn(userdata: *c_void, event: *SDL_Event) -> c_int;
 
-    externfn!(fn SDL_free(mem: *c_void))
-    externfn!(fn SDL_PumpEvents())
-    /*externfn!(fn SDL_PeepEvents(events: &[SDL_Event], numevents: c_int,
-                                action: SDL_eventaction, minType: uint32_t,
-                                maxType: uint32_t) -> c_int)*/
-    externfn!(fn SDL_HasEvent(_type: uint32_t) -> SDL_bool)
-    externfn!(fn SDL_HasEvents(minType: uint32_t, maxType: uint32_t) ->
-              SDL_bool)
-    externfn!(fn SDL_FlushEvent(_type: uint32_t))
-    externfn!(fn SDL_FlushEvents(minType: uint32_t, maxType: uint32_t))
-    externfn!(fn SDL_PollEvent(event: *SDL_Event) -> c_int)
-    externfn!(fn SDL_WaitEvent(event: *SDL_Event) -> c_int)
-    externfn!(fn SDL_WaitEventTimeout(event: *SDL_Event, timeout: c_int) ->
-              c_int)
-    /*externfn!(fn SDL_PushEvent(event: *SDL_Event) -> c_int)*/
-    externfn!(fn SDL_SetEventFilter(filter: SDL_EventFilter,
-                                    userdata: *c_void))
-    /*externfn!(fn SDL_GetEventFilter(filter: *SDL_EventFilter,
-                                    userdata: **c_void) -> SDL_bool)*/
-    externfn!(fn SDL_AddEventWatch(filter: SDL_EventFilter, userdata: *c_void))
-    externfn!(fn SDL_DelEventWatch(filter: SDL_EventFilter, userdata: *c_void))
-    externfn!(fn SDL_FilterEvents(filter: SDL_EventFilter, userdata: *c_void))
-    externfn!(fn SDL_EventState(_type: uint32_t, state: SDL_EventState) ->
-              SDL_EventState)
-    /*externfn!(fn SDL_RegisterEvents(numevents: c_int) -> uint32_t)*/
+    extern "C" {
+        pub fn SDL_free(mem: *c_void);
+        pub fn SDL_PumpEvents();
+        /*pub fn SDL_PeepEvents(events: &[SDL_Event], numevents: c_int,
+                                    action: SDL_eventaction, minType: uint32_t,
+                                    maxType: uint32_t) -> c_int;*/
+        pub fn SDL_HasEvent(_type: uint32_t) -> SDL_bool;
+        pub fn SDL_HasEvents(minType: uint32_t, maxType: uint32_t) ->
+                  SDL_bool;
+        pub fn SDL_FlushEvent(_type: uint32_t);
+        pub fn SDL_FlushEvents(minType: uint32_t, maxType: uint32_t);
+        pub fn SDL_PollEvent(event: *SDL_Event) -> c_int;
+        pub fn SDL_WaitEvent(event: *SDL_Event) -> c_int;
+        pub fn SDL_WaitEventTimeout(event: *SDL_Event, timeout: c_int) ->
+                  c_int;
+        /*pub fn SDL_PushEvent(event: *SDL_Event) -> c_int;*/
+        pub fn SDL_SetEventFilter(filter: SDL_EventFilter,
+                                        userdata: *c_void);
+        /*pub fn SDL_GetEventFilter(filter: *SDL_EventFilter,
+                                        userdata: **c_void) -> SDL_bool;*/
+        pub fn SDL_AddEventWatch(filter: SDL_EventFilter, userdata: *c_void);
+        pub fn SDL_DelEventWatch(filter: SDL_EventFilter, userdata: *c_void);
+        pub fn SDL_FilterEvents(filter: SDL_EventFilter, userdata: *c_void);
+        pub fn SDL_EventState(_type: uint32_t, state: SDL_EventState) -> SDL_EventState;
+        /*pub fn SDL_RegisterEvents(numevents: c_int) -> uint32_t;*/
+    }
 }
 
 #[deriving(FromPrimitive)]

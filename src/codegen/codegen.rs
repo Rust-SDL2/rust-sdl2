@@ -1,10 +1,10 @@
 #[feature(macro_rules)];
 
 use std::os;
-use std::rt::io::buffered::BufferedWriter;
-use std::rt::io::{File, Writer};
-use std::rt::io;
-use std::rt::io::fs::mkdir_recursive;
+use std::io::buffered::BufferedWriter;
+use std::io::{File, Writer};
+use std::io;
+use std::io::fs::mkdir_recursive;
 pub mod branchify;
 pub mod keycode;
 pub mod scancode;

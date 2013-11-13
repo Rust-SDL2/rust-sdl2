@@ -33,23 +33,25 @@ pub mod ll {
     pub static SDL_ENABLE: SDL_MouseState = 1;
     pub static SDL_QUERY: SDL_MouseState = -1;
 
-    externfn!(fn SDL_GetMouseFocus() -> *SDL_Window)
-    externfn!(fn SDL_GetMouseState(x: *c_int, y: *c_int) -> uint32_t)
-    externfn!(fn SDL_GetRelativeMouseState(x: *c_int, y: *c_int) -> uint32_t)
-    externfn!(fn SDL_WarpMouseInWindow(window: *SDL_Window, x: c_int, y: c_int))
-    externfn!(fn SDL_SetRelativeMouseMode(enabled: SDL_bool) -> c_int)
-    externfn!(fn SDL_GetRelativeMouseMode() -> SDL_bool)
-    externfn!(fn SDL_CreateCursor(data: *uint8_t, mask: *uint8_t, w: c_int,
-                                  h: c_int, hot_x: c_int, hot_y: c_int) ->
-              *SDL_Cursor)
-    externfn!(fn SDL_CreateColorCursor(surface: *SDL_Surface, hot_x: c_int,
-                                       hot_y: c_int) -> *SDL_Cursor)
-    externfn!(fn SDL_CreateSystemCursor(id: SDL_SystemCursor) -> *SDL_Cursor)
-    externfn!(fn SDL_SetCursor(cursor: *SDL_Cursor))
-    externfn!(fn SDL_GetCursor() -> *SDL_Cursor)
-    externfn!(fn SDL_GetDefaultCursor() -> *SDL_Cursor)
-    externfn!(fn SDL_FreeCursor(cursor: *SDL_Cursor))
-    externfn!(fn SDL_ShowCursor(toggle: SDL_MouseState) -> SDL_MouseState)
+    extern "C" {
+        pub fn SDL_GetMouseFocus() -> *SDL_Window;
+        pub fn SDL_GetMouseState(x: *c_int, y: *c_int) -> uint32_t;
+        pub fn SDL_GetRelativeMouseState(x: *c_int, y: *c_int) -> uint32_t;
+        pub fn SDL_WarpMouseInWindow(window: *SDL_Window, x: c_int, y: c_int);
+        pub fn SDL_SetRelativeMouseMode(enabled: SDL_bool) -> c_int;
+        pub fn SDL_GetRelativeMouseMode() -> SDL_bool;
+        pub fn SDL_CreateCursor(data: *uint8_t, mask: *uint8_t, w: c_int,
+                                      h: c_int, hot_x: c_int, hot_y: c_int) ->
+                  *SDL_Cursor;
+        pub fn SDL_CreateColorCursor(surface: *SDL_Surface, hot_x: c_int,
+                                           hot_y: c_int) -> *SDL_Cursor;
+        pub fn SDL_CreateSystemCursor(id: SDL_SystemCursor) -> *SDL_Cursor;
+        pub fn SDL_SetCursor(cursor: *SDL_Cursor);
+        pub fn SDL_GetCursor() -> *SDL_Cursor;
+        pub fn SDL_GetDefaultCursor() -> *SDL_Cursor;
+        pub fn SDL_FreeCursor(cursor: *SDL_Cursor);
+        pub fn SDL_ShowCursor(toggle: SDL_MouseState) -> SDL_MouseState;
+    }
 }
 
 #[deriving(Eq)]

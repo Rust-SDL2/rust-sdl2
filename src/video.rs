@@ -106,76 +106,78 @@ pub mod ll {
     }
 
     //SDL_video.h
-    externfn!(fn SDL_GetNumVideoDrivers() -> c_int)
-    externfn!(fn SDL_GetVideoDriver(index: c_int) -> *c_char)
-    externfn!(fn SDL_VideoInit(driver_name: *c_char) -> c_int)
-    externfn!(fn SDL_VideoQuit())
-    externfn!(fn SDL_GetCurrentVideoDriver() -> *c_char)
-    externfn!(fn SDL_GetNumVideoDisplays() -> c_int)
-    externfn!(fn SDL_GetDisplayName(displayIndex: c_int) -> *c_char)
-    externfn!(fn SDL_GetDisplayBounds(displayIndex: c_int, rect: *SDL_Rect) -> c_int)
-    externfn!(fn SDL_GetNumDisplayModes(displayIndex: c_int) -> c_int)
-    externfn!(fn SDL_GetDisplayMode(displayIndex: c_int, modeIndex: c_int, mode: *SDL_DisplayMode) -> c_int)
-    externfn!(fn SDL_GetDesktopDisplayMode(displayIndex: c_int, mode: *SDL_DisplayMode) -> c_int)
-    externfn!(fn SDL_GetCurrentDisplayMode(displayIndex: c_int, mode: *SDL_DisplayMode) -> c_int)
-    externfn!(fn SDL_GetClosestDisplayMode(displayIndex: c_int, mode: *SDL_DisplayMode, closest: *SDL_DisplayMode) -> *SDL_DisplayMode)
-    externfn!(fn SDL_GetWindowDisplayIndex(window: *SDL_Window) -> c_int)
-    externfn!(fn SDL_SetWindowDisplayMode(window: *SDL_Window, mode: *SDL_DisplayMode) -> c_int)
-    externfn!(fn SDL_GetWindowDisplayMode(window: *SDL_Window, mode: *SDL_DisplayMode) -> c_int)
-    externfn!(fn SDL_GetWindowPixelFormat(window: *SDL_Window) -> uint32_t)
-    externfn!(fn SDL_CreateWindow(title: *c_char, x: c_int, y: c_int, w: c_int, h: c_int, flags: uint32_t) -> *SDL_Window)
-    externfn!(fn SDL_CreateWindowFrom(data: *c_void) -> *SDL_Window)
-    externfn!(fn SDL_GetWindowID(window: *SDL_Window) -> uint32_t)
-    externfn!(fn SDL_GetWindowFromID(id: uint32_t) -> *SDL_Window)
-    externfn!(fn SDL_GetWindowFlags(window: *SDL_Window) -> uint32_t)
-    externfn!(fn SDL_SetWindowTitle(window: *SDL_Window, title: *c_char))
-    externfn!(fn SDL_GetWindowTitle(window: *SDL_Window) -> *c_char)
-    externfn!(fn SDL_SetWindowIcon(window: *SDL_Window, icon: *SDL_Surface))
-    externfn!(fn SDL_SetWindowData(window: *SDL_Window, name: *c_char, userdata: *c_void) -> *c_void)
-    externfn!(fn SDL_GetWindowData(window: *SDL_Window, name: *c_char) -> *c_void)
-    externfn!(fn SDL_SetWindowPosition(window: *SDL_Window, x: c_int, y: c_int))
-    externfn!(fn SDL_GetWindowPosition(window: *SDL_Window, x: *c_int, y: *c_int))
-    externfn!(fn SDL_SetWindowSize(window: *SDL_Window, w: c_int, h: c_int))
-    externfn!(fn SDL_GetWindowSize(window: *SDL_Window, w: *c_int, h: *c_int))
-    externfn!(fn SDL_SetWindowMinimumSize(window: *SDL_Window, min_w: c_int, min_h: c_int))
-    externfn!(fn SDL_GetWindowMinimumSize(window: *SDL_Window, w: *c_int, h: *c_int))
-    externfn!(fn SDL_SetWindowMaximumSize(window: *SDL_Window, max_w: c_int, max_h: c_int))
-    externfn!(fn SDL_GetWindowMaximumSize(window: *SDL_Window, w: *c_int, h: *c_int))
-    externfn!(fn SDL_SetWindowBordered(window: *SDL_Window, bordered: SDL_bool))
-    externfn!(fn SDL_ShowWindow(window: *SDL_Window))
-    externfn!(fn SDL_HideWindow(window: *SDL_Window))
-    externfn!(fn SDL_RaiseWindow(window: *SDL_Window))
-    externfn!(fn SDL_MaximizeWindow(window: *SDL_Window))
-    externfn!(fn SDL_MinimizeWindow(window: *SDL_Window))
-    externfn!(fn SDL_RestoreWindow(window: *SDL_Window))
-    externfn!(fn SDL_SetWindowFullscreen(window: *SDL_Window, flags: uint32_t) -> c_int)
-    externfn!(fn SDL_GetWindowSurface(window: *SDL_Window) -> *SDL_Surface)
-    externfn!(fn SDL_UpdateWindowSurface(window: *SDL_Window) -> c_int)
-    externfn!(fn SDL_UpdateWindowSurfaceRects(window: *SDL_Window, rects: *SDL_Rect, numrects: c_int) -> c_int)
-    externfn!(fn SDL_SetWindowGrab(window: *SDL_Window, grabbed: SDL_bool))
-    externfn!(fn SDL_GetWindowGrab(window: *SDL_Window) -> SDL_bool)
-    externfn!(fn SDL_SetWindowBrightness(window: *SDL_Window, brightness: c_float) -> c_int)
-    externfn!(fn SDL_GetWindowBrightness(window: *SDL_Window) -> c_float)
-    externfn!(fn SDL_SetWindowGammaRamp(window: *SDL_Window, red: *uint16_t, green: *uint16_t, blue: *uint16_t) -> c_int)
-    externfn!(fn SDL_GetWindowGammaRamp(window: *SDL_Window, red: *uint16_t, green: *uint16_t, blue: *uint16_t) -> c_int)
-    externfn!(fn SDL_DestroyWindow(window: *SDL_Window))
-    externfn!(fn SDL_IsScreenSaverEnabled() -> SDL_bool)
-    externfn!(fn SDL_EnableScreenSaver())
-    externfn!(fn SDL_DisableScreenSaver())
-    externfn!(fn SDL_GL_LoadLibrary(path: *c_char) -> c_int)
-    //externfn!(fn SDL_GL_GetProcAddress(proc: *c_char) -> Option<extern "C" fn()>) //FIXME: What should the return type of this be?
-    externfn!(fn SDL_GL_UnloadLibrary())
-    externfn!(fn SDL_GL_ExtensionSupported(extension: *c_char) -> SDL_bool)
-    externfn!(fn SDL_GL_SetAttribute(attr: SDL_GLattr, value: c_int) -> c_int)
-    externfn!(fn SDL_GL_GetAttribute(attr: SDL_GLattr, value: *c_int) -> c_int)
-    externfn!(fn SDL_GL_CreateContext(window: *SDL_Window) -> SDL_GLContext)
-    externfn!(fn SDL_GL_MakeCurrent(window: *SDL_Window, context: SDL_GLContext) -> c_int)
-    externfn!(fn SDL_GL_GetCurrentWindow() -> *SDL_Window)
-    externfn!(fn SDL_GL_GetCurrentContext() -> SDL_GLContext)
-    externfn!(fn SDL_GL_SetSwapInterval(interval: c_int) -> c_int)
-    externfn!(fn SDL_GL_GetSwapInterval() -> c_int)
-    externfn!(fn SDL_GL_SwapWindow(window: *SDL_Window))
-    externfn!(fn SDL_GL_DeleteContext(context: SDL_GLContext))
+    extern "C" {
+        pub fn SDL_GetNumVideoDrivers() -> c_int;
+        pub fn SDL_GetVideoDriver(index: c_int) -> *c_char;
+        pub fn SDL_VideoInit(driver_name: *c_char) -> c_int;
+        pub fn SDL_VideoQuit();
+        pub fn SDL_GetCurrentVideoDriver() -> *c_char;
+        pub fn SDL_GetNumVideoDisplays() -> c_int;
+        pub fn SDL_GetDisplayName(displayIndex: c_int) -> *c_char;
+        pub fn SDL_GetDisplayBounds(displayIndex: c_int, rect: *SDL_Rect) -> c_int;
+        pub fn SDL_GetNumDisplayModes(displayIndex: c_int) -> c_int;
+        pub fn SDL_GetDisplayMode(displayIndex: c_int, modeIndex: c_int, mode: *SDL_DisplayMode) -> c_int;
+        pub fn SDL_GetDesktopDisplayMode(displayIndex: c_int, mode: *SDL_DisplayMode) -> c_int;
+        pub fn SDL_GetCurrentDisplayMode(displayIndex: c_int, mode: *SDL_DisplayMode) -> c_int;
+        pub fn SDL_GetClosestDisplayMode(displayIndex: c_int, mode: *SDL_DisplayMode, closest: *SDL_DisplayMode) -> *SDL_DisplayMode;
+        pub fn SDL_GetWindowDisplayIndex(window: *SDL_Window) -> c_int;
+        pub fn SDL_SetWindowDisplayMode(window: *SDL_Window, mode: *SDL_DisplayMode) -> c_int;
+        pub fn SDL_GetWindowDisplayMode(window: *SDL_Window, mode: *SDL_DisplayMode) -> c_int;
+        pub fn SDL_GetWindowPixelFormat(window: *SDL_Window) -> uint32_t;
+        pub fn SDL_CreateWindow(title: *c_char, x: c_int, y: c_int, w: c_int, h: c_int, flags: uint32_t) -> *SDL_Window;
+        pub fn SDL_CreateWindowFrom(data: *c_void) -> *SDL_Window;
+        pub fn SDL_GetWindowID(window: *SDL_Window) -> uint32_t;
+        pub fn SDL_GetWindowFromID(id: uint32_t) -> *SDL_Window;
+        pub fn SDL_GetWindowFlags(window: *SDL_Window) -> uint32_t;
+        pub fn SDL_SetWindowTitle(window: *SDL_Window, title: *c_char);
+        pub fn SDL_GetWindowTitle(window: *SDL_Window) -> *c_char;
+        pub fn SDL_SetWindowIcon(window: *SDL_Window, icon: *SDL_Surface);
+        pub fn SDL_SetWindowData(window: *SDL_Window, name: *c_char, userdata: *c_void) -> *c_void;
+        pub fn SDL_GetWindowData(window: *SDL_Window, name: *c_char) -> *c_void;
+        pub fn SDL_SetWindowPosition(window: *SDL_Window, x: c_int, y: c_int);
+        pub fn SDL_GetWindowPosition(window: *SDL_Window, x: *c_int, y: *c_int);
+        pub fn SDL_SetWindowSize(window: *SDL_Window, w: c_int, h: c_int);
+        pub fn SDL_GetWindowSize(window: *SDL_Window, w: *c_int, h: *c_int);
+        pub fn SDL_SetWindowMinimumSize(window: *SDL_Window, min_w: c_int, min_h: c_int);
+        pub fn SDL_GetWindowMinimumSize(window: *SDL_Window, w: *c_int, h: *c_int);
+        pub fn SDL_SetWindowMaximumSize(window: *SDL_Window, max_w: c_int, max_h: c_int);
+        pub fn SDL_GetWindowMaximumSize(window: *SDL_Window, w: *c_int, h: *c_int);
+        pub fn SDL_SetWindowBordered(window: *SDL_Window, bordered: SDL_bool);
+        pub fn SDL_ShowWindow(window: *SDL_Window);
+        pub fn SDL_HideWindow(window: *SDL_Window);
+        pub fn SDL_RaiseWindow(window: *SDL_Window);
+        pub fn SDL_MaximizeWindow(window: *SDL_Window);
+        pub fn SDL_MinimizeWindow(window: *SDL_Window);
+        pub fn SDL_RestoreWindow(window: *SDL_Window);
+        pub fn SDL_SetWindowFullscreen(window: *SDL_Window, flags: uint32_t) -> c_int;
+        pub fn SDL_GetWindowSurface(window: *SDL_Window) -> *SDL_Surface;
+        pub fn SDL_UpdateWindowSurface(window: *SDL_Window) -> c_int;
+        pub fn SDL_UpdateWindowSurfaceRects(window: *SDL_Window, rects: *SDL_Rect, numrects: c_int) -> c_int;
+        pub fn SDL_SetWindowGrab(window: *SDL_Window, grabbed: SDL_bool);
+        pub fn SDL_GetWindowGrab(window: *SDL_Window) -> SDL_bool;
+        pub fn SDL_SetWindowBrightness(window: *SDL_Window, brightness: c_float) -> c_int;
+        pub fn SDL_GetWindowBrightness(window: *SDL_Window) -> c_float;
+        pub fn SDL_SetWindowGammaRamp(window: *SDL_Window, red: *uint16_t, green: *uint16_t, blue: *uint16_t) -> c_int;
+        pub fn SDL_GetWindowGammaRamp(window: *SDL_Window, red: *uint16_t, green: *uint16_t, blue: *uint16_t) -> c_int;
+        pub fn SDL_DestroyWindow(window: *SDL_Window);
+        pub fn SDL_IsScreenSaverEnabled() -> SDL_bool;
+        pub fn SDL_EnableScreenSaver();
+        pub fn SDL_DisableScreenSaver();
+        pub fn SDL_GL_LoadLibrary(path: *c_char) -> c_int;
+        //pub fn SDL_GL_GetProcAddress(proc: *c_char) -> Option<extern "C" fn()> //FIXME: What should the return type of this be
+        pub fn SDL_GL_UnloadLibrary();
+        pub fn SDL_GL_ExtensionSupported(extension: *c_char) -> SDL_bool;
+        pub fn SDL_GL_SetAttribute(attr: SDL_GLattr, value: c_int) -> c_int;
+        pub fn SDL_GL_GetAttribute(attr: SDL_GLattr, value: *c_int) -> c_int;
+        pub fn SDL_GL_CreateContext(window: *SDL_Window) -> SDL_GLContext;
+        pub fn SDL_GL_MakeCurrent(window: *SDL_Window, context: SDL_GLContext) -> c_int;
+        pub fn SDL_GL_GetCurrentWindow() -> *SDL_Window;
+        pub fn SDL_GL_GetCurrentContext() -> SDL_GLContext;
+        pub fn SDL_GL_SetSwapInterval(interval: c_int) -> c_int;
+        pub fn SDL_GL_GetSwapInterval() -> c_int;
+        pub fn SDL_GL_SwapWindow(window: *SDL_Window);
+        pub fn SDL_GL_DeleteContext(context: SDL_GLContext);
+    }
 }
 
 #[deriving(Eq)]

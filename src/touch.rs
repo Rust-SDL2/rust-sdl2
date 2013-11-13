@@ -18,11 +18,13 @@ pub mod ll {
     pub type SDL_FingerID = int64_t;
     pub type SDL_Finger = Finger;
 
-    externfn!(fn SDL_GetNumTouchDevices() -> c_int)
-    externfn!(fn SDL_GetTouchDevice(index: c_int) -> SDL_TouchID)
-    externfn!(fn SDL_GetNumTouchFingers(touchID: SDL_TouchID) -> c_int)
-    externfn!(fn SDL_GetTouchFinger(touchID: SDL_TouchID, index: c_int) ->
-              *SDL_Finger)
+    extern "C" {
+        pub fn SDL_GetNumTouchDevices() -> c_int;
+        pub fn SDL_GetTouchDevice(index: c_int) -> SDL_TouchID;
+        pub fn SDL_GetNumTouchFingers(touchID: SDL_TouchID) -> c_int;
+        pub fn SDL_GetTouchFinger(touchID: SDL_TouchID, index: c_int) ->
+                  *SDL_Finger;
+    }
 }
 
 pub fn get_num_touch_devices() -> int {

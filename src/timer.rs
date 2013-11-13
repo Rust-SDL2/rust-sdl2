@@ -3,10 +3,12 @@ pub mod ll {
     use std::libc::{uint32_t, uint64_t};
 
     //SDL_timer.h
-    externfn!(fn SDL_GetTicks() -> uint32_t)
-    externfn!(fn SDL_GetPerformanceCounter() -> uint64_t)
-    externfn!(fn SDL_GetPerformanceFrequency() -> uint64_t)
-    externfn!(fn SDL_Delay(ms: uint32_t))
+    extern "C" {
+        pub fn SDL_GetTicks() -> uint32_t;
+        pub fn SDL_GetPerformanceCounter() -> uint64_t;
+        pub fn SDL_GetPerformanceFrequency() -> uint64_t;
+        pub fn SDL_Delay(ms: uint32_t);
+    }
     //TODO: Figure out what to do with the timer callback functions
 }
 

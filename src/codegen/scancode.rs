@@ -1,5 +1,5 @@
 extern mod extra;
-use std::rt::io::Writer;
+use std::io::Writer;
 use super::get_writer;
 
 struct ScanCode {

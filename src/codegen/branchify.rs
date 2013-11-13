@@ -1,7 +1,7 @@
 #[macro_escape];
 
-use std::rt::io::buffered::BufferedWriter;
-use std::rt::io::{File, Writer};
+use std::io::buffered::BufferedWriter;
+use std::io::{File, Writer};
 use std::str::CharIterator;
 
 struct ParseBranch {
