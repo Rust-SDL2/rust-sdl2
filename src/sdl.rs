@@ -8,7 +8,7 @@ mod mac {
     #[link_args="-framework SDL2"]
     extern {}
 
-    #[cfg(mac_dylib)]
+    #[cfg(not(mac_framework))]
     #[link_args="-lSDL2"]
     extern {}
 }
