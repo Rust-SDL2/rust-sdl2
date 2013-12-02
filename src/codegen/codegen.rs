@@ -5,6 +5,7 @@ use std::io::buffered::BufferedWriter;
 use std::io::{File, Writer};
 use std::io;
 use std::io::fs::mkdir_recursive;
+use std::path::GenericPath;
 pub mod branchify;
 pub mod keycode;
 pub mod scancode;
@@ -17,7 +18,7 @@ fn main() {
             os::set_exit_status(1); 
         },
         3 => {
-            let output_dir = GenericPath::new(args[2].clone());
+            let output_dir = GenericPath::init(args[2].clone());
             // TODO: maybe not 0777?
             mkdir_recursive(&output_dir, 0b111_111_111);
 
