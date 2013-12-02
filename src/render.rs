@@ -186,15 +186,15 @@ impl RendererInfo {
             TargetTexture
         ];
 
-        let actual_flags = do flags.iter().filter_map |&flag| {
+        let actual_flags = flags.iter().filter_map(|&flag| {
             if info.flags as int & (flag as int) != 0 { Some(flag) }
             else { None }
-        }.collect();
+        }).collect();
 
         unsafe {
-            let texture_formats: ~[pixels::PixelFormatFlag] = do info.texture_formats.slice(0, info.num_texture_formats as uint).iter().map |&format| {
+            let texture_formats: ~[pixels::PixelFormatFlag] = info.texture_formats.slice(0, info.num_texture_formats as uint).iter().map(|&format| {
                 FromPrimitive::from_i64(format as i64).unwrap()
-            }.collect();
+            }).collect();
 
             ~RendererInfo {
                 name: str::raw::from_c_str(cast::transmute_copy(&info.name)),
@@ -633,7 +633,7 @@ impl Texture {
         unsafe { ll::SDL_GL_UnbindTexture(self.raw) == 0 }
     }
 
-    pub fn gl_with_bind<R>(&self, f: &fn(tex_w: f64, tex_h: f64) -> R) -> R {
+    pub fn gl_with_bind<R>(&self, f: |tex_w: f64, tex_h: f64| -> R) -> R {
         unsafe {
             let texw: c_float = 0.0;
             let texh: c_float = 0.0;

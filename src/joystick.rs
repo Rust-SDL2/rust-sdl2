@@ -59,8 +59,8 @@ pub fn wrap_hat_state(bitflags: u8) -> ~[HatState] {
         DownHatState,
         LeftHatState];
 
-    do flags.iter().filter_map |&flag| {
+    flags.iter().filter_map(|&flag| {
         if bitflags & (flag as u8) != 0 { Some(flag) }
         else { None }
-    }.collect()
+    }).collect()
 }

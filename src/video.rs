@@ -298,10 +298,10 @@ fn wrap_window_flags(bitflags: u32) -> ~[WindowFlags] {
         Foreign
     ];
 
-    do flags.iter().filter_map |&flag| {
+    flags.iter().filter_map(|&flag| {
         if bitflags & (flag as u32) != 0 { Some(flag) }
         else { None }
-    }.collect()
+    }).collect()
 }
 
 #[deriving(Eq)]
@@ -357,7 +357,7 @@ impl Window {
         let flags = window_flags.iter().fold(0u32, |flags, flag| { flags | *flag as u32 });
 
         unsafe {
-            let raw = do title.with_c_str |buff| {
+            let raw = title.with_c_str(|buff| {
                 ll::SDL_CreateWindow(
                     buff,
                     unwrap_windowpos(x),
@@ -366,7 +366,7 @@ impl Window {
                     height as c_int,
                     flags
                 )
-            };
+            });
 
             if raw == ptr::null() {
                 Err(get_error())
@@ -437,9 +437,9 @@ impl Window {
     }
 
     pub fn set_title(&self, title: &str) {
-        do title.with_c_str |buff| {
+        title.with_c_str(|buff| {
             unsafe { ll::SDL_SetWindowTitle(self.raw, buff) }
-        }
+        })
     }
     
     pub fn get_title(&self) -> ~str {
@@ -631,9 +631,9 @@ pub fn get_video_driver(id: int) -> ~str {
 }
 
 pub fn video_init(name: &str) -> bool {
-    do name.with_c_str |buf| {
+    name.with_c_str(|buf| {
         unsafe { ll::SDL_VideoInit(buf) == 0 }
-    }
+    })
 }
 
 pub fn video_quit() {
@@ -743,13 +743,13 @@ pub fn disable_screen_saver() {
 
 pub fn gl_load_library(path: &str) -> Result<(), ~str> {
     unsafe {
-        do path.with_c_str |path| {
+        path.with_c_str(|path| {
             if ll::SDL_GL_LoadLibrary(path) == 0 {
                 Ok(())
             } else {
                 Err(get_error())
             }
-        }
+        })
     }
 }
 
@@ -766,9 +766,9 @@ pub fn gl_unload_library() {
 }*/
 
 pub fn gl_extension_supported(extension: &str) -> bool {
-    do extension.with_c_str |buff| {
+    extension.with_c_str(|buff| {
         unsafe { ll::SDL_GL_ExtensionSupported(buff) == 1 }
-    }
+    })
 }
 
 pub fn gl_set_attribute(attr: GLAttr, value: int) -> bool {

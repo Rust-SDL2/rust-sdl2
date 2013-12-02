@@ -52,7 +52,7 @@ pub fn branchify(options: &[(&str, &str)], case_sensitive: bool) -> ~[ParseBranc
     };
 
     for &(key, result) in options.iter() {
-        go_down_moses(&mut root, key.iter(), result, case_sensitive);
+        go_down_moses(&mut root, key.chars(), result, case_sensitive);
     }
 
     root.children

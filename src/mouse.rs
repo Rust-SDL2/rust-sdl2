@@ -168,10 +168,10 @@ pub fn wrap_mouse_state(bitflags: u32) -> ~[MouseState] {
         X1MouseState,
         X2MouseState];
 
-    do flags.iter().filter_map |&flag| {
+    flags.iter().filter_map(|&flag| {
         if bitflags & (flag as u32) != 0 { Some(flag) }
         else { None }
-    }.collect()
+    }).collect()
 }
 
 pub fn get_mouse_focus() -> Option<~video::Window> {

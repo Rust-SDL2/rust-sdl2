@@ -81,10 +81,10 @@ pub fn wrap_mod_state(bitflags: ll::SDL_Keymod) -> ~[Mod] {
         ModeMod,
         ReservedMod];
 
-    do flags.iter().filter_map |&flag| {
+    flags.iter().filter_map(|&flag| {
         if bitflags & (flag as ll::SDL_Keymod) != 0 { Some(flag) }
         else { None }
-    }.collect()
+    }).collect()
 }
 
 pub fn get_keyboard_focus() -> Option<~Window> {
@@ -148,9 +148,9 @@ pub fn get_scancode_name(scancode: ScanCode) -> ~str {
 
 pub fn get_scancode_from_name(name: &str) -> ScanCode {
     unsafe {
-        do name.with_c_str |name| {
+        name.with_c_str(|name| {
             FromPrimitive::from_int(ll::SDL_GetScancodeFromName(name) as int).unwrap()
-        }
+        })
     }
 }
 
@@ -162,9 +162,9 @@ pub fn get_key_name(key: KeyCode) -> ~str {
 
 pub fn get_key_from_name(name: &str) -> KeyCode {
     unsafe {
-        do name.with_c_str |name| {
+        name.with_c_str(|name| {
             FromPrimitive::from_int(ll::SDL_GetKeyFromName(name) as int).unwrap()
-        }
+        })
     }
 }
 

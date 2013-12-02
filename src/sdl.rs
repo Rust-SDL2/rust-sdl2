@@ -86,24 +86,24 @@ pub enum Error {
 
 pub fn init(flags: &[InitFlag]) -> bool {
     unsafe {
-        ll::SDL_Init(do flags.iter().fold(0u32) |flags, &flag| {
+        ll::SDL_Init(flags.iter().fold(0u32, |flags, &flag| {
             flags | flag as ll::SDL_InitFlag
-        }) == 0
+        })) == 0
     }
 }
 
 pub fn init_subsystem(flags: &[InitFlag]) -> bool {
     unsafe {
-        ll::SDL_InitSubSystem(do flags.iter().fold(0u32) |flags, &flag| {
+        ll::SDL_InitSubSystem(flags.iter().fold(0u32, |flags, &flag| {
             flags | flag as ll::SDL_InitFlag
-        }) == 0
+        })) == 0
     }
 }
 
 pub fn quit_subsystem(flags: &[InitFlag]) {
-    let flags = do flags.iter().fold(0u32) |flags, &flag| {
+    let flags = flags.iter().fold(0u32, |flags, &flag| {
         flags | flag as ll::SDL_InitFlag
-    };
+    });
 
     unsafe { ll::SDL_QuitSubSystem(flags); }
 }
@@ -113,9 +113,9 @@ pub fn quit() {
 }
 
 pub fn was_inited(flags: &[InitFlag]) -> ~[InitFlag] {
-    let flags = do flags.iter().fold(0u32) |flags, &flag| {
+    let flags = flags.iter().fold(0u32, |flags, &flag| {
         flags | flag as ll::SDL_InitFlag
-    };
+    });
     let bitflags = unsafe { ll::SDL_WasInit(flags) };
 
     let flags = [InitTimer,
@@ -128,10 +128,10 @@ pub fn was_inited(flags: &[InitFlag]) -> ~[InitFlag] {
         InitNoParachute,
         InitEverything];
 
-    do flags.iter().filter_map |&flag| {
+    flags.iter().filter_map(|&flag| {
         if bitflags & (flag as ll::SDL_InitFlag) != 0 { Some(flag) }
         else { None }
-    }.collect()
+    }).collect()
 }
 
 pub fn get_error() -> ~str {
@@ -143,9 +143,9 @@ pub fn get_error() -> ~str {
 }
 
 pub fn set_error(err: &str) {
-    do err.with_c_str |buf| {
+    err.with_c_str(|buf| {
         unsafe { ll::SDL_SetError(buf); }
-    }
+    })
 }
 
 pub fn set_error_from_code(err: Error) {
