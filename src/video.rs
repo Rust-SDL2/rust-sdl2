@@ -164,7 +164,7 @@ pub mod ll {
         pub fn SDL_EnableScreenSaver();
         pub fn SDL_DisableScreenSaver();
         pub fn SDL_GL_LoadLibrary(path: *c_char) -> c_int;
-        //pub fn SDL_GL_GetProcAddress(proc: *c_char) -> Option<extern "C" fn()> //FIXME: What should the return type of this be
+        pub fn SDL_GL_GetProcAddress(procname: *c_char) -> Option<extern "C" fn()>;
         pub fn SDL_GL_UnloadLibrary();
         pub fn SDL_GL_ExtensionSupported(extension: *c_char) -> SDL_bool;
         pub fn SDL_GL_SetAttribute(attr: SDL_GLattr, value: c_int) -> c_int;
@@ -757,13 +757,13 @@ pub fn gl_unload_library() {
     unsafe { ll::SDL_GL_UnloadLibrary(); }
 }
 
-/*pub fn gl_get_proc_address(procname: &str) -> Option<extern "C" fn()> {
+pub fn gl_get_proc_address(procname: &str) -> Option<extern "C" fn()> {
     unsafe {
-        do procname.with_c_str |procname| {
+        procname.with_c_str(|procname| {
             ll::SDL_GL_GetProcAddress(procname)
-        }
+        })
     }
-}*/
+}
 
 pub fn gl_extension_supported(extension: &str) -> bool {
     extension.with_c_str(|buff| {
