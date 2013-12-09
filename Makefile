@@ -1,9 +1,8 @@
-RUSTC ?= rustc
 RUSTFLAGS ?=
 
 RUST_SRC = $(shell find src/. -type f -name '*.rs') \
-	src/generated/keycode.rs                        \
-	src/generated/scancode.rs
+	src/sdl2/generated/keycode.rs                   \
+	src/sdl2/generated/scancode.rs
 
 .PHONY: all
 all: libsdl2.dummy
@@ -28,24 +27,29 @@ ifeq ($(UNAME),Darwin)
   endif
 endif
 
-src/codegen/codegen: $(wildcard src/codegen/*.rs)
-	$(RUSTC) $(RUSTFLAGS) $@.rs
+bin/codegen: $(wildcard src/codegen/*.rs)
+	rustpkg install codegen $(RUSTFLAGS)
 
-src/generated/%.rs: src/codegen/codegen
-	src/codegen/codegen $(patsubst src/generated/%,%,$@) src/generated/
+src/sdl2/generated/%.rs: bin/codegen
+	bin/codegen $(patsubst src/sdl2/generated/%,%,$@) src/sdl2/generated/
 
-libsdl2.dummy: src/sdl2.rc $(RUST_SRC)
-	$(RUSTC) $(RUSTFLAGS) $< -o $@
+libsdl2.dummy: src/sdl2/lib.rs $(RUST_SRC)
+	rustpkg build sdl2 $(RUSTFLAGS)
 	touch $@
 
-demos: demo/demo.rc demo/video.rs libsdl2.dummy
-	$(RUSTC) -L . $< -o $@
+demos: src/demo/main.rs src/demo/video.rs libsdl2.dummy
+	rustpkg install demo
 
 demo: demos
-	./demos
+	./bin/demo
 
 .PHONY: clean
 clean:
-	rm -f *.so *.dylib *.dll *.dummy demos src/codegen/codegen
-	rm -rf *.dSYM src/generated/ src/codegen/codegen.dSYM
+	rustpkg clean codegen
+	rustpkg uninstall codegen
+	rustpkg clean sdl2
+	rustpkg clean demo
+	rustpkg uninstall demo
+	rm -f *.dummy
+	rm -rf src/sdl2/generated
 

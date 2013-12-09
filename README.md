@@ -30,12 +30,12 @@ Clone this repo run `make`. To see an example of the code in use, *make demos*.
 
 To compile the demo:
 
-> rustc -L$PWD/src demo/demo.rc
+> rustpkg install demo
 
 
 Then run:
 
-> ./demo/demo
+> ./bin/demo
 
 Or you could instead just use
 
