@@ -8,7 +8,6 @@
 #[license = "MIT"];
 
 #[feature(globs)];
-#[feature(link_args)];
 
 pub use sdl::*;
 #[path = "generated/keycode.rs"]

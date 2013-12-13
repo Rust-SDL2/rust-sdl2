@@ -5,11 +5,11 @@ use std::str;
 #[cfg(target_os="macos")]
 mod mac {
     #[cfg(mac_framework)]
-    #[link_args="-framework SDL2"]
+    #[link(name="framework SDL2")]
     extern {}
 
     #[cfg(not(mac_framework))]
-    #[link_args="-lSDL2"]
+    #[link(name="SDL2")]
     extern {}
 }
 
@@ -17,7 +17,7 @@ mod mac {
 #[cfg(target_os="linux")]
 #[cfg(target_os="freebsd")]
 mod others {
-    #[link_args="-lSDL2"]
+    #[link(name="SDL2")]
     extern {}
 }
 
