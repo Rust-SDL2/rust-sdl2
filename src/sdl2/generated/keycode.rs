@@ -245,7 +245,7 @@ pub enum KeyCode {
 
 }
 
-type Cb<'self> = 'self |buf: &[u8]| -> bool;
+type Cb<'a> = 'a |buf: &[u8]| -> bool;
 impl IterBytes for KeyCode{
 
     fn iter_bytes(&self, lsb0: bool, f: Cb) -> bool {
