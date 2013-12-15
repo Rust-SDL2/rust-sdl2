@@ -8,7 +8,6 @@ use std::str;
 use std::cast;
 use rect::Point;
 use rect::Rect;
-use std::vec;
 use std::num::FromPrimitive;
 
 pub mod ll {
@@ -427,7 +426,7 @@ impl Renderer {
 
     pub fn draw_points(&self, points: &[Point]) -> bool {
         unsafe {
-            ll::SDL_RenderDrawPoints(self.raw, cast::transmute(vec::raw::to_ptr(points)), points.len() as c_int) == 0
+            ll::SDL_RenderDrawPoints(self.raw, cast::transmute(points.as_ptr()), points.len() as c_int) == 0
         }
     }
 
@@ -437,7 +436,7 @@ impl Renderer {
 
     pub fn draw_lines(&self, points: &[Point]) -> bool {
         unsafe {
-            ll::SDL_RenderDrawLines(self.raw, cast::transmute(vec::raw::to_ptr(points)), points.len() as c_int) == 0
+            ll::SDL_RenderDrawLines(self.raw, cast::transmute(points.as_ptr()), points.len() as c_int) == 0
         }
     }
 
@@ -447,7 +446,7 @@ impl Renderer {
 
     pub fn draw_rects(&self, rects: &[Rect]) -> bool {
         unsafe {
-            ll::SDL_RenderDrawRects(self.raw, cast::transmute(vec::raw::to_ptr(rects)), rects.len() as c_int) == 0
+            ll::SDL_RenderDrawRects(self.raw, cast::transmute(rects.as_ptr()), rects.len() as c_int) == 0
         }
     }
 
@@ -457,7 +456,7 @@ impl Renderer {
 
     pub fn fill_rects(&self, rects: &[Rect]) -> bool {
         unsafe {
-            ll::SDL_RenderFillRects(self.raw, cast::transmute(vec::raw::to_ptr(rects)), rects.len() as c_int) == 0
+            ll::SDL_RenderFillRects(self.raw, cast::transmute(rects.as_ptr()), rects.len() as c_int) == 0
         }
     }
 
@@ -605,7 +604,7 @@ impl Texture {
                 None => ptr::null()
             };
 
-            ll::SDL_UpdateTexture(self.raw, actual_rect, cast::transmute(vec::raw::to_ptr(pixel_data)), pitch as c_int) == 0
+            ll::SDL_UpdateTexture(self.raw, actual_rect, cast::transmute(pixel_data.as_ptr()), pitch as c_int) == 0
         }
     }
 

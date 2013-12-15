@@ -1,5 +1,4 @@
 use std::ptr;
-use std::vec;
 
 use get_error;
 use surface;
@@ -89,8 +88,8 @@ impl Drop for Cursor {
 impl Cursor {
     pub fn new(data: &[u8], mask: &[u8], width: int, height: int, hot_x: int, hot_y: int) -> Result<~Cursor, ~str> {
         unsafe {
-            let raw = ll::SDL_CreateCursor(vec::raw::to_ptr(data),
-                                           vec::raw::to_ptr(mask),
+            let raw = ll::SDL_CreateCursor(data.as_ptr(),
+                                           mask.as_ptr(),
                                            width as i32, height as i32,
                                            hot_x as i32, hot_y as i32);
 
