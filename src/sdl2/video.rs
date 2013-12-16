@@ -547,7 +547,7 @@ impl Window {
     }
 
     pub fn update_surface_rects(&self, rects: &[Rect]) -> bool {
-        unsafe { ll::SDL_UpdateWindowSurfaceRects(self.raw, cast::transmute(vec::raw::to_ptr(rects)), rects.len() as c_int) == 0}
+        unsafe { ll::SDL_UpdateWindowSurfaceRects(self.raw, cast::transmute(rects.as_ptr()), rects.len() as c_int) == 0}
     }
 
     pub fn set_grab(&self, grabbed: bool) {
@@ -569,15 +569,15 @@ impl Window {
     pub fn set_gamma_ramp(&self, red: Option<&[u16, ..256]>, green: Option<&[u16, ..256]>, blue: Option<&[u16, ..256]>) -> bool {
         unsafe {
             let unwrapped_red = match red {
-                Some(values) => cast::transmute(vec::raw::to_ptr(*values)),
+                Some(values) => cast::transmute((*values).as_ptr()),
                 None => ptr::null()
             };
             let unwrapped_green = match green {
-                Some(values) => cast::transmute(vec::raw::to_ptr(*values)),
+                Some(values) => cast::transmute((*values).as_ptr()),
                 None => ptr::null()
             };
             let unwrapped_blue = match blue {
-                Some(values) => cast::transmute(vec::raw::to_ptr(*values)),
+                Some(values) => cast::transmute((*values).as_ptr()),
                 None => ptr::null()
             };
             ll::SDL_SetWindowGammaRamp(self.raw, unwrapped_red, unwrapped_green, unwrapped_blue) == 0
@@ -588,7 +588,7 @@ impl Window {
         let red: ~[u16] = vec::with_capacity(256);
         let green: ~[u16] = vec::with_capacity(256);
         let blue: ~[u16] = vec::with_capacity(256);
-        let result = unsafe {ll::SDL_GetWindowGammaRamp(self.raw, cast::transmute(vec::raw::to_ptr(red)), cast::transmute(vec::raw::to_ptr(green)), cast::transmute(vec::raw::to_ptr(blue))) == 0};
+        let result = unsafe {ll::SDL_GetWindowGammaRamp(self.raw, cast::transmute(red.as_ptr()), cast::transmute(green.as_ptr()), cast::transmute(blue.as_ptr())) == 0};
         if result {
             Ok((red, green, blue))
         } else {

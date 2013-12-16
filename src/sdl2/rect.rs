@@ -1,7 +1,6 @@
 use std::cast;
 use std::libc::c_int;
 use std::ptr;
-use std::vec;
 
 #[deriving(Eq)]
 #[deriving(Clone)]
@@ -70,7 +69,7 @@ impl Rect {
 
         let result = unsafe {
             ll::SDL_EnclosePoints(
-                cast::transmute(vec::raw::to_ptr(points)),
+                cast::transmute(points.as_ptr()),
                 points.len() as c_int,
                 match clip { Some(ref rect) => cast::transmute(rect), None => ptr::null() },
                 &out
