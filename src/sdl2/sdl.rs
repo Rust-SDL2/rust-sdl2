@@ -5,7 +5,7 @@ use std::str;
 #[cfg(target_os="macos")]
 mod mac {
     #[cfg(mac_framework)]
-    #[link(name="framework SDL2")]
+    #[link(kind="framework", name="SDL2")]
     extern {}
 
     #[cfg(not(mac_framework))]
