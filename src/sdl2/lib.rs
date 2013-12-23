@@ -1,8 +1,8 @@
 #[link(name = "sdl2",
-       package_id = "sdl2",
        vers = "0.0.1",
        uuid = "263e35b2-0727-11e3-b3dd-29219a890b3c",
        url = "http://github.com/AngryLawyer/rust-sdl2")];
+#[crate_id="sdl2"];
 
 #[desc = "SDL2 bindings"];
 #[license = "MIT"];
