@@ -1,7 +1,6 @@
 extern mod extra;
 use std::io::Writer;
 use super::get_writer;
-use std::cmp::{Less, Equal, Greater};
 
 struct Key {
     code: uint,
