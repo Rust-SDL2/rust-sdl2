@@ -6,6 +6,22 @@ struct ScanCode {
     code: uint,
     ident: &'static str,
 }
+impl TotalOrd for ScanCode {
+    fn cmp(&self, other: &ScanCode) -> Ordering {
+        if self.code < other.code {
+            Less
+        } else if self.code > other.code {
+            Greater
+        } else { Equal }
+    }
+}
+impl TotalEq for ScanCode {
+    fn equals(&self, other: &ScanCode) -> bool {
+        if self.code == other.code {
+            true
+        } else { false }
+    }
+}
 
 fn ScanCode(code: uint, ident: &'static str) -> ScanCode {
     ScanCode { code: code, ident: ident }
@@ -272,7 +288,7 @@ pub fn generate(output_dir: &Path) {
         ScanCode(512, "NumScanCode"),
         ];
 
-        extra::sort::quick_sort(entries, |a, b| a.code <= b.code);
+        entries.sort();
     unsafe {
         longest_ident = entries.iter().map(|&key| key.ident().len()).max_by(|&i| i).unwrap();
     }

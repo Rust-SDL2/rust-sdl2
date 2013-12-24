@@ -1,11 +1,29 @@
 extern mod extra;
 use std::io::Writer;
 use super::get_writer;
+use std::cmp::{Less, Equal, Greater};
 
 struct Key {
     code: uint,
     ident: &'static str,
 }
+impl TotalOrd for Key {
+    fn cmp(&self, other: &Key) -> Ordering {
+        if self.code < other.code {
+            Less
+        } else if self.code > other.code {
+            Greater
+        } else { Equal }
+    }
+}
+impl TotalEq for Key {
+    fn equals(&self, other: &Key) -> bool {
+        if self.code == other.code {
+            true
+        } else { false }
+    }
+}
+
 
 fn Key(code: uint, ident: &'static str) -> Key {
     Key { code: code, ident: ident }
@@ -265,7 +283,7 @@ pub fn generate(output_dir: &Path) {
         Key(1073742106, "SleepKey"),
         ];
 
-        extra::sort::quick_sort(entries, |a, b| a.code <= b.code);
+        entries.sort();
     unsafe {
         longest_ident = entries.iter().map(|&key| key.ident().len()).max_by(|&i| i).unwrap();
     }
