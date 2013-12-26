@@ -1,4 +1,5 @@
 #[feature(macro_rules)];
+#[crate_id = "codegen#0.1"];
 
 use std::os;
 use std::io::buffered::BufferedWriter;
@@ -15,7 +16,7 @@ fn main() {
     match args.len() {
         0 => {
             println("usage: codegen [keycode|scancode].rs destdir");
-            os::set_exit_status(1); 
+            os::set_exit_status(1);
         },
         3 => {
             let output_dir = GenericPath::new(args[2].clone());
