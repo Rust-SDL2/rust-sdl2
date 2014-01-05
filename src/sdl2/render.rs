@@ -207,9 +207,15 @@ impl RendererInfo {
 }
 
 #[deriving(Eq)]
+enum RendererParent {
+    Window(~video::Window),
+    Surface(~surface::Surface)
+}
+
+#[deriving(Eq)]
 pub struct Renderer {
     raw: *ll::SDL_Renderer,
-    parent: Either<~video::Window, ~surface::Surface>,
+    parent: RendererParent,
     owned: bool
 }
 
@@ -238,7 +244,7 @@ impl Renderer {
         if raw == ptr::null() {
             Err(get_error())
         } else {
-            Ok(~Renderer{ raw: raw, parent: Left(window), owned: true,})
+            Ok(~Renderer{ raw: raw, parent: Window(window), owned: true,})
         }
     }
 
@@ -254,7 +260,7 @@ impl Renderer {
             };
             Ok(~Renderer {
                 raw: raw_renderer,
-                parent: Left(window),
+                parent: Window(window),
                 owned: true 
             })
         } else {
@@ -267,7 +273,7 @@ impl Renderer {
         if result == ptr::null() {
             Ok(~Renderer {
                 raw: result,
-                parent: Right(surface),
+                parent: Surface(surface),
                 owned: true 
             })
         } else {
