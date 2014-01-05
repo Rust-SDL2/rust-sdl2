@@ -138,7 +138,7 @@ pub enum RenderDriverIndex {
 
 #[deriving(Eq, FromPrimitive)]
 pub enum TextureAccess {
-    AccessStatic = ll::SDL_TEXTUREACCESS_STATIC as int, 
+    AccessStatic = ll::SDL_TEXTUREACCESS_STATIC as int,
     AccessStreaming = ll::SDL_TEXTUREACCESS_STREAMING as int,
     AccessTarget = ll::SDL_TEXTUREACCESS_TARGET as int
 }
@@ -255,7 +255,7 @@ impl Renderer {
             Ok(~Renderer {
                 raw: raw_renderer,
                 parent: Left(window),
-                owned: true 
+                owned: true
             })
         } else {
             Err(get_error())
@@ -268,7 +268,7 @@ impl Renderer {
             Ok(~Renderer {
                 raw: result,
                 parent: Right(surface),
-                owned: true 
+                owned: true
             })
         } else {
             Err(get_error())
@@ -343,7 +343,7 @@ impl Renderer {
     }
 
     pub fn set_render_target(&self, texture: Option<&Texture>) -> bool {
-        unsafe { 
+        unsafe {
             let actual_texture = match texture {
                 Some(texture) => cast::transmute(texture.raw),
                 None => ptr::null()
@@ -467,11 +467,11 @@ impl Renderer {
                 texture.raw,
                 match src {
                     Some(rect) => cast::transmute(&rect),
-                    None => ptr::null() 
+                    None => ptr::null()
                 },
                 match dst {
                     Some(rect) => cast::transmute(&rect),
-                    None => ptr::null() 
+                    None => ptr::null()
                 }
             ) == 0
         }
@@ -485,16 +485,16 @@ impl Renderer {
                 texture.raw,
                 match src {
                     Some(rect) => cast::transmute(&rect),
-                    None => ptr::null() 
+                    None => ptr::null()
                 },
                 match dst {
                     Some(rect) => cast::transmute(&rect),
-                    None => ptr::null() 
+                    None => ptr::null()
                 },
                 angle as c_double,
                 match center {
                     Some(point) => cast::transmute(&point),
-                    None => ptr::null() 
+                    None => ptr::null()
                 },
                 FromPrimitive::from_i64(flip as i64).unwrap()
             ) == 0
@@ -542,7 +542,7 @@ impl Texture {
         if result {
             Ok(~TextureQuery {
                format: FromPrimitive::from_i64(format as i64).unwrap(),
-               access: FromPrimitive::from_i64(access as i64).unwrap(), 
+               access: FromPrimitive::from_i64(access as i64).unwrap(),
                width: width as int,
                height: height as int
             })
@@ -598,7 +598,7 @@ impl Texture {
     }
 
     pub fn update(&self, rect: Option<Rect>, pixel_data: &[u8], pitch: int) -> bool {
-        unsafe { 
+        unsafe {
             let actual_rect = match rect {
                 Some(rect) => cast::transmute(&rect),
                 None => ptr::null()
@@ -650,7 +650,7 @@ pub fn get_num_render_drivers() -> Result<int, ~str> {
     if result > 0 {
         Ok(result as int)
     } else {
-        Err(get_error()) 
+        Err(get_error())
     }
 }
 
