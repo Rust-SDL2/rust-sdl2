@@ -3,7 +3,7 @@
 
 use std::os;
 use std::io::buffered::BufferedWriter;
-use std::io::{File, Writer};
+use std::io::File;
 use std::io;
 use std::io::fs::mkdir_recursive;
 use std::path::GenericPath;
