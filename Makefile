@@ -37,10 +37,10 @@ libsdl2.dummy: src/sdl2/lib.rs $(RUST_SRC)
 	rustpkg build sdl2 $(RUSTFLAGS)
 	touch $@
 
-demos: src/demo/main.rs src/demo/video.rs libsdl2.dummy
+compile_demo: src/demo/main.rs src/demo/video.rs libsdl2.dummy
 	rustpkg install demo
 
-demo: demos
+demo: compile_demo
 	./bin/demo
 
 .PHONY: clean
