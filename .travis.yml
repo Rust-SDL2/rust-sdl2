@@ -9,4 +9,4 @@ install:
   - ./configure && make && sudo make install
   - cd -
 script:
-  - make compile_demos
+  - make compile_demo
