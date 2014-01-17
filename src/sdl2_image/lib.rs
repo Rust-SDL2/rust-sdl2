@@ -14,6 +14,26 @@ use sdl2::surface::Surface;
 use sdl2::render::{Texture, Renderer};
 use sdl2::get_error;
 
+// Setup linking for all targets.
+#[cfg(target_os="macos")]
+mod mac {
+    #[cfg(mac_framework)]
+    #[link(kind="framework", name="SDL2_image")]
+    extern {}
+
+    #[cfg(not(mac_framework))]
+    #[link(name="SDL2_image")]
+    extern {}
+}
+
+#[cfg(target_os="win32")]
+#[cfg(target_os="linux")]
+#[cfg(target_os="freebsd")]
+mod others {
+    #[link(name="SDL2_image")]
+    extern {}
+}
+
 mod ffi;
 
 #[deriving(Clone, Eq, IterBytes, ToStr)]
