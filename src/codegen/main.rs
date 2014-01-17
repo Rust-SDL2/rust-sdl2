@@ -16,7 +16,7 @@ fn main() {
     let args = os::args();
     match args.len() {
         0 => {
-            println!("usage: codegen [keycode|scancode].rs destdir");
+            println("usage: codegen [keycode|scancode].rs destdir");
             os::set_exit_status(1);
         },
         3 => {
