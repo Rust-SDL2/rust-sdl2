@@ -11,7 +11,8 @@ use std::ptr;
 use std::cast;
 use std::io;
 use sdl2::surface::Surface;
-use sdl2::render::{Texture, Renderer};
+use sdl2::render::Texture;
+pub use sdl2::render::Renderer;
 use sdl2::get_error;
 
 // Setup linking for all targets.
@@ -89,17 +90,16 @@ impl ImageVersion {
 //     }
 // }
 
-pub trait ImageLoader<T> {
-    fn from_file(filename: &str) -> Result<~T, ~str>;
-    fn from_xpm_array(xpm: **i8) -> Result<~T, ~str>;
+pub trait ImageLoader {
+    fn from_file(filename: &str) -> Result<~Surface, ~str>;
+    fn from_xpm_array(xpm: **i8) -> Result<~Surface, ~str>;
 }
 
 pub trait ImageSaver {
     fn save(&self, filename: &str) -> Result<(), ~str>;
 }
 
-// TODO -- does this need to be pub'd?
-impl ImageLoader<Surface> for Surface {
+impl ImageLoader for Surface {
     fn from_file(filename: &str) -> Result<~Surface, ~str> {
         unsafe {
             let raw = ffi::IMG_Load(filename.to_c_str().unwrap());
