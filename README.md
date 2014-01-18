@@ -13,7 +13,8 @@ Requirements
 Installation
 ------------
 
-```git clone https://github.com/xsleonard/rust-sdl2_image
+```
+git clone https://github.com/xsleonard/rust-sdl2_image
 cd rust-sdl2_image
 rustpkg install sdl2_image
 ```

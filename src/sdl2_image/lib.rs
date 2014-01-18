@@ -12,7 +12,7 @@ use std::cast;
 use std::io;
 use sdl2::surface::Surface;
 use sdl2::render::Texture;
-pub use sdl2::render::Renderer;
+use sdl2::render::Renderer;
 use sdl2::get_error;
 
 // Setup linking for all targets.
@@ -45,6 +45,7 @@ pub enum InitFlag {
     InitWebp = ffi::IMG_INIT_WEBP as int,
 }
 
+#[deriving(Eq, Clone)]
 pub struct ImageVersion {
     major: int,
     minor: int,
@@ -65,30 +66,6 @@ impl ImageVersion {
         }
     }
 }
-
-
-// TODO -- this should be in rust-sdl2
-// Most of the sdl2_image API relies on SDL_RWops.
-
-// #[deriving(Eq)]
-// pub struct RWops {
-//     raw: *SDL_RWops;
-//     owned: bool;
-// }
-
-// impl Drop for RWops {
-//     fn drop(&mut self) {
-//         if self.owned {
-//             unsafe {
-//                 // TODO -- close() returns a c_int error status.
-//                 // How do we deal with errors in the destructor?
-//                 // Probably either kill the task, or don't implement this
-//                 // as a destructor
-//                 self.raw.close()
-//             }
-//         }
-//     }
-// }
 
 pub trait ImageLoader {
     fn from_file(filename: &str) -> Result<~Surface, ~str>;
@@ -176,6 +153,7 @@ pub fn init(flags: &[InitFlag]) -> ~[InitFlag] {
 }
 
 pub fn quit() {
+    //! Teardown the SDL2_Image subsystem
     unsafe { ffi::IMG_Quit(); }
 }
 
@@ -185,3 +163,26 @@ pub fn get_linked_version() -> ImageVersion {
         ImageVersion::from_sdl_version(ffi::IMG_Linked_Version())
     }
 }
+
+// TODO -- this should be in rust-sdl2
+// Most of the sdl2_image API relies on SDL_RWops.
+
+// #[deriving(Eq)]
+// pub struct RWops {
+//     raw: *SDL_RWops;
+//     owned: bool;
+// }
+
+// impl Drop for RWops {
+//     fn drop(&mut self) {
+//         if self.owned {
+//             unsafe {
+//                 // TODO -- close() returns a c_int error status.
+//                 // How do we deal with errors in the destructor?
+//                 // Probably either kill the task, or don't implement this
+//                 // as a destructor
+//                 self.raw.close()
+//             }
+//         }
+//     }
+// }
