@@ -68,8 +68,11 @@ impl ImageVersion {
 }
 
 pub trait ImageLoader {
-    fn from_file(filename: &str) -> Result<~Surface, ~str>;
-    fn from_xpm_array(xpm: **i8) -> Result<~Surface, ~str>;
+    // Self is only returned here to type hint to the compiler.
+    // The syntax for type hinting in this case is not yet defined.
+    // The intended return value is Result<~Surface, ~str>.
+    fn from_file(filename: &str) -> Result<~Self, ~str>;
+    fn from_xpm_array(xpm: **i8) -> Result<~Self, ~str>;
 }
 
 pub trait ImageSaver {
