@@ -46,28 +46,28 @@ pub enum InitFlag {
 }
 
 #[deriving(Eq, Clone)]
-pub struct ImageVersion {
+pub struct SDLImageVersion {
     major: int,
     minor: int,
     patch: int,
 }
 
-impl ToStr for ImageVersion {
+impl ToStr for SDLImageVersion {
     fn to_str(&self) -> ~str {
         format!("{}.{}.{}", self.major, self.minor, self.patch)
     }
 }
 
-impl ImageVersion {
-    fn from_sdl_version(sv: *ffi::SDL_version) -> ImageVersion {
+impl SDLImageVersion {
+    fn from_sdl_version(sv: *ffi::SDL_version) -> SDLImageVersion {
         unsafe {
             let v = *sv;
-            ImageVersion{ major: v.major, minor: v.minor, patch: v.patch }
+            SDLImageVersion{ major: v.major, minor: v.minor, patch: v.patch }
         }
     }
 }
 
-pub trait ImageLoader {
+pub trait LoadSurface {
     // Self is only returned here to type hint to the compiler.
     // The syntax for type hinting in this case is not yet defined.
     // The intended return value is Result<~Surface, ~str>.
@@ -75,11 +75,11 @@ pub trait ImageLoader {
     fn from_xpm_array(xpm: **i8) -> Result<~Self, ~str>;
 }
 
-pub trait ImageSaver {
+pub trait SaveImage {
     fn save(&self, filename: &str) -> Result<(), ~str>;
 }
 
-impl ImageLoader for Surface {
+impl LoadSurface for Surface {
     fn from_file(filename: &str) -> Result<~Surface, ~str> {
         unsafe {
             let raw = ffi::IMG_Load(filename.to_c_str().unwrap());
@@ -103,7 +103,7 @@ impl ImageLoader for Surface {
     }
 }
 
-impl ImageSaver for Surface {
+impl SaveImage for Surface {
     fn save(&self, filename: &str) -> Result<(), ~str> {
         unsafe {
             let status = ffi::IMG_SavePNG(self.raw,
@@ -117,13 +117,12 @@ impl ImageSaver for Surface {
     }
 }
 
-pub trait TextureLoader {
-    fn load_texture_from_file(&self, filename: &str) -> Result<~Texture, ~str>;
+pub trait LoadTexture {
+    fn load_texture(&self, filename: &str) -> Result<~Texture, ~str>;
 }
 
-impl TextureLoader for Renderer {
-    fn load_texture_from_file(&self,
-                              filename: &str) -> Result<~Texture, ~str> {
+impl LoadTexture for Renderer {
+    fn load_texture(&self, filename: &str) -> Result<~Texture, ~str> {
         unsafe {
             let raw = ffi::IMG_LoadTexture(self.raw,
                                            filename.to_c_str().unwrap());
@@ -160,10 +159,10 @@ pub fn quit() {
     unsafe { ffi::IMG_Quit(); }
 }
 
-pub fn get_linked_version() -> ImageVersion {
+pub fn get_linked_version() -> SDLImageVersion {
     //! Returns the version of the dynamically linked SDL_image library
     unsafe {
-        ImageVersion::from_sdl_version(ffi::IMG_Linked_Version())
+        SDLImageVersion::from_sdl_version(ffi::IMG_Linked_Version())
     }
 }
 
