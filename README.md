@@ -19,3 +19,10 @@ cd rust-sdl2_image
 rustpkg install sdl2_image
 ```
 
+Demo
+----
+
+```
+rustpkg install demo
+./bin/demo image.[png|jpg]
+```

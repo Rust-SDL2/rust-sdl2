@@ -37,6 +37,9 @@ mod others {
 
 mod ffi;
 
+// repr(C) "makes the size of the enum's discriminant the default
+// size of enums that the C ABI for the platform uses."
+#[repr(C)]
 #[deriving(Clone, Eq, IterBytes, ToStr)]
 pub enum InitFlag {
     InitJpg = ffi::IMG_INIT_JPG as int,
