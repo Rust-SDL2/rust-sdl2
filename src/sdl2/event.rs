@@ -685,8 +685,10 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
                     Ok(window) => window,
                 };
 
-                let text = str::from_utf8_owned(event.text.iter().take_while(|b| (**b) != 0i8).map(|b| b.to_u8().unwrap()).collect::<~[u8]>());
-
+                let text = match str::from_utf8_owned(event.text.iter().take_while(|b| (**b) != 0i8).map(|b| b.to_u8().unwrap()).collect::<~[u8]>()) {
+                    Some(t) => t,
+                    None => ~""
+                };
                 TextEditingEvent(event.timestamp as uint, window, text,
                                  event.start as int, event.length as int)
             }
@@ -701,8 +703,10 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
                     Ok(window) => window,
                 };
 
-                let text = str::from_utf8_owned(event.text.iter().take_while(|b| (**b) != 0i8).map(|b| b.to_u8().unwrap()).collect::<~[u8]>());
-
+                let text = match str::from_utf8_owned(event.text.iter().take_while(|b| (**b) != 0i8).map(|b| b.to_u8().unwrap()).collect::<~[u8]>()) {
+                    Some(t) => t,
+                    None => ~""
+                };
                 TextInputEvent(event.timestamp as uint, window, text)
             }
 
