@@ -2,7 +2,7 @@
 #[crate_id = "codegen#0.1"];
 
 use std::os;
-use std::io::buffered::BufferedWriter;
+use std::io::BufferedWriter;
 use std::io::File;
 use std::io;
 use std::io::stdio::println;
