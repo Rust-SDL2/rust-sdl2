@@ -36,6 +36,8 @@ mod others {
 
 mod ffi;
 
+/// InitFlags are passed to init() to control which subsystem
+/// functionality to load.
 // repr(C) "makes the size of the enum's discriminant the default
 // size of enums that the C ABI for the platform uses."
 #[repr(C)]
@@ -47,6 +49,7 @@ pub enum InitFlag {
     InitWebp = ffi::IMG_INIT_WEBP as int,
 }
 
+/// The version of the libSDL.so that you are linked to
 #[deriving(Eq, Clone)]
 pub struct SDLImageVersion {
     major: int,
@@ -62,6 +65,7 @@ impl ToStr for SDLImageVersion {
 
 impl SDLImageVersion {
     fn from_sdl_version(sv: *ffi::SDL_version) -> SDLImageVersion {
+        //! Converts a raw *SDL_version to SDLImageVersion
         unsafe {
             let v = *sv;
             SDLImageVersion{ major: v.major, minor: v.minor, patch: v.patch }
@@ -69,6 +73,7 @@ impl SDLImageVersion {
     }
 }
 
+/// Static method extensions for creating Surfaces
 pub trait LoadSurface {
     // Self is only returned here to type hint to the compiler.
     // The syntax for type hinting in this case is not yet defined.
@@ -77,12 +82,14 @@ pub trait LoadSurface {
     fn from_xpm_array(xpm: **i8) -> Result<~Self, ~str>;
 }
 
-pub trait SaveImage {
+/// Method extensions to Surface for saving to disk
+pub trait SaveSurface {
     fn save(&self, filename: &Path) -> Result<(), ~str>;
 }
 
 impl LoadSurface for Surface {
     fn from_file(filename: &Path) -> Result<~Surface, ~str> {
+        //! Loads an SDL Surface from a file
         unsafe {
             let raw = ffi::IMG_Load(filename.to_c_str().unwrap());
             if raw == ptr::null() {
@@ -94,6 +101,7 @@ impl LoadSurface for Surface {
     }
 
     fn from_xpm_array(xpm: **i8) -> Result<~Surface, ~str> {
+        //! Loads an SDL Surface from XPM data
         unsafe {
             let raw = ffi::IMG_ReadXPMFromArray(xpm as **c_char);
             if raw == ptr::null() {
@@ -105,8 +113,9 @@ impl LoadSurface for Surface {
     }
 }
 
-impl SaveImage for Surface {
+impl SaveSurface for Surface {
     fn save(&self, filename: &Path) -> Result<(), ~str> {
+        //! Saves an SDL Surface to a file
         unsafe {
             let status = ffi::IMG_SavePNG(self.raw,
                                           filename.to_c_str().unwrap());
@@ -119,12 +128,14 @@ impl SaveImage for Surface {
     }
 }
 
+/// Method extensions for creating Textures from a Renderer
 pub trait LoadTexture {
     fn load_texture(&self, filename: &Path) -> Result<~Texture, ~str>;
 }
 
 impl LoadTexture for Renderer {
     fn load_texture(&self, filename: &Path) -> Result<~Texture, ~str> {
+        //! Loads an SDL Texture from a file
         unsafe {
             let raw = ffi::IMG_LoadTexture(self.raw,
                                            filename.to_c_str().unwrap());
