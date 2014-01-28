@@ -1,15 +1,14 @@
-#[crate_type = "rlib"];
-#[crate_id="github.com/xsleonard/sdl2_image-rs#sdl2_image:0.1"];
+#[crate_id="sdl2_image#sdl2_image:0.1"];
+#[crate_type = "lib"];
 #[desc = "SDL2_image bindings and wrappers"];
 #[comment = "SDL2_image bindings and wrappers"];
 #[license = "MIT"];
+
 
 extern mod sdl2;
 
 use std::libc::{c_int, c_char};
 use std::ptr;
-use std::cast;
-use std::io;
 use sdl2::surface::Surface;
 use sdl2::render::Texture;
 use sdl2::render::Renderer;
@@ -74,16 +73,16 @@ pub trait LoadSurface {
     // Self is only returned here to type hint to the compiler.
     // The syntax for type hinting in this case is not yet defined.
     // The intended return value is Result<~Surface, ~str>.
-    fn from_file(filename: &str) -> Result<~Self, ~str>;
+    fn from_file(filename: &Path) -> Result<~Self, ~str>;
     fn from_xpm_array(xpm: **i8) -> Result<~Self, ~str>;
 }
 
 pub trait SaveImage {
-    fn save(&self, filename: &str) -> Result<(), ~str>;
+    fn save(&self, filename: &Path) -> Result<(), ~str>;
 }
 
 impl LoadSurface for Surface {
-    fn from_file(filename: &str) -> Result<~Surface, ~str> {
+    fn from_file(filename: &Path) -> Result<~Surface, ~str> {
         unsafe {
             let raw = ffi::IMG_Load(filename.to_c_str().unwrap());
             if raw == ptr::null() {
@@ -107,7 +106,7 @@ impl LoadSurface for Surface {
 }
 
 impl SaveImage for Surface {
-    fn save(&self, filename: &str) -> Result<(), ~str> {
+    fn save(&self, filename: &Path) -> Result<(), ~str> {
         unsafe {
             let status = ffi::IMG_SavePNG(self.raw,
                                           filename.to_c_str().unwrap());
@@ -121,11 +120,11 @@ impl SaveImage for Surface {
 }
 
 pub trait LoadTexture {
-    fn load_texture(&self, filename: &str) -> Result<~Texture, ~str>;
+    fn load_texture(&self, filename: &Path) -> Result<~Texture, ~str>;
 }
 
 impl LoadTexture for Renderer {
-    fn load_texture(&self, filename: &str) -> Result<~Texture, ~str> {
+    fn load_texture(&self, filename: &Path) -> Result<~Texture, ~str> {
         unsafe {
             let raw = ffi::IMG_LoadTexture(self.raw,
                                            filename.to_c_str().unwrap());

@@ -1,5 +1,3 @@
-#[nowarn(dead_code)]
-
 extern mod sdl2;
 
 use std::libc::{c_int, c_char};

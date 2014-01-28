@@ -3,16 +3,19 @@ use sdl2_image;
 use sdl2_image::LoadSurface;
 // use sdl2_image::LoadTexture;
 
-pub fn main(png: ~str) {
+pub fn main(png: &Path) {
     sdl2::init([sdl2::InitVideo]);
     sdl2_image::init([sdl2_image::InitPng, sdl2_image::InitJpg]);
 
-    let window = match sdl2::video::Window::new("rust-sdl2 demo: Video", sdl2::video::PosCentered, sdl2::video::PosCentered, 800, 600, [sdl2::video::OpenGL]) {
+    let window = match sdl2::video::Window::new(
+            "rust-sdl2 demo: Video", sdl2::video::PosCentered,
+            sdl2::video::PosCentered, 800, 600, [sdl2::video::OpenGL]) {
         Ok(window) => window,
         Err(err) => fail!(format!("failed to create window: {}", err))
     };
 
-    let renderer = match sdl2::render::Renderer::from_window(window, sdl2::render::DriverAuto, [sdl2::render::Accelerated]) {
+    let renderer = match sdl2::render::Renderer::from_window(
+            window, sdl2::render::DriverAuto, [sdl2::render::Accelerated]) {
         Ok(renderer) => renderer,
         Err(err) => fail!(format!("failed to create renderer: {}", err))
     };
@@ -27,8 +30,8 @@ pub fn main(png: ~str) {
         Err(err) => fail!(format!("Failed to create surface: {}", err))
     };
 
-    // Load a texture directly via the renderer
-    // let texture = match renderer.load_texture("test.png") {
+    // // Load a texture directly via the renderer
+    // let texture = match renderer.load_texture(png) {
     //     Ok(texture) => texture,
     //     Err(err) => fail!(format!("Could not set render target: {}", err))
     // };
