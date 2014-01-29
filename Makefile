@@ -1,11 +1,16 @@
 RUSTFLAGS ?=
+OUTDIR ?= ./build
+
+BINDIR = $(OUTDIR)/bin
+LIBDIR = $(OUTDIR)/lib
+TMPDIR = $(OUTDIR)/tmp
 
 RUST_SRC = $(shell find src/. -type f -name '*.rs') \
 	src/sdl2/generated/keycode.rs                   \
 	src/sdl2/generated/scancode.rs
 
 .PHONY: all
-all: libsdl2.dummy
+all: $(TMPDIR)/libsdl2.dummy
 
 UNAME=$(shell uname)
 
@@ -27,29 +32,26 @@ ifeq ($(UNAME),Darwin)
   endif
 endif
 
-bin/codegen: $(wildcard src/codegen/*.rs)
-	rustpkg install codegen $(RUSTFLAGS)
+$(BINDIR) $(LIBDIR) $(TMPDIR):
+	mkdir -p '$@'
 
-src/sdl2/generated/%.rs: bin/codegen
-	bin/codegen $(patsubst src/sdl2/generated/%,%,$@) src/sdl2/generated/
+$(TMPDIR)/codegen: $(wildcard src/codegen/*.rs) $(TMPDIR)
+	rustc -o '$(TMPDIR)/codegen' src/codegen/main.rs $(RUSTFLAGS)
 
-libsdl2.dummy: src/sdl2/lib.rs $(RUST_SRC)
-	rustpkg build sdl2 $(RUSTFLAGS)
+src/sdl2/generated/%.rs: $(TMPDIR)/codegen
+	'$(TMPDIR)/codegen' $(patsubst src/sdl2/generated/%,%,$@) src/sdl2/generated/
+
+$(TMPDIR)/libsdl2.dummy: src/sdl2/lib.rs $(RUST_SRC) $(LIBDIR) $(TMPDIR)
+	rustc --out-dir '$(LIBDIR)' src/sdl2/lib.rs $(RUSTFLAGS)
 	touch $@
 
-compile_demo: src/demo/main.rs src/demo/video.rs libsdl2.dummy
-	rustpkg install demo
+compile_demo: src/demo/main.rs src/demo/video.rs $(TMPDIR)/libsdl2.dummy $(BINDIR)
+	rustc -o '$(BINDIR)/demo' -L '$(LIBDIR)' src/demo/main.rs
 
 demo: compile_demo
-	./bin/demo
+	'$(BINDIR)/demo'
 
 .PHONY: clean
 clean:
-	rustpkg clean codegen
-	rustpkg uninstall codegen
-	rustpkg clean sdl2
-	rustpkg clean demo
-	rustpkg uninstall demo
-	rm -f *.dummy
 	rm -rf src/sdl2/generated
-
+	rm -rf '$(OUTDIR)'
