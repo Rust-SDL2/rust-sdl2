@@ -339,7 +339,7 @@ impl ToPrimitive for ScanCode {
     for primitive_type in types.iter() {
         out.write(format!("fn to_{}(&self) -> Option<{}> \\{
             Some(self.code() as {})
-        \\}\n", *primitive_type, *primitive_type, *primitive_type).into_bytes())
+        \\}\n", *primitive_type, *primitive_type, *primitive_type).into_bytes());
     }
 
 out.write("
