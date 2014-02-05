@@ -42,7 +42,7 @@ fn main() {
 
 pub fn get_writer(output_dir: &Path, filename: &str) -> ~BufferedWriter<File> {
     match File::open_mode(&output_dir.join(filename), io::Truncate, io::Write) {
-        Some(writer) => ~BufferedWriter::new(writer),
-        None => fail!("Unable to write file"),
+        Ok(writer) => ~BufferedWriter::new(writer),
+        Err(e) => fail!("Unable to write file: {:s}", e.desc),
     }
 }
