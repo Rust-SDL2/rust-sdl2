@@ -16,7 +16,11 @@ If you want a library compatible with earlier versions of SDL, please see https:
 
 ## Where are SDL_image, SDL_mixer, and SDL_ttf?
 
-I plan for these to live outside of this repo. So far, they haven't been written - so feel free to take command and have a go at writing bindings for them!
+These live outside of the repo.
+
+* https://github.com/xsleonard/rust-sdl2_image
+
+SDL_mixer and SDL_ttf have yet to be written.
 
 # Requirements
 
