@@ -1,5 +1,5 @@
-extern mod sdl2;
-extern mod native;
+extern crate sdl2;
+extern crate native;
 
 mod video;
 
