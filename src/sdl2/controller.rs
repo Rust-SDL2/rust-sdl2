@@ -3,7 +3,6 @@ use std::libc::c_int;
 pub mod ll {
     use std::cast;
     use std::libc::{c_int, c_schar, c_uchar, c_uint, c_void, int16_t, uint8_t};
-    use std::ptr;
     use joystick::ll::{SDL_Joystick, SDL_JoystickGUID};
 
     pub type SDL_bool = c_int;
@@ -32,13 +31,13 @@ pub mod ll {
 
     impl SDL_GameControllerButtonBindData {
         pub fn button(&self) -> *c_int {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
         pub fn axis(&self) -> *c_int {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
         pub fn hat(&self) -> *SDL_GameControllerButtonBindDataHat {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
     }
 

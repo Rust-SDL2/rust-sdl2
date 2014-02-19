@@ -20,7 +20,6 @@ pub mod ll {
     use std::cast;
     use std::libc::{c_float, c_int, c_schar, c_uint, c_void, int16_t,
                     int32_t, uint8_t, uint16_t, uint32_t};
-    use std::ptr;
     use gesture::ll::SDL_GestureID;
     use keyboard::ll::SDL_Keysym;
     use touch::ll::SDL_FingerID;
@@ -307,99 +306,99 @@ pub mod ll {
 
     impl SDL_Event {
         pub fn _type(&self) -> *uint32_t {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn common(&self) -> *SDL_CommonEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn window(&self) -> *SDL_WindowEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn key(&self) -> *SDL_KeyboardEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn edit(&self) -> *SDL_TextEditingEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn text(&self) -> *SDL_TextInputEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn motion(&self) -> *SDL_MouseMotionEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn button(&self) -> *SDL_MouseButtonEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn wheel(&self) -> *SDL_MouseWheelEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn jaxis(&self) -> *SDL_JoyAxisEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn jball(&self) -> *SDL_JoyBallEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn jhat(&self) -> *SDL_JoyHatEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn jbutton(&self) -> *SDL_JoyButtonEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn jdevice(&self) -> *SDL_JoyDeviceEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn caxis(&self) -> *SDL_ControllerAxisEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn cbutton(&self) -> *SDL_ControllerButtonEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn cdevice(&self) -> *SDL_ControllerDeviceEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn quit(&self) -> *SDL_QuitEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn user(&self) -> *SDL_UserEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn syswm(&self) -> *SDL_SysWMEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn tfinger(&self) -> *SDL_TouchFingerEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn mgesture(&self) -> *SDL_MultiGestureEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn dgesture(&self) -> *SDL_DollarGestureEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
 
         pub fn drop(&self) -> *SDL_DropEvent {
-            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+            unsafe { cast::transmute_copy(&self) }
         }
     }
 
@@ -572,7 +571,7 @@ fn wrap_event(raw: ll::SDL_Event) -> Event {
         let raw_type = if raw_type.is_null() { return NoEvent; }
                        else { *raw_type };
 
-        // FIXME: This should error-check 
+        // FIXME: This should error-check
         let event_type: EventType = FromPrimitive::from_uint(raw_type as uint).unwrap();
         match event_type {
             QuitEventType => {
