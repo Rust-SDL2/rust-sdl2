@@ -6,6 +6,8 @@
 
 #[feature(globs)];
 
+extern crate collections;
+
 pub use sdl::*;
 #[path = "generated/keycode.rs"]
 pub mod keycode;
