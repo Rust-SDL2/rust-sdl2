@@ -310,8 +310,6 @@ pub enum ScanCode {
     out.write("
 }
 
-
-// type Cb<'a> = 'a |buf: &[u8]| -> bool;
 impl Hash for ScanCode {
 	#[inline]
 	fn hash(&self, state: &mut SipState) {

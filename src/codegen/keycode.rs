@@ -304,7 +304,6 @@ pub enum KeyCode {
     out.write("
 }
 
-//type Cb<'a> = 'a |buf: &[u8]| -> bool;
 impl Hash for KeyCode {
    #[inline] 
     fn hash(&self, state: &mut SipState) {
