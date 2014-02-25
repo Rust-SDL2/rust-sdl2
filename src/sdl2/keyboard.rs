@@ -1,4 +1,4 @@
-use std::hashmap::HashMap;
+use collections::hashmap::HashMap;
 use std::num::FromPrimitive;
 use std::ptr;
 use std::str;
