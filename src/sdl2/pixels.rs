@@ -114,8 +114,8 @@ impl Color {
         let b: u8 = 0;
         let a: u8 = 0;
 
-        let result = unsafe {
-             ll::SDL_GetRGBA(pixel, format.raw, &r, &g, &b, &a)
+        unsafe {
+            ll::SDL_GetRGBA(pixel, format.raw, &r, &g, &b, &a)
         };
         RGBA(r, g, b, a)
     }
