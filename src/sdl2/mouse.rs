@@ -4,6 +4,7 @@ use get_error;
 use surface;
 use video;
 
+#[allow(non_camel_case_types)]
 pub mod ll {
     use std::libc::{c_int, c_uint, c_void, uint8_t, uint32_t};
     use surface::ll::SDL_Surface;

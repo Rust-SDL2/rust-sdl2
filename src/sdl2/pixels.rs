@@ -1,5 +1,6 @@
 use std::rand;
 
+#[allow(non_camel_case_types)]
 pub mod ll {
     use std::libc::{c_int, uint8_t, uint32_t};
 

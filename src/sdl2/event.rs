@@ -16,6 +16,7 @@ use mouse::{Mouse, MouseState};
 use scancode::ScanCode;
 use video;
 
+#[allow(non_camel_case_types)]
 pub mod ll {
     use std::cast;
     use std::libc::{c_float, c_int, c_schar, c_uint, c_void, int16_t,
