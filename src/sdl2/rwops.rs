@@ -1,3 +1,4 @@
+#[allow(non_camel_case_types)]
 pub mod ll {
     use std::libc::{c_uchar, uint8_t, uint32_t, c_schar};
 
@@ -12,7 +13,7 @@ pub mod ll {
         write: *uint8_t,
         close: *uint8_t,
         _type: uint32_t,
-        hidden: SDL_RWops_Anon
+        priv hidden: SDL_RWops_Anon
     }
 
     extern "C" {

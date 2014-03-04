@@ -1,4 +1,5 @@
 
+#[allow(non_camel_case_types)]
 pub mod ll {
     use std::libc::{c_int, int64_t};
     use rwops::ll::SDL_RWops;

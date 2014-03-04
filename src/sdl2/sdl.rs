@@ -21,6 +21,7 @@ mod others {
     extern {}
 }
 
+#[allow(non_camel_case_types)]
 pub mod ll {
     use std::libc::{c_int, c_uint, c_schar, uint32_t};
 

@@ -10,6 +10,7 @@ use rect::Point;
 use rect::Rect;
 use std::num::FromPrimitive;
 
+#[allow(non_camel_case_types)]
 pub mod ll {
 
     use std::libc::{c_int, c_char, c_void, c_float, c_double};
@@ -215,7 +216,7 @@ enum RendererParent {
 #[deriving(Eq)]
 pub struct Renderer {
     raw: *ll::SDL_Renderer,
-    parent: RendererParent,
+    priv parent: RendererParent,
     owned: bool
 }
 
