@@ -137,6 +137,11 @@ impl Surface {
         }
     }
 
+    pub fn get_pixel_format(&self) -> pixels::PixelFormat {
+        pixels::PixelFormat {
+            raw: unsafe { (*self.raw).format }
+        }
+    }
 
     pub fn lock(&self) -> bool {
         unsafe { ll::SDL_LockSurface(self.raw) == 0 }
@@ -191,10 +196,30 @@ impl Surface {
         }
     }
 
-    /* //TODO: Figure out how to safely turn Color(RGB) into the pixel using the right format
-    pub fn SDL_SetColorKey(surface: *SDL_Surface, flag: c_int, key: uint32_t) -> c_int;
-    pub fn SDL_GetColorKey(surface: *SDL_Surface, key: *uint32_t) -> c_int;
-    */
+    pub fn set_color_key(&self, enable: bool, color: pixels::Color) -> Result<(), ~str> {
+        let key = color.to_u32(&self.get_pixel_format());
+        let result = unsafe {
+            ll::SDL_SetColorKey(self.raw, ::std::bool::to_bit(enable), key)
+        };
+        if result == 0 {
+            Ok(())
+        } else {
+            Err(get_error())
+        }
+    }
+
+    pub fn get_color_key(&self) -> Result<pixels::Color, ~str> {
+        let key: u32 = 0;
+        let result = unsafe {
+            ll::SDL_GetColorKey(self.raw, &key)
+        };
+
+        if result == 0 {
+            Ok(pixels::Color::from_u32(&self.get_pixel_format(), key))
+        } else {
+            Err(get_error())
+        }
+    }
     
     pub fn set_color_mod(&self, color: pixels::Color) -> bool {
         let (r, g, b) = match color {

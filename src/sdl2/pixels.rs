@@ -77,6 +77,13 @@ pub mod ll {
     pub static SDL_PIXELFORMAT_YUY2: SDL_PixelFormatFlag = 0x32595559;
     pub static SDL_PIXELFORMAT_UYVY: SDL_PixelFormatFlag = 0x59565955;
     pub static SDL_PIXELFORMAT_YVYU: SDL_PixelFormatFlag = 0x55595659;
+
+    extern "C" {
+        pub fn SDL_GetRGB(pixel: uint32_t, format: *SDL_PixelFormat, r: *uint8_t, g: *uint8_t, b: *uint8_t);
+        pub fn SDL_GetRGBA(pixel: uint32_t, format: *SDL_PixelFormat, r: *uint8_t, g: *uint8_t, b: *uint8_t, a: *uint8_t);
+        pub fn SDL_MapRGB(format: *SDL_PixelFormat, r: uint8_t, g: uint8_t, b: uint8_t) -> uint32_t;
+        pub fn SDL_MapRGBA(format: *SDL_PixelFormat, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) -> uint32_t;
+    }
 }
 #[deriving(Eq)]
 pub struct Palette {
@@ -89,11 +96,41 @@ pub enum Color {
     RGBA(u8, u8, u8, u8)
 }
 
+impl Color {
+    pub fn to_u32(&self, format: &PixelFormat) -> u32 {
+        match self {
+            &RGB(r, g, b) => {
+                unsafe { ll::SDL_MapRGB(format.raw, r, g, b) }
+            }
+            &RGBA(r, g, b, a) => {
+                unsafe { ll::SDL_MapRGBA(format.raw, r, g, b, a) }
+            }
+        }
+    }
+
+    pub fn from_u32(format: &PixelFormat, pixel: u32) -> Color {
+        let r: u8 = 0;
+        let g: u8 = 0;
+        let b: u8 = 0;
+        let a: u8 = 0;
+
+        unsafe {
+            ll::SDL_GetRGBA(pixel, format.raw, &r, &g, &b, &a)
+        };
+        RGBA(r, g, b, a)
+    }
+}
+
 impl rand::Rand for Color {
     fn rand<R: rand::Rng>(rng: &mut R) -> Color {
         if rng.gen() { RGBA(rng.gen(), rng.gen(), rng.gen(), rng.gen()) }
         else { RGB(rng.gen(), rng.gen(), rng.gen()) }
     }
+}
+
+#[deriving(Eq)]
+pub struct PixelFormat {
+    raw: *ll::SDL_PixelFormat
 }
 
 #[deriving(Eq, FromPrimitive)]
