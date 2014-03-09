@@ -6,6 +6,27 @@ struct ScanCode {
     code: uint,
     ident: &'static str,
 }
+
+impl Ord for ScanCode {
+    fn lt (&self, other: &ScanCode) -> bool {
+        if self.code < other.code {
+            true
+        } else {
+            false
+        }
+    }
+}
+
+impl Eq for ScanCode {
+    fn eq (&self, other: &ScanCode) -> bool {
+        if self.code == other.code {
+            true
+        } else {
+            false
+        }
+    }
+}
+
 impl TotalOrd for ScanCode {
     fn cmp(&self, other: &ScanCode) -> Ordering {
         if self.code < other.code {
