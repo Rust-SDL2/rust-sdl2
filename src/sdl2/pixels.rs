@@ -19,6 +19,7 @@ pub mod ll {
         refcount: c_int
     }
 
+    #[allow(uppercase_variables)]
     pub struct SDL_PixelFormat {
         format: SDL_PixelFormatFlag,
         palette: *SDL_Palette,
