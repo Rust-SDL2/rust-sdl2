@@ -1,8 +1,10 @@
 // This automatically generated file is used as sdl2::keycode.
 
+use std::hash::Hash;
+use std::hash::sip::SipState;
+
 use std::num::FromPrimitive;
 use std::num::ToPrimitive;
-use std::to_bytes::IterBytes;
 
 #[deriving(Eq)]
 pub enum KeyCode {
@@ -245,12 +247,11 @@ pub enum KeyCode {
 
 }
 
-type Cb<'a> = 'a |buf: &[u8]| -> bool;
-impl IterBytes for KeyCode{
-
-    fn iter_bytes(&self, lsb0: bool, f: Cb) -> bool {
-        self.code().iter_bytes(lsb0, f)
-    }
+impl Hash for KeyCode {
+   #[inline] 
+    fn hash(&self, state: &mut SipState) {
+	self.code().hash(state);
+    } 
 }
 
 impl KeyCode {

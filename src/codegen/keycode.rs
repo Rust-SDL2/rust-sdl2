@@ -6,6 +6,27 @@ struct Key {
     code: uint,
     ident: &'static str,
 }
+
+impl Ord for Key {
+    fn lt (&self, other: &Key) -> bool {
+        if self.code < other.code {
+            true
+        } else {
+            false
+        }
+    }
+}
+
+impl Eq for Key {
+    fn eq (&self, other: &Key) -> bool {
+        if self.code == other.code {
+            true
+        } else {
+            false
+        }
+    }
+}
+
 impl TotalOrd for Key {
     fn cmp(&self, other: &Key) -> Ordering {
         if self.code < other.code {
