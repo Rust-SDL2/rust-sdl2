@@ -1,4 +1,4 @@
-use std::rand;
+extern crate rand;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
