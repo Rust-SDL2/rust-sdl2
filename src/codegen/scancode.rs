@@ -1,4 +1,3 @@
-extern crate extra;
 use std::io::Writer;
 use super::get_writer;
 
