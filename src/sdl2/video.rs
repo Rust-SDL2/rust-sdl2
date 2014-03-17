@@ -2,7 +2,7 @@ use std::libc::{c_int, c_float, uint32_t};
 use std::ptr;
 use std::str;
 use std::cast;
-use std::vec;
+use std::vec_ng::Vec;
 
 use rect::Rect;
 use surface::Surface;
@@ -282,7 +282,7 @@ pub enum FullscreenType {
 }
 
 
-fn wrap_window_flags(bitflags: u32) -> ~[WindowFlags] {
+fn wrap_window_flags(bitflags: u32) -> Vec<WindowFlags> {
     let flags = [
         Fullscreen,
         OpenGL,
@@ -432,7 +432,7 @@ impl Window {
         unsafe { ll::SDL_GetWindowID(self.raw) }
     }
 
-    pub fn get_flags(&self) -> ~[WindowFlags] {
+    pub fn get_flags(&self) -> Vec<WindowFlags> {
         let raw = unsafe { ll::SDL_GetWindowFlags(self.raw) };
         wrap_window_flags(raw) 
     }
@@ -585,10 +585,10 @@ impl Window {
         }
     }
 
-    pub fn get_gamma_ramp(&self) -> Result<(~[u16], ~[u16], ~[u16]), ~str> {
-        let red: ~[u16] = vec::with_capacity(256);
-        let green: ~[u16] = vec::with_capacity(256);
-        let blue: ~[u16] = vec::with_capacity(256);
+    pub fn get_gamma_ramp(&self) -> Result<(Vec<u16>, Vec<u16>, Vec<u16>), ~str> {
+        let red: Vec<u16> = Vec::with_capacity(256);
+        let green: Vec<u16> = Vec::with_capacity(256);
+        let blue: Vec<u16> = Vec::with_capacity(256);
         let result = unsafe {ll::SDL_GetWindowGammaRamp(self.raw, cast::transmute(red.as_ptr()), cast::transmute(green.as_ptr()), cast::transmute(blue.as_ptr())) == 0};
         if result {
             Ok((red, green, blue))

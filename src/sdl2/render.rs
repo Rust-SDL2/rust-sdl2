@@ -9,6 +9,7 @@ use std::cast;
 use rect::Point;
 use rect::Rect;
 use std::num::FromPrimitive;
+use std::vec_ng::Vec;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
@@ -155,8 +156,8 @@ pub enum RendererFlags {
 #[deriving(Eq)]
 pub struct RendererInfo {
     name: ~str,
-    flags: ~[RendererFlags],
-    texture_formats: ~[pixels::PixelFormatFlag],
+    flags: Vec<RendererFlags>,
+    texture_formats: Vec<pixels::PixelFormatFlag>,
     max_texture_width: int,
     max_texture_height: int
 }
@@ -192,7 +193,7 @@ impl RendererInfo {
         }).collect();
 
         unsafe {
-            let texture_formats: ~[pixels::PixelFormatFlag] = info.texture_formats.slice(0, info.num_texture_formats as uint).iter().map(|&format| {
+            let texture_formats: Vec<pixels::PixelFormatFlag> = info.texture_formats.slice(0, info.num_texture_formats as uint).iter().map(|&format| {
                 FromPrimitive::from_i64(format as i64).unwrap()
             }).collect();
 

@@ -1,4 +1,5 @@
 use std::ptr;
+use std::vec_ng::Vec;
 
 use get_error;
 use surface;
@@ -161,7 +162,7 @@ pub fn wrap_mouse(bitflags: u8) -> Mouse {
     }
 }
 
-pub fn wrap_mouse_state(bitflags: u32) -> ~[MouseState] {
+pub fn wrap_mouse_state(bitflags: u32) -> Vec<MouseState> {
     let flags = [LeftMouseState,
         MiddleMouseState,
         RightMouseState,
@@ -183,7 +184,7 @@ pub fn get_mouse_focus() -> Option<~video::Window> {
     }
 }
 
-pub fn get_mouse_state() -> (~[MouseState], int, int) {
+pub fn get_mouse_state() -> (Vec<MouseState>, int, int) {
     let x = 0;
     let y = 0;
     let raw = unsafe { ll::SDL_GetMouseState(&x, &y) };
@@ -191,7 +192,7 @@ pub fn get_mouse_state() -> (~[MouseState], int, int) {
     return (wrap_mouse_state(raw), x as int, y as int);
 }
 
-pub fn get_relative_mouse_state() -> (~[MouseState], int, int) {
+pub fn get_relative_mouse_state() -> (Vec<MouseState>, int, int) {
     let x = 0;
     let y = 0;
     let raw = unsafe { ll::SDL_GetRelativeMouseState(&x, &y) };

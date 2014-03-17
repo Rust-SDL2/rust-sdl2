@@ -3,6 +3,7 @@ use std::num::FromPrimitive;
 use std::ptr;
 use std::str;
 use std::vec;
+use std::vec_ng::Vec;
 
 use keycode::KeyCode;
 use rect::Rect;
@@ -67,7 +68,7 @@ pub enum Mod {
      ReservedMod = 0x8000
 }
 
-pub fn wrap_mod_state(bitflags: ll::SDL_Keymod) -> ~[Mod] {
+pub fn wrap_mod_state(bitflags: ll::SDL_Keymod) -> Vec<Mod> {
     let flags = [NoMod,
         LShiftMod,
         RShiftMod,
@@ -114,7 +115,7 @@ pub fn get_keyboard_state() -> ~HashMap<ScanCode, bool> {
     return state;
 }
 
-pub fn get_mod_state() -> ~[Mod] {
+pub fn get_mod_state() -> Vec<Mod> {
     unsafe { wrap_mod_state(ll::SDL_GetModState()) }
 }
 

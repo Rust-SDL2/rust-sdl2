@@ -1,3 +1,4 @@
+use std::vec_ng::Vec;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
@@ -53,7 +54,7 @@ pub enum HatState {
     LeftHatState
 }
 
-pub fn wrap_hat_state(bitflags: u8) -> ~[HatState] {
+pub fn wrap_hat_state(bitflags: u8) -> Vec<HatState> {
     let flags = [CenteredHatState,
         UpHatState,
         RightHatState,

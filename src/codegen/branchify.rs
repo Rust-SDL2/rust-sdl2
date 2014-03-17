@@ -3,24 +3,25 @@
 use std::io::BufferedWriter;
 use std::io::{File, Writer};
 use std::str::Chars;
+use std::vec_ng::Vec;
 
 struct ParseBranch {
-    matches: ~[u8],
+    matches: Vec<u8>,
     result: Option<~str>,
-    children: ~[ParseBranch],
+    children: Vec<ParseBranch>,
 }
 
 impl ParseBranch {
     fn new() -> ParseBranch {
         ParseBranch {
-            matches: ~[],
+            matches: Vec::new(),
             result: None,
-            children: ~[],
+            children: Vec::new(),
         }
     }
 }
 
-pub fn branchify(options: &[(&str, &str)], case_sensitive: bool) -> ~[ParseBranch] {
+pub fn branchify(options: &[(&str, &str)], case_sensitive: bool) -> Vec<ParseBranch> {
     let mut root = ParseBranch::new();
 
     fn go_down_moses(branch: &mut ParseBranch, mut chariter: Chars, result: &str, case_sensitive: bool) {
@@ -28,7 +29,7 @@ pub fn branchify(options: &[(&str, &str)], case_sensitive: bool) -> ~[ParseBranc
             Some(c) => {
                 let first_case = if case_sensitive { c as u8 } else { c.to_ascii().to_upper().to_byte() };
                 for next_branch in branch.children.mut_iter() {
-                    if next_branch.matches[0] == first_case {
+                    if next_branch.matches.as_slice()[0] == first_case {
                         go_down_moses(next_branch, chariter, result, case_sensitive);
                         return;
                     }
@@ -42,7 +43,8 @@ pub fn branchify(options: &[(&str, &str)], case_sensitive: bool) -> ~[ParseBranc
                     }
                 }
                 branch.children.push(subbranch);
-                go_down_moses(&mut branch.children[branch.children.len() - 1], chariter, result, case_sensitive);
+                let index = branch.children.len() -1;
+                go_down_moses(&mut branch.children.as_mut_slice()[index], chariter, result, case_sensitive);
             },
             None => {
                 assert!(branch.result.is_none());
