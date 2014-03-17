@@ -1,6 +1,6 @@
-extern crate extra;
 use std::io::Writer;
 use super::get_writer;
+use std::vec_ng::Vec;
 
 struct Key {
     code: uint,
@@ -348,7 +348,7 @@ impl KeyCode {
 impl ToPrimitive for KeyCode {
     /// Equivalent to `self.code()`
 ".as_bytes());
-    let types = ~["i64", "u64", "int"];
+    let types = vec!("i64", "u64", "int");
     for primitive_type in types.iter() {
         out.write(format!("fn to_{}(&self) -> Option<{}> \\{
             Some(self.code() as {})

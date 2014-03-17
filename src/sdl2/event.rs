@@ -2,6 +2,7 @@ use std::cast;
 use std::libc::{c_int, c_void, uint32_t};
 use std::num::FromPrimitive;
 use std::str;
+use std::vec_ng::Vec;
 
 use controller;
 use controller::{ControllerAxis, ControllerButton};
@@ -524,12 +525,12 @@ pub enum Event {
     WindowEvent(uint, ~video::Window, WindowEventId, int, int),
     // TODO: SysWMEvent
 
-    KeyDownEvent(uint, ~video::Window, KeyCode, ScanCode, ~[Mod]),
-    KeyUpEvent(uint, ~video::Window, KeyCode, ScanCode, ~[Mod]),
+    KeyDownEvent(uint, ~video::Window, KeyCode, ScanCode, Vec<Mod>),
+    KeyUpEvent(uint, ~video::Window, KeyCode, ScanCode, Vec<Mod>),
     TextEditingEvent(uint, ~video::Window, ~str, int, int),
     TextInputEvent(uint, ~video::Window, ~str),
 
-    MouseMotionEvent(uint, ~video::Window, uint, ~[MouseState], int, int,
+    MouseMotionEvent(uint, ~video::Window, uint, Vec<MouseState>, int, int,
                      int, int),
     MouseButtonDownEvent(uint, ~video::Window, uint, Mouse, int, int),
     MouseButtonUpEvent(uint, ~video::Window, uint, Mouse, int, int),
@@ -537,7 +538,7 @@ pub enum Event {
 
     JoyAxisMotionEvent(uint, int, int, i16),
     JoyBallMotionEvent(uint, int, i16, i16),
-    JoyHatMotionEvent(uint, int, int, ~[HatState]),
+    JoyHatMotionEvent(uint, int, int, Vec<HatState>),
     JoyButtonDownEvent(uint, int, int),
     JoyButtonUpEvent(uint, int, int),
     JoyDeviceAddedEvent(uint, int),
@@ -566,6 +567,8 @@ pub enum Event {
 impl Event {
 }
 
+// TODO: Remove this when from_utf8 is updated in Rust
+#[allow(deprecated_owned_vector)]
 fn wrap_event(raw: ll::SDL_Event) -> Event {
     unsafe {
         let raw_type = raw._type();

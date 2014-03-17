@@ -8,33 +8,34 @@ use std::io;
 use std::io::stdio::println;
 use std::io::fs::mkdir_recursive;
 use std::path::GenericPath;
+use std::vec_ng::Vec;
 pub mod branchify;
 pub mod keycode;
 pub mod scancode;
 
 fn main() {
-    let args = os::args();
+    let args = Vec::from_slice(os::args());
     match args.len() {
         0 => {
             println("usage: codegen [keycode|scancode].rs destdir");
             os::set_exit_status(1);
         },
         3 => {
-            let output_dir = GenericPath::new(args[2].clone());
+            let output_dir = GenericPath::new(args.get(2).clone());
             // TODO: maybe not 0777?
             mkdir_recursive(&output_dir, 0b111_111_111);
 
-            if args[1] == ~"keycode.rs" {
+            if *args.get(1) == ~"keycode.rs" {
                 keycode::generate(&output_dir);
-            } else if args[1] == ~"scancode.rs" {
+            } else if *args.get(1) == ~"scancode.rs" {
                 scancode::generate(&output_dir);
             } else {
-                println!("unknown thing-to-generate '{}'", args[1]);
+                println!("unknown thing-to-generate '{}'", args.get(1));
                 os::set_exit_status(1);
             }
         },
         _ => {
-            println!("usage: {} [keycode|scancode].rs destdir", args[0]);
+            println!("usage: {} [keycode|scancode].rs destdir", args.get(0));
             os::set_exit_status(1);
         }
     }
