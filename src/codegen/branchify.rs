@@ -94,9 +94,14 @@ pub fn generate_branchified_method(
     macro_rules! wf(($($x:tt)*) => ({
         let indentstr = " ".repeat(indent * 4);
         let s = format!($($x)*);
-        writer.write(indentstr.as_bytes());
-        writer.write(s.as_bytes());
-        writer.write(bytes!("\n"));
+        let result = writer.write(indentstr.as_bytes())
+        .and(writer.write(s.as_bytes()))
+        .and(writer.write(bytes!("\n")));
+
+        match result {
+            Ok(_)  => {},
+            Err(e) => fail!("write error: {:s}", e.desc),
+        }
     }))
 
     fn r(writer: &mut BufferedWriter<File>, branch: &ParseBranch, prefix: &str, indent: uint, read_call: &str,
