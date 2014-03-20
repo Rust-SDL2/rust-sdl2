@@ -23,12 +23,18 @@ fn main() {
         3 => {
             let output_dir = GenericPath::new(args.get(2).clone());
             // TODO: maybe not 0777?
-            mkdir_recursive(&output_dir, 0b111_111_111);
+            match mkdir_recursive(&output_dir, 0b111_111_111) {
+                Err(msg) => fail!("Could not create directory for generated sources: {}", msg),
+                Ok(_) => {},
+            };
 
             if *args.get(1) == ~"keycode.rs" {
                 keycode::generate(&output_dir);
             } else if *args.get(1) == ~"scancode.rs" {
-                scancode::generate(&output_dir);
+                match scancode::generate(&output_dir) {
+                    Ok(_)    => {},
+                    Err(msg) => fail!("Could not automatically generate sources for scancodes: {}", msg.desc),
+                };
             } else {
                 println!("unknown thing-to-generate '{}'", args.get(1));
                 os::set_exit_status(1);
