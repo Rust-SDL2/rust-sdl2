@@ -9,7 +9,7 @@ use std::cast;
 use rect::Point;
 use rect::Rect;
 use std::num::FromPrimitive;
-use std::vec_ng::Vec;
+use std::vec::Vec;
 
 #[allow(non_camel_case_types)]
 pub mod ll {

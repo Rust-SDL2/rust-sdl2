@@ -1,4 +1,4 @@
-use std::vec_ng::Vec;
+use std::vec::Vec;
 
 #[allow(non_camel_case_types)]
 pub mod ll {

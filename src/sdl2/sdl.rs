@@ -1,6 +1,6 @@
 use std::cast;
 use std::str;
-use std::vec_ng::Vec;
+use std::vec::Vec;
 
 // Setup linking for all targets.
 #[cfg(target_os="macos")]
