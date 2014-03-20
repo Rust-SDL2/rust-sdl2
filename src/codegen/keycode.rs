@@ -1,4 +1,4 @@
-use std::io::{IoError,Writer};
+use std::io::{IoResult,Writer};
 use super::get_writer;
 use std::vec_ng::Vec;
 
@@ -62,7 +62,7 @@ impl Key {
 
 static mut longest_ident: uint = 0;
 
-pub fn generate(output_dir: &Path) -> Result<(), IoError> {
+pub fn generate(output_dir: &Path) -> IoResult<()> {
     let mut out = get_writer(output_dir, "keycode.rs");
     let mut entries = [
         Key(0, "UnknownKey"),
