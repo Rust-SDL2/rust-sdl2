@@ -394,7 +394,7 @@ impl FromPrimitive for ScanCode {
 
 try!(out.write("
 }".as_bytes()));
-	try!(out.flush());
-
-	return Ok(());
+    
+    try!(out.flush());
+    Ok(())
 }
