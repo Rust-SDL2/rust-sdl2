@@ -21,6 +21,7 @@ impl ParseBranch {
     }
 }
 
+#[allow(visible_private_types)]
 pub fn branchify(options: &[(&str, &str)], case_sensitive: bool) -> Vec<ParseBranch> {
     let mut root = ParseBranch::new();
 
@@ -80,6 +81,7 @@ macro_rules! branchify(
 /// :param unknown: the expression to call for an unknown value; in this string, ``{}`` will be
 ///         replaced with an expression (literal or non-literal) evaluating to a ``~str`` (it is
 ///         ``{}`` only, not arbitrary format strings)
+#[allow(visible_private_types)]
 pub fn generate_branchified_method(
         writer: &mut BufferedWriter<File>,
         branches: &[ParseBranch],
