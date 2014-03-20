@@ -21,6 +21,7 @@ impl ParseBranch {
     }
 }
 
+#[allow(visible_private_types)]
 pub fn branchify(options: &[(&str, &str)], case_sensitive: bool) -> Vec<ParseBranch> {
     let mut root = ParseBranch::new();
 
@@ -80,6 +81,7 @@ macro_rules! branchify(
 /// :param unknown: the expression to call for an unknown value; in this string, ``{}`` will be
 ///         replaced with an expression (literal or non-literal) evaluating to a ``~str`` (it is
 ///         ``{}`` only, not arbitrary format strings)
+#[allow(visible_private_types)]
 pub fn generate_branchified_method(
         writer: &mut BufferedWriter<File>,
         branches: &[ParseBranch],
@@ -94,9 +96,14 @@ pub fn generate_branchified_method(
     macro_rules! wf(($($x:tt)*) => ({
         let indentstr = " ".repeat(indent * 4);
         let s = format!($($x)*);
-        writer.write(indentstr.as_bytes());
-        writer.write(s.as_bytes());
-        writer.write(bytes!("\n"));
+        let result = writer.write(indentstr.as_bytes())
+        .and(writer.write(s.as_bytes()))
+        .and(writer.write(bytes!("\n")));
+
+        match result {
+            Ok(_)  => {},
+            Err(e) => fail!("write error: {:s}", e.desc),
+        }
     }))
 
     fn r(writer: &mut BufferedWriter<File>, branch: &ParseBranch, prefix: &str, indent: uint, read_call: &str,
