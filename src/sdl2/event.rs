@@ -2,7 +2,7 @@ use std::cast;
 use std::libc::{c_int, c_void, uint32_t};
 use std::num::FromPrimitive;
 use std::str;
-use std::vec_ng::Vec;
+use std::vec::Vec;
 
 use controller;
 use controller::{ControllerAxis, ControllerButton};

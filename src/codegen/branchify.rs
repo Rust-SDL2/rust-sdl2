@@ -3,7 +3,7 @@
 use std::io::BufferedWriter;
 use std::io::{File, Writer};
 use std::str::Chars;
-use std::vec_ng::Vec;
+use std::vec::Vec;
 
 struct ParseBranch {
     matches: Vec<u8>,

@@ -1,5 +1,5 @@
 use std::ptr;
-use std::vec_ng::Vec;
+use std::vec::Vec;
 
 use get_error;
 use surface;

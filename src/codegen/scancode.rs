@@ -1,6 +1,6 @@
 use std::io::{IoResult,Writer};
+use std::vec::Vec;
 use super::get_writer;
-use std::vec_ng::Vec;
 
 struct ScanCode {
     code: uint,

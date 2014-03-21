@@ -2,7 +2,7 @@ use std::libc::{c_int, c_float, uint32_t};
 use std::ptr;
 use std::str;
 use std::cast;
-use std::vec_ng::Vec;
+use std::vec::Vec;
 
 use rect::Rect;
 use surface::Surface;

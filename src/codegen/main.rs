@@ -8,7 +8,7 @@ use std::io;
 use std::io::stdio::println;
 use std::io::fs::mkdir_recursive;
 use std::path::GenericPath;
-use std::vec_ng::Vec;
+use std::vec::Vec;
 pub mod branchify;
 pub mod keycode;
 pub mod scancode;
