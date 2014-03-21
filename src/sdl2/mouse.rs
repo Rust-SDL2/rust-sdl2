@@ -1,5 +1,5 @@
 use std::ptr;
-use std::vec::Vec;
+use std::vec::{Vec, append_one};
 
 use get_error;
 use surface;
@@ -140,15 +140,17 @@ pub enum Mouse {
     RightMouse,
     X1Mouse,
     X2Mouse,
+    UnknownMouse(u8)
 }
 
 #[deriving(Eq)]
 pub enum MouseState {
-    LeftMouseState = 1,
-    MiddleMouseState = 2,
-    RightMouseState = 4,
-    X1MouseState = 8,
-    X2MouseState = 16,
+    LeftMouseState,
+    MiddleMouseState,
+    RightMouseState,
+    X1MouseState,
+    X2MouseState,
+    UnknownMouseState(u32)
 }
 
 pub fn wrap_mouse(bitflags: u8) -> Mouse {
@@ -158,21 +160,33 @@ pub fn wrap_mouse(bitflags: u8) -> Mouse {
         3 => RightMouse,
         4 => X1Mouse,
         5 => X2Mouse,
-        _ => fail!(~"unhandled mouse type")
+        _ => UnknownMouse(bitflags) 
     }
 }
 
 pub fn wrap_mouse_state(bitflags: u32) -> Vec<MouseState> {
-    let flags = [LeftMouseState,
-        MiddleMouseState,
-        RightMouseState,
-        X1MouseState,
-        X2MouseState];
+    let flags = [(LeftMouseState, 1),
+        (MiddleMouseState, 2),
+        (RightMouseState, 4),
+        (X1MouseState, 8),
+        (X2MouseState, 16)];
 
-    flags.iter().filter_map(|&flag| {
-        if bitflags & (flag as u32) != 0 { Some(flag) }
-        else { None }
-    }).collect()
+    let mut leftovers = bitflags;
+
+    let flags_out = flags.iter().filter_map(|&(flag, value)| {
+        if bitflags & value != 0 {
+            leftovers -= value;
+            Some(flag)
+        } else {
+            None
+        }
+    }).collect();
+
+    if leftovers > 0 {
+        append_one(flags_out, UnknownMouseState(leftovers))
+    } else {
+        flags_out
+    }
 }
 
 pub fn get_mouse_focus() -> Option<~video::Window> {
