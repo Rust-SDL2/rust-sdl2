@@ -6,7 +6,7 @@ use std::hash::sip::SipState;
 use std::num::FromPrimitive;
 use std::num::ToPrimitive;
 
-#[deriving(Eq)]
+#[deriving(Eq, TotalEq)]
 pub enum ScanCode {
     UnknownScanCode            = 0,
     AScanCode                  = 4,
