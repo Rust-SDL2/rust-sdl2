@@ -37,11 +37,6 @@ impl TotalOrd for ScanCode {
     }
 }
 impl TotalEq for ScanCode {
-    fn equals(&self, other: &ScanCode) -> bool {
-        if self.code == other.code {
-            true
-        } else { false }
-    }
 }
 
 fn ScanCode(code: uint, ident: &'static str) -> ScanCode {
@@ -321,7 +316,7 @@ use std::hash::sip::SipState;
 use std::num::FromPrimitive;
 use std::num::ToPrimitive;
 
-#[deriving(Eq)]
+#[deriving(Eq, TotalEq)]
 pub enum ScanCode {
 ".as_bytes()));
     for &entry in entries.iter() {

@@ -37,11 +37,6 @@ impl TotalOrd for Key {
     }
 }
 impl TotalEq for Key {
-    fn equals(&self, other: &Key) -> bool {
-        if self.code == other.code {
-            true
-        } else { false }
-    }
 }
 
 
