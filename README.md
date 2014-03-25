@@ -28,7 +28,7 @@ SDL_mixer and SDL_ttf have yet to be written.
 * *SDL2.0  development libraries* - install through your favourite package management tool, or via http://www.libsdl.org/
 
 # Installation
-Clone this repo run `make`. To see an example of the code in use, *make demos*.
+Clone this repo run `make`. To see an example of the code in use, *make demo*.
 
 # Demo
 
