@@ -1,10 +1,10 @@
-#[crate_id="sdl2#0.0.1"];
-#[crate_type = "lib"];
+#![crate_id="sdl2#0.0.1"]
+#![crate_type = "lib"]
 
-#[desc = "SDL2 bindings"];
-#[license = "MIT"];
+#![desc = "SDL2 bindings"]
+#![license = "MIT"]
 
-#[feature(globs)];
+#![feature(globs)]
 
 extern crate collections;
 
