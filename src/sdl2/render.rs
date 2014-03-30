@@ -214,7 +214,7 @@ enum RendererParent {
     Surface(~surface::Surface),
 }
 
-#[deriving(Eq)]
+#[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct Renderer {
     raw: *ll::SDL_Renderer,
     priv parent: RendererParent,
@@ -522,7 +522,7 @@ pub struct TextureQuery {
     height: int
 }
 
-#[deriving(Eq)]
+#[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct Texture {
     raw: *ll::SDL_Texture,
     owned: bool

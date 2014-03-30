@@ -337,7 +337,7 @@ impl Drop for GLContext {
 }
 
 
-#[deriving(Eq)]
+#[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct Window {
     raw: *ll::SDL_Window,
     owned: bool

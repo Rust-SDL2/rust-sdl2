@@ -71,7 +71,7 @@ pub enum SystemCursor {
     HandCursor = ll::SDL_SYSTEM_CURSOR_HAND,
 }
 
-#[deriving(Eq)]
+#[deriving(Eq)] #[allow(raw_pointer_deriving)] 
 pub struct Cursor {
     raw: *ll::SDL_Cursor,
     owned: bool
