@@ -1,5 +1,4 @@
 use std::io::{IoResult,Writer};
-use std::vec::Vec;
 use super::get_writer;
 
 struct Key {
