@@ -87,7 +87,7 @@ pub mod ll {
         pub fn SDL_MapRGBA(format: *SDL_PixelFormat, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) -> uint32_t;
     }
 }
-#[deriving(Eq)]
+#[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct Palette {
     raw: *ll::SDL_Palette
 }
@@ -130,7 +130,7 @@ impl rand::Rand for Color {
     }
 }
 
-#[deriving(Eq)]
+#[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct PixelFormat {
     raw: *ll::SDL_PixelFormat
 }

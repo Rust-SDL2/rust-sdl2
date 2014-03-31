@@ -83,7 +83,7 @@ pub enum SurfaceFlag {
     DontFree = ll::SDL_DONTFREE as int
 }
 
-#[deriving(Eq)]
+#[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct Surface {
     raw: *ll::SDL_Surface,
     owned: bool

@@ -1,4 +1,4 @@
-#[macro_escape];
+#![macro_escape]
 
 use std::io::BufferedWriter;
 use std::io::{File, Writer};
