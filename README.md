@@ -14,11 +14,12 @@ Installation
 ------------
 
 ```
+# compile your rust-sdl2 somewhere
 git clone https://github.com/andelf/rust-sdl2_ttf
 cd rust-sdl2_ttf
-rustc src/sdl2_ttf/lib.rs
+rustc -L. src/sdl2_ttf/lib.rs
 # OR if you are using the mac framework version
-rustc --cfg mac_framework src/sdl2_ttf/lib.rs
+rustc -L. --cfg mac_framework src/sdl2_ttf/lib.rs
 ```
 
 Demo
