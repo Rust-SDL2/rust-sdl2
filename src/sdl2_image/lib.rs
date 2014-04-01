@@ -1,11 +1,11 @@
-#[crate_id="sdl2_image#sdl2_image:0.1"];
-#[crate_type = "lib"];
-#[desc = "SDL2_image bindings and wrappers"];
-#[comment = "SDL2_image bindings and wrappers"];
-#[license = "MIT"];
+#![crate_id="sdl2_image#sdl2_image:0.1"]
+#![crate_type = "lib"]
+#![desc = "SDL2_image bindings and wrappers"]
+#![comment = "SDL2_image bindings and wrappers"]
+#![license = "MIT"]
 
 
-extern mod sdl2;
+extern crate sdl2;
 
 use std::libc::{c_int, c_char};
 use std::ptr;
@@ -34,6 +34,7 @@ mod others {
     extern {}
 }
 
+#[allow(non_camel_case_types, dead_code)]
 mod ffi;
 
 /// InitFlags are passed to init() to control which subsystem
@@ -41,7 +42,7 @@ mod ffi;
 // repr(C) "makes the size of the enum's discriminant the default
 // size of enums that the C ABI for the platform uses."
 #[repr(C)]
-#[deriving(Clone, Eq, IterBytes, ToStr)]
+#[deriving(Clone, Eq, Hash, Show)]
 pub enum InitFlag {
     InitJpg = ffi::IMG_INIT_JPG as int,
     InitPng = ffi::IMG_INIT_PNG as int,
@@ -57,9 +58,9 @@ pub struct SDLImageVersion {
     patch: int,
 }
 
-impl ToStr for SDLImageVersion {
-    fn to_str(&self) -> ~str {
-        format!("{}.{}.{}", self.major, self.minor, self.patch)
+impl ::std::fmt::Show for SDLImageVersion {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(f.buf, "{}.{}.{}", self.major, self.minor, self.patch)
     }
 }
 

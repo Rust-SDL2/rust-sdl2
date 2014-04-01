@@ -1,4 +1,4 @@
-extern mod sdl2;
+extern crate sdl2;
 
 use std::libc::{c_int, c_char};
 use sdl2::surface::ll::SDL_Surface;
@@ -93,4 +93,3 @@ pub fn IMG_SavePNG_RW(surface: *SDL_Surface, dst: *SDL_RWops,
                       freedst: c_int) -> c_int;
 
 }   // extern "C"
-
