@@ -6,40 +6,40 @@ pub mod ll {
 
     //SDL_pixels.h
     pub struct SDL_Color {
-        r: uint8_t,
-        g: uint8_t,
-        b: uint8_t,
-        a: uint8_t,
+        pub r: uint8_t,
+        pub g: uint8_t,
+        pub b: uint8_t,
+        pub a: uint8_t,
     }
 
     pub struct SDL_Palette {
-        ncolors: c_int,
-        colors: *SDL_Color,
-        version: uint32_t,
-        refcount: c_int
+        pub ncolors: c_int,
+        pub colors: *SDL_Color,
+        pub version: uint32_t,
+        pub refcount: c_int
     }
 
     #[allow(uppercase_variables)]
     pub struct SDL_PixelFormat {
-        format: SDL_PixelFormatFlag,
-        palette: *SDL_Palette,
-        BitsPerPixel: uint8_t,
-        BytesPerPixel: uint8_t,
-        padding: [uint8_t, ..2],
-        Rmask: uint8_t,
-        Gmask: uint8_t,
-        Bmask: uint8_t,
-        Amask: uint8_t,
-        Rloss: uint8_t,
-        Gloss: uint8_t,
-        Bloss: uint8_t,
-        Aloss: uint8_t,
-        Rshift: uint8_t,
-        Gshift: uint8_t,
-        Bshift: uint8_t,
-        Ashift: uint8_t,
-        refcount: c_int,
-        next: *SDL_PixelFormat
+        pub format: SDL_PixelFormatFlag,
+        pub palette: *SDL_Palette,
+        pub BitsPerPixel: uint8_t,
+        pub BytesPerPixel: uint8_t,
+        pub padding: [uint8_t, ..2],
+        pub Rmask: uint8_t,
+        pub Gmask: uint8_t,
+        pub Bmask: uint8_t,
+        pub Amask: uint8_t,
+        pub Rloss: uint8_t,
+        pub Gloss: uint8_t,
+        pub Bloss: uint8_t,
+        pub Aloss: uint8_t,
+        pub Rshift: uint8_t,
+        pub Gshift: uint8_t,
+        pub Bshift: uint8_t,
+        pub Ashift: uint8_t,
+        pub refcount: c_int,
+        pub next: *SDL_PixelFormat
     }
 
     pub type SDL_PixelFormatFlag = uint32_t;
@@ -89,7 +89,7 @@ pub mod ll {
 }
 #[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct Palette {
-    raw: *ll::SDL_Palette
+    pub raw: *ll::SDL_Palette
 }
 
 #[deriving(Eq)]
@@ -132,7 +132,7 @@ impl rand::Rand for Color {
 
 #[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct PixelFormat {
-    raw: *ll::SDL_PixelFormat
+    pub raw: *ll::SDL_PixelFormat
 }
 
 #[deriving(Eq, FromPrimitive)]

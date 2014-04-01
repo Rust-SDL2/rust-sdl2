@@ -5,17 +5,17 @@ use std::ptr;
 #[deriving(Eq)]
 #[deriving(Clone)]
 pub struct Point{
-    x: i32,
-    y: i32
+    pub x: i32,
+    pub y: i32
 }
 
 #[deriving(Eq)]
 #[deriving(Clone)]
 pub struct Rect {
-    x: i32,
-    y: i32,
-    w: i32,
-    h: i32 
+    pub x: i32,
+    pub y: i32,
+    pub w: i32,
+    pub h: i32 
 }
 
 #[allow(non_camel_case_types)]

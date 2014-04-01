@@ -25,10 +25,10 @@ pub mod ll {
 
     // SDL_keyboard.h
     pub struct SDL_Keysym {
-        scancode: SDL_Scancode,
-        sym: SDL_Keycode,
-        _mod: uint16_t,
-        unused: uint32_t,
+        pub scancode: SDL_Scancode,
+        pub sym: SDL_Keycode,
+        pub _mod: uint16_t,
+        pub unused: uint32_t,
     }
 
     extern "C" {

@@ -36,12 +36,12 @@ pub mod ll {
 
     pub struct SDL_RendererInfo
     {
-        name: *c_char,
-        flags: uint32_t,
-        num_texture_formats: uint32_t,
-        texture_formats: [uint32_t, ..16],
-        max_texture_width: c_int,
-        max_texture_height: c_int,
+        pub name: *c_char,
+        pub flags: uint32_t,
+        pub num_texture_formats: uint32_t,
+        pub texture_formats: [uint32_t, ..16],
+        pub max_texture_width: c_int,
+        pub max_texture_height: c_int,
     }
 
     pub enum SDL_TextureAccess {
@@ -155,11 +155,11 @@ pub enum RendererFlags {
 
 #[deriving(Eq)]
 pub struct RendererInfo {
-    name: ~str,
-    flags: Vec<RendererFlags>,
-    texture_formats: Vec<pixels::PixelFormatFlag>,
-    max_texture_width: int,
-    max_texture_height: int
+    pub name: ~str,
+    pub flags: Vec<RendererFlags>,
+    pub texture_formats: Vec<pixels::PixelFormatFlag>,
+    pub max_texture_width: int,
+    pub max_texture_height: int
 }
 
 #[deriving(Eq, FromPrimitive)]
@@ -216,9 +216,9 @@ enum RendererParent {
 
 #[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct Renderer {
-    raw: *ll::SDL_Renderer,
-    priv parent: RendererParent,
-    owned: bool
+    pub raw: *ll::SDL_Renderer,
+    parent: RendererParent,
+    pub owned: bool
 }
 
 impl Drop for Renderer {
@@ -516,16 +516,16 @@ impl Renderer {
 }
 
 pub struct TextureQuery {
-    format: pixels::PixelFormatFlag,
-    access: TextureAccess,
-    width: int,
-    height: int
+    pub format: pixels::PixelFormatFlag,
+    pub access: TextureAccess,
+    pub width: int,
+    pub height: int
 }
 
 #[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct Texture {
-    raw: *ll::SDL_Texture,
-    owned: bool
+    pub raw: *ll::SDL_Texture,
+    pub owned: bool
 }
 
 impl Drop for Texture {
