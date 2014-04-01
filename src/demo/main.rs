@@ -1,8 +1,8 @@
-#[crate_type = "bin"];
+#![crate_type = "bin"]
 
-extern mod sdl2;
-extern mod sdl2_image;
-extern mod native;
+extern crate sdl2;
+extern crate sdl2_image;
+extern crate native;
 
 use std::os;
 
