@@ -13,9 +13,9 @@ pub static IMG_INIT_TIF: IMG_InitFlags = 0x00000004;
 pub static IMG_INIT_WEBP: IMG_InitFlags = 0x00000008;
 
 pub struct SDL_version {
-    major: int,
-    minor: int,
-    patch: int,
+    pub major: int,
+    pub minor: int,
+    pub patch: int,
 }
 
 extern "C" {
