@@ -81,229 +81,229 @@ pub mod ll {
     pub static SDL_LASTEVENT: SDL_EventType = 65535;
 
     pub struct SDL_CommonEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
     }
 
     pub struct SDL_WindowEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        windowID: uint32_t,
-        event: uint8_t,
-        padding1: uint8_t,
-        padding2: uint8_t,
-        padding3: uint8_t,
-        data1: int32_t,
-        data2: int32_t,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub windowID: uint32_t,
+        pub event: uint8_t,
+        pub padding1: uint8_t,
+        pub padding2: uint8_t,
+        pub padding3: uint8_t,
+        pub data1: int32_t,
+        pub data2: int32_t,
     }
 
     pub struct SDL_KeyboardEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        windowID: uint32_t,
-        state: uint8_t,
-        repeat: uint8_t,
-        padding2: uint8_t,
-        padding3: uint8_t,
-        keysym: SDL_Keysym,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub windowID: uint32_t,
+        pub state: uint8_t,
+        pub repeat: uint8_t,
+        pub padding2: uint8_t,
+        pub padding3: uint8_t,
+        pub keysym: SDL_Keysym,
     }
 
     pub struct SDL_TextEditingEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        windowID: uint32_t,
-        text: [c_schar, ..32u],
-        start: int32_t,
-        length: int32_t,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub windowID: uint32_t,
+        pub text: [c_schar, ..32u],
+        pub start: int32_t,
+        pub length: int32_t,
     }
 
     pub struct SDL_TextInputEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        windowID: uint32_t,
-        text: [c_schar, ..32u],
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub windowID: uint32_t,
+        pub text: [c_schar, ..32u],
     }
 
     pub struct SDL_MouseMotionEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        windowID: uint32_t,
-        which: uint32_t,
-        state: uint32_t,
-        x: int32_t,
-        y: int32_t,
-        xrel: int32_t,
-        yrel: int32_t,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub windowID: uint32_t,
+        pub which: uint32_t,
+        pub state: uint32_t,
+        pub x: int32_t,
+        pub y: int32_t,
+        pub xrel: int32_t,
+        pub yrel: int32_t,
     }
 
     pub struct SDL_MouseButtonEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        windowID: uint32_t,
-        which: uint32_t,
-        button: uint8_t,
-        state: uint8_t,
-        padding1: uint8_t,
-        padding2: uint8_t,
-        x: int32_t,
-        y: int32_t,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub windowID: uint32_t,
+        pub which: uint32_t,
+        pub button: uint8_t,
+        pub state: uint8_t,
+        pub padding1: uint8_t,
+        pub padding2: uint8_t,
+        pub x: int32_t,
+        pub y: int32_t,
     }
 
     pub struct SDL_MouseWheelEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        windowID: uint32_t,
-        which: uint32_t,
-        x: int32_t,
-        y: int32_t,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub windowID: uint32_t,
+        pub which: uint32_t,
+        pub x: int32_t,
+        pub y: int32_t,
     }
 
     pub struct SDL_JoyAxisEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        which: int32_t,
-        axis: uint8_t,
-        padding1: uint8_t,
-        padding2: uint8_t,
-        padding3: uint8_t,
-        value: int16_t,
-        padding4: uint16_t,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub which: int32_t,
+        pub axis: uint8_t,
+        pub padding1: uint8_t,
+        pub padding2: uint8_t,
+        pub padding3: uint8_t,
+        pub value: int16_t,
+        pub padding4: uint16_t,
     }
 
     pub struct SDL_JoyBallEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        which: int32_t,
-        ball: uint8_t,
-        padding1: uint8_t,
-        padding2: uint8_t,
-        padding3: uint8_t,
-        xrel: int16_t,
-        yrel: int16_t,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub which: int32_t,
+        pub ball: uint8_t,
+        pub padding1: uint8_t,
+        pub padding2: uint8_t,
+        pub padding3: uint8_t,
+        pub xrel: int16_t,
+        pub yrel: int16_t,
     }
 
     pub struct SDL_JoyHatEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        which: int32_t,
-        hat: uint8_t,
-        value: uint8_t,
-        padding1: uint8_t,
-        padding2: uint8_t,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub which: int32_t,
+        pub hat: uint8_t,
+        pub value: uint8_t,
+        pub padding1: uint8_t,
+        pub padding2: uint8_t,
     }
 
     pub struct SDL_JoyButtonEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        which: int32_t,
-        button: uint8_t,
-        state: uint8_t,
-        padding1: uint8_t,
-        padding2: uint8_t,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub which: int32_t,
+        pub button: uint8_t,
+        pub state: uint8_t,
+        pub padding1: uint8_t,
+        pub padding2: uint8_t,
     }
 
     pub struct SDL_JoyDeviceEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        which: int32_t,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub which: int32_t,
     }
 
     pub struct SDL_ControllerAxisEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        which: int32_t,
-        axis: uint8_t,
-        padding1: uint8_t,
-        padding2: uint8_t,
-        padding3: uint8_t,
-        value: int16_t,
-        padding4: uint16_t,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub which: int32_t,
+        pub axis: uint8_t,
+        pub padding1: uint8_t,
+        pub padding2: uint8_t,
+        pub padding3: uint8_t,
+        pub value: int16_t,
+        pub padding4: uint16_t,
     }
 
     pub struct SDL_ControllerButtonEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        which: int32_t,
-        button: uint8_t,
-        state: uint8_t,
-        padding1: uint8_t,
-        padding2: uint8_t,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub which: int32_t,
+        pub button: uint8_t,
+        pub state: uint8_t,
+        pub padding1: uint8_t,
+        pub padding2: uint8_t,
     }
 
     pub struct SDL_ControllerDeviceEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        which: int32_t,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub which: int32_t,
     }
 
     pub struct SDL_TouchFingerEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        touchId: SDL_TouchID,
-        fingerId: SDL_FingerID,
-        x: c_float,
-        y: c_float,
-        dx: c_float,
-        dy: c_float,
-        pressure: c_float,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub touchId: SDL_TouchID,
+        pub fingerId: SDL_FingerID,
+        pub x: c_float,
+        pub y: c_float,
+        pub dx: c_float,
+        pub dy: c_float,
+        pub pressure: c_float,
     }
 
     pub struct SDL_MultiGestureEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        touchId: SDL_TouchID,
-        dTheta: c_float,
-        dDist: c_float,
-        x: c_float,
-        y: c_float,
-        numFingers: uint16_t,
-        padding: uint16_t,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub touchId: SDL_TouchID,
+        pub dTheta: c_float,
+        pub dDist: c_float,
+        pub x: c_float,
+        pub y: c_float,
+        pub numFingers: uint16_t,
+        pub padding: uint16_t,
     }
 
     pub struct SDL_DollarGestureEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        touchId: SDL_TouchID,
-        gestureId: SDL_GestureID,
-        numFingers: uint32_t,
-        error: c_float,
-        x: c_float,
-        y: c_float,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub touchId: SDL_TouchID,
+        pub gestureId: SDL_GestureID,
+        pub numFingers: uint32_t,
+        pub error: c_float,
+        pub x: c_float,
+        pub y: c_float,
     }
 
     pub struct SDL_DropEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        file: *c_schar,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub file: *c_schar,
     }
 
     pub struct SDL_QuitEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
     }
 
     pub struct SDL_OSEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
     }
 
     pub struct SDL_UserEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        windowID: uint32_t,
-        code: int32_t,
-        data1: *c_void,
-        data2: *c_void,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub windowID: uint32_t,
+        pub code: int32_t,
+        pub data1: *c_void,
+        pub data2: *c_void,
     }
 
     pub struct SDL_SysWMEvent {
-        _type: uint32_t,
-        timestamp: uint32_t,
-        msg: *SDL_SysWMmsg,
+        pub _type: uint32_t,
+        pub timestamp: uint32_t,
+        pub msg: *SDL_SysWMmsg,
     }
 
     pub struct SDL_Event {
-        data: [uint8_t, ..56u],
+        pub data: [uint8_t, ..56u],
     }
 
     impl SDL_Event {

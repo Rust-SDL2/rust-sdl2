@@ -7,13 +7,13 @@ pub mod ll {
     }
 
     pub struct SDL_RWops {
-        size: *uint8_t,
-        seek: *uint8_t,
-        read: *uint8_t,
-        write: *uint8_t,
-        close: *uint8_t,
-        _type: uint32_t,
-        priv hidden: SDL_RWops_Anon
+        pub size: *uint8_t,
+        pub seek: *uint8_t,
+        pub read: *uint8_t,
+        pub write: *uint8_t,
+        pub close: *uint8_t,
+        pub _type: uint32_t,
+        hidden: SDL_RWops_Anon
     }
 
     extern "C" {

@@ -25,11 +25,11 @@ pub mod ll {
     pub struct SDL_Window;
 
     pub struct SDL_DisplayMode {
-        format: uint32_t,
-        w: c_int,
-        h: c_int,
-        refresh_rate: c_int,
-        driverdata: *c_void
+        pub format: uint32_t,
+        pub w: c_int,
+        pub h: c_int,
+        pub refresh_rate: c_int,
+        pub driverdata: *c_void
     }
 
     pub type SDL_WindowPos = c_int;
@@ -220,10 +220,10 @@ fn empty_sdl_display_mode() -> ll::SDL_DisplayMode {
 
 #[deriving(Eq)]
 pub struct DisplayMode {
-    format: u32,
-    w: int,
-    h: int,
-    refresh_rate: int
+    pub format: u32,
+    pub w: int,
+    pub h: int,
+    pub refresh_rate: int
 }
 
 impl DisplayMode {
@@ -322,8 +322,8 @@ fn unwrap_windowpos (pos: WindowPos) -> ll::SDL_WindowPos {
 
 #[deriving(Eq)]
 pub struct GLContext {
-    raw: ll::SDL_GLContext,
-    owned: bool
+    pub raw: ll::SDL_GLContext,
+    pub owned: bool
 }
 
 impl Drop for GLContext {
@@ -339,8 +339,8 @@ impl Drop for GLContext {
 
 #[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct Window {
-    raw: *ll::SDL_Window,
-    owned: bool
+    pub raw: *ll::SDL_Window,
+    pub owned: bool
 }
 
 impl Drop for Window {

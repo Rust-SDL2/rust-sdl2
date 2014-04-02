@@ -28,18 +28,18 @@ pub mod ll {
     pub struct SDL_BlitMap;
 
     pub struct SDL_Surface {
-        flags: uint32_t,
-        format: *SDL_PixelFormat,
-        w: c_int,
-        h: c_int,
-        pitch: c_int,
-        pixels: *c_void,
-        userdata: *c_void,
-        locked: c_int,
-        lock_data: *c_void,
-        clip_rect: SDL_Rect,
-        map: *SDL_BlitMap,
-        refcount: c_int
+        pub flags: uint32_t,
+        pub format: *SDL_PixelFormat,
+        pub w: c_int,
+        pub h: c_int,
+        pub pitch: c_int,
+        pub pixels: *c_void,
+        pub userdata: *c_void,
+        pub locked: c_int,
+        pub lock_data: *c_void,
+        pub clip_rect: SDL_Rect,
+        pub map: *SDL_BlitMap,
+        pub refcount: c_int
     }
 
     extern "C" {
@@ -85,8 +85,8 @@ pub enum SurfaceFlag {
 
 #[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct Surface {
-    raw: *ll::SDL_Surface,
-    owned: bool
+    pub raw: *ll::SDL_Surface,
+    pub owned: bool
 }
 
 impl Drop for Surface {

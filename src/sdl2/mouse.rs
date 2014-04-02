@@ -1,5 +1,5 @@
 use std::ptr;
-use std::vec::{Vec, append_one};
+use std::vec::Vec;
 
 use get_error;
 use surface;
@@ -173,7 +173,7 @@ pub fn wrap_mouse_state(bitflags: u32) -> Vec<MouseState> {
 
     let mut leftovers = bitflags;
 
-    let flags_out = flags.iter().filter_map(|&(flag, value)| {
+    let flags_out: Vec<_> = flags.iter().filter_map(|&(flag, value)| {
         if bitflags & value != 0 {
             leftovers -= value;
             Some(flag)
@@ -183,7 +183,7 @@ pub fn wrap_mouse_state(bitflags: u32) -> Vec<MouseState> {
     }).collect();
 
     if leftovers > 0 {
-        append_one(flags_out, UnknownMouseState(leftovers))
+        flags_out.append_one(UnknownMouseState(leftovers))
     } else {
         flags_out
     }
