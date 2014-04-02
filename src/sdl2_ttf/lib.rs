@@ -98,8 +98,8 @@ pub fn quit() {
 #[allow(raw_pointer_deriving)]
 #[deriving(Eq)]
 pub struct Font {
-    priv raw: *ffi::TTF_Font,
-    priv owned: bool
+    raw: *ffi::TTF_Font,
+    owned: bool
 }
 
 impl Drop for Font {
