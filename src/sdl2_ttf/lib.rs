@@ -9,6 +9,7 @@ extern crate sdl2;
 
 use std::libc::{c_int, c_long};
 use std::ptr;
+use std::fmt;
 use std::c_str::CString;
 use std::num::FromPrimitive;
 use sdl2::surface::Surface;
@@ -57,7 +58,8 @@ pub enum Hinting {
     HintingNone   = ffi::TTF_HINTING_NONE   as int
 }
 
-#[deriving(Eq, Show)]
+/// Glyph Metrics
+#[deriving(Eq, Clone, Show)]
 pub struct GlyphMetrics {
     minx: int,
     maxx: int,
@@ -71,6 +73,38 @@ fn color_to_c_color(color: Color) -> SDL_Color {
     match color {
         pixels::RGB(r, g, b)     => SDL_Color { r: r, g: g, b: b, a: 255 },
         pixels::RGBA(r, g, b, a) => SDL_Color { r: r, g: g, b: b, a: a   }
+    }
+}
+
+/// The version of the libSDL.so that you are linked to
+/// FIXME: this type should be in rust-sdl2 package
+#[deriving(Eq, Clone)]
+pub struct SDLVersion {
+    major: int,
+    minor: int,
+    patch: int,
+}
+
+impl fmt::Show for SDLVersion {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f.buf, "{}.{}.{}", self.major, self.minor, self.patch)
+    }
+}
+
+impl SDLVersion {
+    fn from_sdl_version(sv: *ffi::SDL_version) -> SDLVersion {
+        //! Converts a raw *SDL_version to SDLVersion
+        unsafe {
+            let v = *sv;
+            SDLVersion{ major: v.major as int, minor: v.minor as int, patch: v.patch as int }
+        }
+    }
+}
+
+/// Returns the version of the dynamically linked SDL_ttf library
+pub fn get_linked_version() -> SDLVersion {
+    unsafe {
+        SDLVersion::from_sdl_version(ffi::TTF_Linked_Version())
     }
 }
 

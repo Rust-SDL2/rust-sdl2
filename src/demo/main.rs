@@ -17,6 +17,7 @@ fn start(argc: int, argv: **u8) -> int {
 #[main]
 fn main() {
     let args = os::args();
+    println!("linked sdl2_ttf: {}", sdl2_ttf::get_linked_version().to_str());
     if args.len() < 2 {
         println!("Usage: ./demo font.[ttf|ttc|fon]")
     } else {
