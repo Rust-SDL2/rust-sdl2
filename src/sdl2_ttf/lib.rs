@@ -80,9 +80,9 @@ fn color_to_c_color(color: Color) -> SDL_Color {
 /// FIXME: this type should be in rust-sdl2 package
 #[deriving(Eq, Clone)]
 pub struct SDLVersion {
-    major: int,
-    minor: int,
-    patch: int,
+    pub major: int,
+    pub minor: int,
+    pub patch: int,
 }
 
 impl fmt::Show for SDLVersion {
