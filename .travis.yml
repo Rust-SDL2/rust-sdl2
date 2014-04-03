@@ -1,0 +1,19 @@
+before_install:
+  - yes | sudo add-apt-repository ppa:hansjorg/rust
+  - sudo apt-get update
+install:
+  - sudo apt-get install rust-nightly
+  - time wget -q http://www.libsdl.org/release/SDL2-2.0.3.tar.gz
+  - time wget -q http://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.12.tar.gz
+  - time tar xf SDL2-*.tar.gz
+  - time tar xf SDL2_ttf-*.tar.gz
+  - cd SDL2-*
+  - ./configure && make && sudo make install
+  - cd -
+  - cd SDL2_ttf-*
+  - ./configure && make && sudo make install
+  - cd -
+  - git clone https://github.com/AngryLawyer/rust-sdl2.git
+  - rustc rust-sdl2/src/sdl2/lib.rs
+script:
+  - rustc -L. rust-sdl2_ttf/src/sdl2_ttf/lib.rs
