@@ -9,6 +9,7 @@ extern crate sdl2;
 
 use std::libc::{c_int, c_char};
 use std::ptr;
+use std::fmt;
 use sdl2::surface::Surface;
 use sdl2::render::Texture;
 use sdl2::render::Renderer;
@@ -53,13 +54,13 @@ pub enum InitFlag {
 /// The version of the libSDL.so that you are linked to
 #[deriving(Eq, Clone)]
 pub struct SDLImageVersion {
-    major: int,
-    minor: int,
-    patch: int,
+    pub major: int,
+    pub minor: int,
+    pub patch: int,
 }
 
-impl ::std::fmt::Show for SDLImageVersion {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+impl fmt::Show for SDLImageVersion {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f.buf, "{}.{}.{}", self.major, self.minor, self.patch)
     }
 }
@@ -69,7 +70,7 @@ impl SDLImageVersion {
         //! Converts a raw *SDL_version to SDLImageVersion
         unsafe {
             let v = *sv;
-            SDLImageVersion{ major: v.major, minor: v.minor, patch: v.patch }
+            SDLImageVersion{ major: v.major as int, minor: v.minor as int, patch: v.patch as int }
         }
     }
 }

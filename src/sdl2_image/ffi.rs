@@ -1,6 +1,6 @@
 extern crate sdl2;
 
-use std::libc::{c_int, c_char};
+use std::libc::{c_int, c_char, uint8_t};
 use sdl2::surface::ll::SDL_Surface;
 use sdl2::rwops::ll::SDL_RWops;
 use sdl2::render::ll::SDL_Texture;
@@ -13,9 +13,9 @@ pub static IMG_INIT_TIF: IMG_InitFlags = 0x00000004;
 pub static IMG_INIT_WEBP: IMG_InitFlags = 0x00000008;
 
 pub struct SDL_version {
-    pub major: int,
-    pub minor: int,
-    pub patch: int,
+    pub major: uint8_t,
+    pub minor: uint8_t,
+    pub patch: uint8_t,
 }
 
 extern "C" {
