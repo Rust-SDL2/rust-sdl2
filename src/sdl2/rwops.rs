@@ -44,7 +44,7 @@ pub mod ll {
 #[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct RWops {
     pub raw: *ll::SDL_RWops,
-    pub owned: bool
+    pub close_on_drop: bool
 }
 
 /// A structure that provides an abstract interface to stream I/O.
@@ -54,7 +54,7 @@ impl RWops {
             ll::SDL_RWFromFile(path.to_c_str().unwrap(), mode.to_c_str().unwrap())
         };
         if raw.is_null() { Err(get_error()) }
-        else { Ok(~RWops{raw: raw, owned: true}) }
+        else { Ok(~RWops{raw: raw, close_on_drop: true}) }
     }
 
     pub fn from_bytes(buf: &[u8]) -> Result<~RWops, ~str> {
@@ -62,15 +62,18 @@ impl RWops {
             ll::SDL_RWFromConstMem(buf.as_ptr() as *c_void, buf.len() as c_int)
         };
         if raw.is_null() { Err(get_error()) }
-        else { Ok(~RWops{raw: raw, owned: true}) }
+        else { Ok(~RWops{raw: raw, close_on_drop: true}) }
     }
 }
 
 impl Drop for RWops {
     fn drop(&mut self) {
         // TODO: handle close error
-        unsafe {
-            ll::SDL_FreeRW(self.raw);
+        if self.close_on_drop {
+            let ret = unsafe { ((*self.raw).close)(self.raw) };
+            if ret != 0 {
+                println!("error {} when closing RWopt {:?}", get_error(), self);
+            }
         }
     }
 }
