@@ -7,6 +7,7 @@
 #![feature(globs)]
 
 extern crate collections;
+extern crate libc;
 
 pub use sdl::*;
 #[path = "generated/keycode.rs"]

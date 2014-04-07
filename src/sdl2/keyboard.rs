@@ -12,7 +12,7 @@ use video::Window;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
-    use std::libc::{c_int, c_schar, c_uint, int32_t, uint8_t, uint16_t,
+    use libc::{c_int, c_schar, c_uint, int32_t, uint8_t, uint16_t,
                     uint32_t};
     use rect::Rect;
     use video::ll::SDL_Window;

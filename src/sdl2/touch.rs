@@ -12,7 +12,7 @@ pub struct Finger {
 
 #[allow(non_camel_case_types)]
 pub mod ll {
-    use std::libc::{c_int, int64_t};
+    use libc::{c_int, int64_t};
     use touch::Finger;
 
     pub type SDL_TouchID = int64_t;
