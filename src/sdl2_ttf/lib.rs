@@ -6,8 +6,9 @@
 
 
 extern crate sdl2;
+extern crate libc;
 
-use std::libc::{c_int, c_long};
+use libc::{c_int, c_long};
 use std::ptr;
 use std::fmt;
 use std::c_str::CString;
