@@ -1,5 +1,5 @@
 use std::cast;
-use std::libc::{c_int, c_void, uint32_t};
+use libc::{c_int, c_void, uint32_t};
 use std::num::FromPrimitive;
 use std::str;
 use std::vec::Vec;
@@ -20,8 +20,8 @@ use video;
 #[allow(non_camel_case_types)]
 pub mod ll {
     use std::cast;
-    use std::libc::{c_float, c_int, c_schar, c_uint, c_void, int16_t,
-                    int32_t, uint8_t, uint16_t, uint32_t};
+    use libc::{c_float, c_int, c_schar, c_uint, c_void, int16_t,
+               int32_t, uint8_t, uint16_t, uint32_t};
     use gesture::ll::SDL_GestureID;
     use keyboard::ll::SDL_Keysym;
     use touch::ll::SDL_FingerID;

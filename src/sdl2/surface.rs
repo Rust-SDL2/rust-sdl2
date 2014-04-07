@@ -2,7 +2,7 @@ use std::cast;
 use rect::Rect;
 use get_error;
 use std::ptr;
-use std::libc::c_int;
+use libc::c_int;
 use pixels;
 use rwops;
 
@@ -13,7 +13,7 @@ pub mod ll {
     use render::ll::SDL_BlendMode;
     use rwops::ll::SDL_RWops;
     use rect::Rect;
-    use std::libc::{c_int, c_void, uint32_t, uint8_t};
+    use libc::{c_int, c_void, uint32_t, uint8_t};
     pub type SDL_Rect = Rect;
     pub type SDL_bool = c_int;
 

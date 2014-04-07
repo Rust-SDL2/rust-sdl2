@@ -1,9 +1,9 @@
-use std::libc::c_int;
+use libc::c_int;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
     use std::cast;
-    use std::libc::{c_int, c_schar, c_uchar, c_uint, c_void, int16_t, uint8_t};
+    use libc::{c_int, c_schar, c_uchar, c_uint, c_void, int16_t, uint8_t};
     use joystick::ll::{SDL_Joystick, SDL_JoystickGUID};
 
     pub type SDL_bool = c_int;

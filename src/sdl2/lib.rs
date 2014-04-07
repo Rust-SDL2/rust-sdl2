@@ -6,6 +6,7 @@
 
 #![feature(globs)]
 
+extern crate libc;
 extern crate collections;
 
 pub use sdl::*;

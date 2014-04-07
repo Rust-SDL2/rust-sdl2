@@ -1,4 +1,4 @@
-use std::libc::{c_int, c_float, uint32_t};
+use libc::{c_int, c_float, uint32_t};
 use std::ptr;
 use std::str;
 use std::cast;
@@ -16,7 +16,7 @@ pub mod ll {
     use rect::Rect;
     use surface::ll::SDL_Surface;
 
-    use std::libc::{c_void, c_int, c_float, c_char, uint16_t, uint32_t};
+    use libc::{c_void, c_int, c_float, c_char, uint16_t, uint32_t};
 
     pub type SDL_Rect = Rect;
     pub type SDL_bool = c_int;

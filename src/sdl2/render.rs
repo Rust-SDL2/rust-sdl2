@@ -3,7 +3,7 @@ use surface;
 use pixels;
 use get_error;
 use std::ptr;
-use std::libc::{c_int, uint32_t, c_float, c_double};
+use libc::{c_int, uint32_t, c_float, c_double};
 use std::str;
 use std::cast;
 use rect::Point;
@@ -14,8 +14,8 @@ use std::vec::Vec;
 #[allow(non_camel_case_types)]
 pub mod ll {
 
-    use std::libc::{c_int, c_char, c_void, c_float, c_double};
-    use std::libc::{uint8_t, uint32_t};
+    use libc::{c_int, c_char, c_void, c_float, c_double};
+    use libc::{uint8_t, uint32_t};
     use rect::Rect;
     use rect::Point;
 
