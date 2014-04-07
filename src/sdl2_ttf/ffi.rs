@@ -1,6 +1,6 @@
 extern crate sdl2;
 
-use std::libc::{c_int, c_char, c_long, c_void, uint16_t, uint32_t, uint8_t};
+use libc::{c_int, c_char, c_long, c_void, uint16_t, uint32_t, uint8_t};
 use sdl2::surface::ll::SDL_Surface;
 use sdl2::pixels::ll::SDL_Color;
 use sdl2::rwops::ll::SDL_RWops;
