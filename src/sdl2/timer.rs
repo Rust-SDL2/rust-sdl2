@@ -1,6 +1,6 @@
 pub mod ll {
 
-    use std::libc::{uint32_t, uint64_t};
+    use libc::{uint32_t, uint64_t};
 
     //SDL_timer.h
     extern "C" {

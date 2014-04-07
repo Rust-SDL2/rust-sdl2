@@ -1,6 +1,6 @@
 #[allow(non_camel_case_types)]
 pub mod ll {
-    use std::libc::{c_uchar, uint8_t, uint32_t, c_schar};
+    use libc::{c_uchar, uint8_t, uint32_t, c_schar};
 
     struct SDL_RWops_Anon {
         data: [c_uchar, ..24],
