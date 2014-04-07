@@ -166,7 +166,7 @@ impl Surface {
 
     pub fn from_bmp(path: &Path) -> Result<~Surface, ~str> {
         let raw = unsafe {
-            ll::SDL_LoadBMP_RW(rwops::ll::SDL_RWFromFile(path.to_c_str().unwrap(), "rb".to_c_str().unwrap()), 1)
+            ll::SDL_LoadBMP_RW(rwops::RWops::from_file(path, "rb").unwrap().raw, 0)
         };
 
         if raw.is_null() { Err(get_error()) }
@@ -174,9 +174,9 @@ impl Surface {
     }
 
     pub fn save_bmp(&self, path: &Path) -> bool {
-		unsafe {
-        	ll::SDL_SaveBMP_RW(self.raw, rwops::ll::SDL_RWFromFile(path.to_c_str().unwrap(), "wb".to_c_str().unwrap()), 1) == 0
-		}
+	unsafe {
+            ll::SDL_SaveBMP_RW(self.raw, rwops::RWops::from_file(path, "rb").unwrap().raw, 0) == 0
+	}
     }
 
     pub fn set_palette(&self, palette: &pixels::Palette) -> bool {
@@ -221,7 +221,7 @@ impl Surface {
             Err(get_error())
         }
     }
-    
+
     pub fn set_color_mod(&self, color: pixels::Color) -> bool {
         let (r, g, b) = match color {
             pixels::RGB(r, g, b) => (r, g, b),
