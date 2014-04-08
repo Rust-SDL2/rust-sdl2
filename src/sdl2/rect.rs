@@ -1,5 +1,5 @@
 use std::cast;
-use std::libc::c_int;
+use libc::c_int;
 use std::ptr;
 
 #[deriving(Eq)]
@@ -21,7 +21,7 @@ pub struct Rect {
 #[allow(non_camel_case_types)]
 pub mod ll {
 
-    use std::libc::{c_int};
+    use libc::{c_int};
     use rect::Rect;
     use rect::Point;
 

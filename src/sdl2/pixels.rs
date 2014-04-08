@@ -2,7 +2,7 @@ extern crate rand;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
-    use std::libc::{c_int, uint8_t, uint32_t};
+    use libc::{c_int, uint8_t, uint32_t};
 
     //SDL_pixels.h
     pub struct SDL_Color {
