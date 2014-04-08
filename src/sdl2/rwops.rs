@@ -1,7 +1,7 @@
 use std::io;
 use std::io::IoResult;
 use get_error;
-use libc::{c_void, c_int};
+use libc::{c_void, c_int, size_t};
 
 #[allow(non_camel_case_types)]
 pub mod ll {
@@ -80,7 +80,7 @@ impl Drop for RWops {
 
 impl Reader for RWops {
     fn read(&mut self, buf: &mut [u8]) -> IoResult<uint> {
-        let out_len = buf.len() as u64;
+        let out_len = buf.len() as size_t;
         // FIXME: it's better to use as_mut_ptr().
         // number of objects read, or 0 at error or end of file.
         let ret = unsafe {
@@ -96,7 +96,7 @@ impl Reader for RWops {
 
 impl Writer for RWops {
     fn write(&mut self, buf: &[u8]) -> IoResult<()> {
-        let in_len = buf.len() as u64;
+        let in_len = buf.len() as size_t;
         let ret = unsafe {
             ((*self.raw).write)(self.raw, buf.as_ptr() as *c_void, 1, in_len)
         };
