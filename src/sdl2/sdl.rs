@@ -24,7 +24,7 @@ mod others {
 
 #[allow(non_camel_case_types)]
 pub mod ll {
-    use libc::{c_int, c_uint, c_schar, uint32_t};
+    use libc::{c_int, c_uint, c_schar, uint32_t, c_void};
 
     pub type SDL_errorcode = c_uint;
     pub static SDL_ENOMEM: SDL_errorcode = 0;
@@ -61,6 +61,9 @@ pub mod ll {
 
         //SDL_timer.h
         pub fn SDL_GetTicks() -> uint32_t;
+
+        //SDL_video.h
+        pub fn SDL_GL_GetProcAddress(symbol: *c_schar) -> *c_void;
     }
 }
 
@@ -161,3 +164,14 @@ pub fn clear_error() {
 pub fn get_ticks() -> uint {
     unsafe { ll::SDL_GetTicks() as uint }
 }
+
+pub fn get_proc_address(symbol: &str) -> Option<extern "system" fn()> {
+    let mut f = None;
+    unsafe {
+        symbol.with_c_str(|buf| {
+                f = Some(cast::transmute(ll::SDL_GL_GetProcAddress(buf)));
+                });
+    }
+    f
+}
+
