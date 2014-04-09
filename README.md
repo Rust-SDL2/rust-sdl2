@@ -26,5 +26,5 @@ Demo
 
 ```
 rustc -L. src/demo/main.rs -o demo
-./demo mixer.[png|jpg]
+./demo mixer.[wav|mp3|ogg]
 ```
