@@ -1,3 +1,7 @@
+/*!
+A binding for SDL2_mixer.
+ */
+
 #![crate_id="sdl2_mixer#sdl2_mixer:0.1"]
 #![crate_type = "lib"]
 #![desc = "SDL2_mixer bindings and wrappers"]
@@ -152,6 +156,7 @@ pub fn get_chunk_decoder(index: int) -> ~str {
     }
 }
 
+/// The internal format for an audio chunk.
 #[deriving(Eq)] #[allow(raw_pointer_deriving, visible_private_types)]
 pub struct Chunk {
     pub raw: *ffi::Mix_Chunk,
@@ -194,6 +199,7 @@ impl Chunk {
     }
 }
 
+/// Loader trait for RWops
 pub trait LoaderRWops {
     /// Load src for use as a sample.
     fn load_wav(&self) -> Result<~Chunk, ~str>;
@@ -224,6 +230,7 @@ pub enum Fading {
     FadingIn  = ffi::MIX_FADING_IN as int
 }
 
+/// Sound effect channel.
 pub struct Channel(int);
 
 pub fn allocate_channels(numchans: int) -> int {
@@ -235,12 +242,12 @@ pub fn allocate_channels(numchans: int) -> int {
 
 impl Channel {
     pub fn all() -> Channel {
-        //! all channel (-1)
+        //! Represent for all channels (-1)
         Channel(-1)
     }
 
     pub fn post() -> Channel {
-        //! MIX_CHANNEL_POST  -2
+        //! This is the MIX_CHANNEL_POST (-2)
         Channel(-2)
     }
 
@@ -427,6 +434,7 @@ pub fn reserve_channels(num: int) -> int {
     unsafe { ffi::Mix_ReserveChannels(num as c_int) as int }
 }
 
+/// Sound effect channel grouping.
 pub struct Group(int);
 
 impl default::Default for Group {

@@ -1,3 +1,6 @@
+env:
+  global:
+    - secure: JLix99cbDVr9+s9QOux8FmnyEHGmpNHavKoO7lo1dG4Em8XyeByIXeBNggYX3d/vpdQ+FrqNO+3HrRJpZvXl1OO3uPGFtIQLH6bXLTaggC3z/67maEQSQQS8rcSHImkg1CDKoPWKvZfnB6IqWRYLTBJWILwBLoocure7/+/8III=
 before_install:
   - yes | sudo add-apt-repository ppa:hansjorg/rust
   - sudo apt-get update
@@ -18,3 +21,6 @@ install:
   - rustc rust-sdl2/src/sdl2/lib.rs
 script:
   - rustc -L. rust-sdl2_mixer/src/sdl2_mixer/lib.rs
+  - rustdoc -L. rust-sdl2_mixer/src/sdl2_mixer/lib.rs
+after_script:
+  - curl http://www.rust-ci.org/artifacts/put?t=$RUSTCI_TOKEN | sh
