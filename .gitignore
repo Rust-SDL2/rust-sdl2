@@ -1,3 +1,14 @@
+*~
+*#
+*.o
+*.a
+*.so
+*.rlib
+*.dylib
+*.dSYM
+*.dll
+*.dummy
+*.exe
 .rust/
 build/
 bin/
