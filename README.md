@@ -25,6 +25,6 @@ Demo
 ----
 
 ```
-rustc -L. src/demo/main.rs -o demo
+rustc -L. src/demo/demo.rs
 ./demo mixer.[wav|mp3|ogg]
 ```
