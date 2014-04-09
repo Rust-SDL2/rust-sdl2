@@ -605,7 +605,7 @@ impl Music {
     }
 
     // FIXME: make these class method?
-    pub fn get__volume() -> int {
+    pub fn get_volume() -> int {
         unsafe { ffi::Mix_VolumeMusic(-1) as int }
     }
 
@@ -641,7 +641,7 @@ impl Music {
         }
     }
 
-    pub fn set_cmd(command: &str) -> Result<(), ~str> {
+    pub fn set_command(command: &str) -> Result<(), ~str> {
         //! Setup a command line music player to use to play music.
         let ret = unsafe {
             ffi::Mix_SetMusicCMD(command.to_c_str().unwrap())
