@@ -48,7 +48,7 @@ mod ffi;
 
 /// Font Style
 #[deriving(Show)]
-pub enum Style {
+pub enum FontStyle {
     StyleNormal = ffi::TTF_STYLE_NORMAL as int,
     StyleBold   = ffi::TTF_STYLE_BOLD   as int,
     StyleItalic = ffi::TTF_STYLE_ITALIC as int,
@@ -158,7 +158,7 @@ impl Drop for Font {
     }
 }
 
-fn wrap_font_styles(bitflags: u32) -> Vec<Style> {
+fn wrap_font_styles(bitflags: u32) -> Vec<FontStyle> {
     let styles = [StyleBold, StyleItalic, StyleUnderline, StyleStrikeThrough];
     styles.iter().filter_map(|&flag| {
         if bitflags & (flag as u32) != 0 { Some(flag) }
@@ -191,13 +191,13 @@ impl Font {
         }
     }
 
-    pub fn get_style(&self) -> Vec<Style> {
+    pub fn get_style(&self) -> Vec<FontStyle> {
         //! Get font render style
         let raw = unsafe { ffi::TTF_GetFontStyle(self.raw) };
         wrap_font_styles(raw as u32)
     }
 
-    pub fn set_style(&self, styles: &[Style]) {
+    pub fn set_style(&self, styles: &[FontStyle]) {
         //! Set font render style.
         let flags = styles.iter().fold(0i32, |flags, flag| { flags | *flag as i32 });
         unsafe {
@@ -247,49 +247,49 @@ impl Font {
         }
     }
 
-    pub fn get_height(&self) -> int {
+    pub fn height(&self) -> int {
         //! Get font maximum total height.
         unsafe {
             ffi::TTF_FontHeight(self.raw) as int
         }
     }
 
-    pub fn get_ascent(&self) -> int {
+    pub fn ascent(&self) -> int {
         //! Get font highest ascent (height above base).
         unsafe {
             ffi::TTF_FontAscent(self.raw) as int
         }
     }
 
-    pub fn get_descent(&self) -> int {
+    pub fn descent(&self) -> int {
         //! Get font lowest descent (height below base).
         unsafe {
             ffi::TTF_FontDescent(self.raw) as int
         }
     }
 
-    pub fn get_line_skip(&self) -> int {
+    pub fn line_skip(&self) -> int {
         //! Get font recommended line spacing.
         unsafe {
             ffi::TTF_FontLineSkip(self.raw) as int
         }
     }
 
-    pub fn get_faces_number(&self) -> int {
+    pub fn faces(&self) -> int {
         //! Get the number of faces in a font.
         unsafe {
             ffi::TTF_FontFaces(self.raw) as int
         }
     }
 
-    pub fn is_fixed_width(&self) -> bool {
+    pub fn face_is_fixed_width(&self) -> bool {
         //! Get whether font is monospaced or not.
         unsafe {
             ffi::TTF_FontFaceIsFixedWidth(self.raw) != 0
         }
     }
 
-    pub fn get_family_name(&self) -> Option<~str> {
+    pub fn face_family_name(&self) -> Option<~str> {
         //! Get current font face family name string.
         unsafe {
             // not owns buffer
@@ -302,7 +302,7 @@ impl Font {
         }
     }
 
-    pub fn get_style_name(&self) -> Option<~str> {
+    pub fn face_style_name(&self) -> Option<~str> {
         //! Get current font face style name string.
         unsafe {
             let cname = ffi::TTF_FontFaceStyleName(self.raw);
@@ -314,7 +314,7 @@ impl Font {
         }
     }
 
-    pub fn get_char_index(&self, ch: char) -> Option<uint> {
+    pub fn index_of_char(&self, ch: char) -> Option<uint> {
         //! Get individual font glyph availability.
         unsafe {
             let ret = ffi::TTF_GlyphIsProvided(self.raw, ch as u16);
@@ -326,7 +326,7 @@ impl Font {
         }
     }
 
-    pub fn get_char_metrics(&self, ch: char) -> Option<GlyphMetrics> {
+    pub fn metrics_of_char(&self, ch: char) -> Option<GlyphMetrics> {
         //! Get individual font glyph metrics.
         let minx = 0;
         let maxx = 0;
