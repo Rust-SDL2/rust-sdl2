@@ -166,7 +166,7 @@ impl Surface {
 
     pub fn from_bmp(path: &Path) -> Result<~Surface, ~str> {
         let raw = unsafe {
-            ll::SDL_LoadBMP_RW(rwops::RWops::from_file(path, "rb").unwrap().raw, 0)
+            ll::SDL_LoadBMP_RW(try!(rwops::RWops::from_file(path, "rb")).raw, 0)
         };
 
         if raw.is_null() { Err(get_error()) }
@@ -175,7 +175,7 @@ impl Surface {
 
     pub fn save_bmp(&self, path: &Path) -> bool {
 	unsafe {
-            ll::SDL_SaveBMP_RW(self.raw, rwops::RWops::from_file(path, "rb").unwrap().raw, 0) == 0
+            ll::SDL_SaveBMP_RW(self.raw, try!(rwops::RWops::from_file(path, "rb")).raw, 0) == 0
 	}
     }
 
