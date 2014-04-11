@@ -63,13 +63,13 @@ pub mod ll {
         pub src_format: SDL_AudioFormat,
         pub dst_format: SDL_AudioFormat,
         pub rate_incr: c_double,
-        pub buf: *uint8_t,
+        pub buf: *mut uint8_t,
         pub len: c_int,
         pub len_cvt: c_int,
         pub len_mult: c_int,
         pub len_ratio: c_double,
-        pub filters: [SDL_AudioFilter, ..10u],
-        pub filter_index: c_int,
+        filters: [SDL_AudioFilter, ..10u],
+        filter_index: c_int,
     }
     pub type SDL_AudioDeviceID = uint32_t;
     pub type SDL_AudioStatus = c_uint;
@@ -99,11 +99,11 @@ pub mod ll {
                               spec: *SDL_AudioSpec,
                               audio_buf: **uint8_t, audio_len: *uint32_t) -> *SDL_AudioSpec;
         pub fn SDL_FreeWAV(audio_buf: *uint8_t);
-        pub fn SDL_BuildAudioCVT(cvt: *SDL_AudioCVT,
+        pub fn SDL_BuildAudioCVT(cvt: *mut SDL_AudioCVT,
                                  src_format: SDL_AudioFormat, src_channels: uint8_t,
                                  src_rate: c_int, dst_format: SDL_AudioFormat,
                                  dst_channels: uint8_t, dst_rate: c_int) -> c_int;
-        pub fn SDL_ConvertAudio(cvt: *SDL_AudioCVT) -> c_int;
+        pub fn SDL_ConvertAudio(cvt: *mut SDL_AudioCVT) -> c_int;
         pub fn SDL_MixAudio(dst: *uint8_t, src: *uint8_t, len: uint32_t,
                             volume: c_int);
         pub fn SDL_MixAudioFormat(dst: *uint8_t, src: *uint8_t,
@@ -193,7 +193,6 @@ pub fn get_current_audio_driver() -> ~str {
     }
 }
 
-
 // make this same layout as in C
 #[repr(C)]
 pub struct AudioSpec<'a > {
@@ -207,7 +206,6 @@ pub struct AudioSpec<'a > {
     c_callback: ll::SDL_AudioCallback,
     pub callback: &'a |&mut [u8]|:'a, // same size as *c_void
 }
-
 
 extern "C" fn c_audio_callback(userdata: *c_void, stream: *uint8_t, len: c_int) {
     unsafe {
@@ -224,17 +222,13 @@ extern "C" fn c_audio_callback(userdata: *c_void, stream: *uint8_t, len: c_int) 
 
 
 impl<'a> AudioSpec<'a> {
-    fn alloc() -> AudioSpec {
-        unsafe { mem::uninit::<AudioSpec>() }
-    }
-
     pub fn load_wav(path: &Path) -> Result<(~AudioSpec, CVec<u8>), ~str> {
         AudioSpec::load_wav_rw(try!(RWops::from_file(path, "rb")))
     }
 
     pub fn load_wav_rw(src: &RWops) -> Result<(~AudioSpec, CVec<u8>), ~str> {
         assert_eq!(mem::size_of::<AudioSpec>(), mem::size_of::<ll::SDL_AudioSpec>());
-        let mut spec = AudioSpec::alloc();
+        let mut spec = unsafe { mem::uninit::<AudioSpec>() };
         let audio_buf = ptr::null::<u8>();
         let audio_len = 0u32;
         unsafe {
@@ -270,7 +264,7 @@ impl AudioDevice {
 
     pub fn open(device: &str, iscapture: int, spec: &AudioSpec) -> Result<(AudioDevice, ~AudioSpec), ~str> {
         //! SDL_OpenAudioDevice
-        let obtained = AudioSpec::alloc();
+        let obtained = unsafe { mem::uninit::<AudioSpec>() };
         unsafe {
             let ret = ll::SDL_OpenAudioDevice(device.to_c_str().unwrap(),
                                               iscapture as c_int,
@@ -318,19 +312,25 @@ impl AudioDevice {
     }
 }
 
-
-
 #[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct AudioCVT {
-    pub raw: *ll::SDL_AudioCVT,
+    pub raw: *mut ll::SDL_AudioCVT,
     pub owned: bool,
+}
+
+impl Drop for AudioCVT {
+    fn drop(&mut self) {
+        if self.owned {
+            unsafe { libc::free(self.raw as *mut c_void) }
+        }
+    }
 }
 
 impl AudioCVT {
     pub fn new(src_format: AudioFormat, src_channels: u8, src_rate: int,
                dst_format: AudioFormat, dst_channels: u8, dst_rate: int) -> Result<~AudioCVT, ~str> {
         unsafe {
-            let c_cvt_p = libc::malloc(mem::size_of::<ll::SDL_AudioCVT>() as size_t) as *ll::SDL_AudioCVT;
+            let c_cvt_p = libc::malloc(mem::size_of::<ll::SDL_AudioCVT>() as size_t) as *mut ll::SDL_AudioCVT;
             let ret = ll::SDL_BuildAudioCVT(c_cvt_p,
                                             src_format, src_channels, src_rate as c_int,
                                             dst_format, dst_channels, dst_rate as c_int);
@@ -342,13 +342,31 @@ impl AudioCVT {
         }
     }
 
-    pub fn convert(&self) -> Result<(), ~str> {
+    pub fn convert(&self, src: CVec<u8>) -> Result<CVec<u8>, ~str> {
         //! Convert audio data to a desired audio format.
-        let ret = unsafe { ll::SDL_ConvertAudio(self.raw) };
-        if ret == 0 {
-            Ok(())
-        } else {
-            Err(get_error())
+
+        unsafe {
+            if (*self.raw).needed != 1 {
+                return Err(~"no convertion needed!")
+            }
+            // set len
+            (*self.raw).len = src.len() as c_int;
+            // alloc buf
+            let size = (*self.raw).len * (*self.raw).len_mult;
+            (*self.raw).buf = libc::malloc(size as size_t) as *mut u8;
+            // set buf
+            ptr::copy_memory::<u8>((*self.raw).buf, src.as_slice().as_ptr(), src.len());
+            // convert
+            let ret = ll::SDL_ConvertAudio(self.raw);
+            // return
+            let p = (*self.raw).buf as *mut c_void; // send to proc()
+            if ret == 0 {
+                Ok( CVec::new_with_dtor((*self.raw).buf as *mut u8, (*self.raw).len_cvt as uint,
+                                        proc() { libc::free(p) })
+                    )
+            } else {
+                Err(get_error())
+            }
         }
     }
 }
