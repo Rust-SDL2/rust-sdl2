@@ -20,6 +20,8 @@ use std::default;
 use std::ptr;
 use std::cast;
 use std::raw;
+use std::ops::BitOr;
+use std::default::Default;
 use sdl2::get_error;
 use sdl2::rwops::RWops;
 
@@ -133,35 +135,58 @@ pub fn get_linked_version() -> SDLVersion {
     }
 }
 
-#[repr(C)]
 #[deriving(Clone, Eq, Hash, Show)]
 pub enum InitFlag {
-    InitFlac       = ffi::MIX_INIT_FLAC as int,
-    InitMod        = ffi::MIX_INIT_MOD as int,
-    InitModPlug    = ffi::MIX_INIT_MODPLUG as int,
-    InitMp3        = ffi::MIX_INIT_MP3 as int,
-    InitOgg        = ffi::MIX_INIT_OGG as int,
-    InitFluidSynth = ffi::MIX_INIT_FLUIDSYNTH as int,
+    InitFlac,
+    InitMod,
+    InitModPlug,
+    InitMp3,
+    InitOgg,
+    InitFluidSynth,
+    InitRaw(int),
 }
 
-pub fn init(flags: &[InitFlag]) -> ~[InitFlag] {
-    //! Loads dynamic libraries and prepares them for use.  Flags should be
-    //! one or more flags from InitFlag.
-    //! It returns the flags successfully initialized, or [] on failure.
-    let mut used = ~[];
-    unsafe {
-        let used_flags = ffi::Mix_Init(
-            flags.iter().fold(0, |flags, &flag| {
-                flags | flag as ffi::MIX_InitFlags
-            }) as c_int
-        );
-        for flag in flags.iter() {
-            if used_flags & *flag as c_int != 0 {
-                used.push(*flag)
-            }
+impl InitFlag {
+    #[inline]
+    pub fn to_ll(self) -> c_int {
+        match self {
+            InitFlac       => ffi::MIX_INIT_FLAC as c_int,
+            InitMod        => ffi::MIX_INIT_MOD as c_int,
+            InitModPlug    => ffi::MIX_INIT_MODPLUG as c_int,
+            InitMp3        => ffi::MIX_INIT_MP3 as c_int,
+            InitOgg        => ffi::MIX_INIT_OGG as c_int,
+            InitFluidSynth => ffi::MIX_INIT_FLUIDSYNTH as c_int,
+            InitRaw(n)     => n as c_int,
         }
     }
-    used
+
+    pub fn from_ll(n: c_int) -> InitFlag {
+        InitRaw(n as int)
+    }
+
+    pub fn mask(self, flag: InitFlag) -> bool {
+        self.to_ll() & flag.to_ll() == flag.to_ll()
+    }
+}
+
+impl BitOr<InitFlag, InitFlag> for InitFlag {
+    fn bitor(&self, rhs: &InitFlag) -> InitFlag {
+        InitRaw(self.to_ll() as int | rhs.to_ll() as int)
+    }
+}
+
+impl Default for InitFlag {
+    fn default() -> InitFlag {
+        InitFlag::from_ll((ffi::MIX_INIT_FLAC | ffi::MIX_INIT_MOD | ffi::MIX_INIT_MODPLUG |
+                           ffi::MIX_INIT_MP3 | ffi::MIX_INIT_OGG | ffi::MIX_INIT_FLUIDSYNTH) as c_int)
+    }
+}
+
+pub fn init(flags: InitFlag) -> InitFlag {
+    //! Loads dynamic libraries and prepares them for use.  Flags should be
+    //! one or more flags from InitFlag.
+    let ret = unsafe { ffi::Mix_Init(flags.to_ll()) };
+    InitFlag::from_ll(ret)
 }
 
 pub fn quit() {
