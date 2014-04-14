@@ -44,8 +44,59 @@ mod others {
 #[allow(non_camel_case_types, dead_code)]
 mod ffi;
 
+// This comes from SDL_audio.h
+#[allow(non_camel_case_types)]
+mod ll {
+    use libc::uint16_t;
+
+    pub static AUDIO_U8     : uint16_t =     0x0008;
+    pub static AUDIO_S8     : uint16_t =     0x8008;
+    pub static AUDIO_U16LSB : uint16_t =     0x0010;
+    pub static AUDIO_S16LSB : uint16_t =     0x8010;
+    pub static AUDIO_U16MSB : uint16_t =     0x1010;
+    pub static AUDIO_S16MSB : uint16_t =     0x9010;
+    pub static AUDIO_U16    : uint16_t =     AUDIO_U16LSB;
+    pub static AUDIO_S16    : uint16_t =     AUDIO_S16LSB;
+    pub static AUDIO_S32LSB : uint16_t =     0x8020;
+    pub static AUDIO_S32MSB : uint16_t =     0x9020;
+    pub static AUDIO_S32    : uint16_t =     AUDIO_S32LSB;
+    pub static AUDIO_F32LSB : uint16_t =     0x8120;
+    pub static AUDIO_F32MSB : uint16_t =     0x9120;
+    pub static AUDIO_F32    : uint16_t =     AUDIO_F32LSB;
+    pub static AUDIO_U16SYS : uint16_t =     AUDIO_U16LSB;
+    pub static AUDIO_S16SYS : uint16_t =     AUDIO_S16LSB;
+    pub static AUDIO_S32SYS : uint16_t =     AUDIO_S32LSB;
+    pub static AUDIO_F32SYS : uint16_t =     AUDIO_F32LSB;
+}
+
+pub type AudioFormat = uint16_t;
+
+pub static AudioU8     : AudioFormat = ll::AUDIO_U8;
+pub static AudioS8     : AudioFormat = ll::AUDIO_S8;
+pub static AudioU16LSB : AudioFormat = ll::AUDIO_U16LSB;
+pub static AudioS16LSB : AudioFormat = ll::AUDIO_S16LSB;
+pub static AudioU16MSB : AudioFormat = ll::AUDIO_U16MSB;
+pub static AudioS16MSB : AudioFormat = ll::AUDIO_S16MSB;
+pub static AudioU16    : AudioFormat = ll::AUDIO_U16;
+pub static AudioS16    : AudioFormat = ll::AUDIO_S16;
+pub static AudioS32LSB : AudioFormat = ll::AUDIO_S32LSB;
+pub static AudioS32MSB : AudioFormat = ll::AUDIO_S32MSB;
+pub static AudioS32    : AudioFormat = ll::AUDIO_S32;
+pub static AudioF32LSB : AudioFormat = ll::AUDIO_F32LSB;
+pub static AudioF32MSB : AudioFormat = ll::AUDIO_F32MSB;
+pub static AudioF32    : AudioFormat = ll::AUDIO_F32;
+pub static AudioU16SYS : AudioFormat = ll::AUDIO_U16SYS;
+pub static AudioS16SYS : AudioFormat = ll::AUDIO_S16SYS;
+pub static AudioS32SYS : AudioFormat = ll::AUDIO_S32SYS;
+pub static AudioF32SYS : AudioFormat = ll::AUDIO_F32SYS;
+
+/// The suggested default is signed 16bit samples in host byte order.
+pub static DEFAULT_FORMAT: AudioFormat = ll::AUDIO_S16SYS;
+/// Defualt channels: Stereo.
 pub static DEFAULT_CHANNELS : int = 2;
+/// Good default sample rate in Hz (samples per second) for PC sound cards.
 pub static DEFAULT_FREQUENCY : int = 22050;
+/// Maximum value for any volume setting.
 pub static MAX_VOLUME : int = 128;
 
 
@@ -116,7 +167,7 @@ pub fn quit() {
     unsafe { ffi::Mix_Quit(); }
 }
 
-pub fn open_audio(frequency: int, format: u16, channels: int, chunksize: int) -> Result<(), ~str> {
+pub fn open_audio(frequency: int, format: AudioFormat, channels: int, chunksize: int) -> Result<(), ~str> {
     //! Open the mixer with a certain audio format.
     let ret = unsafe { ffi::Mix_OpenAudio(frequency as c_int, format, channels as c_int, chunksize as c_int) };
     if ret == 0 { Ok(()) }
@@ -128,14 +179,14 @@ pub fn close_audio() {
     unsafe { ffi::Mix_CloseAudio() }
 }
 
-pub fn query_spec() -> Result<(int, u16, int), ~str> {
+pub fn query_spec() -> Result<(int, AudioFormat, int), ~str> {
     //! Get the actual audio format in use by the opened audio device.
     let frequency : c_int = 0;
     let format : uint16_t = 0;
     let channels : c_int  = 0;
     let ret = unsafe { ffi::Mix_QuerySpec(&frequency, &format, &channels) };
     if ret == 0 {
-        Ok((frequency as int, format as u16, channels as int))
+        Ok((frequency as int, format as AudioFormat, channels as int))
     } else {
         Err(get_error())
     }
@@ -225,7 +276,7 @@ impl LoaderRWops for RWops {
 #[repr(C)]
 #[deriving(Clone, Eq, Hash, Show, FromPrimitive)]
 pub enum Fading {
-    FadingNo  = ffi::MIX_NO_FADING as int,
+    NoFading  = ffi::MIX_NO_FADING as int,
     FadingOut = ffi::MIX_FADING_OUT as int,
     FadingIn  = ffi::MIX_FADING_IN as int
 }
@@ -529,16 +580,16 @@ pub fn get_music_decoder(index: int) -> ~str {
 #[repr(C)]
 #[deriving(Clone, Eq, Hash, Show, FromPrimitive)]
 pub enum MusicType {
-    TypeNone    = ffi::MUS_NONE as int,
-    TypeCmd     = ffi::MUS_CMD as int,
-    TypeWav     = ffi::MUS_WAV as int,
-    TypeMod     = ffi::MUS_MOD as int,
-    TypeMid     = ffi::MUS_MID as int,
-    TypeOgg     = ffi::MUS_OGG as int,
-    TypeMp3     = ffi::MUS_MP3 as int,
-    TypeMp3Mad  = ffi::MUS_MP3_MAD as int,
-    TypeFlac    = ffi::MUS_FLAC as int,
-    TypeModPlug = ffi::MUS_MODPLUG as int
+    MusicNone    = ffi::MUS_NONE as int,
+    MusicCmd     = ffi::MUS_CMD as int,
+    MusicWav     = ffi::MUS_WAV as int,
+    MusicMod     = ffi::MUS_MOD as int,
+    MusicMid     = ffi::MUS_MID as int,
+    MusicOgg     = ffi::MUS_OGG as int,
+    MusicMp3     = ffi::MUS_MP3 as int,
+    MusicMp3Mad  = ffi::MUS_MP3_MAD as int,
+    MusicFlac    = ffi::MUS_FLAC as int,
+    MusicModPlug = ffi::MUS_MODPLUG as int
 }
 
 /// This is an opaque data type used for Music data.
