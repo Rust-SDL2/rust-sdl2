@@ -18,6 +18,8 @@ use std::fmt;
 use std::c_str::CString;
 use std::default;
 use std::ptr;
+use std::cast;
+use std::raw;
 use sdl2::get_error;
 use sdl2::rwops::RWops;
 
@@ -282,12 +284,42 @@ pub enum Fading {
 }
 
 /// Sound effect channel.
+#[deriving(Eq, Show)]
 pub struct Channel(int);
 
 pub fn allocate_channels(numchans: int) -> int {
     //! Set the number of channels being mixed.
     unsafe {
         ffi::Mix_AllocateChannels(numchans as c_int) as int
+    }
+}
+
+static mut channel_finished_callback: Option<raw::Closure> = None;
+
+extern "C" fn c_channel_finished_callback(ch: c_int) {
+    unsafe {
+        match channel_finished_callback {
+            None => (),
+            Some(cb) => {
+                let cb = cast::transmute::<_, |Channel|>(cb);
+                cb(Channel(ch as int))
+            }
+        }
+    }
+}
+
+pub fn set_channel_finished(f: |Channel|:'static) {
+    //! When channel playback is halted, then the specified channel_finished function is called.
+    unsafe {
+        channel_finished_callback = Some(cast::transmute::<_, raw::Closure>(f));
+        ffi::Mix_ChannelFinished(Some(c_channel_finished_callback));
+    }
+}
+
+pub fn unset_channel_finished() {
+    unsafe {
+        ffi::Mix_ChannelFinished(None);
+        channel_finished_callback = None;
     }
 }
 
@@ -381,8 +413,6 @@ impl Channel {
         let Channel(ch) = self;
         unsafe { ffi::Mix_FadeOutChannel(ch as c_int, ms as c_int) as int }
     }
-
-    // TODO: Mix_ChannelFinished
 
     pub fn is_playing(self) -> bool {
         //! if channel is playing, or not.
@@ -592,11 +622,24 @@ pub enum MusicType {
     MusicModPlug = ffi::MUS_MODPLUG as int
 }
 
+// hooks
+static mut music_finished_hook: Option<raw::Closure> = None;
+
+extern "C" fn c_music_finished_hook() {
+    unsafe { match music_finished_hook {
+        None => (),
+        Some(f) => {
+            let f = cast::transmute::<_, ||>(f);
+            f()
+        }
+    } }
+}
+
 /// This is an opaque data type used for Music data.
 #[deriving(Eq)] #[allow(raw_pointer_deriving, visible_private_types)]
 pub struct Music {
     pub raw: *ffi::Mix_Music,
-    pub owned: bool
+    pub owned: bool,
 }
 
 impl Drop for Music {
@@ -730,8 +773,22 @@ impl Music {
     }
 
     // TODO: Mix_HookMusic
-    // TODO: Mix_HookMusicFinished
     // TODO: Mix_GetMusicHookData
+
+    pub fn hook_finished(f: ||) {
+        unsafe {
+            music_finished_hook = Some(cast::transmute(f));
+            ffi::Mix_HookMusicFinished(Some(c_music_finished_hook));
+        }
+    }
+
+    pub fn unhook_finished() {
+        unsafe {
+            ffi::Mix_HookMusicFinished(None);
+            // unset from c, then rust, to avoid race condiction
+            music_finished_hook = None;
+        }
+    }
 
     pub fn is_playing() -> bool {
         //! If music is actively playing, or not.

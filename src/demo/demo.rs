@@ -47,6 +47,9 @@ fn dump_info(filename: &Path) -> Result<(), ~str> {
     println!("query spec => {}", mix::query_spec());
 
     let music = mix::Music::from_file(filename).unwrap();
+
+    mix::Music::hook_finished(|| { println!("play ends! from rust cb") });
+
     println!("music => {:?}", music);
     println!("music type => {}", music.get_type());
 
@@ -63,6 +66,11 @@ fn dump_info(filename: &Path) -> Result<(), ~str> {
     println!("fading in from pos ... {}", music.fade_in_from_pos(1, 10000, 100.0));
 
     sdl2::timer::delay(5000);
+
+    mix::Music::halt();
+
+    sdl2::timer::delay(1000);
+    // here will print hook_finished
 
     mix::quit();
     sdl2::quit();
