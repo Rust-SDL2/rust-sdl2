@@ -13,15 +13,14 @@ A binding for SDL2_mixer.
 extern crate libc;
 extern crate sdl2;
 
-use libc::{c_int, uint16_t, c_double};
 use std::fmt;
-use std::c_str::CString;
 use std::default;
 use std::ptr;
 use std::cast;
 use std::raw;
+use std::c_str::CString;
 use std::ops::BitOr;
-use std::default::Default;
+use libc::{c_int, uint16_t, c_double};
 use sdl2::get_error;
 use sdl2::rwops::RWops;
 
@@ -175,7 +174,7 @@ impl BitOr<InitFlag, InitFlag> for InitFlag {
     }
 }
 
-impl Default for InitFlag {
+impl default::Default for InitFlag {
     fn default() -> InitFlag {
         InitFlag::from_ll((ffi::MIX_INIT_FLAC | ffi::MIX_INIT_MOD | ffi::MIX_INIT_MODPLUG |
                            ffi::MIX_INIT_MP3 | ffi::MIX_INIT_OGG | ffi::MIX_INIT_FLUIDSYNTH) as c_int)
