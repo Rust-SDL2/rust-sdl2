@@ -3,13 +3,15 @@ use surface;
 use pixels;
 use get_error;
 use std::ptr;
-use libc::{c_int, uint32_t, c_float, c_double};
+use libc;
+use libc::{c_int, uint32_t, c_float, c_double, c_void, size_t};
 use std::str;
 use std::cast;
 use rect::Point;
 use rect::Rect;
 use std::num::FromPrimitive;
 use std::vec::Vec;
+use std::c_vec::CVec;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
@@ -559,10 +561,28 @@ impl Renderer {
         else { Err(get_error()) }
     }
 
-    //TODO: Figure out how big the Pixels array is supposed to be
-    /*
-    pub fn SDL_RenderReadPixels(renderer: *SDL_Renderer, rect: *SDL_Rect, format: uint32_t, pixels: *c_void, pitch: c_int) -> c_int;
-    */
+    pub fn read_pixels(&self, rect: Option<Rect>, format: pixels::PixelFormatFlag) -> Result<CVec<u8>, ~str> {
+        unsafe {
+            let (actual_rect, w, h) = match rect {
+                Some(rect) => (cast::transmute(&rect), rect.w as uint, rect.h as uint),
+                None => {
+                    let (w, h) = try!(self.get_output_size());
+                    (ptr::null(), w as uint, h as uint)
+                }
+            };
+            let size = format.byte_size_of_pixels(w * h);
+            let pixels = libc::malloc(size as size_t) as *u8;
+            let pitch = w * format.byte_size_per_pixel(); // calculated pitch
+            let ret = ll::SDL_RenderReadPixels(self.raw, actual_rect, format as uint32_t, pixels as *c_void, pitch as c_int);
+            if ret == 0 {
+                Ok(CVec::new_with_dtor(pixels as *mut u8, size, proc() {
+                    libc::free(pixels as *mut c_void)
+                }))
+            } else {
+                Err(get_error())
+            }
+        }
+    }
 }
 
 pub struct TextureQuery {
@@ -678,10 +698,29 @@ impl Texture {
         else { Err(get_error()) }
     }
 
-    //TODO: Figure out how big pixels ends up
-    /*
-    pub fn SDL_LockTexture(texture: *SDL_Texture, rect: *SDL_Rect, pixels: **c_void, pitch: *c_int) -> c_int;
-    pub fn SDL_UnlockTexture(texture: *SDL_Texture))*/
+    pub fn lock(&self, rect: Option<Rect>) -> Result<CVec<u8>, ~str> {
+        let q = try!(self.query());
+        unsafe {
+            let actual_rect = match rect {
+                Some(rect) => cast::transmute(&rect),
+                None => ptr::null()
+            };
+
+            let pixels : *c_void = ptr::null();
+            let pitch = 0;
+            let ret = ll::SDL_LockTexture(self.raw, actual_rect, &pixels, &pitch);
+            let size = q.format.byte_size_of_pixels((q.width * q.height) as uint);
+            if ret == 0 {
+                Ok(CVec::new(pixels as *mut u8, size))
+            } else {
+                Err(get_error())
+            }
+        }
+    }
+
+    pub fn unlock(&self) {
+        unsafe { ll::SDL_UnlockTexture(self.raw) }
+    }
 
     pub fn gl_bind_texture(&self) -> Result<(f64, f64), ~str> {
         let texw: c_float = 0.0;
