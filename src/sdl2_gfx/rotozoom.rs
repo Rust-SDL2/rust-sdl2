@@ -33,11 +33,17 @@ mod ll {
     }
 }
 
+/// RotozoomSurface for work with rust-sdl2 Surface type
 pub trait RotozoomSurface {
+    /// Rotates and zooms a surface and optional anti-aliasing.
     fn rotozoom(&self, angle: f64, zoom: f64, smooth: bool) -> Result<~Surface, ~str>;
+    /// Rotates and zooms a surface with different horizontal and vertival scaling factors and optional anti-aliasing.
     fn rotozoom_xy(&self, angle: f64, zoomx: f64, zoomy: f64, smooth: bool) -> Result<~Surface, ~str>;
+    /// Zoom a surface by independent horizontal and vertical factors with optional smoothing.
     fn zoom(&self, zoomx: f64, zoomy: f64, smooth: bool) -> Result<~Surface, ~str>;
+    /// Shrink a surface by an integer ratio using averaging.
     fn shrink(&self, factorx: int, factory: int) -> Result<~Surface, ~str>;
+    /// Rotates a 8/16/24/32 bit surface in increments of 90 degrees.
     fn rotate_90deg(&self, turns: int) -> Result<~Surface, ~str>;
 }
 

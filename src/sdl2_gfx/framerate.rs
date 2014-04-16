@@ -23,17 +23,13 @@ mod ll {
     }
 }
 
+/// Structure holding the state and timing information of the framerate controller.
 pub struct FPSManager {
     raw: *mut ll::FPSmanager,
 }
 
-impl Drop for FPSManager {
-    fn drop(&mut self) {
-        unsafe { libc::free(self.raw as *mut c_void) }
-    }
-}
-
 impl FPSManager {
+    /// Create the framerate manager.
     pub fn new() -> FPSManager {
         unsafe {
             let raw = libc::malloc(mem::size_of::<ll::FPSmanager>() as u64) as *mut ll::FPSmanager;
@@ -42,24 +38,33 @@ impl FPSManager {
         }
     }
 
-    pub fn set_framerate(&mut self, rate: int) -> Result<(), ~str> {
+    /// Set the framerate in Hz.
+    pub fn set_framerate(&mut self, rate: uint) -> Result<(), ~str> {
         let ret = unsafe { ll::SDL_setFramerate(self.raw, rate as uint32_t) };
         if ret == 0 { Ok(()) }
         else { Err(~"set_framerate error: beyond lower/upper limit.") }
     }
 
-
+    /// Return the current target framerate in Hz.
     pub fn get_framerate(&self) -> int {
         // will not get an error
         unsafe { ll::SDL_getFramerate(self.raw) as int }
     }
 
+    /// Return the current framecount.
     pub fn get_framecount(&self) -> int {
         // will not get an error
         unsafe { ll::SDL_getFramecount(self.raw) as int }
     }
 
+    /// Delay execution to maintain a constant framerate and calculate fps.
     pub fn framerate_delay(&mut self) -> uint {
         unsafe { ll::SDL_framerateDelay(self.raw) as uint }
+    }
+}
+
+impl Drop for FPSManager {
+    fn drop(&mut self) {
+        unsafe { libc::free(self.raw as *mut c_void) }
     }
 }

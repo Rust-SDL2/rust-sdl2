@@ -1,5 +1,6 @@
 use std::cast;
 use std::ptr;
+use std::num::ToPrimitive;
 use libc::{c_void, c_int, c_char};
 use sdl2::render::Renderer;
 use sdl2::surface::Surface;
@@ -179,8 +180,7 @@ pub trait ToColor {
 
     #[inline]
     fn as_u32(&self) -> u32 {
-        let (r, g, b, a) = self.as_RGBA();
-        (r as u32) << 24 + (g as u32) << 16 + (b as u32) << 8 + a
+        unsafe { cast::transmute(self.as_RGBA()) }
     }
 }
 
@@ -198,18 +198,6 @@ impl ToColor for pixels::Color {
     }
 }
 
-impl ToColor for u32 {
-    #[inline]
-    fn as_RGBA(&self) -> (u8, u8, u8, u8) {
-        unsafe { cast::transmute(*self) }
-    }
-
-    #[inline]
-    fn as_u32(&self) -> u32 {
-        *self
-    }
-}
-
 impl ToColor for (u8, u8, u8, u8) {
     #[inline]
     fn as_RGBA(&self) -> (u8, u8, u8, u8) {
@@ -222,7 +210,32 @@ impl ToColor for (u8, u8, u8, u8) {
     }
 }
 
+impl ToColor for u32 {
+    #[inline]
+    fn as_RGBA(&self) -> (u8, u8, u8, u8) {
+        unsafe { cast::transmute(*self) }
+    }
 
+    #[inline]
+    fn as_u32(&self) -> u32 {
+        *self
+    }
+}
+
+// for 0xXXXXXXXX
+impl ToColor for int {
+    #[inline]
+    fn as_RGBA(&self) -> (u8, u8, u8, u8) {
+        unsafe { cast::transmute(self.to_u32().expect("Can't convert to Color Type")) }
+    }
+
+    #[inline]
+    fn as_u32(&self) -> u32 {
+        self.to_u32().expect("Can't convert to Color Type")
+    }
+}
+
+/// For drawing with rust-sdl2 Renderer
 pub trait DrawRenderer {
     fn pixel<C: ToColor>(&self, x: i16, y: i16, color: C) -> Result<(), ~str>;
     fn hline<C: ToColor>(&self, x1: i16, x2: i16, y: i16, color: C) -> Result<(), ~str>;
@@ -307,6 +320,7 @@ impl DrawRenderer for Renderer {
     }
     fn line<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, color: C) -> Result<(), ~str> {
         let ret = unsafe {
+            println!("debug => {:X}", color.as_u32());
             ll::lineColor(self.raw, x1, y1, x2, y2, color.as_u32())
         };
         if ret == 0 { Ok(()) }
@@ -472,6 +486,7 @@ impl DrawRenderer for Renderer {
     }
 }
 
+/// Sets or resets the current global font data.
 pub fn set_font(fontdata: Option<&[u8]>, cw: uint, ch: uint) {
     let actual_fontdata = match fontdata {
         None  => ptr::null(),
@@ -482,6 +497,7 @@ pub fn set_font(fontdata: Option<&[u8]>, cw: uint, ch: uint) {
     }
 }
 
+/// Sets current global font character rotation steps.
 pub fn set_font_rotation(rotation: uint) {
     unsafe { ll::gfxPrimitivesSetFontRotation(rotation as u32) }
 }
