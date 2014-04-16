@@ -2,12 +2,8 @@
 
 use libc::*;
 use sdl2::rwops::ll::SDL_RWops;
+use sdl2::version::ll::SDL_version;
 
-pub struct SDL_version {
-    pub major: uint8_t,
-    pub minor: uint8_t,
-    pub patch: uint8_t,
-}
 pub type MIX_InitFlags = c_uint;
 pub static MIX_INIT_FLAC: c_uint = 1;
 pub static MIX_INIT_MOD: c_uint = 2;

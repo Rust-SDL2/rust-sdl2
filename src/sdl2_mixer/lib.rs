@@ -13,7 +13,6 @@ A binding for SDL2_mixer.
 extern crate libc;
 extern crate sdl2;
 
-use std::fmt;
 use std::default;
 use std::ptr;
 use std::cast;
@@ -23,6 +22,7 @@ use std::ops::BitOr;
 use libc::{c_int, uint16_t, c_double};
 use sdl2::get_error;
 use sdl2::rwops::RWops;
+use sdl2::version::Version;
 
 // Setup linking for all targets.
 #[cfg(target_os="macos")]
@@ -103,34 +103,10 @@ pub static DEFAULT_FREQUENCY : int = 22050;
 pub static MAX_VOLUME : int = 128;
 
 
-/// The version of the libSDL.so that you are linked to
-#[deriving(Eq, Clone)]
-pub struct SDLVersion {
-    pub major: int,
-    pub minor: int,
-    pub patch: int,
-}
-
-impl fmt::Show for SDLVersion {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f.buf, "{}.{}.{}", self.major, self.minor, self.patch)
-    }
-}
-
-impl SDLVersion {
-    fn from_sdl_version(sv: *ffi::SDL_version) -> SDLVersion {
-        //! Converts a raw *SDL_version to SDLVersion
-        unsafe {
-            let v = *sv;
-            SDLVersion{ major: v.major as int, minor: v.minor as int, patch: v.patch as int }
-        }
-    }
-}
-
-pub fn get_linked_version() -> SDLVersion {
+pub fn get_linked_version() -> Version {
     //! Returns the version of the dynamically linked SDL_mixer library
     unsafe {
-        SDLVersion::from_sdl_version(ffi::Mix_Linked_Version())
+        Version::from_ll(ffi::Mix_Linked_Version())
     }
 }
 
