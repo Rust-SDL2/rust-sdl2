@@ -135,7 +135,7 @@ pub struct PixelFormat {
     pub raw: *ll::SDL_PixelFormat
 }
 
-#[deriving(Eq, FromPrimitive)]
+#[deriving(Eq, Show, FromPrimitive)]
 pub enum PixelFormatFlag {
     Unknown = ll::SDL_PIXELFORMAT_UNKNOWN as int,
     Index1LSB = ll::SDL_PIXELFORMAT_INDEX1LSB as int,
@@ -173,4 +173,59 @@ pub enum PixelFormatFlag {
     YUY2 = ll::SDL_PIXELFORMAT_YUY2 as int,
     UYVY = ll::SDL_PIXELFORMAT_UYVY as int,
     YVYU = ll::SDL_PIXELFORMAT_YVYU as int
+}
+
+impl PixelFormatFlag {
+    pub fn byte_size_of_pixels(&self, num_of_pixels: uint) -> uint {
+        match *self {
+            RGB332
+                => num_of_pixels * 1,
+            RGB444 | RGB555 | BGR555 | ARGB4444 | RGBA4444 | ABGR4444 |
+            BGRA4444 | ARGB1555 | RGBA5551 | ABGR1555 | BGRA5551 | RGB565 |
+            BGR565
+                => num_of_pixels * 2,
+            RGB24 | BGR24
+                => num_of_pixels * 3,
+            RGB888 | RGBX8888 | BGR888 | BGRX8888 | ARGB8888 | RGBA8888 |
+            ABGR8888 | BGRA8888 | ARGB2101010
+                => num_of_pixels * 4,
+            // YUV formats
+            // FIXME: rounding error here?
+            YV12 | IYUV
+                => num_of_pixels / 2 * 3,
+            YUY2 | UYVY | YVYU
+                => num_of_pixels * 2,
+            // Unsupported formats
+            Index8
+                => num_of_pixels * 1,
+            Unknown | Index1LSB | Index1MSB | Index4LSB | Index4MSB
+                => fail!("not supported format: {}", *self),
+        }
+    }
+
+    pub fn byte_size_per_pixel(&self) -> uint {
+        match *self {
+            RGB332
+                => 1,
+            RGB444 | RGB555 | BGR555 | ARGB4444 | RGBA4444 | ABGR4444 |
+            BGRA4444 | ARGB1555 | RGBA5551 | ABGR1555 | BGRA5551 | RGB565 |
+            BGR565
+                => 2,
+            RGB24 | BGR24
+                => 3,
+            RGB888 | RGBX8888 | BGR888 | BGRX8888 | ARGB8888 | RGBA8888 |
+            ABGR8888 | BGRA8888 | ARGB2101010
+                => 4,
+            // YUV formats
+            YV12 | IYUV
+                => 2,
+            YUY2 | UYVY | YVYU
+                => 2,
+            // Unsupported formats
+            Index8
+                => 1,
+            Unknown | Index1LSB | Index1MSB | Index4LSB | Index4MSB
+                => fail!("not supported format: {}", *self),
+        }
+    }
 }

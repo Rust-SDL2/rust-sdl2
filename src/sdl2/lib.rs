@@ -31,3 +31,4 @@ pub mod render;
 pub mod rwops;
 pub mod sdl;
 pub mod audio;
+pub mod version;
