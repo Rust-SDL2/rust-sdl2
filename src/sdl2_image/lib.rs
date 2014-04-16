@@ -10,11 +10,11 @@ extern crate libc;
 
 use libc::{c_int, c_char};
 use std::ptr;
-use std::fmt;
 use sdl2::surface::Surface;
 use sdl2::render::Texture;
 use sdl2::render::Renderer;
 use sdl2::rwops::RWops;
+use sdl2::version::Version;
 use sdl2::get_error;
 
 // Setup linking for all targets.
@@ -51,30 +51,6 @@ pub enum InitFlag {
     InitPng = ffi::IMG_INIT_PNG as int,
     InitTif = ffi::IMG_INIT_TIF as int,
     InitWebp = ffi::IMG_INIT_WEBP as int,
-}
-
-/// The version of the libSDL.so that you are linked to
-#[deriving(Eq, Clone)]
-pub struct SDLImageVersion {
-    pub major: int,
-    pub minor: int,
-    pub patch: int,
-}
-
-impl fmt::Show for SDLImageVersion {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f.buf, "{}.{}.{}", self.major, self.minor, self.patch)
-    }
-}
-
-impl SDLImageVersion {
-    fn from_sdl_version(sv: *ffi::SDL_version) -> SDLImageVersion {
-        //! Converts a raw *SDL_version to SDLImageVersion
-        unsafe {
-            let v = *sv;
-            SDLImageVersion{ major: v.major as int, minor: v.minor as int, patch: v.patch as int }
-        }
-    }
 }
 
 /// Static method extensions for creating Surfaces
@@ -190,10 +166,10 @@ pub fn quit() {
     unsafe { ffi::IMG_Quit(); }
 }
 
-pub fn get_linked_version() -> SDLImageVersion {
+pub fn get_linked_version() -> Version {
     //! Returns the version of the dynamically linked SDL_image library
     unsafe {
-        SDLImageVersion::from_sdl_version(ffi::IMG_Linked_Version())
+        Version::from_ll(ffi::IMG_Linked_Version())
     }
 }
 
