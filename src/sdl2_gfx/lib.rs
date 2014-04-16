@@ -26,7 +26,7 @@ use sdl2::pixels::ll::SDL_Color;
 use sdl2::rwops::RWops;
 
 // Setup linking for all targets.
-#[link(kind="framework", name="SDL2_gfx")]
+#[link(name="SDL2_gfx")]
 extern {}
 
 
