@@ -17,6 +17,5 @@ install:
   - git clone https://github.com/AngryLawyer/rust-sdl2.git
   - rustc rust-sdl2/src/sdl2/lib.rs
 script:
-  - echo TODO
-#  - rustc -L. rust-sdl2_gfx/src/sdl2_gfx/lib.rs
-#  - rustdoc -L. rust-sdl2_gfx/src/sdl2_gfx/lib.rs
+  - rustc -L. rust-sdl2_gfx/src/sdl2_gfx/lib.rs
+  - rustdoc -L. rust-sdl2_gfx/src/sdl2_gfx/lib.rs
