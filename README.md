@@ -21,6 +21,7 @@ These live outside of the repo.
 * https://github.com/xsleonard/rust-sdl2_image
 * https://github.com/andelf/rust-sdl2_ttf
 * https://github.com/andelf/rust-sdl2_mixer
+* https://github.com/andelf/rust-sdl2_gfx
 
 # Requirements
 
