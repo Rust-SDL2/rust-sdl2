@@ -27,6 +27,6 @@ Demo
 ----
 
 ```
-rustc -L. src/demo/main.rs -o demo
-./demo
+rustc -L. src/demo/gfx_demo.rs
+./gfx_demo
 ```
