@@ -13,7 +13,6 @@ extern crate sdl2;
 
 use libc::{c_int, c_long};
 use std::ptr;
-use std::fmt;
 use std::c_str::CString;
 use std::num::FromPrimitive;
 use sdl2::surface::Surface;
@@ -22,6 +21,7 @@ use sdl2::pixels;
 use sdl2::pixels::Color;
 use sdl2::pixels::ll::SDL_Color;
 use sdl2::rwops::RWops;
+use sdl2::version::Version;
 
 // Setup linking for all targets.
 #[cfg(target_os="macos")]
@@ -82,35 +82,10 @@ fn color_to_c_color(color: Color) -> SDL_Color {
     }
 }
 
-/// The version of the libSDL.so that you are linked to
-/// FIXME: this type should be in rust-sdl2 package
-#[deriving(Eq, Clone)]
-pub struct SDLVersion {
-    pub major: int,
-    pub minor: int,
-    pub patch: int,
-}
-
-impl fmt::Show for SDLVersion {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f.buf, "{}.{}.{}", self.major, self.minor, self.patch)
-    }
-}
-
-impl SDLVersion {
-    fn from_sdl_version(sv: *ffi::SDL_version) -> SDLVersion {
-        //! Converts a raw *SDL_version to SDLVersion
-        unsafe {
-            let v = *sv;
-            SDLVersion{ major: v.major as int, minor: v.minor as int, patch: v.patch as int }
-        }
-    }
-}
-
 /// Returns the version of the dynamically linked SDL_ttf library
-pub fn get_linked_version() -> SDLVersion {
+pub fn get_linked_version() -> Version {
     unsafe {
-        SDLVersion::from_sdl_version(ffi::TTF_Linked_Version())
+        Version::from_ll(ffi::TTF_Linked_Version())
     }
 }
 

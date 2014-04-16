@@ -1,9 +1,10 @@
 extern crate sdl2;
 
-use libc::{c_int, c_char, c_long, c_void, uint16_t, uint32_t, uint8_t};
+use libc::{c_int, c_char, c_long, c_void, uint16_t, uint32_t};
 use sdl2::surface::ll::SDL_Surface;
 use sdl2::pixels::ll::SDL_Color;
 use sdl2::rwops::ll::SDL_RWops;
+use sdl2::version::ll::SDL_version;
 
 
 pub static TTF_STYLE_NORMAL        : c_int = 0x00;
@@ -16,12 +17,6 @@ pub static TTF_HINTING_NORMAL    : c_int = 0;
 pub static TTF_HINTING_LIGHT     : c_int = 1;
 pub static TTF_HINTING_MONO      : c_int = 2;
 pub static TTF_HINTING_NONE      : c_int = 3;
-
-pub struct SDL_version {
-    pub major: uint8_t,
-    pub minor: uint8_t,
-    pub patch: uint8_t,
-}
 
 pub type TTF_Font = c_void;
 extern "C" {
