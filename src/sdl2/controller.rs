@@ -3,7 +3,7 @@ use libc::c_int;
 #[allow(non_camel_case_types)]
 pub mod ll {
     use std::cast;
-    use libc::{c_int, c_schar, c_uchar, c_uint, c_void, int16_t, uint8_t};
+    use libc::{c_int, c_char, c_uchar, c_uint, c_void, int16_t, uint8_t};
     use joystick::ll::{SDL_Joystick, SDL_JoystickGUID};
 
     pub type SDL_bool = c_int;
@@ -72,18 +72,18 @@ pub mod ll {
     pub static SDL_CONTROLLER_BUTTON_MAX: SDL_GameControllerButton = 15;
 
     extern "C" {
-        pub fn SDL_GameControllerAddMapping(mappingString: *c_schar) -> c_int;
+        pub fn SDL_GameControllerAddMapping(mappingString: *c_char) -> c_int;
         pub fn SDL_GameControllerMappingForGUID(guid: SDL_JoystickGUID) ->
-                  *c_schar;
+                  *c_char;
         pub fn SDL_GameControllerMapping(gamecontroller: *SDL_GameController)
-                  -> *c_schar;
+                  -> *c_char;
         pub fn SDL_IsGameController(joystick_index: c_int) -> SDL_bool;
         pub fn SDL_GameControllerNameForIndex(joystick_index: c_int) ->
-                  *c_schar;
+                  *c_char;
         pub fn SDL_GameControllerOpen(joystick_index: c_int) ->
                   *SDL_GameController;
         pub fn SDL_GameControllerName(gamecontroller: *SDL_GameController) ->
-                  *c_schar;
+                  *c_char;
         pub fn SDL_GameControllerGetAttached(gamecontroller:
                                                        *SDL_GameController) ->
                   SDL_bool;
@@ -92,11 +92,11 @@ pub mod ll {
                   *SDL_Joystick;
         pub fn SDL_GameControllerEventState(state: c_int) -> c_int;
         pub fn SDL_GameControllerUpdate();
-        pub fn SDL_GameControllerGetAxisFromString(pchString: *c_schar) ->
+        pub fn SDL_GameControllerGetAxisFromString(pchString: *c_char) ->
                   SDL_GameControllerAxis;
         pub fn SDL_GameControllerGetStringForAxis(axis:
                                                             SDL_GameControllerAxis)
-                  -> *c_schar;
+                  -> *c_char;
         pub fn SDL_GameControllerGetBindForAxis(gamecontroller:
                                                           *SDL_GameController,
                                                       axis: SDL_GameControllerAxis)
@@ -104,11 +104,11 @@ pub mod ll {
         pub fn SDL_GameControllerGetAxis(gamecontroller: *SDL_GameController,
                                                axis: SDL_GameControllerAxis) ->
                   int16_t;
-        pub fn SDL_GameControllerGetButtonFromString(pchString: *c_schar) ->
+        pub fn SDL_GameControllerGetButtonFromString(pchString: *c_char) ->
                   SDL_GameControllerButton;
         pub fn SDL_GameControllerGetStringForButton(button:
                                                           SDL_GameControllerButton)
-                  -> *c_schar;
+                  -> *c_char;
         pub fn SDL_GameControllerGetBindForButton(gamecontroller:
                                                             *SDL_GameController,
                                                         button:

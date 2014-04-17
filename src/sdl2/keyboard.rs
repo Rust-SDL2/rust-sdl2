@@ -12,7 +12,7 @@ use video::Window;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
-    use libc::{c_int, c_schar, c_uint, int32_t, uint8_t, uint16_t,
+    use libc::{c_int, c_char, c_uint, int32_t, uint8_t, uint16_t,
                     uint32_t};
     use rect::Rect;
     use video::ll::SDL_Window;
@@ -38,10 +38,10 @@ pub mod ll {
         pub fn SDL_SetModState(modstate: SDL_Keymod);
         pub fn SDL_GetKeyFromScancode(scancode: SDL_Scancode) -> SDL_Keycode;
         pub fn SDL_GetScancodeFromKey(key: SDL_Keycode) -> SDL_Scancode;
-        pub fn SDL_GetScancodeName(scancode: SDL_Scancode) -> *c_schar;
-        pub fn SDL_GetScancodeFromName(name: *c_schar) -> SDL_Scancode;
-        pub fn SDL_GetKeyName(key: SDL_Keycode) -> *c_schar;
-        pub fn SDL_GetKeyFromName(name: *c_schar) -> SDL_Keycode;
+        pub fn SDL_GetScancodeName(scancode: SDL_Scancode) -> *c_char;
+        pub fn SDL_GetScancodeFromName(name: *c_char) -> SDL_Scancode;
+        pub fn SDL_GetKeyName(key: SDL_Keycode) -> *c_char;
+        pub fn SDL_GetKeyFromName(name: *c_char) -> SDL_Keycode;
         pub fn SDL_StartTextInput();
         pub fn SDL_IsTextInputActive() -> SDL_bool;
         pub fn SDL_StopTextInput();
