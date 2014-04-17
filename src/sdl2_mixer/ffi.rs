@@ -52,7 +52,7 @@ extern "C" {
                          channels: *c_int) -> c_int;
     pub fn Mix_LoadWAV_RW(src: *SDL_RWops, freesrc: c_int) ->
      *Mix_Chunk;
-    pub fn Mix_LoadMUS(file: *c_schar) -> *Mix_Music;
+    pub fn Mix_LoadMUS(file: *c_char) -> *Mix_Music;
     pub fn Mix_LoadMUS_RW(src: *SDL_RWops, freesrc: c_int) ->
      *Mix_Music;
     pub fn Mix_LoadMUSType_RW(src: *SDL_RWops, _type: Mix_MusicType,
@@ -62,9 +62,9 @@ extern "C" {
     pub fn Mix_FreeChunk(chunk: *Mix_Chunk);
     pub fn Mix_FreeMusic(music: *Mix_Music);
     pub fn Mix_GetNumChunkDecoders() -> c_int;
-    pub fn Mix_GetChunkDecoder(index: c_int) -> *c_schar;
+    pub fn Mix_GetChunkDecoder(index: c_int) -> *c_char;
     pub fn Mix_GetNumMusicDecoders() -> c_int;
-    pub fn Mix_GetMusicDecoder(index: c_int) -> *c_schar;
+    pub fn Mix_GetMusicDecoder(index: c_int) -> *c_char;
     pub fn Mix_GetMusicType(music: *Mix_Music) -> Mix_MusicType;
     pub fn Mix_SetPostMix(mix_func:
                               ::std::option::Option<extern "C" fn
@@ -132,14 +132,14 @@ extern "C" {
     pub fn Mix_SetMusicPosition(position: c_double) -> c_int;
     pub fn Mix_Playing(channel: c_int) -> c_int;
     pub fn Mix_PlayingMusic() -> c_int;
-    pub fn Mix_SetMusicCMD(command: *c_schar) -> c_int;
+    pub fn Mix_SetMusicCMD(command: *c_char) -> c_int;
     pub fn Mix_SetSynchroValue(value: c_int) -> c_int;
     pub fn Mix_GetSynchroValue() -> c_int;
-    pub fn Mix_SetSoundFonts(paths: *c_schar) -> c_int;
-    pub fn Mix_GetSoundFonts() -> *c_schar;
+    pub fn Mix_SetSoundFonts(paths: *c_char) -> c_int;
+    pub fn Mix_GetSoundFonts() -> *c_char;
     pub fn Mix_EachSoundFont(function:
                                  ::std::option::Option<extern "C" fn
-                                                           (arg1: *c_schar,
+                                                           (arg1: *c_char,
                                                             arg2: *c_void)
                                                            -> c_int>,
                              data: *c_void) -> c_int;
