@@ -24,7 +24,7 @@ mod others {
 
 #[allow(non_camel_case_types)]
 pub mod ll {
-    use libc::{c_int, c_uint, c_schar, uint32_t};
+    use libc::{c_int, c_uint, c_char, uint32_t};
 
     pub type SDL_errorcode = c_uint;
     pub static SDL_ENOMEM: SDL_errorcode = 0;
@@ -49,8 +49,8 @@ pub mod ll {
     extern "C" {
         pub fn SDL_ClearError();
         pub fn SDL_Error(code: SDL_errorcode) -> c_int;
-        pub fn SDL_SetError(fmt: *c_schar) -> c_int;
-        pub fn SDL_GetError() -> *c_schar;
+        pub fn SDL_SetError(fmt: *c_char) -> c_int;
+        pub fn SDL_GetError() -> *c_char;
 
         //SDL.h
         pub fn SDL_Init(flags: uint32_t) -> c_int;

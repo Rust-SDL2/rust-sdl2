@@ -20,7 +20,7 @@ use video;
 #[allow(non_camel_case_types)]
 pub mod ll {
     use std::cast;
-    use libc::{c_float, c_int, c_schar, c_uint, c_void, int16_t,
+    use libc::{c_float, c_int, c_char, c_uint, c_void, int16_t,
                int32_t, uint8_t, uint16_t, uint32_t};
     use gesture::ll::SDL_GestureID;
     use keyboard::ll::SDL_Keysym;
@@ -112,7 +112,7 @@ pub mod ll {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
         pub windowID: uint32_t,
-        pub text: [c_schar, ..32u],
+        pub text: [c_char, ..32u],
         pub start: int32_t,
         pub length: int32_t,
     }
@@ -121,7 +121,7 @@ pub mod ll {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
         pub windowID: uint32_t,
-        pub text: [c_schar, ..32u],
+        pub text: [c_char, ..32u],
     }
 
     pub struct SDL_MouseMotionEvent {
@@ -274,7 +274,7 @@ pub mod ll {
     pub struct SDL_DropEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
-        pub file: *c_schar,
+        pub file: *c_char,
     }
 
     pub struct SDL_QuitEvent {

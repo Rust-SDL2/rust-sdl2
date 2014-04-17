@@ -5,7 +5,7 @@ use libc::{c_void, c_int, size_t};
 
 #[allow(non_camel_case_types)]
 pub mod ll {
-    use libc::{c_uchar, uint32_t, c_schar, FILE, c_void};
+    use libc::{c_uchar, uint32_t, c_char, FILE, c_void};
     use libc::{c_int, int64_t, size_t};
 
     struct SDL_RWops_Anon {
@@ -31,7 +31,7 @@ pub mod ll {
     }
 
     extern "C" {
-        pub fn SDL_RWFromFile(file: *c_schar, mode: *c_schar) -> *SDL_RWops;
+        pub fn SDL_RWFromFile(file: *c_char, mode: *c_char) -> *SDL_RWops;
         pub fn SDL_RWFromFP(fp: *FILE, autoclose: SDL_bool) -> *SDL_RWops;
         pub fn SDL_RWFromMem(mem: *c_void, size: c_int) -> *SDL_RWops;
         pub fn SDL_RWFromConstMem(mem: *c_void, size: c_int) -> *SDL_RWops;
