@@ -315,7 +315,7 @@ impl DrawRenderer for Renderer {
     }
     fn rounded_box<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, rad: i16, color: C) -> Result<(), ~str> {
         let ret = unsafe {
-            ll::roundedRectangleColor(self.raw, x1, y1, x2, y2, rad, color.as_u32())
+            ll::roundedBoxColor(self.raw, x1, y1, x2, y2, rad, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
