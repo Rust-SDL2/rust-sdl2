@@ -1,3 +1,5 @@
+//! Graphic Primitives
+
 use std::cast;
 use std::ptr;
 use std::num::ToPrimitive;
@@ -479,7 +481,9 @@ impl DrawRenderer for Renderer {
 
     fn string<C: ToColor>(&self, x: i16, y: i16, s: &str, color: C) -> Result<(), ~str> {
         let ret = unsafe {
-            ll::stringColor(self.raw, x, y, s.as_slice().as_ptr() as *i8, color.as_u32())
+            s.with_c_str(|buf| {
+                ll::stringColor(self.raw, x, y, buf as *i8, color.as_u32())
+            })
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
