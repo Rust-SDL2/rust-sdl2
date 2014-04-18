@@ -1,3 +1,5 @@
+//! MMX image filters
+
 use std::cast;
 use std::c_vec::CVec;
 use libc;

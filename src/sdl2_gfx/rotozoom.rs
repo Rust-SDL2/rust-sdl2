@@ -1,3 +1,5 @@
+//! Surface Rotozoomer
+
 use libc::c_int;
 use sdl2::surface::Surface;
 pub use std::f64::consts::PI;
