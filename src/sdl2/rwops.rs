@@ -62,7 +62,7 @@ impl RWops {
             ll::SDL_RWFromConstMem(buf.as_ptr() as *c_void, buf.len() as c_int)
         };
         if raw.is_null() { Err(get_error()) }
-        else { Ok(~RWops{raw: raw, close_on_drop: true}) }
+        else { Ok(~RWops{raw: raw, close_on_drop: false}) }
     }
 }
 
