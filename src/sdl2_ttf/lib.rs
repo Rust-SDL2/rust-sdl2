@@ -172,7 +172,7 @@ impl Font {
         wrap_font_styles(raw as u32)
     }
 
-    pub fn set_style(&self, styles: &[FontStyle]) {
+    pub fn set_style(&mut self, styles: &[FontStyle]) {
         //! Set font render style.
         let flags = styles.iter().fold(0i32, |flags, flag| { flags | *flag as i32 });
         unsafe {
@@ -187,7 +187,7 @@ impl Font {
         }
     }
 
-    pub fn set_outline(&self, outline: int) {
+    pub fn set_outline(&mut self, outline: int) {
         //! Set font outline width.
         unsafe {
             ffi::TTF_SetFontOutline(self.raw, outline as c_int)
@@ -201,7 +201,7 @@ impl Font {
         }
     }
 
-    pub fn set_hinting(&self, hinting: Hinting) {
+    pub fn set_hinting(&mut self, hinting: Hinting) {
         //! Set freetype hinter setting.
         unsafe {
             ffi::TTF_SetFontHinting(self.raw, hinting as c_int)
@@ -215,7 +215,7 @@ impl Font {
         }
     }
 
-    pub fn set_kerning(&self, kerning: bool) {
+    pub fn set_kerning(&mut self, kerning: bool) {
         //! Set freetype kerning setting.
         unsafe {
             ffi::TTF_SetFontKerning(self.raw, kerning as c_int)
