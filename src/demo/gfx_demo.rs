@@ -54,7 +54,7 @@ fn mainloop() -> Result<(), ~str> {
     'main : loop {
         'event : loop {
             // this will avoid program to run 100% CPU
-            fpsm.framerate_delay();
+            fpsm.delay();
 
             match event::poll_event() {
                 event::QuitEvent(_) => break 'main,

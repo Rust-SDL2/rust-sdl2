@@ -53,13 +53,13 @@ impl FPSManager {
     }
 
     /// Return the current framecount.
-    pub fn get_framecount(&self) -> int {
+    pub fn get_frame_count(&self) -> int {
         // will not get an error
         unsafe { ll::SDL_getFramecount(self.raw) as int }
     }
 
     /// Delay execution to maintain a constant framerate and calculate fps.
-    pub fn framerate_delay(&mut self) -> uint {
+    pub fn delay(&mut self) -> uint {
         unsafe { ll::SDL_framerateDelay(self.raw) as uint }
     }
 }
