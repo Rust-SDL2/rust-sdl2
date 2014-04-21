@@ -18,7 +18,8 @@ use std::ptr;
 use std::cast;
 use std::raw;
 use std::c_str::CString;
-use std::ops::BitOr;
+use std::ops;
+use std::num;
 use libc::{c_int, uint16_t, c_double};
 use sdl2::get_error;
 use sdl2::rwops::RWops;
@@ -102,14 +103,15 @@ pub static DEFAULT_FREQUENCY : int = 22050;
 /// Maximum value for any volume setting.
 pub static MAX_VOLUME : int = 128;
 
-
+/// Returns the version of the dynamically linked SDL_mixer library
 pub fn get_linked_version() -> Version {
-    //! Returns the version of the dynamically linked SDL_mixer library
+
     unsafe {
         Version::from_ll(ffi::Mix_Linked_Version())
     }
 }
 
+#[allow(visible_private_types)]
 #[deriving(Clone, Eq, Hash, Show)]
 pub enum InitFlag {
     InitFlac,
@@ -118,25 +120,33 @@ pub enum InitFlag {
     InitMp3,
     InitOgg,
     InitFluidSynth,
-    InitRaw(int),
+    InitRaw(ffi::MIX_InitFlags),
 }
 
 impl InitFlag {
     #[inline]
-    pub fn to_ll(self) -> c_int {
+    fn to_ll(self) -> ffi::MIX_InitFlags {
         match self {
-            InitFlac       => ffi::MIX_INIT_FLAC as c_int,
-            InitMod        => ffi::MIX_INIT_MOD as c_int,
-            InitModPlug    => ffi::MIX_INIT_MODPLUG as c_int,
-            InitMp3        => ffi::MIX_INIT_MP3 as c_int,
-            InitOgg        => ffi::MIX_INIT_OGG as c_int,
-            InitFluidSynth => ffi::MIX_INIT_FLUIDSYNTH as c_int,
-            InitRaw(n)     => n as c_int,
+            InitFlac       => ffi::MIX_INIT_FLAC,
+            InitMod        => ffi::MIX_INIT_MOD,
+            InitModPlug    => ffi::MIX_INIT_MODPLUG,
+            InitMp3        => ffi::MIX_INIT_MP3,
+            InitOgg        => ffi::MIX_INIT_OGG,
+            InitFluidSynth => ffi::MIX_INIT_FLUIDSYNTH,
+            InitRaw(val)   => val,
         }
     }
 
-    pub fn from_ll(n: c_int) -> InitFlag {
-        InitRaw(n as int)
+    fn from_ll(cflag: ffi::MIX_InitFlags) -> InitFlag {
+        match cflag {
+            ffi::MIX_INIT_FLAC  => InitFlac,
+            ffi::MIX_INIT_MOD  => InitMod,
+            ffi::MIX_INIT_MODPLUG  => InitModPlug,
+            ffi::MIX_INIT_MP3  => InitMp3,
+            ffi::MIX_INIT_OGG  => InitOgg,
+            ffi::MIX_INIT_FLUIDSYNTH  => InitFluidSynth,
+            val => InitRaw(val),
+        }
     }
 
     pub fn mask(self, flag: InitFlag) -> bool {
@@ -144,45 +154,67 @@ impl InitFlag {
     }
 }
 
-impl BitOr<InitFlag, InitFlag> for InitFlag {
+impl ops::BitOr<InitFlag, InitFlag> for InitFlag {
     fn bitor(&self, rhs: &InitFlag) -> InitFlag {
-        InitRaw(self.to_ll() as int | rhs.to_ll() as int)
+        InitFlag::from_ll(self.to_ll() | rhs.to_ll())
     }
 }
 
 impl default::Default for InitFlag {
     fn default() -> InitFlag {
         InitFlag::from_ll((ffi::MIX_INIT_FLAC | ffi::MIX_INIT_MOD | ffi::MIX_INIT_MODPLUG |
-                           ffi::MIX_INIT_MP3 | ffi::MIX_INIT_OGG | ffi::MIX_INIT_FLUIDSYNTH) as c_int)
+                           ffi::MIX_INIT_MP3 | ffi::MIX_INIT_OGG | ffi::MIX_INIT_FLUIDSYNTH))
     }
 }
 
-pub fn init(flags: InitFlag) -> InitFlag {
-    //! Loads dynamic libraries and prepares them for use.  Flags should be
-    //! one or more flags from InitFlag.
-    let ret = unsafe { ffi::Mix_Init(flags.to_ll()) };
-    InitFlag::from_ll(ret)
+impl num::FromPrimitive for InitFlag {
+    #[inline]
+    fn from_i64(n: i64) -> Option<InitFlag> {
+        Some(InitFlag::from_ll(n as ffi::MIX_InitFlags))
+    }
+    #[inline]
+    fn from_u64(n: u64) -> Option<InitFlag> {
+        Some(InitFlag::from_ll(n as ffi::MIX_InitFlags))
+    }
 }
 
+impl num::ToPrimitive for InitFlag {
+    #[inline]
+    fn to_i64(&self) -> Option<i64> {
+        Some(self.to_ll() as i64)
+    }
+    #[inline]
+    fn to_u64(&self) -> Option<u64> {
+        Some(self.to_ll() as u64)
+    }
+}
+
+/// Loads dynamic libraries and prepares them for use.  Flags should be
+/// one or more flags from InitFlag.
+pub fn init(flags: InitFlag) -> InitFlag {
+    let ret = unsafe { ffi::Mix_Init(flags.to_ll() as c_int) };
+    InitFlag::from_ll(ret as ffi::MIX_InitFlags)
+}
+
+/// Cleans up all dynamically loaded library handles, freeing memory.
 pub fn quit() {
-    //! Cleans up all dynamically loaded library handles, freeing memory.
     unsafe { ffi::Mix_Quit(); }
 }
 
+/// Open the mixer with a certain audio format.
 pub fn open_audio(frequency: int, format: AudioFormat, channels: int, chunksize: int) -> Result<(), ~str> {
-    //! Open the mixer with a certain audio format.
     let ret = unsafe { ffi::Mix_OpenAudio(frequency as c_int, format, channels as c_int, chunksize as c_int) };
     if ret == 0 { Ok(()) }
     else { Err(get_error()) }
 }
 
+/// Shutdown and cleanup the mixer API.
 pub fn close_audio() {
-    //! Shutdown and cleanup the mixer API.
     unsafe { ffi::Mix_CloseAudio() }
 }
 
+/// Get the actual audio format in use by the opened audio device.
 pub fn query_spec() -> Result<(int, AudioFormat, int), ~str> {
-    //! Get the actual audio format in use by the opened audio device.
     let frequency : c_int = 0;
     let format : uint16_t = 0;
     let channels : c_int  = 0;
@@ -196,13 +228,13 @@ pub fn query_spec() -> Result<(int, AudioFormat, int), ~str> {
 
 // 4.2 Samples
 
+/// Get the number of sample chunk decoders available from the Mix_GetChunkDecoder function.
 pub fn get_chunk_decoders_number() -> int {
-    //! Get the number of sample chunk decoders available from the Mix_GetChunkDecoder function.
     unsafe { ffi::Mix_GetNumChunkDecoders() as int }
 }
 
+/// Get the name of the indexed sample chunk decoder.
 pub fn get_chunk_decoder(index: int) -> ~str {
-    //! Get the name of the indexed sample chunk decoder.
      unsafe {
         let name = ffi::Mix_GetChunkDecoder(index as c_int);
         CString::new(name, false).as_str().unwrap().into_owned()
@@ -225,8 +257,8 @@ impl Drop for Chunk {
 }
 
 impl Chunk {
+    /// Load file for use as a sample.
     pub fn from_file(path: &Path) -> Result<~Chunk, ~str> {
-        //! Load file for use as a sample.
         let raw = unsafe {
             ffi::Mix_LoadWAV_RW(try!(RWops::from_file(path, "wb")).raw, 0)
         };
@@ -237,15 +269,15 @@ impl Chunk {
         }
     }
 
+    /// Set chunk->volume to volume.
     pub fn set_volume(&mut self, volume: int) -> int {
-        //! Set chunk->volume to volume.
         unsafe {
             ffi::Mix_VolumeChunk(self.raw, volume as c_int) as int
         }
     }
 
+    /// current volume for the chunk.
     pub fn get_volume(&self) -> int {
-        //! current volume for the chunk.
         unsafe {
             ffi::Mix_VolumeChunk(self.raw, -1) as int
         }
@@ -259,8 +291,8 @@ pub trait LoaderRWops {
 }
 
 impl LoaderRWops for RWops {
+    /// Load src for use as a sample.
     fn load_wav(&self) -> Result<~Chunk, ~str> {
-        //! Load src for use as a sample.
         let raw = unsafe {
             ffi::Mix_LoadWAV_RW(self.raw, 0)
         };
@@ -275,6 +307,7 @@ impl LoaderRWops for RWops {
 
 // 4.3 Channels
 
+/// Fader effect type enumerations
 #[repr(C)]
 #[deriving(Clone, Eq, Hash, Show, FromPrimitive)]
 pub enum Fading {
@@ -287,8 +320,8 @@ pub enum Fading {
 #[deriving(Eq, Show)]
 pub struct Channel(int);
 
+/// Set the number of channels being mixed.
 pub fn allocate_channels(numchans: int) -> int {
-    //! Set the number of channels being mixed.
     unsafe {
         ffi::Mix_AllocateChannels(numchans as c_int) as int
     }
@@ -308,8 +341,8 @@ extern "C" fn c_channel_finished_callback(ch: c_int) {
     }
 }
 
+/// When channel playback is halted, then the specified channel_finished function is called.
 pub fn set_channel_finished(f: |Channel|:'static) {
-    //! When channel playback is halted, then the specified channel_finished function is called.
     unsafe {
         channel_finished_callback = Some(cast::transmute::<_, raw::Closure>(f));
         ffi::Mix_ChannelFinished(Some(c_channel_finished_callback));
@@ -324,19 +357,18 @@ pub fn unset_channel_finished() {
 }
 
 impl Channel {
+    /// Represent for all channels (-1)
     pub fn all() -> Channel {
-        //! Represent for all channels (-1)
         Channel(-1)
     }
 
+    /// This is the MIX_CHANNEL_POST (-2)
     pub fn post() -> Channel {
-        //! This is the MIX_CHANNEL_POST (-2)
         Channel(-2)
     }
 
+    /// Set the volume for any allocated channel.
     pub fn set_volume(self, volume: int) -> int {
-        //! Set the volume for any allocated channel.
-        //! If channel is -1 then all channels at are set at once.
         let Channel(ch) = self;
         unsafe {
             ffi::Mix_Volume(ch as c_int, volume as c_int) as int
@@ -350,8 +382,8 @@ impl Channel {
         }
     }
 
+    /// Play chunk on channel, or if channel is -1, pick the first free unreserved channel.
     pub fn play(self, chunk: Chunk, loops: int) -> Result<Channel, ~str> {
-        //! Play chunk on channel, or if channel is -1, pick the first free unreserved channel.
         self.play_timed(chunk, loops, -1)
     }
 
@@ -367,8 +399,8 @@ impl Channel {
         }
     }
 
+    /// Play chunk on channel, or if channel is -1, pick the first free unreserved channel.
     pub fn fade_in(self, chunk: Chunk, loops: int, ms: int) -> Result<Channel, ~str> {
-        //! Play chunk on channel, or if channel is -1, pick the first free unreserved channel.
         self.fade_in_timed(chunk, loops, ms, -1)
     }
 
@@ -384,57 +416,57 @@ impl Channel {
         }
     }
 
+    /// Pause channel, or all playing channels if -1 is passed in.
     pub fn pause(self) {
-        //! Pause channel, or all playing channels if -1 is passed in.
         let Channel(ch) = self;
         unsafe { ffi::Mix_Pause(ch as c_int); }
     }
 
+    /// Unpause channel, or all playing and paused channels if -1 is passed in.
     pub fn resume(self) {
-        //! Unpause channel, or all playing and paused channels if -1 is passed in.
         let Channel(ch) = self;
         unsafe { ffi::Mix_Resume(ch as c_int); }
     }
 
+    /// Halt channel playback
     pub fn halt(self) {
-        //! Halt channel playback
         let Channel(ch) = self;
         unsafe { ffi::Mix_HaltChannel(ch as c_int); }
     }
 
+    /// Halt channel playback, after ticks milliseconds.
     pub fn expire(self, ticks: int) -> int {
-        //! Halt channel playback, after ticks milliseconds.
         let Channel(ch) = self;
         unsafe { ffi::Mix_ExpireChannel(ch as c_int, ticks as c_int) as int }
     }
 
+    /// Gradually fade out which channel over ms milliseconds starting from now.
     pub fn fade_out(self, ms: int) -> int {
-        //! Gradually fade out which channel over ms milliseconds starting from now.
         let Channel(ch) = self;
         unsafe { ffi::Mix_FadeOutChannel(ch as c_int, ms as c_int) as int }
     }
 
+    /// if channel is playing, or not.
     pub fn is_playing(self) -> bool {
-        //! if channel is playing, or not.
         let Channel(ch) = self;
         unsafe { ffi::Mix_Playing(ch as c_int) != 0 }
     }
 
+    ///  if channel is paused, or not.
     pub fn is_paused(self) -> bool {
-        //!  if channel is paused, or not.
         let Channel(ch) = self;
         unsafe { ffi::Mix_Paused(ch as c_int) != 0 }
     }
 
+    /// if channel is fading in, out, or not
     pub fn get_fading(self) -> Fading {
-        //! if channel is fading in, out, or not
         let Channel(ch) = self;
         let ret = unsafe { ffi::Mix_FadingChannel(ch as c_int) as int };
         FromPrimitive::from_int(ret).unwrap()
     }
 
+    /// Get the most recent sample chunk pointer played on channel.
     pub fn get_chunk(self) -> Option<Chunk> {
-        //! Get the most recent sample chunk pointer played on channel.
         let Channel(ch) = self;
         let raw = unsafe { ffi::Mix_GetChunk(ch as c_int) };
         if raw.is_null() {
@@ -444,8 +476,8 @@ impl Channel {
         }
     }
 
+    /// This removes all effects registered to channel.
     pub fn unregister_all_effects(self) -> Result<(), ~str> {
-        //! This removes all effects registered to channel.
         let Channel(ch) = self;
         let ret = unsafe { ffi::Mix_UnregisterAllEffects(ch as c_int) };
         if ret == 0 {
@@ -465,8 +497,8 @@ impl Channel {
         }
     }
 
+    /// This effect simulates a simple attenuation of volume due to distance.
     pub fn set_distance(self, distance: u8) -> Result<(), ~str> {
-        //! This effect simulates a simple attenuation of volume due to distance.
         let Channel(ch) = self;
         let ret = unsafe { ffi::Mix_SetDistance(ch as c_int, distance) };
         if ret == 0 {
@@ -476,8 +508,8 @@ impl Channel {
         }
     }
 
+    /// This effect emulates a simple 3D audio effect.
     pub fn set_position(self, angle: i16, distance: u8) -> Result<(), ~str> {
-        //! This effect emulates a simple 3D audio effect.
         let Channel(ch) = self;
         let ret = unsafe { ffi::Mix_SetPosition(ch as c_int, angle, distance) };
         if ret == 0 {
@@ -487,8 +519,8 @@ impl Channel {
         }
     }
 
+    /// Simple reverse stereo, swaps left and right channel sound.
     pub fn set_reverse_stereo(self, flip: bool) -> Result<(), ~str> {
-        //! Simple reverse stereo, swaps left and right channel sound.
         let Channel(ch) = self;
         let ret = unsafe { ffi::Mix_SetReverseStereo(ch as c_int, flip as c_int) };
         if ret == 0 {
@@ -509,9 +541,9 @@ pub fn get_paused_channels_number() -> int {
 
 // 4.4 Groups
 
+/// Reserve num channels from being used when playing samples when
+/// passing in -1 as a channel number to playback functions.
 pub fn reserve_channels(num: int) -> int {
-    //! Reserve num channels from being used when playing samples when
-    //! passing in -1 as a channel number to playback functions.
     unsafe { ffi::Mix_ReserveChannels(num as c_int) as int }
 }
 
@@ -525,27 +557,27 @@ impl default::Default for Group {
 }
 
 impl Group {
+    /// Add channels starting at from up through to to group tag,
+    /// or reset it's group to the default group tag (-1).
     pub fn add_channels_range(self, from: int, to: int) -> int {
-        //! Add channels starting at from up through to to group tag,
-        //! or reset it's group to the default group tag (-1).
         let Group(g) = self;
         unsafe { ffi::Mix_GroupChannels(from as c_int, to as c_int, g as c_int) as int }
     }
 
+    /// Add which channel to group tag, or reset it's group to the default group tag
     pub fn add_channel(self, Channel(ch): Channel) -> bool {
-        //! Add which channel to group tag, or reset it's group to the default group tag
         let Group(g) = self;
         unsafe { ffi::Mix_GroupChannel(ch as c_int, g as c_int) == 1 }
     }
 
+    /// Count the number of channels in group
     pub fn count(self) -> int {
-        //! Count the number of channels in group
         let Group(g) = self;
         unsafe { ffi::Mix_GroupCount(g as c_int) as int }
     }
 
+    /// Find the first available (not playing) channel in group
     pub fn find_available(self) -> Option<Channel> {
-        //! Find the first available (not playing) channel in group
         let Group(g) = self;
         let ret = unsafe { ffi::Mix_GroupAvailable(g as c_int) as int };
         if ret == -1 {
@@ -555,8 +587,8 @@ impl Group {
         }
     }
 
+    /// Find the oldest actively playing channel in group
     pub fn find_oldest(self) -> Option<Channel> {
-        //! Find the oldest actively playing channel in group
         let Group(g) = self;
         let ret = unsafe { ffi::Mix_GroupOldest(g as c_int) as int };
         if ret == -1 {
@@ -566,8 +598,8 @@ impl Group {
         }
     }
 
+    /// Find the newest, most recently started, actively playing channel in group.
     pub fn find_newest(self) -> Option<Channel> {
-        //! Find the newest, most recently started, actively playing channel in group.
         let Group(g) = self;
         let ret = unsafe { ffi::Mix_GroupNewer(g as c_int) as int };
         if ret == -1 {
@@ -577,15 +609,15 @@ impl Group {
         }
     }
 
+    /// Gradually fade out channels in group over some milliseconds starting from now.
+    /// Returns the number of channels set to fade out.
     pub fn fade_out(self, ms: int) -> int {
-        //! Gradually fade out channels in group over some milliseconds starting from now.
-        //! Returns the number of channels set to fade out.
         let Group(g) = self;
         unsafe { ffi::Mix_FadeOutGroup(g as c_int, ms as c_int) as int }
     }
 
+    /// Halt playback on all channels in group.
     pub fn halt(self) {
-        //! Halt playback on all channels in group.
         let Group(g) = self;
         unsafe { ffi::Mix_HaltGroup(g as c_int); }
     }
@@ -593,20 +625,20 @@ impl Group {
 
 // 4.5 Music
 
+/// Get the number of music decoders available.
 pub fn get_music_decoders_number() -> int {
-    //! Get the number of music decoders available.
     unsafe { ffi::Mix_GetNumMusicDecoders() as int }
 }
 
+/// Get the name of the indexed music decoder.
 pub fn get_music_decoder(index: int) -> ~str {
-    //! Get the name of the indexed music decoder.
     unsafe {
         let name = ffi::Mix_GetMusicDecoder(index as c_int);
         CString::new(name, false).as_str().unwrap().into_owned()
     }
 }
 
-
+/// Music type enumerations
 #[repr(C)]
 #[deriving(Clone, Eq, Hash, Show, FromPrimitive)]
 pub enum MusicType {
@@ -651,8 +683,8 @@ impl Drop for Music {
 }
 
 impl Music {
+    /// Load music file to use.
     pub fn from_file(path: &Path) -> Result<~Music, ~str> {
-        //! Load music file to use.
         let raw = unsafe {
             ffi::Mix_LoadMUS(path.to_c_str().unwrap())
         };
@@ -663,14 +695,14 @@ impl Music {
         }
     }
 
+    /// The file format encoding of the music.
     pub fn get_type(&self) -> MusicType {
-        //! The file format encoding of the music.
         let ret = unsafe { ffi::Mix_GetMusicType(self.raw) as int };
         FromPrimitive::from_int(ret).unwrap()
     }
 
+    /// Play the loaded music loop times through from start to finish.
     pub fn play(&self, loops: int) -> Result<(), ~str> {
-        //! Play the loaded music loop times through from start to finish.
         let ret = unsafe {
             ffi::Mix_PlayMusic(self.raw, loops as c_int)
         };
@@ -681,9 +713,9 @@ impl Music {
         }
     }
 
+    /// Fade in over ms milliseconds of time, the loaded music,
+    /// playing it loop times through from start to finish.
     pub fn fade_in(&self, loops: int, ms: int) -> Result<(), ~str> {
-        //! Fade in over ms milliseconds of time, the loaded music,
-        //! playing it loop times through from start to finish.
         let ret = unsafe {
             ffi::Mix_FadeInMusic(self.raw, loops as c_int, ms as c_int)
         };
@@ -694,8 +726,8 @@ impl Music {
         }
     }
 
+    /// Fade in over ms milliseconds of time, from position.
     pub fn fade_in_from_pos(&self, loops: int, ms: int, position: f64) -> Result<(), ~str> {
-        //! Fade in over ms milliseconds of time, from position.
         let ret = unsafe {
             ffi::Mix_FadeInMusicPos(self.raw, loops as c_int, ms as c_int, position as c_double)
         };
@@ -711,28 +743,28 @@ impl Music {
         unsafe { ffi::Mix_VolumeMusic(-1) as int }
     }
 
+    /// Set the volume.
     pub fn set_volume(volume: int) -> int {
-        //! Set the volume.
         unsafe { ffi::Mix_VolumeMusic(volume as c_int) as int }
     }
 
+    /// Pause the music playback.
     pub fn pause() {
-        //! Pause the music playback.
         unsafe { ffi::Mix_PauseMusic(); }
     }
 
+    /// Unpause the music.
     pub fn resume() {
-        //! Unpause the music.
         unsafe { ffi::Mix_ResumeMusic(); }
     }
 
+    /// Rewind the music to the start.
     pub fn rewind() {
-        //! Rewind the music to the start.
         unsafe { ffi::Mix_RewindMusic(); }
     }
 
+    /// Set the position of the currently playing music.
     pub fn set_pos(position: f64) -> Result<(), ~str> {
-        //! Set the position of the currently playing music.
         let ret = unsafe {
             ffi::Mix_SetMusicPosition(position as c_double)
         };
@@ -743,8 +775,8 @@ impl Music {
         }
     }
 
+    /// Setup a command line music player to use to play music.
     pub fn set_command(command: &str) -> Result<(), ~str> {
-        //! Setup a command line music player to use to play music.
         let ret = unsafe {
             ffi::Mix_SetMusicCMD(command.to_c_str().unwrap())
         };
@@ -755,13 +787,13 @@ impl Music {
         }
     }
 
+    /// Halt playback of music.
     pub fn halt() {
-        //! Halt playback of music.
         unsafe { ffi::Mix_HaltMusic(); }
     }
 
+    /// Gradually fade out the music over ms milliseconds starting from now.
     pub fn fade_out(ms: int) -> Result<(), ~str> {
-        //! Gradually fade out the music over ms milliseconds starting from now.
         let ret = unsafe {
             ffi::Mix_FadeOutMusic(ms as c_int)
         };
@@ -790,18 +822,18 @@ impl Music {
         }
     }
 
+    /// If music is actively playing, or not.
     pub fn is_playing() -> bool {
-        //! If music is actively playing, or not.
         unsafe { ffi::Mix_PlayingMusic() == 1 }
     }
 
+    /// If music is paused, or not.
     pub fn is_paused() -> bool {
-        //! If music is paused, or not.
         unsafe { ffi::Mix_PausedMusic() == 1 }
     }
 
+    /// If music is fading, or not.
     pub fn get_fading() -> Fading {
-        //! If music is fading, or not.
         let ret = unsafe { ffi::Mix_FadingMusic() as int };
         FromPrimitive::from_int(ret).unwrap()
     }
