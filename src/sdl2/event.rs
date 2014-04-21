@@ -502,22 +502,44 @@ pub enum EventType {
 }
 
 /// An enum of window events.
-pub enum WindowEvent {
-    NoneWindowEvent,
-    ShownWindowEvent,
-    HiddenWindowEvent,
-    ExposedWindowEvent,
-    MovedWindowEvent,
-    ResizedWindowEvent,
-    SizeChangedWindowEvent,
-    MinimizedWindowEvent,
-    MaximizedWindowEvent,
-    RestoredWindowEvent,
-    EnterWindowEvent,
-    LeaveWindowEvent,
-    FocusGainedWindowEvent,
-    FocusLostWindowEvent,
-    CloseWindowEvent,
+pub enum WindowEventId {
+    NoneWindowEventId,
+    ShownWindowEventId,
+    HiddenWindowEventId,
+    ExposedWindowEventId,
+    MovedWindowEventId,
+    ResizedWindowEventId,
+    SizeChangedWindowEventId,
+    MinimizedWindowEventId,
+    MaximizedWindowEventId,
+    RestoredWindowEventId,
+    EnterWindowEventId,
+    LeaveWindowEventId,
+    FocusGainedWindowEventId,
+    FocusLostWindowEventId,
+    CloseWindowEventId,
+}
+
+impl WindowEventId {
+    fn from_ll(id: u8) -> WindowEventId {
+        match id {
+            1  => ShownWindowEventId,
+            2  => HiddenWindowEventId,
+            3  => ExposedWindowEventId,
+            4  => MovedWindowEventId,
+            5  => ResizedWindowEventId,
+            6  => SizeChangedWindowEventId,
+            7  => MinimizedWindowEventId,
+            8  => MaximizedWindowEventId,
+            9  => RestoredWindowEventId,
+            10 => EnterWindowEventId,
+            11 => LeaveWindowEventId,
+            12 => FocusGainedWindowEventId,
+            13 => FocusLostWindowEventId,
+            14 => CloseWindowEventId,
+            _  => NoneWindowEventId
+        }
+    }
 }
 
 /// Different event types.
@@ -534,7 +556,7 @@ pub enum Event {
     AppDidEnterForegroundEvent(uint),
 
     /// (timestamp, window, winEventId, data1, data2)
-    WindowEvent(uint, ~video::Window, WindowEvent, int, int),
+    WindowEvent(uint, ~video::Window, WindowEventId, int, int),
     // TODO: SysWMEvent
 
     /// (timestamp, window, keycode, scancode, keymod)
@@ -675,7 +697,7 @@ impl Event {
                 };
 
                 WindowEvent(event.timestamp as uint, window,
-                            wrap_window_event_id(event.event),
+                            WindowEventId::from_ll(event.event),
                             event.data1 as int, event.data2 as int)
             }
             // TODO: SysWMEventType
@@ -950,26 +972,6 @@ impl Event {
         }}                      // close unsafe & match
 
 
-    }
-}
-
-fn wrap_window_event_id(id: u8) -> WindowEvent {
-    match id {
-        1  => ShownWindowEvent,
-        2  => HiddenWindowEvent,
-        3  => ExposedWindowEvent,
-        4  => MovedWindowEvent,
-        5  => ResizedWindowEvent,
-        6  => SizeChangedWindowEvent,
-        7  => MinimizedWindowEvent,
-        8  => MaximizedWindowEvent,
-        9  => RestoredWindowEvent,
-        10 => EnterWindowEvent,
-        11 => LeaveWindowEvent,
-        12 => FocusGainedWindowEvent,
-        13 => FocusLostWindowEvent,
-        14 => CloseWindowEvent,
-        _  => NoneWindowEvent
     }
 }
 
