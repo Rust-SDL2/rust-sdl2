@@ -145,7 +145,7 @@ impl LoadTexture for Renderer {
 pub fn init(flags: &[InitFlag]) -> ~[InitFlag] {
     //! Initializes SDL2_image with InitFlags and returns which
     //! InitFlags were actually used.
-    let mut used = ~[];
+    let mut used = Vec::new();
     unsafe {
         let used_flags = ffi::IMG_Init(
             flags.iter().fold(0, |flags, &flag| {
@@ -158,7 +158,7 @@ pub fn init(flags: &[InitFlag]) -> ~[InitFlag] {
             }
         }
     }
-    used
+    used.as_slice().into_owned()
 }
 
 pub fn quit() {
