@@ -82,6 +82,6 @@ impl<'a> Drop for Timer<'a> {
 }
 
 extern "C" fn c_timer_callback(_interval: uint32_t, param: *c_void) -> uint32_t {
-    let f : &|| -> uint = unsafe { cast::transmute(param) };
+    let f : &mut || -> uint = unsafe { cast::transmute(param) };
     (*f)() as uint32_t
 }

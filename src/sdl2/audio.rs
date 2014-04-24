@@ -209,7 +209,7 @@ pub struct AudioSpec<'a > {
 
 extern "C" fn c_audio_callback(userdata: *c_void, stream: *uint8_t, len: c_int) {
     unsafe {
-        let f : &|&mut [u8]| = cast::transmute(userdata);
+        let f : &mut |&mut [u8]| = cast::transmute(userdata);
 
         // FIXME: lifetime error in calling
         //slice::raw::mut_buf_as_slice(stream as *mut u8, len as uint, *f)
