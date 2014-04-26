@@ -560,8 +560,8 @@ pub enum Event {
     // TODO: SysWMEvent
 
     /// (timestamp, window, keycode, scancode, keymod)
-    KeyDownEvent(uint, ~video::Window, KeyCode, ScanCode, Vec<Mod>),
-    KeyUpEvent(uint, ~video::Window, KeyCode, ScanCode, Vec<Mod>),
+    KeyDownEvent(uint, ~video::Window, KeyCode, ScanCode, Mod),
+    KeyUpEvent(uint, ~video::Window, KeyCode, ScanCode, Mod),
     /// (timestamp, window, text, start, length)
     TextEditingEvent(uint, ~video::Window, ~str, int, int),
     /// (timestamp, window, text)
@@ -714,7 +714,7 @@ impl Event {
                 KeyDownEvent(event.timestamp as uint, window,
                              FromPrimitive::from_int(event.keysym.sym as int).unwrap(),
                              FromPrimitive::from_int(event.keysym.scancode as int).unwrap(),
-                             keyboard::wrap_mod_state(event.keysym._mod as SDL_Keymod))
+                             keyboard::Mod::new(event.keysym._mod as SDL_Keymod))
             }
             KeyUpEventType => {
                 let event = *raw.key();
@@ -728,7 +728,7 @@ impl Event {
                 KeyUpEvent(event.timestamp as uint, window,
                            FromPrimitive::from_int(event.keysym.sym as int).unwrap(),
                            FromPrimitive::from_int(event.keysym.scancode as int).unwrap(),
-                           keyboard::wrap_mod_state(event.keysym._mod as SDL_Keymod))
+                           keyboard::Mod::new(event.keysym._mod as SDL_Keymod))
             }
             TextEditingEventType => {
                 let event = *raw.edit();
