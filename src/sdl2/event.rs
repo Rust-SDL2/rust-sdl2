@@ -568,7 +568,7 @@ pub enum Event {
     TextInputEvent(uint, ~video::Window, ~str),
 
     /// (timestamp, window, which, [MouseState], x, y, xrel, yrel)
-    MouseMotionEvent(uint, ~video::Window, uint, Vec<MouseState>, int, int,
+    MouseMotionEvent(uint, ~video::Window, uint, MouseState, int, int,
                      int, int),
     /// (timestamp, window, which, MouseBtn, x, y)
     MouseButtonDownEvent(uint, ~video::Window, uint, Mouse, int, int),
@@ -767,7 +767,7 @@ impl Event {
 
                 MouseMotionEvent(event.timestamp as uint, window,
                                  event.which as uint,
-                                 mouse::wrap_mouse_state(event.state),
+                                 mouse::MouseState::new(event.state),
                                  event.x as int, event.y as int,
                                  event.xrel as int, event.yrel as int)
             }
