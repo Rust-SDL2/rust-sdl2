@@ -2,6 +2,8 @@
 A binding for SDL2_ttf.
  */
 
+#![feature(macro_rules)]
+
 #![crate_id="sdl2_ttf#sdl2_ttf:0.1"]
 #![crate_type = "lib"]
 #![desc = "SDL2_ttf bindings and wrappers"]
@@ -12,14 +14,11 @@ extern crate libc;
 extern crate sdl2;
 
 use libc::{c_int, c_long};
-use std::ptr;
 use std::c_str::CString;
 use std::num::FromPrimitive;
 use sdl2::surface::Surface;
 use sdl2::get_error;
-use sdl2::pixels;
 use sdl2::pixels::Color;
-use sdl2::pixels::ll::SDL_Color;
 use sdl2::rwops::RWops;
 use sdl2::version::Version;
 
@@ -45,16 +44,17 @@ mod others {
 
 #[allow(non_camel_case_types, dead_code)]
 mod ffi;
+mod flag;
 
 /// Font Style
 #[deriving(Show)]
-pub enum FontStyle {
-    StyleNormal = ffi::TTF_STYLE_NORMAL as int,
-    StyleBold   = ffi::TTF_STYLE_BOLD   as int,
-    StyleItalic = ffi::TTF_STYLE_ITALIC as int,
-    StyleUnderline = ffi::TTF_STYLE_UNDERLINE as int,
-    StyleStrikeThrough = ffi::TTF_STYLE_STRIKETHROUGH as int
-}
+flag_type!(FontStyle : c_int {
+    StyleNormal = ffi::TTF_STYLE_NORMAL,
+    StyleBold   = ffi::TTF_STYLE_BOLD,
+    StyleItalic = ffi::TTF_STYLE_ITALIC,
+    StyleUnderline = ffi::TTF_STYLE_UNDERLINE,
+    StyleStrikeThrough = ffi::TTF_STYLE_STRIKETHROUGH
+})
 
 #[deriving(Show, Eq, FromPrimitive)]
 pub enum Hinting {
@@ -72,14 +72,6 @@ pub struct GlyphMetrics {
     pub miny: int,
     pub maxy: int,
     pub advance: int
-}
-
-#[inline]
-fn color_to_c_color(color: Color) -> SDL_Color {
-    match color {
-        pixels::RGB(r, g, b)     => SDL_Color { r: r, g: g, b: b, a: 255 },
-        pixels::RGBA(r, g, b, a) => SDL_Color { r: r, g: g, b: b, a: a   }
-    }
 }
 
 /// Returns the version of the dynamically linked SDL_ttf library
@@ -133,20 +125,12 @@ impl Drop for Font {
     }
 }
 
-fn wrap_font_styles(bitflags: u32) -> Vec<FontStyle> {
-    let styles = [StyleBold, StyleItalic, StyleUnderline, StyleStrikeThrough];
-    styles.iter().filter_map(|&flag| {
-        if bitflags & (flag as u32) != 0 { Some(flag) }
-        else { None }
-    }).collect()
-}
-
 impl Font {
     pub fn from_file(filename: &Path, ptsize: int) -> Result<~Font, ~str> {
         //! Load file for use as a font, at ptsize size.
         unsafe {
             let raw = ffi::TTF_OpenFont(filename.to_c_str().unwrap(), ptsize as c_int);
-            if raw == ptr::null() {
+            if raw.is_null() {
                 Err(get_error())
             } else {
                 Ok(~Font { raw: raw, owned: true })
@@ -158,7 +142,7 @@ impl Font {
         //! Load file, face index, for use as a font, at ptsize size.
         unsafe {
             let raw = ffi::TTF_OpenFontIndex(filename.to_c_str().unwrap(), ptsize as c_int, index as c_long);
-            if raw == ptr::null() {
+            if raw.is_null() {
                 Err(get_error())
             } else {
                 Ok(~Font { raw: raw, owned: true })
@@ -166,17 +150,16 @@ impl Font {
         }
     }
 
-    pub fn get_style(&self) -> Vec<FontStyle> {
+    pub fn get_style(&self) -> FontStyle {
         //! Get font render style
         let raw = unsafe { ffi::TTF_GetFontStyle(self.raw) };
-        wrap_font_styles(raw as u32)
+        FontStyle::new(raw)
     }
 
-    pub fn set_style(&mut self, styles: &[FontStyle]) {
+    pub fn set_style(&mut self, styles: FontStyle) {
         //! Set font render style.
-        let flags = styles.iter().fold(0i32, |flags, flag| { flags | *flag as i32 });
         unsafe {
-            ffi::TTF_SetFontStyle(self.raw, flags)
+            ffi::TTF_SetFontStyle(self.raw, styles.get())
         }
     }
 
@@ -269,7 +252,7 @@ impl Font {
         unsafe {
             // not owns buffer
             let cname = ffi::TTF_FontFaceFamilyName(self.raw);
-            if cname == ptr::null() {
+            if cname.is_null() {
                 None
             } else {
                 Some(CString::new(cname, false).as_str().unwrap().into_owned())
@@ -281,7 +264,7 @@ impl Font {
         //! Get current font face style name string.
         unsafe {
             let cname = ffi::TTF_FontFaceStyleName(self.raw);
-            if cname == ptr::null() {
+            if cname.is_null() {
                 None
             } else {
                 Some(CString::new(cname, false).as_str().unwrap().into_owned())
@@ -357,9 +340,9 @@ impl Font {
         //! Draw LATIN1 text in solid mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderText_Solid(self.raw, ctext, color_to_c_color(fg))
+                    ffi::TTF_RenderText_Solid(self.raw, ctext, fg)
                 });
-            if raw == ptr::null() {
+            if raw.is_null() {
                 Err(get_error())
             } else {
                 Ok(~Surface { raw: raw, owned: true })
@@ -371,9 +354,9 @@ impl Font {
         //! Draw UTF8 text in solid mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderUTF8_Solid(self.raw, ctext, color_to_c_color(fg))
+                    ffi::TTF_RenderUTF8_Solid(self.raw, ctext, fg)
                 });
-            if raw == ptr::null() {
+            if raw.is_null() {
                 Err(get_error())
             } else {
                 Ok(~Surface { raw: raw, owned: true })
@@ -384,8 +367,8 @@ impl Font {
     pub fn render_char_solid(&self, ch: char, fg: Color) -> Result<~Surface, ~str> {
         //! Draw a UNICODE glyph in solid mode.
         unsafe {
-            let raw = ffi::TTF_RenderGlyph_Solid(self.raw, ch as u16, color_to_c_color(fg));
-            if raw == ptr::null() {
+            let raw = ffi::TTF_RenderGlyph_Solid(self.raw, ch as u16, fg);
+            if raw.is_null() {
                 Err(get_error())
             } else {
                 Ok(~Surface { raw: raw, owned: true })
@@ -397,9 +380,9 @@ impl Font {
         //! Draw LATIN1 text in shaded mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderText_Shaded(self.raw, ctext, color_to_c_color(fg), color_to_c_color(bg))
+                    ffi::TTF_RenderText_Shaded(self.raw, ctext, fg, bg)
                 });
-            if raw == ptr::null() {
+            if raw.is_null() {
                 Err(get_error())
             } else {
                 Ok(~Surface { raw: raw, owned: true })
@@ -411,9 +394,9 @@ impl Font {
         //! Draw UTF8 text in shaded mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderUTF8_Shaded(self.raw, ctext, color_to_c_color(fg), color_to_c_color(bg))
+                    ffi::TTF_RenderUTF8_Shaded(self.raw, ctext, fg, bg)
                 });
-            if raw == ptr::null() {
+            if raw.is_null() {
                 Err(get_error())
             } else {
                 Ok(~Surface { raw: raw, owned: true })
@@ -424,8 +407,8 @@ impl Font {
     pub fn render_char_shaded(&self, ch: char, fg: Color, bg: Color) -> Result<~Surface, ~str> {
         //! Draw a UNICODE glyph in shaded mode.
         unsafe {
-            let raw = ffi::TTF_RenderGlyph_Shaded(self.raw, ch as u16, color_to_c_color(fg), color_to_c_color(bg));
-            if raw == ptr::null() {
+            let raw = ffi::TTF_RenderGlyph_Shaded(self.raw, ch as u16, fg, bg);
+            if raw.is_null() {
                 Err(get_error())
             } else {
                 Ok(~Surface { raw: raw, owned: true })
@@ -437,9 +420,9 @@ impl Font {
         //! Draw LATIN1 text in blended mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderText_Blended(self.raw, ctext, color_to_c_color(fg))
+                    ffi::TTF_RenderText_Blended(self.raw, ctext, fg)
                 });
-            if raw == ptr::null() {
+            if raw.is_null() {
                 Err(get_error())
             } else {
                 Ok(~Surface { raw: raw, owned: true })
@@ -451,9 +434,9 @@ impl Font {
         //! Draw UTF8 text in blended mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderUTF8_Blended(self.raw, ctext, color_to_c_color(fg))
+                    ffi::TTF_RenderUTF8_Blended(self.raw, ctext, fg)
                 });
-            if raw == ptr::null() {
+            if raw.is_null() {
                 Err(get_error())
             } else {
                 Ok(~Surface { raw: raw, owned: true })
@@ -464,8 +447,8 @@ impl Font {
     pub fn render_char_blended(&self, ch: char, fg: Color) -> Result<~Surface, ~str> {
         //! Draw a UNICODE glyph in blended mode.
         unsafe {
-            let raw = ffi::TTF_RenderGlyph_Blended(self.raw, ch as u16, color_to_c_color(fg));
-            if raw == ptr::null() {
+            let raw = ffi::TTF_RenderGlyph_Blended(self.raw, ch as u16, fg);
+            if raw.is_null() {
                 Err(get_error())
             } else {
                 Ok(~Surface { raw: raw, owned: true })
@@ -488,7 +471,7 @@ impl LoaderRWops for RWops {
         let raw = unsafe {
             ffi::TTF_OpenFontRW(self.raw, 0, ptsize as c_int)
         };
-        if raw == ptr::null() {
+        if raw.is_null() {
             Err(get_error())
         } else {
             Ok(~Font { raw: raw, owned: true })
@@ -498,7 +481,7 @@ impl LoaderRWops for RWops {
         let raw = unsafe {
             ffi::TTF_OpenFontIndexRW(self.raw, 0, ptsize as c_int, index as c_long)
         };
-        if raw == ptr::null() {
+        if raw.is_null() {
             Err(get_error())
         } else {
             Ok(~Font { raw: raw, owned: true })

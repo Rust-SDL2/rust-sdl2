@@ -17,24 +17,24 @@ macro_rules! rect(
 )
 
 pub fn main(filename: &Path) {
-    sdl2::init([sdl2::InitVideo]);
+    sdl2::init(sdl2::InitVideo);
     sdl2_ttf::init();
 
     let window = trying!(sdl2::video::Window::new(
             "rust-sdl2 demo: Video", sdl2::video::PosCentered,
-            sdl2::video::PosCentered, SCREEN_WIDTH, SCREEN_HEIGHT, [sdl2::video::OpenGL]));
+            sdl2::video::PosCentered, SCREEN_WIDTH, SCREEN_HEIGHT, sdl2::video::OpenGL));
 
     let renderer = trying!(sdl2::render::Renderer::from_window(
-            window, sdl2::render::DriverAuto, [sdl2::render::Accelerated]));
+            window, sdl2::render::DriverAuto, sdl2::render::Accelerated));
 
     // Load a font
     let font = trying!(sdl2_ttf::Font::from_file(filename, 128));
 
     // render a surface, and convert it to a texture bound to the renderer
-    let surface = trying!(font.render_str_blended("Hello Rust!", sdl2::pixels::RGB(255, 0, 0)));
+    let surface = trying!(font.render_str_blended("Hello Rust!", sdl2::pixels::Color::new(255, 0, 0, 255)));
     let texture = trying!(renderer.create_texture_from_surface(surface));
 
-    renderer.set_draw_color(sdl2::pixels::RGB(195, 217, 255));
+    renderer.set_draw_color(sdl2::pixels::Color::new(195, 217, 255, 255));
     renderer.clear();
 
     let (w, h) = match texture.query() {
