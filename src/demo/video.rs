@@ -8,7 +8,7 @@ pub fn main() {
         Err(err) => fail!(format!("failed to create window: {}", err))
     };
 
-    let renderer = match sdl2::render::Renderer::from_window(window, sdl2::render::DriverAuto, [sdl2::render::Accelerated]) {
+    let renderer = match sdl2::render::Renderer::from_window(window, sdl2::render::DriverAuto, sdl2::render::Accelerated) {
         Ok(renderer) => renderer,
         Err(err) => fail!(format!("failed to create renderer: {}", err))
     };
