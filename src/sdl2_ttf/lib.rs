@@ -18,7 +18,7 @@ use std::c_str::CString;
 use std::num::FromPrimitive;
 use sdl2::surface::Surface;
 use sdl2::get_error;
-use sdl2::pixels::Color;
+use sdl2::pixels::ToColor;
 use sdl2::rwops::RWops;
 use sdl2::version::Version;
 
@@ -336,11 +336,11 @@ impl Font {
         }
     }
 
-    pub fn render_bytes_solid(&self, text: &[u8], fg: Color) -> Result<~Surface, ~str> {
+    pub fn render_bytes_solid<C: ToColor>(&self, text: &[u8], fg: C) -> Result<~Surface, ~str> {
         //! Draw LATIN1 text in solid mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderText_Solid(self.raw, ctext, fg)
+                    ffi::TTF_RenderText_Solid(self.raw, ctext, fg.to_color())
                 });
             if raw.is_null() {
                 Err(get_error())
@@ -350,11 +350,11 @@ impl Font {
         }
     }
 
-    pub fn render_str_solid(&self, text: &str, fg: Color) -> Result<~Surface, ~str> {
+    pub fn render_str_solid<C: ToColor>(&self, text: &str, fg: C) -> Result<~Surface, ~str> {
         //! Draw UTF8 text in solid mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderUTF8_Solid(self.raw, ctext, fg)
+                    ffi::TTF_RenderUTF8_Solid(self.raw, ctext, fg.to_color())
                 });
             if raw.is_null() {
                 Err(get_error())
@@ -364,10 +364,10 @@ impl Font {
         }
     }
 
-    pub fn render_char_solid(&self, ch: char, fg: Color) -> Result<~Surface, ~str> {
+    pub fn render_char_solid<C: ToColor>(&self, ch: char, fg: C) -> Result<~Surface, ~str> {
         //! Draw a UNICODE glyph in solid mode.
         unsafe {
-            let raw = ffi::TTF_RenderGlyph_Solid(self.raw, ch as u16, fg);
+            let raw = ffi::TTF_RenderGlyph_Solid(self.raw, ch as u16, fg.to_color());
             if raw.is_null() {
                 Err(get_error())
             } else {
@@ -376,11 +376,11 @@ impl Font {
         }
     }
 
-    pub fn render_bytes_shaded(&self, text: &[u8], fg: Color, bg: Color) -> Result<~Surface, ~str> {
+    pub fn render_bytes_shaded<C: ToColor>(&self, text: &[u8], fg: C, bg: C) -> Result<~Surface, ~str> {
         //! Draw LATIN1 text in shaded mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderText_Shaded(self.raw, ctext, fg, bg)
+                    ffi::TTF_RenderText_Shaded(self.raw, ctext, fg.to_color(), bg.to_color())
                 });
             if raw.is_null() {
                 Err(get_error())
@@ -390,11 +390,11 @@ impl Font {
         }
     }
 
-    pub fn render_str_shaded(&self, text: &str, fg: Color, bg: Color) -> Result<~Surface, ~str> {
+    pub fn render_str_shaded<C: ToColor>(&self, text: &str, fg: C, bg: C) -> Result<~Surface, ~str> {
         //! Draw UTF8 text in shaded mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderUTF8_Shaded(self.raw, ctext, fg, bg)
+                    ffi::TTF_RenderUTF8_Shaded(self.raw, ctext, fg.to_color(), bg.to_color())
                 });
             if raw.is_null() {
                 Err(get_error())
@@ -404,10 +404,10 @@ impl Font {
         }
     }
 
-    pub fn render_char_shaded(&self, ch: char, fg: Color, bg: Color) -> Result<~Surface, ~str> {
+    pub fn render_char_shaded<C: ToColor>(&self, ch: char, fg: C, bg: C) -> Result<~Surface, ~str> {
         //! Draw a UNICODE glyph in shaded mode.
         unsafe {
-            let raw = ffi::TTF_RenderGlyph_Shaded(self.raw, ch as u16, fg, bg);
+            let raw = ffi::TTF_RenderGlyph_Shaded(self.raw, ch as u16, fg.to_color(), bg.to_color());
             if raw.is_null() {
                 Err(get_error())
             } else {
@@ -416,11 +416,11 @@ impl Font {
         }
     }
 
-    pub fn render_bytes_blended(&self, text: &[u8], fg: Color) -> Result<~Surface, ~str> {
+    pub fn render_bytes_blended<C: ToColor>(&self, text: &[u8], fg: C) -> Result<~Surface, ~str> {
         //! Draw LATIN1 text in blended mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderText_Blended(self.raw, ctext, fg)
+                    ffi::TTF_RenderText_Blended(self.raw, ctext, fg.to_color())
                 });
             if raw.is_null() {
                 Err(get_error())
@@ -430,11 +430,11 @@ impl Font {
         }
     }
 
-    pub fn render_str_blended(&self, text: &str, fg: Color) -> Result<~Surface, ~str> {
+    pub fn render_str_blended<C: ToColor>(&self, text: &str, fg: C) -> Result<~Surface, ~str> {
         //! Draw UTF8 text in blended mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderUTF8_Blended(self.raw, ctext, fg)
+                    ffi::TTF_RenderUTF8_Blended(self.raw, ctext, fg.to_color())
                 });
             if raw.is_null() {
                 Err(get_error())
@@ -444,10 +444,10 @@ impl Font {
         }
     }
 
-    pub fn render_char_blended(&self, ch: char, fg: Color) -> Result<~Surface, ~str> {
+    pub fn render_char_blended<C: ToColor>(&self, ch: char, fg: C) -> Result<~Surface, ~str> {
         //! Draw a UNICODE glyph in blended mode.
         unsafe {
-            let raw = ffi::TTF_RenderGlyph_Blended(self.raw, ch as u16, fg);
+            let raw = ffi::TTF_RenderGlyph_Blended(self.raw, ch as u16, fg.to_color());
             if raw.is_null() {
                 Err(get_error())
             } else {
