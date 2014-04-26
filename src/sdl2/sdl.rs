@@ -1,6 +1,7 @@
 use std::cast;
 use std::str;
-use std::vec::Vec;
+
+mod flag;
 
 // Setup linking for all targets.
 #[cfg(target_os="macos")]
@@ -64,18 +65,17 @@ pub mod ll {
     }
 }
 
-#[deriving(Eq)]
-pub enum InitFlag {
-    InitTimer = ll::SDL_INIT_TIMER as int,
-    InitAudio = ll::SDL_INIT_AUDIO as int,
-    InitVideo = ll::SDL_INIT_VIDEO as int,
-    InitJoystick = ll::SDL_INIT_JOYSTICK as int,
-    InitHaptic = ll::SDL_INIT_HAPTIC as int,
-    InitGameController = ll::SDL_INIT_GAMECONTROLLER as int,
-    InitEvents = ll::SDL_INIT_EVENTS as int,
-    InitNoParachute = ll::SDL_INIT_NOPARACHUTE as int,
-    InitEverything = ll::SDL_INIT_EVERYTHING as int,
-}
+flag_type!(InitFlag {
+    InitTimer = ll::SDL_INIT_TIMER,
+    InitAudio = ll::SDL_INIT_AUDIO,
+    InitVideo = ll::SDL_INIT_VIDEO,
+    InitJoystick = ll::SDL_INIT_JOYSTICK,
+    InitHaptic = ll::SDL_INIT_HAPTIC,
+    InitGameController = ll::SDL_INIT_GAMECONTROLLER,
+    InitEvents = ll::SDL_INIT_EVENTS,
+    InitNoParachute = ll::SDL_INIT_NOPARACHUTE,
+    InitEverything = ll::SDL_INIT_EVERYTHING
+})
 
 #[deriving(Eq)]
 pub enum Error {
@@ -86,54 +86,29 @@ pub enum Error {
     UnsupportedError = ll::SDL_UNSUPPORTED as int
 }
 
-pub fn init(flags: &[InitFlag]) -> bool {
+pub fn init(flags: InitFlag) -> bool {
     unsafe {
-        ll::SDL_Init(flags.iter().fold(0u32, |flags, &flag| {
-            flags | flag as ll::SDL_InitFlag
-        })) == 0
+        ll::SDL_Init(flags.get()) == 0
     }
 }
 
-pub fn init_subsystem(flags: &[InitFlag]) -> bool {
+pub fn init_subsystem(flags: InitFlag) -> bool {
     unsafe {
-        ll::SDL_InitSubSystem(flags.iter().fold(0u32, |flags, &flag| {
-            flags | flag as ll::SDL_InitFlag
-        })) == 0
+        ll::SDL_InitSubSystem(flags.get()) == 0
     }
 }
 
-pub fn quit_subsystem(flags: &[InitFlag]) {
-    let flags = flags.iter().fold(0u32, |flags, &flag| {
-        flags | flag as ll::SDL_InitFlag
-    });
-
-    unsafe { ll::SDL_QuitSubSystem(flags); }
+pub fn quit_subsystem(flags: InitFlag) {
+    unsafe { ll::SDL_QuitSubSystem(flags.get()); }
 }
 
 pub fn quit() {
     unsafe { ll::SDL_Quit(); }
 }
 
-pub fn was_inited(flags: &[InitFlag]) -> Vec<InitFlag> {
-    let flags = flags.iter().fold(0u32, |flags, &flag| {
-        flags | flag as ll::SDL_InitFlag
-    });
-    let bitflags = unsafe { ll::SDL_WasInit(flags) };
-
-    let flags = [InitTimer,
-        InitAudio,
-        InitVideo,
-        InitJoystick,
-        InitHaptic,
-        InitGameController,
-        InitEvents,
-        InitNoParachute,
-        InitEverything];
-
-    flags.iter().filter_map(|&flag| {
-        if bitflags & (flag as ll::SDL_InitFlag) != 0 { Some(flag) }
-        else { None }
-    }).collect()
+pub fn was_inited(flags: InitFlag) -> InitFlag {
+    let raw = unsafe { ll::SDL_WasInit(flags.get()) };
+    flags & InitFlag::new(raw)
 }
 
 pub fn get_error() -> ~str {

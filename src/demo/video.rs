@@ -1,7 +1,7 @@
 use sdl2;
 
 pub fn main() {
-    sdl2::init([sdl2::InitVideo]);
+    sdl2::init(sdl2::InitVideo);
 
     let window = match sdl2::video::Window::new("rust-sdl2 demo: Video", sdl2::video::PosCentered, sdl2::video::PosCentered, 800, 600, [sdl2::video::OpenGL]) {
         Ok(window) => window,
