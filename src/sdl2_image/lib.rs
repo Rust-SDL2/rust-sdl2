@@ -1,3 +1,5 @@
+#![feature(macro_rules)]
+
 #![crate_id="sdl2_image#sdl2_image:0.1"]
 #![crate_type = "lib"]
 #![desc = "SDL2_image bindings and wrappers"]
@@ -39,19 +41,16 @@ mod others {
 
 #[allow(non_camel_case_types, dead_code)]
 mod ffi;
+mod flag;
 
 /// InitFlags are passed to init() to control which subsystem
 /// functionality to load.
-// repr(C) "makes the size of the enum's discriminant the default
-// size of enums that the C ABI for the platform uses."
-#[repr(C)]
-#[deriving(Clone, Eq, Hash, Show)]
-pub enum InitFlag {
-    InitJpg = ffi::IMG_INIT_JPG as int,
-    InitPng = ffi::IMG_INIT_PNG as int,
-    InitTif = ffi::IMG_INIT_TIF as int,
-    InitWebp = ffi::IMG_INIT_WEBP as int,
-}
+flag_type!(InitFlag : c_int {
+    InitJpg = ffi::IMG_INIT_JPG,
+    InitPng = ffi::IMG_INIT_PNG,
+    InitTif = ffi::IMG_INIT_TIF,
+    InitWebp = ffi::IMG_INIT_WEBP
+})
 
 /// Static method extensions for creating Surfaces
 pub trait LoadSurface {
@@ -142,23 +141,11 @@ impl LoadTexture for Renderer {
     }
 }
 
-pub fn init(flags: &[InitFlag]) -> ~[InitFlag] {
+pub fn init(flags: InitFlag) -> InitFlag {
     //! Initializes SDL2_image with InitFlags and returns which
     //! InitFlags were actually used.
-    let mut used = Vec::new();
-    unsafe {
-        let used_flags = ffi::IMG_Init(
-            flags.iter().fold(0, |flags, &flag| {
-                flags | flag as ffi::IMG_InitFlags
-            })
-        );
-        for flag in flags.iter() {
-            if used_flags & *flag as c_int != 0 {
-                used.push(*flag)
-            }
-        }
-    }
-    used.as_slice().into_owned()
+    let used = unsafe { ffi::IMG_Init(flags.get()) };
+    InitFlag::new(used)
 }
 
 pub fn quit() {

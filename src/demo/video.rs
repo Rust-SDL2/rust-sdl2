@@ -4,18 +4,18 @@ use sdl2_image::LoadSurface;
 // use sdl2_image::LoadTexture;
 
 pub fn main(png: &Path) {
-    sdl2::init([sdl2::InitVideo]);
-    sdl2_image::init([sdl2_image::InitPng, sdl2_image::InitJpg]);
+    sdl2::init(sdl2::InitVideo);
+    sdl2_image::init(sdl2_image::InitPng | sdl2_image::InitJpg);
 
     let window = match sdl2::video::Window::new(
             "rust-sdl2 demo: Video", sdl2::video::PosCentered,
-            sdl2::video::PosCentered, 800, 600, [sdl2::video::OpenGL]) {
+            sdl2::video::PosCentered, 800, 600, sdl2::video::OpenGL) {
         Ok(window) => window,
         Err(err) => fail!(format!("failed to create window: {}", err))
     };
 
     let renderer = match sdl2::render::Renderer::from_window(
-            window, sdl2::render::DriverAuto, [sdl2::render::Accelerated]) {
+            window, sdl2::render::DriverAuto, sdl2::render::Accelerated) {
         Ok(renderer) => renderer,
         Err(err) => fail!(format!("failed to create renderer: {}", err))
     };
