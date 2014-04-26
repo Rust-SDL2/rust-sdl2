@@ -20,19 +20,19 @@
 #![macro_escape]
 
 macro_rules! flag_type(
-    ($typename:ident { $($name:ident = $value:expr),* }) => {
+    ($typename:ident : $supertype:ident { $($name:ident = $value:expr),* }) => {
         pub struct $typename {
-            bits: u32
+            bits: $supertype
         }
 
         impl $typename {
             #[inline]
-            pub fn new(bits: u32) -> $typename {
+            pub fn new(bits: $supertype) -> $typename {
                 $typename { bits: bits }
             }
 
             #[inline]
-            pub fn get(self) -> u32 {
+            pub fn get(self) -> $supertype {
                 self.bits
             }
         }
@@ -87,20 +87,23 @@ macro_rules! flag_type(
             }
         }
 
-        impl ::std::ops::Shl<u32, $typename> for $typename {
-            fn shl(&self, rhs: &u32) -> $typename {
+        impl ::std::ops::Shl<$supertype, $typename> for $typename {
+            fn shl(&self, rhs: &$supertype) -> $typename {
                 $typename { bits: self.bits << *rhs }
             }
         }
 
-        impl ::std::ops::Shr<u32, $typename> for $typename {
-            fn shr(&self, rhs: &u32) -> $typename {
+        impl ::std::ops::Shr<$supertype, $typename> for $typename {
+            fn shr(&self, rhs: &$supertype) -> $typename {
                 $typename { bits: self.bits >> *rhs }
             }
         }
 
         $(
-            pub static $name: $typename = $typename { bits: $value as u32 };
+            pub static $name: $typename = $typename { bits: $value as $supertype };
         )+
+    };
+    ($typename:ident { $($name:ident = $value:expr),* }) => {
+        flag_type!($typename : u32 { $($name = $value),* })
     }
 )
