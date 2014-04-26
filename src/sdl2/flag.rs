@@ -63,6 +63,12 @@ macro_rules! flag_type(
             }
         }
 
+        impl ::std::ops::Not<$typename> for $typename {
+            fn not(&self) -> $typename {
+                $typename { bits: !self.bits }
+            }
+        }
+
         impl ::std::ops::BitAnd<$typename, $typename> for $typename {
             fn bitand(&self, rhs: &$typename) -> $typename {
                 $typename { bits: self.bits & rhs.bits }
@@ -78,6 +84,18 @@ macro_rules! flag_type(
         impl ::std::ops::BitXor<$typename, $typename> for $typename {
             fn bitxor(&self, rhs: &$typename) -> $typename {
                 $typename { bits: self.bits ^ rhs.bits }
+            }
+        }
+
+        impl ::std::ops::Shl<u32, $typename> for $typename {
+            fn shl(&self, rhs: &u32) -> $typename {
+                $typename { bits: self.bits << *rhs }
+            }
+        }
+
+        impl ::std::ops::Shr<u32, $typename> for $typename {
+            fn shr(&self, rhs: &u32) -> $typename {
+                $typename { bits: self.bits >> *rhs }
             }
         }
 
