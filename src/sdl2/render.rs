@@ -252,11 +252,10 @@ impl Renderer {
         }
     }
 
-    pub fn new_with_window(width: int, height: int, window_flags: &[video::WindowFlags]) -> Result<~Renderer, ~str> {
+    pub fn new_with_window(width: int, height: int, window_flags: video::WindowFlags) -> Result<~Renderer, ~str> {
         let raw_window: *video::ll::SDL_Window = ptr::null();
         let raw_renderer: *ll::SDL_Renderer = ptr::null();
-        let flags = window_flags.iter().fold(0u32, |flags, flag| { flags | *flag as u32 });
-        let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, flags, &raw_window, &raw_renderer) == 0};
+        let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, window_flags.get(), &raw_window, &raw_renderer) == 0};
         if result {
             let window = ~video::Window {
                 raw: raw_window,
