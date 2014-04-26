@@ -6,7 +6,6 @@ use std::cast;
 use libc::{c_int, c_void, uint32_t};
 use std::num::FromPrimitive;
 use std::str;
-use std::vec::Vec;
 use std::ptr;
 
 use controller;
@@ -581,7 +580,7 @@ pub enum Event {
     /// (timestamp, whichId, ballIdx, xrel, yrel)
     JoyBallMotionEvent(uint, int, int, i16, i16),
     /// (timestamp, whichId, hatIdx, state)
-    JoyHatMotionEvent(uint, int, int, Vec<HatState>),
+    JoyHatMotionEvent(uint, int, int, HatState),
     /// (timestamp, whichId, buttonIdx)
     JoyButtonDownEvent(uint, int, int),
     JoyButtonUpEvent(uint, int, int),
@@ -828,7 +827,7 @@ impl Event {
                 let event = *raw.jhat();
                 JoyHatMotionEvent(event.timestamp as uint, event.which as int,
                                   event.hat as int,
-                                  joystick::wrap_hat_state(event.value))
+                                  joystick::HatState::new(event.value as u32))
             }
             JoyButtonDownEventType => {
                 let event = *raw.jbutton();
