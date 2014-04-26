@@ -5,7 +5,6 @@ extern crate sdl2;
 extern crate sdl2_mixer;
 
 use std::os;
-use std::default::Default;
 use mix = sdl2_mixer;
 
 
@@ -22,9 +21,10 @@ fn main() {
 
 fn dump_info(filename: &Path) -> Result<(), ~str> {
     println!("linked version: {}", mix::get_linked_version());
-    sdl2::init([sdl2::InitAudio, sdl2::InitTimer]);
-    println!("inited => {}", mix::init(Default::default()));
-
+    sdl2::init(sdl2::InitAudio | sdl2::InitTimer);
+    println!("inited => {}", mix::init(sdl2_mixer::InitMp3 | sdl2_mixer::InitFlac |
+                                       sdl2_mixer::InitMod | sdl2_mixer::InitFluidSynth |
+                                       sdl2_mixer::InitModPlug | sdl2_mixer::InitOgg).get());
     // TODO: 0x8010 is SDL_audio flag
     try!(mix::open_audio(mix::DEFAULT_FREQUENCY, 0x8010u16, 2, 1024));
     mix::allocate_channels(0);

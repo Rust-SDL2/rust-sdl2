@@ -8,7 +8,7 @@ A binding for SDL2_mixer.
 #![comment = "SDL2_mixer bindings and wrappers"]
 #![license = "MIT"]
 
-#![feature(globs)]
+#![feature(globs, macro_rules)]
 
 extern crate libc;
 extern crate sdl2;
@@ -18,8 +18,6 @@ use std::ptr;
 use std::cast;
 use std::raw;
 use std::c_str::CString;
-use std::ops;
-use std::num;
 use libc::{c_int, uint16_t, c_double};
 use sdl2::get_error;
 use sdl2::rwops::RWops;
@@ -47,6 +45,7 @@ mod others {
 
 #[allow(non_camel_case_types, dead_code)]
 mod ffi;
+mod flag;
 
 // This comes from SDL_audio.h
 #[allow(non_camel_case_types)]
@@ -111,89 +110,20 @@ pub fn get_linked_version() -> Version {
     }
 }
 
-#[allow(visible_private_types)]
-#[deriving(Clone, Eq, Hash, Show)]
-pub enum InitFlag {
-    InitFlac,
-    InitMod,
-    InitModPlug,
-    InitMp3,
-    InitOgg,
-    InitFluidSynth,
-    InitRaw(ffi::MIX_InitFlags),
-}
-
-impl InitFlag {
-    #[inline]
-    fn to_ll(self) -> ffi::MIX_InitFlags {
-        match self {
-            InitFlac       => ffi::MIX_INIT_FLAC,
-            InitMod        => ffi::MIX_INIT_MOD,
-            InitModPlug    => ffi::MIX_INIT_MODPLUG,
-            InitMp3        => ffi::MIX_INIT_MP3,
-            InitOgg        => ffi::MIX_INIT_OGG,
-            InitFluidSynth => ffi::MIX_INIT_FLUIDSYNTH,
-            InitRaw(val)   => val,
-        }
-    }
-
-    fn from_ll(cflag: ffi::MIX_InitFlags) -> InitFlag {
-        match cflag {
-            ffi::MIX_INIT_FLAC  => InitFlac,
-            ffi::MIX_INIT_MOD  => InitMod,
-            ffi::MIX_INIT_MODPLUG  => InitModPlug,
-            ffi::MIX_INIT_MP3  => InitMp3,
-            ffi::MIX_INIT_OGG  => InitOgg,
-            ffi::MIX_INIT_FLUIDSYNTH  => InitFluidSynth,
-            val => InitRaw(val),
-        }
-    }
-
-    pub fn mask(self, flag: InitFlag) -> bool {
-        self.to_ll() & flag.to_ll() == flag.to_ll()
-    }
-}
-
-impl ops::BitOr<InitFlag, InitFlag> for InitFlag {
-    fn bitor(&self, rhs: &InitFlag) -> InitFlag {
-        InitFlag::from_ll(self.to_ll() | rhs.to_ll())
-    }
-}
-
-impl default::Default for InitFlag {
-    fn default() -> InitFlag {
-        InitFlag::from_ll((ffi::MIX_INIT_FLAC | ffi::MIX_INIT_MOD | ffi::MIX_INIT_MODPLUG |
-                           ffi::MIX_INIT_MP3 | ffi::MIX_INIT_OGG | ffi::MIX_INIT_FLUIDSYNTH))
-    }
-}
-
-impl num::FromPrimitive for InitFlag {
-    #[inline]
-    fn from_i64(n: i64) -> Option<InitFlag> {
-        Some(InitFlag::from_ll(n as ffi::MIX_InitFlags))
-    }
-    #[inline]
-    fn from_u64(n: u64) -> Option<InitFlag> {
-        Some(InitFlag::from_ll(n as ffi::MIX_InitFlags))
-    }
-}
-
-impl num::ToPrimitive for InitFlag {
-    #[inline]
-    fn to_i64(&self) -> Option<i64> {
-        Some(self.to_ll() as i64)
-    }
-    #[inline]
-    fn to_u64(&self) -> Option<u64> {
-        Some(self.to_ll() as u64)
-    }
-}
+flag_type!(InitFlag : c_int {
+    InitFlac       = ffi::MIX_INIT_FLAC,
+    InitMod        = ffi::MIX_INIT_MOD,
+    InitModPlug    = ffi::MIX_INIT_MODPLUG,
+    InitMp3        = ffi::MIX_INIT_MP3,
+    InitOgg        = ffi::MIX_INIT_OGG,
+    InitFluidSynth = ffi::MIX_INIT_FLUIDSYNTH
+})
 
 /// Loads dynamic libraries and prepares them for use.  Flags should be
 /// one or more flags from InitFlag.
 pub fn init(flags: InitFlag) -> InitFlag {
-    let ret = unsafe { ffi::Mix_Init(flags.to_ll() as c_int) };
-    InitFlag::from_ll(ret as ffi::MIX_InitFlags)
+    let ret = unsafe { ffi::Mix_Init(flags.get()) };
+    InitFlag::new(ret)
 }
 
 /// Cleans up all dynamically loaded library handles, freeing memory.
