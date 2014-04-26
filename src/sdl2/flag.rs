@@ -100,7 +100,7 @@ macro_rules! flag_type(
         }
 
         $(
-            pub static $name: $typename = $typename { bits: $value };
+            pub static $name: $typename = $typename { bits: $value as u32 };
         )+
     }
 )

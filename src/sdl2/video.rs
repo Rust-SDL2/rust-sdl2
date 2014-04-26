@@ -260,19 +260,19 @@ impl DisplayMode {
 }
 
 flag_type!(WindowFlags {
-    Fullscreen = ll::SDL_WINDOW_FULLSCREEN as u32,
-    OpenGL = ll::SDL_WINDOW_OPENGL as u32,
-    Shown = ll::SDL_WINDOW_SHOWN as u32,
-    Hidden = ll::SDL_WINDOW_HIDDEN as u32,
-    Borderless = ll::SDL_WINDOW_BORDERLESS as u32,
-    Resizable = ll::SDL_WINDOW_RESIZABLE as u32,
-    Minimized = ll::SDL_WINDOW_MINIMIZED as u32,
-    Maximized = ll::SDL_WINDOW_MAXIMIZED as u32,
-    InputGrabbed = ll::SDL_WINDOW_INPUT_GRABBED as u32,
-    InputFocus = ll::SDL_WINDOW_INPUT_FOCUS as u32,
-    MouseFocus = ll::SDL_WINDOW_MOUSE_FOCUS as u32,
-    FullscreenDesktop = ll::SDL_WINDOW_FULLSCREEN_DESKTOP as u32,
-    Foreign = ll::SDL_WINDOW_FOREIGN as u32
+    Fullscreen = ll::SDL_WINDOW_FULLSCREEN,
+    OpenGL = ll::SDL_WINDOW_OPENGL,
+    Shown = ll::SDL_WINDOW_SHOWN,
+    Hidden = ll::SDL_WINDOW_HIDDEN,
+    Borderless = ll::SDL_WINDOW_BORDERLESS,
+    Resizable = ll::SDL_WINDOW_RESIZABLE,
+    Minimized = ll::SDL_WINDOW_MINIMIZED,
+    Maximized = ll::SDL_WINDOW_MAXIMIZED,
+    InputGrabbed = ll::SDL_WINDOW_INPUT_GRABBED,
+    InputFocus = ll::SDL_WINDOW_INPUT_FOCUS,
+    MouseFocus = ll::SDL_WINDOW_MOUSE_FOCUS,
+    FullscreenDesktop = ll::SDL_WINDOW_FULLSCREEN_DESKTOP,
+    Foreign = ll::SDL_WINDOW_FOREIGN
 })
 
 #[deriving(Eq)]

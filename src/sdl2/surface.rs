@@ -78,10 +78,10 @@ pub mod ll {
 }
 
 flag_type!(SurfaceFlag {
-    SWSurface = ll::SDL_SWSURFACE as u32,
-    PreAlloc = ll::SDL_PREALLOC as u32,
-    RLEAccel = ll::SDL_RLEACCEL as u32,
-    DontFree = ll::SDL_DONTFREE as u32
+    SWSurface = ll::SDL_SWSURFACE,
+    PreAlloc = ll::SDL_PREALLOC,
+    RLEAccel = ll::SDL_RLEACCEL,
+    DontFree = ll::SDL_DONTFREE
 })
 
 #[deriving(Eq)] #[allow(raw_pointer_deriving)]

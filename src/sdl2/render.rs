@@ -150,10 +150,10 @@ pub enum TextureAccess {
 }
 
 flag_type!(RendererFlags {
-    Software = ll::SDL_RENDERER_SOFTWARE as u32,
-    Accelerated = ll::SDL_RENDERER_ACCELERATED as u32,
-    PresentVSync = ll::SDL_RENDERER_PRESENTVSYNC as u32,
-    TargetTexture = ll::SDL_RENDERER_TARGETTEXTURE as u32
+    Software = ll::SDL_RENDERER_SOFTWARE,
+    Accelerated = ll::SDL_RENDERER_ACCELERATED,
+    PresentVSync = ll::SDL_RENDERER_PRESENTVSYNC,
+    TargetTexture = ll::SDL_RENDERER_TARGETTEXTURE
 })
 
 #[deriving(Eq)]
