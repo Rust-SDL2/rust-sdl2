@@ -827,7 +827,7 @@ impl Event {
                 let event = *raw.jhat();
                 JoyHatMotionEvent(event.timestamp as uint, event.which as int,
                                   event.hat as int,
-                                  joystick::HatState::new(event.value as u32))
+                                  joystick::HatState::new(event.value))
             }
             JoyButtonDownEventType => {
                 let event = *raw.jbutton();

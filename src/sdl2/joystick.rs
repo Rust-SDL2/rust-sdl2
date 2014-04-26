@@ -45,8 +45,7 @@ pub mod ll {
     }
 }
 
-// TODO: should use u8
-flag_type!(HatState {
+flag_type!(HatState: u8 {
     CenteredHatState = 0,
     UpHatState = 0x01,
     RightHatState = 0x02,
