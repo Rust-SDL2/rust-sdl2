@@ -11,6 +11,8 @@ use std::num::FromPrimitive;
 
 use get_error;
 
+mod flag;
+
 #[allow(non_camel_case_types)]
 pub mod ll {
     use rect::Rect;
@@ -257,52 +259,27 @@ impl DisplayMode {
     }
 }
 
-#[deriving(Eq)]
-pub enum WindowFlags {
-    Fullscreen = ll::SDL_WINDOW_FULLSCREEN as int,
-    OpenGL = ll::SDL_WINDOW_OPENGL as int,
-    Shown = ll::SDL_WINDOW_SHOWN as int,
-    Hidden = ll::SDL_WINDOW_HIDDEN as int,
-    Borderless = ll::SDL_WINDOW_BORDERLESS as int,
-    Resizable = ll::SDL_WINDOW_RESIZABLE as int,
-    Minimized = ll::SDL_WINDOW_MINIMIZED as int,
-    Maximized = ll::SDL_WINDOW_MAXIMIZED as int,
-    InputGrabbed = ll::SDL_WINDOW_INPUT_GRABBED as int,
-    InputFocus = ll::SDL_WINDOW_INPUT_FOCUS as int,
-    MouseFocus = ll::SDL_WINDOW_MOUSE_FOCUS as int,
-    FullscreenDesktop = ll::SDL_WINDOW_FULLSCREEN_DESKTOP as int,
-    Foreign = ll::SDL_WINDOW_FOREIGN as int
-}
+flag_type!(WindowFlags {
+    Fullscreen = ll::SDL_WINDOW_FULLSCREEN,
+    OpenGL = ll::SDL_WINDOW_OPENGL,
+    Shown = ll::SDL_WINDOW_SHOWN,
+    Hidden = ll::SDL_WINDOW_HIDDEN,
+    Borderless = ll::SDL_WINDOW_BORDERLESS,
+    Resizable = ll::SDL_WINDOW_RESIZABLE,
+    Minimized = ll::SDL_WINDOW_MINIMIZED,
+    Maximized = ll::SDL_WINDOW_MAXIMIZED,
+    InputGrabbed = ll::SDL_WINDOW_INPUT_GRABBED,
+    InputFocus = ll::SDL_WINDOW_INPUT_FOCUS,
+    MouseFocus = ll::SDL_WINDOW_MOUSE_FOCUS,
+    FullscreenDesktop = ll::SDL_WINDOW_FULLSCREEN_DESKTOP,
+    Foreign = ll::SDL_WINDOW_FOREIGN
+})
 
 #[deriving(Eq)]
 pub enum FullscreenType {
     FTOff = 0,
-    FTTrue = Fullscreen as int,
-    FTDesktop = FullscreenDesktop as int
-}
-
-
-fn wrap_window_flags(bitflags: u32) -> Vec<WindowFlags> {
-    let flags = [
-        Fullscreen,
-        OpenGL,
-        Shown,
-        Hidden,
-        Borderless,
-        Resizable,
-        Minimized,
-        Maximized,
-        InputGrabbed,
-        InputFocus,
-        MouseFocus,
-        FullscreenDesktop,
-        Foreign
-    ];
-
-    flags.iter().filter_map(|&flag| {
-        if bitflags & (flag as u32) != 0 { Some(flag) }
-        else { None }
-    }).collect()
+    FTTrue = ll::SDL_WINDOW_FULLSCREEN as int,
+    FTDesktop = ll::SDL_WINDOW_FULLSCREEN_DESKTOP as int
 }
 
 #[deriving(Eq)]
@@ -354,9 +331,7 @@ impl Drop for Window {
 }
 
 impl Window {
-    pub fn new(title: &str, x: WindowPos, y: WindowPos, width: int, height: int, window_flags: &[WindowFlags]) -> Result<~Window, ~str> {
-        let flags = window_flags.iter().fold(0u32, |flags, flag| { flags | *flag as u32 });
-
+    pub fn new(title: &str, x: WindowPos, y: WindowPos, width: int, height: int, window_flags: WindowFlags) -> Result<~Window, ~str> {
         unsafe {
             let raw = title.with_c_str(|buff| {
                 ll::SDL_CreateWindow(
@@ -365,7 +340,7 @@ impl Window {
                     unwrap_windowpos(y),
                     width as c_int,
                     height as c_int,
-                    flags
+                    window_flags.get()
                 )
             });
 
@@ -432,9 +407,9 @@ impl Window {
         unsafe { ll::SDL_GetWindowID(self.raw) }
     }
 
-    pub fn get_flags(&self) -> Vec<WindowFlags> {
+    pub fn get_flags(&self) -> WindowFlags {
         let raw = unsafe { ll::SDL_GetWindowFlags(self.raw) };
-        wrap_window_flags(raw) 
+        WindowFlags::new(raw)
     }
 
     pub fn set_title(&self, title: &str) {

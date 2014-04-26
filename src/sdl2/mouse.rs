@@ -1,9 +1,10 @@
 use std::ptr;
-use std::vec::Vec;
 
 use get_error;
 use surface;
 use video;
+
+mod flag;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
@@ -143,15 +144,13 @@ pub enum Mouse {
     UnknownMouse(u8)
 }
 
-#[deriving(Eq)]
-pub enum MouseState {
-    LeftMouseState,
-    MiddleMouseState,
-    RightMouseState,
-    X1MouseState,
-    X2MouseState,
-    UnknownMouseState(u32)
-}
+flag_type!(MouseState {
+    LeftMouseState = 0x01,
+    MiddleMouseState = 0x02,
+    RightMouseState = 0x04,
+    X1MouseState = 0x08,
+    X2MouseState = 0x10
+})
 
 pub fn wrap_mouse(bitflags: u8) -> Mouse {
     match bitflags {
@@ -164,31 +163,6 @@ pub fn wrap_mouse(bitflags: u8) -> Mouse {
     }
 }
 
-pub fn wrap_mouse_state(bitflags: u32) -> Vec<MouseState> {
-    let flags = [(LeftMouseState, 1),
-        (MiddleMouseState, 2),
-        (RightMouseState, 4),
-        (X1MouseState, 8),
-        (X2MouseState, 16)];
-
-    let mut leftovers = bitflags;
-
-    let flags_out: Vec<_> = flags.iter().filter_map(|&(flag, value)| {
-        if bitflags & value != 0 {
-            leftovers -= value;
-            Some(flag)
-        } else {
-            None
-        }
-    }).collect();
-
-    if leftovers > 0 {
-        flags_out.append_one(UnknownMouseState(leftovers))
-    } else {
-        flags_out
-    }
-}
-
 pub fn get_mouse_focus() -> Option<~video::Window> {
     let raw = unsafe { ll::SDL_GetMouseFocus() };
     if raw == ptr::null() {
@@ -198,20 +172,20 @@ pub fn get_mouse_focus() -> Option<~video::Window> {
     }
 }
 
-pub fn get_mouse_state() -> (Vec<MouseState>, int, int) {
+pub fn get_mouse_state() -> (MouseState, int, int) {
     let x = 0;
     let y = 0;
     let raw = unsafe { ll::SDL_GetMouseState(&x, &y) };
 
-    return (wrap_mouse_state(raw), x as int, y as int);
+    return (MouseState::new(raw), x as int, y as int);
 }
 
-pub fn get_relative_mouse_state() -> (Vec<MouseState>, int, int) {
+pub fn get_relative_mouse_state() -> (MouseState, int, int) {
     let x = 0;
     let y = 0;
     let raw = unsafe { ll::SDL_GetRelativeMouseState(&x, &y) };
 
-    return (wrap_mouse_state(raw), x as int, y as int);
+    return (MouseState::new(raw), x as int, y as int);
 }
 
 pub fn warp_mouse_in_window(window: &video::Window, x: i32, y: i32) {

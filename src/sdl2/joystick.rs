@@ -1,4 +1,4 @@
-use std::vec::Vec;
+mod flag;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
@@ -45,24 +45,14 @@ pub mod ll {
     }
 }
 
-#[deriving(Eq)]
-pub enum HatState {
-    CenteredHatState,
-    UpHatState,
-    RightHatState,
-    DownHatState,
-    LeftHatState
-}
-
-pub fn wrap_hat_state(bitflags: u8) -> Vec<HatState> {
-    let flags = [CenteredHatState,
-        UpHatState,
-        RightHatState,
-        DownHatState,
-        LeftHatState];
-
-    flags.iter().filter_map(|&flag| {
-        if bitflags & (flag as u8) != 0 { Some(flag) }
-        else { None }
-    }).collect()
-}
+flag_type!(HatState: u8 {
+    CenteredHatState = 0,
+    UpHatState = 0x01,
+    RightHatState = 0x02,
+    DownHatState = 0x04,
+    LeftHatState = 0x08,
+    RightUpHatState = 0x02 | 0x01,   // RightHatState | UpHatState
+    RightDownHatState = 0x02 | 0x04, // RightHatState | DownHatState,
+    LeftUpHatState = 0x08 | 0x01,    // LeftHatState | UpHatState,
+    LeftDownHatState = 0x08 | 0x04   // LeftHatState | DownHatState
+})

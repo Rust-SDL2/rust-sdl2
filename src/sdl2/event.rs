@@ -6,7 +6,6 @@ use std::cast;
 use libc::{c_int, c_void, uint32_t};
 use std::num::FromPrimitive;
 use std::str;
-use std::vec::Vec;
 use std::ptr;
 
 use controller;
@@ -560,15 +559,15 @@ pub enum Event {
     // TODO: SysWMEvent
 
     /// (timestamp, window, keycode, scancode, keymod)
-    KeyDownEvent(uint, ~video::Window, KeyCode, ScanCode, Vec<Mod>),
-    KeyUpEvent(uint, ~video::Window, KeyCode, ScanCode, Vec<Mod>),
+    KeyDownEvent(uint, ~video::Window, KeyCode, ScanCode, Mod),
+    KeyUpEvent(uint, ~video::Window, KeyCode, ScanCode, Mod),
     /// (timestamp, window, text, start, length)
     TextEditingEvent(uint, ~video::Window, ~str, int, int),
     /// (timestamp, window, text)
     TextInputEvent(uint, ~video::Window, ~str),
 
     /// (timestamp, window, which, [MouseState], x, y, xrel, yrel)
-    MouseMotionEvent(uint, ~video::Window, uint, Vec<MouseState>, int, int,
+    MouseMotionEvent(uint, ~video::Window, uint, MouseState, int, int,
                      int, int),
     /// (timestamp, window, which, MouseBtn, x, y)
     MouseButtonDownEvent(uint, ~video::Window, uint, Mouse, int, int),
@@ -581,7 +580,7 @@ pub enum Event {
     /// (timestamp, whichId, ballIdx, xrel, yrel)
     JoyBallMotionEvent(uint, int, int, i16, i16),
     /// (timestamp, whichId, hatIdx, state)
-    JoyHatMotionEvent(uint, int, int, Vec<HatState>),
+    JoyHatMotionEvent(uint, int, int, HatState),
     /// (timestamp, whichId, buttonIdx)
     JoyButtonDownEvent(uint, int, int),
     JoyButtonUpEvent(uint, int, int),
@@ -714,7 +713,7 @@ impl Event {
                 KeyDownEvent(event.timestamp as uint, window,
                              FromPrimitive::from_int(event.keysym.sym as int).unwrap(),
                              FromPrimitive::from_int(event.keysym.scancode as int).unwrap(),
-                             keyboard::wrap_mod_state(event.keysym._mod as SDL_Keymod))
+                             keyboard::Mod::new(event.keysym._mod as SDL_Keymod))
             }
             KeyUpEventType => {
                 let event = *raw.key();
@@ -728,7 +727,7 @@ impl Event {
                 KeyUpEvent(event.timestamp as uint, window,
                            FromPrimitive::from_int(event.keysym.sym as int).unwrap(),
                            FromPrimitive::from_int(event.keysym.scancode as int).unwrap(),
-                           keyboard::wrap_mod_state(event.keysym._mod as SDL_Keymod))
+                           keyboard::Mod::new(event.keysym._mod as SDL_Keymod))
             }
             TextEditingEventType => {
                 let event = *raw.edit();
@@ -767,7 +766,7 @@ impl Event {
 
                 MouseMotionEvent(event.timestamp as uint, window,
                                  event.which as uint,
-                                 mouse::wrap_mouse_state(event.state),
+                                 mouse::MouseState::new(event.state),
                                  event.x as int, event.y as int,
                                  event.xrel as int, event.yrel as int)
             }
@@ -828,7 +827,7 @@ impl Event {
                 let event = *raw.jhat();
                 JoyHatMotionEvent(event.timestamp as uint, event.which as int,
                                   event.hat as int,
-                                  joystick::wrap_hat_state(event.value))
+                                  joystick::HatState::new(event.value))
             }
             JoyButtonDownEventType => {
                 let event = *raw.jbutton();

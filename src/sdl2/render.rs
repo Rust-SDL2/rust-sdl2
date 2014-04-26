@@ -13,6 +13,8 @@ use std::num::FromPrimitive;
 use std::vec::Vec;
 use std::c_vec::CVec;
 
+mod flag;
+
 #[allow(non_camel_case_types)]
 pub mod ll {
 
@@ -147,18 +149,17 @@ pub enum TextureAccess {
     AccessTarget = ll::SDL_TEXTUREACCESS_TARGET as int
 }
 
-#[deriving(Eq)]
-pub enum RendererFlags {
-    Software = ll::SDL_RENDERER_SOFTWARE as int,
-    Accelerated = ll::SDL_RENDERER_ACCELERATED as int,
-    PresentVSync = ll::SDL_RENDERER_PRESENTVSYNC as int,
-    TargetTexture = ll::SDL_RENDERER_TARGETTEXTURE as int
-}
+flag_type!(RendererFlags {
+    Software = ll::SDL_RENDERER_SOFTWARE,
+    Accelerated = ll::SDL_RENDERER_ACCELERATED,
+    PresentVSync = ll::SDL_RENDERER_PRESENTVSYNC,
+    TargetTexture = ll::SDL_RENDERER_TARGETTEXTURE
+})
 
 #[deriving(Eq)]
 pub struct RendererInfo {
     pub name: ~str,
-    pub flags: Vec<RendererFlags>,
+    pub flags: RendererFlags,
     pub texture_formats: Vec<pixels::PixelFormatFlag>,
     pub max_texture_width: int,
     pub max_texture_height: int
@@ -181,18 +182,7 @@ pub enum RendererFlip {
 
 impl RendererInfo {
     pub fn from_ll(info: &ll::SDL_RendererInfo) -> ~RendererInfo {
-
-        let flags = [
-            Software,
-            Accelerated,
-            PresentVSync,
-            TargetTexture
-        ];
-
-        let actual_flags = flags.iter().filter_map(|&flag| {
-            if info.flags as int & (flag as int) != 0 { Some(flag) }
-            else { None }
-        }).collect();
+        let actual_flags = RendererFlags::new(info.flags);
 
         unsafe {
             let texture_formats: Vec<pixels::PixelFormatFlag> = info.texture_formats.slice(0, info.num_texture_formats as uint).iter().map(|&format| {
@@ -234,15 +224,14 @@ impl Drop for Renderer {
 }
 
 impl Renderer {
-    pub fn from_window(window: ~video::Window, index: RenderDriverIndex, renderer_flags: &[RendererFlags]) -> Result<~Renderer, ~str> {
-        let flags = renderer_flags.iter().fold(0u32, |flags, flag| { flags | *flag as u32 });
+    pub fn from_window(window: ~video::Window, index: RenderDriverIndex, renderer_flags: RendererFlags) -> Result<~Renderer, ~str> {
         let index = match index {
             DriverAuto => -1,
             DriverIndex(x) => x
         };
 
         let raw = unsafe {
-            ll::SDL_CreateRenderer(window.raw, index as c_int, flags)
+            ll::SDL_CreateRenderer(window.raw, index as c_int, renderer_flags.get())
         };
 
         if raw == ptr::null() {
@@ -252,11 +241,10 @@ impl Renderer {
         }
     }
 
-    pub fn new_with_window(width: int, height: int, window_flags: &[video::WindowFlags]) -> Result<~Renderer, ~str> {
+    pub fn new_with_window(width: int, height: int, window_flags: video::WindowFlags) -> Result<~Renderer, ~str> {
         let raw_window: *video::ll::SDL_Window = ptr::null();
         let raw_renderer: *ll::SDL_Renderer = ptr::null();
-        let flags = window_flags.iter().fold(0u32, |flags, flag| { flags | *flag as u32 });
-        let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, flags, &raw_window, &raw_renderer) == 0};
+        let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, window_flags.get(), &raw_window, &raw_renderer) == 0};
         if result {
             let window = ~video::Window {
                 raw: raw_window,

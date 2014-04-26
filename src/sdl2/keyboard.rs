@@ -3,12 +3,13 @@ use std::num::FromPrimitive;
 use std::ptr;
 use std::str;
 use std::slice;
-use std::vec::Vec;
 
 use keycode::KeyCode;
 use rect::Rect;
 use scancode::ScanCode;
 use video::Window;
+
+mod flag;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
@@ -51,8 +52,7 @@ pub mod ll {
     }
 }
 
-#[deriving(Eq)]
-pub enum Mod {
+flag_type!(Mod {
      NoMod = 0x0000,
      LShiftMod = 0x0001,
      RShiftMod = 0x0002,
@@ -66,28 +66,7 @@ pub enum Mod {
      CapsMod = 0x2000,
      ModeMod = 0x4000,
      ReservedMod = 0x8000
-}
-
-pub fn wrap_mod_state(bitflags: ll::SDL_Keymod) -> Vec<Mod> {
-    let flags = [NoMod,
-        LShiftMod,
-        RShiftMod,
-        LCtrlMod,
-        RCtrlMod,
-        LAltMod,
-        RAltMod,
-        LGuiMod,
-        RGuiMod,
-        NumMod,
-        CapsMod,
-        ModeMod,
-        ReservedMod];
-
-    flags.iter().filter_map(|&flag| {
-        if bitflags & (flag as ll::SDL_Keymod) != 0 { Some(flag) }
-        else { None }
-    }).collect()
-}
+})
 
 pub fn get_keyboard_focus() -> Option<~Window> {
     let raw = unsafe { ll::SDL_GetKeyboardFocus() };
@@ -115,17 +94,12 @@ pub fn get_keyboard_state() -> ~HashMap<ScanCode, bool> {
     return state;
 }
 
-pub fn get_mod_state() -> Vec<Mod> {
-    unsafe { wrap_mod_state(ll::SDL_GetModState()) }
+pub fn get_mod_state() -> Mod {
+    unsafe { Mod::new(ll::SDL_GetModState()) }
 }
 
-pub fn set_mod_state(flags: &[Mod]) {
-    let mut state = 0;
-    for flag in flags.iter() {
-        state |= *flag as ll::SDL_Keymod;
-    }
-
-    unsafe { ll::SDL_SetModState(state); }
+pub fn set_mod_state(flags: Mod) {
+    unsafe { ll::SDL_SetModState(flags.get()); }
 }
 
 pub fn get_key_from_scancode(scancode: ScanCode) -> KeyCode {
