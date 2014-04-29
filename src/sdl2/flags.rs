@@ -107,7 +107,7 @@ macro_rules! flag_type(
             }
         }
 
-        impl ::flag::Flags for $typename {
+        impl ::flags::Flags for $typename {
             fn none() -> $typename {
                 $typename { bits: 0 as $supertype }
             }

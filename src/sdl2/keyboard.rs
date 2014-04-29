@@ -9,7 +9,7 @@ use rect::Rect;
 use scancode::ScanCode;
 use video::Window;
 
-mod flag;
+mod flags;
 
 #[allow(non_camel_case_types)]
 pub mod ll {

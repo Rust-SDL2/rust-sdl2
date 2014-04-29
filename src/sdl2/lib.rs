@@ -33,4 +33,4 @@ pub mod rwops;
 pub mod sdl;
 pub mod audio;
 pub mod version;
-pub mod flag;
+pub mod flags;
