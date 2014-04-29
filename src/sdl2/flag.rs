@@ -19,6 +19,14 @@
 
 #![macro_escape]
 
+pub trait Flags: ::std::ops::Not<Self> {
+    fn none() -> Self;
+    fn all() -> Self {
+        let none: Self = Flags::none();
+        !none
+    }
+}
+
 macro_rules! flag_type(
     ($typename:ident : $supertype:ident { $($name:ident = $value:expr),* }) => {
         pub struct $typename {
@@ -96,6 +104,12 @@ macro_rules! flag_type(
         impl ::std::ops::Shr<$supertype, $typename> for $typename {
             fn shr(&self, rhs: &$supertype) -> $typename {
                 $typename { bits: self.bits >> *rhs }
+            }
+        }
+
+        impl ::flag::Flags for $typename {
+            fn none() -> $typename {
+                $typename { bits: 0 as $supertype }
             }
         }
 
