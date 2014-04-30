@@ -6,7 +6,7 @@ use libc::c_int;
 use pixels;
 use rwops;
 
-mod flag;
+mod flags;
 
 #[allow(non_camel_case_types)]
 pub mod ll {

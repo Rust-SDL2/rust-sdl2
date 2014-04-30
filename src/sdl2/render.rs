@@ -13,7 +13,7 @@ use std::num::FromPrimitive;
 use std::vec::Vec;
 use std::c_vec::CVec;
 
-mod flag;
+mod flags;
 
 #[allow(non_camel_case_types)]
 pub mod ll {

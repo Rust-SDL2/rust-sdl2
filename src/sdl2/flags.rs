@@ -1,9 +1,11 @@
 // Loosely based on zlib-licensed code from RustAllegro
 //     https://github.com/SiegeLord/RustAllegro
 //
-// Implements efficient, type-safe flags with support for bitwise operators.
+//! Implements efficient, type-safe flags with support for bitwise operators.
 //
-// Usage:
+// The macros defined in this module are for internal usage only.
+//
+// Example:
 //
 // flag_type!(FlagTypeName {
 //     FlagName1 = FlagValue1,
@@ -18,6 +20,22 @@
 // }
 
 #![macro_escape]
+
+/// The `Flags` trait is used to define values for flag types where either none
+/// or all of the flags are set.
+pub trait Flags: ::std::ops::Not<Self> {
+    /// Returns a value representing an empty bitset. Implementors should ensure
+    /// this function returns the equivalent of `0` (no bits set) for a flag
+    /// type.
+    fn none() -> Self;
+
+    /// By default, this function will negate the result of `none()`. For sanely
+    /// implemented types, this should be equivalent to having all flags set.
+    fn all() -> Self {
+        let none: Self = Flags::none();
+        !none
+    }
+}
 
 macro_rules! flag_type(
     ($typename:ident : $supertype:ident { $($name:ident = $value:expr),* }) => {
@@ -96,6 +114,12 @@ macro_rules! flag_type(
         impl ::std::ops::Shr<$supertype, $typename> for $typename {
             fn shr(&self, rhs: &$supertype) -> $typename {
                 $typename { bits: self.bits >> *rhs }
+            }
+        }
+
+        impl ::flags::Flags for $typename {
+            fn none() -> $typename {
+                $typename { bits: 0 as $supertype }
             }
         }
 
