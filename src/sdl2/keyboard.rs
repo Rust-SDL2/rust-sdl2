@@ -9,8 +9,6 @@ use rect::Rect;
 use scancode::ScanCode;
 use video::Window;
 
-mod flags;
-
 #[allow(non_camel_case_types)]
 pub mod ll {
     use libc::{c_int, c_char, c_uint, int32_t, uint8_t, uint16_t,

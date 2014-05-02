@@ -6,8 +6,6 @@ use libc::c_int;
 use pixels;
 use rwops;
 
-mod flags;
-
 #[allow(non_camel_case_types)]
 pub mod ll {
     use pixels::ll::SDL_PixelFormat;
