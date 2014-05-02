@@ -4,8 +4,6 @@ use get_error;
 use surface;
 use video;
 
-mod flags;
-
 #[allow(non_camel_case_types)]
 pub mod ll {
     use libc::{c_int, c_uint, c_void, uint8_t, uint32_t};

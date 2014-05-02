@@ -16,6 +16,7 @@ pub mod keycode;
 #[path = "generated/scancode.rs"]
 pub mod scancode;
 
+pub mod flags;
 pub mod event;
 pub mod gesture;
 pub mod touch;
@@ -33,4 +34,3 @@ pub mod rwops;
 pub mod sdl;
 pub mod audio;
 pub mod version;
-pub mod flags;

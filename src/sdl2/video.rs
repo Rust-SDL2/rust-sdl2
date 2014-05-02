@@ -11,8 +11,6 @@ use std::num::FromPrimitive;
 
 use get_error;
 
-mod flags;
-
 #[allow(non_camel_case_types)]
 pub mod ll {
     use rect::Rect;
