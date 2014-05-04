@@ -1,3 +1,4 @@
+RUSTC ?= rustc
 RUSTFLAGS ?=
 OUTDIR ?= ./build
 
@@ -36,17 +37,17 @@ $(BINDIR) $(LIBDIR) $(TMPDIR):
 	mkdir -p '$@'
 
 $(TMPDIR)/codegen: $(wildcard src/codegen/*.rs) $(TMPDIR)
-	rustc -o '$(TMPDIR)/codegen' src/codegen/main.rs $(RUSTFLAGS)
+	$(RUSTC) -o '$(TMPDIR)/codegen' src/codegen/main.rs $(RUSTFLAGS)
 
 src/sdl2/generated/%.rs: $(TMPDIR)/codegen
 	'$(TMPDIR)/codegen' $(patsubst src/sdl2/generated/%,%,$@) src/sdl2/generated/
 
 $(TMPDIR)/libsdl2.dummy: src/sdl2/lib.rs $(RUST_SRC) $(LIBDIR) $(TMPDIR)
-	rustc --out-dir '$(LIBDIR)' src/sdl2/lib.rs $(RUSTFLAGS)
+	$(RUSTC) --out-dir '$(LIBDIR)' src/sdl2/lib.rs $(RUSTFLAGS)
 	touch $@
 
 compile_demo: src/demo/main.rs src/demo/video.rs $(TMPDIR)/libsdl2.dummy $(BINDIR)
-	rustc -o '$(BINDIR)/demo' -L '$(LIBDIR)' src/demo/main.rs
+	$(RUSTC) -o '$(BINDIR)/demo' -L '$(LIBDIR)' src/demo/main.rs
 
 demo: compile_demo
 	'$(BINDIR)/demo'
