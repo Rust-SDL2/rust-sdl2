@@ -12,6 +12,7 @@
 .rust/
 build/
 bin/
+doc/
 lib/
 src/generated
 /rustpkg_db.json
