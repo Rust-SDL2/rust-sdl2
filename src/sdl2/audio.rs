@@ -262,11 +262,15 @@ impl AudioDevice {
         }
     }
 
-    pub fn open(device: &str, iscapture: int, spec: &AudioSpec) -> Result<(AudioDevice, ~AudioSpec), ~str> {
+    pub fn open(device: Option<&str>, iscapture: int, spec: &AudioSpec) -> Result<(AudioDevice, ~AudioSpec), ~str> {
         //! SDL_OpenAudioDevice
         let obtained = unsafe { mem::uninit::<AudioSpec>() };
         unsafe {
-            let ret = ll::SDL_OpenAudioDevice(device.to_c_str().unwrap(),
+            let device_c_str = match device {
+                None => ptr::null(),
+                Some(device) => device.to_c_str().unwrap(),
+            };
+            let ret = ll::SDL_OpenAudioDevice(device_c_str,
                                               iscapture as c_int,
                                               cast::transmute(spec),
                                               cast::transmute(&obtained),
@@ -347,7 +351,7 @@ impl AudioCVT {
 
         unsafe {
             if (*self.raw).needed != 1 {
-                return Err(~"no convertion needed!")
+                return Err("no convertion needed!".to_owned())
             }
             // set len
             (*self.raw).len = src.len() as c_int;
