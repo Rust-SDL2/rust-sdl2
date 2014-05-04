@@ -329,7 +329,7 @@ impl Drop for Window {
 }
 
 impl Window {
-    pub fn new(title: &str, x: WindowPos, y: WindowPos, width: int, height: int, window_flags: WindowFlags) -> Result<~Window, ~str> {
+    pub fn new(title: &str, x: WindowPos, y: WindowPos, width: int, height: int, window_flags: WindowFlags) -> Result<Window, ~str> {
         unsafe {
             let raw = title.with_c_str(|buff| {
                 ll::SDL_CreateWindow(
@@ -345,17 +345,17 @@ impl Window {
             if raw == ptr::null() {
                 Err(get_error())
             } else {
-                Ok(~Window{ raw: raw, owned: true })
+                Ok(Window{ raw: raw, owned: true })
             }
         }
     }
 
-    pub fn from_id(id: u32) -> Result<~Window, ~str> {
+    pub fn from_id(id: u32) -> Result<Window, ~str> {
         let raw = unsafe { ll::SDL_GetWindowFromID(id) };
         if raw == ptr::null() {
             Err(get_error())
         } else {
-            Ok(~Window{ raw: raw, owned: false})
+            Ok(Window{ raw: raw, owned: false})
         }
     }
 
@@ -380,7 +380,7 @@ impl Window {
         }
     }
 
-    pub fn get_display_mode(&self, display_mode: &DisplayMode) -> Result<~DisplayMode, ~str> {
+    pub fn get_display_mode(&self, display_mode: &DisplayMode) -> Result<DisplayMode, ~str> {
         let dm = empty_sdl_display_mode();
 
         let result = unsafe { 
@@ -391,7 +391,7 @@ impl Window {
         };
 
         if result {
-            Ok(~DisplayMode::from_ll(&dm))
+            Ok(DisplayMode::from_ll(&dm))
         } else {
             Err(get_error())
         }
@@ -506,13 +506,13 @@ impl Window {
         unsafe { ll::SDL_SetWindowFullscreen(self.raw, fullscreen_type as uint32_t) == 0 }
     }
 
-    pub fn get_surface(&self) -> Result<~Surface, ~str> {
+    pub fn get_surface(&self) -> Result<Surface, ~str> {
         let raw = unsafe { ll::SDL_GetWindowSurface(self.raw) };
 
         if raw == ptr::null() {
             Err(get_error())
         } else {
-            Ok(~Surface {raw: raw, owned: false}) //Docs say that it releases with the window
+            Ok(Surface {raw: raw, owned: false}) //Docs say that it releases with the window
         }
     }
 
@@ -570,12 +570,12 @@ impl Window {
         }
     }
 
-    pub fn gl_create_context(&self) -> Result<~GLContext, ~str> {
+    pub fn gl_create_context(&self) -> Result<GLContext, ~str> {
         let result = unsafe { ll::SDL_GL_CreateContext(self.raw) };
         if result == ptr::null() {
             Err(get_error())
         } else {
-            Ok(~GLContext{raw: result, owned: true})
+            Ok(GLContext{raw: result, owned: true})
         }
     }
 
@@ -657,40 +657,40 @@ pub fn get_num_display_modes(display_index: int) -> Result<int, ~str> {
     }
 }
 
-pub fn get_display_mode(display_index: int, mode_index: int) -> Result<~DisplayMode, ~str> {
+pub fn get_display_mode(display_index: int, mode_index: int) -> Result<DisplayMode, ~str> {
     let dm = empty_sdl_display_mode();
     let result = unsafe { ll::SDL_GetDisplayMode(display_index as c_int, mode_index as c_int, &dm) == 0};
 
     if result {
-        Ok(~DisplayMode::from_ll(&dm))
+        Ok(DisplayMode::from_ll(&dm))
     } else {
         Err(get_error())
     }
 }
 
-pub fn get_desktop_display_mode(display_index: int) -> Result<~DisplayMode, ~str> {
+pub fn get_desktop_display_mode(display_index: int) -> Result<DisplayMode, ~str> {
     let dm = empty_sdl_display_mode();
     let result = unsafe { ll::SDL_GetDesktopDisplayMode(display_index as c_int, &dm) == 0};
 
     if result {
-        Ok(~DisplayMode::from_ll(&dm))
+        Ok(DisplayMode::from_ll(&dm))
     } else {
         Err(get_error())
     }
 }
 
-pub fn get_current_display_mode(display_index: int) -> Result<~DisplayMode, ~str> {
+pub fn get_current_display_mode(display_index: int) -> Result<DisplayMode, ~str> {
     let dm = empty_sdl_display_mode();
     let result = unsafe { ll::SDL_GetCurrentDisplayMode(display_index as c_int, &dm) == 0};
 
     if result {
-        Ok(~DisplayMode::from_ll(&dm))
+        Ok(DisplayMode::from_ll(&dm))
     } else {
         Err(get_error())
     }
 }
 
-pub fn get_closest_display_mode(display_index: int, mode: &DisplayMode) -> Result<~DisplayMode, ~str> {
+pub fn get_closest_display_mode(display_index: int, mode: &DisplayMode) -> Result<DisplayMode, ~str> {
     let input = mode.to_ll();
     let out = empty_sdl_display_mode();
 
@@ -699,7 +699,7 @@ pub fn get_closest_display_mode(display_index: int, mode: &DisplayMode) -> Resul
     if result == ptr::null() {
         Err(get_error())
     } else {
-        Ok(~DisplayMode::from_ll(&out))
+        Ok(DisplayMode::from_ll(&out))
     }
 }
 
@@ -760,21 +760,21 @@ pub fn gl_get_attribute(attr: GLAttr) -> Result<int, ~str> {
     }
 }
 
-pub fn gl_get_current_window() -> Result<~Window, ~str> {
+pub fn gl_get_current_window() -> Result<Window, ~str> {
     let raw = unsafe { ll::SDL_GL_GetCurrentWindow() };
     if raw == ptr::null() {
         Err(get_error())
     } else {
-        Ok(~Window{ raw: raw, owned: false })
+        Ok(Window{ raw: raw, owned: false })
     }
 }
 
-pub fn gl_get_current_context() -> Result<~GLContext, ~str> {
+pub fn gl_get_current_context() -> Result<GLContext, ~str> {
     let raw = unsafe { ll::SDL_GL_GetCurrentContext() };
     if raw == ptr::null() {
         Err(get_error())
     } else {
-        Ok(~GLContext{ raw: raw, owned: false })
+        Ok(GLContext{ raw: raw, owned: false })
     }
 }
 
