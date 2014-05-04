@@ -347,7 +347,7 @@ impl AudioCVT {
 
         unsafe {
             if (*self.raw).needed != 1 {
-                return Err(~"no convertion needed!")
+                return Err("no convertion needed!".to_owned())
             }
             // set len
             (*self.raw).len = src.len() as c_int;

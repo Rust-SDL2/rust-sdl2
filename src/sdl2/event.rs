@@ -738,7 +738,7 @@ impl Event {
                     Ok(window) => window,
                 };
 
-                let text = str::from_utf8_owned(event.text.iter().take_while(|&b| (*b) != 0i8).map(|&b| b as u8).collect::<~[u8]>()).unwrap_or(~"");
+                let text = str::from_utf8_owned(event.text.iter().take_while(|&b| (*b) != 0i8).map(|&b| b as u8).collect::<~[u8]>()).unwrap_or("".to_owned());
                 TextEditingEvent(event.timestamp as uint, window, text,
                                  event.start as int, event.length as int)
             }
@@ -751,7 +751,7 @@ impl Event {
                     Ok(window) => window,
                 };
 
-                let text = str::from_utf8_owned(event.text.iter().take_while(|&b| (*b) != 0i8).map(|&b| b as u8).collect::<~[u8]>()).unwrap_or(~"");
+                let text = str::from_utf8_owned(event.text.iter().take_while(|&b| (*b) != 0i8).map(|&b| b as u8).collect::<~[u8]>()).unwrap_or("".to_owned());
                 TextInputEvent(event.timestamp as uint, window, text)
             }
 
@@ -1094,7 +1094,7 @@ pub fn push_event(event: Event) -> Result<(), ~str> {
             else { Err(get_error()) }
         },
         None => {
-            Err(~"Unsupport event type to push back to queue.")
+            Err("Unsupport event type to push back to queue.".to_owned())
         }
     }
 }
