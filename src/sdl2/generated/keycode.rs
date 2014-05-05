@@ -6,7 +6,7 @@ use std::hash::sip::SipState;
 use std::num::FromPrimitive;
 use std::num::ToPrimitive;
 
-#[deriving(Eq, TotalEq)]
+#[deriving(Eq, TotalEq, Show)]
 pub enum KeyCode {
     UnknownKey            = 0,
     BackspaceKey          = 8,

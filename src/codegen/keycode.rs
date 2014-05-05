@@ -309,7 +309,7 @@ use std::hash::sip::SipState;
 use std::num::FromPrimitive;
 use std::num::ToPrimitive;
 
-#[deriving(Eq, TotalEq)]
+#[deriving(Eq, TotalEq, Show)]
 pub enum KeyCode {
 ".as_bytes()));
     for &entry in entries.iter() {

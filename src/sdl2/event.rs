@@ -500,6 +500,7 @@ pub enum EventType {
     LastEventType = ll::SDL_LASTEVENT,
 }
 
+#[deriving(Show)]
 /// An enum of window events.
 pub enum WindowEventId {
     NoneWindowEventId,
@@ -617,6 +618,52 @@ pub enum Event {
 
     /// (timestamp, Window, type, code)
     UserEvent(uint, ~video::Window, uint, int),
+}
+
+impl ::std::fmt::Show for Event {
+    fn fmt(&self, out: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        out.buf.write_str(match *self {
+            NoEvent => "NoEvent",
+            QuitEvent(..) => "QuitEvent",
+            AppTerminatingEvent(..) => "AppTerminatingEvent",
+            AppLowMemoryEvent(..) => "AppLowMemoryEvent",
+            AppWillEnterBackgroundEvent(..) => "AppWillEnterBackgroundEvent",
+            AppDidEnterBackgroundEvent(..) => "AppDidEnterBackgroundEvent",
+            AppWillEnterForegroundEvent(..) => "AppWillEnterForegroundEvent",
+            AppDidEnterForegroundEvent(..) => "AppDidEnterForegroundEvent",
+            WindowEvent(..) => "WindowEvent",
+            KeyDownEvent(..) => "KeyDownEvent",
+            KeyUpEvent(..) => "KeyUpEvent",
+            TextEditingEvent(..) => "TextEditingEvent",
+            TextInputEvent(..) => "TextInputEvent",
+            MouseMotionEvent(..) => "MouseMotionEvent",
+            MouseButtonDownEvent(..) => "MouseButtonDownEvent",
+            MouseButtonUpEvent(..) => "MouseButtonUpEvent",
+            MouseWheelEvent(..) => "MouseWheelEvent",
+            JoyAxisMotionEvent(..) => "JoyAxisMotionEvent",
+            JoyBallMotionEvent(..) => "JoyBallMotionEvent",
+            JoyHatMotionEvent(..) => "JoyHatMotionEvent",
+            JoyButtonDownEvent(..) => "JoyButtonDownEvent",
+            JoyButtonUpEvent(..) => "JoyButtonUpEvent",
+            JoyDeviceAddedEvent(..) => "JoyDeviceAddedEvent",
+            JoyDeviceRemovedEvent(..) => "JoyDeviceRemovedEvent",
+            ControllerAxisMotionEvent(..) => "ControllerAxisMotionEvent",
+            ControllerButtonDownEvent(..) => "ControllerButtonDownEvent",
+            ControllerButtonUpEvent(..) => "ControllerButtonUpEvent",
+            ControllerDeviceAddedEvent(..) => "ControllerDeviceAddedEvent",
+            ControllerDeviceRemovedEvent(..) => "ControllerDeviceRemovedEvent",
+            ControllerDeviceRemappedEvent(..) => "ControllerDeviceRemappedEvent",
+            FingerDownEvent(..) => "FingerDownEvent",
+            FingerUpEvent(..) => "FingerUpEvent",
+            FingerMotionEvent(..) => "FingerMotionEvent",
+            DollarGestureEvent(..) => "DollarGestureEvent",
+            DollarRecordEvent(..) => "DollarRecordEvent",
+            MultiGestureEvent(..) => "MultiGestureEvent",
+            ClipboardUpdateEvent(..) => "ClipboardUpdateEvent",
+            DropFileEvent(..) => "DropFileEvent",
+            UserEvent(..) => "UserEvent",
+        })
+    }
 }
 
 // TODO: Remove this when from_utf8 is updated in Rust
