@@ -179,7 +179,7 @@ pub enum RendererFlip {
 }
 
 impl RendererInfo {
-    pub fn from_ll(info: &ll::SDL_RendererInfo) -> ~RendererInfo {
+    pub fn from_ll(info: &ll::SDL_RendererInfo) -> RendererInfo {
         let actual_flags = RendererFlags::new(info.flags);
 
         unsafe {
@@ -187,7 +187,7 @@ impl RendererInfo {
                 FromPrimitive::from_i64(format as i64).unwrap()
             }).collect();
 
-            ~RendererInfo {
+            RendererInfo {
                 name: str::raw::from_c_str(cast::transmute_copy(&info.name)),
                 flags: actual_flags,
                 texture_formats: texture_formats,
@@ -200,8 +200,8 @@ impl RendererInfo {
 
 #[deriving(Eq)]
 enum RendererParent {
-    Window(~video::Window),
-    Surface(~surface::Surface),
+    Window(video::Window),
+    Surface(surface::Surface),
 }
 
 #[deriving(Eq)] #[allow(raw_pointer_deriving)]
@@ -222,7 +222,7 @@ impl Drop for Renderer {
 }
 
 impl Renderer {
-    pub fn from_window(window: ~video::Window, index: RenderDriverIndex, renderer_flags: RendererFlags) -> Result<~Renderer, ~str> {
+    pub fn from_window(window: video::Window, index: RenderDriverIndex, renderer_flags: RendererFlags) -> Result<Renderer, ~str> {
         let index = match index {
             DriverAuto => -1,
             DriverIndex(x) => x
@@ -235,20 +235,20 @@ impl Renderer {
         if raw == ptr::null() {
             Err(get_error())
         } else {
-            Ok(~Renderer{ raw: raw, parent: Window(window), owned: true,})
+            Ok(Renderer{ raw: raw, parent: Window(window), owned: true,})
         }
     }
 
-    pub fn new_with_window(width: int, height: int, window_flags: video::WindowFlags) -> Result<~Renderer, ~str> {
+    pub fn new_with_window(width: int, height: int, window_flags: video::WindowFlags) -> Result<Renderer, ~str> {
         let raw_window: *video::ll::SDL_Window = ptr::null();
         let raw_renderer: *ll::SDL_Renderer = ptr::null();
         let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, window_flags.get(), &raw_window, &raw_renderer) == 0};
         if result {
-            let window = ~video::Window {
+            let window = video::Window {
                 raw: raw_window,
                 owned: true
             };
-            Ok(~Renderer {
+            Ok(Renderer {
                 raw: raw_renderer,
                 parent: Window(window),
                 owned: true
@@ -258,10 +258,10 @@ impl Renderer {
         }
     }
 
-    pub fn from_surface(surface: ~surface::Surface) -> Result<~Renderer, ~str> {
+    pub fn from_surface(surface: surface::Surface) -> Result<Renderer, ~str> {
         let result = unsafe { ll::SDL_CreateSoftwareRenderer(surface.raw) };
         if result == ptr::null() {
-            Ok(~Renderer {
+            Ok(Renderer {
                 raw: result,
                 parent: Surface(surface),
                 owned: true
@@ -320,21 +320,21 @@ impl Renderer {
         }
     }
 
-    pub fn create_texture(&self, format: pixels::PixelFormatFlag, access: TextureAccess, width: int, height: int) -> Result<~Texture, ~str> {
+    pub fn create_texture(&self, format: pixels::PixelFormatFlag, access: TextureAccess, width: int, height: int) -> Result<Texture, ~str> {
         let result = unsafe { ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int) };
         if result == ptr::null() {
             Err(get_error())
         } else {
-            Ok(~Texture { raw: result, owned: true } )
+            Ok(Texture { raw: result, owned: true } )
         }
     }
 
-    pub fn create_texture_from_surface(&self, surface: &surface::Surface) -> Result<~Texture, ~str> {
+    pub fn create_texture_from_surface(&self, surface: &surface::Surface) -> Result<Texture, ~str> {
         let result = unsafe { ll::SDL_CreateTextureFromSurface(self.raw, surface.raw) };
         if result == ptr::null() {
             Err(get_error())
         } else {
-            Ok(~Texture { raw: result, owned: true } )
+            Ok(Texture { raw: result, owned: true } )
         }
     }
 
@@ -356,13 +356,13 @@ impl Renderer {
         }
     }
 
-    pub fn get_render_target(&self) -> Result<~Texture, ~str> {
+    pub fn get_render_target(&self) -> Result<Texture, ~str> {
         let raw = unsafe { ll::SDL_GetRenderTarget(self.raw) };
 
         if raw == ptr::null() {
             Err(get_error())
         } else {
-            Ok(~Texture{
+            Ok(Texture{
                 raw: raw,
                 owned: false
             })
@@ -596,7 +596,7 @@ impl Drop for Texture {
 
 impl Texture {
 
-    pub fn query(&self) -> Result<~TextureQuery, ~str> {
+    pub fn query(&self) -> Result<TextureQuery, ~str> {
         let format: uint32_t = 0;
         let access: c_int = 0;
         let width: c_int = 0;
@@ -604,7 +604,7 @@ impl Texture {
 
         let result = unsafe { ll::SDL_QueryTexture(self.raw, &format, &access, &width, &height) == 0 };
         if result {
-            Ok(~TextureQuery {
+            Ok(TextureQuery {
                format: FromPrimitive::from_i64(format as i64).unwrap(),
                access: FromPrimitive::from_i64(access as i64).unwrap(),
                width: width as int,
@@ -749,7 +749,7 @@ pub fn get_num_render_drivers() -> Result<int, ~str> {
     }
 }
 
-pub fn get_render_driver_info(index: int) -> Result<~RendererInfo, ~str> {
+pub fn get_render_driver_info(index: int) -> Result<RendererInfo, ~str> {
     let out = ll::SDL_RendererInfo {
         name: ptr::null(),
         flags: 0,

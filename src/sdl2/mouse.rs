@@ -87,7 +87,7 @@ impl Drop for Cursor {
 }
 
 impl Cursor {
-    pub fn new(data: &[u8], mask: &[u8], width: int, height: int, hot_x: int, hot_y: int) -> Result<~Cursor, ~str> {
+    pub fn new(data: &[u8], mask: &[u8], width: int, height: int, hot_x: int, hot_y: int) -> Result<Cursor, ~str> {
         unsafe {
             let raw = ll::SDL_CreateCursor(data.as_ptr(),
                                            mask.as_ptr(),
@@ -97,12 +97,12 @@ impl Cursor {
             if raw == ptr::null() {
                 Err(get_error())
             } else {
-                Ok(~Cursor{ raw: raw, owned: true })
+                Ok(Cursor{ raw: raw, owned: true })
             }
         }
     }
 
-    pub fn from_surface(surface: surface::Surface, hot_x: int, hot_y: int) -> Result<~Cursor, ~str> {
+    pub fn from_surface(surface: surface::Surface, hot_x: int, hot_y: int) -> Result<Cursor, ~str> {
         unsafe {
             let raw = ll::SDL_CreateColorCursor(surface.raw, hot_x as i32,
                                                 hot_y as i32);
@@ -110,19 +110,19 @@ impl Cursor {
             if raw == ptr::null() {
                 Err(get_error())
             } else {
-                Ok(~Cursor{ raw: raw, owned: true })
+                Ok(Cursor{ raw: raw, owned: true })
             }
         }
     }
 
-    pub fn from_system(cursor: SystemCursor) -> Result<~Cursor, ~str> {
+    pub fn from_system(cursor: SystemCursor) -> Result<Cursor, ~str> {
         unsafe {
             let raw = ll::SDL_CreateSystemCursor(cursor as u32);
 
             if raw == ptr::null() {
                 Err(get_error())
             } else {
-                Ok(~Cursor{ raw: raw, owned: true })
+                Ok(Cursor{ raw: raw, owned: true })
             }
         }
     }
@@ -161,12 +161,12 @@ pub fn wrap_mouse(bitflags: u8) -> Mouse {
     }
 }
 
-pub fn get_mouse_focus() -> Option<~video::Window> {
+pub fn get_mouse_focus() -> Option<video::Window> {
     let raw = unsafe { ll::SDL_GetMouseFocus() };
     if raw == ptr::null() {
         None
     } else {
-        Some(~video::Window{ raw: raw, owned: false })
+        Some(video::Window{ raw: raw, owned: false })
     }
 }
 
@@ -198,23 +198,23 @@ pub fn get_relative_mouse_mode() -> bool {
     unsafe { ll::SDL_GetRelativeMouseMode() == 1 }
 }
 
-pub fn get_cursor() -> Option<~Cursor> {
+pub fn get_cursor() -> Option<Cursor> {
     let raw = unsafe { ll::SDL_GetCursor() };
 
     if raw == ptr::null() {
         None
     } else {
-        Some(~Cursor { raw: raw, owned: false })
+        Some(Cursor { raw: raw, owned: false })
     }
 }
 
-pub fn get_default_cursor() -> Option<~Cursor> {
+pub fn get_default_cursor() -> Option<Cursor> {
     let raw = unsafe { ll::SDL_GetDefaultCursor() };
 
     if raw == ptr::null() {
         None
     } else {
-        Some(~Cursor { raw: raw, owned: false })
+        Some(Cursor { raw: raw, owned: false })
     }
 }
 

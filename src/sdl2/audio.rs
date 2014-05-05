@@ -222,11 +222,11 @@ extern "C" fn c_audio_callback(userdata: *c_void, stream: *uint8_t, len: c_int) 
 
 
 impl<'a> AudioSpec<'a> {
-    pub fn load_wav(path: &Path) -> Result<(~AudioSpec, CVec<u8>), ~str> {
-        AudioSpec::load_wav_rw(try!(RWops::from_file(path, "rb")))
+    pub fn load_wav(path: &Path) -> Result<(AudioSpec, CVec<u8>), ~str> {
+        AudioSpec::load_wav_rw(&try!(RWops::from_file(path, "rb")))
     }
 
-    pub fn load_wav_rw(src: &RWops) -> Result<(~AudioSpec, CVec<u8>), ~str> {
+    pub fn load_wav_rw(src: &RWops) -> Result<(AudioSpec, CVec<u8>), ~str> {
         assert_eq!(mem::size_of::<AudioSpec>(), mem::size_of::<ll::SDL_AudioSpec>());
         let mut spec = unsafe { mem::uninit::<AudioSpec>() };
         let audio_buf = ptr::null::<u8>();
@@ -240,7 +240,7 @@ impl<'a> AudioSpec<'a> {
                     ll::SDL_FreeWAV(audio_buf)
                 });
                 spec.c_callback = Some(c_audio_callback);
-                Ok((~spec, v))
+                Ok((spec, v))
             }
         }
     }
@@ -262,7 +262,7 @@ impl AudioDevice {
         }
     }
 
-    pub fn open(device: &str, iscapture: int, spec: &AudioSpec) -> Result<(AudioDevice, ~AudioSpec), ~str> {
+    pub fn open(device: &str, iscapture: int, spec: &AudioSpec) -> Result<(AudioDevice, AudioSpec), ~str> {
         //! SDL_OpenAudioDevice
         let obtained = unsafe { mem::uninit::<AudioSpec>() };
         unsafe {
@@ -275,9 +275,9 @@ impl AudioDevice {
                 Err(get_error())
             } else {
                 if iscapture == 0 { // plaback device
-                    Ok((PlaybackDevice(ret as AudioDeviceID), ~obtained))
+                    Ok((PlaybackDevice(ret as AudioDeviceID), obtained))
                 } else {
-                    Ok((RecordingDevice(ret as AudioDeviceID), ~obtained))
+                    Ok((RecordingDevice(ret as AudioDeviceID), obtained))
                 }
             }
         }
@@ -328,14 +328,14 @@ impl Drop for AudioCVT {
 
 impl AudioCVT {
     pub fn new(src_format: AudioFormat, src_channels: u8, src_rate: int,
-               dst_format: AudioFormat, dst_channels: u8, dst_rate: int) -> Result<~AudioCVT, ~str> {
+               dst_format: AudioFormat, dst_channels: u8, dst_rate: int) -> Result<AudioCVT, ~str> {
         unsafe {
             let c_cvt_p = libc::malloc(mem::size_of::<ll::SDL_AudioCVT>() as size_t) as *mut ll::SDL_AudioCVT;
             let ret = ll::SDL_BuildAudioCVT(c_cvt_p,
                                             src_format, src_channels, src_rate as c_int,
                                             dst_format, dst_channels, dst_rate as c_int);
             if ret == 1 || ret == 0 {
-                Ok(~AudioCVT { raw: c_cvt_p, owned: true })
+                Ok(AudioCVT { raw: c_cvt_p, owned: true })
             } else {
                 Err(get_error())
             }

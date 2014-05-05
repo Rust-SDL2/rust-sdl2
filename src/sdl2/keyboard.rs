@@ -66,17 +66,17 @@ flag_type!(Mod {
      ReservedMod = 0x8000
 })
 
-pub fn get_keyboard_focus() -> Option<~Window> {
+pub fn get_keyboard_focus() -> Option<Window> {
     let raw = unsafe { ll::SDL_GetKeyboardFocus() };
     if raw == ptr::null() {
         None
     } else {
-        Some(~Window{ raw: raw, owned: false })
+        Some(Window{ raw: raw, owned: false })
     }
 }
 
-pub fn get_keyboard_state() -> ~HashMap<ScanCode, bool> {
-    let mut state: ~HashMap<ScanCode, bool> = ~HashMap::new();
+pub fn get_keyboard_state() -> HashMap<ScanCode, bool> {
+    let mut state: HashMap<ScanCode, bool> = HashMap::new();
     let count = 0;
 
     let raw = unsafe { slice::raw::from_buf_raw(ll::SDL_GetKeyboardState(&count),
