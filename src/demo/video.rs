@@ -21,11 +21,11 @@ pub fn main(png: &Path) {
     };
 
     // Load a surface, and convert it to a texture bound to the renderer
-    let surface: ~sdl2::surface::Surface = match LoadSurface::from_file(png) {
+    let surface = match LoadSurface::from_file(png) {
         Ok(surface) => surface,
         Err(err) => fail!(format!("Failed to load png: {}", err))
     };
-    let texture = match renderer.create_texture_from_surface(surface) {
+    let texture = match renderer.create_texture_from_surface(&surface) {
         Ok(texture) => texture,
         Err(err) => fail!(format!("Failed to create surface: {}", err))
     };
@@ -36,7 +36,7 @@ pub fn main(png: &Path) {
     //     Err(err) => fail!(format!("Could not set render target: {}", err))
     // };
 
-    renderer.copy(texture, None, None);
+    renderer.copy(&texture, None, None);
     renderer.present();
 
     'main : loop {
