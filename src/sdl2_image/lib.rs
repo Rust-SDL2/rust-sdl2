@@ -57,8 +57,8 @@ pub trait LoadSurface {
     // Self is only returned here to type hint to the compiler.
     // The syntax for type hinting in this case is not yet defined.
     // The intended return value is Result<~Surface, ~str>.
-    fn from_file(filename: &Path) -> Result<~Self, ~str>;
-    fn from_xpm_array(xpm: **i8) -> Result<~Self, ~str>;
+    fn from_file(filename: &Path) -> Result<Self, ~str>;
+    fn from_xpm_array(xpm: **i8) -> Result<Self, ~str>;
 }
 
 /// Method extensions to Surface for saving to disk
@@ -68,26 +68,26 @@ pub trait SaveSurface {
 }
 
 impl LoadSurface for Surface {
-    fn from_file(filename: &Path) -> Result<~Surface, ~str> {
+    fn from_file(filename: &Path) -> Result<Surface, ~str> {
         //! Loads an SDL Surface from a file
         unsafe {
             let raw = ffi::IMG_Load(filename.to_c_str().unwrap());
             if raw == ptr::null() {
                 Err(get_error())
             } else {
-                Ok(~Surface { raw: raw, owned: true })
+                Ok(Surface { raw: raw, owned: true })
             }
         }
     }
 
-    fn from_xpm_array(xpm: **i8) -> Result<~Surface, ~str> {
+    fn from_xpm_array(xpm: **i8) -> Result<Surface, ~str> {
         //! Loads an SDL Surface from XPM data
         unsafe {
             let raw = ffi::IMG_ReadXPMFromArray(xpm as **c_char);
             if raw == ptr::null() {
                 Err(get_error())
             } else {
-                Ok(~Surface { raw: raw, owned: true })
+                Ok(Surface { raw: raw, owned: true })
             }
         }
     }
@@ -123,11 +123,11 @@ impl SaveSurface for Surface {
 
 /// Method extensions for creating Textures from a Renderer
 pub trait LoadTexture {
-    fn load_texture(&self, filename: &Path) -> Result<~Texture, ~str>;
+    fn load_texture(&self, filename: &Path) -> Result<Texture, ~str>;
 }
 
 impl LoadTexture for Renderer {
-    fn load_texture(&self, filename: &Path) -> Result<~Texture, ~str> {
+    fn load_texture(&self, filename: &Path) -> Result<Texture, ~str> {
         //! Loads an SDL Texture from a file
         unsafe {
             let raw = ffi::IMG_LoadTexture(self.raw,
@@ -135,7 +135,7 @@ impl LoadTexture for Renderer {
             if raw == ptr::null() {
                 Err(get_error())
             } else {
-                Ok(~Texture{ raw: raw, owned: true })
+                Ok(Texture{ raw: raw, owned: true })
             }
         }
     }
@@ -161,35 +161,35 @@ pub fn get_linked_version() -> Version {
 }
 
 #[inline]
-fn to_surface_result(raw: *sdl2::surface::ll::SDL_Surface) -> Result<~Surface, ~str> {
+fn to_surface_result(raw: *sdl2::surface::ll::SDL_Surface) -> Result<Surface, ~str> {
     if raw == ptr::null() {
         Err(get_error())
     } else {
-        Ok(~Surface { raw: raw, owned: true })
+        Ok(Surface { raw: raw, owned: true })
     }
 }
 
 pub trait ImageRWops {
     /// load as a surface. except TGA
-    fn load(&self) -> Result<~Surface, ~str>;
+    fn load(&self) -> Result<Surface, ~str>;
     /// load as a surface. This can load all supported image formats.
-    fn load_typed(&self, _type: &str) -> Result<~Surface, ~str>;
+    fn load_typed(&self, _type: &str) -> Result<Surface, ~str>;
 
-    fn load_cur(&self) -> Result<~Surface, ~str>;
-    fn load_ico(&self) -> Result<~Surface, ~str>;
-    fn load_bmp(&self) -> Result<~Surface, ~str>;
-    fn load_pnm(&self) -> Result<~Surface, ~str>;
-    fn load_xpm(&self) -> Result<~Surface, ~str>;
-    fn load_xcf(&self) -> Result<~Surface, ~str>;
-    fn load_pcx(&self) -> Result<~Surface, ~str>;
-    fn load_gif(&self) -> Result<~Surface, ~str>;
-    fn load_jpg(&self) -> Result<~Surface, ~str>;
-    fn load_tif(&self) -> Result<~Surface, ~str>;
-    fn load_png(&self) -> Result<~Surface, ~str>;
-    fn load_tga(&self) -> Result<~Surface, ~str>;
-    fn load_lbm(&self) -> Result<~Surface, ~str>;
-    fn load_xv(&self)  -> Result<~Surface, ~str>;
-    fn load_webp(&self) -> Result<~Surface, ~str>;
+    fn load_cur(&self) -> Result<Surface, ~str>;
+    fn load_ico(&self) -> Result<Surface, ~str>;
+    fn load_bmp(&self) -> Result<Surface, ~str>;
+    fn load_pnm(&self) -> Result<Surface, ~str>;
+    fn load_xpm(&self) -> Result<Surface, ~str>;
+    fn load_xcf(&self) -> Result<Surface, ~str>;
+    fn load_pcx(&self) -> Result<Surface, ~str>;
+    fn load_gif(&self) -> Result<Surface, ~str>;
+    fn load_jpg(&self) -> Result<Surface, ~str>;
+    fn load_tif(&self) -> Result<Surface, ~str>;
+    fn load_png(&self) -> Result<Surface, ~str>;
+    fn load_tga(&self) -> Result<Surface, ~str>;
+    fn load_lbm(&self) -> Result<Surface, ~str>;
+    fn load_xv(&self)  -> Result<Surface, ~str>;
+    fn load_webp(&self) -> Result<Surface, ~str>;
 
     fn is_cur(&self) -> bool;
     fn is_ico(&self) -> bool;
@@ -208,76 +208,76 @@ pub trait ImageRWops {
 }
 
 impl ImageRWops for RWops {
-    fn load(&self) -> Result<~Surface, ~str> {
+    fn load(&self) -> Result<Surface, ~str> {
         let raw = unsafe {
             ffi::IMG_Load_RW(self.raw, 0)
         };
         to_surface_result(raw)
     }
-    fn load_typed(&self, _type: &str) -> Result<~Surface, ~str> {
+    fn load_typed(&self, _type: &str) -> Result<Surface, ~str> {
         let raw = unsafe {
             ffi::IMG_LoadTyped_RW(self.raw, 0, _type.to_c_str().unwrap())
         };
         to_surface_result(raw)
     }
 
-    fn load_cur(&self) -> Result<~Surface, ~str> {
+    fn load_cur(&self) -> Result<Surface, ~str> {
         let raw = unsafe { ffi::IMG_LoadCUR_RW(self.raw) };
         to_surface_result(raw)
     }
-    fn load_ico(&self) -> Result<~Surface, ~str> {
+    fn load_ico(&self) -> Result<Surface, ~str> {
         let raw = unsafe { ffi::IMG_LoadICO_RW(self.raw) };
         to_surface_result(raw)
     }
-    fn load_bmp(&self) -> Result<~Surface, ~str> {
+    fn load_bmp(&self) -> Result<Surface, ~str> {
         let raw = unsafe { ffi::IMG_LoadBMP_RW(self.raw) };
         to_surface_result(raw)
     }
-    fn load_pnm(&self) -> Result<~Surface, ~str> {
+    fn load_pnm(&self) -> Result<Surface, ~str> {
         let raw = unsafe { ffi::IMG_LoadPNM_RW(self.raw) };
         to_surface_result(raw)
     }
-    fn load_xpm(&self) -> Result<~Surface, ~str> {
+    fn load_xpm(&self) -> Result<Surface, ~str> {
         let raw = unsafe { ffi::IMG_LoadXPM_RW(self.raw) };
         to_surface_result(raw)
     }
-    fn load_xcf(&self) -> Result<~Surface, ~str> {
+    fn load_xcf(&self) -> Result<Surface, ~str> {
         let raw = unsafe { ffi::IMG_LoadXCF_RW(self.raw) };
         to_surface_result(raw)
     }
-    fn load_pcx(&self) -> Result<~Surface, ~str> {
+    fn load_pcx(&self) -> Result<Surface, ~str> {
         let raw = unsafe { ffi::IMG_LoadPCX_RW(self.raw) };
         to_surface_result(raw)
     }
-    fn load_gif(&self) -> Result<~Surface, ~str> {
+    fn load_gif(&self) -> Result<Surface, ~str> {
         let raw = unsafe { ffi::IMG_LoadGIF_RW(self.raw) };
         to_surface_result(raw)
     }
-    fn load_jpg(&self) -> Result<~Surface, ~str> {
+    fn load_jpg(&self) -> Result<Surface, ~str> {
         let raw = unsafe { ffi::IMG_LoadJPG_RW(self.raw) };
         to_surface_result(raw)
     }
-    fn load_tif(&self) -> Result<~Surface, ~str> {
+    fn load_tif(&self) -> Result<Surface, ~str> {
         let raw = unsafe { ffi::IMG_LoadTIF_RW(self.raw) };
         to_surface_result(raw)
     }
-    fn load_png(&self) -> Result<~Surface, ~str> {
+    fn load_png(&self) -> Result<Surface, ~str> {
         let raw = unsafe { ffi::IMG_LoadPNG_RW(self.raw) };
         to_surface_result(raw)
     }
-    fn load_tga(&self) -> Result<~Surface, ~str> {
+    fn load_tga(&self) -> Result<Surface, ~str> {
         let raw = unsafe { ffi::IMG_LoadTGA_RW(self.raw) };
         to_surface_result(raw)
     }
-    fn load_lbm(&self) -> Result<~Surface, ~str> {
+    fn load_lbm(&self) -> Result<Surface, ~str> {
         let raw = unsafe { ffi::IMG_LoadLBM_RW(self.raw) };
         to_surface_result(raw)
     }
-    fn load_xv(&self)  -> Result<~Surface, ~str> {
+    fn load_xv(&self)  -> Result<Surface, ~str> {
         let raw = unsafe { ffi::IMG_LoadXV_RW(self.raw) };
         to_surface_result(raw)
     }
-    fn load_webp(&self)  -> Result<~Surface, ~str> {
+    fn load_webp(&self)  -> Result<Surface, ~str> {
         let raw = unsafe { ffi::IMG_LoadWEBP_RW(self.raw) };
         to_surface_result(raw)
     }
