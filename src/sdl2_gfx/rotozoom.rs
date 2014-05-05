@@ -55,7 +55,7 @@ impl RotozoomSurface for Surface {
             ll::rotozoomSurface(self.raw, angle, zoom, smooth as c_int)
         };
         if raw.is_null() {
-            Err(~"rotozoomSurface: error.")
+            Err("rotozoomSurface: error.".to_owned())
         } else {
             Ok(~Surface { raw: raw, owned: true })
         }
@@ -65,7 +65,7 @@ impl RotozoomSurface for Surface {
             ll::rotozoomSurfaceXY(self.raw, angle, zoomx, zoomy, smooth as c_int)
         };
         if raw.is_null() {
-            Err(~"rotozoomSurfaceXY: error.")
+            Err("rotozoomSurfaceXY: error.".to_owned())
         } else {
             Ok(~Surface { raw: raw, owned: true })
         }
@@ -75,7 +75,7 @@ impl RotozoomSurface for Surface {
             ll::zoomSurface(self.raw, zoomx, zoomy, smooth as c_int)
         };
         if raw.is_null() {
-            Err(~"zoomSurface: error.")
+            Err("zoomSurface: error.".to_owned())
         } else {
             Ok(~Surface { raw: raw, owned: true })
         }
@@ -85,7 +85,7 @@ impl RotozoomSurface for Surface {
             ll::shrinkSurface(self.raw, factorx as c_int, factory as c_int)
         };
         if raw.is_null() {
-            Err(~"shrinkSurface: error.")
+            Err("shrinkSurface: error.".to_owned())
         } else {
             Ok(~Surface { raw: raw, owned: true })
         }
@@ -95,7 +95,7 @@ impl RotozoomSurface for Surface {
             ll::rotateSurface90Degrees(self.raw, turns as c_int)
         };
         if raw.is_null() {
-            Err(~"rotateSurface90Degrees: error.")
+            Err("rotateSurface90Degrees: error.".to_owned())
         } else {
             Ok(~Surface { raw: raw, owned: true })
         }

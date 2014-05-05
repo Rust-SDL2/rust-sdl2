@@ -43,7 +43,7 @@ impl FPSManager {
     pub fn set_framerate(&mut self, rate: uint) -> Result<(), ~str> {
         let ret = unsafe { ll::SDL_setFramerate(self.raw, rate as uint32_t) };
         if ret == 0 { Ok(()) }
-        else { Err(~"set_framerate error: beyond lower/upper limit.") }
+        else { Err("set_framerate error: beyond lower/upper limit.".to_owned()) }
     }
 
     /// Return the current target framerate in Hz.
