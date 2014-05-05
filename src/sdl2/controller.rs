@@ -141,7 +141,7 @@ pub fn wrap_controller_axis(bitflags: u8) -> ControllerAxis {
         ll::SDL_CONTROLLER_AXIS_RIGHTY       => RightYAxis,
         ll::SDL_CONTROLLER_AXIS_TRIGGERLEFT  => TriggerLeftAxis,
         ll::SDL_CONTROLLER_AXIS_TRIGGERRIGHT => TriggerRightAxis,
-        _ => fail!(~"unhandled controller axis")
+        _ => fail!("unhandled controller axis")
     }
 }
 
@@ -182,6 +182,6 @@ pub fn wrap_controller_button(bitflags: u8) -> ControllerButton {
         ll::SDL_CONTROLLER_BUTTON_DPAD_DOWN     => DPadDownButton,
         ll::SDL_CONTROLLER_BUTTON_DPAD_LEFT     => DPadLeftButton,
         ll::SDL_CONTROLLER_BUTTON_DPAD_RIGHT    => DPadRightButton,
-        _ => fail!(~"unhandled controller button")
+        _ => fail!("unhandled controller button")
     }
 }
