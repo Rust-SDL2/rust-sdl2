@@ -188,14 +188,14 @@ impl Drop for Chunk {
 
 impl Chunk {
     /// Load file for use as a sample.
-    pub fn from_file(path: &Path) -> Result<~Chunk, ~str> {
+    pub fn from_file(path: &Path) -> Result<Chunk, ~str> {
         let raw = unsafe {
             ffi::Mix_LoadWAV_RW(try!(RWops::from_file(path, "wb")).raw, 0)
         };
         if raw.is_null() {
             Err(get_error())
         } else {
-            Ok(~Chunk{ raw: raw, owned: true })
+            Ok(Chunk{ raw: raw, owned: true })
         }
     }
 
@@ -217,19 +217,19 @@ impl Chunk {
 /// Loader trait for RWops
 pub trait LoaderRWops {
     /// Load src for use as a sample.
-    fn load_wav(&self) -> Result<~Chunk, ~str>;
+    fn load_wav(&self) -> Result<Chunk, ~str>;
 }
 
 impl LoaderRWops for RWops {
     /// Load src for use as a sample.
-    fn load_wav(&self) -> Result<~Chunk, ~str> {
+    fn load_wav(&self) -> Result<Chunk, ~str> {
         let raw = unsafe {
             ffi::Mix_LoadWAV_RW(self.raw, 0)
         };
         if raw == ptr::null() {
             Err(get_error())
         } else {
-            Ok(~Chunk{ raw: raw, owned: true })
+            Ok(Chunk{ raw: raw, owned: true })
         }
     }
 }
@@ -614,14 +614,14 @@ impl Drop for Music {
 
 impl Music {
     /// Load music file to use.
-    pub fn from_file(path: &Path) -> Result<~Music, ~str> {
+    pub fn from_file(path: &Path) -> Result<Music, ~str> {
         let raw = unsafe {
             ffi::Mix_LoadMUS(path.to_c_str().unwrap())
         };
         if raw.is_null() {
             Err(get_error())
         } else {
-            Ok(~Music{ raw: raw, owned: true })
+            Ok(Music{ raw: raw, owned: true })
         }
     }
 
