@@ -204,7 +204,7 @@ pub struct AudioSpec<'a > {
     pub padding: uint16_t,
     pub size: uint32_t,
     c_callback: ll::SDL_AudioCallback,
-    pub callback: &'a |&mut [u8]|:'a, // same size as *c_void
+    pub callback: Option<&'a |&mut [u8]|:'a>, // same size as *c_void
 }
 
 extern "C" fn c_audio_callback(userdata: *c_void, stream: *uint8_t, len: c_int) {
@@ -262,9 +262,9 @@ impl AudioDevice {
         }
     }
 
-    pub fn open(device: Option<&str>, iscapture: int, spec: &AudioSpec) -> Result<(AudioDevice, ~AudioSpec), ~str> {
+    pub fn open(device: Option<&str>, iscapture: int, spec: &AudioSpec) -> Result<(AudioDevice, AudioSpec), ~str> {
         //! SDL_OpenAudioDevice
-        let obtained = ~unsafe { mem::uninit::<AudioSpec>() };
+        let obtained = unsafe { mem::uninit::<AudioSpec>() };
         unsafe {
             let device_c_str = match device {
                 None => ptr::null(),
