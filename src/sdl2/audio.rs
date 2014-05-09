@@ -262,9 +262,9 @@ impl AudioDevice {
         }
     }
 
-    pub fn open(device: Option<&str>, iscapture: int, spec: &AudioSpec) -> Result<(AudioDevice, ~AudioSpec), ~str> {
+    pub fn open(device: Option<&str>, iscapture: int, spec: &AudioSpec) -> Result<(AudioDevice, AudioSpec), ~str> {
         //! SDL_OpenAudioDevice
-        let obtained = ~unsafe { mem::uninit::<AudioSpec>() };
+        let obtained = unsafe { mem::uninit::<AudioSpec>() };
         unsafe {
             let device_c_str = match device {
                 None => ptr::null(),
