@@ -346,7 +346,7 @@ impl Font {
         }
     }
 
-    pub fn render_bytes_solid(&self, text: &[u8], fg: Color) -> Result<~Surface, ~str> {
+    pub fn render_bytes_solid(&self, text: &[u8], fg: Color) -> Result<Surface, ~str> {
         //! Draw LATIN1 text in solid mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
@@ -355,12 +355,12 @@ impl Font {
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(~Surface { raw: raw, owned: true })
+                Ok(Surface { raw: raw, owned: true })
             }
         }
     }
 
-    pub fn render_str_solid(&self, text: &str, fg: Color) -> Result<~Surface, ~str> {
+    pub fn render_str_solid(&self, text: &str, fg: Color) -> Result<Surface, ~str> {
         //! Draw UTF8 text in solid mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
@@ -369,24 +369,24 @@ impl Font {
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(~Surface { raw: raw, owned: true })
+                Ok(Surface { raw: raw, owned: true })
             }
         }
     }
 
-    pub fn render_char_solid(&self, ch: char, fg: Color) -> Result<~Surface, ~str> {
+    pub fn render_char_solid(&self, ch: char, fg: Color) -> Result<Surface, ~str> {
         //! Draw a UNICODE glyph in solid mode.
         unsafe {
             let raw = ffi::TTF_RenderGlyph_Solid(self.raw, ch as u16, color_to_c_color(fg));
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(~Surface { raw: raw, owned: true })
+                Ok(Surface { raw: raw, owned: true })
             }
         }
     }
 
-    pub fn render_bytes_shaded(&self, text: &[u8], fg: Color, bg: Color) -> Result<~Surface, ~str> {
+    pub fn render_bytes_shaded(&self, text: &[u8], fg: Color, bg: Color) -> Result<Surface, ~str> {
         //! Draw LATIN1 text in shaded mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
@@ -395,12 +395,12 @@ impl Font {
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(~Surface { raw: raw, owned: true })
+                Ok(Surface { raw: raw, owned: true })
             }
         }
     }
 
-    pub fn render_str_shaded(&self, text: &str, fg: Color, bg: Color) -> Result<~Surface, ~str> {
+    pub fn render_str_shaded(&self, text: &str, fg: Color, bg: Color) -> Result<Surface, ~str> {
         //! Draw UTF8 text in shaded mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
@@ -409,24 +409,24 @@ impl Font {
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(~Surface { raw: raw, owned: true })
+                Ok(Surface { raw: raw, owned: true })
             }
         }
     }
 
-    pub fn render_char_shaded(&self, ch: char, fg: Color, bg: Color) -> Result<~Surface, ~str> {
+    pub fn render_char_shaded(&self, ch: char, fg: Color, bg: Color) -> Result<Surface, ~str> {
         //! Draw a UNICODE glyph in shaded mode.
         unsafe {
             let raw = ffi::TTF_RenderGlyph_Shaded(self.raw, ch as u16, color_to_c_color(fg), color_to_c_color(bg));
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(~Surface { raw: raw, owned: true })
+                Ok(Surface { raw: raw, owned: true })
             }
         }
     }
 
-    pub fn render_bytes_blended(&self, text: &[u8], fg: Color) -> Result<~Surface, ~str> {
+    pub fn render_bytes_blended(&self, text: &[u8], fg: Color) -> Result<Surface, ~str> {
         //! Draw LATIN1 text in blended mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
@@ -435,12 +435,12 @@ impl Font {
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(~Surface { raw: raw, owned: true })
+                Ok(Surface { raw: raw, owned: true })
             }
         }
     }
 
-    pub fn render_str_blended(&self, text: &str, fg: Color) -> Result<~Surface, ~str> {
+    pub fn render_str_blended(&self, text: &str, fg: Color) -> Result<Surface, ~str> {
         //! Draw UTF8 text in blended mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
@@ -449,19 +449,19 @@ impl Font {
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(~Surface { raw: raw, owned: true })
+                Ok(Surface { raw: raw, owned: true })
             }
         }
     }
 
-    pub fn render_char_blended(&self, ch: char, fg: Color) -> Result<~Surface, ~str> {
+    pub fn render_char_blended(&self, ch: char, fg: Color) -> Result<Surface, ~str> {
         //! Draw a UNICODE glyph in blended mode.
         unsafe {
             let raw = ffi::TTF_RenderGlyph_Blended(self.raw, ch as u16, color_to_c_color(fg));
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(~Surface { raw: raw, owned: true })
+                Ok(Surface { raw: raw, owned: true })
             }
         }
     }
