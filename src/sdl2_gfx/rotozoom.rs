@@ -38,66 +38,66 @@ mod ll {
 /// RotozoomSurface for work with rust-sdl2 Surface type
 pub trait RotozoomSurface {
     /// Rotates and zooms a surface and optional anti-aliasing.
-    fn rotozoom(&self, angle: f64, zoom: f64, smooth: bool) -> Result<~Surface, ~str>;
+    fn rotozoom(&self, angle: f64, zoom: f64, smooth: bool) -> Result<Surface, ~str>;
     /// Rotates and zooms a surface with different horizontal and vertival scaling factors and optional anti-aliasing.
-    fn rotozoom_xy(&self, angle: f64, zoomx: f64, zoomy: f64, smooth: bool) -> Result<~Surface, ~str>;
+    fn rotozoom_xy(&self, angle: f64, zoomx: f64, zoomy: f64, smooth: bool) -> Result<Surface, ~str>;
     /// Zoom a surface by independent horizontal and vertical factors with optional smoothing.
-    fn zoom(&self, zoomx: f64, zoomy: f64, smooth: bool) -> Result<~Surface, ~str>;
+    fn zoom(&self, zoomx: f64, zoomy: f64, smooth: bool) -> Result<Surface, ~str>;
     /// Shrink a surface by an integer ratio using averaging.
-    fn shrink(&self, factorx: int, factory: int) -> Result<~Surface, ~str>;
+    fn shrink(&self, factorx: int, factory: int) -> Result<Surface, ~str>;
     /// Rotates a 8/16/24/32 bit surface in increments of 90 degrees.
-    fn rotate_90deg(&self, turns: int) -> Result<~Surface, ~str>;
+    fn rotate_90deg(&self, turns: int) -> Result<Surface, ~str>;
 }
 
 impl RotozoomSurface for Surface {
-    fn rotozoom(&self, angle: f64, zoom: f64, smooth: bool) -> Result<~Surface, ~str> {
+    fn rotozoom(&self, angle: f64, zoom: f64, smooth: bool) -> Result<Surface, ~str> {
         let raw = unsafe {
             ll::rotozoomSurface(self.raw, angle, zoom, smooth as c_int)
         };
         if raw.is_null() {
             Err("rotozoomSurface: error.".to_owned())
         } else {
-            Ok(~Surface { raw: raw, owned: true })
+            Ok(Surface { raw: raw, owned: true })
         }
     }
-    fn rotozoom_xy(&self, angle: f64, zoomx: f64, zoomy: f64, smooth: bool) -> Result<~Surface, ~str> {
+    fn rotozoom_xy(&self, angle: f64, zoomx: f64, zoomy: f64, smooth: bool) -> Result<Surface, ~str> {
         let raw = unsafe {
             ll::rotozoomSurfaceXY(self.raw, angle, zoomx, zoomy, smooth as c_int)
         };
         if raw.is_null() {
             Err("rotozoomSurfaceXY: error.".to_owned())
         } else {
-            Ok(~Surface { raw: raw, owned: true })
+            Ok(Surface { raw: raw, owned: true })
         }
     }
-    fn zoom(&self, zoomx: f64, zoomy: f64, smooth: bool) -> Result<~Surface, ~str> {
+    fn zoom(&self, zoomx: f64, zoomy: f64, smooth: bool) -> Result<Surface, ~str> {
         let raw = unsafe {
             ll::zoomSurface(self.raw, zoomx, zoomy, smooth as c_int)
         };
         if raw.is_null() {
             Err("zoomSurface: error.".to_owned())
         } else {
-            Ok(~Surface { raw: raw, owned: true })
+            Ok(Surface { raw: raw, owned: true })
         }
     }
-    fn shrink(&self, factorx: int, factory: int) -> Result<~Surface, ~str> {
+    fn shrink(&self, factorx: int, factory: int) -> Result<Surface, ~str> {
         let raw = unsafe {
             ll::shrinkSurface(self.raw, factorx as c_int, factory as c_int)
         };
         if raw.is_null() {
             Err("shrinkSurface: error.".to_owned())
         } else {
-            Ok(~Surface { raw: raw, owned: true })
+            Ok(Surface { raw: raw, owned: true })
         }
     }
-    fn rotate_90deg(&self, turns: int) -> Result<~Surface, ~str> {
+    fn rotate_90deg(&self, turns: int) -> Result<Surface, ~str> {
         let raw = unsafe {
             ll::rotateSurface90Degrees(self.raw, turns as c_int)
         };
         if raw.is_null() {
             Err("rotateSurface90Degrees: error.".to_owned())
         } else {
-            Ok(~Surface { raw: raw, owned: true })
+            Ok(Surface { raw: raw, owned: true })
         }
     }
 }
