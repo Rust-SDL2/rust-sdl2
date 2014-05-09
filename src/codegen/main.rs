@@ -5,6 +5,7 @@ use std::os;
 use std::io::BufferedWriter;
 use std::io::File;
 use std::io;
+use std::io::UserDir;
 use std::io::stdio::println;
 use std::io::fs::mkdir_recursive;
 use std::path::GenericPath;
@@ -22,8 +23,7 @@ fn main() {
         },
         3 => {
             let output_dir = GenericPath::new(args.get(2).clone());
-            // TODO: maybe not 0777?
-            match mkdir_recursive(&output_dir, 0b111_111_111) {
+            match mkdir_recursive(&output_dir, UserDir) {
                 Err(e) => fail!("Could not create directory for generated sources: {:s}", e.desc),
                 Ok(_) => {},
             };
@@ -50,9 +50,9 @@ fn main() {
     }
 }
 
-pub fn get_writer(output_dir: &Path, filename: &str) -> ~BufferedWriter<File> {
+pub fn get_writer(output_dir: &Path, filename: &str) -> BufferedWriter<File> {
     match File::open_mode(&output_dir.join(filename), io::Truncate, io::Write) {
-        Ok(writer) => ~BufferedWriter::new(writer),
+        Ok(writer) => BufferedWriter::new(writer),
         Err(e) => fail!("Unable to write file: {:s}", e.desc),
     }
 }
