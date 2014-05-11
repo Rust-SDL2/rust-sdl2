@@ -1,6 +1,6 @@
 //! Graphic Primitives
 
-use std::cast;
+use std::mem;
 use std::ptr;
 use std::num::ToPrimitive;
 use libc::{c_void, c_int, c_char};
@@ -182,7 +182,7 @@ pub trait ToColor {
 
     #[inline]
     fn as_u32(&self) -> u32 {
-        unsafe { cast::transmute(self.as_RGBA()) }
+        unsafe { mem::transmute(self.as_RGBA()) }
     }
 }
 
@@ -208,14 +208,14 @@ impl ToColor for (u8, u8, u8, u8) {
 
     #[inline]
     fn as_u32(&self) -> u32 {
-        unsafe { cast::transmute(*self) }
+        unsafe { mem::transmute(*self) }
     }
 }
 
 impl ToColor for u32 {
     #[inline]
     fn as_RGBA(&self) -> (u8, u8, u8, u8) {
-        unsafe { cast::transmute(*self) }
+        unsafe { mem::transmute(*self) }
     }
 
     #[inline]
@@ -228,7 +228,7 @@ impl ToColor for u32 {
 impl ToColor for int {
     #[inline]
     fn as_RGBA(&self) -> (u8, u8, u8, u8) {
-        unsafe { cast::transmute(self.to_u32().expect("Can't convert to Color Type")) }
+        unsafe { mem::transmute(self.to_u32().expect("Can't convert to Color Type")) }
     }
 
     #[inline]

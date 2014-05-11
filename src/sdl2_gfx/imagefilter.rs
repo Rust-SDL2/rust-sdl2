@@ -1,6 +1,6 @@
 //! MMX image filters
 
-use std::cast;
+use std::mem;
 use std::c_vec::CVec;
 use libc;
 use libc::{size_t, c_void, c_uint, c_int};
@@ -115,9 +115,9 @@ pub fn add(src1: CVec<u8>, src2: CVec<u8>) -> Result<CVec<u8>, ~str> {
     assert_eq!(src1.len(), src2.len());
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterAdd(cast::transmute(src1.get(0)),
-                                              cast::transmute(src2.get(0)),
-                                              cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterAdd(mem::transmute(src1.get(0)),
+                                              mem::transmute(src2.get(0)),
+                                              mem::transmute(dest.get(0)),
                                               size as c_uint) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterAdd error".to_owned()) }
@@ -128,9 +128,9 @@ pub fn mean(src1: CVec<u8>, src2: CVec<u8>) -> Result<CVec<u8>, ~str> {
     assert_eq!(src1.len(), src2.len());
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterMean(cast::transmute(src1.get(0)),
-                                               cast::transmute(src2.get(0)),
-                                               cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterMean(mem::transmute(src1.get(0)),
+                                               mem::transmute(src2.get(0)),
+                                               mem::transmute(dest.get(0)),
                                                size as c_uint) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterMean error".to_owned()) }
@@ -141,9 +141,9 @@ pub fn sub(src1: CVec<u8>, src2: CVec<u8>) -> Result<CVec<u8>, ~str> {
     assert_eq!(src1.len(), src2.len());
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterSub(cast::transmute(src1.get(0)),
-                                              cast::transmute(src2.get(0)),
-                                              cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterSub(mem::transmute(src1.get(0)),
+                                              mem::transmute(src2.get(0)),
+                                              mem::transmute(dest.get(0)),
                                               size as c_uint) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterSub error".to_owned()) }
@@ -154,9 +154,9 @@ pub fn abs_diff(src1: CVec<u8>, src2: CVec<u8>) -> Result<CVec<u8>, ~str> {
     assert_eq!(src1.len(), src2.len());
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterAbsDiff(cast::transmute(src1.get(0)),
-                                                  cast::transmute(src2.get(0)),
-                                                  cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterAbsDiff(mem::transmute(src1.get(0)),
+                                                  mem::transmute(src2.get(0)),
+                                                  mem::transmute(dest.get(0)),
                                                   size as c_uint) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterAbsDiff error".to_owned()) }
@@ -167,9 +167,9 @@ pub fn mult(src1: CVec<u8>, src2: CVec<u8>) -> Result<CVec<u8>, ~str> {
     assert_eq!(src1.len(), src2.len());
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterMult(cast::transmute(src1.get(0)),
-                                               cast::transmute(src2.get(0)),
-                                               cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterMult(mem::transmute(src1.get(0)),
+                                               mem::transmute(src2.get(0)),
+                                               mem::transmute(dest.get(0)),
                                                size as c_uint) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterMult error".to_owned()) }
@@ -180,9 +180,9 @@ pub fn mult_nor(src1: CVec<u8>, src2: CVec<u8>) -> Result<CVec<u8>, ~str> {
     assert_eq!(src1.len(), src2.len());
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterMultNor(cast::transmute(src1.get(0)),
-                                                  cast::transmute(src2.get(0)),
-                                                  cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterMultNor(mem::transmute(src1.get(0)),
+                                                  mem::transmute(src2.get(0)),
+                                                  mem::transmute(dest.get(0)),
                                                   size as c_uint) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterMultNor error".to_owned()) }
@@ -193,9 +193,9 @@ pub fn mult_div_by2(src1: CVec<u8>, src2: CVec<u8>) -> Result<CVec<u8>, ~str> {
     assert_eq!(src1.len(), src2.len());
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterMultDivby2(cast::transmute(src1.get(0)),
-                                                     cast::transmute(src2.get(0)),
-                                                     cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterMultDivby2(mem::transmute(src1.get(0)),
+                                                     mem::transmute(src2.get(0)),
+                                                     mem::transmute(dest.get(0)),
                                                      size as c_uint) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterMultDivby2 error".to_owned()) }
@@ -206,9 +206,9 @@ pub fn mult_div_by4(src1: CVec<u8>, src2: CVec<u8>) -> Result<CVec<u8>, ~str> {
     assert_eq!(src1.len(), src2.len());
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterMultDivby4(cast::transmute(src1.get(0)),
-                                                     cast::transmute(src2.get(0)),
-                                                     cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterMultDivby4(mem::transmute(src1.get(0)),
+                                                     mem::transmute(src2.get(0)),
+                                                     mem::transmute(dest.get(0)),
                                                      size as c_uint) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterMultDivby4 error".to_owned()) }
@@ -219,9 +219,9 @@ pub fn bit_and(src1: CVec<u8>, src2: CVec<u8>) -> Result<CVec<u8>, ~str> {
     assert_eq!(src1.len(), src2.len());
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterBitAnd(cast::transmute(src1.get(0)),
-                                                 cast::transmute(src2.get(0)),
-                                                 cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterBitAnd(mem::transmute(src1.get(0)),
+                                                 mem::transmute(src2.get(0)),
+                                                 mem::transmute(dest.get(0)),
                                                  size as c_uint) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterBitAnd error".to_owned()) }
@@ -232,9 +232,9 @@ pub fn bit_or(src1: CVec<u8>, src2: CVec<u8>) -> Result<CVec<u8>, ~str> {
     assert_eq!(src1.len(), src2.len());
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterBitOr(cast::transmute(src1.get(0)),
-                                                cast::transmute(src2.get(0)),
-                                                cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterBitOr(mem::transmute(src1.get(0)),
+                                                mem::transmute(src2.get(0)),
+                                                mem::transmute(dest.get(0)),
                                                 size as c_uint) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterBitOr error".to_owned()) }
@@ -245,9 +245,9 @@ pub fn div(src1: CVec<u8>, src2: CVec<u8>) -> Result<CVec<u8>, ~str> {
     assert_eq!(src1.len(), src2.len());
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterDiv(cast::transmute(src1.get(0)),
-                                              cast::transmute(src2.get(0)),
-                                              cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterDiv(mem::transmute(src1.get(0)),
+                                              mem::transmute(src2.get(0)),
+                                              mem::transmute(dest.get(0)),
                                               size as c_uint) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterDiv error".to_owned()) }
@@ -257,8 +257,8 @@ pub fn div(src1: CVec<u8>, src2: CVec<u8>) -> Result<CVec<u8>, ~str> {
 pub fn bit_negation(src1: CVec<u8>) -> Result<CVec<u8>, ~str> {
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterBitNegation(cast::transmute(src1.get(0)),
-                                                      cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterBitNegation(mem::transmute(src1.get(0)),
+                                                      mem::transmute(dest.get(0)),
                                                       size as c_uint) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterBitNegation error".to_owned()) }
@@ -268,8 +268,8 @@ pub fn bit_negation(src1: CVec<u8>) -> Result<CVec<u8>, ~str> {
 pub fn add_byte(src1: CVec<u8>, c: u8) -> Result<CVec<u8>, ~str> {
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterAddByte(cast::transmute(src1.get(0)),
-                                                  cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterAddByte(mem::transmute(src1.get(0)),
+                                                  mem::transmute(dest.get(0)),
                                                   size as c_uint, c) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterAddByte error".to_owned()) }
@@ -279,8 +279,8 @@ pub fn add_byte(src1: CVec<u8>, c: u8) -> Result<CVec<u8>, ~str> {
 pub fn add_uint(src1: CVec<u8>, c: u32) -> Result<CVec<u8>, ~str> {
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterAddUint(cast::transmute(src1.get(0)),
-                                                  cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterAddUint(mem::transmute(src1.get(0)),
+                                                  mem::transmute(dest.get(0)),
                                                   size as c_uint, c) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterAddUint error".to_owned()) }
@@ -290,8 +290,8 @@ pub fn add_uint(src1: CVec<u8>, c: u32) -> Result<CVec<u8>, ~str> {
 pub fn add_byte_to_half(src1: CVec<u8>, c: u8) -> Result<CVec<u8>, ~str> {
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterAddByteToHalf(cast::transmute(src1.get(0)),
-                                                        cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterAddByteToHalf(mem::transmute(src1.get(0)),
+                                                        mem::transmute(dest.get(0)),
                                                         size as c_uint, c) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterAddByteToHalf error".to_owned()) }
@@ -301,8 +301,8 @@ pub fn add_byte_to_half(src1: CVec<u8>, c: u8) -> Result<CVec<u8>, ~str> {
 pub fn sub_byte(src1: CVec<u8>, c: u8) -> Result<CVec<u8>, ~str> {
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterSubByte(cast::transmute(src1.get(0)),
-                                                  cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterSubByte(mem::transmute(src1.get(0)),
+                                                  mem::transmute(dest.get(0)),
                                                   size as c_uint, c) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterSubByte error".to_owned()) }
@@ -312,8 +312,8 @@ pub fn sub_byte(src1: CVec<u8>, c: u8) -> Result<CVec<u8>, ~str> {
 pub fn sub_uint(src1: CVec<u8>, c: u32) -> Result<CVec<u8>, ~str> {
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterSubUint(cast::transmute(src1.get(0)),
-                                                  cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterSubUint(mem::transmute(src1.get(0)),
+                                                  mem::transmute(dest.get(0)),
                                                   size as c_uint, c) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterSubUint error".to_owned()) }
@@ -323,8 +323,8 @@ pub fn sub_uint(src1: CVec<u8>, c: u32) -> Result<CVec<u8>, ~str> {
 pub fn shift_right(src1: CVec<u8>, n: u8) -> Result<CVec<u8>, ~str> {
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterShiftRight(cast::transmute(src1.get(0)),
-                                                     cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterShiftRight(mem::transmute(src1.get(0)),
+                                                     mem::transmute(dest.get(0)),
                                                      size as c_uint, n) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterShiftRight error".to_owned()) }
@@ -334,8 +334,8 @@ pub fn shift_right(src1: CVec<u8>, n: u8) -> Result<CVec<u8>, ~str> {
 pub fn shift_right_uint(src1: CVec<u8>, n: u8) -> Result<CVec<u8>, ~str> {
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterShiftRightUint(cast::transmute(src1.get(0)),
-                                                         cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterShiftRightUint(mem::transmute(src1.get(0)),
+                                                         mem::transmute(dest.get(0)),
                                                          size as c_uint, n) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterShiftRightUint error".to_owned()) }
@@ -345,8 +345,8 @@ pub fn shift_right_uint(src1: CVec<u8>, n: u8) -> Result<CVec<u8>, ~str> {
 pub fn mult_by_byte(src1: CVec<u8>, c: u8) -> Result<CVec<u8>, ~str> {
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterMultByByte(cast::transmute(src1.get(0)),
-                                                     cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterMultByByte(mem::transmute(src1.get(0)),
+                                                     mem::transmute(dest.get(0)),
                                                      size as c_uint, c) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterMultByByte error".to_owned()) }
@@ -356,8 +356,8 @@ pub fn mult_by_byte(src1: CVec<u8>, c: u8) -> Result<CVec<u8>, ~str> {
 pub fn shift_right_and_mult_by_byte(src1: CVec<u8>, n: u8, c: u8) -> Result<CVec<u8>, ~str> {
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterShiftRightAndMultByByte(cast::transmute(src1.get(0)),
-                                                                  cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterShiftRightAndMultByByte(mem::transmute(src1.get(0)),
+                                                                  mem::transmute(dest.get(0)),
                                                                   size as c_uint, n, c) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterShiftRightAndMultByByte error".to_owned()) }
@@ -367,8 +367,8 @@ pub fn shift_right_and_mult_by_byte(src1: CVec<u8>, n: u8, c: u8) -> Result<CVec
 pub fn shift_left_byte(src1: CVec<u8>, n: u8) -> Result<CVec<u8>, ~str> {
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterShiftLeftByte(cast::transmute(src1.get(0)),
-                                                        cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterShiftLeftByte(mem::transmute(src1.get(0)),
+                                                        mem::transmute(dest.get(0)),
                                                         size as c_uint, n) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterShiftLeftByte error".to_owned()) }
@@ -378,8 +378,8 @@ pub fn shift_left_byte(src1: CVec<u8>, n: u8) -> Result<CVec<u8>, ~str> {
 pub fn shift_left_uint(src1: CVec<u8>, n: u8) -> Result<CVec<u8>, ~str> {
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterShiftLeftUint(cast::transmute(src1.get(0)),
-                                                        cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterShiftLeftUint(mem::transmute(src1.get(0)),
+                                                        mem::transmute(dest.get(0)),
                                                         size as c_uint, n) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterShiftLeftUint error".to_owned()) }
@@ -389,8 +389,8 @@ pub fn shift_left_uint(src1: CVec<u8>, n: u8) -> Result<CVec<u8>, ~str> {
 pub fn shift_left(src1: CVec<u8>, n: u8) -> Result<CVec<u8>, ~str> {
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterShiftLeft(cast::transmute(src1.get(0)),
-                                                    cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterShiftLeft(mem::transmute(src1.get(0)),
+                                                    mem::transmute(dest.get(0)),
                                                     size as c_uint, n) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterShiftLeft error".to_owned()) }
@@ -400,8 +400,8 @@ pub fn shift_left(src1: CVec<u8>, n: u8) -> Result<CVec<u8>, ~str> {
 pub fn binarize_using_threshold(src1: CVec<u8>, t: u8) -> Result<CVec<u8>, ~str> {
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterBinarizeUsingThreshold(cast::transmute(src1.get(0)),
-                                                                 cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterBinarizeUsingThreshold(mem::transmute(src1.get(0)),
+                                                                 mem::transmute(dest.get(0)),
                                                                  size as c_uint, t) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterBinarizeUsingThreshold error".to_owned()) }
@@ -411,8 +411,8 @@ pub fn binarize_using_threshold(src1: CVec<u8>, t: u8) -> Result<CVec<u8>, ~str>
 pub fn clip_to_range(src1: CVec<u8>, tmin: u8, tmax: u8) -> Result<CVec<u8>, ~str> {
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterClipToRange(cast::transmute(src1.get(0)),
-                                                      cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterClipToRange(mem::transmute(src1.get(0)),
+                                                      mem::transmute(dest.get(0)),
                                                       size as c_uint, tmin, tmax) };
     if ret == 0 { Ok(dest) }
     else { Err("SDL_imageFilterClipToRange error".to_owned()) }
@@ -422,8 +422,8 @@ pub fn clip_to_range(src1: CVec<u8>, tmin: u8, tmax: u8) -> Result<CVec<u8>, ~st
 pub fn normalize_linear(src1: CVec<u8>, cmin: int, cmax: int, nmin: int, nmax: int) -> Result<CVec<u8>, ~str> {
     let size = src1.len();
     let dest = cvec_with_size(size);
-    let ret = unsafe { ll::SDL_imageFilterNormalizeLinear(cast::transmute(src1.get(0)),
-                                                          cast::transmute(dest.get(0)),
+    let ret = unsafe { ll::SDL_imageFilterNormalizeLinear(mem::transmute(src1.get(0)),
+                                                          mem::transmute(dest.get(0)),
                                                           size as c_uint,
                                                           cmin as c_int, cmax as c_int,
                                                           nmin as c_int, nmax as c_int) };
