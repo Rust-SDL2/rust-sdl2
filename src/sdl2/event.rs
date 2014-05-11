@@ -799,7 +799,7 @@ impl Event {
                 };
 
                 let text = str::from_utf8_lossy(event.text.iter().take_while(|&b| (*b) != 0i8).map(|&b| b as u8).collect::<Vec<u8>>().as_slice()).into_owned();
-                TextInputEvent(event.timestamp as uint, window, text.to_owned())
+                TextInputEvent(event.timestamp as uint, window, text)
             }
 
             MouseMotionEventType => {
