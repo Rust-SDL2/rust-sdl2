@@ -15,7 +15,7 @@ extern crate sdl2;
 
 use std::default;
 use std::ptr;
-use std::cast;
+use std::mem;
 use std::raw;
 use std::c_str::CString;
 use libc::{c_int, uint16_t, c_double};
@@ -264,7 +264,7 @@ extern "C" fn c_channel_finished_callback(ch: c_int) {
         match channel_finished_callback {
             None => (),
             Some(cb) => {
-                let cb = cast::transmute::<_, |Channel|>(cb);
+                let cb = mem::transmute::<_, |Channel|>(cb);
                 cb(Channel(ch as int))
             }
         }
@@ -274,7 +274,7 @@ extern "C" fn c_channel_finished_callback(ch: c_int) {
 /// When channel playback is halted, then the specified channel_finished function is called.
 pub fn set_channel_finished(f: |Channel|:'static) {
     unsafe {
-        channel_finished_callback = Some(cast::transmute::<_, raw::Closure>(f));
+        channel_finished_callback = Some(mem::transmute::<_, raw::Closure>(f));
         ffi::Mix_ChannelFinished(Some(c_channel_finished_callback));
     }
 }
@@ -591,7 +591,7 @@ extern "C" fn c_music_finished_hook() {
     unsafe { match music_finished_hook {
         None => (),
         Some(f) => {
-            let f = cast::transmute::<_, ||>(f);
+            let f = mem::transmute::<_, ||>(f);
             f()
         }
     } }
@@ -739,7 +739,7 @@ impl Music {
 
     pub fn hook_finished(f: ||) {
         unsafe {
-            music_finished_hook = Some(cast::transmute(f));
+            music_finished_hook = Some(mem::transmute(f));
             ffi::Mix_HookMusicFinished(Some(c_music_finished_hook));
         }
     }
