@@ -1,4 +1,4 @@
-use std::cast;
+use std::mem;
 use libc::{uint32_t, c_void};
 use std::raw;
 
@@ -49,14 +49,14 @@ pub struct Timer<'a> {
 impl<'a> Timer<'a> {
     pub fn new<'a>(delay: uint, callback: ||: 'a -> uint, remove_on_drop: bool) -> Timer<'a> {
         unsafe {
-            let c_param = cast::transmute::<_, raw::Closure>(callback);
+            let c_param = mem::transmute::<_, raw::Closure>(callback);
             Timer { delay: delay, raw: 0, closure: c_param, remove_on_drop: remove_on_drop }
         }
     }
 
     pub fn start(&mut self) {
         unsafe {
-            let timer_id = ll::SDL_AddTimer(self.delay as u32, Some(c_timer_callback), cast::transmute(&self.closure));
+            let timer_id = ll::SDL_AddTimer(self.delay as u32, Some(c_timer_callback), mem::transmute(&self.closure));
             self.raw = timer_id;
         }
     }
@@ -82,6 +82,6 @@ impl<'a> Drop for Timer<'a> {
 }
 
 extern "C" fn c_timer_callback(_interval: uint32_t, param: *c_void) -> uint32_t {
-    let f : &mut || -> uint = unsafe { cast::transmute(param) };
+    let f : &mut || -> uint = unsafe { mem::transmute(param) };
     (*f)() as uint32_t
 }

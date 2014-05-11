@@ -2,7 +2,7 @@
 Rectangle Functions
  */
 
-use std::cast;
+use std::mem;
 use libc::c_int;
 
 /// A structure that defines a two dimensional point.
@@ -67,9 +67,9 @@ impl Rect {
 
         let result = unsafe {
             ll::SDL_EnclosePoints(
-                cast::transmute(points.as_ptr()),
+                mem::transmute(points.as_ptr()),
                 points.len() as c_int,
-                cast::transmute(clip.as_ref()),
+                mem::transmute(clip.as_ref()),
                 &out
             ) != 0
         };

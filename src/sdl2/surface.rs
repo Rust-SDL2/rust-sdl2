@@ -1,4 +1,4 @@
-use std::cast;
+use std::mem;
 use rect::Rect;
 use get_error;
 use std::ptr;
@@ -150,7 +150,7 @@ impl Surface {
         unsafe {
             if ll::SDL_LockSurface(self.raw) != 0 { fail!("could not lock surface"); }
             let len = (*self.raw).pitch as uint * ((*self.raw).h as uint);
-            let pixels: &mut [u8] = cast::transmute(((*self.raw).pixels, len));
+            let pixels: &mut [u8] = mem::transmute(((*self.raw).pixels, len));
             let rv = f(pixels);
             ll::SDL_UnlockSurface(self.raw);
             rv

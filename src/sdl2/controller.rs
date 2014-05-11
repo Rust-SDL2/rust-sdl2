@@ -2,7 +2,7 @@ use libc::c_int;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
-    use std::cast;
+    use std::mem;
     use libc::{c_int, c_char, c_uchar, c_uint, c_void, int16_t, uint8_t};
     use joystick::ll::{SDL_Joystick, SDL_JoystickGUID};
 
@@ -32,13 +32,13 @@ pub mod ll {
 
     impl SDL_GameControllerButtonBindData {
         pub fn button(&self) -> *c_int {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
         pub fn axis(&self) -> *c_int {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
         pub fn hat(&self) -> *SDL_GameControllerButtonBindDataHat {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
     }
 

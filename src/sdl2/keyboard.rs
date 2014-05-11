@@ -2,7 +2,7 @@ use collections::hashmap::HashMap;
 use std::num::FromPrimitive;
 use std::ptr;
 use std::str;
-use std::slice;
+use std::vec;
 
 use keycode::KeyCode;
 use rect::Rect;
@@ -79,13 +79,13 @@ pub fn get_keyboard_state() -> HashMap<ScanCode, bool> {
     let mut state: HashMap<ScanCode, bool> = HashMap::new();
     let count = 0;
 
-    let raw = unsafe { slice::raw::from_buf_raw(ll::SDL_GetKeyboardState(&count),
-                                              count as uint) };
+    let raw = unsafe { vec::raw::from_buf(ll::SDL_GetKeyboardState(&count),
+                                          count as uint) };
 
     let mut current = 0;
     while current < raw.len() {
         state.insert(FromPrimitive::from_int(current as int).unwrap(),
-                     raw[current] == 1);
+                     *raw.get(current) == 1);
         current += 1;
     }
 

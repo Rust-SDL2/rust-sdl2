@@ -1,4 +1,3 @@
-use std::cast;
 use std::ptr;
 use std::mem;
 use std::c_str::CString;
@@ -209,11 +208,11 @@ pub struct AudioSpec<'a > {
 
 extern "C" fn c_audio_callback(userdata: *c_void, stream: *uint8_t, len: c_int) {
     unsafe {
-        let f : &mut |&mut [u8]| = cast::transmute(userdata);
+        let f : &mut |&mut [u8]| = mem::transmute(userdata);
 
         // FIXME: lifetime error in calling
         //slice::raw::mut_buf_as_slice(stream as *mut u8, len as uint, *f)
-        (*f)(cast::transmute(Slice {
+        (*f)(mem::transmute(Slice {
             data: stream,
             len: len as uint
         }))
@@ -232,7 +231,7 @@ impl<'a> AudioSpec<'a> {
         let audio_buf = ptr::null::<u8>();
         let audio_len = 0u32;
         unsafe {
-            let ret = ll::SDL_LoadWAV_RW(src.raw, 0, cast::transmute(&spec), &audio_buf, &audio_len);
+            let ret = ll::SDL_LoadWAV_RW(src.raw, 0, mem::transmute(&spec), &audio_buf, &audio_len);
             if ret.is_null() {
                 Err(get_error())
             } else {
@@ -272,8 +271,8 @@ impl AudioDevice {
             };
             let ret = ll::SDL_OpenAudioDevice(device_c_str,
                                               iscapture as c_int,
-                                              cast::transmute(spec),
-                                              cast::transmute(&obtained),
+                                              mem::transmute(spec),
+                                              mem::transmute(&obtained),
                                               0);
             if ret == 0 {
                 Err(get_error())
