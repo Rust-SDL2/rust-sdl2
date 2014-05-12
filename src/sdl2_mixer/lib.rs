@@ -150,9 +150,9 @@ pub fn query_spec() -> Result<(int, AudioFormat, int), ~str> {
     let channels : c_int  = 0;
     let ret = unsafe { ffi::Mix_QuerySpec(&frequency, &format, &channels) };
     if ret == 0 {
-        Ok((frequency as int, format as AudioFormat, channels as int))
-    } else {
         Err(get_error())
+    } else {
+        Ok((frequency as int, format as AudioFormat, channels as int))
     }
 }
 
@@ -190,7 +190,7 @@ impl Chunk {
     /// Load file for use as a sample.
     pub fn from_file(path: &Path) -> Result<Chunk, ~str> {
         let raw = unsafe {
-            ffi::Mix_LoadWAV_RW(try!(RWops::from_file(path, "wb")).raw, 0)
+            ffi::Mix_LoadWAV_RW(try!(RWops::from_file(path, "rb")).raw, 0)
         };
         if raw.is_null() {
             Err(get_error())
@@ -313,11 +313,11 @@ impl Channel {
     }
 
     /// Play chunk on channel, or if channel is -1, pick the first free unreserved channel.
-    pub fn play(self, chunk: Chunk, loops: int) -> Result<Channel, ~str> {
+    pub fn play(self, chunk: &Chunk, loops: int) -> Result<Channel, ~str> {
         self.play_timed(chunk, loops, -1)
     }
 
-    pub fn play_timed(self, chunk: Chunk, loops: int, ticks: int) -> Result<Channel, ~str> {
+    pub fn play_timed(self, chunk: &Chunk, loops: int, ticks: int) -> Result<Channel, ~str> {
         let Channel(ch) = self;
         let ret = unsafe {
             ffi::Mix_PlayChannelTimed(ch as c_int, chunk.raw, loops as c_int, ticks as c_int)
@@ -330,11 +330,11 @@ impl Channel {
     }
 
     /// Play chunk on channel, or if channel is -1, pick the first free unreserved channel.
-    pub fn fade_in(self, chunk: Chunk, loops: int, ms: int) -> Result<Channel, ~str> {
+    pub fn fade_in(self, chunk: &Chunk, loops: int, ms: int) -> Result<Channel, ~str> {
         self.fade_in_timed(chunk, loops, ms, -1)
     }
 
-    pub fn fade_in_timed(self, chunk: Chunk, loops: int, ms: int, ticks: int) -> Result<Channel, ~str> {
+    pub fn fade_in_timed(self, chunk: &Chunk, loops: int, ms: int, ticks: int) -> Result<Channel, ~str> {
         let Channel(ch) = self;
         let ret = unsafe {
             ffi::Mix_FadeInChannelTimed(ch as c_int, chunk.raw, loops as c_int, ms as c_int, ticks as c_int)
