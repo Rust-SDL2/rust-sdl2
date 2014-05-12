@@ -250,16 +250,9 @@ impl Surface {
 
     pub fn upper_blit( &self, src: &Surface, dstrect: Option<Rect>, srcrect: Option<Rect> ) -> bool {
         unsafe {
-            match( srcrect, dstrect ) {
-                (Some( srcrect ), Some( dstrect )) => 
-                    ll::SDL_UpperBlit( src.raw, &srcrect, self.raw, &dstrect ) == 0,                
-                (Some( srcrect ), None) => 
-                    ll::SDL_UpperBlit( src.raw, &srcrect, self.raw, ptr::null() ) == 0,
-                (None, Some( dstrect )) => 
-                    ll::SDL_UpperBlit( src.raw, ptr::null(), self.raw, &dstrect ) == 0,
-                (None, None) => 
-                    ll::SDL_UpperBlit( src.raw, ptr::null(), self.raw, ptr::null() ) == 0
-            }
+            let dstrect_ptr = mem::transmute( dstrect.as_ref() );
+            let srcrect_ptr = mem::transmute( srcrect.as_ref() );
+            ll::SDL_UpperBlit( src.raw, srcrect_ptr, self.raw, dstrect_ptr ) == 0
         }
     }
 
