@@ -2,7 +2,7 @@
 Event Handling
  */
 
-use std::cast;
+use std::mem;
 use libc::{c_int, c_void, uint32_t};
 use std::num::FromPrimitive;
 use std::str;
@@ -25,7 +25,7 @@ use get_error;
 #[doc(hidden)]
 #[allow(non_camel_case_types)]
 pub mod ll {
-    use std::cast;
+    use std::mem;
     use libc::{c_float, c_int, c_char, c_uint, c_void, int16_t,
                int32_t, uint8_t, uint16_t, uint32_t};
     use gesture::ll::SDL_GestureID;
@@ -314,99 +314,99 @@ pub mod ll {
 
     impl SDL_Event {
         pub fn _type(&self) -> *uint32_t {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn common(&self) -> *SDL_CommonEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn window(&self) -> *SDL_WindowEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn key(&self) -> *SDL_KeyboardEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn edit(&self) -> *SDL_TextEditingEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn text(&self) -> *SDL_TextInputEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn motion(&self) -> *SDL_MouseMotionEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn button(&self) -> *SDL_MouseButtonEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn wheel(&self) -> *SDL_MouseWheelEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn jaxis(&self) -> *SDL_JoyAxisEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn jball(&self) -> *SDL_JoyBallEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn jhat(&self) -> *SDL_JoyHatEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn jbutton(&self) -> *SDL_JoyButtonEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn jdevice(&self) -> *SDL_JoyDeviceEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn caxis(&self) -> *SDL_ControllerAxisEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn cbutton(&self) -> *SDL_ControllerButtonEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn cdevice(&self) -> *SDL_ControllerDeviceEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn quit(&self) -> *SDL_QuitEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn user(&self) -> *SDL_UserEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn syswm(&self) -> *SDL_SysWMEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn tfinger(&self) -> *SDL_TouchFingerEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn mgesture(&self) -> *SDL_MultiGestureEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn dgesture(&self) -> *SDL_DollarGestureEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
 
         pub fn drop(&self) -> *SDL_DropEvent {
-            unsafe { cast::transmute_copy(&self) }
+            unsafe { mem::transmute_copy(&self) }
         }
     }
 
@@ -682,7 +682,7 @@ impl Event {
                     data2: ptr::null(),
                 };
                 unsafe {
-                    ptr::copy_memory(cast::transmute::<_,*mut ll::SDL_UserEvent>(&ret), &event, 1);
+                    ptr::copy_memory(mem::transmute::<_,*mut ll::SDL_UserEvent>(&ret), &event, 1);
                 }
                 Some(ret)
             },
@@ -785,7 +785,7 @@ impl Event {
                     Ok(window) => window,
                 };
 
-                let text = str::from_utf8_owned(event.text.iter().take_while(|&b| (*b) != 0i8).map(|&b| b as u8).collect::<~[u8]>()).unwrap_or("".to_owned());
+                let text = str::from_utf8_lossy(event.text.iter().take_while(|&b| (*b) != 0i8).map(|&b| b as u8).collect::<Vec<u8>>().as_slice()).into_owned();
                 TextEditingEvent(event.timestamp as uint, window, text,
                                  event.start as int, event.length as int)
             }
@@ -798,7 +798,7 @@ impl Event {
                     Ok(window) => window,
                 };
 
-                let text = str::from_utf8_owned(event.text.iter().take_while(|&b| (*b) != 0i8).map(|&b| b as u8).collect::<~[u8]>()).unwrap_or("".to_owned());
+                let text = str::from_utf8_lossy(event.text.iter().take_while(|&b| (*b) != 0i8).map(|&b| b as u8).collect::<Vec<u8>>().as_slice()).into_owned();
                 TextInputEvent(event.timestamp as uint, window, text)
             }
 
@@ -1081,33 +1081,33 @@ pub fn wait_event_timeout(timeout: int) -> Result<Event, ~str> {
 }
 
 extern "C" fn event_filter_wrapper(userdata: *c_void, event: *ll::SDL_Event) -> c_int {
-    let filter: extern fn(event: Event) -> bool = unsafe { cast::transmute(userdata) };
+    let filter: extern fn(event: Event) -> bool = unsafe { mem::transmute(userdata) };
     if event.is_null() { 1 }
-    else { filter(Event::from_ll(unsafe { cast::transmute(event) })) as c_int }
+    else { filter(Event::from_ll(unsafe { mem::transmute(event) })) as c_int }
 }
 
 /// Set up a filter to process all events before they change internal state and are posted to the internal event queue.
 pub fn set_event_filter(filter_func: extern fn(event: Event) -> bool) {
     unsafe { ll::SDL_SetEventFilter(event_filter_wrapper,
-                                    cast::transmute(filter_func)) }
+                                    mem::transmute(filter_func)) }
 }
 
 /// Add a callback to be triggered when an event is added to the event queue.
 pub fn add_event_watch(filter_func: extern fn(event: Event) -> bool) {
     unsafe { ll::SDL_AddEventWatch(event_filter_wrapper,
-                                   cast::transmute(filter_func)) }
+                                   mem::transmute(filter_func)) }
 }
 
 /// Remove an event watch callback added.
 pub fn delete_event_watch(filter_func: extern fn(event: Event) -> bool) {
     unsafe { ll::SDL_DelEventWatch(event_filter_wrapper,
-                                   cast::transmute(filter_func)) }
+                                   mem::transmute(filter_func)) }
 }
 
 /// Run a specific filter function on the current event queue, removing any events for which the filter returns 0.
 pub fn filter_events(filter_func: extern fn(event: Event) -> bool) {
     unsafe { ll::SDL_FilterEvents(event_filter_wrapper,
-                                  cast::transmute(filter_func)) }
+                                  mem::transmute(filter_func)) }
 }
 
 /// Set the state of processing events.

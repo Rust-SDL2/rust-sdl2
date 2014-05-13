@@ -1,4 +1,4 @@
-use std::cast;
+use std::mem;
 use std::str;
 
 // Setup linking for all targets.
@@ -113,7 +113,7 @@ pub fn get_error() -> ~str {
     unsafe {
         let cstr = ll::SDL_GetError();
 
-        str::raw::from_c_str(cast::transmute_copy(&cstr))
+        str::raw::from_c_str(mem::transmute_copy(&cstr))
     }
 }
 
