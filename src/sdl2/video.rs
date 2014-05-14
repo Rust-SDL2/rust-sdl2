@@ -1,7 +1,7 @@
 use libc::{c_int, c_float, uint32_t};
 use std::ptr;
 use std::str;
-use std::cast;
+use std::mem;
 use std::vec::Vec;
 
 use rect::Rect;
@@ -69,7 +69,7 @@ pub mod ll {
         SDL_WINDOWEVENT_FOCUS_LOST,
         SDL_WINDOWEVENT_CLOSE
     }
-    
+
     pub type SDL_GLContext = *c_void;
 
     #[deriving(FromPrimitive)]
@@ -290,7 +290,7 @@ pub enum WindowPos {
 fn unwrap_windowpos (pos: WindowPos) -> ll::SDL_WindowPos {
     match pos {
         PosUndefined => ll::SDL_WINDOWPOS_UNDEFINED,
-        PosCentered => ll::SDL_WINDOWPOS_CENTERED, 
+        PosCentered => ll::SDL_WINDOWPOS_CENTERED,
         Positioned(x) => x as ll::SDL_WindowPos
     }
 }
@@ -369,25 +369,25 @@ impl Window {
     }
 
     pub fn set_display_mode(&self, display_mode: Option<DisplayMode>) -> bool {
-        return unsafe { 
+        return unsafe {
             ll::SDL_SetWindowDisplayMode(
                 self.raw,
                 match display_mode {
-                    Some(ref mode) => cast::transmute(&mode.to_ll()),
-                    None => ptr::null() 
+                    Some(ref mode) => mem::transmute(&mode.to_ll()),
+                    None => ptr::null()
                 }
-            ) == 0 
+            ) == 0
         }
     }
 
     pub fn get_display_mode(&self, display_mode: &DisplayMode) -> Result<DisplayMode, ~str> {
         let dm = empty_sdl_display_mode();
 
-        let result = unsafe { 
+        let result = unsafe {
             ll::SDL_GetWindowDisplayMode(
                 self.raw,
                 &display_mode.to_ll()
-            ) == 0 
+            ) == 0
         };
 
         if result {
@@ -415,11 +415,11 @@ impl Window {
             unsafe { ll::SDL_SetWindowTitle(self.raw, buff) }
         })
     }
-    
+
     pub fn get_title(&self) -> ~str {
         unsafe {
             let cstr = ll::SDL_GetWindowTitle(self.raw);
-            str::raw::from_c_str(cast::transmute_copy(&cstr))
+            str::raw::from_c_str(mem::transmute_copy(&cstr))
         }
     }
 
@@ -521,7 +521,7 @@ impl Window {
     }
 
     pub fn update_surface_rects(&self, rects: &[Rect]) -> bool {
-        unsafe { ll::SDL_UpdateWindowSurfaceRects(self.raw, cast::transmute(rects.as_ptr()), rects.len() as c_int) == 0}
+        unsafe { ll::SDL_UpdateWindowSurfaceRects(self.raw, mem::transmute(rects.as_ptr()), rects.len() as c_int) == 0}
     }
 
     pub fn set_grab(&self, grabbed: bool) {
@@ -543,15 +543,15 @@ impl Window {
     pub fn set_gamma_ramp(&self, red: Option<&[u16, ..256]>, green: Option<&[u16, ..256]>, blue: Option<&[u16, ..256]>) -> bool {
         unsafe {
             let unwrapped_red = match red {
-                Some(values) => cast::transmute((*values).as_ptr()),
+                Some(values) => mem::transmute((*values).as_ptr()),
                 None => ptr::null()
             };
             let unwrapped_green = match green {
-                Some(values) => cast::transmute((*values).as_ptr()),
+                Some(values) => mem::transmute((*values).as_ptr()),
                 None => ptr::null()
             };
             let unwrapped_blue = match blue {
-                Some(values) => cast::transmute((*values).as_ptr()),
+                Some(values) => mem::transmute((*values).as_ptr()),
                 None => ptr::null()
             };
             ll::SDL_SetWindowGammaRamp(self.raw, unwrapped_red, unwrapped_green, unwrapped_blue) == 0
@@ -562,7 +562,7 @@ impl Window {
         let red: Vec<u16> = Vec::with_capacity(256);
         let green: Vec<u16> = Vec::with_capacity(256);
         let blue: Vec<u16> = Vec::with_capacity(256);
-        let result = unsafe {ll::SDL_GetWindowGammaRamp(self.raw, cast::transmute(red.as_ptr()), cast::transmute(green.as_ptr()), cast::transmute(blue.as_ptr())) == 0};
+        let result = unsafe {ll::SDL_GetWindowGammaRamp(self.raw, mem::transmute(red.as_ptr()), mem::transmute(green.as_ptr()), mem::transmute(blue.as_ptr())) == 0};
         if result {
             Ok((red, green, blue))
         } else {
@@ -600,7 +600,7 @@ pub fn get_num_video_drivers() -> Result<int, ~str> {
 pub fn get_video_driver(id: int) -> ~str {
     unsafe {
         let cstr = ll::SDL_GetVideoDriver(id as c_int);
-        str::raw::from_c_str(cast::transmute_copy(&cstr))
+        str::raw::from_c_str(mem::transmute_copy(&cstr))
     }
 }
 
@@ -617,7 +617,7 @@ pub fn video_quit() {
 pub fn get_current_video_driver() -> ~str {
     unsafe {
         let cstr = ll::SDL_GetCurrentVideoDriver();
-        str::raw::from_c_str(cast::transmute_copy(&cstr))
+        str::raw::from_c_str(mem::transmute_copy(&cstr))
     }
 }
 
@@ -633,7 +633,7 @@ pub fn get_num_video_displays() -> Result<int, ~str> {
 pub fn get_display_name(display_index: int) -> ~str {
     unsafe {
         let cstr = ll::SDL_GetDisplayName(display_index as c_int);
-        str::raw::from_c_str(cast::transmute_copy(&cstr))
+        str::raw::from_c_str(mem::transmute_copy(&cstr))
     }
 }
 
