@@ -248,7 +248,7 @@ impl Surface {
         }
     }
 
-    pub fn blit_surface( &self, src: &Surface, dstrect: Option<Rect>, srcrect: Option<Rect> ) -> bool {
+    pub fn blit( &self, src: &Surface, dstrect: Option<Rect>, srcrect: Option<Rect> ) -> bool {
         unsafe {
             let dstrect_ptr = mem::transmute( dstrect.as_ref() );
             let srcrect_ptr = mem::transmute( srcrect.as_ref() );
