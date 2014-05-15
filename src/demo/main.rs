@@ -21,6 +21,6 @@ fn main() {
     if args.len() < 2 {
         println!("Usage: ./demo font.[ttf|ttc|fon]")
     } else {
-        video::main(&Path::new(args[1]));
+        video::main(&Path::new(args.get(1).to_owned()));
     }
 }

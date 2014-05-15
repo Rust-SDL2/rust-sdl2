@@ -32,7 +32,7 @@ pub fn main(filename: &Path) {
 
     // render a surface, and convert it to a texture bound to the renderer
     let surface = trying!(font.render_str_blended("Hello Rust!", sdl2::pixels::RGBA(255, 0, 0, 255)));
-    let texture = trying!(renderer.create_texture_from_surface(surface));
+    let texture = trying!(renderer.create_texture_from_surface(&surface));
 
     renderer.set_draw_color(sdl2::pixels::RGBA(195, 217, 255, 255));
     renderer.clear();
