@@ -142,12 +142,12 @@ pub enum Mouse {
     UnknownMouse(u8)
 }
 
-flag_type!(MouseState {
-    LeftMouseState = 0x01,
-    MiddleMouseState = 0x02,
-    RightMouseState = 0x04,
-    X1MouseState = 0x08,
-    X2MouseState = 0x10
+bitflags!(flags MouseState: u32 {
+    static LeftMouseState = 0x01,
+    static MiddleMouseState = 0x02,
+    static RightMouseState = 0x04,
+    static X1MouseState = 0x08,
+    static X2MouseState = 0x10
 })
 
 pub fn wrap_mouse(bitflags: u8) -> Mouse {
@@ -173,17 +173,19 @@ pub fn get_mouse_focus() -> Option<video::Window> {
 pub fn get_mouse_state() -> (MouseState, int, int) {
     let x = 0;
     let y = 0;
-    let raw = unsafe { ll::SDL_GetMouseState(&x, &y) };
-
-    return (MouseState::new(raw), x as int, y as int);
+    unsafe {
+        let raw = ll::SDL_GetMouseState(&x, &y);
+        return (MouseState::from_bits(raw), x as int, y as int);
+    }
 }
 
 pub fn get_relative_mouse_state() -> (MouseState, int, int) {
     let x = 0;
     let y = 0;
-    let raw = unsafe { ll::SDL_GetRelativeMouseState(&x, &y) };
-
-    return (MouseState::new(raw), x as int, y as int);
+    unsafe {
+        let raw = ll::SDL_GetRelativeMouseState(&x, &y);
+        return (MouseState::from_bits(raw), x as int, y as int);
+    }
 }
 
 pub fn warp_mouse_in_window(window: &video::Window, x: i32, y: i32) {

@@ -75,11 +75,11 @@ pub mod ll {
     }
 }
 
-flag_type!(SurfaceFlag {
-    SWSurface = ll::SDL_SWSURFACE,
-    PreAlloc = ll::SDL_PREALLOC,
-    RLEAccel = ll::SDL_RLEACCEL,
-    DontFree = ll::SDL_DONTFREE
+bitflags!(flags SurfaceFlag: u32 {
+    static SWSurface = ll::SDL_SWSURFACE as u32,
+    static PreAlloc = ll::SDL_PREALLOC as u32,
+    static RLEAccel = ll::SDL_RLEACCEL as u32,
+    static DontFree = ll::SDL_DONTFREE as u32
 })
 
 #[deriving(Eq)] #[allow(raw_pointer_deriving)]
@@ -102,7 +102,7 @@ impl Surface {
     pub fn new(surface_flags: SurfaceFlag, width: int, height: int, bpp: int,
                rmask: u32, gmask: u32, bmask: u32, amask: u32) -> Result<Surface, ~str> {
         unsafe {
-            let raw = ll::SDL_CreateRGBSurface(surface_flags.get(), width as c_int, height as c_int, bpp as c_int,
+            let raw = ll::SDL_CreateRGBSurface(surface_flags.bits(), width as c_int, height as c_int, bpp as c_int,
                                                rmask, gmask, bmask, amask);
 
             if raw == ptr::null() {

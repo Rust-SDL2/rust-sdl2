@@ -50,20 +50,20 @@ pub mod ll {
     }
 }
 
-flag_type!(Mod {
-     NoMod = 0x0000,
-     LShiftMod = 0x0001,
-     RShiftMod = 0x0002,
-     LCtrlMod = 0x0040,
-     RCtrlMod = 0x0080,
-     LAltMod = 0x0100,
-     RAltMod = 0x0200,
-     LGuiMod = 0x0400,
-     RGuiMod = 0x0800,
-     NumMod = 0x1000,
-     CapsMod = 0x2000,
-     ModeMod = 0x4000,
-     ReservedMod = 0x8000
+bitflags!(flags Mod: u32 {
+     static NoMod = 0x0000,
+     static LShiftMod = 0x0001,
+     static RShiftMod = 0x0002,
+     static LCtrlMod = 0x0040,
+     static RCtrlMod = 0x0080,
+     static LAltMod = 0x0100,
+     static RAltMod = 0x0200,
+     static LGuiMod = 0x0400,
+     static RGuiMod = 0x0800,
+     static NumMod = 0x1000,
+     static CapsMod = 0x2000,
+     static ModeMod = 0x4000,
+     static ReservedMod = 0x8000
 })
 
 pub fn get_keyboard_focus() -> Option<Window> {
@@ -93,11 +93,11 @@ pub fn get_keyboard_state() -> HashMap<ScanCode, bool> {
 }
 
 pub fn get_mod_state() -> Mod {
-    unsafe { Mod::new(ll::SDL_GetModState()) }
+    unsafe { Mod::from_bits(ll::SDL_GetModState()) }
 }
 
 pub fn set_mod_state(flags: Mod) {
-    unsafe { ll::SDL_SetModState(flags.get()); }
+    unsafe { ll::SDL_SetModState(flags.bits()); }
 }
 
 pub fn get_key_from_scancode(scancode: ScanCode) -> KeyCode {

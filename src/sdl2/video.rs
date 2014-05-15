@@ -257,20 +257,20 @@ impl DisplayMode {
     }
 }
 
-flag_type!(WindowFlags {
-    Fullscreen = ll::SDL_WINDOW_FULLSCREEN,
-    OpenGL = ll::SDL_WINDOW_OPENGL,
-    Shown = ll::SDL_WINDOW_SHOWN,
-    Hidden = ll::SDL_WINDOW_HIDDEN,
-    Borderless = ll::SDL_WINDOW_BORDERLESS,
-    Resizable = ll::SDL_WINDOW_RESIZABLE,
-    Minimized = ll::SDL_WINDOW_MINIMIZED,
-    Maximized = ll::SDL_WINDOW_MAXIMIZED,
-    InputGrabbed = ll::SDL_WINDOW_INPUT_GRABBED,
-    InputFocus = ll::SDL_WINDOW_INPUT_FOCUS,
-    MouseFocus = ll::SDL_WINDOW_MOUSE_FOCUS,
-    FullscreenDesktop = ll::SDL_WINDOW_FULLSCREEN_DESKTOP,
-    Foreign = ll::SDL_WINDOW_FOREIGN
+bitflags!(flags WindowFlags: u32 {
+    static Fullscreen = ll::SDL_WINDOW_FULLSCREEN as u32,
+    static OpenGL = ll::SDL_WINDOW_OPENGL as u32,
+    static Shown = ll::SDL_WINDOW_SHOWN as u32,
+    static Hidden = ll::SDL_WINDOW_HIDDEN as u32,
+    static Borderless = ll::SDL_WINDOW_BORDERLESS as u32,
+    static Resizable = ll::SDL_WINDOW_RESIZABLE as u32,
+    static Minimized = ll::SDL_WINDOW_MINIMIZED as u32,
+    static Maximized = ll::SDL_WINDOW_MAXIMIZED as u32,
+    static InputGrabbed = ll::SDL_WINDOW_INPUT_GRABBED as u32,
+    static InputFocus = ll::SDL_WINDOW_INPUT_FOCUS as u32,
+    static MouseFocus = ll::SDL_WINDOW_MOUSE_FOCUS as u32,
+    static FullscreenDesktop = ll::SDL_WINDOW_FULLSCREEN_DESKTOP as u32,
+    static Foreign = ll::SDL_WINDOW_FOREIGN as u32
 })
 
 #[deriving(Eq)]
@@ -338,7 +338,7 @@ impl Window {
                     unwrap_windowpos(y),
                     width as c_int,
                     height as c_int,
-                    window_flags.get()
+                    window_flags.bits()
                 )
             });
 
@@ -406,8 +406,10 @@ impl Window {
     }
 
     pub fn get_flags(&self) -> WindowFlags {
-        let raw = unsafe { ll::SDL_GetWindowFlags(self.raw) };
-        WindowFlags::new(raw)
+        unsafe {
+            let raw = ll::SDL_GetWindowFlags(self.raw);
+            WindowFlags::from_bits(raw)
+        }
     }
 
     pub fn set_title(&self, title: &str) {
