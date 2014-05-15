@@ -13,7 +13,7 @@ fn main() {
     if args.len() < 2 {
         println!("Usage: ./demo audio.[mp3|wav|ogg]")
     } else {
-        match dump_info(&Path::new(args[1])) {
+        match dump_info(&Path::new(args.get(1).to_owned())) {
             _ => ()
         }
     }
@@ -24,7 +24,7 @@ fn dump_info(filename: &Path) -> Result<(), ~str> {
     sdl2::init(sdl2::InitAudio | sdl2::InitTimer);
     println!("inited => {}", mix::init(sdl2_mixer::InitMp3 | sdl2_mixer::InitFlac |
                                        sdl2_mixer::InitMod | sdl2_mixer::InitFluidSynth |
-                                       sdl2_mixer::InitModPlug | sdl2_mixer::InitOgg).get());
+                                       sdl2_mixer::InitModPlug | sdl2_mixer::InitOgg).bits());
     // TODO: 0x8010 is SDL_audio flag
     try!(mix::open_audio(mix::DEFAULT_FREQUENCY, 0x8010u16, 2, 1024));
     mix::allocate_channels(0);
