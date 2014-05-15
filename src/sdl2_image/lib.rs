@@ -41,15 +41,14 @@ mod others {
 
 #[allow(non_camel_case_types, dead_code)]
 mod ffi;
-mod flag;
 
 /// InitFlags are passed to init() to control which subsystem
 /// functionality to load.
-flag_type!(InitFlag : c_int {
-    InitJpg = ffi::IMG_INIT_JPG,
-    InitPng = ffi::IMG_INIT_PNG,
-    InitTif = ffi::IMG_INIT_TIF,
-    InitWebp = ffi::IMG_INIT_WEBP
+bitflags!(flags InitFlag : u32 {
+    static InitJpg = ffi::IMG_INIT_JPG as u32,
+    static InitPng = ffi::IMG_INIT_PNG as u32,
+    static InitTif = ffi::IMG_INIT_TIF as u32,
+    static InitWebp = ffi::IMG_INIT_WEBP as u32
 })
 
 /// Static method extensions for creating Surfaces
@@ -144,8 +143,10 @@ impl LoadTexture for Renderer {
 pub fn init(flags: InitFlag) -> InitFlag {
     //! Initializes SDL2_image with InitFlags and returns which
     //! InitFlags were actually used.
-    let used = unsafe { ffi::IMG_Init(flags.get()) };
-    InitFlag::new(used)
+    unsafe {
+        let used = ffi::IMG_Init(flags.bits() as c_int);
+        InitFlag::from_bits(used as u32)
+    }
 }
 
 pub fn quit() {
