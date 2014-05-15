@@ -63,16 +63,16 @@ pub mod ll {
     }
 }
 
-flag_type!(InitFlag {
-    InitTimer = ll::SDL_INIT_TIMER,
-    InitAudio = ll::SDL_INIT_AUDIO,
-    InitVideo = ll::SDL_INIT_VIDEO,
-    InitJoystick = ll::SDL_INIT_JOYSTICK,
-    InitHaptic = ll::SDL_INIT_HAPTIC,
-    InitGameController = ll::SDL_INIT_GAMECONTROLLER,
-    InitEvents = ll::SDL_INIT_EVENTS,
-    InitNoParachute = ll::SDL_INIT_NOPARACHUTE,
-    InitEverything = ll::SDL_INIT_EVERYTHING
+bitflags!(flags InitFlag: u32 {
+    static InitTimer = ll::SDL_INIT_TIMER,
+    static InitAudio = ll::SDL_INIT_AUDIO,
+    static InitVideo = ll::SDL_INIT_VIDEO,
+    static InitJoystick = ll::SDL_INIT_JOYSTICK,
+    static InitHaptic = ll::SDL_INIT_HAPTIC,
+    static InitGameController = ll::SDL_INIT_GAMECONTROLLER,
+    static InitEvents = ll::SDL_INIT_EVENTS,
+    static InitNoParachute = ll::SDL_INIT_NOPARACHUTE,
+    static InitEverything = ll::SDL_INIT_EVERYTHING
 })
 
 #[deriving(Eq)]
@@ -86,18 +86,18 @@ pub enum Error {
 
 pub fn init(flags: InitFlag) -> bool {
     unsafe {
-        ll::SDL_Init(flags.get()) == 0
+        ll::SDL_Init(flags.bits()) == 0
     }
 }
 
 pub fn init_subsystem(flags: InitFlag) -> bool {
     unsafe {
-        ll::SDL_InitSubSystem(flags.get()) == 0
+        ll::SDL_InitSubSystem(flags.bits()) == 0
     }
 }
 
 pub fn quit_subsystem(flags: InitFlag) {
-    unsafe { ll::SDL_QuitSubSystem(flags.get()); }
+    unsafe { ll::SDL_QuitSubSystem(flags.bits()); }
 }
 
 pub fn quit() {
@@ -105,8 +105,10 @@ pub fn quit() {
 }
 
 pub fn was_inited(flags: InitFlag) -> InitFlag {
-    let raw = unsafe { ll::SDL_WasInit(flags.get()) };
-    flags & InitFlag::new(raw)
+    unsafe {
+        let raw = ll::SDL_WasInit(flags.bits());
+        flags & InitFlag::from_bits(raw)
+    }
 }
 
 pub fn get_error() -> ~str {

@@ -147,11 +147,11 @@ pub enum TextureAccess {
     AccessTarget = ll::SDL_TEXTUREACCESS_TARGET as int
 }
 
-flag_type!(RendererFlags {
-    Software = ll::SDL_RENDERER_SOFTWARE,
-    Accelerated = ll::SDL_RENDERER_ACCELERATED,
-    PresentVSync = ll::SDL_RENDERER_PRESENTVSYNC,
-    TargetTexture = ll::SDL_RENDERER_TARGETTEXTURE
+bitflags!(flags RendererFlags: u32 {
+    static Software = ll::SDL_RENDERER_SOFTWARE as u32,
+    static Accelerated = ll::SDL_RENDERER_ACCELERATED as u32,
+    static PresentVSync = ll::SDL_RENDERER_PRESENTVSYNC as u32,
+    static TargetTexture = ll::SDL_RENDERER_TARGETTEXTURE as u32
 })
 
 #[deriving(Eq)]
@@ -180,7 +180,7 @@ pub enum RendererFlip {
 
 impl RendererInfo {
     pub fn from_ll(info: &ll::SDL_RendererInfo) -> RendererInfo {
-        let actual_flags = RendererFlags::new(info.flags);
+        let actual_flags = unsafe { RendererFlags::from_bits(info.flags) };
 
         unsafe {
             let texture_formats: Vec<pixels::PixelFormatFlag> = info.texture_formats.slice(0, info.num_texture_formats as uint).iter().map(|&format| {
@@ -229,7 +229,7 @@ impl Renderer {
         };
 
         let raw = unsafe {
-            ll::SDL_CreateRenderer(window.raw, index as c_int, renderer_flags.get())
+            ll::SDL_CreateRenderer(window.raw, index as c_int, renderer_flags.bits())
         };
 
         if raw == ptr::null() {
@@ -242,7 +242,7 @@ impl Renderer {
     pub fn new_with_window(width: int, height: int, window_flags: video::WindowFlags) -> Result<Renderer, ~str> {
         let raw_window: *video::ll::SDL_Window = ptr::null();
         let raw_renderer: *ll::SDL_Renderer = ptr::null();
-        let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, window_flags.get(), &raw_window, &raw_renderer) == 0};
+        let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, window_flags.bits(), &raw_window, &raw_renderer) == 0};
         if result {
             let window = video::Window {
                 raw: raw_window,

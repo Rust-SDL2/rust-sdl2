@@ -760,7 +760,7 @@ impl Event {
                 KeyDownEvent(event.timestamp as uint, window,
                              FromPrimitive::from_int(event.keysym.sym as int).unwrap(),
                              FromPrimitive::from_int(event.keysym.scancode as int).unwrap(),
-                             keyboard::Mod::new(event.keysym._mod as SDL_Keymod))
+                             keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod))
             }
             KeyUpEventType => {
                 let event = *raw.key();
@@ -774,7 +774,7 @@ impl Event {
                 KeyUpEvent(event.timestamp as uint, window,
                            FromPrimitive::from_int(event.keysym.sym as int).unwrap(),
                            FromPrimitive::from_int(event.keysym.scancode as int).unwrap(),
-                           keyboard::Mod::new(event.keysym._mod as SDL_Keymod))
+                           keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod))
             }
             TextEditingEventType => {
                 let event = *raw.edit();
@@ -813,7 +813,7 @@ impl Event {
 
                 MouseMotionEvent(event.timestamp as uint, window,
                                  event.which as uint,
-                                 mouse::MouseState::new(event.state),
+                                 mouse::MouseState::from_bits(event.state),
                                  event.x as int, event.y as int,
                                  event.xrel as int, event.yrel as int)
             }
@@ -874,7 +874,7 @@ impl Event {
                 let event = *raw.jhat();
                 JoyHatMotionEvent(event.timestamp as uint, event.which as int,
                                   event.hat as int,
-                                  joystick::HatState::new(event.value))
+                                  joystick::HatState::from_bits(event.value))
             }
             JoyButtonDownEventType => {
                 let event = *raw.jbutton();
