@@ -45,7 +45,6 @@ mod others {
 
 #[allow(non_camel_case_types, dead_code)]
 mod ffi;
-mod flag;
 
 // This comes from SDL_audio.h
 #[allow(non_camel_case_types)]
@@ -110,20 +109,22 @@ pub fn get_linked_version() -> Version {
     }
 }
 
-flag_type!(InitFlag : c_int {
-    InitFlac       = ffi::MIX_INIT_FLAC,
-    InitMod        = ffi::MIX_INIT_MOD,
-    InitModPlug    = ffi::MIX_INIT_MODPLUG,
-    InitMp3        = ffi::MIX_INIT_MP3,
-    InitOgg        = ffi::MIX_INIT_OGG,
-    InitFluidSynth = ffi::MIX_INIT_FLUIDSYNTH
+bitflags!(flags InitFlag : u32 {
+    static InitFlac       = ffi::MIX_INIT_FLAC as u32,
+    static InitMod        = ffi::MIX_INIT_MOD as u32,
+    static InitModPlug    = ffi::MIX_INIT_MODPLUG as u32,
+    static InitMp3        = ffi::MIX_INIT_MP3 as u32,
+    static InitOgg        = ffi::MIX_INIT_OGG as u32,
+    static InitFluidSynth = ffi::MIX_INIT_FLUIDSYNTH as u32
 })
 
 /// Loads dynamic libraries and prepares them for use.  Flags should be
 /// one or more flags from InitFlag.
 pub fn init(flags: InitFlag) -> InitFlag {
-    let ret = unsafe { ffi::Mix_Init(flags.get()) };
-    InitFlag::new(ret)
+    unsafe {
+        let ret = ffi::Mix_Init(flags.bits() as c_int);
+        InitFlag::from_bits(ret as u32)
+    }
 }
 
 /// Cleans up all dynamically loaded library handles, freeing memory.
