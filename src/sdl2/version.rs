@@ -38,7 +38,7 @@ impl Version {
 
 impl fmt::Show for Version {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f.buf, "{}.{}.{}", self.major, self.minor, self.patch)
+        write!(f, "{}.{}.{}", self.major, self.minor, self.patch)
     }
 }
 

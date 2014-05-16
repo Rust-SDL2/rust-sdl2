@@ -107,7 +107,7 @@ pub fn quit() {
 pub fn was_inited(flags: InitFlag) -> InitFlag {
     unsafe {
         let raw = ll::SDL_WasInit(flags.bits());
-        flags & InitFlag::from_bits(raw)
+        flags & InitFlag::from_bits(raw).unwrap()
     }
 }
 

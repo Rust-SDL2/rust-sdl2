@@ -180,7 +180,7 @@ pub enum RendererFlip {
 
 impl RendererInfo {
     pub fn from_ll(info: &ll::SDL_RendererInfo) -> RendererInfo {
-        let actual_flags = unsafe { RendererFlags::from_bits(info.flags) };
+        let actual_flags = RendererFlags::from_bits(info.flags).unwrap();
 
         unsafe {
             let texture_formats: Vec<pixels::PixelFormatFlag> = info.texture_formats.slice(0, info.num_texture_formats as uint).iter().map(|&format| {
