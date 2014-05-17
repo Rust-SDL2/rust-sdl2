@@ -622,7 +622,7 @@ pub enum Event {
 
 impl ::std::fmt::Show for Event {
     fn fmt(&self, out: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        out.buf.write_str(match *self {
+        out.write(match *self {
             NoEvent => "NoEvent",
             QuitEvent(..) => "QuitEvent",
             AppTerminatingEvent(..) => "AppTerminatingEvent",
@@ -662,7 +662,7 @@ impl ::std::fmt::Show for Event {
             ClipboardUpdateEvent(..) => "ClipboardUpdateEvent",
             DropFileEvent(..) => "DropFileEvent",
             UserEvent(..) => "UserEvent",
-        })
+        }.as_bytes())
     }
 }
 
@@ -760,7 +760,7 @@ impl Event {
                 KeyDownEvent(event.timestamp as uint, window,
                              FromPrimitive::from_int(event.keysym.sym as int).unwrap(),
                              FromPrimitive::from_int(event.keysym.scancode as int).unwrap(),
-                             keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod))
+                             keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap())
             }
             KeyUpEventType => {
                 let event = *raw.key();
@@ -774,7 +774,7 @@ impl Event {
                 KeyUpEvent(event.timestamp as uint, window,
                            FromPrimitive::from_int(event.keysym.sym as int).unwrap(),
                            FromPrimitive::from_int(event.keysym.scancode as int).unwrap(),
-                           keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod))
+                           keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap())
             }
             TextEditingEventType => {
                 let event = *raw.edit();
@@ -813,7 +813,7 @@ impl Event {
 
                 MouseMotionEvent(event.timestamp as uint, window,
                                  event.which as uint,
-                                 mouse::MouseState::from_bits(event.state),
+                                 mouse::MouseState::from_bits(event.state).unwrap(),
                                  event.x as int, event.y as int,
                                  event.xrel as int, event.yrel as int)
             }
@@ -874,7 +874,7 @@ impl Event {
                 let event = *raw.jhat();
                 JoyHatMotionEvent(event.timestamp as uint, event.which as int,
                                   event.hat as int,
-                                  joystick::HatState::from_bits(event.value))
+                                  joystick::HatState::from_bits(event.value).unwrap())
             }
             JoyButtonDownEventType => {
                 let event = *raw.jbutton();

@@ -93,7 +93,7 @@ pub fn get_keyboard_state() -> HashMap<ScanCode, bool> {
 }
 
 pub fn get_mod_state() -> Mod {
-    unsafe { Mod::from_bits(ll::SDL_GetModState()) }
+    unsafe { Mod::from_bits(ll::SDL_GetModState()).unwrap() }
 }
 
 pub fn set_mod_state(flags: Mod) {

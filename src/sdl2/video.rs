@@ -408,7 +408,7 @@ impl Window {
     pub fn get_flags(&self) -> WindowFlags {
         unsafe {
             let raw = ll::SDL_GetWindowFlags(self.raw);
-            WindowFlags::from_bits(raw)
+            WindowFlags::from_bits(raw).unwrap()
         }
     }
 
