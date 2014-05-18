@@ -1,5 +1,7 @@
 use video;
+use video::Window;
 use surface;
+use surface::Surface;
 use pixels;
 use get_error;
 use std::ptr;
@@ -198,20 +200,14 @@ impl RendererInfo {
     }
 }
 
-#[deriving(Eq)]
-enum RendererParent {
-    Window(video::Window),
-    Surface(surface::Surface),
-}
-
 #[deriving(Eq)] #[allow(raw_pointer_deriving)]
-pub struct Renderer {
-    pub raw: *ll::SDL_Renderer,
-    parent: RendererParent,
-    pub owned: bool
+pub struct Renderer<S> {
+    raw: *ll::SDL_Renderer,
+    parent: S,
+    owned: bool
 }
 
-impl Drop for Renderer {
+impl<S> Drop for Renderer<S> {
     fn drop(&mut self) {
         if self.owned {
             unsafe {
@@ -221,8 +217,8 @@ impl Drop for Renderer {
     }
 }
 
-impl Renderer {
-    pub fn from_window(window: video::Window, index: RenderDriverIndex, renderer_flags: RendererFlags) -> Result<Renderer, ~str> {
+impl<S> Renderer<S> {
+    pub fn from_window(window: Window, index: RenderDriverIndex, renderer_flags: RendererFlags) -> Result<Renderer<Window>, ~str> {
         let index = match index {
             DriverAuto => -1,
             DriverIndex(x) => x
@@ -235,16 +231,16 @@ impl Renderer {
         if raw == ptr::null() {
             Err(get_error())
         } else {
-            Ok(Renderer{ raw: raw, parent: Window(window), owned: true,})
+            Ok(Renderer{ raw: raw, parent: window, owned: true,})
         }
     }
 
-    pub fn new_with_window(width: int, height: int, window_flags: video::WindowFlags) -> Result<Renderer, ~str> {
+    pub fn new_with_window(width: int, height: int, window_flags: video::WindowFlags) -> Result<Renderer<Window>, ~str> {
         let raw_window: *video::ll::SDL_Window = ptr::null();
         let raw_renderer: *ll::SDL_Renderer = ptr::null();
         let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, window_flags.bits(), &raw_window, &raw_renderer) == 0};
         if result {
-            let window = video::Window {
+            let window = Window {
                 raw: raw_window,
                 owned: true
             };
@@ -258,7 +254,7 @@ impl Renderer {
         }
     }
 
-    pub fn from_surface(surface: surface::Surface) -> Result<Renderer, ~str> {
+    pub fn from_surface(surface: &surface::Surface) -> Result<Renderer, ~str> {
         let result = unsafe { ll::SDL_CreateSoftwareRenderer(surface.raw) };
         if result == ptr::null() {
             Ok(Renderer {
@@ -270,6 +266,12 @@ impl Renderer {
             Err(get_error())
         }
     }
+
+    #[inline]
+    pub fn get_parent(&'a self) -> &'a S { &self.parent }
+
+    #[inline]
+    pub fn unwrap_parent(self) -> S { self.parent }
 
     pub fn set_draw_color(&self, color: pixels::Color) -> Result<(), ~str> {
         let ret = match color {
