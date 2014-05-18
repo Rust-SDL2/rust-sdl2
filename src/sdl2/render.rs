@@ -202,9 +202,9 @@ impl RendererInfo {
 
 #[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct Renderer<S> {
-    raw: *ll::SDL_Renderer,
+    pub raw: *ll::SDL_Renderer,
     parent: Option<S>,
-    owned: bool
+    pub owned: bool
 }
 
 #[unsafe_destructor]
