@@ -21,7 +21,7 @@ fn main() {
             os::set_exit_status(1);
         },
         3 => {
-            let output_dir = GenericPath::new(args.get(2).clone());
+            let output_dir = GenericPath::new(args.get(2).as_slice());
             match mkdir_recursive(&output_dir, UserDir) {
                 Err(e) => fail!("Could not create directory for generated sources: {:s}", e.desc),
                 Ok(_) => {},
