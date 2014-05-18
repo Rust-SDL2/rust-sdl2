@@ -203,10 +203,11 @@ impl RendererInfo {
 #[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct Renderer<S> {
     raw: *ll::SDL_Renderer,
-    parent: S,
+    parent: Option<S>,
     owned: bool
 }
 
+#[unsafe_destructor]
 impl<S> Drop for Renderer<S> {
     fn drop(&mut self) {
         if self.owned {
@@ -217,7 +218,7 @@ impl<S> Drop for Renderer<S> {
     }
 }
 
-impl<S> Renderer<S> {
+impl Renderer<Window> {
     pub fn from_window(window: Window, index: RenderDriverIndex, renderer_flags: RendererFlags) -> Result<Renderer<Window>, ~str> {
         let index = match index {
             DriverAuto => -1,
@@ -231,7 +232,7 @@ impl<S> Renderer<S> {
         if raw == ptr::null() {
             Err(get_error())
         } else {
-            Ok(Renderer{ raw: raw, parent: window, owned: true,})
+            Ok(Renderer{ raw: raw, parent: Some(window), owned: true,})
         }
     }
 
@@ -246,32 +247,39 @@ impl<S> Renderer<S> {
             };
             Ok(Renderer {
                 raw: raw_renderer,
-                parent: Window(window),
+                parent: Some(window),
                 owned: true
             })
         } else {
             Err(get_error())
         }
     }
+}
 
-    pub fn from_surface(surface: &surface::Surface) -> Result<Renderer, ~str> {
+impl Renderer<Surface> {
+    pub fn from_surface(surface: surface::Surface) -> Result<Renderer<Surface>, ~str> {
         let result = unsafe { ll::SDL_CreateSoftwareRenderer(surface.raw) };
         if result == ptr::null() {
             Ok(Renderer {
                 raw: result,
-                parent: Surface(surface),
+                parent: Some(surface),
                 owned: true
             })
         } else {
             Err(get_error())
         }
     }
+}
+
+impl<S> Renderer<S> {
+    #[inline]
+    pub fn get_parent<'a>(&'a self) -> &'a S { self.parent.get_ref() }
 
     #[inline]
-    pub fn get_parent(&'a self) -> &'a S { &self.parent }
-
-    #[inline]
-    pub fn unwrap_parent(self) -> S { self.parent }
+    pub fn unwrap_parent(mut self) -> S { 
+        use std::mem; 
+        mem::replace(&mut self.parent, None).unwrap()
+    }
 
     pub fn set_draw_color(&self, color: pixels::Color) -> Result<(), ~str> {
         let ret = match color {
