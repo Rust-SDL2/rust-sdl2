@@ -123,7 +123,7 @@ bitflags!(flags InitFlag : u32 {
 pub fn init(flags: InitFlag) -> InitFlag {
     unsafe {
         let ret = ffi::Mix_Init(flags.bits() as c_int);
-        InitFlag::from_bits(ret as u32)
+        InitFlag::from_bits_truncate(ret as u32)
     }
 }
 
