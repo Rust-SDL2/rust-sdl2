@@ -145,7 +145,7 @@ pub fn init(flags: InitFlag) -> InitFlag {
     //! InitFlags were actually used.
     unsafe {
         let used = ffi::IMG_Init(flags.bits() as c_int);
-        InitFlag::from_bits(used as u32)
+        InitFlag::from_bits_truncate(used as u32)
     }
 }
 
