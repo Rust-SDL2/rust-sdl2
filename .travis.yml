@@ -18,6 +18,7 @@ install:
   - ./configure && make && sudo make install
   - cd -
   - git clone https://github.com/andelf/rust-sdl2.git
+  - (cd rust-sdl2 && make)
   - rustc rust-sdl2/src/sdl2/lib.rs
 script:
   - rustc -L. rust-sdl2_mixer/src/sdl2_mixer/lib.rs
