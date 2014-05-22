@@ -1,8 +1,11 @@
+/*!
+Querying SDL Version
+ */
+
 use std::fmt;
-use std::mem;
 use std::c_str::CString;
 
-
+#[doc(hidden)]
 #[allow(non_camel_case_types)]
 pub mod ll {
     use libc::{uint8_t, c_char, c_int};
@@ -18,17 +21,20 @@ pub mod ll {
     }
 }
 
-
+/// A structure that contains information about the version of SDL in use.
 #[deriving(Eq, Clone)]
 pub struct Version {
+    /// major version
     pub major: int,
+    /// minor version
     pub minor: int,
+    /// update version (patchlevel)
     pub patch: int,
 }
 
 impl Version {
+    /// Convert a raw *SDL_version to Version.
     pub fn from_ll(sv: *ll::SDL_version) -> Version {
-        //! Converts a raw *SDL_version to Version
         unsafe {
             let v = *sv;
             Version{ major: v.major as int, minor: v.minor as int, patch: v.patch as int }
@@ -42,14 +48,16 @@ impl fmt::Show for Version {
     }
 }
 
+/// Get the version of SDL that is linked against your program.
 pub fn get_version() -> Version {
     unsafe {
-        let mut cver = mem::init::<ll::SDL_version>();
+        let mut cver = ll::SDL_version { major: 0, minor: 0, patch: 0};
         ll::SDL_GetVersion(&mut cver);
         Version::from_ll(&cver)
     }
 }
 
+/// Get the code revision of SDL that is linked against your program.
 pub fn get_revision() -> ~str {
     unsafe {
         let ret = ll::SDL_GetRevision();
@@ -57,6 +65,7 @@ pub fn get_revision() -> ~str {
     }
 }
 
+/// Get the revision number of SDL that is linked against your program.
 pub fn get_revision_number() -> int {
     unsafe {
         ll::SDL_GetRevisionNumber() as int
