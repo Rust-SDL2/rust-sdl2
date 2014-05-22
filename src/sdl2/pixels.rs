@@ -89,8 +89,10 @@ pub mod ll {
 }
 #[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct Palette {
-    pub raw: *ll::SDL_Palette
+    raw: *ll::SDL_Palette
 }
+
+impl_raw_accessors!(Palette, *ll::SDL_Palette)
 
 #[deriving(Eq)]
 pub enum Color {
@@ -132,8 +134,11 @@ impl rand::Rand for Color {
 
 #[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct PixelFormat {
-    pub raw: *ll::SDL_PixelFormat
+    raw: *ll::SDL_PixelFormat
 }
+
+impl_raw_accessors!(PixelFormat, *ll::SDL_PixelFormat)
+impl_raw_constructor!(PixelFormat -> PixelFormat (raw: *ll::SDL_PixelFormat))
 
 #[deriving(Eq, Show, FromPrimitive)]
 pub enum PixelFormatFlag {

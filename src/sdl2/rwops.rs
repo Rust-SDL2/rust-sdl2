@@ -43,9 +43,12 @@ pub mod ll {
 
 #[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct RWops {
-    pub raw: *ll::SDL_RWops,
-    pub close_on_drop: bool
+    raw: *ll::SDL_RWops,
+    close_on_drop: bool
 }
+
+impl_raw_accessors!(RWops, *ll::SDL_RWops)
+impl_owned_accessors!(RWops, close_on_drop)
 
 /// A structure that provides an abstract interface to stream I/O.
 impl RWops {

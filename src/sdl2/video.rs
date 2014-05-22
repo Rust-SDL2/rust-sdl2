@@ -297,8 +297,8 @@ fn unwrap_windowpos (pos: WindowPos) -> ll::SDL_WindowPos {
 
 #[deriving(Eq)]
 pub struct GLContext {
-    pub raw: ll::SDL_GLContext,
-    pub owned: bool
+    raw: ll::SDL_GLContext,
+    owned: bool
 }
 
 impl Drop for GLContext {
@@ -311,13 +311,26 @@ impl Drop for GLContext {
     }
 }
 
-
 #[deriving(Eq)]
 #[allow(raw_pointer_deriving)]
 pub struct Window {
-    pub raw: *ll::SDL_Window,
-    pub owned: bool
+    raw: *ll::SDL_Window,
+    owned: bool
 }
+
+impl_raw_accessors!(
+    GLContext, ll::SDL_GLContext;
+    Window, *ll::SDL_Window
+)
+
+impl_owned_accessors!(
+    GLContext, owned;
+    Window, owned
+)
+
+impl_raw_constructor!(
+    Window -> Window (raw: *ll::SDL_Window, owned: bool)
+)
 
 impl Drop for Window {
     fn drop(&mut self) {
@@ -427,7 +440,7 @@ impl Window {
     }
 
     pub fn set_icon(&self, icon: &Surface) {
-        unsafe { ll::SDL_SetWindowIcon(self.raw, icon.raw) }
+        unsafe { ll::SDL_SetWindowIcon(self.raw, icon.raw()) }
     }
 
     //pub fn SDL_SetWindowData(window: *SDL_Window, name: *c_char, userdata: *c_void) -> *c_void; //TODO: Figure out what this does
@@ -515,7 +528,7 @@ impl Window {
         if raw == ptr::null() {
             Err(get_error())
         } else {
-            Ok(Surface {raw: raw, owned: false}) //Docs say that it releases with the window
+            unsafe { Ok(Surface::new_from_raw(raw, false)) } //Docs say that it releases with the window
         }
     }
 

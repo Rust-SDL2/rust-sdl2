@@ -71,7 +71,7 @@ pub fn get_keyboard_focus() -> Option<Window> {
     if raw == ptr::null() {
         None
     } else {
-        Some(Window{ raw: raw, owned: false })
+        unsafe { Some(Window::new_from_raw(raw, false)) }
     }
 }
 
@@ -163,5 +163,5 @@ pub fn has_screen_keyboard_support() -> bool {
 }
 
 pub fn is_screen_keyboard_shown(window: &Window) -> bool {
-    unsafe { ll::SDL_IsScreenKeyboardShown(window.raw) == 1 }
+    unsafe { ll::SDL_IsScreenKeyboardShown(window.raw()) == 1 }
 }

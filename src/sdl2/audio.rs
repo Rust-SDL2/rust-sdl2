@@ -231,7 +231,7 @@ impl<'a> AudioSpec<'a> {
         let audio_buf = ptr::null::<u8>();
         let audio_len = 0u32;
         unsafe {
-            let ret = ll::SDL_LoadWAV_RW(src.raw, 0, mem::transmute(&spec), &audio_buf, &audio_len);
+            let ret = ll::SDL_LoadWAV_RW(src.raw(), 0, mem::transmute(&spec), &audio_buf, &audio_len);
             if ret.is_null() {
                 Err(get_error())
             } else {
@@ -317,9 +317,12 @@ impl AudioDevice {
 
 #[deriving(Eq)] #[allow(raw_pointer_deriving)]
 pub struct AudioCVT {
-    pub raw: *mut ll::SDL_AudioCVT,
-    pub owned: bool,
+    raw: *mut ll::SDL_AudioCVT,
+    owned: bool,
 }
+
+impl_raw_accessors!(AudioCVT, *mut ll::SDL_AudioCVT)
+impl_owned_accessors!(AudioCVT, owned)
 
 impl Drop for AudioCVT {
     fn drop(&mut self) {
