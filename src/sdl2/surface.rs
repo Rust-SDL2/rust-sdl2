@@ -82,7 +82,8 @@ bitflags!(flags SurfaceFlag: u32 {
     static DontFree = ll::SDL_DONTFREE as u32
 })
 
-#[deriving(Eq)] #[allow(raw_pointer_deriving)]
+#[deriving(Eq)]
+#[allow(raw_pointer_deriving)]
 pub struct Surface {
     pub raw: *ll::SDL_Surface,
     pub owned: bool

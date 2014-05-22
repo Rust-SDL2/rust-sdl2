@@ -102,7 +102,8 @@ impl Cursor {
         }
     }
 
-    pub fn from_surface(surface: surface::Surface, hot_x: int, hot_y: int) -> Result<Cursor, ~str> {
+    // TODO: figure out how to pass Surface in here correctly
+    pub fn from_surface(surface: &surface::Surface, hot_x: int, hot_y: int) -> Result<Cursor, ~str> {
         unsafe {
             let raw = ll::SDL_CreateColorCursor(surface.raw, hot_x as i32,
                                                 hot_y as i32);
