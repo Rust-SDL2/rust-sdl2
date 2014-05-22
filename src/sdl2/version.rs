@@ -33,7 +33,7 @@ pub struct Version {
 }
 
 impl Version {
-    /// Converts a raw *SDL_version to Version
+    /// Convert a raw *SDL_version to Version.
     pub fn from_ll(sv: *ll::SDL_version) -> Version {
         unsafe {
             let v = *sv;
