@@ -1,6 +1,7 @@
 use std::ptr;
 
 use get_error;
+use SdlResult;
 use surface;
 use video;
 
@@ -87,7 +88,7 @@ impl Drop for Cursor {
 }
 
 impl Cursor {
-    pub fn new(data: &[u8], mask: &[u8], width: int, height: int, hot_x: int, hot_y: int) -> Result<Cursor, String> {
+    pub fn new(data: &[u8], mask: &[u8], width: int, height: int, hot_x: int, hot_y: int) -> SdlResult<Cursor> {
         unsafe {
             let raw = ll::SDL_CreateCursor(data.as_ptr(),
                                            mask.as_ptr(),
@@ -103,7 +104,7 @@ impl Cursor {
     }
 
     // TODO: figure out how to pass Surface in here correctly
-    pub fn from_surface(surface: &surface::Surface, hot_x: int, hot_y: int) -> Result<Cursor, String> {
+    pub fn from_surface(surface: &surface::Surface, hot_x: int, hot_y: int) -> SdlResult<Cursor> {
         unsafe {
             let raw = ll::SDL_CreateColorCursor(surface.raw(), hot_x as i32,
                                                 hot_y as i32);
@@ -116,7 +117,7 @@ impl Cursor {
         }
     }
 
-    pub fn from_system(cursor: SystemCursor) -> Result<Cursor, String> {
+    pub fn from_system(cursor: SystemCursor) -> SdlResult<Cursor> {
         unsafe {
             let raw = ll::SDL_CreateSystemCursor(cursor as u32);
 
