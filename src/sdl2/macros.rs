@@ -23,22 +23,12 @@ macro_rules! impl_owned_accessors(
 )
 
 macro_rules! impl_raw_constructor(
-    ($($t:ty -> $te:ident ($r:ident:$rt:ty));+) => (
+    ($($t:ty -> $te:ident ($($r:ident:$rt:ty),+));+) => (
         $(
         impl $t {
             #[inline]
-            pub unsafe fn new_from_raw($r:$rt) -> $t {
-                $te { $r: $r }
-            }
-        }
-        )+
-    );
-    ($($t:ty -> $te:ident ($r:ident:$rt:ty, $o:ident:$ot:ty));+) => (
-        $(
-        impl $t {
-            #[inline]
-            pub unsafe fn new_from_raw($r:$rt, $o:$ot) -> $t {
-                $te { $r: $r, $o: $o }
+            pub unsafe fn new_from_raw($($r:$rt),+) -> $t {
+                $te { $($r: $r),+ }
             }
         }
         )+
