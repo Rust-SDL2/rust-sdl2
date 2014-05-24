@@ -114,7 +114,7 @@ pub fn get_scancode_from_key(key: KeyCode) -> ScanCode {
     }
 }
 
-pub fn get_scancode_name(scancode: ScanCode) -> ~str {
+pub fn get_scancode_name(scancode: ScanCode) -> StrBuf {
     unsafe {
         str::raw::from_c_str(ll::SDL_GetScancodeName(scancode.code() as u32))
     }
@@ -128,7 +128,7 @@ pub fn get_scancode_from_name(name: &str) -> ScanCode {
     }
 }
 
-pub fn get_key_name(key: KeyCode) -> ~str {
+pub fn get_key_name(key: KeyCode) -> StrBuf {
     unsafe {
         str::raw::from_c_str(ll::SDL_GetKeyName(key.code()))
     }

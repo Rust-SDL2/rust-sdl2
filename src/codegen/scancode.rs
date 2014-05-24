@@ -1,4 +1,5 @@
 use std::io::{IoResult,Writer};
+use std::path::BytesContainer;
 use super::get_writer;
 
 struct ScanCode {
@@ -43,12 +44,12 @@ fn ScanCode(code: uint, ident: &'static str) -> ScanCode {
 }
 
 impl ScanCode {
-    fn ident(&self) -> ~str {
+    fn ident(&self) -> StrBuf {
         self.ident.to_owned()
     }
 
-    fn padded_ident(&self) -> ~str {
-        self.ident() + " ".repeat(unsafe { longest_ident } - self.ident().len())
+    fn padded_ident(&self) -> StrBuf {
+        self.ident().append(" ".repeat(unsafe { longest_ident } - self.ident().len()).as_slice())
     }
 
 }
@@ -319,7 +320,7 @@ use std::num::ToPrimitive;
 pub enum ScanCode {
 ".as_bytes()));
     for &entry in entries.iter() {
-        try!(out.write(format!("    {} = {},\n", entry.padded_ident(), entry.code).into_bytes()));
+        try!(out.write(format!("    {} = {},\n", entry.padded_ident(), entry.code).container_as_bytes()));
     }
 
     try!(out.write("
@@ -338,7 +339,7 @@ impl ScanCode {
         match *self {
 ".as_bytes()));
     for &entry in entries.iter() {
-        try!(out.write(format!("            {} => {},\n", entry.padded_ident(), entry.code).into_bytes()));
+        try!(out.write(format!("            {} => {},\n", entry.padded_ident(), entry.code).container_as_bytes()));
     }
     
     try!(out.write("
@@ -355,7 +356,7 @@ impl ToPrimitive for ScanCode {
     for primitive_type in types.iter() {
         try!(out.write(format!("fn to_{}(&self) -> Option<{}> \\{
             Some(self.code() as {})
-        \\}\n", *primitive_type, *primitive_type, *primitive_type).into_bytes()));
+        \\}\n", *primitive_type, *primitive_type, *primitive_type).container_as_bytes()));
     }
 
 try!(out.write("
@@ -374,10 +375,10 @@ impl FromPrimitive for ScanCode {
         try!(out.write(format!("
     fn from_{}(n: {}) -> Option<ScanCode> \\{
         match n \\{
-", *primitive_type, *primitive_type).into_bytes()));
+", *primitive_type, *primitive_type).container_as_bytes()));
 
         for &entry in entries.iter() {
-            try!(out.write(format!("            {} => Some({}),\n", entry.code, entry.ident()).into_bytes()));
+            try!(out.write(format!("            {} => Some({}),\n", entry.code, entry.ident()).container_as_bytes()));
         }
    
         try!(out.write("

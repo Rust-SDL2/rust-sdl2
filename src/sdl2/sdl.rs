@@ -111,7 +111,7 @@ pub fn was_inited(flags: InitFlag) -> InitFlag {
     }
 }
 
-pub fn get_error() -> ~str {
+pub fn get_error() -> StrBuf {
     unsafe {
         let cstr = ll::SDL_GetError();
 
