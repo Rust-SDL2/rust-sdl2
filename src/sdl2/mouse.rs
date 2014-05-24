@@ -167,7 +167,7 @@ pub fn get_mouse_focus() -> Option<video::Window> {
     if raw == ptr::null() {
         None
     } else {
-        unsafe { Some(video::Window::new_from_raw(raw, false)) }
+        unsafe { Some(video::Window::from_ll(raw, false)) }
     }
 }
 

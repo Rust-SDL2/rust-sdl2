@@ -241,7 +241,7 @@ impl Renderer<Window> {
         let raw_renderer: *ll::SDL_Renderer = ptr::null();
         let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, window_flags.bits(), &raw_window, &raw_renderer) == 0};
         if result {
-            let window = unsafe { Window::new_from_raw(raw_window, true) };
+            let window = unsafe { Window::from_ll(raw_window, true) };
             Ok(Renderer {
                 raw: raw_renderer,
                 parent: Some(window),

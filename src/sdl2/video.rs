@@ -528,7 +528,7 @@ impl Window {
         if raw == ptr::null() {
             Err(get_error())
         } else {
-            unsafe { Ok(Surface::new_from_raw(raw, false)) } //Docs say that it releases with the window
+            unsafe { Ok(Surface::from_ll(raw, false)) } //Docs say that it releases with the window
         }
     }
 

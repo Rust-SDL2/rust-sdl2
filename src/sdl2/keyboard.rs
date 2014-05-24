@@ -71,7 +71,7 @@ pub fn get_keyboard_focus() -> Option<Window> {
     if raw == ptr::null() {
         None
     } else {
-        unsafe { Some(Window::new_from_raw(raw, false)) }
+        unsafe { Some(Window::from_ll(raw, false)) }
     }
 }
 

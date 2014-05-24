@@ -142,7 +142,7 @@ impl Surface {
 
     pub fn get_pixel_format(&self) -> pixels::PixelFormat {
         unsafe { 
-            pixels::PixelFormat::new_from_raw((*self.raw).format)
+            pixels::PixelFormat::from_ll((*self.raw).format)
         }
     }
 

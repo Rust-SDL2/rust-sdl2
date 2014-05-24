@@ -27,7 +27,7 @@ macro_rules! impl_raw_constructor(
         $(
         impl $t {
             #[inline]
-            pub unsafe fn new_from_raw($($r:$rt),+) -> $t {
+            pub unsafe fn from_ll($($r:$rt),+) -> $t {
                 $te { $($r: $r),+ }
             }
         }
