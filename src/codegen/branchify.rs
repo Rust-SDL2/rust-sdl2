@@ -7,7 +7,7 @@ use std::vec::Vec;
 
 struct ParseBranch {
     matches: Vec<u8>,
-    result: Option<~str>,
+    result: Option<StrBuf>,
     children: Vec<ParseBranch>,
 }
 
@@ -112,14 +112,14 @@ pub fn generate_branchified_method(
             let next_prefix = format!("{}{}", prefix, c as char);
             wf!("Some(b) if b == '{}' as u8 => match {} \\{", c as char, read_call);
             for b in branch.children.iter() {
-                r(writer, b, next_prefix, indent + 1, read_call, end, max_len, valid, unknown);
+                r(writer, b, next_prefix.as_slice(), indent + 1, read_call, end, max_len, valid, unknown);
             }
             match branch.result {
                 Some(ref result) => wf!("    Some(b) if b == SP => return Some({}),", *result),
                 None => wf!("    Some(b) if b == SP => return Some({}),",
-                                unknown.replace("{}", format!("~\"{}\"", next_prefix))),
+                                unknown.replace("{}", format!("~\"{}\"", next_prefix.as_slice()).as_slice())),
             }
-            wf!("    Some(b) if {} => (\"{}\", b),", valid, next_prefix);
+            wf!("    Some(b) if {} => (\"{}\", b),", valid, next_prefix.as_slice());
             wf!("    _ => return None,");
             wf!("\\},");
         }

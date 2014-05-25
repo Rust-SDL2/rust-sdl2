@@ -27,12 +27,12 @@ fn main() {
                 Ok(_) => {},
             };
 
-            if "keycode.rs" == *args.get(1) {
+            if "keycode.rs" == args.get(1).as_slice() {
                 match keycode::generate(&output_dir) {
                     Ok(_) => {},
                     Err(e) => fail!("Could not automatically generate sources for keycodes: {:s}", e.desc),
                 };
-            } else if "scancode.rs" == *args.get(1) {
+            } else if "scancode.rs" == args.get(1).as_slice() {
                 match scancode::generate(&output_dir) {
                     Ok(_)    => {},
                     Err(e) => fail!("Could not automatically generate sources for scancodes: {:s}", e.desc),

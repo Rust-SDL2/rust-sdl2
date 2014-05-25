@@ -158,7 +158,7 @@ bitflags!(flags RendererFlags: u32 {
 
 #[deriving(Eq)]
 pub struct RendererInfo {
-    pub name: ~str,
+    pub name: StrBuf,
     pub flags: RendererFlags,
     pub texture_formats: Vec<pixels::PixelFormatFlag>,
     pub max_texture_width: int,
@@ -219,7 +219,7 @@ impl<S> Drop for Renderer<S> {
 }
 
 impl Renderer<Window> {
-    pub fn from_window(window: Window, index: RenderDriverIndex, renderer_flags: RendererFlags) -> Result<Renderer<Window>, ~str> {
+    pub fn from_window(window: Window, index: RenderDriverIndex, renderer_flags: RendererFlags) -> Result<Renderer<Window>, StrBuf> {
         let index = match index {
             DriverAuto => -1,
             DriverIndex(x) => x
@@ -236,7 +236,7 @@ impl Renderer<Window> {
         }
     }
 
-    pub fn new_with_window(width: int, height: int, window_flags: video::WindowFlags) -> Result<Renderer<Window>, ~str> {
+    pub fn new_with_window(width: int, height: int, window_flags: video::WindowFlags) -> Result<Renderer<Window>, StrBuf> {
         let raw_window: *video::ll::SDL_Window = ptr::null();
         let raw_renderer: *ll::SDL_Renderer = ptr::null();
         let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, window_flags.bits(), &raw_window, &raw_renderer) == 0};
@@ -257,7 +257,7 @@ impl Renderer<Window> {
 }
 
 impl Renderer<Surface> {
-    pub fn from_surface(surface: surface::Surface) -> Result<Renderer<Surface>, ~str> {
+    pub fn from_surface(surface: surface::Surface) -> Result<Renderer<Surface>, StrBuf> {
         let result = unsafe { ll::SDL_CreateSoftwareRenderer(surface.raw) };
         if result == ptr::null() {
             Ok(Renderer {
@@ -281,7 +281,7 @@ impl<S> Renderer<S> {
         mem::replace(&mut self.parent, None).unwrap()
     }
 
-    pub fn set_draw_color(&self, color: pixels::Color) -> Result<(), ~str> {
+    pub fn set_draw_color(&self, color: pixels::Color) -> Result<(), StrBuf> {
         let ret = match color {
             pixels::RGB(r, g, b) => {
                 unsafe { ll::SDL_SetRenderDrawColor(self.raw, r, g, b, 255) }
@@ -294,7 +294,7 @@ impl<S> Renderer<S> {
         else { Err(get_error()) }
     }
 
-    pub fn get_draw_color(&self) -> Result<pixels::Color, ~str> {
+    pub fn get_draw_color(&self) -> Result<pixels::Color, StrBuf> {
         let r: u8 = 0;
         let g: u8 = 0;
         let b: u8 = 0;
@@ -307,7 +307,7 @@ impl<S> Renderer<S> {
         }
     }
 
-    pub fn clear(&self) -> Result<(), ~str> {
+    pub fn clear(&self) -> Result<(), StrBuf> {
         let ret = unsafe { ll::SDL_RenderClear(self.raw) };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
@@ -317,7 +317,7 @@ impl<S> Renderer<S> {
         unsafe { ll::SDL_RenderPresent(self.raw) }
     }
 
-    pub fn get_output_size(&self) -> Result<(int, int), ~str> {
+    pub fn get_output_size(&self) -> Result<(int, int), StrBuf> {
         let width: c_int = 0;
         let height: c_int = 0;
 
@@ -330,7 +330,7 @@ impl<S> Renderer<S> {
         }
     }
 
-    pub fn create_texture(&self, format: pixels::PixelFormatFlag, access: TextureAccess, width: int, height: int) -> Result<Texture, ~str> {
+    pub fn create_texture(&self, format: pixels::PixelFormatFlag, access: TextureAccess, width: int, height: int) -> Result<Texture, StrBuf> {
         let result = unsafe { ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int) };
         if result == ptr::null() {
             Err(get_error())
@@ -339,7 +339,7 @@ impl<S> Renderer<S> {
         }
     }
 
-    pub fn create_texture_from_surface(&self, surface: &surface::Surface) -> Result<Texture, ~str> {
+    pub fn create_texture_from_surface(&self, surface: &surface::Surface) -> Result<Texture, StrBuf> {
         let result = unsafe { ll::SDL_CreateTextureFromSurface(self.raw, surface.raw) };
         if result == ptr::null() {
             Err(get_error())
@@ -352,7 +352,7 @@ impl<S> Renderer<S> {
         unsafe { ll::SDL_RenderTargetSupported(self.raw) == 1 }
     }
 
-    pub fn set_render_target(&self, texture: Option<&Texture>) -> Result<(), ~str> {
+    pub fn set_render_target(&self, texture: Option<&Texture>) -> Result<(), StrBuf> {
         unsafe {
             let actual_texture = match texture {
                 Some(texture) => mem::transmute(texture.raw),
@@ -366,7 +366,7 @@ impl<S> Renderer<S> {
         }
     }
 
-    pub fn get_render_target(&self) -> Result<Texture, ~str> {
+    pub fn get_render_target(&self) -> Result<Texture, StrBuf> {
         let raw = unsafe { ll::SDL_GetRenderTarget(self.raw) };
 
         if raw == ptr::null() {
@@ -379,7 +379,7 @@ impl<S> Renderer<S> {
         }
     }
 
-    pub fn set_logical_size(&self, width: int, height: int) -> Result<(), ~str> {
+    pub fn set_logical_size(&self, width: int, height: int) -> Result<(), StrBuf> {
         let ret = unsafe { ll::SDL_RenderSetLogicalSize(self.raw, width as c_int, height as c_int) };
 
         if ret == 0 { Ok(()) }
@@ -396,7 +396,7 @@ impl<S> Renderer<S> {
         (width as int, height as int)
     }
 
-    pub fn set_viewport(&self, rect: &Rect) -> Result<(), ~str> {
+    pub fn set_viewport(&self, rect: &Rect) -> Result<(), StrBuf> {
         let ret = unsafe { ll::SDL_RenderSetViewport(self.raw, rect) };
 
         if ret == 0 { Ok(()) }
@@ -414,7 +414,7 @@ impl<S> Renderer<S> {
         rect
     }
 
-    pub fn set_clip_rect(&self, rect: &Rect) -> Result<(), ~str> {
+    pub fn set_clip_rect(&self, rect: &Rect) -> Result<(), StrBuf> {
         let ret = unsafe { ll::SDL_RenderSetClipRect(self.raw, rect) };
 
         if ret == 0 { Ok(()) }
@@ -432,7 +432,7 @@ impl<S> Renderer<S> {
         rect
     }
 
-    pub fn set_scale(&self, scale_x: f64, scale_y: f64) -> Result<(), ~str> {
+    pub fn set_scale(&self, scale_x: f64, scale_y: f64) -> Result<(), StrBuf> {
         let ret = unsafe { ll::SDL_RenderSetScale(self.raw, scale_x as c_float, scale_y as c_float) };
 
         if ret == 0 { Ok(()) }
@@ -446,14 +446,14 @@ impl<S> Renderer<S> {
         (scale_x as f64, scale_y as f64)
     }
 
-    pub fn draw_point(&self, point: Point) -> Result<(), ~str> {
+    pub fn draw_point(&self, point: Point) -> Result<(), StrBuf> {
         let ret = unsafe { ll::SDL_RenderDrawPoint(self.raw, point.x, point.y) };
 
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
 
-    pub fn draw_points(&self, points: &[Point]) -> Result<(), ~str> {
+    pub fn draw_points(&self, points: &[Point]) -> Result<(), StrBuf> {
         let ret = unsafe {
             ll::SDL_RenderDrawPoints(self.raw, mem::transmute(points.as_ptr()), points.len() as c_int)
         };
@@ -462,14 +462,14 @@ impl<S> Renderer<S> {
         else { Err(get_error()) }
     }
 
-    pub fn draw_line(&self, start: Point, end: Point) -> Result<(), ~str> {
+    pub fn draw_line(&self, start: Point, end: Point) -> Result<(), StrBuf> {
         let ret = unsafe { ll::SDL_RenderDrawLine(self.raw, start.x, start.y, end.x, end.y) };
 
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
 
-    pub fn draw_lines(&self, points: &[Point]) -> Result<(), ~str> {
+    pub fn draw_lines(&self, points: &[Point]) -> Result<(), StrBuf> {
         let ret = unsafe {
             ll::SDL_RenderDrawLines(self.raw, mem::transmute(points.as_ptr()), points.len() as c_int)
         };
@@ -478,14 +478,14 @@ impl<S> Renderer<S> {
         else { Err(get_error()) }
     }
 
-    pub fn draw_rect(&self, rect: &Rect) -> Result<(), ~str> {
+    pub fn draw_rect(&self, rect: &Rect) -> Result<(), StrBuf> {
         let ret = unsafe { ll::SDL_RenderDrawRect(self.raw, rect) };
 
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
 
-    pub fn draw_rects(&self, rects: &[Rect]) -> Result<(), ~str> {
+    pub fn draw_rects(&self, rects: &[Rect]) -> Result<(), StrBuf> {
         let ret = unsafe {
             ll::SDL_RenderDrawRects(self.raw, mem::transmute(rects.as_ptr()), rects.len() as c_int)
         };
@@ -494,14 +494,14 @@ impl<S> Renderer<S> {
         else { Err(get_error()) }
     }
 
-    pub fn fill_rect(&self, rect: &Rect) -> Result<(), ~str> {
+    pub fn fill_rect(&self, rect: &Rect) -> Result<(), StrBuf> {
         let ret = unsafe { ll::SDL_RenderFillRect(self.raw, rect) };
 
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
 
-    pub fn fill_rects(&self, rects: &[Rect]) -> Result<(), ~str> {
+    pub fn fill_rects(&self, rects: &[Rect]) -> Result<(), StrBuf> {
         let ret = unsafe {
             ll::SDL_RenderFillRects(self.raw, mem::transmute(rects.as_ptr()), rects.len() as c_int)
         };
@@ -510,7 +510,7 @@ impl<S> Renderer<S> {
         else { Err(get_error()) }
     }
 
-    pub fn copy(&self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>) -> Result<(), ~str> {
+    pub fn copy(&self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>) -> Result<(), StrBuf> {
         let ret = unsafe {
             ll::SDL_RenderCopy(
                 self.raw,
@@ -531,7 +531,7 @@ impl<S> Renderer<S> {
     }
 
     //TODO: Check whether RendererFlip is supposed to be combinable
-    pub fn copy_ex(&self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>, angle: f64, center: Option<Point>, flip: RendererFlip) -> Result<(), ~str> {
+    pub fn copy_ex(&self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>, angle: f64, center: Option<Point>, flip: RendererFlip) -> Result<(), StrBuf> {
         let ret = unsafe {
             ll::SDL_RenderCopyEx(
                 self.raw,
@@ -557,7 +557,7 @@ impl<S> Renderer<S> {
         else { Err(get_error()) }
     }
 
-    pub fn read_pixels(&self, rect: Option<Rect>, format: pixels::PixelFormatFlag) -> Result<CVec<u8>, ~str> {
+    pub fn read_pixels(&self, rect: Option<Rect>, format: pixels::PixelFormatFlag) -> Result<CVec<u8>, StrBuf> {
         unsafe {
             let (actual_rect, w, h) = match rect {
                 Some(rect) => (mem::transmute(&rect), rect.w as uint, rect.h as uint),
@@ -606,7 +606,7 @@ impl Drop for Texture {
 
 impl Texture {
 
-    pub fn query(&self) -> Result<TextureQuery, ~str> {
+    pub fn query(&self) -> Result<TextureQuery, StrBuf> {
         let format: uint32_t = 0;
         let access: c_int = 0;
         let width: c_int = 0;
@@ -625,14 +625,14 @@ impl Texture {
         }
     }
 
-    pub fn set_color_mod(&self, red: u8, green: u8, blue: u8) -> Result<(), ~str> {
+    pub fn set_color_mod(&self, red: u8, green: u8, blue: u8) -> Result<(), StrBuf> {
         let ret = unsafe { ll::SDL_SetTextureColorMod(self.raw, red, green, blue) };
 
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
 
-    pub fn get_color_mod(&self) -> Result<(u8, u8, u8), ~str> {
+    pub fn get_color_mod(&self) -> Result<(u8, u8, u8), StrBuf> {
         let r = 0;
         let g = 0;
         let b = 0;
@@ -645,14 +645,14 @@ impl Texture {
         }
     }
 
-    pub fn set_alpha_mod(&self, alpha: u8) -> Result<(), ~str> {
+    pub fn set_alpha_mod(&self, alpha: u8) -> Result<(), StrBuf> {
         let ret = unsafe { ll::SDL_SetTextureAlphaMod(self.raw, alpha) };
 
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
 
-    pub fn get_alpha_mod(&self) -> Result<u8, ~str> {
+    pub fn get_alpha_mod(&self) -> Result<u8, StrBuf> {
         let alpha = 0;
         let result = unsafe { ll::SDL_GetTextureAlphaMod(self.raw, &alpha) == 0 };
 
@@ -663,14 +663,14 @@ impl Texture {
         }
     }
 
-    pub fn set_blend_mode(&self, blend: BlendMode) -> Result<(), ~str> {
+    pub fn set_blend_mode(&self, blend: BlendMode) -> Result<(), StrBuf> {
         let ret = unsafe { ll::SDL_SetTextureBlendMode(self.raw, FromPrimitive::from_i64(blend as i64).unwrap()) };
 
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
 
-    pub fn get_blend_mode(&self) -> Result<BlendMode, ~str> {
+    pub fn get_blend_mode(&self) -> Result<BlendMode, StrBuf> {
         let blend: i64 = 0;
         let result = unsafe { ll::SDL_GetTextureBlendMode(self.raw, &FromPrimitive::from_i64(blend as i64).unwrap()) == 0 };
         if result {
@@ -680,7 +680,7 @@ impl Texture {
         }
     }
 
-    pub fn update(&self, rect: Option<Rect>, pixel_data: &[u8], pitch: int) -> Result<(), ~str> {
+    pub fn update(&self, rect: Option<Rect>, pixel_data: &[u8], pitch: int) -> Result<(), StrBuf> {
         let ret = unsafe {
             let actual_rect = match rect {
                 Some(rect) => mem::transmute(&rect),
@@ -694,7 +694,7 @@ impl Texture {
         else { Err(get_error()) }
     }
 
-    pub fn lock(&self, rect: Option<Rect>) -> Result<CVec<u8>, ~str> {
+    pub fn lock(&self, rect: Option<Rect>) -> Result<CVec<u8>, StrBuf> {
         let q = try!(self.query());
         unsafe {
             let actual_rect = match rect {
@@ -718,7 +718,7 @@ impl Texture {
         unsafe { ll::SDL_UnlockTexture(self.raw) }
     }
 
-    pub fn gl_bind_texture(&self) -> Result<(f64, f64), ~str> {
+    pub fn gl_bind_texture(&self) -> Result<(f64, f64), StrBuf> {
         let texw: c_float = 0.0;
         let texh: c_float = 0.0;
 
@@ -750,7 +750,7 @@ impl Texture {
 }
 
 
-pub fn get_num_render_drivers() -> Result<int, ~str> {
+pub fn get_num_render_drivers() -> Result<int, StrBuf> {
     let result = unsafe { ll::SDL_GetNumRenderDrivers() };
     if result > 0 {
         Ok(result as int)
@@ -759,7 +759,7 @@ pub fn get_num_render_drivers() -> Result<int, ~str> {
     }
 }
 
-pub fn get_render_driver_info(index: int) -> Result<RendererInfo, ~str> {
+pub fn get_render_driver_info(index: int) -> Result<RendererInfo, StrBuf> {
     let out = ll::SDL_RendererInfo {
         name: ptr::null(),
         flags: 0,

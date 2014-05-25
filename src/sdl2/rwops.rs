@@ -49,7 +49,7 @@ pub struct RWops {
 
 /// A structure that provides an abstract interface to stream I/O.
 impl RWops {
-    pub fn from_file(path: &Path, mode: &str) -> Result<RWops, ~str> {
+    pub fn from_file(path: &Path, mode: &str) -> Result<RWops, StrBuf> {
         let raw = unsafe {
             ll::SDL_RWFromFile(path.to_c_str().unwrap(), mode.to_c_str().unwrap())
         };
@@ -57,7 +57,7 @@ impl RWops {
         else { Ok(RWops{raw: raw, close_on_drop: true}) }
     }
 
-    pub fn from_bytes(buf: &[u8]) -> Result<RWops, ~str> {
+    pub fn from_bytes(buf: &[u8]) -> Result<RWops, StrBuf> {
         let raw = unsafe {
             ll::SDL_RWFromConstMem(buf.as_ptr() as *c_void, buf.len() as c_int)
         };
