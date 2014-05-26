@@ -115,7 +115,7 @@ pub fn was_inited(flags: InitFlag) -> InitFlag {
 pub fn get_error() -> String {
     unsafe {
         let cstr = CString::new(ll::SDL_GetError(), false);
-        cstr.as_str().unwrap().to_strbuf()
+        cstr.as_str().unwrap().into_owned()
     }
 }
 

@@ -1142,7 +1142,7 @@ pub fn push_event(event: Event) -> SdlResult<()> {
             else { Err(get_error()) }
         },
         None => {
-            Err("Unsupport event type to push back to queue.".to_strbuf())
+            Err("Unsupport event type to push back to queue.".into_owned())
         }
     }
 }

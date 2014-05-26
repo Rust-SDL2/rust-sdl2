@@ -733,7 +733,7 @@ impl Texture {
         if result {
             Ok((texw as f64, texh as f64))
         } else {
-            Err("Operation not supported".to_strbuf())
+            Err("Operation not supported".into_owned())
         }
     }
 
