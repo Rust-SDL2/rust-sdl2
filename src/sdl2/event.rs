@@ -564,9 +564,9 @@ pub enum Event {
     KeyDownEvent(uint, video::Window, KeyCode, ScanCode, Mod),
     KeyUpEvent(uint, video::Window, KeyCode, ScanCode, Mod),
     /// (timestamp, window, text, start, length)
-    TextEditingEvent(uint, video::Window, ~str, int, int),
+    TextEditingEvent(uint, video::Window, String, int, int),
     /// (timestamp, window, text)
-    TextInputEvent(uint, video::Window, ~str),
+    TextInputEvent(uint, video::Window, String),
 
     /// (timestamp, window, which, [MouseState], x, y, xrel, yrel)
     MouseMotionEvent(uint, video::Window, uint, MouseState, int, int,
@@ -615,7 +615,7 @@ pub enum Event {
     ClipboardUpdateEvent(uint),
 
     /// (timestamp, filename)
-    DropFileEvent(uint, ~str),
+    DropFileEvent(uint, String),
 
     /// (timestamp, Window, type, code)
     UserEvent(uint, video::Window, uint, int),

@@ -498,7 +498,7 @@ impl<S> Renderer<S> {
         else { Err(get_error()) }
     }
 
-    pub fn fill_rect(&self, rect: &Rect) -> Result<(), ~str> {
+    pub fn fill_rect(&self, rect: &Rect) -> Result<(), String> {
         let ret = unsafe { ll::SDL_RenderFillRect(self.raw, rect) };
 
         if ret == 0 { Ok(()) }

@@ -228,7 +228,7 @@ impl<'a> AudioSpec<'a> {
 
     pub fn load_wav_rw(src: &RWops) -> SdlResult<(AudioSpec, CVec<u8>)> {
         assert_eq!(mem::size_of::<AudioSpec>(), mem::size_of::<ll::SDL_AudioSpec>());
-        let mut spec = unsafe { mem::uninit::<AudioSpec>() };
+        let mut spec = unsafe { mem::uninitialized::<AudioSpec>() };
         let audio_buf = ptr::null::<u8>();
         let audio_len = 0u32;
         unsafe {
@@ -264,7 +264,7 @@ impl AudioDevice {
 
     pub fn open(device: Option<&str>, iscapture: int, spec: &AudioSpec) -> SdlResult<(AudioDevice, AudioSpec)> {
         //! SDL_OpenAudioDevice
-        let obtained = unsafe { mem::uninit::<AudioSpec>() };
+        let obtained = unsafe { mem::uninitialized::<AudioSpec>() };
         unsafe {
             let device_c_str = match device {
                 None => ptr::null(),

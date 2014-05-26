@@ -83,6 +83,8 @@ pub enum Error {
     UnsupportedError = ll::SDL_UNSUPPORTED as int
 }
 
+pub type SdlResult<T> = Result<T, String>;
+
 pub fn init(flags: InitFlag) -> bool {
     unsafe {
         ll::SDL_Init(flags.bits()) == 0
