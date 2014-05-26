@@ -44,11 +44,11 @@ fn ScanCode(code: uint, ident: &'static str) -> ScanCode {
 }
 
 impl ScanCode {
-    fn ident(&self) -> StrBuf {
+    fn ident(&self) -> String {
         self.ident.to_owned()
     }
 
-    fn padded_ident(&self) -> StrBuf {
+    fn padded_ident(&self) -> String {
         self.ident().append(" ".repeat(unsafe { longest_ident } - self.ident().len()).as_slice())
     }
 

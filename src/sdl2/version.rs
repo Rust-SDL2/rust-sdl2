@@ -58,7 +58,7 @@ pub fn get_version() -> Version {
 }
 
 /// Get the code revision of SDL that is linked against your program.
-pub fn get_revision() -> StrBuf {
+pub fn get_revision() -> String {
     unsafe {
         let ret = ll::SDL_GetRevision();
         CString::new(ret, false).as_str().unwrap().into_owned()

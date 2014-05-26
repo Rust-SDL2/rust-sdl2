@@ -343,7 +343,7 @@ impl Drop for Window {
 }
 
 impl Window {
-    pub fn new(title: &str, x: WindowPos, y: WindowPos, width: int, height: int, window_flags: WindowFlags) -> Result<Window, StrBuf> {
+    pub fn new(title: &str, x: WindowPos, y: WindowPos, width: int, height: int, window_flags: WindowFlags) -> Result<Window, String> {
         unsafe {
             let raw = title.with_c_str(|buff| {
                 ll::SDL_CreateWindow(
@@ -364,7 +364,7 @@ impl Window {
         }
     }
 
-    pub fn from_id(id: u32) -> Result<Window, StrBuf> {
+    pub fn from_id(id: u32) -> Result<Window, String> {
         let raw = unsafe { ll::SDL_GetWindowFromID(id) };
         if raw == ptr::null() {
             Err(get_error())
@@ -373,7 +373,7 @@ impl Window {
         }
     }
 
-    pub fn get_display_index(&self) -> Result<int, StrBuf> {
+    pub fn get_display_index(&self) -> Result<int, String> {
         let result = unsafe { ll::SDL_GetWindowDisplayIndex(self.raw) };
         if result < 0 {
             return Err(get_error())
@@ -394,7 +394,7 @@ impl Window {
         }
     }
 
-    pub fn get_display_mode(&self, display_mode: &DisplayMode) -> Result<DisplayMode, StrBuf> {
+    pub fn get_display_mode(&self, display_mode: &DisplayMode) -> Result<DisplayMode, String> {
         let dm = empty_sdl_display_mode();
 
         let result = unsafe {
@@ -432,7 +432,7 @@ impl Window {
         })
     }
 
-    pub fn get_title(&self) -> StrBuf {
+    pub fn get_title(&self) -> String {
         unsafe {
             let cstr = ll::SDL_GetWindowTitle(self.raw);
             str::raw::from_c_str(mem::transmute_copy(&cstr))
@@ -522,7 +522,7 @@ impl Window {
         unsafe { ll::SDL_SetWindowFullscreen(self.raw, fullscreen_type as uint32_t) == 0 }
     }
 
-    pub fn get_surface(&self) -> Result<Surface, StrBuf> {
+    pub fn get_surface(&self) -> Result<Surface, String> {
         let raw = unsafe { ll::SDL_GetWindowSurface(self.raw) };
 
         if raw == ptr::null() {
@@ -574,7 +574,7 @@ impl Window {
         }
     }
 
-    pub fn get_gamma_ramp(&self) -> Result<(Vec<u16>, Vec<u16>, Vec<u16>), StrBuf> {
+    pub fn get_gamma_ramp(&self) -> Result<(Vec<u16>, Vec<u16>, Vec<u16>), String> {
         let red: Vec<u16> = Vec::with_capacity(256);
         let green: Vec<u16> = Vec::with_capacity(256);
         let blue: Vec<u16> = Vec::with_capacity(256);
@@ -586,7 +586,7 @@ impl Window {
         }
     }
 
-    pub fn gl_create_context(&self) -> Result<GLContext, StrBuf> {
+    pub fn gl_create_context(&self) -> Result<GLContext, String> {
         let result = unsafe { ll::SDL_GL_CreateContext(self.raw) };
         if result == ptr::null() {
             Err(get_error())
@@ -604,7 +604,7 @@ impl Window {
     }
 }
 
-pub fn get_num_video_drivers() -> Result<int, StrBuf> {
+pub fn get_num_video_drivers() -> Result<int, String> {
     let result = unsafe { ll::SDL_GetNumVideoDrivers() };
     if result < 0 {
         Err(get_error())
@@ -613,7 +613,7 @@ pub fn get_num_video_drivers() -> Result<int, StrBuf> {
     }
 }
 
-pub fn get_video_driver(id: int) -> StrBuf {
+pub fn get_video_driver(id: int) -> String {
     unsafe {
         let cstr = ll::SDL_GetVideoDriver(id as c_int);
         str::raw::from_c_str(mem::transmute_copy(&cstr))
@@ -630,14 +630,14 @@ pub fn video_quit() {
     unsafe { ll::SDL_VideoQuit() }
 }
 
-pub fn get_current_video_driver() -> StrBuf {
+pub fn get_current_video_driver() -> String {
     unsafe {
         let cstr = ll::SDL_GetCurrentVideoDriver();
         str::raw::from_c_str(mem::transmute_copy(&cstr))
     }
 }
 
-pub fn get_num_video_displays() -> Result<int, StrBuf> {
+pub fn get_num_video_displays() -> Result<int, String> {
     let result = unsafe { ll::SDL_GetNumVideoDisplays() };
     if result < 0 {
         Err(get_error())
@@ -646,14 +646,14 @@ pub fn get_num_video_displays() -> Result<int, StrBuf> {
     }
 }
 
-pub fn get_display_name(display_index: int) -> StrBuf {
+pub fn get_display_name(display_index: int) -> String {
     unsafe {
         let cstr = ll::SDL_GetDisplayName(display_index as c_int);
         str::raw::from_c_str(mem::transmute_copy(&cstr))
     }
 }
 
-pub fn get_display_bounds(display_index: int) -> Result<Rect, StrBuf> {
+pub fn get_display_bounds(display_index: int) -> Result<Rect, String> {
     let out: Rect = Rect::new(0, 0, 0, 0);
     let result = unsafe { ll::SDL_GetDisplayBounds(display_index as c_int, &out) == 0 };
 
@@ -664,7 +664,7 @@ pub fn get_display_bounds(display_index: int) -> Result<Rect, StrBuf> {
     }
 }
 
-pub fn get_num_display_modes(display_index: int) -> Result<int, StrBuf> {
+pub fn get_num_display_modes(display_index: int) -> Result<int, String> {
     let result = unsafe { ll::SDL_GetNumDisplayModes(display_index as c_int) };
     if result < 0 {
         Err(get_error())
@@ -673,7 +673,7 @@ pub fn get_num_display_modes(display_index: int) -> Result<int, StrBuf> {
     }
 }
 
-pub fn get_display_mode(display_index: int, mode_index: int) -> Result<DisplayMode, StrBuf> {
+pub fn get_display_mode(display_index: int, mode_index: int) -> Result<DisplayMode, String> {
     let dm = empty_sdl_display_mode();
     let result = unsafe { ll::SDL_GetDisplayMode(display_index as c_int, mode_index as c_int, &dm) == 0};
 
@@ -684,7 +684,7 @@ pub fn get_display_mode(display_index: int, mode_index: int) -> Result<DisplayMo
     }
 }
 
-pub fn get_desktop_display_mode(display_index: int) -> Result<DisplayMode, StrBuf> {
+pub fn get_desktop_display_mode(display_index: int) -> Result<DisplayMode, String> {
     let dm = empty_sdl_display_mode();
     let result = unsafe { ll::SDL_GetDesktopDisplayMode(display_index as c_int, &dm) == 0};
 
@@ -695,7 +695,7 @@ pub fn get_desktop_display_mode(display_index: int) -> Result<DisplayMode, StrBu
     }
 }
 
-pub fn get_current_display_mode(display_index: int) -> Result<DisplayMode, StrBuf> {
+pub fn get_current_display_mode(display_index: int) -> Result<DisplayMode, String> {
     let dm = empty_sdl_display_mode();
     let result = unsafe { ll::SDL_GetCurrentDisplayMode(display_index as c_int, &dm) == 0};
 
@@ -706,7 +706,7 @@ pub fn get_current_display_mode(display_index: int) -> Result<DisplayMode, StrBu
     }
 }
 
-pub fn get_closest_display_mode(display_index: int, mode: &DisplayMode) -> Result<DisplayMode, StrBuf> {
+pub fn get_closest_display_mode(display_index: int, mode: &DisplayMode) -> Result<DisplayMode, String> {
     let input = mode.to_ll();
     let out = empty_sdl_display_mode();
 
@@ -731,7 +731,7 @@ pub fn disable_screen_saver() {
     unsafe { ll::SDL_DisableScreenSaver() }
 }
 
-pub fn gl_load_library(path: &str) -> Result<(), StrBuf> {
+pub fn gl_load_library(path: &str) -> Result<(), String> {
     unsafe {
         path.with_c_str(|path| {
             if ll::SDL_GL_LoadLibrary(path) == 0 {
@@ -765,7 +765,7 @@ pub fn gl_set_attribute(attr: GLAttr, value: int) -> bool {
     unsafe { ll::SDL_GL_SetAttribute(FromPrimitive::from_u64(attr as u64).unwrap(), value as c_int) == 0 }
 }
 
-pub fn gl_get_attribute(attr: GLAttr) -> Result<int, StrBuf> {
+pub fn gl_get_attribute(attr: GLAttr) -> Result<int, String> {
     let out: c_int = 0;
 
     let result = unsafe { ll::SDL_GL_GetAttribute(FromPrimitive::from_u64(attr as u64).unwrap(), &out) } == 0;
@@ -776,7 +776,7 @@ pub fn gl_get_attribute(attr: GLAttr) -> Result<int, StrBuf> {
     }
 }
 
-pub fn gl_get_current_window() -> Result<Window, StrBuf> {
+pub fn gl_get_current_window() -> Result<Window, String> {
     let raw = unsafe { ll::SDL_GL_GetCurrentWindow() };
     if raw == ptr::null() {
         Err(get_error())
@@ -785,7 +785,7 @@ pub fn gl_get_current_window() -> Result<Window, StrBuf> {
     }
 }
 
-pub fn gl_get_current_context() -> Result<GLContext, StrBuf> {
+pub fn gl_get_current_context() -> Result<GLContext, String> {
     let raw = unsafe { ll::SDL_GL_GetCurrentContext() };
     if raw == ptr::null() {
         Err(get_error())
