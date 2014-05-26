@@ -563,9 +563,9 @@ pub enum Event {
     KeyDownEvent(uint, video::Window, KeyCode, ScanCode, Mod),
     KeyUpEvent(uint, video::Window, KeyCode, ScanCode, Mod),
     /// (timestamp, window, text, start, length)
-    TextEditingEvent(uint, video::Window, StrBuf, int, int),
+    TextEditingEvent(uint, video::Window, String, int, int),
     /// (timestamp, window, text)
-    TextInputEvent(uint, video::Window, StrBuf),
+    TextInputEvent(uint, video::Window, String),
 
     /// (timestamp, window, which, [MouseState], x, y, xrel, yrel)
     MouseMotionEvent(uint, video::Window, uint, MouseState, int, int,
@@ -614,7 +614,7 @@ pub enum Event {
     ClipboardUpdateEvent(uint),
 
     /// (timestamp, filename)
-    DropFileEvent(uint, StrBuf),
+    DropFileEvent(uint, String),
 
     /// (timestamp, Window, type, code)
     UserEvent(uint, video::Window, uint, int),
@@ -1062,7 +1062,7 @@ pub fn poll_event() -> Event {
 }
 
 /// Wait indefinitely for the next available event.
-pub fn wait_event() -> Result<Event, StrBuf> {
+pub fn wait_event() -> Result<Event, String> {
     let raw = null_event();
     let success = unsafe { ll::SDL_WaitEvent(&raw) == 1 as c_int };
 
@@ -1071,7 +1071,7 @@ pub fn wait_event() -> Result<Event, StrBuf> {
 }
 
 /// Wait until the specified timeout (in milliseconds) for the next available event.
-pub fn wait_event_timeout(timeout: int) -> Result<Event, StrBuf> {
+pub fn wait_event_timeout(timeout: int) -> Result<Event, String> {
     let raw = null_event();
     let success = unsafe { ll::SDL_WaitEventTimeout(&raw, timeout as c_int) ==
                            1 as c_int };
@@ -1133,7 +1133,7 @@ pub fn register_events(num: int) -> Option<uint> {
 }
 
 /// add an event to the event queue
-pub fn push_event(event: Event) -> Result<(), StrBuf> {
+pub fn push_event(event: Event) -> Result<(), String> {
     match event.to_ll() {
         Some(raw_event) => {
             let ok = unsafe { ll::SDL_PushEvent(&raw_event) == 1 };
