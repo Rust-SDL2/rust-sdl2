@@ -16,6 +16,7 @@ pub mod keycode;
 #[path = "generated/scancode.rs"]
 pub mod scancode;
 
+pub mod macros;
 pub mod event;
 pub mod gesture;
 pub mod touch;
