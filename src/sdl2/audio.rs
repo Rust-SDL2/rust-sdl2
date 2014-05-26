@@ -9,6 +9,7 @@ use std::raw::Slice;
 
 use get_error;
 use rwops::RWops;
+use SdlResult;
 
 
 #[allow(non_camel_case_types)]
@@ -221,11 +222,11 @@ extern "C" fn c_audio_callback(userdata: *c_void, stream: *uint8_t, len: c_int) 
 
 
 impl<'a> AudioSpec<'a> {
-    pub fn load_wav(path: &Path) -> Result<(AudioSpec, CVec<u8>), String> {
+    pub fn load_wav(path: &Path) -> SdlResult<(AudioSpec, CVec<u8>)> {
         AudioSpec::load_wav_rw(&try!(RWops::from_file(path, "rb")))
     }
 
-    pub fn load_wav_rw(src: &RWops) -> Result<(AudioSpec, CVec<u8>), String> {
+    pub fn load_wav_rw(src: &RWops) -> SdlResult<(AudioSpec, CVec<u8>)> {
         assert_eq!(mem::size_of::<AudioSpec>(), mem::size_of::<ll::SDL_AudioSpec>());
         let mut spec = unsafe { mem::uninitialized::<AudioSpec>() };
         let audio_buf = ptr::null::<u8>();
@@ -261,7 +262,7 @@ impl AudioDevice {
         }
     }
 
-    pub fn open(device: Option<&str>, iscapture: int, spec: &AudioSpec) -> Result<(AudioDevice, AudioSpec), String> {
+    pub fn open(device: Option<&str>, iscapture: int, spec: &AudioSpec) -> SdlResult<(AudioDevice, AudioSpec)> {
         //! SDL_OpenAudioDevice
         let obtained = unsafe { mem::uninitialized::<AudioSpec>() };
         unsafe {
@@ -334,7 +335,7 @@ impl Drop for AudioCVT {
 
 impl AudioCVT {
     pub fn new(src_format: AudioFormat, src_channels: u8, src_rate: int,
-               dst_format: AudioFormat, dst_channels: u8, dst_rate: int) -> Result<AudioCVT, String> {
+               dst_format: AudioFormat, dst_channels: u8, dst_rate: int) -> SdlResult<AudioCVT> {
         unsafe {
             let c_cvt_p = libc::malloc(mem::size_of::<ll::SDL_AudioCVT>() as size_t) as *mut ll::SDL_AudioCVT;
             let ret = ll::SDL_BuildAudioCVT(c_cvt_p,
@@ -348,12 +349,12 @@ impl AudioCVT {
         }
     }
 
-    pub fn convert(&self, src: CVec<u8>) -> Result<CVec<u8>, String> {
+    pub fn convert(&self, src: CVec<u8>) -> SdlResult<CVec<u8>> {
         //! Convert audio data to a desired audio format.
 
         unsafe {
             if (*self.raw).needed != 1 {
-                return Err("no convertion needed!".to_owned())
+                return Err("no convertion needed!".into_owned())
             }
             // set len
             (*self.raw).len = src.len() as c_int;
