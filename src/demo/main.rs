@@ -19,6 +19,6 @@ fn main() {
     if args.len() < 2 {
         println!("Usage: ./demo image.[png|jpg]")
     } else {
-        video::main(&Path::new(args.get(1).to_owned()));
+        video::main(&Path::new(args.get(1).to_string()));
     }
 }
