@@ -39,13 +39,14 @@ impl TotalOrd for ScanCode {
 impl TotalEq for ScanCode {
 }
 
+#[allow(non_snake_case_functions)]
 fn ScanCode(code: uint, ident: &'static str) -> ScanCode {
     ScanCode { code: code, ident: ident }
 }
 
 impl ScanCode {
     fn ident(&self) -> String {
-        self.ident.to_owned()
+        self.ident.to_string()
     }
 
     fn padded_ident(&self) -> String {
@@ -341,7 +342,7 @@ impl ScanCode {
     for &entry in entries.iter() {
         try!(out.write(format!("            {} => {},\n", entry.padded_ident(), entry.code).container_as_bytes()));
     }
-    
+
     try!(out.write("
         }
     }
@@ -380,7 +381,7 @@ impl FromPrimitive for ScanCode {
         for &entry in entries.iter() {
             try!(out.write(format!("            {} => Some({}),\n", entry.code, entry.ident()).container_as_bytes()));
         }
-   
+
         try!(out.write("
                 _   => { Some(UnknownScanCode) }
             }
@@ -389,7 +390,7 @@ impl FromPrimitive for ScanCode {
 
 try!(out.write("
 }".as_bytes()));
-    
+
     try!(out.flush());
     Ok(())
 }

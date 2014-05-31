@@ -156,7 +156,7 @@ pub fn get_num_audio_drivers() -> int {
 pub fn get_audio_driver(index: int) -> String {
     unsafe {
         let buf = ll::SDL_GetAudioDriver(index as c_int);
-        CString::new(buf, false).as_str().unwrap().into_owned()
+        CString::new(buf, false).as_str().unwrap().into_string()
     }
 }
 
@@ -167,11 +167,11 @@ pub fn get_num_audio_devices(iscapture: int) -> int {
 pub fn get_audio_device_name(index: int, iscapture: int) -> String {
     unsafe {
         let buf = ll::SDL_GetAudioDeviceName(index as c_int, iscapture as c_int);
-        CString::new(buf, false).as_str().unwrap().into_owned()
+        CString::new(buf, false).as_str().unwrap().into_string()
     }
 }
 
-pub fn audio_init(name: &str) -> Result<(), String> {
+pub fn audio_init(name: &str) -> SdlResult<()> {
     let ret = name.with_c_str(|buf| {
             unsafe { ll::SDL_AudioInit(buf) }
         });
@@ -189,12 +189,10 @@ pub fn audio_quit() {
 pub fn get_current_audio_driver() -> String {
     unsafe {
         let buf = ll::SDL_GetCurrentAudioDriver();
-        CString::new(buf, false).as_str().unwrap().into_owned()
+        CString::new(buf, false).as_str().unwrap().into_string()
     }
 }
 
-// make this same layout as in C
-#[repr(C)]
 pub struct AudioSpec<'a > {
     pub freq: c_int,
     pub format: AudioFormat,
@@ -354,7 +352,7 @@ impl AudioCVT {
 
         unsafe {
             if (*self.raw).needed != 1 {
-                return Err("no convertion needed!".into_owned())
+                return Err("no convertion needed!".into_string())
             }
             // set len
             (*self.raw).len = src.len() as c_int;

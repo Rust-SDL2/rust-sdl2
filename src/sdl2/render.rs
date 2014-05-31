@@ -274,8 +274,8 @@ impl<S> Renderer<S> {
     pub fn get_parent<'a>(&'a self) -> &'a S { self.parent.get_ref() }
 
     #[inline]
-    pub fn unwrap_parent(mut self) -> S { 
-        use std::mem; 
+    pub fn unwrap_parent(mut self) -> S {
+        use std::mem;
         mem::replace(&mut self.parent, None).unwrap()
     }
 
@@ -498,7 +498,7 @@ impl<S> Renderer<S> {
         else { Err(get_error()) }
     }
 
-    pub fn fill_rect(&self, rect: &Rect) -> Result<(), String> {
+    pub fn fill_rect(&self, rect: &Rect) -> SdlResult<()> {
         let ret = unsafe { ll::SDL_RenderFillRect(self.raw, rect) };
 
         if ret == 0 { Ok(()) }
@@ -733,7 +733,7 @@ impl Texture {
         if result {
             Ok((texw as f64, texh as f64))
         } else {
-            Err("Operation not supported".into_owned())
+            Err("Operation not supported".into_string())
         }
     }
 

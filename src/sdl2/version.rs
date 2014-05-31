@@ -61,7 +61,7 @@ pub fn get_version() -> Version {
 pub fn get_revision() -> String {
     unsafe {
         let ret = ll::SDL_GetRevision();
-        CString::new(ret, false).as_str().unwrap().into_owned()
+        CString::new(ret, false).as_str().unwrap().into_string()
     }
 }
 

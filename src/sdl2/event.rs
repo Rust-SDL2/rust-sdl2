@@ -786,7 +786,7 @@ impl Event {
                     Ok(window) => window,
                 };
 
-                let text = str::from_utf8_lossy(event.text.iter().take_while(|&b| (*b) != 0i8).map(|&b| b as u8).collect::<Vec<u8>>().as_slice()).into_owned();
+                let text = str::from_utf8_lossy(event.text.iter().take_while(|&b| (*b) != 0i8).map(|&b| b as u8).collect::<Vec<u8>>().as_slice()).into_string();
                 TextEditingEvent(event.timestamp as uint, window, text,
                                  event.start as int, event.length as int)
             }
@@ -799,7 +799,7 @@ impl Event {
                     Ok(window) => window,
                 };
 
-                let text = str::from_utf8_lossy(event.text.iter().take_while(|&b| (*b) != 0i8).map(|&b| b as u8).collect::<Vec<u8>>().as_slice()).into_owned();
+                let text = str::from_utf8_lossy(event.text.iter().take_while(|&b| (*b) != 0i8).map(|&b| b as u8).collect::<Vec<u8>>().as_slice()).into_string();
                 TextInputEvent(event.timestamp as uint, window, text)
             }
 
@@ -1142,7 +1142,7 @@ pub fn push_event(event: Event) -> SdlResult<()> {
             else { Err(get_error()) }
         },
         None => {
-            Err("Unsupport event type to push back to queue.".into_owned())
+            Err("Unsupport event type to push back to queue.".into_string())
         }
     }
 }

@@ -39,14 +39,14 @@ impl TotalOrd for Key {
 impl TotalEq for Key {
 }
 
-
+#[allow(non_snake_case_functions)]
 fn Key(code: uint, ident: &'static str) -> Key {
     Key { code: code, ident: ident }
 }
 
 impl Key {
     fn ident(&self) -> String {
-        self.ident.to_owned()
+        self.ident.to_string()
     }
 
     fn padded_ident(&self) -> String {
@@ -321,10 +321,10 @@ pub enum KeyCode {
 }
 
 impl Hash for KeyCode {
-   #[inline] 
+   #[inline]
     fn hash(&self, state: &mut SipState) {
 	self.code().hash(state);
-    } 
+    }
 }
 
 impl KeyCode {

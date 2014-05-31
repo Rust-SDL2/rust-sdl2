@@ -1,8 +1,6 @@
 use std::io;
 use std::io::IoResult;
-use get_error;
 use libc::{c_void, c_int, size_t};
-
 use get_error;
 use SdlResult;
 
