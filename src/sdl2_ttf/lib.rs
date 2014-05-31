@@ -47,7 +47,6 @@ mod others {
 
 #[allow(non_camel_case_types, dead_code)]
 mod ffi;
-mod flag;
 
 #[inline]
 fn color_to_c_color(color: Color) -> SDL_Color {
@@ -58,16 +57,15 @@ fn color_to_c_color(color: Color) -> SDL_Color {
 }
 
 /// Font Style
-#[deriving(Show)]
-flag_type!(FontStyle : c_int {
-    StyleNormal = ffi::TTF_STYLE_NORMAL,
-    StyleBold   = ffi::TTF_STYLE_BOLD,
-    StyleItalic = ffi::TTF_STYLE_ITALIC,
-    StyleUnderline = ffi::TTF_STYLE_UNDERLINE,
-    StyleStrikeThrough = ffi::TTF_STYLE_STRIKETHROUGH
+bitflags!(flags FontStyle : c_int {
+    static StyleNormal = ffi::TTF_STYLE_NORMAL,
+    static StyleBold   = ffi::TTF_STYLE_BOLD,
+    static StyleItalic = ffi::TTF_STYLE_ITALIC,
+    static StyleUnderline = ffi::TTF_STYLE_UNDERLINE,
+    static StyleStrikeThrough = ffi::TTF_STYLE_STRIKETHROUGH
 })
 
-#[deriving(Show, Eq, FromPrimitive)]
+#[deriving(Show, PartialEq, FromPrimitive)]
 pub enum Hinting {
     HintingNormal = ffi::TTF_HINTING_NORMAL as int,
     HintingLight  = ffi::TTF_HINTING_LIGHT  as int,
@@ -76,7 +74,7 @@ pub enum Hinting {
 }
 
 /// Glyph Metrics
-#[deriving(Eq, Clone, Show)]
+#[deriving(PartialEq, Clone, Show)]
 pub struct GlyphMetrics {
     pub minx: int,
     pub maxx: int,
@@ -117,7 +115,7 @@ pub fn quit() {
 
 /// The opaque holder of a loaded font.
 #[allow(raw_pointer_deriving)]
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 pub struct Font {
     raw: *ffi::TTF_Font,
     owned: bool
@@ -167,14 +165,16 @@ impl Font {
 
     pub fn get_style(&self) -> FontStyle {
         //! Get font render style
-        let raw = unsafe { ffi::TTF_GetFontStyle(self.raw) };
-        FontStyle::new(raw)
+        unsafe {
+            let raw = ffi::TTF_GetFontStyle(self.raw);
+            FontStyle::from_bits_truncate(raw)
+        }
     }
 
     pub fn set_style(&mut self, styles: FontStyle) {
         //! Set font render style.
         unsafe {
-            ffi::TTF_SetFontStyle(self.raw, styles.get())
+            ffi::TTF_SetFontStyle(self.raw, styles.bits())
         }
     }
 
