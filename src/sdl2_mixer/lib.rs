@@ -22,8 +22,7 @@ use libc::{c_int, uint16_t, c_double};
 use sdl2::get_error;
 use sdl2::rwops::RWops;
 use sdl2::version::Version;
-
-pub type SdlResult<T> = Result<T, String>;
+use sdl2::SdlResult;
 
 // Setup linking for all targets.
 #[cfg(target_os="macos")]
@@ -175,7 +174,7 @@ pub fn get_chunk_decoder(index: int) -> String {
 }
 
 /// The internal format for an audio chunk.
-#[deriving(Eq)] #[allow(raw_pointer_deriving, visible_private_types)]
+#[deriving(PartialEq)] #[allow(raw_pointer_deriving, visible_private_types)]
 pub struct Chunk {
     pub raw: *ffi::Mix_Chunk,
     pub owned: bool
@@ -242,7 +241,7 @@ impl LoaderRWops for RWops {
 
 /// Fader effect type enumerations
 #[repr(C)]
-#[deriving(Clone, Eq, Hash, Show, FromPrimitive)]
+#[deriving(Clone, PartialEq, Hash, Show, FromPrimitive)]
 pub enum Fading {
     NoFading  = ffi::MIX_NO_FADING as int,
     FadingOut = ffi::MIX_FADING_OUT as int,
@@ -250,7 +249,7 @@ pub enum Fading {
 }
 
 /// Sound effect channel.
-#[deriving(Eq, Show)]
+#[deriving(PartialEq, Show)]
 pub struct Channel(int);
 
 /// Set the number of channels being mixed.
@@ -573,7 +572,7 @@ pub fn get_music_decoder(index: int) -> String {
 
 /// Music type enumerations
 #[repr(C)]
-#[deriving(Clone, Eq, Hash, Show, FromPrimitive)]
+#[deriving(Clone, PartialEq, Hash, Show, FromPrimitive)]
 pub enum MusicType {
     MusicNone    = ffi::MUS_NONE as int,
     MusicCmd     = ffi::MUS_CMD as int,
@@ -601,7 +600,7 @@ extern "C" fn c_music_finished_hook() {
 }
 
 /// This is an opaque data type used for Music data.
-#[deriving(Eq)] #[allow(raw_pointer_deriving, visible_private_types)]
+#[deriving(PartialEq)] #[allow(raw_pointer_deriving, visible_private_types)]
 pub struct Music {
     pub raw: *ffi::Mix_Music,
     pub owned: bool,
