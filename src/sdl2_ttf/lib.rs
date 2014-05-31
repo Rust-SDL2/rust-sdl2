@@ -23,6 +23,7 @@ use sdl2::pixels::Color;
 use sdl2::pixels::ll::SDL_Color;
 use sdl2::rwops::RWops;
 use sdl2::version::Version;
+use sdl2::SdlResult;
 
 // Setup linking for all targets.
 #[cfg(target_os="macos")]
@@ -136,7 +137,11 @@ impl Drop for Font {
 }
 
 impl Font {
-    pub fn from_file(filename: &Path, ptsize: int) -> Result<Font, ~str> {
+    fn from_ll(raw: *ffi::TTF_Font, owned: bool) -> Font {
+        Font { raw: raw, owned: owned }
+    }
+
+    pub fn from_file(filename: &Path, ptsize: int) -> SdlResult<Font> {
         //! Load file for use as a font, at ptsize size.
         unsafe {
             let raw = ffi::TTF_OpenFont(filename.to_c_str().unwrap(), ptsize as c_int);
@@ -148,7 +153,7 @@ impl Font {
         }
     }
 
-    pub fn from_file_index(filename: &Path, ptsize: int, index: int) -> Result<Font, ~str> {
+    pub fn from_file_index(filename: &Path, ptsize: int, index: int) -> SdlResult<Font> {
         //! Load file, face index, for use as a font, at ptsize size.
         unsafe {
             let raw = ffi::TTF_OpenFontIndex(filename.to_c_str().unwrap(), ptsize as c_int, index as c_long);
@@ -257,7 +262,7 @@ impl Font {
         }
     }
 
-    pub fn face_family_name(&self) -> Option<~str> {
+    pub fn face_family_name(&self) -> Option<String> {
         //! Get current font face family name string.
         unsafe {
             // not owns buffer
@@ -265,19 +270,19 @@ impl Font {
             if cname.is_null() {
                 None
             } else {
-                Some(CString::new(cname, false).as_str().unwrap().into_owned())
+                Some(CString::new(cname, false).as_str().unwrap().into_string())
             }
         }
     }
 
-    pub fn face_style_name(&self) -> Option<~str> {
+    pub fn face_style_name(&self) -> Option<String> {
         //! Get current font face style name string.
         unsafe {
             let cname = ffi::TTF_FontFaceStyleName(self.raw);
             if cname.is_null() {
                 None
             } else {
-                Some(CString::new(cname, false).as_str().unwrap().into_owned())
+                Some(CString::new(cname, false).as_str().unwrap().into_string())
             }
         }
     }
@@ -314,7 +319,7 @@ impl Font {
         }
     }
 
-    pub fn size_of_bytes(&self, text: &[u8]) -> Result<(int, int), ~str> {
+    pub fn size_of_bytes(&self, text: &[u8]) -> SdlResult<(int, int)> {
         //! Get size of LATIN1 text string as would be rendered.
         let w = 0;
         let h = 0;
@@ -330,7 +335,7 @@ impl Font {
         }
     }
 
-    pub fn size_of_str(&self, text: &str) -> Result<(int, int), ~str> {
+    pub fn size_of_str(&self, text: &str) -> SdlResult<(int, int)> {
         //! Get size of UTF8 text string as would be rendered.
         let w = 0;
         let h = 0;
@@ -346,7 +351,7 @@ impl Font {
         }
     }
 
-    pub fn render_bytes_solid(&self, text: &[u8], fg: Color) -> Result<Surface, ~str> {
+    pub fn render_bytes_solid(&self, text: &[u8], fg: Color) -> SdlResult<Surface> {
         //! Draw LATIN1 text in solid mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
@@ -355,12 +360,12 @@ impl Font {
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface { raw: raw, owned: true })
+                Ok(Surface::from_ll(raw, true))
             }
         }
     }
 
-    pub fn render_str_solid(&self, text: &str, fg: Color) -> Result<Surface, ~str> {
+    pub fn render_str_solid(&self, text: &str, fg: Color) -> SdlResult<Surface> {
         //! Draw UTF8 text in solid mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
@@ -369,24 +374,24 @@ impl Font {
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface { raw: raw, owned: true })
+                Ok(Surface::from_ll(raw, true))
             }
         }
     }
 
-    pub fn render_char_solid(&self, ch: char, fg: Color) -> Result<Surface, ~str> {
+    pub fn render_char_solid(&self, ch: char, fg: Color) -> SdlResult<Surface> {
         //! Draw a UNICODE glyph in solid mode.
         unsafe {
             let raw = ffi::TTF_RenderGlyph_Solid(self.raw, ch as u16, color_to_c_color(fg));
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface { raw: raw, owned: true })
+                Ok(Surface::from_ll(raw, true))
             }
         }
     }
 
-    pub fn render_bytes_shaded(&self, text: &[u8], fg: Color, bg: Color) -> Result<Surface, ~str> {
+    pub fn render_bytes_shaded(&self, text: &[u8], fg: Color, bg: Color) -> SdlResult<Surface> {
         //! Draw LATIN1 text in shaded mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
@@ -395,12 +400,12 @@ impl Font {
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface { raw: raw, owned: true })
+                Ok(Surface::from_ll(raw, true))
             }
         }
     }
 
-    pub fn render_str_shaded(&self, text: &str, fg: Color, bg: Color) -> Result<Surface, ~str> {
+    pub fn render_str_shaded(&self, text: &str, fg: Color, bg: Color) -> SdlResult<Surface> {
         //! Draw UTF8 text in shaded mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
@@ -409,24 +414,24 @@ impl Font {
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface { raw: raw, owned: true })
+                Ok(Surface::from_ll(raw, true))
             }
         }
     }
 
-    pub fn render_char_shaded(&self, ch: char, fg: Color, bg: Color) -> Result<Surface, ~str> {
+    pub fn render_char_shaded(&self, ch: char, fg: Color, bg: Color) -> SdlResult<Surface> {
         //! Draw a UNICODE glyph in shaded mode.
         unsafe {
             let raw = ffi::TTF_RenderGlyph_Shaded(self.raw, ch as u16, color_to_c_color(fg), color_to_c_color(bg));
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface { raw: raw, owned: true })
+                Ok(Surface::from_ll(raw, true))
             }
         }
     }
 
-    pub fn render_bytes_blended(&self, text: &[u8], fg: Color) -> Result<Surface, ~str> {
+    pub fn render_bytes_blended(&self, text: &[u8], fg: Color) -> SdlResult<Surface> {
         //! Draw LATIN1 text in blended mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
@@ -435,12 +440,12 @@ impl Font {
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface { raw: raw, owned: true })
+                Ok(Surface::from_ll(raw, true))
             }
         }
     }
 
-    pub fn render_str_blended(&self, text: &str, fg: Color) -> Result<Surface, ~str> {
+    pub fn render_str_blended(&self, text: &str, fg: Color) -> SdlResult<Surface> {
         //! Draw UTF8 text in blended mode.
         unsafe {
             let raw = text.with_c_str(|ctext| {
@@ -449,19 +454,19 @@ impl Font {
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface { raw: raw, owned: true })
+                Ok(Surface::from_ll(raw, true))
             }
         }
     }
 
-    pub fn render_char_blended(&self, ch: char, fg: Color) -> Result<Surface, ~str> {
+    pub fn render_char_blended(&self, ch: char, fg: Color) -> SdlResult<Surface> {
         //! Draw a UNICODE glyph in blended mode.
         unsafe {
             let raw = ffi::TTF_RenderGlyph_Blended(self.raw, ch as u16, color_to_c_color(fg));
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface { raw: raw, owned: true })
+                Ok(Surface::from_ll(raw, true))
             }
         }
     }
@@ -471,30 +476,30 @@ impl Font {
 /// Loader trait for RWops
 pub trait LoaderRWops {
     /// Load src for use as a font.
-    fn load_font(&self, ptsize: int) -> Result<Font, ~str>;
+    fn load_font(&self, ptsize: int) -> SdlResult<Font>;
     /// Load src for use as a font.
-    fn load_font_index(&self, ptsize: int, index: int) -> Result<Font, ~str>;
+    fn load_font_index(&self, ptsize: int, index: int) -> SdlResult<Font>;
 }
 
 impl LoaderRWops for RWops {
-    fn load_font(&self, ptsize: int) -> Result<Font, ~str> {
+    fn load_font(&self, ptsize: int) -> SdlResult<Font> {
         let raw = unsafe {
-            ffi::TTF_OpenFontRW(self.raw, 0, ptsize as c_int)
+            ffi::TTF_OpenFontRW(self.raw(), 0, ptsize as c_int)
         };
         if raw.is_null() {
             Err(get_error())
         } else {
-            Ok(Font { raw: raw, owned: true })
+            Ok(Font::from_ll(raw, true))
         }
     }
-    fn load_font_index(&self, ptsize: int, index: int) -> Result<Font, ~str> {
+    fn load_font_index(&self, ptsize: int, index: int) -> SdlResult<Font> {
         let raw = unsafe {
-            ffi::TTF_OpenFontIndexRW(self.raw, 0, ptsize as c_int, index as c_long)
+            ffi::TTF_OpenFontIndexRW(self.raw(), 0, ptsize as c_int, index as c_long)
         };
         if raw.is_null() {
             Err(get_error())
         } else {
-            Ok(Font { raw: raw, owned: true })
+            Ok(Font::from_ll(raw, true))
         }
     }
 }
