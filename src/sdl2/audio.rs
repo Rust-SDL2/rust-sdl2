@@ -142,7 +142,7 @@ pub static AudioS32SYS : AudioFormat = ll::AUDIO_S32SYS;
 pub static AudioF32SYS : AudioFormat = ll::AUDIO_F32SYS;
 
 #[repr(C)]
-#[deriving(Clone, Eq, Hash, Show, FromPrimitive)]
+#[deriving(Clone, PartialEq, Hash, Show, FromPrimitive)]
 pub enum AudioStatus {
     Stopped = ll::SDL_AUDIO_STOPPED as int,
     Playing = ll::SDL_AUDIO_PLAYING as int,
@@ -314,7 +314,7 @@ impl AudioDevice {
     }
 }
 
-#[deriving(Eq)] #[allow(raw_pointer_deriving)]
+#[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct AudioCVT {
     raw: *mut ll::SDL_AudioCVT,
     owned: bool,

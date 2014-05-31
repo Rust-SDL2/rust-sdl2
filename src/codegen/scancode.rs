@@ -7,7 +7,7 @@ struct ScanCode {
     ident: &'static str,
 }
 
-impl Ord for ScanCode {
+impl PartialOrd for ScanCode {
     fn lt (&self, other: &ScanCode) -> bool {
         if self.code < other.code {
             true
@@ -17,7 +17,7 @@ impl Ord for ScanCode {
     }
 }
 
-impl Eq for ScanCode {
+impl PartialEq for ScanCode {
     fn eq (&self, other: &ScanCode) -> bool {
         if self.code == other.code {
             true
@@ -317,7 +317,7 @@ use std::hash::sip::SipState;
 use std::num::FromPrimitive;
 use std::num::ToPrimitive;
 
-#[deriving(Eq, TotalEq, Show)]
+#[deriving(PartialEq, TotalEq, Show)]
 pub enum ScanCode {
 ".as_bytes()));
     for &entry in entries.iter() {

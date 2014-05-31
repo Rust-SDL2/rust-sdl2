@@ -42,7 +42,7 @@ pub mod ll {
     }
 }
 
-#[deriving(Eq)] #[allow(raw_pointer_deriving)]
+#[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct RWops {
     raw: *ll::SDL_RWops,
     close_on_drop: bool

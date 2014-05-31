@@ -143,7 +143,7 @@ pub enum RenderDriverIndex {
     DriverIndex(int)
 }
 
-#[deriving(Eq, FromPrimitive)]
+#[deriving(PartialEq, FromPrimitive)]
 pub enum TextureAccess {
     AccessStatic = ll::SDL_TEXTUREACCESS_STATIC as int,
     AccessStreaming = ll::SDL_TEXTUREACCESS_STREAMING as int,
@@ -157,7 +157,7 @@ bitflags!(flags RendererFlags: u32 {
     static TargetTexture = ll::SDL_RENDERER_TARGETTEXTURE as u32
 })
 
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 pub struct RendererInfo {
     pub name: String,
     pub flags: RendererFlags,
@@ -166,7 +166,7 @@ pub struct RendererInfo {
     pub max_texture_height: int
 }
 
-#[deriving(Eq, FromPrimitive)]
+#[deriving(PartialEq, FromPrimitive)]
 pub enum BlendMode {
     BlendNone = ll::SDL_BLENDMODE_NONE as int,
     BlendBlend = ll::SDL_BLENDMODE_BLEND as int,
@@ -174,7 +174,7 @@ pub enum BlendMode {
     BlendMod = ll::SDL_BLENDMODE_MOD as int
 }
 
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 pub enum RendererFlip {
     FlipNone = ll::SDL_FLIP_NONE as int,
     FlipHorizontal = ll::SDL_FLIP_HORIZONTAL as int,
@@ -201,7 +201,7 @@ impl RendererInfo {
     }
 }
 
-#[deriving(Eq)] #[allow(raw_pointer_deriving)]
+#[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct Renderer<S> {
     raw: *ll::SDL_Renderer,
     parent: Option<S>,
@@ -592,7 +592,7 @@ pub struct TextureQuery {
     pub height: int
 }
 
-#[deriving(Eq)] #[allow(raw_pointer_deriving)]
+#[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct Texture {
     pub raw: *ll::SDL_Texture,
     pub owned: bool

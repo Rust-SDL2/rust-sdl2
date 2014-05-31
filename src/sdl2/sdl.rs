@@ -74,7 +74,7 @@ bitflags!(flags InitFlag: u32 {
     static InitEverything = ll::SDL_INIT_EVERYTHING
 })
 
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 pub enum Error {
     NoMemError = ll::SDL_ENOMEM as int,
     ReadError = ll::SDL_EFREAD as int,

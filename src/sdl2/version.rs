@@ -22,7 +22,7 @@ pub mod ll {
 }
 
 /// A structure that contains information about the version of SDL in use.
-#[deriving(Eq, Clone)]
+#[deriving(PartialEq, Clone)]
 pub struct Version {
     /// major version
     pub major: int,

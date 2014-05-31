@@ -7,7 +7,7 @@ struct Key {
     ident: &'static str,
 }
 
-impl Ord for Key {
+impl PartialOrd for Key {
     fn lt (&self, other: &Key) -> bool {
         if self.code < other.code {
             true
@@ -17,7 +17,7 @@ impl Ord for Key {
     }
 }
 
-impl Eq for Key {
+impl PartialEq for Key {
     fn eq (&self, other: &Key) -> bool {
         if self.code == other.code {
             true
@@ -310,7 +310,7 @@ use std::hash::sip::SipState;
 use std::num::FromPrimitive;
 use std::num::ToPrimitive;
 
-#[deriving(Eq, TotalEq, Show)]
+#[deriving(PartialEq, TotalEq, Show)]
 pub enum KeyCode {
 ".as_bytes()));
     for &entry in entries.iter() {

@@ -55,7 +55,7 @@ pub mod ll {
     }
 }
 
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 pub enum SystemCursor {
     ArrowCursor = ll::SDL_SYSTEM_CURSOR_ARROW,
     IBeamCursor = ll::SDL_SYSTEM_CURSOR_IBEAM,
@@ -71,7 +71,7 @@ pub enum SystemCursor {
     HandCursor = ll::SDL_SYSTEM_CURSOR_HAND,
 }
 
-#[deriving(Eq)] #[allow(raw_pointer_deriving)] 
+#[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct Cursor {
     raw: *ll::SDL_Cursor,
     owned: bool
@@ -134,7 +134,7 @@ impl Cursor {
     }
 }
 
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 pub enum Mouse {
     LeftMouse,
     MiddleMouse,
@@ -159,7 +159,7 @@ pub fn wrap_mouse(bitflags: u8) -> Mouse {
         3 => RightMouse,
         4 => X1Mouse,
         5 => X2Mouse,
-        _ => UnknownMouse(bitflags) 
+        _ => UnknownMouse(bitflags)
     }
 }
 
