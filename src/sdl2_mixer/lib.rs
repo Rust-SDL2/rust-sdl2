@@ -23,6 +23,8 @@ use sdl2::get_error;
 use sdl2::rwops::RWops;
 use sdl2::version::Version;
 
+pub type SdlResult<T> = Result<T, String>;
+
 // Setup linking for all targets.
 #[cfg(target_os="macos")]
 mod mac {
@@ -133,7 +135,7 @@ pub fn quit() {
 }
 
 /// Open the mixer with a certain audio format.
-pub fn open_audio(frequency: int, format: AudioFormat, channels: int, chunksize: int) -> Result<(), ~str> {
+pub fn open_audio(frequency: int, format: AudioFormat, channels: int, chunksize: int) -> SdlResult<()> {
     let ret = unsafe { ffi::Mix_OpenAudio(frequency as c_int, format, channels as c_int, chunksize as c_int) };
     if ret == 0 { Ok(()) }
     else { Err(get_error()) }
@@ -145,7 +147,7 @@ pub fn close_audio() {
 }
 
 /// Get the actual audio format in use by the opened audio device.
-pub fn query_spec() -> Result<(int, AudioFormat, int), ~str> {
+pub fn query_spec() -> SdlResult<(int, AudioFormat, int)> {
     let frequency : c_int = 0;
     let format : uint16_t = 0;
     let channels : c_int  = 0;
@@ -165,10 +167,10 @@ pub fn get_chunk_decoders_number() -> int {
 }
 
 /// Get the name of the indexed sample chunk decoder.
-pub fn get_chunk_decoder(index: int) -> ~str {
+pub fn get_chunk_decoder(index: int) -> String {
      unsafe {
         let name = ffi::Mix_GetChunkDecoder(index as c_int);
-        CString::new(name, false).as_str().unwrap().into_owned()
+        CString::new(name, false).as_str().unwrap().into_string()
     }
 }
 
@@ -189,9 +191,9 @@ impl Drop for Chunk {
 
 impl Chunk {
     /// Load file for use as a sample.
-    pub fn from_file(path: &Path) -> Result<Chunk, ~str> {
+    pub fn from_file(path: &Path) -> SdlResult<Chunk> {
         let raw = unsafe {
-            ffi::Mix_LoadWAV_RW(try!(RWops::from_file(path, "rb")).raw, 0)
+            ffi::Mix_LoadWAV_RW(try!(RWops::from_file(path, "rb")).raw(), 0)
         };
         if raw.is_null() {
             Err(get_error())
@@ -218,14 +220,14 @@ impl Chunk {
 /// Loader trait for RWops
 pub trait LoaderRWops {
     /// Load src for use as a sample.
-    fn load_wav(&self) -> Result<Chunk, ~str>;
+    fn load_wav(&self) -> SdlResult<Chunk>;
 }
 
 impl LoaderRWops for RWops {
     /// Load src for use as a sample.
-    fn load_wav(&self) -> Result<Chunk, ~str> {
+    fn load_wav(&self) -> SdlResult<Chunk> {
         let raw = unsafe {
-            ffi::Mix_LoadWAV_RW(self.raw, 0)
+            ffi::Mix_LoadWAV_RW(self.raw(), 0)
         };
         if raw == ptr::null() {
             Err(get_error())
@@ -314,11 +316,11 @@ impl Channel {
     }
 
     /// Play chunk on channel, or if channel is -1, pick the first free unreserved channel.
-    pub fn play(self, chunk: &Chunk, loops: int) -> Result<Channel, ~str> {
+    pub fn play(self, chunk: &Chunk, loops: int) -> SdlResult<Channel> {
         self.play_timed(chunk, loops, -1)
     }
 
-    pub fn play_timed(self, chunk: &Chunk, loops: int, ticks: int) -> Result<Channel, ~str> {
+    pub fn play_timed(self, chunk: &Chunk, loops: int, ticks: int) -> SdlResult<Channel> {
         let Channel(ch) = self;
         let ret = unsafe {
             ffi::Mix_PlayChannelTimed(ch as c_int, chunk.raw, loops as c_int, ticks as c_int)
@@ -331,11 +333,11 @@ impl Channel {
     }
 
     /// Play chunk on channel, or if channel is -1, pick the first free unreserved channel.
-    pub fn fade_in(self, chunk: &Chunk, loops: int, ms: int) -> Result<Channel, ~str> {
+    pub fn fade_in(self, chunk: &Chunk, loops: int, ms: int) -> SdlResult<Channel> {
         self.fade_in_timed(chunk, loops, ms, -1)
     }
 
-    pub fn fade_in_timed(self, chunk: &Chunk, loops: int, ms: int, ticks: int) -> Result<Channel, ~str> {
+    pub fn fade_in_timed(self, chunk: &Chunk, loops: int, ms: int, ticks: int) -> SdlResult<Channel> {
         let Channel(ch) = self;
         let ret = unsafe {
             ffi::Mix_FadeInChannelTimed(ch as c_int, chunk.raw, loops as c_int, ms as c_int, ticks as c_int)
@@ -408,7 +410,7 @@ impl Channel {
     }
 
     /// This removes all effects registered to channel.
-    pub fn unregister_all_effects(self) -> Result<(), ~str> {
+    pub fn unregister_all_effects(self) -> SdlResult<()> {
         let Channel(ch) = self;
         let ret = unsafe { ffi::Mix_UnregisterAllEffects(ch as c_int) };
         if ret == 0 {
@@ -418,7 +420,7 @@ impl Channel {
         }
     }
 
-    pub fn set_panning(self, left: u8, right: u8) -> Result<(), ~str> {
+    pub fn set_panning(self, left: u8, right: u8) -> SdlResult<()> {
         let Channel(ch) = self;
         let ret = unsafe { ffi::Mix_SetPanning(ch as c_int, left, right) };
         if ret == 0 {
@@ -429,7 +431,7 @@ impl Channel {
     }
 
     /// This effect simulates a simple attenuation of volume due to distance.
-    pub fn set_distance(self, distance: u8) -> Result<(), ~str> {
+    pub fn set_distance(self, distance: u8) -> SdlResult<()> {
         let Channel(ch) = self;
         let ret = unsafe { ffi::Mix_SetDistance(ch as c_int, distance) };
         if ret == 0 {
@@ -440,7 +442,7 @@ impl Channel {
     }
 
     /// This effect emulates a simple 3D audio effect.
-    pub fn set_position(self, angle: i16, distance: u8) -> Result<(), ~str> {
+    pub fn set_position(self, angle: i16, distance: u8) -> SdlResult<()> {
         let Channel(ch) = self;
         let ret = unsafe { ffi::Mix_SetPosition(ch as c_int, angle, distance) };
         if ret == 0 {
@@ -451,7 +453,7 @@ impl Channel {
     }
 
     /// Simple reverse stereo, swaps left and right channel sound.
-    pub fn set_reverse_stereo(self, flip: bool) -> Result<(), ~str> {
+    pub fn set_reverse_stereo(self, flip: bool) -> SdlResult<()> {
         let Channel(ch) = self;
         let ret = unsafe { ffi::Mix_SetReverseStereo(ch as c_int, flip as c_int) };
         if ret == 0 {
@@ -562,10 +564,10 @@ pub fn get_music_decoders_number() -> int {
 }
 
 /// Get the name of the indexed music decoder.
-pub fn get_music_decoder(index: int) -> ~str {
+pub fn get_music_decoder(index: int) -> String {
     unsafe {
         let name = ffi::Mix_GetMusicDecoder(index as c_int);
-        CString::new(name, false).as_str().unwrap().into_owned()
+        CString::new(name, false).as_str().unwrap().into_string()
     }
 }
 
@@ -615,7 +617,7 @@ impl Drop for Music {
 
 impl Music {
     /// Load music file to use.
-    pub fn from_file(path: &Path) -> Result<Music, ~str> {
+    pub fn from_file(path: &Path) -> SdlResult<Music> {
         let raw = unsafe {
             ffi::Mix_LoadMUS(path.to_c_str().unwrap())
         };
@@ -633,7 +635,7 @@ impl Music {
     }
 
     /// Play the loaded music loop times through from start to finish.
-    pub fn play(&self, loops: int) -> Result<(), ~str> {
+    pub fn play(&self, loops: int) -> SdlResult<()> {
         let ret = unsafe {
             ffi::Mix_PlayMusic(self.raw, loops as c_int)
         };
@@ -646,7 +648,7 @@ impl Music {
 
     /// Fade in over ms milliseconds of time, the loaded music,
     /// playing it loop times through from start to finish.
-    pub fn fade_in(&self, loops: int, ms: int) -> Result<(), ~str> {
+    pub fn fade_in(&self, loops: int, ms: int) -> SdlResult<()> {
         let ret = unsafe {
             ffi::Mix_FadeInMusic(self.raw, loops as c_int, ms as c_int)
         };
@@ -658,7 +660,7 @@ impl Music {
     }
 
     /// Fade in over ms milliseconds of time, from position.
-    pub fn fade_in_from_pos(&self, loops: int, ms: int, position: f64) -> Result<(), ~str> {
+    pub fn fade_in_from_pos(&self, loops: int, ms: int, position: f64) -> SdlResult<()> {
         let ret = unsafe {
             ffi::Mix_FadeInMusicPos(self.raw, loops as c_int, ms as c_int, position as c_double)
         };
@@ -695,7 +697,7 @@ impl Music {
     }
 
     /// Set the position of the currently playing music.
-    pub fn set_pos(position: f64) -> Result<(), ~str> {
+    pub fn set_pos(position: f64) -> SdlResult<()> {
         let ret = unsafe {
             ffi::Mix_SetMusicPosition(position as c_double)
         };
@@ -707,7 +709,7 @@ impl Music {
     }
 
     /// Setup a command line music player to use to play music.
-    pub fn set_command(command: &str) -> Result<(), ~str> {
+    pub fn set_command(command: &str) -> SdlResult<()> {
         let ret = unsafe {
             ffi::Mix_SetMusicCMD(command.to_c_str().unwrap())
         };
@@ -724,7 +726,7 @@ impl Music {
     }
 
     /// Gradually fade out the music over ms milliseconds starting from now.
-    pub fn fade_out(ms: int) -> Result<(), ~str> {
+    pub fn fade_out(ms: int) -> SdlResult<()> {
         let ret = unsafe {
             ffi::Mix_FadeOutMusic(ms as c_int)
         };
