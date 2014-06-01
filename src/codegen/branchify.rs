@@ -49,7 +49,7 @@ pub fn branchify(options: &[(&str, &str)], case_sensitive: bool) -> Vec<ParseBra
             },
             None => {
                 assert!(branch.result.is_none());
-                branch.result = Some(result.to_owned());
+                branch.result = Some(result.to_string());
             },
         }
     };
@@ -132,7 +132,7 @@ pub fn generate_branchified_method(
     wf!("    _ => return None,");
     wf!("\\};");
     wf!("// OK, that didn't pan out. Let's read the rest and see what we get.");
-    wf!("let mut s = s.to_owned();");
+    wf!("let mut s = s.to_string();");
     wf!("s.push_char(next_byte as char);");
     wf!("loop \\{");
     wf!("    match {} \\{", read_call);

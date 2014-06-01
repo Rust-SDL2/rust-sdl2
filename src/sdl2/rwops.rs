@@ -1,8 +1,6 @@
 use std::io;
 use std::io::IoResult;
-use get_error;
 use libc::{c_void, c_int, size_t};
-
 use get_error;
 use SdlResult;
 
@@ -44,7 +42,7 @@ pub mod ll {
     }
 }
 
-#[deriving(Eq)] #[allow(raw_pointer_deriving)]
+#[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct RWops {
     raw: *ll::SDL_RWops,
     close_on_drop: bool

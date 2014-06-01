@@ -122,7 +122,7 @@ pub mod ll {
     }
 }
 
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 pub enum ControllerAxis {
     InvalidAxis      = ll::SDL_CONTROLLER_AXIS_INVALID,
     LeftXAxis        = ll::SDL_CONTROLLER_AXIS_LEFTX,
@@ -145,7 +145,7 @@ pub fn wrap_controller_axis(bitflags: u8) -> ControllerAxis {
     }
 }
 
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 pub enum ControllerButton {
     InvalidButton       = ll::SDL_CONTROLLER_BUTTON_INVALID,
     AButton             = ll::SDL_CONTROLLER_BUTTON_A,

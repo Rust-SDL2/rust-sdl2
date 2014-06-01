@@ -182,7 +182,7 @@ pub mod ll {
     }
 }
 
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 pub enum GLAttr {
     GLRedSize = ll::SDL_GL_RED_SIZE as int,
     GLGreenSize = ll::SDL_GL_GREEN_SIZE as int,
@@ -219,7 +219,7 @@ fn empty_sdl_display_mode() -> ll::SDL_DisplayMode {
     }
 }
 
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 pub struct DisplayMode {
     pub format: u32,
     pub w: int,
@@ -274,14 +274,14 @@ bitflags!(flags WindowFlags: u32 {
     static Foreign = ll::SDL_WINDOW_FOREIGN as u32
 })
 
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 pub enum FullscreenType {
     FTOff = 0,
     FTTrue = ll::SDL_WINDOW_FULLSCREEN as int,
     FTDesktop = ll::SDL_WINDOW_FULLSCREEN_DESKTOP as int
 }
 
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 pub enum WindowPos {
     PosUndefined,
     PosCentered,
@@ -296,7 +296,7 @@ fn unwrap_windowpos (pos: WindowPos) -> ll::SDL_WindowPos {
     }
 }
 
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 pub struct GLContext {
     raw: ll::SDL_GLContext,
     owned: bool
@@ -312,7 +312,7 @@ impl Drop for GLContext {
     }
 }
 
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 #[allow(raw_pointer_deriving)]
 pub struct Window {
     raw: *ll::SDL_Window,

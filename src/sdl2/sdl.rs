@@ -74,7 +74,7 @@ bitflags!(flags InitFlag: u32 {
     static InitEverything = ll::SDL_INIT_EVERYTHING
 })
 
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 pub enum Error {
     NoMemError = ll::SDL_ENOMEM as int,
     ReadError = ll::SDL_EFREAD as int,
@@ -115,7 +115,7 @@ pub fn was_inited(flags: InitFlag) -> InitFlag {
 pub fn get_error() -> String {
     unsafe {
         let cstr = CString::new(ll::SDL_GetError(), false);
-        cstr.as_str().unwrap().into_owned()
+        cstr.as_str().unwrap().into_string()
     }
 }
 

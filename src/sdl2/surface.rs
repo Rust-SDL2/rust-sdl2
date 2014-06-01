@@ -83,7 +83,7 @@ bitflags!(flags SurfaceFlag: u32 {
     static DontFree = ll::SDL_DONTFREE as u32
 })
 
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 #[allow(raw_pointer_deriving)]
 pub struct Surface {
     raw: *ll::SDL_Surface,
@@ -142,7 +142,7 @@ impl Surface {
     }
 
     pub fn get_pixel_format(&self) -> pixels::PixelFormat {
-        unsafe { 
+        unsafe {
             pixels::PixelFormat::from_ll((*self.raw).format)
         }
     }
@@ -190,12 +190,14 @@ impl Surface {
         }
     }
 
+    #[allow(non_snake_case_functions)]
     pub fn enable_RLE(&self) -> bool {
         unsafe {
             ll::SDL_SetSurfaceRLE(self.raw, 1) == 0
         }
     }
 
+    #[allow(non_snake_case_functions)]
     pub fn disable_RLE(&self) -> bool {
         unsafe {
             ll::SDL_SetSurfaceRLE(self.raw, 0) == 0
