@@ -7,7 +7,7 @@ struct ScanCode {
     ident: &'static str,
 }
 
-impl Ord for ScanCode {
+impl PartialOrd for ScanCode {
     fn lt (&self, other: &ScanCode) -> bool {
         if self.code < other.code {
             true
@@ -17,7 +17,7 @@ impl Ord for ScanCode {
     }
 }
 
-impl Eq for ScanCode {
+impl PartialEq for ScanCode {
     fn eq (&self, other: &ScanCode) -> bool {
         if self.code == other.code {
             true
@@ -27,7 +27,7 @@ impl Eq for ScanCode {
     }
 }
 
-impl TotalOrd for ScanCode {
+impl Ord for ScanCode {
     fn cmp(&self, other: &ScanCode) -> Ordering {
         if self.code < other.code {
             Less
@@ -36,19 +36,20 @@ impl TotalOrd for ScanCode {
         } else { Equal }
     }
 }
-impl TotalEq for ScanCode {
+impl Eq for ScanCode {
 }
 
+#[allow(non_snake_case_functions)]
 fn ScanCode(code: uint, ident: &'static str) -> ScanCode {
     ScanCode { code: code, ident: ident }
 }
 
 impl ScanCode {
-    fn ident(&self) -> StrBuf {
-        self.ident.to_owned()
+    fn ident(&self) -> String {
+        self.ident.to_string()
     }
 
-    fn padded_ident(&self) -> StrBuf {
+    fn padded_ident(&self) -> String {
         self.ident().append(" ".repeat(unsafe { longest_ident } - self.ident().len()).as_slice())
     }
 
@@ -316,7 +317,7 @@ use std::hash::sip::SipState;
 use std::num::FromPrimitive;
 use std::num::ToPrimitive;
 
-#[deriving(Eq, TotalEq, Show)]
+#[deriving(PartialEq, Eq, Show)]
 pub enum ScanCode {
 ".as_bytes()));
     for &entry in entries.iter() {
@@ -341,7 +342,7 @@ impl ScanCode {
     for &entry in entries.iter() {
         try!(out.write(format!("            {} => {},\n", entry.padded_ident(), entry.code).container_as_bytes()));
     }
-    
+
     try!(out.write("
         }
     }
@@ -380,7 +381,7 @@ impl FromPrimitive for ScanCode {
         for &entry in entries.iter() {
             try!(out.write(format!("            {} => Some({}),\n", entry.code, entry.ident()).container_as_bytes()));
         }
-   
+
         try!(out.write("
                 _   => { Some(UnknownScanCode) }
             }
@@ -389,7 +390,7 @@ impl FromPrimitive for ScanCode {
 
 try!(out.write("
 }".as_bytes()));
-    
+
     try!(out.flush());
     Ok(())
 }

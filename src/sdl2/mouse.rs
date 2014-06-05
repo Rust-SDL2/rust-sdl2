@@ -1,6 +1,7 @@
 use std::ptr;
 
 use get_error;
+use SdlResult;
 use surface;
 use video;
 
@@ -54,7 +55,7 @@ pub mod ll {
     }
 }
 
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 pub enum SystemCursor {
     ArrowCursor = ll::SDL_SYSTEM_CURSOR_ARROW,
     IBeamCursor = ll::SDL_SYSTEM_CURSOR_IBEAM,
@@ -70,7 +71,7 @@ pub enum SystemCursor {
     HandCursor = ll::SDL_SYSTEM_CURSOR_HAND,
 }
 
-#[deriving(Eq)] #[allow(raw_pointer_deriving)] 
+#[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct Cursor {
     raw: *ll::SDL_Cursor,
     owned: bool
@@ -87,7 +88,7 @@ impl Drop for Cursor {
 }
 
 impl Cursor {
-    pub fn new(data: &[u8], mask: &[u8], width: int, height: int, hot_x: int, hot_y: int) -> Result<Cursor, StrBuf> {
+    pub fn new(data: &[u8], mask: &[u8], width: int, height: int, hot_x: int, hot_y: int) -> SdlResult<Cursor> {
         unsafe {
             let raw = ll::SDL_CreateCursor(data.as_ptr(),
                                            mask.as_ptr(),
@@ -103,7 +104,7 @@ impl Cursor {
     }
 
     // TODO: figure out how to pass Surface in here correctly
-    pub fn from_surface(surface: &surface::Surface, hot_x: int, hot_y: int) -> Result<Cursor, StrBuf> {
+    pub fn from_surface(surface: &surface::Surface, hot_x: int, hot_y: int) -> SdlResult<Cursor> {
         unsafe {
             let raw = ll::SDL_CreateColorCursor(surface.raw(), hot_x as i32,
                                                 hot_y as i32);
@@ -116,7 +117,7 @@ impl Cursor {
         }
     }
 
-    pub fn from_system(cursor: SystemCursor) -> Result<Cursor, StrBuf> {
+    pub fn from_system(cursor: SystemCursor) -> SdlResult<Cursor> {
         unsafe {
             let raw = ll::SDL_CreateSystemCursor(cursor as u32);
 
@@ -133,7 +134,7 @@ impl Cursor {
     }
 }
 
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 pub enum Mouse {
     LeftMouse,
     MiddleMouse,
@@ -158,7 +159,7 @@ pub fn wrap_mouse(bitflags: u8) -> Mouse {
         3 => RightMouse,
         4 => X1Mouse,
         5 => X2Mouse,
-        _ => UnknownMouse(bitflags) 
+        _ => UnknownMouse(bitflags)
     }
 }
 

@@ -1,7 +1,8 @@
 use std::io;
 use std::io::IoResult;
-use get_error;
 use libc::{c_void, c_int, size_t};
+use get_error;
+use SdlResult;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
@@ -41,7 +42,7 @@ pub mod ll {
     }
 }
 
-#[deriving(Eq)] #[allow(raw_pointer_deriving)]
+#[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct RWops {
     raw: *ll::SDL_RWops,
     close_on_drop: bool
@@ -52,7 +53,7 @@ impl_owned_accessors!(RWops, close_on_drop)
 
 /// A structure that provides an abstract interface to stream I/O.
 impl RWops {
-    pub fn from_file(path: &Path, mode: &str) -> Result<RWops, StrBuf> {
+    pub fn from_file(path: &Path, mode: &str) -> SdlResult<RWops> {
         let raw = unsafe {
             ll::SDL_RWFromFile(path.to_c_str().unwrap(), mode.to_c_str().unwrap())
         };
@@ -60,7 +61,7 @@ impl RWops {
         else { Ok(RWops{raw: raw, close_on_drop: true}) }
     }
 
-    pub fn from_bytes(buf: &[u8]) -> Result<RWops, StrBuf> {
+    pub fn from_bytes(buf: &[u8]) -> SdlResult<RWops> {
         let raw = unsafe {
             ll::SDL_RWFromConstMem(buf.as_ptr() as *c_void, buf.len() as c_int)
         };

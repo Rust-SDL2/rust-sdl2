@@ -7,7 +7,7 @@ struct Key {
     ident: &'static str,
 }
 
-impl Ord for Key {
+impl PartialOrd for Key {
     fn lt (&self, other: &Key) -> bool {
         if self.code < other.code {
             true
@@ -17,7 +17,7 @@ impl Ord for Key {
     }
 }
 
-impl Eq for Key {
+impl PartialEq for Key {
     fn eq (&self, other: &Key) -> bool {
         if self.code == other.code {
             true
@@ -27,7 +27,7 @@ impl Eq for Key {
     }
 }
 
-impl TotalOrd for Key {
+impl Ord for Key {
     fn cmp(&self, other: &Key) -> Ordering {
         if self.code < other.code {
             Less
@@ -36,20 +36,20 @@ impl TotalOrd for Key {
         } else { Equal }
     }
 }
-impl TotalEq for Key {
+impl Eq for Key {
 }
 
-
+#[allow(non_snake_case_functions)]
 fn Key(code: uint, ident: &'static str) -> Key {
     Key { code: code, ident: ident }
 }
 
 impl Key {
-    fn ident(&self) -> StrBuf {
-        self.ident.to_owned()
+    fn ident(&self) -> String {
+        self.ident.to_string()
     }
 
-    fn padded_ident(&self) -> StrBuf {
+    fn padded_ident(&self) -> String {
         self.ident().append(" ".repeat(unsafe { longest_ident } - self.ident().len()).as_slice())
     }
 
@@ -310,7 +310,7 @@ use std::hash::sip::SipState;
 use std::num::FromPrimitive;
 use std::num::ToPrimitive;
 
-#[deriving(Eq, TotalEq, Show)]
+#[deriving(PartialEq, Eq, Show)]
 pub enum KeyCode {
 ".as_bytes()));
     for &entry in entries.iter() {
@@ -321,10 +321,10 @@ pub enum KeyCode {
 }
 
 impl Hash for KeyCode {
-   #[inline] 
+   #[inline]
     fn hash(&self, state: &mut SipState) {
 	self.code().hash(state);
-    } 
+    }
 }
 
 impl KeyCode {

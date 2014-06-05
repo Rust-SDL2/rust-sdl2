@@ -7,7 +7,7 @@ use std::vec::Vec;
 
 struct ParseBranch {
     matches: Vec<u8>,
-    result: Option<StrBuf>,
+    result: Option<String>,
     children: Vec<ParseBranch>,
 }
 
@@ -28,7 +28,7 @@ pub fn branchify(options: &[(&str, &str)], case_sensitive: bool) -> Vec<ParseBra
     fn go_down_moses(branch: &mut ParseBranch, mut chariter: Chars, result: &str, case_sensitive: bool) {
         match chariter.next() {
             Some(c) => {
-                let first_case = if case_sensitive { c as u8 } else { c.to_ascii().to_upper().to_byte() };
+                let first_case = if case_sensitive { c as u8 } else { c.to_ascii().to_uppercase().to_byte() };
                 for next_branch in branch.children.mut_iter() {
                     if next_branch.matches.as_slice()[0] == first_case {
                         go_down_moses(next_branch, chariter, result, case_sensitive);
@@ -38,7 +38,7 @@ pub fn branchify(options: &[(&str, &str)], case_sensitive: bool) -> Vec<ParseBra
                 let mut subbranch = ParseBranch::new();
                 subbranch.matches.push(first_case);
                 if !case_sensitive {
-                    let second_case = c.to_ascii().to_lower().to_byte();
+                    let second_case = c.to_ascii().to_lowercase().to_byte();
                     if first_case != second_case {
                         subbranch.matches.push(second_case);
                     }
@@ -49,7 +49,7 @@ pub fn branchify(options: &[(&str, &str)], case_sensitive: bool) -> Vec<ParseBra
             },
             None => {
                 assert!(branch.result.is_none());
-                branch.result = Some(result.to_owned());
+                branch.result = Some(result.to_string());
             },
         }
     };
@@ -132,7 +132,7 @@ pub fn generate_branchified_method(
     wf!("    _ => return None,");
     wf!("\\};");
     wf!("// OK, that didn't pan out. Let's read the rest and see what we get.");
-    wf!("let mut s = s.to_owned();");
+    wf!("let mut s = s.to_string();");
     wf!("s.push_char(next_byte as char);");
     wf!("loop \\{");
     wf!("    match {} \\{", read_call);

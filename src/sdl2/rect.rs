@@ -6,14 +6,14 @@ use std::mem;
 use libc::c_int;
 
 /// A structure that defines a two dimensional point.
-#[deriving(Eq, Clone, Show)]
+#[deriving(PartialEq, Clone, Show)]
 pub struct Point {
     pub x: i32,
     pub y: i32
 }
 
 /// A structure that defines a rectangle, with the origin at the upper left.
-#[deriving(Eq, Clone, Show)]
+#[deriving(PartialEq, Clone, Show)]
 pub struct Rect {
     pub x: i32,
     pub y: i32,

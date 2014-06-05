@@ -9,6 +9,7 @@
 
 extern crate libc;
 extern crate collections;
+extern crate debug;
 
 pub use sdl::*;
 #[path = "generated/keycode.rs"]
