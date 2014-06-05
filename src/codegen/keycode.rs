@@ -27,7 +27,7 @@ impl PartialEq for Key {
     }
 }
 
-impl TotalOrd for Key {
+impl Ord for Key {
     fn cmp(&self, other: &Key) -> Ordering {
         if self.code < other.code {
             Less
@@ -36,7 +36,7 @@ impl TotalOrd for Key {
         } else { Equal }
     }
 }
-impl TotalEq for Key {
+impl Eq for Key {
 }
 
 #[allow(non_snake_case_functions)]
@@ -310,7 +310,7 @@ use std::hash::sip::SipState;
 use std::num::FromPrimitive;
 use std::num::ToPrimitive;
 
-#[deriving(PartialEq, TotalEq, Show)]
+#[deriving(PartialEq, Eq, Show)]
 pub enum KeyCode {
 ".as_bytes()));
     for &entry in entries.iter() {

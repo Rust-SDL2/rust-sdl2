@@ -27,7 +27,7 @@ impl PartialEq for ScanCode {
     }
 }
 
-impl TotalOrd for ScanCode {
+impl Ord for ScanCode {
     fn cmp(&self, other: &ScanCode) -> Ordering {
         if self.code < other.code {
             Less
@@ -36,7 +36,7 @@ impl TotalOrd for ScanCode {
         } else { Equal }
     }
 }
-impl TotalEq for ScanCode {
+impl Eq for ScanCode {
 }
 
 #[allow(non_snake_case_functions)]
@@ -317,7 +317,7 @@ use std::hash::sip::SipState;
 use std::num::FromPrimitive;
 use std::num::ToPrimitive;
 
-#[deriving(PartialEq, TotalEq, Show)]
+#[deriving(PartialEq, Eq, Show)]
 pub enum ScanCode {
 ".as_bytes()));
     for &entry in entries.iter() {
