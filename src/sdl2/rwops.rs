@@ -145,7 +145,7 @@ impl Seek for RWops {
     }
 }
 
-impl Container for RWops {
+impl Collection for RWops {
     fn len(&self) -> uint {
         unsafe {
             ((*self.raw).size)(self.raw) as uint
