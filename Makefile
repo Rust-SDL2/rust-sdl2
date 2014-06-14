@@ -41,9 +41,29 @@ SOURCE_FILES = $(shell test -e src/ && find src -type f)
 COMPILER = rustc
 
 # For release:
-  COMPILER_FLAGS = -O --cfg mac_framework
+  COMPILER_FLAGS = -O 
 # For debugging:
 # COMPILER_FLAGS = -g
+
+UNAME=$(shell uname)
+
+ifeq ($(UNAME),Darwin)
+  # If the user wasn't explicit, see if SDL2 library exists
+  ifeq ("$(strip $(SDL_MODE))","")
+    SDL_CHECK=$(shell pkg-config --exists sdl2)
+    ifeq ($(SDL_CHECK),0)
+      SDL_MODE = dylib
+    else
+      SDL_MODE = framework
+    endif
+  endif
+
+  ifeq ($(SDL_MODE),framework)
+    COMPILER_FLAGS+=--cfg mac_framework
+  else
+    COMPILER_FLAGS+=--cfg mac_dylib
+  endif
+endif
 
 RUSTDOC = rustdoc
 
