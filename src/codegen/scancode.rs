@@ -355,9 +355,9 @@ impl ToPrimitive for ScanCode {
 
     let types = vec!("i64", "u64", "int");
     for primitive_type in types.iter() {
-        try!(out.write(format!("fn to_{}(&self) -> Option<{}> \\{
+        try!(out.write(format!("fn to_{}(&self) -> Option<{}> {{
             Some(self.code() as {})
-        \\}\n", *primitive_type, *primitive_type, *primitive_type).container_as_bytes()));
+        }}\n", *primitive_type, *primitive_type, *primitive_type).container_as_bytes()));
     }
 
 try!(out.write("
@@ -374,8 +374,8 @@ impl FromPrimitive for ScanCode {
 
 	    for primitive_type in types.iter() {
         try!(out.write(format!("
-    fn from_{}(n: {}) -> Option<ScanCode> \\{
-        match n \\{
+    fn from_{}(n: {}) -> Option<ScanCode> {{
+        match n {{
 ", *primitive_type, *primitive_type).container_as_bytes()));
 
         for &entry in entries.iter() {

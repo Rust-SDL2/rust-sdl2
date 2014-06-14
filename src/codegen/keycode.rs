@@ -345,9 +345,9 @@ impl ToPrimitive for KeyCode {
 ".as_bytes()));
     let types = vec!("i64", "u64", "int");
     for primitive_type in types.iter() {
-        try!(out.write(format!("fn to_{}(&self) -> Option<{}> \\{
+        try!(out.write(format!("fn to_{}(&self) -> Option<{}> {{
             Some(self.code() as {})
-        \\}\n", *primitive_type, *primitive_type, *primitive_type).container_as_bytes()));
+        }}\n", *primitive_type, *primitive_type, *primitive_type).container_as_bytes()));
     }
 
 try!(out.write("
@@ -363,8 +363,8 @@ impl FromPrimitive for KeyCode {
 ".as_bytes()));
     for primitive_type in types.iter() {
         try!(out.write(format!("
-    fn from_{}(n: {}) -> Option<KeyCode> \\{
-        match n \\{
+    fn from_{}(n: {}) -> Option<KeyCode> {{
+        match n {{
 ", *primitive_type, *primitive_type).container_as_bytes()));
         for &entry in entries.iter() {
             try!(out.write(format!("            {} => Some({}),\n", entry.code, entry.ident()).container_as_bytes()));
