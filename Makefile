@@ -1,6 +1,6 @@
 # Rust-Empty: An Makefile to get started with Rust
 # https://github.com/bvssvni/rust-empty
-#
+# 
 # The MIT License (MIT)
 #
 # Copyright (c) 2014 Sven Nilsen
@@ -68,7 +68,7 @@ endif
 RUSTDOC = rustdoc
 
 # Extracts target from rustc.
-TARGET = $(shell rustc --version | awk "/host:/ { print \$$2 }")
+TARGET = $(shell rustc --version 2> /dev/null | awk "/host:/ { print \$$2 }")
 # TARGET = x86_64-unknown-linux-gnu
 # TARGET = x86_64-apple-darwin
 
@@ -93,7 +93,7 @@ endif
 all: $(DEFAULT)
 
 help:
-	$(Q)echo "--- rust-empty (0.4 002)" \
+	$(Q)echo "--- rust-empty (0.4 004)" \
 	&& echo "make run               - Runs executable" \
 	&& echo "make exe               - Builds main executable" \
 	&& echo "make lib               - Both static and dynamic library" \
@@ -233,7 +233,7 @@ rust-ci-lib: $(LIB_ENTRY_FILE)
 	) \
 	|| \
 	( \
-		echo -e "before_install:\n\t- yes | sudo add-apt-repository ppa:hansjorg/rust\n\t- sudo apt-get update\ninstall:\n\t- sudo apt-get install rust-nightly\nscript:\n\t- make lib\n" > .travis.yml \
+		echo -e "install:\n  - wget http://static.rust-lang.org/dist/rust-nightly-x86_64-unknown-linux-gnu.tar.gz -O - | sudo tar zxf - --strip-components 1 -C /usr/local\nscript:\n  - make lib\n" > .travis.yml \
 		&& echo "--- Created '.travis.yml' for library" \
 		&& cat .travis.yml \
 	)
@@ -245,7 +245,7 @@ rust-ci-exe: $(EXE_ENTRY_FILE)
 	) \
 	|| \
 	( \
-		echo -e "before_install:\n\t- yes | sudo add-apt-repository ppa:hansjorg/rust\n\t- sudo apt-get update\ninstall:\n\t- sudo apt-get install rust-nightly\nscript:\n\t- make exe\n" > .travis.yml \
+		echo -e "install:\n  - wget http://static.rust-lang.org/dist/rust-nightly-x86_64-unknown-linux-gnu.tar.gz -O - | sudo tar zxf - --strip-components 1 -C /usr/local\nscript:\n  - make exe\n" > .travis.yml \
 		&& echo "--- Created '.travis.yml' for executable" \
 		&& cat .travis.yml \
 	)
@@ -310,13 +310,13 @@ $(DYLIB): $(SOURCE_FILES) | $(LIB_ENTRY_FILE) $(TARGET_LIB_DIR)
 	$(Q)$(COMPILER) --target "$(TARGET)" $(COMPILER_FLAGS) --crate-type=dylib $(LIB_ENTRY_FILE) -L "target/$(TARGET)/lib" --out-dir "target/$(TARGET)/lib/" \
 	&& echo "--- Built dylib"
 
-bin:
+bin/:
 	$(Q)mkdir -p bin
 
 $(TARGET_LIB_DIR):
 	$(Q)mkdir -p $(TARGET_LIB_DIR)
 
-src:
+src/:
 	$(Q)mkdir -p src
 
 examples-dir:
@@ -338,7 +338,7 @@ git-ignore:
 	) \
 	|| \
 	( \
-		echo -e ".DS_Store\n*~\n*#\n*.o\n*.so\n*.swp\n*.dylib\n*.dSYM\n*.dll\n*.rlib\n*.dummy\n*.exe\n*-test\n/bin/main\n/bin/test-internal\n/bin/test-external\n/doc/\n/target/\n/build/\n/.rust/\nrusti.sh\n" > .gitignore \
+		echo -e ".DS_Store\n*~\n*#\n*.o\n*.so\n*.swp\n*.dylib\n*.dSYM\n*.dll\n*.rlib\n*.dummy\n*.exe\n*-test\n/bin/main\n/bin/test-internal\n/bin/test-external\n/doc/\n/target/\n/build/\n/.rust/\nrusti.sh\n/examples/*\n!/examples/*.rs" > .gitignore \
 		&& echo "--- Created '.gitignore' for git" \
 		&& cat .gitignore \
 	)
