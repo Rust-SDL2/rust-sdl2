@@ -110,7 +110,7 @@ pub fn generate_branchified_method(
             end: &str, max_len: &str, valid: &str, unknown: &str) {
         for &c in branch.matches.iter() {
             let next_prefix = format!("{}{}", prefix, c as char);
-            wf!("Some(b) if b == '{}' as u8 => match {} \\{", c as char, read_call);
+            wf!("Some(b) if b == '{}' as u8 => match {} {{", c as char, read_call);
             for b in branch.children.iter() {
                 r(writer, b, next_prefix.as_slice(), indent + 1, read_call, end, max_len, valid, unknown);
             }
@@ -121,30 +121,30 @@ pub fn generate_branchified_method(
             }
             wf!("    Some(b) if {} => (\"{}\", b),", valid, next_prefix.as_slice());
             wf!("    _ => return None,");
-            wf!("\\},");
+            wf!("}},");
         }
     }
-    wf!("let (s, next_byte) = match {} \\{", read_call);
+    wf!("let (s, next_byte) = match {} {{", read_call);
     for b in branches.iter() {
         r(writer, b, "", indent + 1, read_call, end, max_len, valid, unknown);
     }
     wf!("    Some(b) if {} => (\"\", b),", valid);
     wf!("    _ => return None,");
-    wf!("\\};");
+    wf!("}};");
     wf!("// OK, that didn't pan out. Let's read the rest and see what we get.");
     wf!("let mut s = s.to_string();");
     wf!("s.push_char(next_byte as char);");
-    wf!("loop \\{");
-    wf!("    match {} \\{", read_call);
+    wf!("loop {{");
+    wf!("    match {} {{", read_call);
     wf!("        Some(b) if b == {} => return Some({}),", end, unknown.replace("{}", "s"));
-    wf!("        Some(b) if {} => \\{", valid);
-    wf!("            if s.len() == {} \\{", max_len);
+    wf!("        Some(b) if {} => {{", valid);
+    wf!("            if s.len() == {} {{", max_len);
     wf!("                // Too long; bad request");
     wf!("                return None;");
-    wf!("            \\}");
+    wf!("            }}");
     wf!("            s.push_char(b as char);");
-    wf!("        \\},");
+    wf!("        }},");
     wf!("        _ => return None,");
-    wf!("    \\}");
-    wf!("\\}");
+    wf!("    }}");
+    wf!("}}");
 }
