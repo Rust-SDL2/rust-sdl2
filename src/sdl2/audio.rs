@@ -58,6 +58,7 @@ pub mod ll {
         ::std::option::Option<extern "C" fn
                                   (arg1: *SDL_AudioCVT,
                                    arg2: SDL_AudioFormat)>;
+    #[allow(dead_code)]
     pub struct SDL_AudioCVT {
         pub needed: c_int,
         pub src_format: SDL_AudioFormat,
