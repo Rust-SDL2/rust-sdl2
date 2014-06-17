@@ -6,6 +6,7 @@ pub mod ll {
 
     pub type SDL_Joystick = c_void;
 
+    #[allow(dead_code)]
     pub struct SDL_JoystickGUID {
         data: [uint8_t, ..16u],
     }
