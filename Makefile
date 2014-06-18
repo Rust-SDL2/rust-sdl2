@@ -10,7 +10,7 @@ RUST_SRC = $(shell find src/. -type f -name '*.rs') \
 	src/sdl2/generated/keycode.rs                   \
 	src/sdl2/generated/scancode.rs
 
-.PHONY: all
+.PHONY: all gen-lib
 all: $(TMPDIR)/libsdl2.dummy
 
 UNAME=$(shell uname)
@@ -41,6 +41,9 @@ $(TMPDIR)/codegen: $(wildcard src/codegen/*.rs) $(TMPDIR)
 
 src/sdl2/generated/%.rs: $(TMPDIR)/codegen
 	'$(TMPDIR)/codegen' $(patsubst src/sdl2/generated/%,%,$@) src/sdl2/generated/
+
+gen-lib: src/sdl2/lib.rs $(RUST_SRC) $(LIBDIR) $(TMPDIR)
+	$(RUSTC) --out-dir '$(LIBDIR)' src/sdl2/lib.rs $(RUSTFLAGS)
 
 $(TMPDIR)/libsdl2.dummy: src/sdl2/lib.rs $(RUST_SRC) $(LIBDIR) $(TMPDIR)
 	$(RUSTC) --out-dir '$(LIBDIR)' src/sdl2/lib.rs $(RUSTFLAGS)
