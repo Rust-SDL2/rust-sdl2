@@ -18,7 +18,7 @@ UNAME=$(shell uname)
 ifeq ($(UNAME),Darwin)
   # If the user wasn't explicit, see if SDL2 library exists
   ifeq ("$(strip $(SDL_MODE))","")
-    SDL_CHECK=$(shell pkg-config --exists sdl2)
+    SDL_CHECK=$(shell pkg-config --exists sdl2 && echo $$?)
     ifeq ($(SDL_CHECK),0)
       SDL_MODE = dylib
     else
