@@ -21,6 +21,7 @@ pub mod clipboard;
 pub mod cpuinfo;
 pub mod macros;
 pub mod event;
+pub mod filesystem;
 pub mod gesture;
 pub mod touch;
 pub mod joystick;
