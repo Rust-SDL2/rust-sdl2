@@ -6,6 +6,7 @@
 
 #![feature(globs)]
 #![feature(macro_rules)]
+#![feature(unsafe_destructor)]
 
 extern crate libc;
 extern crate collections;
