@@ -98,7 +98,7 @@ pub fn generate_branchified_method(
         let s = format!($($x)*);
         let result = writer.write(indentstr.as_bytes())
         .and(writer.write(s.as_bytes()))
-        .and(writer.write(bytes!("\n")));
+        .and(writer.write(b"\n"));
 
         match result {
             Ok(_)  => {},
