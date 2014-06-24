@@ -1,0 +1,11 @@
+[package]
+
+name    = "codegen"
+version = "0.0.1"
+authors = ["Graydon Hoare"]
+
+[[bin]]
+
+name = "codegen"
+path = "main.rs"
+

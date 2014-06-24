@@ -19,3 +19,4 @@ src/sdl2/generated/
 .project
 src/demo/main
 doc/
+target/

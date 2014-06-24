@@ -1,0 +1,22 @@
+[package]
+
+name    = "sdl2"
+version = "0.0.1"
+authors = [ "Tony Aldridge<zaragopha@hotmail.com>" ]
+build   = "make src/sdl2/generated/keycode.rs src/sdl2/generated/scancode.rs"
+
+[[lib]]
+
+name       = "sdl2"
+path       = "src/sdl2/lib.rs"
+crate-type = ["dylib"]
+
+[[bin]]
+
+name = "demo"
+path = "src/demo/main.rs"
+
+[dependencies.codegen]
+
+path = "src/codegen/"
+
