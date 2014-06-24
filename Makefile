@@ -1,6 +1,7 @@
 RUSTC ?= rustc
 RUSTFLAGS ?=
 OUTDIR ?= ./build
+CARGODIR ?= ./target
 
 BINDIR = $(OUTDIR)/bin
 LIBDIR = $(OUTDIR)/lib
@@ -55,7 +56,12 @@ compile_demo: src/demo/main.rs src/demo/video.rs $(TMPDIR)/libsdl2.dummy $(BINDI
 demo: compile_demo
 	'$(BINDIR)/demo'
 
+.PHONY: cargo
+cargo:
+	cargo build
+
 .PHONY: clean
 clean:
 	rm -rf src/sdl2/generated
 	rm -rf '$(OUTDIR)'
+	rm -rf '$(CARGODIR)'
