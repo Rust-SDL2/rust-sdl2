@@ -603,6 +603,10 @@ impl Window {
     pub fn gl_swap_window(&self) {
         unsafe { ll::SDL_GL_SwapWindow(self.raw) }
     }
+
+    pub fn peek_ll(&self) -> *ll::SDL_Window {
+        self.raw
+    }
 }
 
 pub fn get_num_video_drivers() -> SdlResult<int> {
