@@ -29,6 +29,7 @@ pub mod joystick;
 pub mod controller;
 pub mod keyboard;
 pub mod mouse;
+pub mod messagebox;
 pub mod rect;
 pub mod surface;
 pub mod pixels;
