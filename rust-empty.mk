@@ -68,7 +68,7 @@ endif
 RUSTDOC = rustdoc
 
 # Extracts target from rustc.
-TARGET = $(shell rustc --version 2> /dev/null | awk "/host:/ { print \$$2 }")
+TARGET = $(shell rustc --version verbose 2> /dev/null | awk "/host:/ { print \$$2 }")
 # TARGET = x86_64-unknown-linux-gnu
 # TARGET = x86_64-apple-darwin
 
@@ -93,7 +93,7 @@ endif
 all: $(DEFAULT)
 
 help:
-	$(Q)echo "--- rust-empty (0.5 008)"
+	$(Q)echo "--- rust-empty (0.6 003)"
 	$(Q)echo "make run               - Runs executable"
 	$(Q)echo "make exe               - Builds main executable"
 	$(Q)echo "make lib               - Both static and dynamic library"
@@ -110,8 +110,8 @@ help:
 	$(Q)echo "make examples          - Builds examples"
 	$(Q)echo "make cargo-lite-exe    - Setup executable package"
 	$(Q)echo "make cargo-lite-lib    - Setup library package"
-	$(Q)echo "make cargo-exe         - EXPERIMENTAL: Setup executable package"
-	$(Q)echo "make cargo-lib         - EXPERIMENTAL: Setup library package"
+	$(Q)echo "make cargo-exe         - Setup executable package"
+	$(Q)echo "make cargo-lib         - Setup library package"
 	$(Q)echo "make rust-ci-lib       - Setup Travis CI Rust library"
 	$(Q)echo "make rust-ci-exe       - Setup Travis CI Rust executable"
 	$(Q)echo "make rusti             - Setup 'rusti.sh' for interactive Rust"
@@ -216,7 +216,7 @@ cargo-exe: $(EXE_ENTRY_FILE)
 		&& cat Cargo.toml \
 	)
 
-cargo-lib: $(EXE_ENTRY_FILE)
+cargo-lib: $(LIB_ENTRY_FILE)
 	$(Q)( \
 		test -e Cargo.toml \
 		&& echo "--- The file 'Cargo.toml' already exists" \
@@ -606,6 +606,7 @@ function build_deps {
 
         # Remember git directory to not build it twice
         git_dir[i]=$$current_git_dir
+        let i+=1
 
         # Visit the symlinks and build the dependencies
         build_deps
@@ -630,11 +631,13 @@ function build_deps {
             && $$MAKE clean \
             && $$MAKE \
         )
-        let i+=1
     done
     cd $$current
 }
 
+# Mark main project as visited to avoid infinite loop.
+git_dir[i]=$$(pwd)
+let i+=1
 if [ "$$1" == "deps" ]; then
     build_deps
 fi
