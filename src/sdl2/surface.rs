@@ -207,7 +207,7 @@ impl Surface {
     pub fn set_color_key(&self, enable: bool, color: pixels::Color) -> SdlResult<()> {
         let key = color.to_u32(&self.get_pixel_format());
         let result = unsafe {
-            ll::SDL_SetColorKey(self.raw, ::std::bool::to_bit(enable), key)
+            ll::SDL_SetColorKey(self.raw, if enable { 1 } else { 0 }, key)
         };
         if result == 0 {
             Ok(())
