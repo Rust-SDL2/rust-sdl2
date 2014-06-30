@@ -41,7 +41,7 @@ pub mod ll {
 
     pub struct SDL_RendererInfo
     {
-        pub name: *c_char,
+        pub name: *const c_char,
         pub flags: uint32_t,
         pub num_texture_formats: uint32_t,
         pub texture_formats: [uint32_t, ..16],
@@ -84,57 +84,57 @@ pub mod ll {
 
     extern "C" {
         pub fn SDL_GetNumRenderDrivers() -> c_int;
-        pub fn SDL_GetRenderDriverInfo(index: c_int, info: *SDL_RendererInfo) -> c_int;
-        pub fn SDL_CreateWindowAndRenderer(width: c_int, height: c_int, window_flags: uint32_t, window: **SDL_Window, renderer: **SDL_Renderer) -> c_int;
-        pub fn SDL_CreateRenderer(window: *SDL_Window, index: c_int, flags: uint32_t) -> *SDL_Renderer;
-        pub fn SDL_CreateSoftwareRenderer(surface: *SDL_Surface) -> *SDL_Renderer;
-        pub fn SDL_GetRenderer(window: *SDL_Window) -> *SDL_Renderer;
-        pub fn SDL_GetRendererInfo(renderer: *SDL_Renderer, info: *SDL_RendererInfo) -> c_int;
-        pub fn SDL_GetRendererOutputSize(renderer: *SDL_Renderer, w: *c_int, h: *c_int) -> c_int;
-        pub fn SDL_CreateTexture(renderer: *SDL_Renderer, format: uint32_t, access: c_int, w: c_int, h: c_int) -> *SDL_Texture;
-        pub fn SDL_CreateTextureFromSurface(renderer: *SDL_Renderer, surface: *SDL_Surface) -> *SDL_Texture;
-        pub fn SDL_QueryTexture(texture: *SDL_Texture, format: *uint32_t, access: *c_int, w: *c_int, h: *c_int) -> c_int;
-        pub fn SDL_SetTextureColorMod(texture: *SDL_Texture, r: uint8_t, g: uint8_t, b: uint8_t) -> c_int;
-        pub fn SDL_GetTextureColorMod(texture: *SDL_Texture, r: *uint8_t, g: *uint8_t, b: *uint8_t) -> c_int;
-        pub fn SDL_SetTextureAlphaMod(texture: *SDL_Texture, alpha: uint8_t) -> c_int;
-        pub fn SDL_GetTextureAlphaMod(texture: *SDL_Texture, alpha: *uint8_t) -> c_int;
-        pub fn SDL_SetTextureBlendMode(texture: *SDL_Texture, blendMode: SDL_BlendMode) -> c_int;
-        pub fn SDL_GetTextureBlendMode(texture: *SDL_Texture, blendMode: *SDL_BlendMode) -> c_int;
-        pub fn SDL_UpdateTexture(texture: *SDL_Texture, rect: *SDL_Rect, pixels: *c_void, pitch: c_int) -> c_int;
-        pub fn SDL_LockTexture(texture: *SDL_Texture, rect: *SDL_Rect, pixels: **c_void, pitch: *c_int) -> c_int;
-        pub fn SDL_UnlockTexture(texture: *SDL_Texture);
-        pub fn SDL_RenderTargetSupported(renderer: *SDL_Renderer) -> SDL_bool;
-        pub fn SDL_SetRenderTarget(renderer: *SDL_Renderer, texture: *SDL_Texture) -> c_int;
-        pub fn SDL_GetRenderTarget(renderer: *SDL_Renderer) -> *SDL_Texture;
-        pub fn SDL_RenderSetLogicalSize(renderer: *SDL_Renderer, w: c_int, h: c_int) -> c_int;
-        pub fn SDL_RenderGetLogicalSize(renderer: *SDL_Renderer, w: *c_int, h: *c_int);
-        pub fn SDL_RenderSetViewport(renderer: *SDL_Renderer, rect: *SDL_Rect) -> c_int;
-        pub fn SDL_RenderGetViewport(renderer: *SDL_Renderer, rect: *SDL_Rect);
-        pub fn SDL_RenderSetClipRect(renderer: *SDL_Renderer, rect: *SDL_Rect) -> c_int;
-        pub fn SDL_RenderGetClipRect(renderer: *SDL_Renderer, rect: *SDL_Rect);
-        pub fn SDL_RenderSetScale(renderer: *SDL_Renderer, scaleX: c_float, scaleY: c_float) -> c_int;
-        pub fn SDL_RenderGetScale(renderer: *SDL_Renderer, scaleX: *c_float, scaleY: *c_float);
-        pub fn SDL_SetRenderDrawColor(renderer: *SDL_Renderer, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) -> c_int;
-        pub fn SDL_GetRenderDrawColor(renderer: *SDL_Renderer, r: *uint8_t, g: *uint8_t, b: *uint8_t, a: *uint8_t) -> c_int;
-        pub fn SDL_SetRenderDrawBlendMode(renderer: *SDL_Renderer, blendMode: SDL_BlendMode) -> c_int;
-        pub fn SDL_GetRenderDrawBlendMode(renderer: *SDL_Renderer, blendMode: *SDL_BlendMode) -> c_int;
-        pub fn SDL_RenderClear(renderer: *SDL_Renderer) -> c_int;
-        pub fn SDL_RenderDrawPoint(renderer: *SDL_Renderer, x: c_int, y: c_int) -> c_int;
-        pub fn SDL_RenderDrawPoints(renderer: *SDL_Renderer, Points: *SDL_Point, count: c_int) -> c_int;
-        pub fn SDL_RenderDrawLine(renderer: *SDL_Renderer, x1: c_int, y1: c_int, x2: c_int, y2: c_int) -> c_int;
-        pub fn SDL_RenderDrawLines(renderer: *SDL_Renderer, Points: *SDL_Point, count: c_int) -> c_int;
-        pub fn SDL_RenderDrawRect(renderer: *SDL_Renderer, rect: *SDL_Rect) -> c_int;
-        pub fn SDL_RenderDrawRects(renderer: *SDL_Renderer, rects: *SDL_Rect, count: c_int) -> c_int;
-        pub fn SDL_RenderFillRect(renderer: *SDL_Renderer, rect: *SDL_Rect) -> c_int;
-        pub fn SDL_RenderFillRects(renderer: *SDL_Renderer, rects: *SDL_Rect, count: c_int) -> c_int;
-        pub fn SDL_RenderCopy(renderer: *SDL_Renderer, texture: *SDL_Texture, srcrect: *SDL_Rect, dstrect: *SDL_Rect) -> c_int;
-        pub fn SDL_RenderCopyEx(renderer: *SDL_Renderer, texture: *SDL_Texture, srcrect: *SDL_Rect, dstrect: *SDL_Rect, angle: c_double, center: *SDL_Point, flip: SDL_RendererFlip) -> c_int;
-        pub fn SDL_RenderReadPixels(renderer: *SDL_Renderer, rect: *SDL_Rect, format: uint32_t, pixels: *c_void, pitch: c_int) -> c_int;
-        pub fn SDL_RenderPresent(renderer: *SDL_Renderer);
-        pub fn SDL_DestroyTexture(texture: *SDL_Texture);
-        pub fn SDL_DestroyRenderer(renderer: *SDL_Renderer);
-        pub fn SDL_GL_BindTexture(texture: *SDL_Texture, texw: *c_float, texh: *c_float) -> c_int;
-        pub fn SDL_GL_UnbindTexture(texture: *SDL_Texture) -> c_int;
+        pub fn SDL_GetRenderDriverInfo(index: c_int, info: *const SDL_RendererInfo) -> c_int;
+        pub fn SDL_CreateWindowAndRenderer(width: c_int, height: c_int, window_flags: uint32_t, window: *const *const SDL_Window, renderer: *const *const SDL_Renderer) -> c_int;
+        pub fn SDL_CreateRenderer(window: *const SDL_Window, index: c_int, flags: uint32_t) -> *const SDL_Renderer;
+        pub fn SDL_CreateSoftwareRenderer(surface: *const SDL_Surface) -> *const SDL_Renderer;
+        pub fn SDL_GetRenderer(window: *const SDL_Window) -> *const SDL_Renderer;
+        pub fn SDL_GetRendererInfo(renderer: *const SDL_Renderer, info: *const SDL_RendererInfo) -> c_int;
+        pub fn SDL_GetRendererOutputSize(renderer: *const SDL_Renderer, w: *const c_int, h: *const c_int) -> c_int;
+        pub fn SDL_CreateTexture(renderer: *const SDL_Renderer, format: uint32_t, access: c_int, w: c_int, h: c_int) -> *const SDL_Texture;
+        pub fn SDL_CreateTextureFromSurface(renderer: *const SDL_Renderer, surface: *const SDL_Surface) -> *const SDL_Texture;
+        pub fn SDL_QueryTexture(texture: *const SDL_Texture, format: *const uint32_t, access: *const c_int, w: *const c_int, h: *const c_int) -> c_int;
+        pub fn SDL_SetTextureColorMod(texture: *const SDL_Texture, r: uint8_t, g: uint8_t, b: uint8_t) -> c_int;
+        pub fn SDL_GetTextureColorMod(texture: *const SDL_Texture, r: *const uint8_t, g: *const uint8_t, b: *const uint8_t) -> c_int;
+        pub fn SDL_SetTextureAlphaMod(texture: *const SDL_Texture, alpha: uint8_t) -> c_int;
+        pub fn SDL_GetTextureAlphaMod(texture: *const SDL_Texture, alpha: *const uint8_t) -> c_int;
+        pub fn SDL_SetTextureBlendMode(texture: *const SDL_Texture, blendMode: SDL_BlendMode) -> c_int;
+        pub fn SDL_GetTextureBlendMode(texture: *const SDL_Texture, blendMode: *const SDL_BlendMode) -> c_int;
+        pub fn SDL_UpdateTexture(texture: *const SDL_Texture, rect: *const SDL_Rect, pixels: *const c_void, pitch: c_int) -> c_int;
+        pub fn SDL_LockTexture(texture: *const SDL_Texture, rect: *const SDL_Rect, pixels: *const *const c_void, pitch: *const c_int) -> c_int;
+        pub fn SDL_UnlockTexture(texture: *const SDL_Texture);
+        pub fn SDL_RenderTargetSupported(renderer: *const SDL_Renderer) -> SDL_bool;
+        pub fn SDL_SetRenderTarget(renderer: *const SDL_Renderer, texture: *const SDL_Texture) -> c_int;
+        pub fn SDL_GetRenderTarget(renderer: *const SDL_Renderer) -> *const SDL_Texture;
+        pub fn SDL_RenderSetLogicalSize(renderer: *const SDL_Renderer, w: c_int, h: c_int) -> c_int;
+        pub fn SDL_RenderGetLogicalSize(renderer: *const SDL_Renderer, w: *const c_int, h: *const c_int);
+        pub fn SDL_RenderSetViewport(renderer: *const SDL_Renderer, rect: *const SDL_Rect) -> c_int;
+        pub fn SDL_RenderGetViewport(renderer: *const SDL_Renderer, rect: *const SDL_Rect);
+        pub fn SDL_RenderSetClipRect(renderer: *const SDL_Renderer, rect: *const SDL_Rect) -> c_int;
+        pub fn SDL_RenderGetClipRect(renderer: *const SDL_Renderer, rect: *const SDL_Rect);
+        pub fn SDL_RenderSetScale(renderer: *const SDL_Renderer, scaleX: c_float, scaleY: c_float) -> c_int;
+        pub fn SDL_RenderGetScale(renderer: *const SDL_Renderer, scaleX: *const c_float, scaleY: *const c_float);
+        pub fn SDL_SetRenderDrawColor(renderer: *const SDL_Renderer, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) -> c_int;
+        pub fn SDL_GetRenderDrawColor(renderer: *const SDL_Renderer, r: *const uint8_t, g: *const uint8_t, b: *const uint8_t, a: *const uint8_t) -> c_int;
+        pub fn SDL_SetRenderDrawBlendMode(renderer: *const SDL_Renderer, blendMode: SDL_BlendMode) -> c_int;
+        pub fn SDL_GetRenderDrawBlendMode(renderer: *const SDL_Renderer, blendMode: *const SDL_BlendMode) -> c_int;
+        pub fn SDL_RenderClear(renderer: *const SDL_Renderer) -> c_int;
+        pub fn SDL_RenderDrawPoint(renderer: *const SDL_Renderer, x: c_int, y: c_int) -> c_int;
+        pub fn SDL_RenderDrawPoints(renderer: *const SDL_Renderer, Points: *const SDL_Point, count: c_int) -> c_int;
+        pub fn SDL_RenderDrawLine(renderer: *const SDL_Renderer, x1: c_int, y1: c_int, x2: c_int, y2: c_int) -> c_int;
+        pub fn SDL_RenderDrawLines(renderer: *const SDL_Renderer, Points: *const SDL_Point, count: c_int) -> c_int;
+        pub fn SDL_RenderDrawRect(renderer: *const SDL_Renderer, rect: *const SDL_Rect) -> c_int;
+        pub fn SDL_RenderDrawRects(renderer: *const SDL_Renderer, rects: *const SDL_Rect, count: c_int) -> c_int;
+        pub fn SDL_RenderFillRect(renderer: *const SDL_Renderer, rect: *const SDL_Rect) -> c_int;
+        pub fn SDL_RenderFillRects(renderer: *const SDL_Renderer, rects: *const SDL_Rect, count: c_int) -> c_int;
+        pub fn SDL_RenderCopy(renderer: *const SDL_Renderer, texture: *const SDL_Texture, srcrect: *const SDL_Rect, dstrect: *const SDL_Rect) -> c_int;
+        pub fn SDL_RenderCopyEx(renderer: *const SDL_Renderer, texture: *const SDL_Texture, srcrect: *const SDL_Rect, dstrect: *const SDL_Rect, angle: c_double, center: *const SDL_Point, flip: SDL_RendererFlip) -> c_int;
+        pub fn SDL_RenderReadPixels(renderer: *const SDL_Renderer, rect: *const SDL_Rect, format: uint32_t, pixels: *const c_void, pitch: c_int) -> c_int;
+        pub fn SDL_RenderPresent(renderer: *const SDL_Renderer);
+        pub fn SDL_DestroyTexture(texture: *const SDL_Texture);
+        pub fn SDL_DestroyRenderer(renderer: *const SDL_Renderer);
+        pub fn SDL_GL_BindTexture(texture: *const SDL_Texture, texw: *const c_float, texh: *const c_float) -> c_int;
+        pub fn SDL_GL_UnbindTexture(texture: *const SDL_Texture) -> c_int;
     }
 }
 
@@ -203,7 +203,7 @@ impl RendererInfo {
 
 #[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct Renderer<S> {
-    raw: *ll::SDL_Renderer,
+    raw: *const ll::SDL_Renderer,
     parent: Option<S>,
     owned: bool
 }
@@ -238,8 +238,8 @@ impl Renderer<Window> {
     }
 
     pub fn new_with_window(width: int, height: int, window_flags: video::WindowFlags) -> SdlResult<Renderer<Window>> {
-        let raw_window: *video::ll::SDL_Window = ptr::null();
-        let raw_renderer: *ll::SDL_Renderer = ptr::null();
+        let raw_window: *const video::ll::SDL_Window = ptr::null();
+        let raw_renderer: *const ll::SDL_Renderer = ptr::null();
         let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, window_flags.bits(), &raw_window, &raw_renderer) == 0};
         if result {
             let window = unsafe { Window::from_ll(raw_window, true) };
@@ -280,7 +280,7 @@ impl<S> Renderer<S> {
     }
 
     #[inline]
-    pub fn raw(&self) -> *ll::SDL_Renderer { self.raw }
+    pub fn raw(&self) -> *const ll::SDL_Renderer { self.raw }
 
     #[inline]
     pub fn owned(&self) -> bool { self.owned }
@@ -571,9 +571,9 @@ impl<S> Renderer<S> {
                 }
             };
             let size = format.byte_size_of_pixels(w * h);
-            let pixels = libc::malloc(size as size_t) as *u8;
+            let pixels = libc::malloc(size as size_t) as *const u8;
             let pitch = w * format.byte_size_per_pixel(); // calculated pitch
-            let ret = ll::SDL_RenderReadPixels(self.raw, actual_rect, format as uint32_t, pixels as *c_void, pitch as c_int);
+            let ret = ll::SDL_RenderReadPixels(self.raw, actual_rect, format as uint32_t, pixels as *const c_void, pitch as c_int);
             if ret == 0 {
                 Ok(CVec::new_with_dtor(pixels as *mut u8, size, proc() {
                     libc::free(pixels as *mut c_void)
@@ -594,7 +594,7 @@ pub struct TextureQuery {
 
 #[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct Texture {
-    pub raw: *ll::SDL_Texture,
+    pub raw: *const ll::SDL_Texture,
     pub owned: bool
 }
 
@@ -706,7 +706,7 @@ impl Texture {
                 None => ptr::null()
             };
 
-            let pixels : *c_void = ptr::null();
+            let pixels : *const c_void = ptr::null();
             let pitch = 0;
             let ret = ll::SDL_LockTexture(self.raw, actual_rect, &pixels, &pitch);
             let size = q.format.byte_size_of_pixels((q.width * q.height) as uint);

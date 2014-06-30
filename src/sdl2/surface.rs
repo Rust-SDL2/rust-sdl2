@@ -30,49 +30,49 @@ pub mod ll {
 
     pub struct SDL_Surface {
         pub flags: uint32_t,
-        pub format: *SDL_PixelFormat,
+        pub format: *const SDL_PixelFormat,
         pub w: c_int,
         pub h: c_int,
         pub pitch: c_int,
-        pub pixels: *c_void,
-        pub userdata: *c_void,
+        pub pixels: *const c_void,
+        pub userdata: *const c_void,
         pub locked: c_int,
-        pub lock_data: *c_void,
+        pub lock_data: *const c_void,
         pub clip_rect: SDL_Rect,
-        pub map: *SDL_BlitMap,
+        pub map: *const SDL_BlitMap,
         pub refcount: c_int
     }
 
     extern "C" {
-        pub fn SDL_CreateRGBSurface(flags: uint32_t, width: c_int, height: c_int, depth: c_int, Rmask: uint32_t, Gmask: uint32_t, Bmask: uint32_t, Amask: uint32_t) ->  *SDL_Surface;
-        pub fn SDL_CreateRGBSurfaceFrom(pixels: *c_void, width: c_int, height: c_int, depth: c_int, pitch: c_int, Rmask: uint32_t, Gmask: uint32_t, Bmask: uint32_t, Amask: uint32_t) ->  *SDL_Surface;
-        pub fn SDL_FreeSurface(surface: *SDL_Surface);
-        pub fn SDL_SetSurfacePalette(surface: *SDL_Surface, palette: *SDL_Palette) -> c_int;
-        pub fn SDL_LockSurface(surface: *SDL_Surface) -> c_int;
-        pub fn SDL_UnlockSurface(surface: *SDL_Surface);
-        pub fn SDL_LoadBMP_RW(src: *SDL_RWops, freesrc: c_int) ->  *SDL_Surface;
-        pub fn SDL_SaveBMP_RW(surface: *SDL_Surface, dst: *SDL_RWops, freedst: c_int) -> c_int;
-        pub fn SDL_SetSurfaceRLE(surface: *SDL_Surface, flag: c_int) -> c_int;
-        pub fn SDL_SetColorKey(surface: *SDL_Surface, flag: c_int, key: uint32_t) -> c_int;
-        pub fn SDL_GetColorKey(surface: *SDL_Surface, key: *uint32_t) -> c_int;
-        pub fn SDL_SetSurfaceColorMod(surface: *SDL_Surface, r: uint8_t, g: uint8_t, b: uint8_t) -> c_int;
-        pub fn SDL_GetSurfaceColorMod(surface: *SDL_Surface, r: *uint8_t, g: *uint8_t, b: *uint8_t ) -> c_int;
-        pub fn SDL_SetSurfaceAlphaMod(surface: *SDL_Surface, alpha: uint8_t) -> c_int;
-        pub fn SDL_GetSurfaceAlphaMod(surface: *SDL_Surface, alpha: *uint8_t ) -> c_int;
-        pub fn SDL_SetSurfaceBlendMode(surface: *SDL_Surface, blendMode: SDL_BlendMode) -> c_int;
-        pub fn SDL_GetSurfaceBlendMode(surface: *SDL_Surface, blendMode: *SDL_BlendMode) -> c_int;
-        pub fn SDL_SetClipRect(surface: *SDL_Surface, rect: *SDL_Rect) ->  SDL_bool;
-        pub fn SDL_GetClipRect(surface: *SDL_Surface, rect: *SDL_Rect);
-        pub fn SDL_ConvertSurface(src: *SDL_Surface, fmt: *SDL_PixelFormat, flags: uint32_t) ->  *SDL_Surface;
-        pub fn SDL_ConvertSurfaceFormat(src: *SDL_Surface, pixel_format: uint32_t, flags: uint32_t) ->  *SDL_Surface;
-        pub fn SDL_ConvertPixels(width: c_int, height: c_int, src_format: uint32_t, src: *c_void, src_pitch: c_int, dst_format: uint32_t, dst: *c_void, dst_pitch: c_int) -> c_int;
-        pub fn SDL_FillRect(dst: *SDL_Surface, rect: *SDL_Rect, color: uint32_t) -> c_int;
-        pub fn SDL_FillRects(dst: *SDL_Surface, rects: *SDL_Rect, count: c_int, color: uint32_t) -> c_int;
-        pub fn SDL_UpperBlit(src: *SDL_Surface, srcrect: *SDL_Rect, dst: *SDL_Surface, dstrect: *SDL_Rect) -> c_int;
-        pub fn SDL_LowerBlit(src: *SDL_Surface, srcrect: *SDL_Rect, dst: *SDL_Surface, dstrect: *SDL_Rect) -> c_int;
-        pub fn SDL_SoftStretch(src: *SDL_Surface, srcrect: *SDL_Rect, dst: *SDL_Surface, dstrect: *SDL_Rect) -> c_int;
-        pub fn SDL_UpperBlitScaled(src: *SDL_Surface, srcrect: *SDL_Rect, dst: *SDL_Surface, dstrect: *SDL_Rect) -> c_int;
-        pub fn SDL_LowerBlitScaled(src: *SDL_Surface, srcrect: *SDL_Rect, dst: *SDL_Surface, dstrect: *SDL_Rect) -> c_int;
+        pub fn SDL_CreateRGBSurface(flags: uint32_t, width: c_int, height: c_int, depth: c_int, Rmask: uint32_t, Gmask: uint32_t, Bmask: uint32_t, Amask: uint32_t) ->  *const SDL_Surface;
+        pub fn SDL_CreateRGBSurfaceFrom(pixels: *const c_void, width: c_int, height: c_int, depth: c_int, pitch: c_int, Rmask: uint32_t, Gmask: uint32_t, Bmask: uint32_t, Amask: uint32_t) ->  *const SDL_Surface;
+        pub fn SDL_FreeSurface(surface: *const SDL_Surface);
+        pub fn SDL_SetSurfacePalette(surface: *const SDL_Surface, palette: *const SDL_Palette) -> c_int;
+        pub fn SDL_LockSurface(surface: *const SDL_Surface) -> c_int;
+        pub fn SDL_UnlockSurface(surface: *const SDL_Surface);
+        pub fn SDL_LoadBMP_RW(src: *const SDL_RWops, freesrc: c_int) ->  *const SDL_Surface;
+        pub fn SDL_SaveBMP_RW(surface: *const SDL_Surface, dst: *const SDL_RWops, freedst: c_int) -> c_int;
+        pub fn SDL_SetSurfaceRLE(surface: *const SDL_Surface, flag: c_int) -> c_int;
+        pub fn SDL_SetColorKey(surface: *const SDL_Surface, flag: c_int, key: uint32_t) -> c_int;
+        pub fn SDL_GetColorKey(surface: *const SDL_Surface, key: *const uint32_t) -> c_int;
+        pub fn SDL_SetSurfaceColorMod(surface: *const SDL_Surface, r: uint8_t, g: uint8_t, b: uint8_t) -> c_int;
+        pub fn SDL_GetSurfaceColorMod(surface: *const SDL_Surface, r: *const uint8_t, g: *const uint8_t, b: *const uint8_t ) -> c_int;
+        pub fn SDL_SetSurfaceAlphaMod(surface: *const SDL_Surface, alpha: uint8_t) -> c_int;
+        pub fn SDL_GetSurfaceAlphaMod(surface: *const SDL_Surface, alpha: *const uint8_t ) -> c_int;
+        pub fn SDL_SetSurfaceBlendMode(surface: *const SDL_Surface, blendMode: SDL_BlendMode) -> c_int;
+        pub fn SDL_GetSurfaceBlendMode(surface: *const SDL_Surface, blendMode: *const SDL_BlendMode) -> c_int;
+        pub fn SDL_SetClipRect(surface: *const SDL_Surface, rect: *const SDL_Rect) ->  SDL_bool;
+        pub fn SDL_GetClipRect(surface: *const SDL_Surface, rect: *const SDL_Rect);
+        pub fn SDL_ConvertSurface(src: *const SDL_Surface, fmt: *const SDL_PixelFormat, flags: uint32_t) ->  *const SDL_Surface;
+        pub fn SDL_ConvertSurfaceFormat(src: *const SDL_Surface, pixel_format: uint32_t, flags: uint32_t) ->  *const SDL_Surface;
+        pub fn SDL_ConvertPixels(width: c_int, height: c_int, src_format: uint32_t, src: *const c_void, src_pitch: c_int, dst_format: uint32_t, dst: *const c_void, dst_pitch: c_int) -> c_int;
+        pub fn SDL_FillRect(dst: *const SDL_Surface, rect: *const SDL_Rect, color: uint32_t) -> c_int;
+        pub fn SDL_FillRects(dst: *const SDL_Surface, rects: *const SDL_Rect, count: c_int, color: uint32_t) -> c_int;
+        pub fn SDL_UpperBlit(src: *const SDL_Surface, srcrect: *const SDL_Rect, dst: *const SDL_Surface, dstrect: *const SDL_Rect) -> c_int;
+        pub fn SDL_LowerBlit(src: *const SDL_Surface, srcrect: *const SDL_Rect, dst: *const SDL_Surface, dstrect: *const SDL_Rect) -> c_int;
+        pub fn SDL_SoftStretch(src: *const SDL_Surface, srcrect: *const SDL_Rect, dst: *const SDL_Surface, dstrect: *const SDL_Rect) -> c_int;
+        pub fn SDL_UpperBlitScaled(src: *const SDL_Surface, srcrect: *const SDL_Rect, dst: *const SDL_Surface, dstrect: *const SDL_Rect) -> c_int;
+        pub fn SDL_LowerBlitScaled(src: *const SDL_Surface, srcrect: *const SDL_Rect, dst: *const SDL_Surface, dstrect: *const SDL_Rect) -> c_int;
     }
 }
 
@@ -86,7 +86,7 @@ bitflags!(flags SurfaceFlag: u32 {
 #[deriving(PartialEq)]
 #[allow(raw_pointer_deriving)]
 pub struct Surface {
-    raw: *ll::SDL_Surface,
+    raw: *const ll::SDL_Surface,
     owned: bool
 }
 
@@ -100,9 +100,9 @@ impl Drop for Surface {
     }
 }
 
-impl_raw_accessors!(Surface, *ll::SDL_Surface)
+impl_raw_accessors!(Surface, *const ll::SDL_Surface)
 impl_owned_accessors!(Surface, owned)
-impl_raw_constructor!(Surface -> Surface (raw: *ll::SDL_Surface, owned: bool))
+impl_raw_constructor!(Surface -> Surface (raw: *const ll::SDL_Surface, owned: bool))
 
 impl Surface {
     pub fn new(surface_flags: SurfaceFlag, width: int, height: int, bpp: int,

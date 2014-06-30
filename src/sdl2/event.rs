@@ -281,7 +281,7 @@ pub mod ll {
     pub struct SDL_DropEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
-        pub file: *c_char,
+        pub file: *const c_char,
     }
 
     pub struct SDL_QuitEvent {
@@ -299,14 +299,14 @@ pub mod ll {
         pub timestamp: uint32_t,
         pub windowID: uint32_t,
         pub code: int32_t,
-        pub data1: *c_void,
-        pub data2: *c_void,
+        pub data1: *const c_void,
+        pub data2: *const c_void,
     }
 
     pub struct SDL_SysWMEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
-        pub msg: *SDL_SysWMmsg,
+        pub msg: *const SDL_SysWMmsg,
     }
 
     pub struct SDL_Event {
@@ -314,99 +314,99 @@ pub mod ll {
     }
 
     impl SDL_Event {
-        pub fn _type(&self) -> *uint32_t {
+        pub fn _type(&self) -> *const uint32_t {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn common(&self) -> *SDL_CommonEvent {
+        pub fn common(&self) -> *const SDL_CommonEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn window(&self) -> *SDL_WindowEvent {
+        pub fn window(&self) -> *const SDL_WindowEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn key(&self) -> *SDL_KeyboardEvent {
+        pub fn key(&self) -> *const SDL_KeyboardEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn edit(&self) -> *SDL_TextEditingEvent {
+        pub fn edit(&self) -> *const SDL_TextEditingEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn text(&self) -> *SDL_TextInputEvent {
+        pub fn text(&self) -> *const SDL_TextInputEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn motion(&self) -> *SDL_MouseMotionEvent {
+        pub fn motion(&self) -> *const SDL_MouseMotionEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn button(&self) -> *SDL_MouseButtonEvent {
+        pub fn button(&self) -> *const SDL_MouseButtonEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn wheel(&self) -> *SDL_MouseWheelEvent {
+        pub fn wheel(&self) -> *const SDL_MouseWheelEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn jaxis(&self) -> *SDL_JoyAxisEvent {
+        pub fn jaxis(&self) -> *const SDL_JoyAxisEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn jball(&self) -> *SDL_JoyBallEvent {
+        pub fn jball(&self) -> *const SDL_JoyBallEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn jhat(&self) -> *SDL_JoyHatEvent {
+        pub fn jhat(&self) -> *const SDL_JoyHatEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn jbutton(&self) -> *SDL_JoyButtonEvent {
+        pub fn jbutton(&self) -> *const SDL_JoyButtonEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn jdevice(&self) -> *SDL_JoyDeviceEvent {
+        pub fn jdevice(&self) -> *const SDL_JoyDeviceEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn caxis(&self) -> *SDL_ControllerAxisEvent {
+        pub fn caxis(&self) -> *const SDL_ControllerAxisEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn cbutton(&self) -> *SDL_ControllerButtonEvent {
+        pub fn cbutton(&self) -> *const SDL_ControllerButtonEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn cdevice(&self) -> *SDL_ControllerDeviceEvent {
+        pub fn cdevice(&self) -> *const SDL_ControllerDeviceEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn quit(&self) -> *SDL_QuitEvent {
+        pub fn quit(&self) -> *const SDL_QuitEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn user(&self) -> *SDL_UserEvent {
+        pub fn user(&self) -> *const SDL_UserEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn syswm(&self) -> *SDL_SysWMEvent {
+        pub fn syswm(&self) -> *const SDL_SysWMEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn tfinger(&self) -> *SDL_TouchFingerEvent {
+        pub fn tfinger(&self) -> *const SDL_TouchFingerEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn mgesture(&self) -> *SDL_MultiGestureEvent {
+        pub fn mgesture(&self) -> *const SDL_MultiGestureEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn dgesture(&self) -> *SDL_DollarGestureEvent {
+        pub fn dgesture(&self) -> *const SDL_DollarGestureEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn drop(&self) -> *SDL_DropEvent {
+        pub fn drop(&self) -> *const SDL_DropEvent {
             unsafe { mem::transmute_copy(&self) }
         }
     }
@@ -416,10 +416,10 @@ pub mod ll {
     pub static SDL_PEEKEVENT: SDL_eventaction = 1;
     pub static SDL_GETEVENT: SDL_eventaction = 2;
     pub type SDL_EventFilter =
-        extern "C" fn(userdata: *c_void, event: *SDL_Event) -> c_int;
+        extern "C" fn(userdata: *const c_void, event: *const SDL_Event) -> c_int;
 
     extern "C" {
-        pub fn SDL_free(mem: *c_void);
+        pub fn SDL_free(mem: *const c_void);
         pub fn SDL_PumpEvents();
         /*pub fn SDL_PeepEvents(events: &[SDL_Event], numevents: c_int,
                                     action: SDL_eventaction, minType: uint32_t,
@@ -429,18 +429,18 @@ pub mod ll {
                   SDL_bool;
         pub fn SDL_FlushEvent(_type: uint32_t);
         pub fn SDL_FlushEvents(minType: uint32_t, maxType: uint32_t);
-        pub fn SDL_PollEvent(event: *SDL_Event) -> c_int;
-        pub fn SDL_WaitEvent(event: *SDL_Event) -> c_int;
-        pub fn SDL_WaitEventTimeout(event: *SDL_Event, timeout: c_int) ->
+        pub fn SDL_PollEvent(event: *const SDL_Event) -> c_int;
+        pub fn SDL_WaitEvent(event: *const SDL_Event) -> c_int;
+        pub fn SDL_WaitEventTimeout(event: *const SDL_Event, timeout: c_int) ->
                   c_int;
-        pub fn SDL_PushEvent(event: *SDL_Event) -> c_int;
+        pub fn SDL_PushEvent(event: *const SDL_Event) -> c_int;
         pub fn SDL_SetEventFilter(filter: SDL_EventFilter,
-                                        userdata: *c_void);
+                                        userdata: *const c_void);
         /*pub fn SDL_GetEventFilter(filter: *SDL_EventFilter,
                                         userdata: **c_void) -> SDL_bool;*/
-        pub fn SDL_AddEventWatch(filter: SDL_EventFilter, userdata: *c_void);
-        pub fn SDL_DelEventWatch(filter: SDL_EventFilter, userdata: *c_void);
-        pub fn SDL_FilterEvents(filter: SDL_EventFilter, userdata: *c_void);
+        pub fn SDL_AddEventWatch(filter: SDL_EventFilter, userdata: *const c_void);
+        pub fn SDL_DelEventWatch(filter: SDL_EventFilter, userdata: *const c_void);
+        pub fn SDL_FilterEvents(filter: SDL_EventFilter, userdata: *const c_void);
         pub fn SDL_EventState(_type: uint32_t, state: SDL_EventState) -> SDL_EventState;
         pub fn SDL_RegisterEvents(numevents: c_int) -> uint32_t;
     }
@@ -448,6 +448,7 @@ pub mod ll {
 
 /// Types of events that can be delivered.
 #[deriving(FromPrimitive)]
+#[repr(u32)]
 pub enum EventType {
     FirstEventType = ll::SDL_FIRSTEVENT,
 
@@ -991,7 +992,7 @@ impl Event {
                 let event = *raw.drop();
 
                 let text = str::raw::from_c_str(event.file);
-                ll::SDL_free(event.file as *c_void);
+                ll::SDL_free(event.file as *const c_void);
 
                 DropFileEvent(event.timestamp as uint, text)
             }
@@ -1081,7 +1082,7 @@ pub fn wait_event_timeout(timeout: int) -> SdlResult<Event> {
     else { Err(get_error()) }
 }
 
-extern "C" fn event_filter_wrapper(userdata: *c_void, event: *ll::SDL_Event) -> c_int {
+extern "C" fn event_filter_wrapper(userdata: *const c_void, event: *const ll::SDL_Event) -> c_int {
     let filter: extern fn(event: Event) -> bool = unsafe { mem::transmute(userdata) };
     if event.is_null() { 1 }
     else { filter(Event::from_ll(unsafe { mem::transmute(event) })) as c_int }

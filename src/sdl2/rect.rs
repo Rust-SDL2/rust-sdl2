@@ -34,11 +34,11 @@ pub mod ll {
     pub type SDL_bool = c_int;
 
     extern "C" {
-        pub fn SDL_HasIntersection(A: *SDL_Rect, B: *SDL_Rect) -> SDL_bool;
-        pub fn SDL_IntersectRect(A: *SDL_Rect, B: *SDL_Rect, result: *SDL_Rect) -> SDL_bool;
-        pub fn SDL_UnionRect(A: *SDL_Rect, B: *SDL_Rect, result: *SDL_Rect);
-        pub fn SDL_EnclosePoints(points: *SDL_Point, count: c_int, clip: *SDL_Rect, result: *SDL_Rect) -> SDL_bool;
-        pub fn SDL_IntersectRectAndLine(rect: *SDL_Rect, X1: *c_int, Y1: *c_int, X2: *c_int, Y2: *c_int) -> SDL_bool;
+        pub fn SDL_HasIntersection(A: *const SDL_Rect, B: *const SDL_Rect) -> SDL_bool;
+        pub fn SDL_IntersectRect(A: *const SDL_Rect, B: *const SDL_Rect, result: *const SDL_Rect) -> SDL_bool;
+        pub fn SDL_UnionRect(A: *const SDL_Rect, B: *const SDL_Rect, result: *const SDL_Rect);
+        pub fn SDL_EnclosePoints(points: *const SDL_Point, count: c_int, clip: *const SDL_Rect, result: *const SDL_Rect) -> SDL_bool;
+        pub fn SDL_IntersectRectAndLine(rect: *const SDL_Rect, X1: *const c_int, Y1: *const c_int, X2: *const c_int, Y2: *const c_int) -> SDL_bool;
     }
 }
 

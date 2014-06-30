@@ -34,13 +34,13 @@ pub mod ll {
     }
 
     impl SDL_GameControllerButtonBindData {
-        pub fn button(&self) -> *c_int {
+        pub fn button(&self) -> *const c_int {
             unsafe { mem::transmute_copy(&self) }
         }
-        pub fn axis(&self) -> *c_int {
+        pub fn axis(&self) -> *const c_int {
             unsafe { mem::transmute_copy(&self) }
         }
-        pub fn hat(&self) -> *SDL_GameControllerButtonBindDataHat {
+        pub fn hat(&self) -> *const SDL_GameControllerButtonBindDataHat {
             unsafe { mem::transmute_copy(&self) }
         }
     }
@@ -75,57 +75,58 @@ pub mod ll {
     pub static SDL_CONTROLLER_BUTTON_MAX: SDL_GameControllerButton = 15;
 
     extern "C" {
-        pub fn SDL_GameControllerAddMapping(mappingString: *c_char) -> c_int;
+        pub fn SDL_GameControllerAddMapping(mappingString: *const c_char) -> c_int;
         pub fn SDL_GameControllerMappingForGUID(guid: SDL_JoystickGUID) ->
-                  *c_char;
-        pub fn SDL_GameControllerMapping(gamecontroller: *SDL_GameController)
-                  -> *c_char;
+                  *const c_char;
+        pub fn SDL_GameControllerMapping(gamecontroller: *const SDL_GameController)
+                  -> *const c_char;
         pub fn SDL_IsGameController(joystick_index: c_int) -> SDL_bool;
         pub fn SDL_GameControllerNameForIndex(joystick_index: c_int) ->
-                  *c_char;
+                  *const c_char;
         pub fn SDL_GameControllerOpen(joystick_index: c_int) ->
-                  *SDL_GameController;
-        pub fn SDL_GameControllerName(gamecontroller: *SDL_GameController) ->
-                  *c_char;
+                  *const SDL_GameController;
+        pub fn SDL_GameControllerName(gamecontroller: *const SDL_GameController) ->
+                  *const c_char;
         pub fn SDL_GameControllerGetAttached(gamecontroller:
-                                                       *SDL_GameController) ->
+                                                       *const SDL_GameController) ->
                   SDL_bool;
         pub fn SDL_GameControllerGetJoystick(gamecontroller:
-                                                       *SDL_GameController) ->
-                  *SDL_Joystick;
+                                                       *const SDL_GameController) ->
+                  *const SDL_Joystick;
         pub fn SDL_GameControllerEventState(state: c_int) -> c_int;
         pub fn SDL_GameControllerUpdate();
-        pub fn SDL_GameControllerGetAxisFromString(pchString: *c_char) ->
+        pub fn SDL_GameControllerGetAxisFromString(pchString: *const c_char) ->
                   SDL_GameControllerAxis;
         pub fn SDL_GameControllerGetStringForAxis(axis:
                                                             SDL_GameControllerAxis)
-                  -> *c_char;
+                  -> *const c_char;
         pub fn SDL_GameControllerGetBindForAxis(gamecontroller:
-                                                          *SDL_GameController,
+                                                          *const SDL_GameController,
                                                       axis: SDL_GameControllerAxis)
                   -> SDL_GameControllerButtonBind;
-        pub fn SDL_GameControllerGetAxis(gamecontroller: *SDL_GameController,
+        pub fn SDL_GameControllerGetAxis(gamecontroller: *const SDL_GameController,
                                                axis: SDL_GameControllerAxis) ->
                   int16_t;
-        pub fn SDL_GameControllerGetButtonFromString(pchString: *c_char) ->
+        pub fn SDL_GameControllerGetButtonFromString(pchString: *const c_char) ->
                   SDL_GameControllerButton;
         pub fn SDL_GameControllerGetStringForButton(button:
                                                           SDL_GameControllerButton)
-                  -> *c_char;
+                  -> *const c_char;
         pub fn SDL_GameControllerGetBindForButton(gamecontroller:
-                                                            *SDL_GameController,
+                                                            *const SDL_GameController,
                                                         button:
                                                           SDL_GameControllerButton)
                   -> SDL_GameControllerButtonBind;
         pub fn SDL_GameControllerGetButton(gamecontroller:
-                                                     *SDL_GameController,
+                                                     *const SDL_GameController,
                                                  button: SDL_GameControllerButton)
                   -> uint8_t;
-        pub fn SDL_GameControllerClose(gamecontroller: *SDL_GameController);
+        pub fn SDL_GameControllerClose(gamecontroller: *const SDL_GameController);
     }
 }
 
 #[deriving(PartialEq)]
+#[repr(i32)]
 pub enum ControllerAxis {
     InvalidAxis      = ll::SDL_CONTROLLER_AXIS_INVALID,
     LeftXAxis        = ll::SDL_CONTROLLER_AXIS_LEFTX,
@@ -149,6 +150,7 @@ pub fn wrap_controller_axis(bitflags: u8) -> ControllerAxis {
 }
 
 #[deriving(PartialEq)]
+#[repr(i32)]
 pub enum ControllerButton {
     InvalidButton       = ll::SDL_CONTROLLER_BUTTON_INVALID,
     AButton             = ll::SDL_CONTROLLER_BUTTON_A,

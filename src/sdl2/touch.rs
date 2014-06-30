@@ -24,7 +24,7 @@ pub mod ll {
         pub fn SDL_GetTouchDevice(index: c_int) -> SDL_TouchID;
         pub fn SDL_GetNumTouchFingers(touchID: SDL_TouchID) -> c_int;
         pub fn SDL_GetTouchFinger(touchID: SDL_TouchID, index: c_int) ->
-                  *SDL_Finger;
+                  *const SDL_Finger;
     }
 }
 
