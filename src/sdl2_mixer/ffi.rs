@@ -13,7 +13,7 @@ pub static MIX_INIT_OGG: c_uint = 16;
 pub static MIX_INIT_FLUIDSYNTH: c_uint = 32;
 pub struct Struct_Mix_Chunk {
     pub allocated: c_int,
-    pub abuf: *uint8_t,
+    pub abuf: *const uint8_t,
     pub alen: uint32_t,
     pub volume: uint8_t,
 }
@@ -37,55 +37,55 @@ pub type Struct__Mix_Music = c_void;
 pub type Mix_Music = Struct__Mix_Music;
 pub type Mix_EffectFunc_t =
     ::std::option::Option<extern "C" fn
-                              (arg1: c_int, arg2: *c_void, arg3: c_int,
-                               arg4: *c_void)>;
+                              (arg1: c_int, arg2: *const c_void, arg3: c_int,
+                               arg4: *const c_void)>;
 pub type Mix_EffectDone_t =
-    ::std::option::Option<extern "C" fn(arg1: c_int, arg2: *c_void)>;
+    ::std::option::Option<extern "C" fn(arg1: c_int, arg2: *const c_void)>;
 extern "C" {
-    pub fn Mix_Linked_Version() -> *SDL_version;
+    pub fn Mix_Linked_Version() -> *const SDL_version;
     pub fn Mix_Init(flags: c_int) -> c_int;
     pub fn Mix_Quit();
     pub fn Mix_OpenAudio(frequency: c_int, format: uint16_t, channels: c_int,
                          chunksize: c_int) -> c_int;
     pub fn Mix_AllocateChannels(numchans: c_int) -> c_int;
-    pub fn Mix_QuerySpec(frequency: *c_int, format: *uint16_t,
-                         channels: *c_int) -> c_int;
-    pub fn Mix_LoadWAV_RW(src: *SDL_RWops, freesrc: c_int) ->
-     *Mix_Chunk;
-    pub fn Mix_LoadMUS(file: *c_char) -> *Mix_Music;
-    pub fn Mix_LoadMUS_RW(src: *SDL_RWops, freesrc: c_int) ->
-     *Mix_Music;
-    pub fn Mix_LoadMUSType_RW(src: *SDL_RWops, _type: Mix_MusicType,
-                              freesrc: c_int) -> *Mix_Music;
-    pub fn Mix_QuickLoad_WAV(mem: *uint8_t) -> *Mix_Chunk;
-    pub fn Mix_QuickLoad_RAW(mem: *uint8_t, len: uint32_t) -> *Mix_Chunk;
-    pub fn Mix_FreeChunk(chunk: *Mix_Chunk);
-    pub fn Mix_FreeMusic(music: *Mix_Music);
+    pub fn Mix_QuerySpec(frequency: *const c_int, format: *const uint16_t,
+                         channels: *const c_int) -> c_int;
+    pub fn Mix_LoadWAV_RW(src: *const SDL_RWops, freesrc: c_int) ->
+     *const Mix_Chunk;
+    pub fn Mix_LoadMUS(file: *const c_char) -> *const Mix_Music;
+    pub fn Mix_LoadMUS_RW(src: *const SDL_RWops, freesrc: c_int) ->
+     *const Mix_Music;
+    pub fn Mix_LoadMUSType_RW(src: *const SDL_RWops, _type: Mix_MusicType,
+                              freesrc: c_int) -> *const Mix_Music;
+    pub fn Mix_QuickLoad_WAV(mem: *const uint8_t) -> *const Mix_Chunk;
+    pub fn Mix_QuickLoad_RAW(mem: *const uint8_t, len: uint32_t) -> *const Mix_Chunk;
+    pub fn Mix_FreeChunk(chunk: *const Mix_Chunk);
+    pub fn Mix_FreeMusic(music: *const Mix_Music);
     pub fn Mix_GetNumChunkDecoders() -> c_int;
-    pub fn Mix_GetChunkDecoder(index: c_int) -> *c_char;
+    pub fn Mix_GetChunkDecoder(index: c_int) -> *const c_char;
     pub fn Mix_GetNumMusicDecoders() -> c_int;
-    pub fn Mix_GetMusicDecoder(index: c_int) -> *c_char;
-    pub fn Mix_GetMusicType(music: *Mix_Music) -> Mix_MusicType;
+    pub fn Mix_GetMusicDecoder(index: c_int) -> *const c_char;
+    pub fn Mix_GetMusicType(music: *const Mix_Music) -> Mix_MusicType;
     pub fn Mix_SetPostMix(mix_func:
                               ::std::option::Option<extern "C" fn
-                                                        (arg1: *c_void,
-                                                         arg2: *uint8_t,
+                                                        (arg1: *const c_void,
+                                                         arg2: *const uint8_t,
                                                          arg3: c_int)>,
-                          arg: *c_void);
+                          arg: *const c_void);
     pub fn Mix_HookMusic(mix_func:
                              ::std::option::Option<extern "C" fn
-                                                       (arg1: *c_void,
-                                                        arg2: *uint8_t,
+                                                       (arg1: *const c_void,
+                                                        arg2: *const uint8_t,
                                                         arg3: c_int)>,
-                         arg: *c_void);
+                         arg: *const c_void);
     pub fn Mix_HookMusicFinished(music_finished:
                                      ::std::option::Option<extern "C" fn()>);
-    pub fn Mix_GetMusicHookData() -> *c_void;
+    pub fn Mix_GetMusicHookData() -> *const c_void;
     pub fn Mix_ChannelFinished(channel_finished:
                                    ::std::option::Option<extern "C" fn
                                                              (arg1: c_int)>);
     pub fn Mix_RegisterEffect(chan: c_int, f: Mix_EffectFunc_t,
-                              d: Mix_EffectDone_t, arg: *c_void) -> c_int;
+                              d: Mix_EffectDone_t, arg: *const c_void) -> c_int;
     pub fn Mix_UnregisterEffect(channel: c_int, f: Mix_EffectFunc_t) -> c_int;
     pub fn Mix_UnregisterAllEffects(channel: c_int) -> c_int;
     pub fn Mix_SetPanning(channel: c_int, left: uint8_t, right: uint8_t) -> c_int;
@@ -100,18 +100,18 @@ extern "C" {
     pub fn Mix_GroupCount(tag: c_int) -> c_int;
     pub fn Mix_GroupOldest(tag: c_int) -> c_int;
     pub fn Mix_GroupNewer(tag: c_int) -> c_int;
-    pub fn Mix_PlayChannelTimed(channel: c_int, chunk: *Mix_Chunk,
+    pub fn Mix_PlayChannelTimed(channel: c_int, chunk: *const Mix_Chunk,
                                 loops: c_int, ticks: c_int) -> c_int;
-    pub fn Mix_PlayMusic(music: *Mix_Music, loops: c_int) -> c_int;
-    pub fn Mix_FadeInMusic(music: *Mix_Music, loops: c_int, ms: c_int) ->
+    pub fn Mix_PlayMusic(music: *const Mix_Music, loops: c_int) -> c_int;
+    pub fn Mix_FadeInMusic(music: *const Mix_Music, loops: c_int, ms: c_int) ->
      c_int;
-    pub fn Mix_FadeInMusicPos(music: *Mix_Music, loops: c_int, ms: c_int,
+    pub fn Mix_FadeInMusicPos(music: *const Mix_Music, loops: c_int, ms: c_int,
                               position: c_double) -> c_int;
-    pub fn Mix_FadeInChannelTimed(channel: c_int, chunk: *Mix_Chunk,
+    pub fn Mix_FadeInChannelTimed(channel: c_int, chunk: *const Mix_Chunk,
                                   loops: c_int, ms: c_int, ticks: c_int) ->
      c_int;
     pub fn Mix_Volume(channel: c_int, volume: c_int) -> c_int;
-    pub fn Mix_VolumeChunk(chunk: *Mix_Chunk, volume: c_int) -> c_int;
+    pub fn Mix_VolumeChunk(chunk: *const Mix_Chunk, volume: c_int) -> c_int;
     pub fn Mix_VolumeMusic(volume: c_int) -> c_int;
     pub fn Mix_HaltChannel(channel: c_int) -> c_int;
     pub fn Mix_HaltGroup(tag: c_int) -> c_int;
@@ -132,17 +132,17 @@ extern "C" {
     pub fn Mix_SetMusicPosition(position: c_double) -> c_int;
     pub fn Mix_Playing(channel: c_int) -> c_int;
     pub fn Mix_PlayingMusic() -> c_int;
-    pub fn Mix_SetMusicCMD(command: *c_char) -> c_int;
+    pub fn Mix_SetMusicCMD(command: *const c_char) -> c_int;
     pub fn Mix_SetSynchroValue(value: c_int) -> c_int;
     pub fn Mix_GetSynchroValue() -> c_int;
-    pub fn Mix_SetSoundFonts(paths: *c_char) -> c_int;
-    pub fn Mix_GetSoundFonts() -> *c_char;
+    pub fn Mix_SetSoundFonts(paths: *const c_char) -> c_int;
+    pub fn Mix_GetSoundFonts() -> *const c_char;
     pub fn Mix_EachSoundFont(function:
                                  ::std::option::Option<extern "C" fn
-                                                           (arg1: *c_char,
-                                                            arg2: *c_void)
+                                                           (arg1: *const c_char,
+                                                            arg2: *const c_void)
                                                            -> c_int>,
-                             data: *c_void) -> c_int;
-    pub fn Mix_GetChunk(channel: c_int) -> *Mix_Chunk;
+                             data: *const c_void) -> c_int;
+    pub fn Mix_GetChunk(channel: c_int) -> *const Mix_Chunk;
     pub fn Mix_CloseAudio();
 }
