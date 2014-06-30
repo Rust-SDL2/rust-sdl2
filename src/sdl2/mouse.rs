@@ -35,27 +35,28 @@ pub mod ll {
     pub static SDL_QUERY: SDL_MouseState = -1;
 
     extern "C" {
-        pub fn SDL_GetMouseFocus() -> *SDL_Window;
-        pub fn SDL_GetMouseState(x: *c_int, y: *c_int) -> uint32_t;
-        pub fn SDL_GetRelativeMouseState(x: *c_int, y: *c_int) -> uint32_t;
-        pub fn SDL_WarpMouseInWindow(window: *SDL_Window, x: c_int, y: c_int);
+        pub fn SDL_GetMouseFocus() -> *const SDL_Window;
+        pub fn SDL_GetMouseState(x: *const c_int, y: *const c_int) -> uint32_t;
+        pub fn SDL_GetRelativeMouseState(x: *const c_int, y: *const c_int) -> uint32_t;
+        pub fn SDL_WarpMouseInWindow(window: *const SDL_Window, x: c_int, y: c_int);
         pub fn SDL_SetRelativeMouseMode(enabled: SDL_bool) -> c_int;
         pub fn SDL_GetRelativeMouseMode() -> SDL_bool;
-        pub fn SDL_CreateCursor(data: *uint8_t, mask: *uint8_t, w: c_int,
+        pub fn SDL_CreateCursor(data: *const uint8_t, mask: *const uint8_t, w: c_int,
                                       h: c_int, hot_x: c_int, hot_y: c_int) ->
-                  *SDL_Cursor;
-        pub fn SDL_CreateColorCursor(surface: *SDL_Surface, hot_x: c_int,
-                                           hot_y: c_int) -> *SDL_Cursor;
-        pub fn SDL_CreateSystemCursor(id: SDL_SystemCursor) -> *SDL_Cursor;
-        pub fn SDL_SetCursor(cursor: *SDL_Cursor);
-        pub fn SDL_GetCursor() -> *SDL_Cursor;
-        pub fn SDL_GetDefaultCursor() -> *SDL_Cursor;
-        pub fn SDL_FreeCursor(cursor: *SDL_Cursor);
+                  *const SDL_Cursor;
+        pub fn SDL_CreateColorCursor(surface: *const SDL_Surface, hot_x: c_int,
+                                           hot_y: c_int) -> *const SDL_Cursor;
+        pub fn SDL_CreateSystemCursor(id: SDL_SystemCursor) -> *const SDL_Cursor;
+        pub fn SDL_SetCursor(cursor: *const SDL_Cursor);
+        pub fn SDL_GetCursor() -> *const SDL_Cursor;
+        pub fn SDL_GetDefaultCursor() -> *const SDL_Cursor;
+        pub fn SDL_FreeCursor(cursor: *const SDL_Cursor);
         pub fn SDL_ShowCursor(toggle: SDL_MouseState) -> SDL_MouseState;
     }
 }
 
 #[deriving(PartialEq)]
+#[repr(u32)]
 pub enum SystemCursor {
     ArrowCursor = ll::SDL_SYSTEM_CURSOR_ARROW,
     IBeamCursor = ll::SDL_SYSTEM_CURSOR_IBEAM,
@@ -73,7 +74,7 @@ pub enum SystemCursor {
 
 #[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct Cursor {
-    raw: *ll::SDL_Cursor,
+    raw: *const ll::SDL_Cursor,
     owned: bool
 }
 

@@ -22,35 +22,35 @@ pub mod ll {
 
     #[allow(dead_code)]
     pub struct SDL_RWops {
-        pub size:  extern "C" fn(context: *SDL_RWops) -> int64_t,
-        pub seek:  extern "C" fn(context: *SDL_RWops, offset: int64_t, whence: c_int) -> int64_t,
-        pub read:  extern "C" fn(context: *SDL_RWops, ptr: *c_void,
+        pub size:  extern "C" fn(context: *const SDL_RWops) -> int64_t,
+        pub seek:  extern "C" fn(context: *const SDL_RWops, offset: int64_t, whence: c_int) -> int64_t,
+        pub read:  extern "C" fn(context: *const SDL_RWops, ptr: *const c_void,
                                  size: size_t, maxnum: size_t) -> size_t,
-        pub write: extern "C" fn(context: *SDL_RWops, ptr: *c_void,
+        pub write: extern "C" fn(context: *const SDL_RWops, ptr: *const c_void,
                                  size: size_t, maxnum: size_t) -> size_t,
-        pub close: extern "C" fn(context: *SDL_RWops) -> c_int,
+        pub close: extern "C" fn(context: *const SDL_RWops) -> c_int,
         pub _type: uint32_t,
         hidden: SDL_RWops_Anon
     }
 
     extern "C" {
-        pub fn SDL_RWFromFile(file: *c_char, mode: *c_char) -> *SDL_RWops;
-        pub fn SDL_RWFromFP(fp: *FILE, autoclose: SDL_bool) -> *SDL_RWops;
-        pub fn SDL_RWFromMem(mem: *c_void, size: c_int) -> *SDL_RWops;
-        pub fn SDL_RWFromConstMem(mem: *c_void, size: c_int) -> *SDL_RWops;
+        pub fn SDL_RWFromFile(file: *const c_char, mode: *const c_char) -> *const SDL_RWops;
+        pub fn SDL_RWFromFP(fp: *const FILE, autoclose: SDL_bool) -> *const SDL_RWops;
+        pub fn SDL_RWFromMem(mem: *const c_void, size: c_int) -> *const SDL_RWops;
+        pub fn SDL_RWFromConstMem(mem: *const c_void, size: c_int) -> *const SDL_RWops;
 
-        pub fn SDL_AllocRW() -> *SDL_RWops;
-        pub fn SDL_FreeRW(area: *SDL_RWops);
+        pub fn SDL_AllocRW() -> *const SDL_RWops;
+        pub fn SDL_FreeRW(area: *const SDL_RWops);
     }
 }
 
 #[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct RWops {
-    raw: *ll::SDL_RWops,
+    raw: *const ll::SDL_RWops,
     close_on_drop: bool
 }
 
-impl_raw_accessors!(RWops, *ll::SDL_RWops)
+impl_raw_accessors!(RWops, *const ll::SDL_RWops)
 impl_owned_accessors!(RWops, close_on_drop)
 
 /// A structure that provides an abstract interface to stream I/O.
@@ -65,7 +65,7 @@ impl RWops {
 
     pub fn from_bytes(buf: &[u8]) -> SdlResult<RWops> {
         let raw = unsafe {
-            ll::SDL_RWFromConstMem(buf.as_ptr() as *c_void, buf.len() as c_int)
+            ll::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int)
         };
         if raw.is_null() { Err(get_error()) }
         else { Ok(RWops{raw: raw, close_on_drop: false}) }
@@ -90,7 +90,7 @@ impl Reader for RWops {
         // FIXME: it's better to use as_mut_ptr().
         // number of objects read, or 0 at error or end of file.
         let ret = unsafe {
-            ((*self.raw).read)(self.raw, buf.as_ptr() as *c_void, 1, out_len)
+            ((*self.raw).read)(self.raw, buf.as_ptr() as *const c_void, 1, out_len)
         };
         if ret == 0 {
             Err(io::standard_error(io::EndOfFile))
@@ -104,7 +104,7 @@ impl Writer for RWops {
     fn write(&mut self, buf: &[u8]) -> IoResult<()> {
         let in_len = buf.len() as size_t;
         let ret = unsafe {
-            ((*self.raw).write)(self.raw, buf.as_ptr() as *c_void, 1, in_len)
+            ((*self.raw).write)(self.raw, buf.as_ptr() as *const c_void, 1, in_len)
         };
         if ret == 0 {
             Err(io::standard_error(io::EndOfFile))

@@ -8,7 +8,7 @@ pub mod ll {
 
     //SDL_timer.h
     pub type SDL_TimerCallback =
-        ::std::option::Option<extern "C" fn(arg1: uint32_t, arg2: *c_void)
+        ::std::option::Option<extern "C" fn(arg1: uint32_t, arg2: *const c_void)
                                             -> uint32_t>;
     pub type SDL_TimerID = c_int;
     extern "C" {
@@ -18,7 +18,7 @@ pub mod ll {
         pub fn SDL_Delay(ms: uint32_t);
 
         pub fn SDL_AddTimer(interval: uint32_t, callback: SDL_TimerCallback,
-                            param: *c_void) -> SDL_TimerID;
+                            param: *const c_void) -> SDL_TimerID;
         pub fn SDL_RemoveTimer(id: SDL_TimerID) -> c_int;
     }
 }
@@ -81,7 +81,7 @@ impl<'a> Drop for Timer<'a> {
     }
 }
 
-extern "C" fn c_timer_callback(_interval: uint32_t, param: *c_void) -> uint32_t {
+extern "C" fn c_timer_callback(_interval: uint32_t, param: *const c_void) -> uint32_t {
     let f : &mut || -> uint = unsafe { mem::transmute(param) };
     (*f)() as uint32_t
 }

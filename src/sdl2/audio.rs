@@ -41,7 +41,7 @@ pub mod ll {
 
     pub type SDL_AudioCallback =
         ::std::option::Option<extern "C" fn
-                                  (arg1: *c_void, arg2: *uint8_t,
+                                  (arg1: *const c_void, arg2: *const uint8_t,
                                    arg3: c_int)>;
     pub struct SDL_AudioSpec {
         pub freq: c_int,
@@ -52,11 +52,11 @@ pub mod ll {
         pub padding: uint16_t,
         pub size: uint32_t,
         pub callback: SDL_AudioCallback,
-        pub userdata: *c_void,
+        pub userdata: *const c_void,
     }
     pub type SDL_AudioFilter =
         ::std::option::Option<extern "C" fn
-                                  (arg1: *SDL_AudioCVT,
+                                  (arg1: *const SDL_AudioCVT,
                                    arg2: SDL_AudioFormat)>;
     #[allow(dead_code)]
     pub struct SDL_AudioCVT {
@@ -79,35 +79,35 @@ pub mod ll {
     pub static SDL_AUDIO_PAUSED: c_uint = 2;
     extern "C" {
         pub fn SDL_GetNumAudioDrivers() -> c_int;
-        pub fn SDL_GetAudioDriver(index: c_int) -> *c_char;
-        pub fn SDL_AudioInit(driver_name: *c_char) -> c_int;
+        pub fn SDL_GetAudioDriver(index: c_int) -> *const c_char;
+        pub fn SDL_AudioInit(driver_name: *const c_char) -> c_int;
         pub fn SDL_AudioQuit();
-        pub fn SDL_GetCurrentAudioDriver() -> *c_char;
-        pub fn SDL_OpenAudio(desired: *SDL_AudioSpec,
-                             obtained: *SDL_AudioSpec) -> c_int;
+        pub fn SDL_GetCurrentAudioDriver() -> *const c_char;
+        pub fn SDL_OpenAudio(desired: *const SDL_AudioSpec,
+                             obtained: *const SDL_AudioSpec) -> c_int;
         pub fn SDL_GetNumAudioDevices(iscapture: c_int) -> c_int;
-        pub fn SDL_GetAudioDeviceName(index: c_int, iscapture: c_int) -> *c_char;
-        pub fn SDL_OpenAudioDevice(device: *c_char, iscapture: c_int,
-                                   desired: *SDL_AudioSpec,
-                                   obtained: *SDL_AudioSpec,
+        pub fn SDL_GetAudioDeviceName(index: c_int, iscapture: c_int) -> *const c_char;
+        pub fn SDL_OpenAudioDevice(device: *const c_char, iscapture: c_int,
+                                   desired: *const SDL_AudioSpec,
+                                   obtained: *const SDL_AudioSpec,
                                    allowed_changes: c_int) -> SDL_AudioDeviceID;
         pub fn SDL_GetAudioStatus() -> SDL_AudioStatus;
         pub fn SDL_GetAudioDeviceStatus(dev: SDL_AudioDeviceID) ->
             SDL_AudioStatus;
         pub fn SDL_PauseAudio(pause_on: c_int);
         pub fn SDL_PauseAudioDevice(dev: SDL_AudioDeviceID, pause_on: c_int);
-        pub fn SDL_LoadWAV_RW(src: *SDL_RWops, freesrc: c_int,
-                              spec: *SDL_AudioSpec,
-                              audio_buf: **uint8_t, audio_len: *uint32_t) -> *SDL_AudioSpec;
-        pub fn SDL_FreeWAV(audio_buf: *uint8_t);
+        pub fn SDL_LoadWAV_RW(src: *const SDL_RWops, freesrc: c_int,
+                              spec: *const SDL_AudioSpec,
+                              audio_buf: *const *const uint8_t, audio_len: *const uint32_t) -> *const SDL_AudioSpec;
+        pub fn SDL_FreeWAV(audio_buf: *const uint8_t);
         pub fn SDL_BuildAudioCVT(cvt: *mut SDL_AudioCVT,
                                  src_format: SDL_AudioFormat, src_channels: uint8_t,
                                  src_rate: c_int, dst_format: SDL_AudioFormat,
                                  dst_channels: uint8_t, dst_rate: c_int) -> c_int;
         pub fn SDL_ConvertAudio(cvt: *mut SDL_AudioCVT) -> c_int;
-        pub fn SDL_MixAudio(dst: *uint8_t, src: *uint8_t, len: uint32_t,
+        pub fn SDL_MixAudio(dst: *const uint8_t, src: *const uint8_t, len: uint32_t,
                             volume: c_int);
-        pub fn SDL_MixAudioFormat(dst: *uint8_t, src: *uint8_t,
+        pub fn SDL_MixAudioFormat(dst: *const uint8_t, src: *const uint8_t,
                                   format: SDL_AudioFormat, len: uint32_t,
                                   volume: c_int);
         pub fn SDL_LockAudio();
@@ -206,7 +206,7 @@ pub struct AudioSpec<'a > {
     pub callback: Option<&'a |&mut [u8]|:'a>, // same size as *c_void
 }
 
-extern "C" fn c_audio_callback(userdata: *c_void, stream: *uint8_t, len: c_int) {
+extern "C" fn c_audio_callback(userdata: *const c_void, stream: *const uint8_t, len: c_int) {
     unsafe {
         let f : &mut |&mut [u8]| = mem::transmute(userdata);
 

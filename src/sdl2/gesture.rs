@@ -10,9 +10,9 @@ pub mod ll {
 
     extern "C" {
         pub fn SDL_RecordGesture(touchId: SDL_TouchID) -> c_int;
-        pub fn SDL_SaveAllDollarTemplates(src: *SDL_RWops) -> c_int;
-        pub fn SDL_SaveDollarTemplate(gestureId: SDL_GestureID, src: *SDL_RWops) -> c_int;
-        pub fn SDL_LoadDollarTemplates(touchId: SDL_TouchID, src: *SDL_RWops) -> c_int;
+        pub fn SDL_SaveAllDollarTemplates(src: *const SDL_RWops) -> c_int;
+        pub fn SDL_SaveDollarTemplate(gestureId: SDL_GestureID, src: *const SDL_RWops) -> c_int;
+        pub fn SDL_LoadDollarTemplates(touchId: SDL_TouchID, src: *const SDL_RWops) -> c_int;
     }
 }
 
