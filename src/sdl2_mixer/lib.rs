@@ -176,7 +176,7 @@ pub fn get_chunk_decoder(index: int) -> String {
 /// The internal format for an audio chunk.
 #[deriving(PartialEq)] #[allow(raw_pointer_deriving, visible_private_types)]
 pub struct Chunk {
-    pub raw: *ffi::Mix_Chunk,
+    pub raw: *const ffi::Mix_Chunk,
     pub owned: bool
 }
 
@@ -602,7 +602,7 @@ extern "C" fn c_music_finished_hook() {
 /// This is an opaque data type used for Music data.
 #[deriving(PartialEq)] #[allow(raw_pointer_deriving, visible_private_types)]
 pub struct Music {
-    pub raw: *ffi::Mix_Music,
+    pub raw: *const ffi::Mix_Music,
     pub owned: bool,
 }
 
