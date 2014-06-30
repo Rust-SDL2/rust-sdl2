@@ -117,7 +117,7 @@ pub fn quit() {
 #[allow(raw_pointer_deriving)]
 #[deriving(PartialEq)]
 pub struct Font {
-    raw: *ffi::TTF_Font,
+    raw: *const ffi::TTF_Font,
     owned: bool
 }
 
@@ -135,7 +135,7 @@ impl Drop for Font {
 }
 
 impl Font {
-    fn from_ll(raw: *ffi::TTF_Font, owned: bool) -> Font {
+    fn from_ll(raw: *const ffi::TTF_Font, owned: bool) -> Font {
         Font { raw: raw, owned: owned }
     }
 
