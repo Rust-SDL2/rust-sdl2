@@ -8,12 +8,17 @@ struct Key {
 }
 
 impl PartialOrd for Key {
-    fn lt (&self, other: &Key) -> bool {
-        if self.code < other.code {
-            true
-        } else {
-            false
+    fn partial_cmp(&self, other: &Key) -> Option<Ordering> {
+        match (!self.lt(other), !other.lt(self)) {
+            (false, false) => None,
+            (false, true) => Some(Less),
+            (true, false) => Some(Greater),
+            (true, true) => Some(Equal),
         }
+    }
+
+    fn lt (&self, other: &Key) -> bool {
+        self.code < other.code
     }
 }
 
