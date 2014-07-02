@@ -8,12 +8,17 @@ struct ScanCode {
 }
 
 impl PartialOrd for ScanCode {
-    fn lt (&self, other: &ScanCode) -> bool {
-        if self.code < other.code {
-            true
-        } else {
-            false
+    fn partial_cmp(&self, other: &ScanCode) -> Option<Ordering> {
+        match (!self.lt(other), !other.lt(self)) {
+            (false, false) => None,
+            (false, true) => Some(Less),
+            (true, false) => Some(Greater),
+            (true, true) => Some(Equal),
         }
+    }
+
+    fn lt (&self, other: &ScanCode) -> bool {
+        self.code < other.code
     }
 }
 
