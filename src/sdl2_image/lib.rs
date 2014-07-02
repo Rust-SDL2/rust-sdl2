@@ -58,7 +58,7 @@ pub trait LoadSurface {
     // The syntax for type hinting in this case is not yet defined.
     // The intended return value is SdlResult<~Surface>.
     fn from_file(filename: &Path) -> SdlResult<Self>;
-    fn from_xpm_array(xpm: **i8) -> SdlResult<Self>;
+    fn from_xpm_array(xpm: *const *const i8) -> SdlResult<Self>;
 }
 
 /// Method extensions to Surface for saving to disk
@@ -80,10 +80,10 @@ impl LoadSurface for Surface {
         }
     }
 
-    fn from_xpm_array(xpm: **i8) -> SdlResult<Surface> {
+    fn from_xpm_array(xpm: *const *const i8) -> SdlResult<Surface> {
         //! Loads an SDL Surface from XPM data
         unsafe {
-            let raw = ffi::IMG_ReadXPMFromArray(xpm as **c_char);
+            let raw = ffi::IMG_ReadXPMFromArray(xpm as *const *const c_char);
             if raw == ptr::null() {
                 Err(get_error())
             } else {
@@ -163,7 +163,7 @@ pub fn get_linked_version() -> Version {
 }
 
 #[inline]
-fn to_surface_result(raw: *sdl2::surface::ll::SDL_Surface) -> SdlResult<Surface> {
+fn to_surface_result(raw: *const sdl2::surface::ll::SDL_Surface) -> SdlResult<Surface> {
     if raw == ptr::null() {
         Err(get_error())
     } else {
