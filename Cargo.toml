@@ -1,0 +1,16 @@
+[package]
+
+name    = "sdl2_image"
+version = "0.0.1"
+authors = [ "xsleonard" ]
+
+[[lib]]
+
+name       = "sdl2_image"
+path       = "src/sdl2_image/lib.rs"
+crate-type = ["dylib"]
+
+[dependencies.sdl2]
+
+git = "https://github.com/AngryLawyer/rust-sdl2.git"
+
