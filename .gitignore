@@ -5,3 +5,4 @@ lib/
 src/generated
 /rustpkg_db.json
 *.so
+target/
