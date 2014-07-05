@@ -119,7 +119,7 @@ impl Surface {
         }
     }
 
-    pub fn from_data(data: &[u8], width: int, height: int, bpp: int, pitch: int,
+    pub fn from_data(data: &mut [u8], width: int, height: int, bpp: int, pitch: int,
                      rmask: u32, gmask: u32, bmask: u32, amask: u32) -> SdlResult<Surface> {
     
         unsafe {
