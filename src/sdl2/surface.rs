@@ -119,7 +119,22 @@ impl Surface {
         }
     }
 
-    //TODO: From Data
+    pub fn from_data(data: &[u8], width: int, height: int, bpp: int, pitch: int,
+                     rmask: u32, gmask: u32, bmask: u32, amask: u32) -> SdlResult<Surface> {
+    
+        unsafe {
+            let raw = ll::SDL_CreateRGBSurfaceFrom(
+                mem::transmute(data.as_ptr()), width as c_int, height as c_int,
+                bpp as c_int, pitch as c_int, rmask, gmask, bmask, amask);
+
+            if raw == ptr::null() {
+                Err(get_error())
+            } else {
+                Ok(Surface { raw: raw, owned: true })
+            }
+        }
+    }
+
     pub fn get_width(&self) -> int {
         unsafe { (*self.raw).w as int }
     }
@@ -265,6 +280,18 @@ impl Surface {
             let dstrect_ptr = mem::transmute( dstrect.as_ref() );
             let srcrect_ptr = mem::transmute( srcrect.as_ref() );
             ll::SDL_UpperBlit( src.raw, srcrect_ptr, self.raw, dstrect_ptr ) == 0
+        }
+    }
+
+    pub fn fill_rect(&mut self, rect: Option<Rect>, color: pixels::Color) -> SdlResult<()> {
+        unsafe {
+            let rect_ptr = mem::transmute( rect.as_ref() );
+            let format = self.get_pixel_format();
+            let result = ll::SDL_FillRect( self.raw, rect_ptr, color.to_u32(&format) );
+            match result {
+                0 => Ok(()),
+                _ => Err(get_error())
+            }
         }
     }
 
