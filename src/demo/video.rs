@@ -25,7 +25,8 @@ pub fn main() {
                     if key == sdl2::keycode::EscapeKey {
                         break 'main
                     }
-                }
+                },
+                sdl2::event::NoEvent => break 'event,
                 _ => {}
             }
         }

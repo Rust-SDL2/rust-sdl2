@@ -120,15 +120,19 @@ impl Surface {
     }
 
     //TODO: From Data
-    pub fn get_width(&self) -> u16 {
-        unsafe { (*self.raw).w as u16 }
+    pub fn get_width(&self) -> int {
+        unsafe { (*self.raw).w as int }
     }
 
-    pub fn get_height(&self) -> u16 {
-        unsafe { (*self.raw).h as u16 }
+    pub fn get_height(&self) -> int {
+        unsafe { (*self.raw).h as int }
     }
 
-    pub fn get_size(&self) -> (u16, u16) {
+    pub fn get_pitch(&self) -> int {
+        unsafe { (*self.raw).pitch as int }
+    }
+
+    pub fn get_size(&self) -> (int, int) {
         (self.get_width(), self.get_height())
     }
 
