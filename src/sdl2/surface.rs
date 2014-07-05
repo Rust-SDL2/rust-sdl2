@@ -3,7 +3,7 @@ use rect::Rect;
 use get_error;
 use SdlResult;
 use std::ptr;
-use libc::c_int;
+use libc::{c_int, uint32_t};
 use pixels;
 use render::BlendMode;
 use rwops;
@@ -361,7 +361,7 @@ impl Surface {
         }
     }
 
-    pub fn get_cip_rect(&self) -> Rect {
+    pub fn get_clip_rect(&self) -> Rect {
         let rect = Rect::new(0, 0, 0, 0);
         unsafe {
             ll::SDL_GetClipRect(self.raw, &rect)
@@ -369,12 +369,80 @@ impl Surface {
         rect
     }
 
+    pub fn convert(&self, format: &pixels::PixelFormat) -> SdlResult<Surface> {
+        // SDL_ConvertSurface takes a flag as the last parameter, which should be 0 by the docs.
+        let surface_ptr = unsafe { ll::SDL_ConvertSurface(self.raw, format.raw(), 0u32) };
+
+        if surface_ptr == ptr::null() {
+            Err(get_error())
+        } else {
+            unsafe { Ok(Surface::from_ll(surface_ptr, true)) }
+        }
+    }
+
+    pub fn convert_format(&self, format: pixels::PixelFormatFlag) -> SdlResult<Surface> {
+        let surface_ptr = unsafe { ll::SDL_ConvertSurfaceFormat(self.raw, format as uint32_t, 0u32) };
+        
+        if surface_ptr == ptr::null() {
+            Err(get_error())
+        } else {
+            unsafe { Ok(Surface::from_ll(surface_ptr, true)) }
+        }
+    }
+
+    pub fn lower_blit(&self, src_rect: Option<Rect>,
+                      dst: &mut Surface, dst_rect: Option<Rect>) -> SdlResult<()> {
+        
+        match unsafe { 
+            let src_rect_ptr = mem::transmute(src_rect.as_ref());
+            let dst_rect_ptr = mem::transmute(dst_rect.as_ref());
+            ll::SDL_LowerBlit(self.raw, src_rect_ptr, dst.raw, dst_rect_ptr)
+        } {
+            0 => Ok(()),
+            _ => Err(get_error())
+        }
+    }
+
+    pub fn soft_stretch(&self, src_rect: Option<Rect>,
+                        dst: &mut Surface, dst_rect: Option<Rect>) -> SdlResult<()> {
+
+        match unsafe {
+            let src_rect_ptr = mem::transmute(src_rect.as_ref());
+            let dst_rect_ptr = mem::transmute(dst_rect.as_ref());
+            ll::SDL_SoftStretch(self.raw, src_rect_ptr, dst.raw, dst_rect_ptr)
+        } {
+            0 => Ok(()),
+            _ => Err(get_error())
+        }
+    }
+
+    pub fn upper_blit_scaled(&self, src_rect: Option<Rect>,
+                             dst: &mut Surface, dst_rect: Option<Rect>) -> SdlResult<()> {
+
+        match unsafe {
+            let src_rect_ptr = mem::transmute(src_rect.as_ref());
+            let dst_rect_ptr = mem::transmute(dst_rect.as_ref());
+            ll::SDL_UpperBlitScaled(self.raw, src_rect_ptr, dst.raw, dst_rect_ptr)
+        } {
+            0 => Ok(()),
+            _ => Err(get_error())
+        }
+    }
+
+    pub fn lower_blit_scaled(&self, src_rect: Option<Rect>,
+                             dst: &mut Surface, dst_rect: Option<Rect>) -> SdlResult<()> {
+    
+        match unsafe {
+            let src_rect_ptr = mem::transmute(src_rect.as_ref());
+            let dst_rect_ptr = mem::transmute(dst_rect.as_ref());
+            ll::SDL_LowerBlitScaled(self.raw, src_rect_ptr, dst.raw, dst_rect_ptr)
+        } {
+            0 => Ok(()),
+            _ => Err(get_error())
+        }
+    }
+
     /*
-    pub fn SDL_ConvertSurface(src: *SDL_Surface, fmt: *SDL_PixelFormat, flags: uint32_t) ->  *SDL_Surface;
-    pub fn SDL_ConvertSurfaceFormat(src: *SDL_Surface, pixel_format: uint32_t, flags: uint32_t) ->  *SDL_Surface;
     pub fn SDL_ConvertPixels(width: c_int, height: c_int, src_format: uint32_t, src: *c_void, src_pitch: c_int, dst_format: uint32_t, dst: *c_void, dst_pitch: c_int) -> c_int;
-    pub fn SDL_LowerBlit(src: *SDL_Surface, srcrect: *SDL_Rect, dst: *SDL_Surface, dstrect: *SDL_Rect) -> c_int;
-    pub fn SDL_SoftStretch(src: *SDL_Surface, srcrect: *SDL_Rect, dst: *SDL_Surface, dstrect: *SDL_Rect) -> c_int;
-    pub fn SDL_UpperBlitScaled(src: *SDL_Surface, srcrect: *SDL_Rect, dst: *SDL_Surface, dstrect: *SDL_Rect) -> c_int;
-    pub fn SDL_LowerBlitScaled(src: *SDL_Surface, srcrect: *SDL_Rect, dst: *SDL_Surface, dstrect: *SDL_Rect) -> c_int)*/
+    */
 }
