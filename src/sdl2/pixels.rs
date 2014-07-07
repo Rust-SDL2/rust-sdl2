@@ -94,7 +94,7 @@ pub struct Palette {
 
 impl_raw_accessors!(Palette, *const ll::SDL_Palette)
 
-#[deriving(PartialEq)]
+#[deriving(PartialEq, Clone)]
 pub enum Color {
     RGB(u8, u8, u8),
     RGBA(u8, u8, u8, u8)
