@@ -1,5 +1,5 @@
 #![feature(macro_rules)]
-#![crate_id = "codegen#0.1"]
+#![crate_name = "codegen"]
 
 use std::os;
 use std::io::BufferedWriter;
