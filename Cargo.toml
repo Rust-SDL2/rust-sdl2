@@ -16,3 +16,5 @@ name = "demo"
 path = "src/demo/main.rs"
 
 [dev-dependencies.codegen]
+
+path = "src/codegen"

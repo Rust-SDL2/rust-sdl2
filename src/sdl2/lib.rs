@@ -1,4 +1,4 @@
-#![crate_id="sdl2#0.0.1"]
+#![crate_name = "sdl2"]
 #![crate_type = "lib"]
 
 #![desc = "SDL2 bindings"]
