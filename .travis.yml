@@ -9,4 +9,5 @@ install:
   - ./configure && make && sudo make install
   - cd -
 script:
+  - export LD_LIBRARY_PATH="/usr/local/lib/:$LD_LIBRARY_PATH"
   - make compile_demo
