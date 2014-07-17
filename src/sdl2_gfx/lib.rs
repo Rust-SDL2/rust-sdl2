@@ -2,12 +2,6 @@
 A binding for SDL2_gfx.
  */
 
-#![crate_id="sdl2_gfx#sdl2_gfx:0.1"]
-#![crate_type = "lib"]
-#![desc = "SDL2_gfx bindings and wrappers"]
-#![comment = "SDL2_gfx bindings and wrappers"]
-#![license = "MIT"]
-
 #![feature(globs, macro_rules)]
 
 extern crate libc;
