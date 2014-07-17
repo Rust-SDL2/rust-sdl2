@@ -70,6 +70,7 @@ impl<'a> Timer<'a> {
     }
 }
 
+#[unsafe_destructor]
 impl<'a> Drop for Timer<'a> {
     fn drop(&mut self) {
         if self.remove_on_drop {
