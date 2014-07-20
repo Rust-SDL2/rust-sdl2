@@ -85,7 +85,7 @@ pub fn get_keyboard_state() -> HashMap<ScanCode, bool> {
     let mut current = 0;
     while current < raw.len() {
         state.insert(FromPrimitive::from_int(current as int).unwrap(),
-                     *raw.get(current) == 1);
+                     raw[current] == 1);
         current += 1;
     }
 
