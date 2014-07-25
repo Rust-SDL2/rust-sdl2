@@ -1,4 +1,3 @@
-use std::str;
 use SdlResult;
 use get_error;
 use std::string::raw::from_buf;
