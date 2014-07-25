@@ -370,13 +370,13 @@ impl<S> Renderer<S> {
         }
     }
 
-    pub fn get_render_target(&self) -> SdlResult<Texture> {
+    pub fn get_render_target(&self) -> Option<Texture> {
         let raw = unsafe { ll::SDL_GetRenderTarget(self.raw) };
 
         if raw == ptr::null() {
-            Err(get_error())
+            None
         } else {
-            Ok(Texture{
+            Some(Texture{
                 raw: raw,
                 owned: false
             })
