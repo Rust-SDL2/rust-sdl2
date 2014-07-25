@@ -8,13 +8,13 @@ use SdlResult;
 use std::ptr;
 use libc;
 use libc::{c_int, uint32_t, c_float, c_double, c_void, size_t};
-use std::str;
 use std::mem;
 use rect::Point;
 use rect::Rect;
 use std::num::FromPrimitive;
 use std::vec::Vec;
 use std::c_vec::CVec;
+use std::string::raw::from_buf;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
@@ -191,7 +191,7 @@ impl RendererInfo {
             }).collect();
 
             RendererInfo {
-                name: str::raw::from_c_str(mem::transmute_copy(&info.name)),
+                name: from_buf(mem::transmute_copy(&info.name)),
                 flags: actual_flags,
                 texture_formats: texture_formats,
                 max_texture_width: info.max_texture_width as int,
