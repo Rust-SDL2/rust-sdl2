@@ -1,6 +1,6 @@
-use std::str;
 use SdlResult;
 use get_error;
+use std::string::raw::from_buf;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
@@ -32,7 +32,7 @@ pub fn set_clipboard_text(text: &String) -> SdlResult<()> {
 pub fn get_clipboard_text() -> SdlResult<String> {
     let result = unsafe {
         let cstr = ll::SDL_GetClipboardText();
-        str::raw::from_c_str(cstr)
+        from_buf(cstr as *const u8)
     };
 
     if result.len() == 0 {
