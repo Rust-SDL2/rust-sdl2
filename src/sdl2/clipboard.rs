@@ -1,4 +1,4 @@
-use std::str;
+use std::string;
 use SdlResult;
 use get_error;
 
@@ -31,8 +31,8 @@ pub fn set_clipboard_text(text: &String) -> SdlResult<()> {
 
 pub fn get_clipboard_text() -> SdlResult<String> {
     let result = unsafe {
-        let cstr = ll::SDL_GetClipboardText();
-        str::raw::from_c_str(cstr)
+        let cstr = ll::SDL_GetClipboardText() as *const u8;
+        string::raw::from_buf(cstr)
     };
 
     if result.len() == 0 {

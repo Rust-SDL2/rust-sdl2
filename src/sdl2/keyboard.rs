@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::num::FromPrimitive;
 use std::ptr;
-use std::str;
+use std::string;
 use std::vec;
 
 use keycode::KeyCode;
@@ -116,7 +116,8 @@ pub fn get_scancode_from_key(key: KeyCode) -> ScanCode {
 
 pub fn get_scancode_name(scancode: ScanCode) -> String {
     unsafe {
-        str::raw::from_c_str(ll::SDL_GetScancodeName(scancode.code() as u32))
+        let scancode_name = ll::SDL_GetScancodeName(scancode.code() as u32);
+        string::raw::from_buf(scancode_name as *const u8)
     }
 }
 
@@ -130,7 +131,8 @@ pub fn get_scancode_from_name(name: &str) -> ScanCode {
 
 pub fn get_key_name(key: KeyCode) -> String {
     unsafe {
-        str::raw::from_c_str(ll::SDL_GetKeyName(key.code()))
+        let key_name = ll::SDL_GetKeyName(key.code());
+        string::raw::from_buf(key_name as *const u8)
     }
 }
 

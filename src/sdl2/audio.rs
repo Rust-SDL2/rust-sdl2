@@ -221,11 +221,12 @@ extern "C" fn c_audio_callback(userdata: *const c_void, stream: *const uint8_t, 
 
 
 impl<'a> AudioSpec<'a> {
-    pub fn load_wav(path: &Path) -> SdlResult<(AudioSpec, CVec<u8>)> {
-        AudioSpec::load_wav_rw(&try!(RWops::from_file(path, "rb")))
+    pub fn load_wav<'b>(path: &Path) -> SdlResult<(AudioSpec<'b>, CVec<u8>)> {
+        let ops = try!(RWops::from_file(path, "rb"));
+        AudioSpec::load_wav_rw(&ops)
     }
 
-    pub fn load_wav_rw(src: &RWops) -> SdlResult<(AudioSpec, CVec<u8>)> {
+    pub fn load_wav_rw<'b>(src: &RWops) -> SdlResult<(AudioSpec<'b>, CVec<u8>)> {
         assert_eq!(mem::size_of::<AudioSpec>(), mem::size_of::<ll::SDL_AudioSpec>());
         let mut spec = unsafe { mem::uninitialized::<AudioSpec>() };
         let audio_buf = ptr::null::<u8>();
@@ -261,7 +262,8 @@ impl AudioDevice {
         }
     }
 
-    pub fn open(device: Option<&str>, iscapture: int, spec: &AudioSpec) -> SdlResult<(AudioDevice, AudioSpec)> {
+    pub fn open<'a>(device: Option<&str>, iscapture: int, spec: &AudioSpec)
+        -> SdlResult<(AudioDevice, AudioSpec<'a>)> {
         //! SDL_OpenAudioDevice
         let obtained = unsafe { mem::uninitialized::<AudioSpec>() };
         unsafe {
