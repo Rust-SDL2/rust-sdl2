@@ -5,7 +5,7 @@ Event Handling
 use std::mem;
 use libc::{c_int, c_void, uint32_t};
 use std::num::FromPrimitive;
-use std::str;
+use std::string;
 use std::ptr;
 
 use controller;
@@ -991,7 +991,7 @@ impl Event {
             DropFileEventType => {
                 let event = *raw.drop();
 
-                let text = str::raw::from_c_str(event.file);
+                let text = string::raw::from_buf(event.file as *const u8);
                 ll::SDL_free(event.file as *const c_void);
 
                 DropFileEvent(event.timestamp as uint, text)

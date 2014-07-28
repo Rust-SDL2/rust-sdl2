@@ -21,18 +21,18 @@ fn main() {
             os::set_exit_status(1);
         },
         3 => {
-            let output_dir = GenericPath::new(args.get(2).as_slice());
+            let output_dir = GenericPath::new(args[2].as_slice());
             match mkdir_recursive(&output_dir, UserDir) {
                 Err(e) => fail!("Could not create directory for generated sources: {:s}", e.desc),
                 Ok(_) => {},
             };
 
-            if "keycode.rs" == args.get(1).as_slice() {
+            if "keycode.rs" == args[1].as_slice() {
                 match keycode::generate(&output_dir) {
                     Ok(_) => {},
                     Err(e) => fail!("Could not automatically generate sources for keycodes: {:s}", e.desc),
                 };
-            } else if "scancode.rs" == args.get(1).as_slice() {
+            } else if "scancode.rs" == args[1].as_slice() {
                 match scancode::generate(&output_dir) {
                     Ok(_)    => {},
                     Err(e) => fail!("Could not automatically generate sources for scancodes: {:s}", e.desc),
