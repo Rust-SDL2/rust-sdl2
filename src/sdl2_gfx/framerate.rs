@@ -1,7 +1,7 @@
 //! Framerate control
 
 use libc;
-use libc::{c_void, uint32_t, malloc};
+use libc::{c_void, uint32_t, malloc, size_t};
 use std::mem;
 use sdl2::SdlResult;
 
@@ -35,7 +35,8 @@ impl FPSManager {
     /// Create the framerate manager.
     pub fn new() -> FPSManager {
         unsafe {
-            let raw = libc::malloc(mem::size_of::<ll::FPSmanager>() as u64) as *mut ll::FPSmanager;
+            let size = mem::size_of::<ll::FPSmanager>() as size_t;
+            let raw = libc::malloc(size) as *mut ll::FPSmanager;
             ll::SDL_initFramerate(raw);
             FPSManager { raw: raw }
         }
