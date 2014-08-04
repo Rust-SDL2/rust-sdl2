@@ -520,11 +520,11 @@ impl<S> Renderer<S> {
                 self.raw,
                 texture.raw,
                 match src {
-                    Some(rect) => mem::transmute(&rect),
+                    Some(ref rect) => mem::transmute(rect),
                     None => ptr::null()
                 },
                 match dst {
-                    Some(rect) => mem::transmute(&rect),
+                    Some(ref rect) => mem::transmute(rect),
                     None => ptr::null()
                 }
             )
@@ -541,16 +541,16 @@ impl<S> Renderer<S> {
                 self.raw,
                 texture.raw,
                 match src {
-                    Some(rect) => mem::transmute(&rect),
+                    Some(ref rect) => mem::transmute(rect),
                     None => ptr::null()
                 },
                 match dst {
-                    Some(rect) => mem::transmute(&rect),
+                    Some(ref rect) => mem::transmute(rect),
                     None => ptr::null()
                 },
                 angle as c_double,
                 match center {
-                    Some(point) => mem::transmute(&point),
+                    Some(ref point) => mem::transmute(point),
                     None => ptr::null()
                 },
                 FromPrimitive::from_i64(flip as i64).unwrap()
@@ -564,7 +564,7 @@ impl<S> Renderer<S> {
     pub fn read_pixels(&self, rect: Option<Rect>, format: pixels::PixelFormatFlag) -> SdlResult<CVec<u8>> {
         unsafe {
             let (actual_rect, w, h) = match rect {
-                Some(rect) => (mem::transmute(&rect), rect.w as uint, rect.h as uint),
+                Some(ref rect) => (mem::transmute(rect), rect.w as uint, rect.h as uint),
                 None => {
                     let (w, h) = try!(self.get_output_size());
                     (ptr::null(), w as uint, h as uint)
@@ -687,7 +687,7 @@ impl Texture {
     pub fn update(&self, rect: Option<Rect>, pixel_data: &[u8], pitch: int) -> SdlResult<()> {
         let ret = unsafe {
             let actual_rect = match rect {
-                Some(rect) => mem::transmute(&rect),
+                Some(ref rect) => mem::transmute(rect),
                 None => ptr::null()
             };
 
@@ -702,7 +702,7 @@ impl Texture {
         let q = try!(self.query());
         unsafe {
             let actual_rect = match rect {
-                Some(rect) => mem::transmute(&rect),
+                Some(ref rect) => mem::transmute(rect),
                 None => ptr::null()
             };
 
