@@ -165,6 +165,7 @@ pub mod ll {
         pub fn SDL_IsScreenSaverEnabled() -> SDL_bool;
         pub fn SDL_EnableScreenSaver();
         pub fn SDL_DisableScreenSaver();
+        pub fn SDL_GL_GetDrawableSize(window: *const SDL_Window, w: *const c_int, h: *const c_int);
         pub fn SDL_GL_LoadLibrary(path: *const c_char) -> c_int;
         pub fn SDL_GL_GetProcAddress(procname: *const c_char) -> Option<extern "system" fn()>;
         pub fn SDL_GL_UnloadLibrary();
@@ -466,6 +467,13 @@ impl Window {
         let w: c_int = 0;
         let h: c_int = 0;
         unsafe { ll::SDL_GetWindowSize(self.raw, &w, &h) };
+        (w as int, h as int)
+    }
+
+    pub fn get_drawable_size(&self) -> (int, int) {
+        let w: c_int = 0;
+        let h: c_int = 0;
+        unsafe { ll::SDL_GL_GetDrawableSize(self.raw, &w, &h) };
         (w as int, h as int)
     }
 

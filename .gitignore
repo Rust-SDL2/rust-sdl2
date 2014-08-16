@@ -20,3 +20,5 @@ src/sdl2/generated/
 src/demo/main
 doc/
 target/
+
+Cargo.lock
