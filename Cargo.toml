@@ -1,11 +1,11 @@
 [package]
 
-name = "rust-sdl2_mixer"
+name = "sdl2_mixer"
 version = "0.0.1"
 readme = "README.md"
 authors = ["ShuYu Wang"]
 
-[[lib]]
+[lib]
 
 name = "sdl2_mixer"
 path = "src/sdl2_mixer/lib.rs"
