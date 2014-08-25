@@ -309,6 +309,7 @@ pub mod ll {
         pub msg: *const SDL_SysWMmsg,
     }
 
+    #[repr(C)]
     pub struct SDL_Event {
         pub data: [uint8_t, ..56u],
     }

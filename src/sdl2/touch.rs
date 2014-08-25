@@ -3,6 +3,7 @@ use std::ptr;
 pub type TouchDevice = ll::SDL_TouchID;
 
 #[deriving(PartialEq)]
+#[repr(C)]
 pub struct Finger {
     id: TouchDevice,
     x: f32,

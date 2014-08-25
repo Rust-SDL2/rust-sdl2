@@ -39,6 +39,7 @@ pub mod ll {
         SDL_RENDERER_TARGETTEXTURE = 0x00000008
     }
 
+    #[repr(C)]
     pub struct SDL_RendererInfo
     {
         pub name: *const c_char,
@@ -69,7 +70,9 @@ pub mod ll {
         SDL_FLIP_VERTICAL = 0x00000002
     }
 
+    #[repr(C)]
     pub struct SDL_Renderer;
+    #[repr(C)]
     pub struct SDL_Texture;
 
     //SDL_blendmode.h

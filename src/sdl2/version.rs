@@ -9,6 +9,7 @@ use std::c_str::CString;
 #[allow(non_camel_case_types)]
 pub mod ll {
     use libc::{uint8_t, c_char, c_int};
+    #[repr(C)]
     pub struct SDL_version {
         pub major: uint8_t,
         pub minor: uint8_t,
