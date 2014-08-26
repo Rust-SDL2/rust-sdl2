@@ -5,6 +5,7 @@ pub mod ll {
     use libc::{c_int, uint8_t, uint32_t};
 
     //SDL_pixels.h
+    #[repr(C)]
     pub struct SDL_Color {
         pub r: uint8_t,
         pub g: uint8_t,
@@ -12,6 +13,7 @@ pub mod ll {
         pub a: uint8_t,
     }
 
+    #[repr(C)]
     pub struct SDL_Palette {
         pub ncolors: c_int,
         pub colors: *const SDL_Color,
@@ -20,6 +22,7 @@ pub mod ll {
     }
 
     #[allow(uppercase_variables)]
+    #[repr(C)]
     pub struct SDL_PixelFormat {
         pub format: SDL_PixelFormatFlag,
         pub palette: *const SDL_Palette,

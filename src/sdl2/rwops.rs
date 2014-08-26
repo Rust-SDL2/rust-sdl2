@@ -10,6 +10,7 @@ pub mod ll {
     use libc::{c_int, int64_t, size_t};
 
     #[allow(dead_code)]
+    #[repr(C)]
     struct SDL_RWops_Anon {
         data: [c_uchar, ..24],
     }
@@ -21,6 +22,7 @@ pub mod ll {
     pub static RW_SEEK_END: c_int = 2;
 
     #[allow(dead_code)]
+    #[repr(C)]
     pub struct SDL_RWops {
         pub size:  extern "C" fn(context: *const SDL_RWops) -> int64_t,
         pub seek:  extern "C" fn(context: *const SDL_RWops, offset: int64_t, whence: c_int) -> int64_t,

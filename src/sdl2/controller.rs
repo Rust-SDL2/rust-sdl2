@@ -17,12 +17,14 @@ pub mod ll {
     pub static SDL_CONTROLLER_BINDTYPE_HAT: SDL_GameControllerBindType = 3;
 
     #[allow(dead_code)]
+    #[repr(C)]
     pub struct SDL_GameControllerButtonBind {
         bindType: SDL_GameControllerBindType,
         value: SDL_GameControllerButtonBindData,
     }
 
     #[allow(dead_code)]
+    #[repr(C)]
     pub struct SDL_GameControllerButtonBindData {
         data: [c_uchar, ..8u],
     }

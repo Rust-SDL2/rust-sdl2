@@ -28,8 +28,10 @@ pub mod ll {
     pub static SDL_DONTFREE: SDL_SurfaceFlag = 0x00000004;
 
     //SDL_surface.h
+    #[repr(C)]
     pub struct SDL_BlitMap;
 
+    #[repr(C)]
     pub struct SDL_Surface {
         pub flags: uint32_t,
         pub format: *const SDL_PixelFormat,

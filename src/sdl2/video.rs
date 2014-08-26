@@ -23,8 +23,10 @@ pub mod ll {
     pub type SDL_bool = c_int;
 
     //SDL_video.h
+    #[repr(C)]
     pub struct SDL_Window;
 
+    #[repr(C)]
     pub struct SDL_DisplayMode {
         pub format: uint32_t,
         pub w: c_int,
