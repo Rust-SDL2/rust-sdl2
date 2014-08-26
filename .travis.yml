@@ -13,4 +13,3 @@ install:
   - cd -
 script:
   - cargo build -v
-  - make compile_demo
