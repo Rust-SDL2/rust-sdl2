@@ -1,6 +1,6 @@
 #![feature(macro_rules)]
 
-#![crate_id="sdl2_image#sdl2_image:0.1"]
+#![crate_name="sdl2_image"]
 #![crate_type = "lib"]
 #![desc = "SDL2_image bindings and wrappers"]
 #![comment = "SDL2_image bindings and wrappers"]
