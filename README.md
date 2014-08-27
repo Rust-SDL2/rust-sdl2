@@ -1,4 +1,4 @@
-# Rust-SDL2 [![Build Status](https://travis-ci.org/AngryLawyer/rust-sdl2.png)](https://travis-ci.org/AngryLawyer/rust-sdl2)
+# Rust-SDL2 [![Build Status](https://travis-ci.org/AngryLawyer/rust-sdl2.png?branch=master)](https://travis-ci.org/AngryLawyer/rust-sdl2)
 
 Bindings for SDL2 in Rust
 
