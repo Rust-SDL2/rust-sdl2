@@ -12,7 +12,7 @@ mod mac {
     extern {}
 }
 
-#[cfg(target_os="win32")]
+#[cfg(target_os="windows")]
 #[cfg(target_os="linux")]
 #[cfg(target_os="freebsd")]
 mod others {
