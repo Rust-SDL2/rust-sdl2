@@ -140,7 +140,6 @@ impl Rect {
 
 #[cfg(test)]
 mod test {
-    //use super::*;
     use super::{Rect, Point};
 
     #[test]
