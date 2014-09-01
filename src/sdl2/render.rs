@@ -274,7 +274,7 @@ impl Renderer<Surface> {
 
 impl<S> Renderer<S> {
     #[inline]
-    pub fn get_parent<'a>(&'a self) -> &'a S { self.parent.get_ref() }
+    pub fn get_parent<'a>(&'a self) -> &'a S { self.parent.as_ref().unwrap() }
 
     #[inline]
     pub fn unwrap_parent(mut self) -> S {
