@@ -16,7 +16,7 @@ pub mod ll {
     pub static SDL_CONTROLLER_BINDTYPE_AXIS: SDL_GameControllerBindType = 2;
     pub static SDL_CONTROLLER_BINDTYPE_HAT: SDL_GameControllerBindType = 3;
 
-    #[allow(dead_code)]
+    #[allow(dead_code, non_snake_case)]
     #[repr(C)]
     pub struct SDL_GameControllerButtonBind {
         bindType: SDL_GameControllerBindType,

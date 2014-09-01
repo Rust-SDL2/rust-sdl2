@@ -213,14 +213,14 @@ impl Surface {
         }
     }
 
-    #[allow(non_snake_case_functions)]
+    #[allow(non_snake_case)]
     pub fn enable_RLE(&self) -> bool {
         unsafe {
             ll::SDL_SetSurfaceRLE(self.raw, 1) == 0
         }
     }
 
-    #[allow(non_snake_case_functions)]
+    #[allow(non_snake_case)]
     pub fn disable_RLE(&self) -> bool {
         unsafe {
             ll::SDL_SetSurfaceRLE(self.raw, 0) == 0

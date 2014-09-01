@@ -24,7 +24,7 @@ use get_error;
 use SdlResult;
 
 #[doc(hidden)]
-#[allow(non_camel_case_types)]
+#[allow(non_camel_case_types, non_snake_case)]
 pub mod ll {
     use std::mem;
     use libc::{c_float, c_int, c_char, c_uint, c_void, int16_t,

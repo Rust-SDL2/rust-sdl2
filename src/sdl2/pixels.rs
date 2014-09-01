@@ -21,7 +21,7 @@ pub mod ll {
         pub refcount: c_int
     }
 
-    #[allow(uppercase_variables)]
+    #[allow(non_snake_case)]
     #[repr(C)]
     pub struct SDL_PixelFormat {
         pub format: SDL_PixelFormatFlag,
