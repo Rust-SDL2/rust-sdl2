@@ -4,12 +4,21 @@ os:
     - osx
 env:
     global:
-        - LD_LIBRARY_PATH: /usr/local/lib
+        - secure: jS3X2wCwnJgAUnCP7MmeSFR/o7kX9MZxcLQcfWwFIFHe83qGys4Xa+csLz7y/5e7n64UYJtn8ZwIgLfCZawalOPQN3SaFrtv1AAnU47YOQhvk++9A8mmg6R/lMuObSqqQteIvL0lkaGmOWBtB81QPg3vsYWgFhdjqGE1seWUsxE=
 install:
-  - wget http://www.libsdl.org/release/SDL2-2.0.0.tar.gz
-  - tar -zxvf SDL2-2.0.0.tar.gz
-  - cd SDL2-2.0.0
-  - ./configure && make && sudo make install
-  - cd -
+    - wget http://www.libsdl.org/release/SDL2-2.0.0.tar.gz
+    - tar -zxvf SDL2-2.0.0.tar.gz
+    - cd SDL2-2.0.0
+    - ./configure && make && sudo make install
+    - cd -
+before_script:
+    - rustc -v
+    - cargo -V
 script:
-  - cargo build -v
+    - cargo build -v
+    - cargo test -v
+    - cargo doc -v
+after_success:
+    - cp -R target/doc doc
+    - curl http://www.rust-ci.org/artifacts/put?t=$RUSTCI_TOKEN | sh
+    - rm -r doc
