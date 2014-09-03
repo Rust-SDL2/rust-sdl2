@@ -1,7 +1,6 @@
 use libc::{c_int, c_float, uint32_t};
 use std::ptr;
 use std::string;
-use std::mem;
 use std::vec::Vec;
 
 use rect::Rect;
@@ -391,7 +390,7 @@ impl Window {
             ll::SDL_SetWindowDisplayMode(
                 self.raw,
                 match display_mode {
-                    Some(ref mode) => mem::transmute(&mode.to_ll()),
+                    Some(ref mode) => &mode.to_ll() as *const _,
                     None => ptr::null()
                 }
             ) == 0
@@ -439,7 +438,7 @@ impl Window {
     pub fn get_title(&self) -> String {
         unsafe {
             let cstr = ll::SDL_GetWindowTitle(self.raw);
-            string::raw::from_buf(mem::transmute_copy(&cstr))
+            string::raw::from_buf(cstr as *const _)
         }
     }
 
@@ -548,7 +547,7 @@ impl Window {
     }
 
     pub fn update_surface_rects(&self, rects: &[Rect]) -> bool {
-        unsafe { ll::SDL_UpdateWindowSurfaceRects(self.raw, mem::transmute(rects.as_ptr()), rects.len() as c_int) == 0}
+        unsafe { ll::SDL_UpdateWindowSurfaceRects(self.raw, rects.as_ptr(), rects.len() as c_int) == 0}
     }
 
     pub fn set_grab(&self, grabbed: bool) {
@@ -570,15 +569,15 @@ impl Window {
     pub fn set_gamma_ramp(&self, red: Option<&[u16, ..256]>, green: Option<&[u16, ..256]>, blue: Option<&[u16, ..256]>) -> bool {
         unsafe {
             let unwrapped_red = match red {
-                Some(values) => mem::transmute((*values).as_ptr()),
+                Some(values) => values.as_ptr(),
                 None => ptr::null()
             };
             let unwrapped_green = match green {
-                Some(values) => mem::transmute((*values).as_ptr()),
+                Some(values) => values.as_ptr(),
                 None => ptr::null()
             };
             let unwrapped_blue = match blue {
-                Some(values) => mem::transmute((*values).as_ptr()),
+                Some(values) => values.as_ptr(),
                 None => ptr::null()
             };
             ll::SDL_SetWindowGammaRamp(self.raw, unwrapped_red, unwrapped_green, unwrapped_blue) == 0
@@ -589,7 +588,7 @@ impl Window {
         let red: Vec<u16> = Vec::with_capacity(256);
         let green: Vec<u16> = Vec::with_capacity(256);
         let blue: Vec<u16> = Vec::with_capacity(256);
-        let result = unsafe {ll::SDL_GetWindowGammaRamp(self.raw, mem::transmute(red.as_ptr()), mem::transmute(green.as_ptr()), mem::transmute(blue.as_ptr())) == 0};
+        let result = unsafe {ll::SDL_GetWindowGammaRamp(self.raw, red.as_ptr(), green.as_ptr(), blue.as_ptr()) == 0};
         if result {
             Ok((red, green, blue))
         } else {
@@ -627,7 +626,7 @@ pub fn get_num_video_drivers() -> SdlResult<int> {
 pub fn get_video_driver(id: int) -> String {
     unsafe {
         let cstr = ll::SDL_GetVideoDriver(id as c_int);
-        string::raw::from_buf(mem::transmute_copy(&cstr))
+        string::raw::from_buf(cstr as *const _)
     }
 }
 
@@ -644,7 +643,7 @@ pub fn video_quit() {
 pub fn get_current_video_driver() -> String {
     unsafe {
         let cstr = ll::SDL_GetCurrentVideoDriver();
-        string::raw::from_buf(mem::transmute_copy(&cstr))
+        string::raw::from_buf(cstr as *const _)
     }
 }
 
@@ -660,7 +659,7 @@ pub fn get_num_video_displays() -> SdlResult<int> {
 pub fn get_display_name(display_index: int) -> String {
     unsafe {
         let cstr = ll::SDL_GetDisplayName(display_index as c_int);
-        string::raw::from_buf(mem::transmute_copy(&cstr))
+        string::raw::from_buf(cstr as *const _)
     }
 }
 

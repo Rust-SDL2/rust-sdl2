@@ -9,7 +9,6 @@ use std::ptr;
 use libc;
 use libc::{c_int, uint32_t, c_float, c_double, c_void, size_t};
 use std::string;
-use std::mem;
 use rect::Point;
 use rect::Rect;
 use std::num::FromPrimitive;
@@ -194,7 +193,7 @@ impl RendererInfo {
             }).collect();
 
             RendererInfo {
-                name: string::raw::from_buf(mem::transmute_copy(&info.name)),
+                name: string::raw::from_buf(info.name as *const _),
                 flags: actual_flags,
                 texture_formats: texture_formats,
                 max_texture_width: info.max_texture_width as int,
@@ -362,7 +361,7 @@ impl<S> Renderer<S> {
     pub fn set_render_target(&self, texture: Option<&Texture>) -> SdlResult<()> {
         unsafe {
             let actual_texture = match texture {
-                Some(texture) => mem::transmute(texture.raw),
+                Some(texture) => texture.raw,
                 None => ptr::null()
             };
             if ll::SDL_SetRenderTarget(self.raw, actual_texture) == 0 {
@@ -462,7 +461,7 @@ impl<S> Renderer<S> {
 
     pub fn draw_points(&self, points: &[Point]) -> SdlResult<()> {
         let ret = unsafe {
-            ll::SDL_RenderDrawPoints(self.raw, mem::transmute(points.as_ptr()), points.len() as c_int)
+            ll::SDL_RenderDrawPoints(self.raw, points.as_ptr(), points.len() as c_int)
         };
 
         if ret == 0 { Ok(()) }
@@ -478,7 +477,7 @@ impl<S> Renderer<S> {
 
     pub fn draw_lines(&self, points: &[Point]) -> SdlResult<()> {
         let ret = unsafe {
-            ll::SDL_RenderDrawLines(self.raw, mem::transmute(points.as_ptr()), points.len() as c_int)
+            ll::SDL_RenderDrawLines(self.raw, points.as_ptr(), points.len() as c_int)
         };
 
         if ret == 0 { Ok(()) }
@@ -494,7 +493,7 @@ impl<S> Renderer<S> {
 
     pub fn draw_rects(&self, rects: &[Rect]) -> SdlResult<()> {
         let ret = unsafe {
-            ll::SDL_RenderDrawRects(self.raw, mem::transmute(rects.as_ptr()), rects.len() as c_int)
+            ll::SDL_RenderDrawRects(self.raw, rects.as_ptr(), rects.len() as c_int)
         };
 
         if ret == 0 { Ok(()) }
@@ -510,7 +509,7 @@ impl<S> Renderer<S> {
 
     pub fn fill_rects(&self, rects: &[Rect]) -> SdlResult<()> {
         let ret = unsafe {
-            ll::SDL_RenderFillRects(self.raw, mem::transmute(rects.as_ptr()), rects.len() as c_int)
+            ll::SDL_RenderFillRects(self.raw, rects.as_ptr(), rects.len() as c_int)
         };
 
         if ret == 0 { Ok(()) }
@@ -523,11 +522,11 @@ impl<S> Renderer<S> {
                 self.raw,
                 texture.raw,
                 match src {
-                    Some(ref rect) => mem::transmute(rect),
+                    Some(ref rect) => rect as *const _,
                     None => ptr::null()
                 },
                 match dst {
-                    Some(ref rect) => mem::transmute(rect),
+                    Some(ref rect) => rect as *const _,
                     None => ptr::null()
                 }
             )
@@ -544,16 +543,16 @@ impl<S> Renderer<S> {
                 self.raw,
                 texture.raw,
                 match src {
-                    Some(ref rect) => mem::transmute(rect),
+                    Some(ref rect) => rect as *const _,
                     None => ptr::null()
                 },
                 match dst {
-                    Some(ref rect) => mem::transmute(rect),
+                    Some(ref rect) => rect as *const _,
                     None => ptr::null()
                 },
                 angle as c_double,
                 match center {
-                    Some(ref point) => mem::transmute(point),
+                    Some(ref point) => point as *const _,
                     None => ptr::null()
                 },
                 FromPrimitive::from_i64(flip as i64).unwrap()
@@ -567,7 +566,7 @@ impl<S> Renderer<S> {
     pub fn read_pixels(&self, rect: Option<Rect>, format: pixels::PixelFormatFlag) -> SdlResult<CVec<u8>> {
         unsafe {
             let (actual_rect, w, h) = match rect {
-                Some(ref rect) => (mem::transmute(rect), rect.w as uint, rect.h as uint),
+                Some(ref rect) => (rect as *const _, rect.w as uint, rect.h as uint),
                 None => {
                     let (w, h) = try!(self.get_output_size());
                     (ptr::null(), w as uint, h as uint)
@@ -690,11 +689,11 @@ impl Texture {
     pub fn update(&self, rect: Option<Rect>, pixel_data: &[u8], pitch: int) -> SdlResult<()> {
         let ret = unsafe {
             let actual_rect = match rect {
-                Some(ref rect) => mem::transmute(rect),
+                Some(ref rect) => rect as *const _,
                 None => ptr::null()
             };
 
-            ll::SDL_UpdateTexture(self.raw, actual_rect, mem::transmute(pixel_data.as_ptr()), pitch as c_int)
+            ll::SDL_UpdateTexture(self.raw, actual_rect, pixel_data.as_ptr() as *const _, pitch as c_int)
         };
 
         if ret == 0 { Ok(()) }
@@ -705,7 +704,7 @@ impl Texture {
         let q = try!(self.query());
         unsafe {
             let actual_rect = match rect {
-                Some(ref rect) => mem::transmute(rect),
+                Some(ref rect) => rect as *const _,
                 None => ptr::null()
             };
 
