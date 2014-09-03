@@ -26,7 +26,6 @@ use SdlResult;
 #[doc(hidden)]
 #[allow(non_camel_case_types, non_snake_case)]
 pub mod ll {
-    use std::mem;
     use libc::{c_float, c_int, c_char, c_uint, c_void, int16_t,
                int32_t, uint8_t, uint16_t, uint32_t};
     use gesture::ll::SDL_GestureID;
@@ -316,99 +315,99 @@ pub mod ll {
 
     impl SDL_Event {
         pub fn _type(&self) -> *const uint32_t {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn common(&self) -> *const SDL_CommonEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn window(&self) -> *const SDL_WindowEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn key(&self) -> *const SDL_KeyboardEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn edit(&self) -> *const SDL_TextEditingEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn text(&self) -> *const SDL_TextInputEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn motion(&self) -> *const SDL_MouseMotionEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn button(&self) -> *const SDL_MouseButtonEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn wheel(&self) -> *const SDL_MouseWheelEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn jaxis(&self) -> *const SDL_JoyAxisEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn jball(&self) -> *const SDL_JoyBallEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn jhat(&self) -> *const SDL_JoyHatEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn jbutton(&self) -> *const SDL_JoyButtonEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn jdevice(&self) -> *const SDL_JoyDeviceEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn caxis(&self) -> *const SDL_ControllerAxisEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn cbutton(&self) -> *const SDL_ControllerButtonEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn cdevice(&self) -> *const SDL_ControllerDeviceEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn quit(&self) -> *const SDL_QuitEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn user(&self) -> *const SDL_UserEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn syswm(&self) -> *const SDL_SysWMEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn tfinger(&self) -> *const SDL_TouchFingerEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn mgesture(&self) -> *const SDL_MultiGestureEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn dgesture(&self) -> *const SDL_DollarGestureEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
 
         pub fn drop(&self) -> *const SDL_DropEvent {
-            unsafe { mem::transmute_copy(&self) }
+            self.data.as_ptr() as *const _
         }
     }
 
@@ -1086,31 +1085,31 @@ pub fn wait_event_timeout(timeout: int) -> SdlResult<Event> {
 extern "C" fn event_filter_wrapper(userdata: *const c_void, event: *const ll::SDL_Event) -> c_int {
     let filter: extern fn(event: Event) -> bool = unsafe { mem::transmute(userdata) };
     if event.is_null() { 1 }
-    else { filter(Event::from_ll(unsafe { mem::transmute(event) })) as c_int }
+    else { filter(Event::from_ll(unsafe { &*event })) as c_int }
 }
 
 /// Set up a filter to process all events before they change internal state and are posted to the internal event queue.
 pub fn set_event_filter(filter_func: extern fn(event: Event) -> bool) {
     unsafe { ll::SDL_SetEventFilter(event_filter_wrapper,
-                                    mem::transmute(filter_func)) }
+                                    filter_func as *const _) }
 }
 
 /// Add a callback to be triggered when an event is added to the event queue.
 pub fn add_event_watch(filter_func: extern fn(event: Event) -> bool) {
     unsafe { ll::SDL_AddEventWatch(event_filter_wrapper,
-                                   mem::transmute(filter_func)) }
+                                   filter_func as *const _) }
 }
 
 /// Remove an event watch callback added.
 pub fn delete_event_watch(filter_func: extern fn(event: Event) -> bool) {
     unsafe { ll::SDL_DelEventWatch(event_filter_wrapper,
-                                   mem::transmute(filter_func)) }
+                                   filter_func as *const _) }
 }
 
 /// Run a specific filter function on the current event queue, removing any events for which the filter returns 0.
 pub fn filter_events(filter_func: extern fn(event: Event) -> bool) {
     unsafe { ll::SDL_FilterEvents(event_filter_wrapper,
-                                  mem::transmute(filter_func)) }
+                                  filter_func as *const _) }
 }
 
 /// Set the state of processing events.

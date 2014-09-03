@@ -69,7 +69,7 @@ impl Rect {
 
         let result = unsafe {
             ll::SDL_EnclosePoints(
-                mem::transmute(points.as_ptr()),
+                points.as_ptr(),
                 points.len() as c_int,
                 mem::transmute(clip.as_ref()),
                 &out

@@ -128,7 +128,7 @@ impl Surface {
     
         unsafe {
             let raw = ll::SDL_CreateRGBSurfaceFrom(
-                mem::transmute(data.as_ptr()), width as c_int, height as c_int,
+                data.as_ptr() as *const _, width as c_int, height as c_int,
                 bpp as c_int, pitch as c_int, rmask, gmask, bmask, amask);
 
             if raw == ptr::null() {
@@ -175,12 +175,11 @@ impl Surface {
     }
 
     /// Locks a surface so that the pixels can be directly accessed safely.
-    pub fn with_lock<R>(&self, f: |pixels: &mut [u8]| -> R) -> R {
+    pub fn with_lock<R>(&mut self, f: |pixels: &mut [u8]| -> R) -> R {
         unsafe {
             if ll::SDL_LockSurface(self.raw) != 0 { fail!("could not lock surface"); }
             let len = (*self.raw).pitch as uint * ((*self.raw).h as uint);
-            let pixels: &mut [u8] = mem::transmute(((*self.raw).pixels, len));
-            let rv = f(pixels);
+            let rv = ::std::slice::raw::mut_buf_as_slice((*self.raw).pixels as *mut _, len, f);
             ll::SDL_UnlockSurface(self.raw);
             rv
         }
