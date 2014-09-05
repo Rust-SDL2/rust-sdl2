@@ -62,17 +62,19 @@ pub mod ll {
     }
 }
 
-bitflags!(flags InitFlag: u32 {
-    static InitTimer = ll::SDL_INIT_TIMER,
-    static InitAudio = ll::SDL_INIT_AUDIO,
-    static InitVideo = ll::SDL_INIT_VIDEO,
-    static InitJoystick = ll::SDL_INIT_JOYSTICK,
-    static InitHaptic = ll::SDL_INIT_HAPTIC,
-    static InitGameController = ll::SDL_INIT_GAMECONTROLLER,
-    static InitEvents = ll::SDL_INIT_EVENTS,
-    static InitNoParachute = ll::SDL_INIT_NOPARACHUTE,
-    static InitEverything = ll::SDL_INIT_EVERYTHING
-})
+bitflags! {
+    flags InitFlag: u32 {
+        static InitTimer = ll::SDL_INIT_TIMER,
+        static InitAudio = ll::SDL_INIT_AUDIO,
+        static InitVideo = ll::SDL_INIT_VIDEO,
+        static InitJoystick = ll::SDL_INIT_JOYSTICK,
+        static InitHaptic = ll::SDL_INIT_HAPTIC,
+        static InitGameController = ll::SDL_INIT_GAMECONTROLLER,
+        static InitEvents = ll::SDL_INIT_EVENTS,
+        static InitNoParachute = ll::SDL_INIT_NOPARACHUTE,
+        static InitEverything = ll::SDL_INIT_EVERYTHING
+    }
+}
 
 #[deriving(PartialEq)]
 pub enum Error {

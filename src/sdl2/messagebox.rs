@@ -18,11 +18,13 @@ pub mod ll {
     }
 }
 
-bitflags!(flags MessageBoxFlag: u32 {
-    static MessageBoxError = ll::SDL_MESSAGEBOX_ERROR as u32,
-    static MessageBoxWarning = ll::SDL_MESSAGEBOX_WARNING as u32,
-    static MessageBoxInformation = ll::SDL_MESSAGEBOX_INFORMATION as u32
-})
+bitflags! {
+    flags MessageBoxFlag: u32 {
+        static MessageBoxError = ll::SDL_MESSAGEBOX_ERROR as u32,
+        static MessageBoxWarning = ll::SDL_MESSAGEBOX_WARNING as u32,
+        static MessageBoxInformation = ll::SDL_MESSAGEBOX_INFORMATION as u32
+    }
+}
 
 pub fn show_simple_message_box(flags: MessageBoxFlag, title: &str, message: &str, window: Window) -> SdlResult<()> {
     let result = unsafe {
