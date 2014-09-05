@@ -80,12 +80,14 @@ pub mod ll {
     }
 }
 
-bitflags!(flags SurfaceFlag: u32 {
-    static SWSurface = ll::SDL_SWSURFACE as u32,
-    static PreAlloc = ll::SDL_PREALLOC as u32,
-    static RLEAccel = ll::SDL_RLEACCEL as u32,
-    static DontFree = ll::SDL_DONTFREE as u32
-})
+bitflags! {
+    flags SurfaceFlag: u32 {
+        static SWSurface = ll::SDL_SWSURFACE as u32,
+        static PreAlloc = ll::SDL_PREALLOC as u32,
+        static RLEAccel = ll::SDL_RLEACCEL as u32,
+        static DontFree = ll::SDL_DONTFREE as u32
+    }
+}
 
 #[deriving(PartialEq)]
 #[allow(raw_pointer_deriving)]

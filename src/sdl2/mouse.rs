@@ -145,13 +145,15 @@ pub enum Mouse {
     UnknownMouse(u8)
 }
 
-bitflags!(flags MouseState: u32 {
-    static LeftMouseState = 0x01,
-    static MiddleMouseState = 0x02,
-    static RightMouseState = 0x04,
-    static X1MouseState = 0x08,
-    static X2MouseState = 0x10
-})
+bitflags! {
+    flags MouseState: u32 {
+        static LeftMouseState = 0x01,
+        static MiddleMouseState = 0x02,
+        static RightMouseState = 0x04,
+        static X1MouseState = 0x08,
+        static X2MouseState = 0x10
+    }
+}
 
 pub fn wrap_mouse(bitflags: u8) -> Mouse {
     match bitflags {
