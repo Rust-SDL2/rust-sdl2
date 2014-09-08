@@ -36,19 +36,15 @@ If you're having issues, [see here](https://github.com/PistonDevelopers/rust-emp
 
 # Installation
 
-Clone this repo and run
+Clone this repo and run [cargo](http://crates.io/)
 
-> make
+> cargo
 
 # Demo
 
-To see an example of the code in usse
+To see an example of the code in use
 
-> make demo
-
-Then run:
-
-> ./bin/demo
+> cargo run demo
 
 # When things go wrong
-Rust, and Rust-SDL2, are both still heavily in development, and you may run into teething issues when using this. Before panicking, check that you're using the latest Master branch of Rust, check that you've updated Rust-SDL2 to the latest version, and run `make clean`. If that fails, please let us know on the issue tracker.
+Rust, and Rust-SDL2, are both still heavily in development, and you may run into teething issues when using this. Before panicking, check that you're using the latest version of both Rust and Cargo, check that you've updated Rust-SDL2 to the latest version, and run `cargo clean`. If that fails, please let us know on the issue tracker.
