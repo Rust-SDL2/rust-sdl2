@@ -3,7 +3,7 @@
 name    = "sdl2"
 version = "0.0.1"
 authors = [ "Tony Aldridge<zaragopha@hotmail.com>" ]
-build   = "./prebuild.sh"
+build   = "sh prebuild.sh"
 
 [lib]
 
