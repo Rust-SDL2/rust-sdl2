@@ -5,7 +5,7 @@ use std::io::{File, Writer};
 use std::str::Chars;
 use std::vec::Vec;
 
-struct ParseBranch {
+pub struct ParseBranch {
     matches: Vec<u8>,
     result: Option<String>,
     children: Vec<ParseBranch>,
