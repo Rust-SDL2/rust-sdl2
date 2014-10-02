@@ -9,7 +9,6 @@ use std::io::UserDir;
 use std::io::stdio::println;
 use std::io::fs::mkdir_recursive;
 use std::path::GenericPath;
-pub mod branchify;
 pub mod keycode;
 pub mod scancode;
 
