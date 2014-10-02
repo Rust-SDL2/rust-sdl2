@@ -321,22 +321,14 @@ pub enum KeyCode {
     try!(out.write("
 }
 
-impl KeyCode {
-    /// Get the code
-    pub fn code(self) -> i32 {
-        self as i32
-    }
-}
-
 impl<S: hash::Writer> Hash<S> for KeyCode {
     #[inline]
     fn hash(&self, state: &mut S) {
-        self.code().hash(state);
+        (*self as i32).hash(state);
     }
 }
 
-impl ToPrimitive for KeyCode {
-    /// Equivalent to `self.code()`".as_bytes()));
+impl ToPrimitive for KeyCode {".as_bytes()));
 
     let types = vec!("i64", "u64", "int");
     for primitive_type in types.iter() {

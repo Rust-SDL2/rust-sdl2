@@ -318,7 +318,7 @@ pub fn generate(output_dir: &Path) -> IoResult<()> {
 
 use std::hash::{mod, Hash};
 
-#[deriving(PartialEq, Eq, Show)]
+#[deriving(PartialEq, Eq, FromPrimitive, Show)]
 pub enum ScanCode {
 ".as_bytes()));
     for &entry in entries.iter() {
@@ -328,22 +328,14 @@ pub enum ScanCode {
     try!(out.write("
 }
 
-impl ScanCode {
-    /// Get the code
-    pub fn code(self) -> i32 {
-        self as i32
-    }
-}
-
 impl<S: hash::Writer> Hash<S> for ScanCode {
     #[inline]
     fn hash(&self, state: &mut S) {
-        self.code().hash(state);
+        (*self as i32).hash(state);
     }
 }
 
-impl ToPrimitive for ScanCode {
-    /// Equivalent to `self.code()`".as_bytes()));
+impl ToPrimitive for ScanCode {".as_bytes()));
 
     let types = vec!("i64", "u64", "int");
     for primitive_type in types.iter() {
@@ -355,34 +347,7 @@ impl ToPrimitive for ScanCode {
 
 try!(out.write("
 }
-
-impl FromPrimitive for ScanCode {
-
-    /// Get a *registered* scan code.
-    ///
-    /// This will return UnknownScanCode if an unknown code is passed.
-    ///
-    /// For example, `from_int(4)` will return `AScanCode`.
 ".as_bytes()));
-
-    for primitive_type in types.iter() {
-        try!(out.write(format!("
-    fn from_{}(n: {}) -> Option<ScanCode> {{
-        match n {{
-", *primitive_type, *primitive_type).container_as_bytes()));
-
-        for &entry in entries.iter() {
-            try!(out.write(format!("            {} => Some({}),\n", entry.code, entry.ident()).container_as_bytes()));
-        }
-
-        try!(out.write("
-                _   => { Some(UnknownScanCode) }
-            }
-        }\n".as_bytes()));
-    }
-
-try!(out.write("
-}".as_bytes()));
 
     try!(out.flush());
     Ok(())
