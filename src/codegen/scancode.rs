@@ -330,15 +330,8 @@ pub enum ScanCode {
 
 impl ScanCode {
     /// Get the code
-    pub fn code(&self) -> i32 {
-        match *self {
-".as_bytes()));
-    for &entry in entries.iter() {
-        try!(out.write(format!("            {} => {},\n", entry.padded_ident(), entry.code).container_as_bytes()));
-    }
-
-    try!(out.write("
-        }
+    pub fn code(self) -> i32 {
+        self as i32
     }
 }
 
@@ -350,14 +343,14 @@ impl<S: hash::Writer> Hash<S> for ScanCode {
 }
 
 impl ToPrimitive for ScanCode {
-    /// Equivalent to `self.code()`
-".as_bytes()));
+    /// Equivalent to `self.code()`".as_bytes()));
 
     let types = vec!("i64", "u64", "int");
     for primitive_type in types.iter() {
-        try!(out.write(format!("fn to_{}(&self) -> Option<{}> {{
-            Some(self.code() as {})
-        }}\n", *primitive_type, *primitive_type, *primitive_type).container_as_bytes()));
+        try!(out.write(format!("
+    fn to_{}(&self) -> Option<{}> {{
+        Some(*self as {})
+    }}", *primitive_type, *primitive_type, *primitive_type).container_as_bytes()));
     }
 
 try!(out.write("
@@ -372,7 +365,7 @@ impl FromPrimitive for ScanCode {
     /// For example, `from_int(4)` will return `AScanCode`.
 ".as_bytes()));
 
-	    for primitive_type in types.iter() {
+    for primitive_type in types.iter() {
         try!(out.write(format!("
     fn from_{}(n: {}) -> Option<ScanCode> {{
         match n {{
