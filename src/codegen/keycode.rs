@@ -309,8 +309,7 @@ pub fn generate(output_dir: &Path) -> IoResult<()> {
     }
     try!(out.write("// This automatically generated file is used as sdl2::keycode.
 
-use std::hash::Hash;
-use std::hash::sip::SipState;
+use std::hash::{mod, Hash};
 
 #[deriving(PartialEq, Eq, Show)]
 pub enum KeyCode {
@@ -320,13 +319,6 @@ pub enum KeyCode {
     }
 
     try!(out.write("
-}
-
-impl Hash for KeyCode {
-   #[inline]
-    fn hash(&self, state: &mut SipState) {
-	self.code().hash(state);
-    }
 }
 
 impl KeyCode {
@@ -339,6 +331,13 @@ impl KeyCode {
     }
     try!(out.write("
         }
+    }
+}
+
+impl<S: hash::Writer> Hash<S> for KeyCode {
+    #[inline]
+    fn hash(&self, state: &mut S) {
+        self.code().hash(state);
     }
 }
 

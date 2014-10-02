@@ -316,8 +316,7 @@ pub fn generate(output_dir: &Path) -> IoResult<()> {
     }
     try!(out.write("// This automatically generated file is used as sdl2::scancode.
 
-use std::hash::Hash;
-use std::hash::sip::SipState;
+use std::hash::{mod, Hash};
 
 #[deriving(PartialEq, Eq, Show)]
 pub enum ScanCode {
@@ -327,13 +326,6 @@ pub enum ScanCode {
     }
 
     try!(out.write("
-}
-
-impl Hash for ScanCode {
-	#[inline]
-	fn hash(&self, state: &mut SipState) {
-		self.code().hash(state);
-	}
 }
 
 impl ScanCode {
@@ -350,8 +342,14 @@ impl ScanCode {
     }
 }
 
-impl ToPrimitive for ScanCode {
+impl<S: hash::Writer> Hash<S> for ScanCode {
+    #[inline]
+    fn hash(&self, state: &mut S) {
+        self.code().hash(state);
+    }
+}
 
+impl ToPrimitive for ScanCode {
     /// Equivalent to `self.code()`
 ".as_bytes()));
 
