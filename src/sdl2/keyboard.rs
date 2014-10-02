@@ -4,9 +4,9 @@ use std::ptr;
 use std::string;
 use std::vec;
 
-use keycode::KeyCode;
+use keycode::{KeyCode, UnknownKey};
 use rect::Rect;
-use scancode::ScanCode;
+use scancode::{ScanCode, UnknownScanCode};
 use video::Window;
 
 #[allow(non_camel_case_types)]
@@ -86,7 +86,8 @@ pub fn get_keyboard_state() -> HashMap<ScanCode, bool> {
 
     let mut current = 0;
     while current < raw.len() {
-        state.insert(FromPrimitive::from_int(current as int).unwrap(),
+        state.insert(FromPrimitive::from_int(current as int)
+                        .unwrap_or(UnknownScanCode),
                      raw[current] == 1);
         current += 1;
     }
@@ -104,13 +105,15 @@ pub fn set_mod_state(flags: Mod) {
 
 pub fn get_key_from_scancode(scancode: ScanCode) -> KeyCode {
     unsafe {
-        FromPrimitive::from_int(ll::SDL_GetKeyFromScancode(scancode as u32) as int).unwrap()
+        FromPrimitive::from_int(ll::SDL_GetKeyFromScancode(scancode as u32) as int)
+            .unwrap_or(UnknownKey)
     }
 }
 
 pub fn get_scancode_from_key(key: KeyCode) -> ScanCode {
     unsafe {
-        FromPrimitive::from_int(ll::SDL_GetScancodeFromKey(key as i32) as int).unwrap()
+        FromPrimitive::from_int(ll::SDL_GetScancodeFromKey(key as i32) as int)
+            .unwrap_or(UnknownScanCode)
     }
 }
 
@@ -124,7 +127,8 @@ pub fn get_scancode_name(scancode: ScanCode) -> String {
 pub fn get_scancode_from_name(name: &str) -> ScanCode {
     unsafe {
         name.with_c_str(|name| {
-            FromPrimitive::from_int(ll::SDL_GetScancodeFromName(name) as int).unwrap()
+            FromPrimitive::from_int(ll::SDL_GetScancodeFromName(name) as int)
+                .unwrap_or(UnknownScanCode)
         })
     }
 }
@@ -139,7 +143,8 @@ pub fn get_key_name(key: KeyCode) -> String {
 pub fn get_key_from_name(name: &str) -> KeyCode {
     unsafe {
         name.with_c_str(|name| {
-            FromPrimitive::from_int(ll::SDL_GetKeyFromName(name) as int).unwrap()
+            FromPrimitive::from_int(ll::SDL_GetKeyFromName(name) as int)
+                .unwrap_or(UnknownKey)
         })
     }
 }

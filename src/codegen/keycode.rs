@@ -311,7 +311,7 @@ pub fn generate(output_dir: &Path) -> IoResult<()> {
 
 use std::hash::{mod, Hash};
 
-#[deriving(PartialEq, Eq, Show)]
+#[deriving(PartialEq, Eq, FromPrimitive, Show)]
 pub enum KeyCode {
 ".as_bytes()));
     for &entry in entries.iter() {
@@ -340,31 +340,7 @@ impl ToPrimitive for KeyCode {".as_bytes()));
 
 try!(out.write("
 }
-
-impl FromPrimitive for KeyCode {
-
-    /// Get a *registered* key code.
-    ///
-    /// This will return UnknownKey if an unknown code is passed.
-    ///
-    /// For example, `from_int(13)` will return `ReturnKey`.
 ".as_bytes()));
-    for primitive_type in types.iter() {
-        try!(out.write(format!("
-    fn from_{}(n: {}) -> Option<KeyCode> {{
-        match n {{
-", *primitive_type, *primitive_type).container_as_bytes()));
-        for &entry in entries.iter() {
-            try!(out.write(format!("            {} => Some({}),\n", entry.code, entry.ident()).container_as_bytes()));
-        }
-        try!(out.write("
-                _   => { Some(UnknownKey) }
-            }
-        }\n".as_bytes()));
-    }
-
-try!(out.write("
-}".as_bytes()));
     try!(out.flush());
     Ok(())
 }
