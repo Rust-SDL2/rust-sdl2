@@ -319,9 +319,6 @@ pub fn generate(output_dir: &Path) -> IoResult<()> {
 use std::hash::Hash;
 use std::hash::sip::SipState;
 
-use std::num::FromPrimitive;
-use std::num::ToPrimitive;
-
 #[deriving(PartialEq, Eq, Show)]
 pub enum ScanCode {
 ".as_bytes()));
