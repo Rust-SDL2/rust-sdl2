@@ -12,9 +12,7 @@ mod mac {
     extern {}
 }
 
-#[cfg(target_os="windows")]
-#[cfg(target_os="linux")]
-#[cfg(target_os="freebsd")]
+#[cfg(any(target_os="windows", target_os="linux", target_os="freebsd"))]
 mod others {
     #[link(name="SDL2")]
     extern {}
