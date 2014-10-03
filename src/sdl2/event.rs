@@ -15,10 +15,10 @@ use joystick::HatState;
 use keyboard;
 use keyboard::Mod;
 use keyboard::ll::SDL_Keymod;
-use keycode::KeyCode;
+use keycode::{KeyCode, UnknownKey};
 use mouse;
 use mouse::{Mouse, MouseState};
-use scancode::ScanCode;
+use scancode::{ScanCode, UnknownScanCode};
 use video;
 use get_error;
 use SdlResult;
@@ -760,8 +760,10 @@ impl Event {
                 };
 
                 KeyDownEvent(event.timestamp as uint, window,
-                             FromPrimitive::from_int(event.keysym.sym as int).unwrap(),
-                             FromPrimitive::from_int(event.keysym.scancode as int).unwrap(),
+                             FromPrimitive::from_int(event.keysym.sym as int)
+                                .unwrap_or(UnknownKey),
+                             FromPrimitive::from_int(event.keysym.scancode as int)
+                                .unwrap_or(UnknownScanCode),
                              keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap())
             }
             KeyUpEventType => {
@@ -774,8 +776,10 @@ impl Event {
                 };
 
                 KeyUpEvent(event.timestamp as uint, window,
-                           FromPrimitive::from_int(event.keysym.sym as int).unwrap(),
-                           FromPrimitive::from_int(event.keysym.scancode as int).unwrap(),
+                           FromPrimitive::from_int(event.keysym.sym as int)
+                                .unwrap_or(UnknownKey),
+                           FromPrimitive::from_int(event.keysym.scancode as int)
+                                .unwrap_or(UnknownScanCode),
                            keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap())
             }
             TextEditingEventType => {

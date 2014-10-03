@@ -13,8 +13,6 @@
 build/
 bin/
 lib/
-src/sdl2/generated/
-/rustpkg_db.json
 *.swp
 .project
 src/demo/main
