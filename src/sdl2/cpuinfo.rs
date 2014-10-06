@@ -22,7 +22,7 @@ pub mod ll {
     }
 }
 
-pub static CachelineSize: int = 128;
+pub static CACHELINESIZE: int = 128;
 
 pub fn get_cpu_count() -> int {
     unsafe { ll::SDL_GetCPUCount() as int }
