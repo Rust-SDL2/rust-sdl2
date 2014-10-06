@@ -125,24 +125,24 @@ pub mod ll {
 
 pub type AudioFormat = ll::SDL_AudioFormat;
 
-pub static AudioU8     : AudioFormat = ll::AUDIO_U8;
-pub static AudioS8     : AudioFormat = ll::AUDIO_S8;
-pub static AudioU16LSB : AudioFormat = ll::AUDIO_U16LSB;
-pub static AudioS16LSB : AudioFormat = ll::AUDIO_S16LSB;
-pub static AudioU16MSB : AudioFormat = ll::AUDIO_U16MSB;
-pub static AudioS16MSB : AudioFormat = ll::AUDIO_S16MSB;
-pub static AudioU16    : AudioFormat = ll::AUDIO_U16;
-pub static AudioS16    : AudioFormat = ll::AUDIO_S16;
-pub static AudioS32LSB : AudioFormat = ll::AUDIO_S32LSB;
-pub static AudioS32MSB : AudioFormat = ll::AUDIO_S32MSB;
-pub static AudioS32    : AudioFormat = ll::AUDIO_S32;
-pub static AudioF32LSB : AudioFormat = ll::AUDIO_F32LSB;
-pub static AudioF32MSB : AudioFormat = ll::AUDIO_F32MSB;
-pub static AudioF32    : AudioFormat = ll::AUDIO_F32;
-pub static AudioU16SYS : AudioFormat = ll::AUDIO_U16SYS;
-pub static AudioS16SYS : AudioFormat = ll::AUDIO_S16SYS;
-pub static AudioS32SYS : AudioFormat = ll::AUDIO_S32SYS;
-pub static AudioF32SYS : AudioFormat = ll::AUDIO_F32SYS;
+pub static AUDIOU8     : AudioFormat = ll::AUDIO_U8;
+pub static AUDIOS8     : AudioFormat = ll::AUDIO_S8;
+pub static AUDIOU16LSB : AudioFormat = ll::AUDIO_U16LSB;
+pub static AUDIOS16LSB : AudioFormat = ll::AUDIO_S16LSB;
+pub static AUDIOU16MSB : AudioFormat = ll::AUDIO_U16MSB;
+pub static AUDIOS16MSB : AudioFormat = ll::AUDIO_S16MSB;
+pub static AUDIOU16    : AudioFormat = ll::AUDIO_U16;
+pub static AUDIOS16    : AudioFormat = ll::AUDIO_S16;
+pub static AUDIOS32LSB : AudioFormat = ll::AUDIO_S32LSB;
+pub static AUDIOS32MSB : AudioFormat = ll::AUDIO_S32MSB;
+pub static AUDIOS32    : AudioFormat = ll::AUDIO_S32;
+pub static AUDIOF32LSB : AudioFormat = ll::AUDIO_F32LSB;
+pub static AUDIOF32MSB : AudioFormat = ll::AUDIO_F32MSB;
+pub static AUDIOF32    : AudioFormat = ll::AUDIO_F32;
+pub static AUDIOU16SYS : AudioFormat = ll::AUDIO_U16SYS;
+pub static AUDIOS16SYS : AudioFormat = ll::AUDIO_S16SYS;
+pub static AUDIOS32SYS : AudioFormat = ll::AUDIO_S32SYS;
+pub static AUDIOF32SYS : AudioFormat = ll::AUDIO_F32SYS;
 
 #[repr(C)]
 #[deriving(Clone, PartialEq, Hash, Show, FromPrimitive)]
