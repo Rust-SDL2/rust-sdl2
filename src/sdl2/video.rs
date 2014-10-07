@@ -262,19 +262,19 @@ impl DisplayMode {
 
 bitflags! {
     flags WindowFlags: u32 {
-        static Fullscreen = ll::SDL_WINDOW_FULLSCREEN as u32,
-        static OpenGL = ll::SDL_WINDOW_OPENGL as u32,
-        static Shown = ll::SDL_WINDOW_SHOWN as u32,
-        static Hidden = ll::SDL_WINDOW_HIDDEN as u32,
-        static Borderless = ll::SDL_WINDOW_BORDERLESS as u32,
-        static Resizable = ll::SDL_WINDOW_RESIZABLE as u32,
-        static Minimized = ll::SDL_WINDOW_MINIMIZED as u32,
-        static Maximized = ll::SDL_WINDOW_MAXIMIZED as u32,
-        static InputGrabbed = ll::SDL_WINDOW_INPUT_GRABBED as u32,
-        static InputFocus = ll::SDL_WINDOW_INPUT_FOCUS as u32,
-        static MouseFocus = ll::SDL_WINDOW_MOUSE_FOCUS as u32,
-        static FullscreenDesktop = ll::SDL_WINDOW_FULLSCREEN_DESKTOP as u32,
-        static Foreign = ll::SDL_WINDOW_FOREIGN as u32
+        static FULLSCREEN = ll::SDL_WINDOW_FULLSCREEN as u32,
+        static OPENGL = ll::SDL_WINDOW_OPENGL as u32,
+        static SHOWN = ll::SDL_WINDOW_SHOWN as u32,
+        static HIDDEN = ll::SDL_WINDOW_HIDDEN as u32,
+        static BORDERLESS = ll::SDL_WINDOW_BORDERLESS as u32,
+        static RESIZABLE = ll::SDL_WINDOW_RESIZABLE as u32,
+        static MINIMIZED = ll::SDL_WINDOW_MINIMIZED as u32,
+        static MAXIMIZED = ll::SDL_WINDOW_MAXIMIZED as u32,
+        static INPUT_GRABBED = ll::SDL_WINDOW_INPUT_GRABBED as u32,
+        static INPUT_FOCUS = ll::SDL_WINDOW_INPUT_FOCUS as u32,
+        static MOUSE_FOCUS = ll::SDL_WINDOW_MOUSE_FOCUS as u32,
+        static FULLSCREEN_DESKTOP = ll::SDL_WINDOW_FULLSCREEN_DESKTOP as u32,
+        static FOREIGN = ll::SDL_WINDOW_FOREIGN as u32
     }
 }
 

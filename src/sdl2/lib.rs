@@ -4,10 +4,7 @@
 #![desc = "SDL2 bindings"]
 #![license = "MIT"]
 
-#![feature(default_type_params
-          , globs
-          , macro_rules
-          , unsafe_destructor)]
+#![feature(default_type_params, globs, macro_rules, unsafe_destructor)]
 
 extern crate libc;
 extern crate collections;

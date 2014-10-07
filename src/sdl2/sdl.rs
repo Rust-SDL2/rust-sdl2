@@ -62,15 +62,15 @@ pub mod ll {
 
 bitflags! {
     flags InitFlag: u32 {
-        static InitTimer = ll::SDL_INIT_TIMER,
-        static InitAudio = ll::SDL_INIT_AUDIO,
-        static InitVideo = ll::SDL_INIT_VIDEO,
-        static InitJoystick = ll::SDL_INIT_JOYSTICK,
-        static InitHaptic = ll::SDL_INIT_HAPTIC,
-        static InitGameController = ll::SDL_INIT_GAMECONTROLLER,
-        static InitEvents = ll::SDL_INIT_EVENTS,
-        static InitNoParachute = ll::SDL_INIT_NOPARACHUTE,
-        static InitEverything = ll::SDL_INIT_EVERYTHING
+        static INIT_TIMER = ll::SDL_INIT_TIMER,
+        static INIT_AUDIO = ll::SDL_INIT_AUDIO,
+        static INIT_VIDEO = ll::SDL_INIT_VIDEO,
+        static INIT_JOYSTICK = ll::SDL_INIT_JOYSTICK,
+        static INIT_HAPTIC = ll::SDL_INIT_HAPTIC,
+        static INIT_GAME_CONTROLLER = ll::SDL_INIT_GAMECONTROLLER,
+        static INIT_EVENTS = ll::SDL_INIT_EVENTS,
+        static INIT_NOPARACHUTE = ll::SDL_INIT_NOPARACHUTE,
+        static INIT_EVERYTHING = ll::SDL_INIT_EVERYTHING
     }
 }
 

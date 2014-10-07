@@ -20,9 +20,9 @@ pub mod ll {
 
 bitflags! {
     flags MessageBoxFlag: u32 {
-        static MessageBoxError = ll::SDL_MESSAGEBOX_ERROR as u32,
-        static MessageBoxWarning = ll::SDL_MESSAGEBOX_WARNING as u32,
-        static MessageBoxInformation = ll::SDL_MESSAGEBOX_INFORMATION as u32
+        static MESSAGEBOX_ERROR = ll::SDL_MESSAGEBOX_ERROR as u32,
+        static MESSAGEBOX_WARNING = ll::SDL_MESSAGEBOX_WARNING as u32,
+        static MESSAGEBOX_INFORMATION = ll::SDL_MESSAGEBOX_INFORMATION as u32
     }
 }
 
