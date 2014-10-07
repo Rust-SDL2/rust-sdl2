@@ -47,14 +47,14 @@ pub mod ll {
 
 bitflags! {
     flags HatState: u8 {
-        static CenteredHatState = 0,
-        static UpHatState = 0x01,
-        static RightHatState = 0x02,
-        static DownHatState = 0x04,
-        static LeftHatState = 0x08,
-        static RightUpHatState = 0x02 | 0x01,   // RightHatState | UpHatState
-        static RightDownHatState = 0x02 | 0x04, // RightHatState | DownHatState,
-        static LeftUpHatState = 0x08 | 0x01,    // LeftHatState | UpHatState,
-        static LeftDownHatState = 0x08 | 0x04   // LeftHatState | DownHatState
+        static CENTEREDHATSTATE = 0,
+        static UPHATSTATE = 0x01,
+        static RIGHTHATSTATE = 0x02,
+        static DOWNHATSTATE = 0x04,
+        static LEFTHATSTATE = 0x08,
+        static RIGHTUPHATSTATE = 0x02 | 0x01,   // RightHatState | UpHatState
+        static RIGHTDOWNHATSTATE = 0x02 | 0x04, // RightHatState | DownHatState,
+        static LEFTUPHATSTATE = 0x08 | 0x01,    // LeftHatState | UpHatState,
+        static LEFTDOWNHATSTATE = 0x08 | 0x04   // LeftHatState | DownHatState
     }
 }

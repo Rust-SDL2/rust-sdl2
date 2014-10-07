@@ -147,11 +147,11 @@ pub enum Mouse {
 
 bitflags! {
     flags MouseState: u32 {
-        static LeftMouseState = 0x01,
-        static MiddleMouseState = 0x02,
-        static RightMouseState = 0x04,
-        static X1MouseState = 0x08,
-        static X2MouseState = 0x10
+        static LEFTMOUSESTATE = 0x01,
+        static MIDDLEMOUSESTATE = 0x02,
+        static RIGHTMOUSESTATE = 0x04,
+        static X1MOUSESTATE = 0x08,
+        static X2MOUSESTATE = 0x10
     }
 }
 
