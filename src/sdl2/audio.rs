@@ -355,7 +355,6 @@ impl AudioCVT {
     pub fn convert(&self, src: CVec<u8>) -> SdlResult<CVec<u8>> {
         //! Convert audio data to a desired audio format.
 
-        use std::slice::Slice;
         unsafe {
             if (*self.raw).needed != 1 {
                 return Err("no convertion needed!".into_string())
