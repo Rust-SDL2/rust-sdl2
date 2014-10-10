@@ -15,24 +15,24 @@ pub mod ll {
     pub type SDL_Cursor = c_void;
 
     pub type SDL_SystemCursor = c_uint;
-    pub static SDL_SYSTEM_CURSOR_ARROW: SDL_SystemCursor = 0;
-    pub static SDL_SYSTEM_CURSOR_IBEAM: SDL_SystemCursor = 1;
-    pub static SDL_SYSTEM_CURSOR_WAIT: SDL_SystemCursor = 2;
-    pub static SDL_SYSTEM_CURSOR_CROSSHAIR: SDL_SystemCursor = 3;
-    pub static SDL_SYSTEM_CURSOR_WAITARROW: SDL_SystemCursor = 4;
-    pub static SDL_SYSTEM_CURSOR_SIZENWSE: SDL_SystemCursor = 5;
-    pub static SDL_SYSTEM_CURSOR_SIZENESW: SDL_SystemCursor = 6;
-    pub static SDL_SYSTEM_CURSOR_SIZEWE: SDL_SystemCursor = 7;
-    pub static SDL_SYSTEM_CURSOR_SIZENS: SDL_SystemCursor = 8;
-    pub static SDL_SYSTEM_CURSOR_SIZEALL: SDL_SystemCursor = 9;
-    pub static SDL_SYSTEM_CURSOR_NO: SDL_SystemCursor = 10;
-    pub static SDL_SYSTEM_CURSOR_HAND: SDL_SystemCursor = 11;
-    pub static SDL_NUM_SYSTEM_CURSORS: SDL_SystemCursor = 12;
+    pub const SDL_SYSTEM_CURSOR_ARROW: SDL_SystemCursor = 0;
+    pub const SDL_SYSTEM_CURSOR_IBEAM: SDL_SystemCursor = 1;
+    pub const SDL_SYSTEM_CURSOR_WAIT: SDL_SystemCursor = 2;
+    pub const SDL_SYSTEM_CURSOR_CROSSHAIR: SDL_SystemCursor = 3;
+    pub const SDL_SYSTEM_CURSOR_WAITARROW: SDL_SystemCursor = 4;
+    pub const SDL_SYSTEM_CURSOR_SIZENWSE: SDL_SystemCursor = 5;
+    pub const SDL_SYSTEM_CURSOR_SIZENESW: SDL_SystemCursor = 6;
+    pub const SDL_SYSTEM_CURSOR_SIZEWE: SDL_SystemCursor = 7;
+    pub const SDL_SYSTEM_CURSOR_SIZENS: SDL_SystemCursor = 8;
+    pub const SDL_SYSTEM_CURSOR_SIZEALL: SDL_SystemCursor = 9;
+    pub const SDL_SYSTEM_CURSOR_NO: SDL_SystemCursor = 10;
+    pub const SDL_SYSTEM_CURSOR_HAND: SDL_SystemCursor = 11;
+    pub const SDL_NUM_SYSTEM_CURSORS: SDL_SystemCursor = 12;
 
     pub type SDL_MouseState = c_int;
-    pub static SDL_DISABLE: SDL_MouseState = 0;
-    pub static SDL_ENABLE: SDL_MouseState = 1;
-    pub static SDL_QUERY: SDL_MouseState = -1;
+    pub const SDL_DISABLE: SDL_MouseState = 0;
+    pub const SDL_ENABLE: SDL_MouseState = 1;
+    pub const SDL_QUERY: SDL_MouseState = -1;
 
     extern "C" {
         pub fn SDL_GetMouseFocus() -> *const SDL_Window;
@@ -147,11 +147,11 @@ pub enum Mouse {
 
 bitflags! {
     flags MouseState: u32 {
-        static LEFTMOUSESTATE = 0x01,
-        static MIDDLEMOUSESTATE = 0x02,
-        static RIGHTMOUSESTATE = 0x04,
-        static X1MOUSESTATE = 0x08,
-        static X2MOUSESTATE = 0x10
+        const LEFTMOUSESTATE = 0x01,
+        const MIDDLEMOUSESTATE = 0x02,
+        const RIGHTMOUSESTATE = 0x04,
+        const X1MOUSESTATE = 0x08,
+        const X2MOUSESTATE = 0x10
     }
 }
 
