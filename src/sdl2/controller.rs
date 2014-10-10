@@ -10,10 +10,10 @@ pub mod ll {
     pub type SDL_GameController = c_void;
 
     pub type SDL_GameControllerBindType = c_uint;
-    pub static SDL_CONTROLLER_BINDTYPE_NONE: SDL_GameControllerBindType = 0;
-    pub static SDL_CONTROLLER_BINDTYPE_BUTTON: SDL_GameControllerBindType = 1;
-    pub static SDL_CONTROLLER_BINDTYPE_AXIS: SDL_GameControllerBindType = 2;
-    pub static SDL_CONTROLLER_BINDTYPE_HAT: SDL_GameControllerBindType = 3;
+    pub const SDL_CONTROLLER_BINDTYPE_NONE: SDL_GameControllerBindType = 0;
+    pub const SDL_CONTROLLER_BINDTYPE_BUTTON: SDL_GameControllerBindType = 1;
+    pub const SDL_CONTROLLER_BINDTYPE_AXIS: SDL_GameControllerBindType = 2;
+    pub const SDL_CONTROLLER_BINDTYPE_HAT: SDL_GameControllerBindType = 3;
 
     #[allow(dead_code, non_snake_case)]
     #[repr(C)]
@@ -47,33 +47,33 @@ pub mod ll {
     }
 
     pub type SDL_GameControllerAxis = c_int;
-    pub static SDL_CONTROLLER_AXIS_INVALID: SDL_GameControllerAxis = -1;
-    pub static SDL_CONTROLLER_AXIS_LEFTX: SDL_GameControllerAxis = 0;
-    pub static SDL_CONTROLLER_AXIS_LEFTY: SDL_GameControllerAxis = 1;
-    pub static SDL_CONTROLLER_AXIS_RIGHTX: SDL_GameControllerAxis = 2;
-    pub static SDL_CONTROLLER_AXIS_RIGHTY: SDL_GameControllerAxis = 3;
-    pub static SDL_CONTROLLER_AXIS_TRIGGERLEFT: SDL_GameControllerAxis = 4;
-    pub static SDL_CONTROLLER_AXIS_TRIGGERRIGHT: SDL_GameControllerAxis = 5;
-    pub static SDL_CONTROLLER_AXIS_MAX: SDL_GameControllerAxis = 6;
+    pub const SDL_CONTROLLER_AXIS_INVALID: SDL_GameControllerAxis = -1;
+    pub const SDL_CONTROLLER_AXIS_LEFTX: SDL_GameControllerAxis = 0;
+    pub const SDL_CONTROLLER_AXIS_LEFTY: SDL_GameControllerAxis = 1;
+    pub const SDL_CONTROLLER_AXIS_RIGHTX: SDL_GameControllerAxis = 2;
+    pub const SDL_CONTROLLER_AXIS_RIGHTY: SDL_GameControllerAxis = 3;
+    pub const SDL_CONTROLLER_AXIS_TRIGGERLEFT: SDL_GameControllerAxis = 4;
+    pub const SDL_CONTROLLER_AXIS_TRIGGERRIGHT: SDL_GameControllerAxis = 5;
+    pub const SDL_CONTROLLER_AXIS_MAX: SDL_GameControllerAxis = 6;
 
     pub type SDL_GameControllerButton = c_int;
-    pub static SDL_CONTROLLER_BUTTON_INVALID: SDL_GameControllerButton = -1;
-    pub static SDL_CONTROLLER_BUTTON_A: SDL_GameControllerButton = 0;
-    pub static SDL_CONTROLLER_BUTTON_B: SDL_GameControllerButton = 1;
-    pub static SDL_CONTROLLER_BUTTON_X: SDL_GameControllerButton = 2;
-    pub static SDL_CONTROLLER_BUTTON_Y: SDL_GameControllerButton = 3;
-    pub static SDL_CONTROLLER_BUTTON_BACK: SDL_GameControllerButton = 4;
-    pub static SDL_CONTROLLER_BUTTON_GUIDE: SDL_GameControllerButton = 5;
-    pub static SDL_CONTROLLER_BUTTON_START: SDL_GameControllerButton = 6;
-    pub static SDL_CONTROLLER_BUTTON_LEFTSTICK: SDL_GameControllerButton = 7;
-    pub static SDL_CONTROLLER_BUTTON_RIGHTSTICK: SDL_GameControllerButton = 8;
-    pub static SDL_CONTROLLER_BUTTON_LEFTSHOULDER: SDL_GameControllerButton = 9;
-    pub static SDL_CONTROLLER_BUTTON_RIGHTSHOULDER: SDL_GameControllerButton = 10;
-    pub static SDL_CONTROLLER_BUTTON_DPAD_UP: SDL_GameControllerButton = 11;
-    pub static SDL_CONTROLLER_BUTTON_DPAD_DOWN: SDL_GameControllerButton = 12;
-    pub static SDL_CONTROLLER_BUTTON_DPAD_LEFT: SDL_GameControllerButton = 13;
-    pub static SDL_CONTROLLER_BUTTON_DPAD_RIGHT: SDL_GameControllerButton = 14;
-    pub static SDL_CONTROLLER_BUTTON_MAX: SDL_GameControllerButton = 15;
+    pub const SDL_CONTROLLER_BUTTON_INVALID: SDL_GameControllerButton = -1;
+    pub const SDL_CONTROLLER_BUTTON_A: SDL_GameControllerButton = 0;
+    pub const SDL_CONTROLLER_BUTTON_B: SDL_GameControllerButton = 1;
+    pub const SDL_CONTROLLER_BUTTON_X: SDL_GameControllerButton = 2;
+    pub const SDL_CONTROLLER_BUTTON_Y: SDL_GameControllerButton = 3;
+    pub const SDL_CONTROLLER_BUTTON_BACK: SDL_GameControllerButton = 4;
+    pub const SDL_CONTROLLER_BUTTON_GUIDE: SDL_GameControllerButton = 5;
+    pub const SDL_CONTROLLER_BUTTON_START: SDL_GameControllerButton = 6;
+    pub const SDL_CONTROLLER_BUTTON_LEFTSTICK: SDL_GameControllerButton = 7;
+    pub const SDL_CONTROLLER_BUTTON_RIGHTSTICK: SDL_GameControllerButton = 8;
+    pub const SDL_CONTROLLER_BUTTON_LEFTSHOULDER: SDL_GameControllerButton = 9;
+    pub const SDL_CONTROLLER_BUTTON_RIGHTSHOULDER: SDL_GameControllerButton = 10;
+    pub const SDL_CONTROLLER_BUTTON_DPAD_UP: SDL_GameControllerButton = 11;
+    pub const SDL_CONTROLLER_BUTTON_DPAD_DOWN: SDL_GameControllerButton = 12;
+    pub const SDL_CONTROLLER_BUTTON_DPAD_LEFT: SDL_GameControllerButton = 13;
+    pub const SDL_CONTROLLER_BUTTON_DPAD_RIGHT: SDL_GameControllerButton = 14;
+    pub const SDL_CONTROLLER_BUTTON_MAX: SDL_GameControllerButton = 15;
 
     extern "C" {
         pub fn SDL_GameControllerAddMapping(mappingString: *const c_char) -> c_int;
