@@ -721,7 +721,7 @@ impl Texture {
         }
     }
 
-    pub fn lock_with(&self, rect: Option<Rect>, func: |CVec<u8>, i32| -> ()) -> SdlResult<()> {
+    pub fn with_lock(&self, rect: Option<Rect>, func: |CVec<u8>, i32| -> ()) -> SdlResult<()> {
         match self.unsafe_lock(rect) {
             Ok((cvec, pitch)) => {
                 func(cvec, pitch); 
@@ -732,7 +732,7 @@ impl Texture {
         }
     }
 
-    pub fn unlock(&self) {
+    fn unlock(&self) {
         unsafe { ll::SDL_UnlockTexture(self.raw) }
     }
 
