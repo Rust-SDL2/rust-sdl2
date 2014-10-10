@@ -32,9 +32,7 @@ mod mac {
     extern {}
 }
 
-#[cfg(target_os="windows")]
-#[cfg(target_os="linux")]
-#[cfg(target_os="freebsd")]
+#[cfg(all(target_os="windows", target_os="linux", target_os="freebsd"))]
 mod others {
     #[link(name="SDL2_image")]
     extern {}
@@ -45,12 +43,14 @@ mod ffi;
 
 /// InitFlags are passed to init() to control which subsystem
 /// functionality to load.
-bitflags!(flags InitFlag : u32 {
-    static InitJpg = ffi::IMG_INIT_JPG as u32,
-    static InitPng = ffi::IMG_INIT_PNG as u32,
-    static InitTif = ffi::IMG_INIT_TIF as u32,
-    static InitWebp = ffi::IMG_INIT_WEBP as u32
-})
+bitflags! {
+    flags InitFlag : u32 {
+        static INIT_JPG  = ffi::IMG_INIT_JPG as u32,
+        static INIT_PNG  = ffi::IMG_INIT_PNG as u32,
+        static INIT_TIF  = ffi::IMG_INIT_TIF as u32,
+        static INIT_WEBP = ffi::IMG_INIT_WEBP as u32
+    }
+}
 
 /// Static method extensions for creating Surfaces
 pub trait LoadSurface {
