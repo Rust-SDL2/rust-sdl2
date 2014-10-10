@@ -154,10 +154,10 @@ pub enum TextureAccess {
 
 bitflags! {
     flags RendererFlags: u32 {
-        static SOFTWARE = ll::SDL_RENDERER_SOFTWARE as u32,
-        static ACCELERATED = ll::SDL_RENDERER_ACCELERATED as u32,
-        static PRESENTVSYNC = ll::SDL_RENDERER_PRESENTVSYNC as u32,
-        static TARGETTEXTURE = ll::SDL_RENDERER_TARGETTEXTURE as u32
+        const SOFTWARE = ll::SDL_RENDERER_SOFTWARE as u32,
+        const ACCELERATED = ll::SDL_RENDERER_ACCELERATED as u32,
+        const PRESENTVSYNC = ll::SDL_RENDERER_PRESENTVSYNC as u32,
+        const TARGETTEXTURE = ll::SDL_RENDERER_TARGETTEXTURE as u32
     }
 }
 
