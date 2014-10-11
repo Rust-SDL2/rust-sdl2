@@ -23,23 +23,23 @@ pub mod ll {
     use libc::{c_int, c_uint, c_char, uint32_t};
 
     pub type SDL_errorcode = c_uint;
-    pub static SDL_ENOMEM: SDL_errorcode = 0;
-    pub static SDL_EFREAD: SDL_errorcode = 1;
-    pub static SDL_EFWRITE: SDL_errorcode = 2;
-    pub static SDL_EFSEEK: SDL_errorcode = 3;
-    pub static SDL_UNSUPPORTED: SDL_errorcode = 4;
-    pub static SDL_LASTERROR: SDL_errorcode = 5;
+    pub const SDL_ENOMEM: SDL_errorcode = 0;
+    pub const SDL_EFREAD: SDL_errorcode = 1;
+    pub const SDL_EFWRITE: SDL_errorcode = 2;
+    pub const SDL_EFSEEK: SDL_errorcode = 3;
+    pub const SDL_UNSUPPORTED: SDL_errorcode = 4;
+    pub const SDL_LASTERROR: SDL_errorcode = 5;
 
     pub type SDL_InitFlag = uint32_t;
-    pub static SDL_INIT_TIMER: SDL_InitFlag = 0x00000001;
-    pub static SDL_INIT_AUDIO: SDL_InitFlag = 0x00000010;
-    pub static SDL_INIT_VIDEO: SDL_InitFlag = 0x00000020;
-    pub static SDL_INIT_JOYSTICK: SDL_InitFlag = 0x00000200;
-    pub static SDL_INIT_HAPTIC: SDL_InitFlag = 0x00001000;
-    pub static SDL_INIT_GAMECONTROLLER: SDL_InitFlag = 0x00002000;
-    pub static SDL_INIT_EVENTS: SDL_InitFlag = 0x00004000;
-    pub static SDL_INIT_NOPARACHUTE: SDL_InitFlag = 0x00100000;
-    pub static SDL_INIT_EVERYTHING: SDL_InitFlag = 0x0000FFFF;
+    pub const SDL_INIT_TIMER: SDL_InitFlag = 0x00000001;
+    pub const SDL_INIT_AUDIO: SDL_InitFlag = 0x00000010;
+    pub const SDL_INIT_VIDEO: SDL_InitFlag = 0x00000020;
+    pub const SDL_INIT_JOYSTICK: SDL_InitFlag = 0x00000200;
+    pub const SDL_INIT_HAPTIC: SDL_InitFlag = 0x00001000;
+    pub const SDL_INIT_GAMECONTROLLER: SDL_InitFlag = 0x00002000;
+    pub const SDL_INIT_EVENTS: SDL_InitFlag = 0x00004000;
+    pub const SDL_INIT_NOPARACHUTE: SDL_InitFlag = 0x00100000;
+    pub const SDL_INIT_EVERYTHING: SDL_InitFlag = 0x0000FFFF;
 
     //SDL_error.h
     extern "C" {
@@ -62,15 +62,15 @@ pub mod ll {
 
 bitflags! {
     flags InitFlag: u32 {
-        static INIT_TIMER = ll::SDL_INIT_TIMER,
-        static INIT_AUDIO = ll::SDL_INIT_AUDIO,
-        static INIT_VIDEO = ll::SDL_INIT_VIDEO,
-        static INIT_JOYSTICK = ll::SDL_INIT_JOYSTICK,
-        static INIT_HAPTIC = ll::SDL_INIT_HAPTIC,
-        static INIT_GAME_CONTROLLER = ll::SDL_INIT_GAMECONTROLLER,
-        static INIT_EVENTS = ll::SDL_INIT_EVENTS,
-        static INIT_NOPARACHUTE = ll::SDL_INIT_NOPARACHUTE,
-        static INIT_EVERYTHING = ll::SDL_INIT_EVERYTHING
+        const INIT_TIMER = ll::SDL_INIT_TIMER,
+        const INIT_AUDIO = ll::SDL_INIT_AUDIO,
+        const INIT_VIDEO = ll::SDL_INIT_VIDEO,
+        const INIT_JOYSTICK = ll::SDL_INIT_JOYSTICK,
+        const INIT_HAPTIC = ll::SDL_INIT_HAPTIC,
+        const INIT_GAME_CONTROLLER = ll::SDL_INIT_GAMECONTROLLER,
+        const INIT_EVENTS = ll::SDL_INIT_EVENTS,
+        const INIT_NOPARACHUTE = ll::SDL_INIT_NOPARACHUTE,
+        const INIT_EVERYTHING = ll::SDL_INIT_EVERYTHING
     }
 }
 
