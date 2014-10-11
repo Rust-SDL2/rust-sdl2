@@ -22,10 +22,10 @@ pub mod ll {
 
     pub type SDL_SurfaceFlag = c_int;
 
-    pub static SDL_SWSURFACE: SDL_SurfaceFlag = 0;
-    pub static SDL_PREALLOC: SDL_SurfaceFlag = 0x00000001;
-    pub static SDL_RLEACCEL: SDL_SurfaceFlag = 0x00000002;
-    pub static SDL_DONTFREE: SDL_SurfaceFlag = 0x00000004;
+    pub const SDL_SWSURFACE: SDL_SurfaceFlag = 0;
+    pub const SDL_PREALLOC: SDL_SurfaceFlag = 0x00000001;
+    pub const SDL_RLEACCEL: SDL_SurfaceFlag = 0x00000002;
+    pub const SDL_DONTFREE: SDL_SurfaceFlag = 0x00000004;
 
     //SDL_surface.h
     #[repr(C)]
@@ -82,10 +82,10 @@ pub mod ll {
 
 bitflags! {
     flags SurfaceFlag: u32 {
-        static SWSURFACE = ll::SDL_SWSURFACE as u32,
-        static PREALLOC = ll::SDL_PREALLOC as u32,
-        static RLEACCEL = ll::SDL_RLEACCEL as u32,
-        static DONTFREE = ll::SDL_DONTFREE as u32
+        const SWSURFACE = ll::SDL_SWSURFACE as u32,
+        const PREALLOC = ll::SDL_PREALLOC as u32,
+        const RLEACCEL = ll::SDL_RLEACCEL as u32,
+        const DONTFREE = ll::SDL_DONTFREE as u32
     }
 }
 
