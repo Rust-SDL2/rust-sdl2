@@ -20,24 +20,24 @@ pub mod ll {
 
     // assume LSB
     pub type SDL_AudioFormat = uint16_t;
-    pub static AUDIO_U8 : SDL_AudioFormat =         0x0008;
-    pub static AUDIO_S8 : SDL_AudioFormat =         0x8008;
-    pub static AUDIO_U16LSB : SDL_AudioFormat =     0x0010;
-    pub static AUDIO_S16LSB : SDL_AudioFormat =     0x8010;
-    pub static AUDIO_U16MSB : SDL_AudioFormat =     0x1010;
-    pub static AUDIO_S16MSB : SDL_AudioFormat =     0x9010;
-    pub static AUDIO_U16 : SDL_AudioFormat =        AUDIO_U16LSB;
-    pub static AUDIO_S16 : SDL_AudioFormat =        AUDIO_S16LSB;
-    pub static AUDIO_S32LSB : SDL_AudioFormat =     0x8020;
-    pub static AUDIO_S32MSB : SDL_AudioFormat =     0x9020;
-    pub static AUDIO_S32 : SDL_AudioFormat =        AUDIO_S32LSB;
-    pub static AUDIO_F32LSB : SDL_AudioFormat =     0x8120;
-    pub static AUDIO_F32MSB : SDL_AudioFormat =     0x9120;
-    pub static AUDIO_F32 : SDL_AudioFormat =        AUDIO_F32LSB;
-    pub static AUDIO_U16SYS : SDL_AudioFormat =     AUDIO_U16LSB;
-    pub static AUDIO_S16SYS : SDL_AudioFormat =     AUDIO_S16LSB;
-    pub static AUDIO_S32SYS : SDL_AudioFormat =     AUDIO_S32LSB;
-    pub static AUDIO_F32SYS : SDL_AudioFormat =     AUDIO_F32LSB;
+    pub const AUDIO_U8 : SDL_AudioFormat =         0x0008;
+    pub const AUDIO_S8 : SDL_AudioFormat =         0x8008;
+    pub const AUDIO_U16LSB : SDL_AudioFormat =     0x0010;
+    pub const AUDIO_S16LSB : SDL_AudioFormat =     0x8010;
+    pub const AUDIO_U16MSB : SDL_AudioFormat =     0x1010;
+    pub const AUDIO_S16MSB : SDL_AudioFormat =     0x9010;
+    pub const AUDIO_U16 : SDL_AudioFormat =        AUDIO_U16LSB;
+    pub const AUDIO_S16 : SDL_AudioFormat =        AUDIO_S16LSB;
+    pub const AUDIO_S32LSB : SDL_AudioFormat =     0x8020;
+    pub const AUDIO_S32MSB : SDL_AudioFormat =     0x9020;
+    pub const AUDIO_S32 : SDL_AudioFormat =        AUDIO_S32LSB;
+    pub const AUDIO_F32LSB : SDL_AudioFormat =     0x8120;
+    pub const AUDIO_F32MSB : SDL_AudioFormat =     0x9120;
+    pub const AUDIO_F32 : SDL_AudioFormat =        AUDIO_F32LSB;
+    pub const AUDIO_U16SYS : SDL_AudioFormat =     AUDIO_U16LSB;
+    pub const AUDIO_S16SYS : SDL_AudioFormat =     AUDIO_S16LSB;
+    pub const AUDIO_S32SYS : SDL_AudioFormat =     AUDIO_S32LSB;
+    pub const AUDIO_F32SYS : SDL_AudioFormat =     AUDIO_F32LSB;
 
     pub type SDL_AudioCallback =
         ::std::option::Option<extern "C" fn
@@ -76,9 +76,9 @@ pub mod ll {
     }
     pub type SDL_AudioDeviceID = uint32_t;
     pub type SDL_AudioStatus = c_uint;
-    pub static SDL_AUDIO_STOPPED: c_uint = 0;
-    pub static SDL_AUDIO_PLAYING: c_uint = 1;
-    pub static SDL_AUDIO_PAUSED: c_uint = 2;
+    pub const SDL_AUDIO_STOPPED: c_uint = 0;
+    pub const SDL_AUDIO_PLAYING: c_uint = 1;
+    pub const SDL_AUDIO_PAUSED: c_uint = 2;
     extern "C" {
         pub fn SDL_GetNumAudioDrivers() -> c_int;
         pub fn SDL_GetAudioDriver(index: c_int) -> *const c_char;
@@ -125,24 +125,24 @@ pub mod ll {
 
 pub type AudioFormat = ll::SDL_AudioFormat;
 
-pub static AUDIOU8     : AudioFormat = ll::AUDIO_U8;
-pub static AUDIOS8     : AudioFormat = ll::AUDIO_S8;
-pub static AUDIOU16LSB : AudioFormat = ll::AUDIO_U16LSB;
-pub static AUDIOS16LSB : AudioFormat = ll::AUDIO_S16LSB;
-pub static AUDIOU16MSB : AudioFormat = ll::AUDIO_U16MSB;
-pub static AUDIOS16MSB : AudioFormat = ll::AUDIO_S16MSB;
-pub static AUDIOU16    : AudioFormat = ll::AUDIO_U16;
-pub static AUDIOS16    : AudioFormat = ll::AUDIO_S16;
-pub static AUDIOS32LSB : AudioFormat = ll::AUDIO_S32LSB;
-pub static AUDIOS32MSB : AudioFormat = ll::AUDIO_S32MSB;
-pub static AUDIOS32    : AudioFormat = ll::AUDIO_S32;
-pub static AUDIOF32LSB : AudioFormat = ll::AUDIO_F32LSB;
-pub static AUDIOF32MSB : AudioFormat = ll::AUDIO_F32MSB;
-pub static AUDIOF32    : AudioFormat = ll::AUDIO_F32;
-pub static AUDIOU16SYS : AudioFormat = ll::AUDIO_U16SYS;
-pub static AUDIOS16SYS : AudioFormat = ll::AUDIO_S16SYS;
-pub static AUDIOS32SYS : AudioFormat = ll::AUDIO_S32SYS;
-pub static AUDIOF32SYS : AudioFormat = ll::AUDIO_F32SYS;
+pub const AUDIOU8     : AudioFormat = ll::AUDIO_U8;
+pub const AUDIOS8     : AudioFormat = ll::AUDIO_S8;
+pub const AUDIOU16LSB : AudioFormat = ll::AUDIO_U16LSB;
+pub const AUDIOS16LSB : AudioFormat = ll::AUDIO_S16LSB;
+pub const AUDIOU16MSB : AudioFormat = ll::AUDIO_U16MSB;
+pub const AUDIOS16MSB : AudioFormat = ll::AUDIO_S16MSB;
+pub const AUDIOU16    : AudioFormat = ll::AUDIO_U16;
+pub const AUDIOS16    : AudioFormat = ll::AUDIO_S16;
+pub const AUDIOS32LSB : AudioFormat = ll::AUDIO_S32LSB;
+pub const AUDIOS32MSB : AudioFormat = ll::AUDIO_S32MSB;
+pub const AUDIOS32    : AudioFormat = ll::AUDIO_S32;
+pub const AUDIOF32LSB : AudioFormat = ll::AUDIO_F32LSB;
+pub const AUDIOF32MSB : AudioFormat = ll::AUDIO_F32MSB;
+pub const AUDIOF32    : AudioFormat = ll::AUDIO_F32;
+pub const AUDIOU16SYS : AudioFormat = ll::AUDIO_U16SYS;
+pub const AUDIOS16SYS : AudioFormat = ll::AUDIO_S16SYS;
+pub const AUDIOS32SYS : AudioFormat = ll::AUDIO_S32SYS;
+pub const AUDIOF32SYS : AudioFormat = ll::AUDIO_F32SYS;
 
 #[repr(C)]
 #[deriving(Clone, PartialEq, Hash, Show, FromPrimitive)]
