@@ -702,27 +702,37 @@ impl Texture {
         else { Err(get_error()) }
     }
 
-    pub fn lock(&self, rect: Option<Rect>) -> SdlResult<CVec<u8>> {
+    fn unsafe_lock(&self, rect: Option<Rect>) -> SdlResult<(CVec<u8>, i32)> {
         let q = try!(self.query());
         unsafe {
             let actual_rect = match rect {
                 Some(ref rect) => rect as *const _,
                 None => ptr::null()
             };
-
             let pixels : *const c_void = ptr::null();
-            let pitch = 0;
+            let pitch = 0i32;
             let ret = ll::SDL_LockTexture(self.raw, actual_rect, &pixels, &pitch);
             let size = q.format.byte_size_of_pixels((q.width * q.height) as uint);
             if ret == 0 {
-                Ok(CVec::new(pixels as *mut u8, size))
+                Ok((CVec::new(pixels as *mut u8, size), pitch))
             } else {
                 Err(get_error())
             }
         }
     }
 
-    pub fn unlock(&self) {
+    pub fn with_lock(&self, rect: Option<Rect>, func: |CVec<u8>, i32| -> ()) -> SdlResult<()> {
+        match self.unsafe_lock(rect) {
+            Ok((cvec, pitch)) => {
+                func(cvec, pitch); 
+                self.unlock();
+                Ok(())
+            }
+            Err(e) => Err(e),
+        }
+    }
+
+    fn unlock(&self) {
         unsafe { ll::SDL_UnlockTexture(self.raw) }
     }
 
