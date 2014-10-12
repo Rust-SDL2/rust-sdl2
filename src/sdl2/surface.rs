@@ -127,7 +127,7 @@ impl Surface {
 
     pub fn from_data(data: &mut [u8], width: int, height: int, bpp: int, pitch: int,
                      rmask: u32, gmask: u32, bmask: u32, amask: u32) -> SdlResult<Surface> {
-    
+
         unsafe {
             let raw = ll::SDL_CreateRGBSurfaceFrom(
                 data.as_ptr() as *const _, width as c_int, height as c_int,
@@ -331,7 +331,7 @@ impl Surface {
 
         match result {
             0 => Ok(alpha),
-            _ => Err(get_error()) 
+            _ => Err(get_error())
         }
     }
 
@@ -385,7 +385,7 @@ impl Surface {
 
     pub fn convert_format(&self, format: pixels::PixelFormatFlag) -> SdlResult<Surface> {
         let surface_ptr = unsafe { ll::SDL_ConvertSurfaceFormat(self.raw, format as uint32_t, 0u32) };
-        
+
         if surface_ptr == ptr::null() {
             Err(get_error())
         } else {
@@ -395,8 +395,8 @@ impl Surface {
 
     pub fn lower_blit(&self, src_rect: Option<Rect>,
                       dst: &mut Surface, dst_rect: Option<Rect>) -> SdlResult<()> {
-        
-        match unsafe { 
+
+        match unsafe {
             let src_rect_ptr = mem::transmute(src_rect.as_ref());
             let dst_rect_ptr = mem::transmute(dst_rect.as_ref());
             ll::SDL_LowerBlit(self.raw, src_rect_ptr, dst.raw, dst_rect_ptr)
@@ -434,7 +434,7 @@ impl Surface {
 
     pub fn lower_blit_scaled(&self, src_rect: Option<Rect>,
                              dst: &mut Surface, dst_rect: Option<Rect>) -> SdlResult<()> {
-    
+
         match unsafe {
             let src_rect_ptr = mem::transmute(src_rect.as_ref());
             let dst_rect_ptr = mem::transmute(dst_rect.as_ref());

@@ -17,9 +17,9 @@ pub mod ll {
 
     pub type SDL_bool = c_int;
 
-    pub static RW_SEEK_SET: c_int = 0;
-    pub static RW_SEEK_CUR: c_int = 1;
-    pub static RW_SEEK_END: c_int = 2;
+    pub const RW_SEEK_SET: c_int = 0;
+    pub const RW_SEEK_CUR: c_int = 1;
+    pub const RW_SEEK_END: c_int = 2;
 
     #[allow(dead_code)]
     #[repr(C)]
