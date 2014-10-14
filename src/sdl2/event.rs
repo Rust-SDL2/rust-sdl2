@@ -86,11 +86,13 @@ pub mod ll {
     pub const SDL_USEREVENT: SDL_EventType = 32768;
     pub const SDL_LASTEVENT: SDL_EventType = 65535;
 
+    #[repr(C)]
     pub struct SDL_CommonEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
     }
 
+    #[repr(C)]
     pub struct SDL_WindowEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
@@ -103,6 +105,7 @@ pub mod ll {
         pub data2: int32_t,
     }
 
+    #[repr(C)]
     pub struct SDL_KeyboardEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
@@ -114,6 +117,7 @@ pub mod ll {
         pub keysym: SDL_Keysym,
     }
 
+    #[repr(C)]
     pub struct SDL_TextEditingEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
@@ -123,6 +127,7 @@ pub mod ll {
         pub length: int32_t,
     }
 
+    #[repr(C)]
     pub struct SDL_TextInputEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
@@ -130,6 +135,7 @@ pub mod ll {
         pub text: [c_char, ..32u],
     }
 
+    #[repr(C)]
     pub struct SDL_MouseMotionEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
@@ -142,6 +148,7 @@ pub mod ll {
         pub yrel: int32_t,
     }
 
+    #[repr(C)]
     pub struct SDL_MouseButtonEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
@@ -155,6 +162,7 @@ pub mod ll {
         pub y: int32_t,
     }
 
+    #[repr(C)]
     pub struct SDL_MouseWheelEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
@@ -164,6 +172,7 @@ pub mod ll {
         pub y: int32_t,
     }
 
+    #[repr(C)]
     pub struct SDL_JoyAxisEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
@@ -176,6 +185,7 @@ pub mod ll {
         pub padding4: uint16_t,
     }
 
+    #[repr(C)]
     pub struct SDL_JoyBallEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
@@ -188,6 +198,7 @@ pub mod ll {
         pub yrel: int16_t,
     }
 
+    #[repr(C)]
     pub struct SDL_JoyHatEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
@@ -198,6 +209,7 @@ pub mod ll {
         pub padding2: uint8_t,
     }
 
+    #[repr(C)]
     pub struct SDL_JoyButtonEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
@@ -208,12 +220,14 @@ pub mod ll {
         pub padding2: uint8_t,
     }
 
+    #[repr(C)]
     pub struct SDL_JoyDeviceEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
         pub which: int32_t,
     }
 
+    #[repr(C)]
     pub struct SDL_ControllerAxisEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
@@ -226,6 +240,7 @@ pub mod ll {
         pub padding4: uint16_t,
     }
 
+    #[repr(C)]
     pub struct SDL_ControllerButtonEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
@@ -236,12 +251,14 @@ pub mod ll {
         pub padding2: uint8_t,
     }
 
+    #[repr(C)]
     pub struct SDL_ControllerDeviceEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
         pub which: int32_t,
     }
 
+    #[repr(C)]
     pub struct SDL_TouchFingerEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
@@ -254,6 +271,7 @@ pub mod ll {
         pub pressure: c_float,
     }
 
+    #[repr(C)]
     pub struct SDL_MultiGestureEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
@@ -266,6 +284,7 @@ pub mod ll {
         pub padding: uint16_t,
     }
 
+    #[repr(C)]
     pub struct SDL_DollarGestureEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
@@ -277,22 +296,26 @@ pub mod ll {
         pub y: c_float,
     }
 
+    #[repr(C)]
     pub struct SDL_DropEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
         pub file: *const c_char,
     }
 
+    #[repr(C)]
     pub struct SDL_QuitEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
     }
 
+    #[repr(C)]
     pub struct SDL_OSEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
     }
 
+    #[repr(C)]
     pub struct SDL_UserEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
@@ -302,6 +325,7 @@ pub mod ll {
         pub data2: *const c_void,
     }
 
+    #[repr(C)]
     pub struct SDL_SysWMEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
