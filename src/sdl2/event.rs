@@ -876,7 +876,7 @@ impl Event {
                                    event.x as int, event.y as int)
             }
             MouseWheelEventType => {
-                let event = *raw.button();
+                let event = *raw.wheel();
 
                 let window = video::Window::from_id(event.windowID);
                 let window = match window {
