@@ -133,6 +133,6 @@ pub fn clear_error() {
     unsafe { ll::SDL_ClearError(); }
 }
 
-pub fn get_ticks() -> uint {
-    unsafe { ll::SDL_GetTicks() as uint }
+pub fn get_ticks() -> u32 {
+    unsafe { ll::SDL_GetTicks() as u32 }
 }
