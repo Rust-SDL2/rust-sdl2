@@ -80,7 +80,7 @@ impl Drop for RWops {
         if self.close_on_drop {
             let ret = unsafe { ((*self.raw).close)(self.raw) };
             if ret != 0 {
-                println!("error {} when closing RWopt {:?}", get_error(), self);
+                println!("error {} when closing RWopt", get_error());
             }
         }
     }
