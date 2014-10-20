@@ -17,15 +17,15 @@ macro_rules! rect(
 )
 
 pub fn main(filename: &Path) {
-    sdl2::init(sdl2::InitVideo);
+    sdl2::init(sdl2::INIT_VIDEO);
     sdl2_ttf::init();
 
     let window = trying!(sdl2::video::Window::new(
             "rust-sdl2 demo: Video", sdl2::video::PosCentered,
-            sdl2::video::PosCentered, SCREEN_WIDTH, SCREEN_HEIGHT, sdl2::video::OpenGL));
+            sdl2::video::PosCentered, SCREEN_WIDTH, SCREEN_HEIGHT, sdl2::video::OPENGL));
 
     let renderer = trying!(sdl2::render::Renderer::from_window(
-            window, sdl2::render::DriverAuto, sdl2::render::Accelerated));
+            window, sdl2::render::DriverAuto, sdl2::render::ACCELERATED));
 
     // Load a font
     let font = trying!(sdl2_ttf::Font::from_file(filename, 128));

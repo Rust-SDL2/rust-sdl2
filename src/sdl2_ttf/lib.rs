@@ -37,9 +37,7 @@ mod mac {
     extern {}
 }
 
-#[cfg(target_os="win32")]
-#[cfg(target_os="linux")]
-#[cfg(target_os="freebsd")]
+#[cfg(any(target_os="windows", target_os="linux", target_os="freebsd"))]
 mod others {
     #[link(name="SDL2_ttf")]
     extern {}
@@ -58,11 +56,11 @@ fn color_to_c_color(color: Color) -> SDL_Color {
 
 /// Font Style
 bitflags!(flags FontStyle : c_int {
-    static StyleNormal = ffi::TTF_STYLE_NORMAL,
-    static StyleBold   = ffi::TTF_STYLE_BOLD,
-    static StyleItalic = ffi::TTF_STYLE_ITALIC,
-    static StyleUnderline = ffi::TTF_STYLE_UNDERLINE,
-    static StyleStrikeThrough = ffi::TTF_STYLE_STRIKETHROUGH
+    const StyleNormal = ffi::TTF_STYLE_NORMAL,
+    const StyleBold   = ffi::TTF_STYLE_BOLD,
+    const StyleItalic = ffi::TTF_STYLE_ITALIC,
+    const StyleUnderline = ffi::TTF_STYLE_UNDERLINE,
+    const StyleStrikeThrough = ffi::TTF_STYLE_STRIKETHROUGH
 })
 
 #[deriving(Show, PartialEq, FromPrimitive)]
@@ -117,7 +115,7 @@ pub fn quit() {
 #[allow(raw_pointer_deriving)]
 #[deriving(PartialEq)]
 pub struct Font {
-    raw: *ffi::TTF_Font,
+    raw: *const ffi::TTF_Font,
     owned: bool
 }
 
@@ -135,7 +133,7 @@ impl Drop for Font {
 }
 
 impl Font {
-    fn from_ll(raw: *ffi::TTF_Font, owned: bool) -> Font {
+    fn from_ll(raw: *const ffi::TTF_Font, owned: bool) -> Font {
         Font { raw: raw, owned: owned }
     }
 

@@ -1,10 +1,10 @@
+language: rust
+os:
+    - linux
 env:
   global:
     - secure: bEpP3zUNn1g3jOhB9s0y8XDbxtAcf8rt2ilwkx6/OjhZm7mcfcvjoiEyG/c6iu4AOhF3CTvhnjZmuuD7d1eUChNwWpNhyWMZ3gj+lNNAugfZfOv7sFFQpEMZ2hbO1djr7/TeuXmQgJqIUHYfCoW2nXObXkESpl2yzOiYhhUdH58=
-before_install:
-  - wget -q http://static.rust-lang.org/dist/rust-nightly-x86_64-unknown-linux-gnu.tar.gz
-  - tar xf rust-nightly-x86_64-unknown-linux-gnu.tar.gz
-  - sudo ./rust-nightly-x86_64-unknown-linux-gnu/install.sh
+    - LD_LIBRARY_PATH: /usr/local/lib
 install:
   - cd ..
   - time wget -q http://www.libsdl.org/release/SDL2-2.0.3.tar.gz
@@ -17,11 +17,10 @@ install:
   - cd SDL2_ttf-*
   - ./configure && make && sudo make install
   - cd -
-  - git clone https://github.com/AngryLawyer/rust-sdl2.git
-  - (cd rust-sdl2 && make)
-  - rustc rust-sdl2/src/sdl2/lib.rs
 script:
-  - rustc -L. rust-sdl2_ttf/src/sdl2_ttf/lib.rs
-  - rustdoc -L. rust-sdl2_ttf/src/sdl2_ttf/lib.rs
+  - cd rust-sdl2_ttf
+  - cargo build -v
+  - cargo test -v
+  - cargo doc -v
 after_script:
   - curl http://www.rust-ci.org/artifacts/put?t=$RUSTCI_TOKEN | sh
