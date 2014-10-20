@@ -9,12 +9,11 @@ authors = ["ShuYu Wang<andelf@gmail.com>"]
 name = "sdl2_mixer"
 path = "src/sdl2_mixer/lib.rs"
 
-[dependencies.sdl2]
-
-git = "https://github.com/AngryLawyer/rust-sdl2"
-
-
 [[bin]]
 
 name = "demo"
 path = "src/demo/main.rs"
+
+[dependencies.sdl2]
+
+git = "https://github.com/AngryLawyer/rust-sdl2"

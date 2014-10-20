@@ -2,7 +2,7 @@
 A binding for SDL2_mixer.
  */
 
-#![crate_id="sdl2_mixer#sdl2_mixer:0.1"]
+#![crate_name = "sdl2_mixer"]
 #![crate_type = "lib"]
 #![desc = "SDL2_mixer bindings and wrappers"]
 #![comment = "SDL2_mixer bindings and wrappers"]
@@ -110,12 +110,12 @@ pub fn get_linked_version() -> Version {
 }
 
 bitflags!(flags InitFlag : u32 {
-    const InitFlac       = ffi::MIX_INIT_FLAC as u32,
-    const InitMod        = ffi::MIX_INIT_MOD as u32,
-    const InitModPlug    = ffi::MIX_INIT_MODPLUG as u32,
-    const InitMp3        = ffi::MIX_INIT_MP3 as u32,
-    const InitOgg        = ffi::MIX_INIT_OGG as u32,
-    const InitFluidSynth = ffi::MIX_INIT_FLUIDSYNTH as u32
+    const INIT_FLAC       = ffi::MIX_INIT_FLAC as u32,
+    const INIT_MOD        = ffi::MIX_INIT_MOD as u32,
+    const INIT_MODPLUG    = ffi::MIX_INIT_MODPLUG as u32,
+    const INIT_MP3        = ffi::MIX_INIT_MP3 as u32,
+    const INIT_OGG        = ffi::MIX_INIT_OGG as u32,
+    const INIT_FLUIDSYNTH = ffi::MIX_INIT_FLUIDSYNTH as u32
 })
 
 /// Loads dynamic libraries and prepares them for use.  Flags should be

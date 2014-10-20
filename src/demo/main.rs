@@ -21,9 +21,9 @@ fn main() {
 fn dump_info(filename: &Path) -> Result<(), String> {
     println!("linked version: {}", sdl2_mixer::get_linked_version());
     sdl2::init(sdl2::INIT_AUDIO | sdl2::INIT_TIMER);
-    println!("inited => {}", sdl2_mixer::init(sdl2_mixer::InitMp3 | sdl2_mixer::InitFlac |
-                                              sdl2_mixer::InitMod | sdl2_mixer::InitFluidSynth |
-                                              sdl2_mixer::InitModPlug | sdl2_mixer::InitOgg).bits());
+    println!("inited => {}", sdl2_mixer::init(sdl2_mixer::INIT_MP3 | sdl2_mixer::INIT_FLAC |
+                                              sdl2_mixer::INIT_MOD | sdl2_mixer::INIT_FLUIDSYNTH |
+                                              sdl2_mixer::INIT_MODPLUG | sdl2_mixer::INIT_OGG).bits());
     // TODO: 0x8010 is SDL_audio flag
     try!(sdl2_mixer::open_audio(sdl2_mixer::DEFAULT_FREQUENCY, 0x8010u16, 2, 1024));
     sdl2_mixer::allocate_channels(0);
