@@ -4,6 +4,7 @@ os:
 env:
   global:
     - secure: JLix99cbDVr9+s9QOux8FmnyEHGmpNHavKoO7lo1dG4Em8XyeByIXeBNggYX3d/vpdQ+FrqNO+3HrRJpZvXl1OO3uPGFtIQLH6bXLTaggC3z/67maEQSQQS8rcSHImkg1CDKoPWKvZfnB6IqWRYLTBJWILwBLoocure7/+/8III=
+    - LD_LIBRARY_PATH: /usr/local/lib
 install:
   - cd ..
   - time wget -q http://www.libsdl.org/release/SDL2-2.0.3.tar.gz
