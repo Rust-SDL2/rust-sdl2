@@ -1,9 +1,9 @@
+language: rust
+os:
+    - linux
 env:
   global:
     - secure: JLix99cbDVr9+s9QOux8FmnyEHGmpNHavKoO7lo1dG4Em8XyeByIXeBNggYX3d/vpdQ+FrqNO+3HrRJpZvXl1OO3uPGFtIQLH6bXLTaggC3z/67maEQSQQS8rcSHImkg1CDKoPWKvZfnB6IqWRYLTBJWILwBLoocure7/+/8III=
-before_install:
-  - curl -sL https://static.rust-lang.org/dist/rust-nightly-x86_64-unknown-linux-gnu.tar.gz | tar --strip-components=1 -C ~/rust -xzf -
-  - curl -sL https://static.rust-lang.org/cargo-dist/cargo-nightly-x86_64-unknown-linux-gnu.tar.gz | tar --strip-components=1 -C ~/rust -xzf -
 install:
   - cd ..
   - time wget -q http://www.libsdl.org/release/SDL2-2.0.3.tar.gz
@@ -16,19 +16,10 @@ install:
   - cd SDL2_mixer-*
   - ./configure && make && sudo make install
   - cd -
-  - git clone https://github.com/andelf/rust-sdl2.git
-  - (cd rust-sdl2 && make)
-  - rustc rust-sdl2/src/sdl2/lib.rs
 script:
-  - rustc -L. rust-sdl2_mixer/src/sdl2_mixer/lib.rs
-  - rustdoc -L. rust-sdl2_mixer/src/sdl2_mixer/lib.rs
+  - cd rust-sdl2_mixer
+  - cargo build -v
+  - cargo test -v
+  - cargo doc -v
 after_script:
   - curl http://www.rust-ci.org/artifacts/put?t=$RUSTCI_TOKEN | sh
-
-
-
-8.03s$
-0.01s0.01s0.04s$ rustc --version
-rustc 0.13.0-nightly (aff4f11cd 2014-10-19 23:32:07 +0000)
-0.01s$ cargo --version
-cargo 0.0.1-pre-nightly (664517e 2014-10-18 15:29:55 +0000)
