@@ -1,7 +1,6 @@
 #![crate_type = "bin"]
-#![crate_id="demo"]
+#![crate_name="demo"]
 
-extern crate debug;
 extern crate sdl2;
 extern crate sdl2_mixer;
 
@@ -13,7 +12,7 @@ fn main() {
     if args.len() < 2 {
         println!("Usage: ./demo audio.[mp3|wav|ogg]")
     } else {
-        match dump_info(&Path::new(args.get(1).to_string())) {
+        match dump_info(&Path::new(args[1].to_string())) {
             _ => ()
         }
     }
@@ -21,10 +20,10 @@ fn main() {
 
 fn dump_info(filename: &Path) -> Result<(), String> {
     println!("linked version: {}", sdl2_mixer::get_linked_version());
-    sdl2::init(sdl2::InitAudio | sdl2::InitTimer);
+    sdl2::init(sdl2::INIT_AUDIO | sdl2::INIT_TIMER);
     println!("inited => {}", sdl2_mixer::init(sdl2_mixer::InitMp3 | sdl2_mixer::InitFlac |
-                                       sdl2_mixer::InitMod | sdl2_mixer::InitFluidSynth |
-                                       sdl2_mixer::InitModPlug | sdl2_mixer::InitOgg).bits());
+                                              sdl2_mixer::InitMod | sdl2_mixer::InitFluidSynth |
+                                              sdl2_mixer::InitModPlug | sdl2_mixer::InitOgg).bits());
     // TODO: 0x8010 is SDL_audio flag
     try!(sdl2_mixer::open_audio(sdl2_mixer::DEFAULT_FREQUENCY, 0x8010u16, 2, 1024));
     sdl2_mixer::allocate_channels(0);
@@ -33,7 +32,7 @@ fn dump_info(filename: &Path) -> Result<(), String> {
         let n = sdl2_mixer::get_chunk_decoders_number();
         println!("available chunk(sample) decoders: {}", n);
         for i in range(0, n) {
-            println!("| decoder {} => {:?}", i, sdl2_mixer::get_chunk_decoder(i));
+            println!("| decoder {} => {:}", i, sdl2_mixer::get_chunk_decoder(i));
         }
     }
 
@@ -41,7 +40,7 @@ fn dump_info(filename: &Path) -> Result<(), String> {
         let n = sdl2_mixer::get_music_decoders_number();
         println!("available music decoders: {}", n);
         for i in range(0, n) {
-            println!("| decoder {} => {:?}", i, sdl2_mixer::get_music_decoder(i));
+            println!("| decoder {} => {:}", i, sdl2_mixer::get_music_decoder(i));
         }
     }
 
@@ -51,7 +50,7 @@ fn dump_info(filename: &Path) -> Result<(), String> {
 
     sdl2_mixer::Music::hook_finished(|| { println!("play ends! from rust cb") });
 
-    println!("music => {:?}", music);
+    println!("music => {:}", music);
     println!("music type => {}", music.get_type());
 
     println!("music volume => {}", sdl2_mixer::Music::get_volume());

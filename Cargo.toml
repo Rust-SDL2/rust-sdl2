@@ -2,8 +2,7 @@
 
 name = "sdl2_mixer"
 version = "0.0.1"
-readme = "README.md"
-authors = ["ShuYu Wang"]
+authors = ["ShuYu Wang<andelf@gmail.com>"]
 
 [lib]
 
@@ -14,3 +13,8 @@ path = "src/sdl2_mixer/lib.rs"
 
 git = "https://github.com/AngryLawyer/rust-sdl2"
 
+
+[[bin]]
+
+name = "demo"
+path = "src/demo/main.rs"

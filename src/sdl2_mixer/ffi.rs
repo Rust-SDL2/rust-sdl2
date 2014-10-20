@@ -5,12 +5,12 @@ use sdl2::rwops::ll::SDL_RWops;
 use sdl2::version::ll::SDL_version;
 
 pub type MIX_InitFlags = c_uint;
-pub static MIX_INIT_FLAC: c_uint = 1;
-pub static MIX_INIT_MOD: c_uint = 2;
-pub static MIX_INIT_MODPLUG: c_uint = 4;
-pub static MIX_INIT_MP3: c_uint = 8;
-pub static MIX_INIT_OGG: c_uint = 16;
-pub static MIX_INIT_FLUIDSYNTH: c_uint = 32;
+pub const MIX_INIT_FLAC: c_uint = 1;
+pub const MIX_INIT_MOD: c_uint = 2;
+pub const MIX_INIT_MODPLUG: c_uint = 4;
+pub const MIX_INIT_MP3: c_uint = 8;
+pub const MIX_INIT_OGG: c_uint = 16;
+pub const MIX_INIT_FLUIDSYNTH: c_uint = 32;
 pub struct Struct_Mix_Chunk {
     pub allocated: c_int,
     pub abuf: *const uint8_t,
@@ -19,20 +19,20 @@ pub struct Struct_Mix_Chunk {
 }
 pub type Mix_Chunk = Struct_Mix_Chunk;
 pub type Mix_Fading = c_uint;
-pub static MIX_NO_FADING: c_uint = 0;
-pub static MIX_FADING_OUT: c_uint = 1;
-pub static MIX_FADING_IN: c_uint = 2;
+pub const MIX_NO_FADING: c_uint = 0;
+pub const MIX_FADING_OUT: c_uint = 1;
+pub const MIX_FADING_IN: c_uint = 2;
 pub type Mix_MusicType = c_uint;
-pub static MUS_NONE: c_uint = 0;
-pub static MUS_CMD: c_uint = 1;
-pub static MUS_WAV: c_uint = 2;
-pub static MUS_MOD: c_uint = 3;
-pub static MUS_MID: c_uint = 4;
-pub static MUS_OGG: c_uint = 5;
-pub static MUS_MP3: c_uint = 6;
-pub static MUS_MP3_MAD: c_uint = 7;
-pub static MUS_FLAC: c_uint = 8;
-pub static MUS_MODPLUG: c_uint = 9;
+pub const MUS_NONE: c_uint = 0;
+pub const MUS_CMD: c_uint = 1;
+pub const MUS_WAV: c_uint = 2;
+pub const MUS_MOD: c_uint = 3;
+pub const MUS_MID: c_uint = 4;
+pub const MUS_OGG: c_uint = 5;
+pub const MUS_MP3: c_uint = 6;
+pub const MUS_MP3_MAD: c_uint = 7;
+pub const MUS_FLAC: c_uint = 8;
+pub const MUS_MODPLUG: c_uint = 9;
 pub type Struct__Mix_Music = c_void;
 pub type Mix_Music = Struct__Mix_Music;
 pub type Mix_EffectFunc_t =
