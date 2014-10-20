@@ -10,7 +10,11 @@ name       = "sdl2_image"
 path       = "src/sdl2_image/lib.rs"
 crate-type = ["dylib"]
 
+[[bin]]
+
+name = "demo"
+path = "src/demo/main.rs"
+
 [dependencies.sdl2]
 
 git = "https://github.com/AngryLawyer/rust-sdl2.git"
-
