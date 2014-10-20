@@ -8,10 +8,10 @@ use sdl2::render::ll::SDL_Renderer;
 use sdl2::version::ll::SDL_version;
 
 pub type IMG_InitFlags = c_int;
-pub static IMG_INIT_JPG: IMG_InitFlags = 0x00000001;
-pub static IMG_INIT_PNG: IMG_InitFlags = 0x00000002;
-pub static IMG_INIT_TIF: IMG_InitFlags = 0x00000004;
-pub static IMG_INIT_WEBP: IMG_InitFlags = 0x00000008;
+pub const IMG_INIT_JPG: IMG_InitFlags = 0x00000001;
+pub const IMG_INIT_PNG: IMG_InitFlags = 0x00000002;
+pub const IMG_INIT_TIF: IMG_InitFlags = 0x00000004;
+pub const IMG_INIT_WEBP: IMG_InitFlags = 0x00000008;
 
 extern "C" {
 

@@ -45,10 +45,10 @@ mod ffi;
 /// functionality to load.
 bitflags! {
     flags InitFlag : u32 {
-        static INIT_JPG  = ffi::IMG_INIT_JPG as u32,
-        static INIT_PNG  = ffi::IMG_INIT_PNG as u32,
-        static INIT_TIF  = ffi::IMG_INIT_TIF as u32,
-        static INIT_WEBP = ffi::IMG_INIT_WEBP as u32
+        const INIT_JPG  = ffi::IMG_INIT_JPG as u32,
+        const INIT_PNG  = ffi::IMG_INIT_PNG as u32,
+        const INIT_TIF  = ffi::IMG_INIT_TIF as u32,
+        const INIT_WEBP = ffi::IMG_INIT_WEBP as u32
     }
 }
 
