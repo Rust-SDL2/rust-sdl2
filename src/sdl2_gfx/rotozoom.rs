@@ -18,16 +18,16 @@ mod ll {
                                  zoomx: c_double, zoomy: c_double, smooth: c_int)
                                  -> *const SDL_Surface;
         pub fn rotozoomSurfaceSize(width: c_int, height: c_int, angle: c_double,
-                                   zoom: c_double, dstwidth: *const c_int,
-                                   dstheight: *const c_int);
+                                   zoom: c_double, dstwidth: *mut c_int,
+                                   dstheight: *mut c_int);
         pub fn rotozoomSurfaceSizeXY(width: c_int, height: c_int, angle: c_double,
                                      zoomx: c_double, zoomy: c_double,
-                                     dstwidth: *const c_int, dstheight: *const c_int);
+                                     dstwidth: *mut c_int, dstheight: *mut c_int);
         pub fn zoomSurface(src: *const SDL_Surface, zoomx: c_double,
                            zoomy: c_double, smooth: c_int) -> *const SDL_Surface;
         pub fn zoomSurfaceSize(width: c_int, height: c_int, zoomx: c_double,
-                               zoomy: c_double, dstwidth: *const c_int,
-                               dstheight: *const c_int);
+                               zoomy: c_double, dstwidth: *mut c_int,
+                               dstheight: *mut c_int);
         pub fn shrinkSurface(src: *const SDL_Surface, factorx: c_int,
                              factory: c_int) -> *const SDL_Surface;
         pub fn rotateSurface90Degrees(src: *const SDL_Surface,
@@ -104,22 +104,22 @@ impl RotozoomSurface for Surface {
 }
 
 pub fn get_zoom_size(width: int, height: int, zoomx: f64, zoomy: f64) -> (int, int) {
-    let w = 0;
-    let h = 0;
-    unsafe { ll::zoomSurfaceSize(width as c_int, height as c_int, zoomx, zoomy, &w, &h) }
+    let mut w: c_int = 0;
+    let mut h: c_int = 0;
+    unsafe { ll::zoomSurfaceSize(width as c_int, height as c_int, zoomx, zoomy, &mut w, &mut h) }
     (w as int, h as int)
 }
 
 pub fn get_rotozoom_size(width: int, height: int, angle: f64, zoom: f64) -> (int, int) {
-    let w = 0;
-    let h = 0;
-    unsafe { ll::rotozoomSurfaceSize(width as c_int, height as c_int, angle, zoom, &w, &h) }
+    let mut w: c_int = 0;
+    let mut h: c_int = 0;
+    unsafe { ll::rotozoomSurfaceSize(width as c_int, height as c_int, angle, zoom, &mut w, &mut h) }
     (w as int, h as int)
 }
 
 pub fn get_rotozoom_xy_size(width: int, height: int, angle: f64, zoomx: f64, zoomy: f64) -> (int, int) {
-    let w = 0;
-    let h = 0;
-    unsafe { ll::rotozoomSurfaceSizeXY(width as c_int, height as c_int, angle, zoomx, zoomy, &w, &h) }
+    let mut w: c_int = 0;
+    let mut h: c_int = 0;
+    unsafe { ll::rotozoomSurfaceSizeXY(width as c_int, height as c_int, angle, zoomx, zoomy, &mut w, &mut h) }
     (w as int, h as int)
 }

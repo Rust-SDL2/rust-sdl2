@@ -155,7 +155,7 @@ mod ll {
                                  vy: *const int16_t, n: c_int, r: uint8_t, g: uint8_t,
                                  b: uint8_t, a: uint8_t) -> c_int;
         pub fn texturedPolygon(renderer: *const SDL_Renderer, vx: *const int16_t,
-                               vy: *const int16_t, n: c_int, texture: *const SDL_Surface,
+                               vy: *const int16_t, n: c_int, texture: *mut SDL_Surface,
                                texture_dx: c_int, texture_dy: c_int) -> c_int;
         pub fn bezierColor(renderer: *const SDL_Renderer, vx: *const int16_t, vy: *const int16_t,
                            n: c_int, s: c_int, color: uint32_t) -> c_int;
@@ -170,9 +170,9 @@ mod ll {
                              c: c_char, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t)
                              -> c_int;
         pub fn stringColor(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
-                           s: *const c_char, color: uint32_t) -> c_int;
+                           s: *mut c_char, color: uint32_t) -> c_int;
         pub fn stringRGBA(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
-                          s: *const c_char, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) ->
+                          s: *mut c_char, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) ->
             c_int;
     }
 }
@@ -483,7 +483,7 @@ impl<P> DrawRenderer for Renderer<P> {
     fn string<C: ToColor>(&self, x: i16, y: i16, s: &str, color: C) -> SdlResult<()> {
         let ret = unsafe {
             s.with_c_str(|buf| {
-                ll::stringColor(self.raw(), x, y, buf as *const i8, color.as_u32())
+                ll::stringColor(self.raw(), x, y, buf as *mut i8, color.as_u32())
             })
         };
         if ret == 0 { Ok(()) }
