@@ -18,161 +18,161 @@ mod ll {
     use sdl2::render::ll::SDL_Renderer;
     use sdl2::surface::ll::SDL_Surface;
     extern "C" {
-        pub fn pixelColor(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
+        pub fn pixelColor(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
                           color: uint32_t) -> c_int;
-        pub fn pixelRGBA(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
+        pub fn pixelRGBA(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
                          r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) -> c_int;
-        pub fn hlineColor(renderer: *SDL_Renderer, x1: int16_t, x2: int16_t,
+        pub fn hlineColor(renderer: *const SDL_Renderer, x1: int16_t, x2: int16_t,
                           y: int16_t, color: uint32_t) -> c_int;
-        pub fn hlineRGBA(renderer: *SDL_Renderer, x1: int16_t, x2: int16_t,
+        pub fn hlineRGBA(renderer: *const SDL_Renderer, x1: int16_t, x2: int16_t,
                          y: int16_t, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) ->
             c_int;
-        pub fn vlineColor(renderer: *SDL_Renderer, x: int16_t, y1: int16_t,
+        pub fn vlineColor(renderer: *const SDL_Renderer, x: int16_t, y1: int16_t,
                           y2: int16_t, color: uint32_t) -> c_int;
-        pub fn vlineRGBA(renderer: *SDL_Renderer, x: int16_t, y1: int16_t,
+        pub fn vlineRGBA(renderer: *const SDL_Renderer, x: int16_t, y1: int16_t,
                          y2: int16_t, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) ->
             c_int;
-        pub fn rectangleColor(renderer: *SDL_Renderer, x1: int16_t, y1: int16_t,
+        pub fn rectangleColor(renderer: *const SDL_Renderer, x1: int16_t, y1: int16_t,
                               x2: int16_t, y2: int16_t, color: uint32_t) -> c_int;
-        pub fn rectangleRGBA(renderer: *SDL_Renderer, x1: int16_t, y1: int16_t,
+        pub fn rectangleRGBA(renderer: *const SDL_Renderer, x1: int16_t, y1: int16_t,
                              x2: int16_t, y2: int16_t, r: uint8_t, g: uint8_t, b: uint8_t,
                              a: uint8_t) -> c_int;
-        pub fn roundedRectangleColor(renderer: *SDL_Renderer, x1: int16_t,
+        pub fn roundedRectangleColor(renderer: *const SDL_Renderer, x1: int16_t,
                                      y1: int16_t, x2: int16_t, y2: int16_t,
                                      rad: int16_t, color: uint32_t) -> c_int;
-        pub fn roundedRectangleRGBA(renderer: *SDL_Renderer, x1: int16_t,
+        pub fn roundedRectangleRGBA(renderer: *const SDL_Renderer, x1: int16_t,
                                     y1: int16_t, x2: int16_t, y2: int16_t,
                                     rad: int16_t, r: uint8_t, g: uint8_t, b: uint8_t,
                                     a: uint8_t) -> c_int;
-        pub fn boxColor(renderer: *SDL_Renderer, x1: int16_t, y1: int16_t,
+        pub fn boxColor(renderer: *const SDL_Renderer, x1: int16_t, y1: int16_t,
                         x2: int16_t, y2: int16_t, color: uint32_t) -> c_int;
-        pub fn boxRGBA(renderer: *SDL_Renderer, x1: int16_t, y1: int16_t,
+        pub fn boxRGBA(renderer: *const SDL_Renderer, x1: int16_t, y1: int16_t,
                        x2: int16_t, y2: int16_t, r: uint8_t, g: uint8_t, b: uint8_t,
                        a: uint8_t) -> c_int;
-        pub fn roundedBoxColor(renderer: *SDL_Renderer, x1: int16_t,
+        pub fn roundedBoxColor(renderer: *const SDL_Renderer, x1: int16_t,
                                y1: int16_t, x2: int16_t, y2: int16_t, rad: int16_t,
                                color: uint32_t) -> c_int;
-        pub fn roundedBoxRGBA(renderer: *SDL_Renderer, x1: int16_t, y1: int16_t,
+        pub fn roundedBoxRGBA(renderer: *const SDL_Renderer, x1: int16_t, y1: int16_t,
                               x2: int16_t, y2: int16_t, rad: int16_t, r: uint8_t,
                               g: uint8_t, b: uint8_t, a: uint8_t) -> c_int;
-        pub fn lineColor(renderer: *SDL_Renderer, x1: int16_t, y1: int16_t,
+        pub fn lineColor(renderer: *const SDL_Renderer, x1: int16_t, y1: int16_t,
                          x2: int16_t, y2: int16_t, color: uint32_t) -> c_int;
-        pub fn lineRGBA(renderer: *SDL_Renderer, x1: int16_t, y1: int16_t,
+        pub fn lineRGBA(renderer: *const SDL_Renderer, x1: int16_t, y1: int16_t,
                         x2: int16_t, y2: int16_t, r: uint8_t, g: uint8_t, b: uint8_t,
                         a: uint8_t) -> c_int;
-        pub fn aalineColor(renderer: *SDL_Renderer, x1: int16_t, y1: int16_t,
+        pub fn aalineColor(renderer: *const SDL_Renderer, x1: int16_t, y1: int16_t,
                            x2: int16_t, y2: int16_t, color: uint32_t) -> c_int;
-        pub fn aalineRGBA(renderer: *SDL_Renderer, x1: int16_t, y1: int16_t,
+        pub fn aalineRGBA(renderer: *const SDL_Renderer, x1: int16_t, y1: int16_t,
                           x2: int16_t, y2: int16_t, r: uint8_t, g: uint8_t, b: uint8_t,
                           a: uint8_t) -> c_int;
-        pub fn thickLineColor(renderer: *SDL_Renderer, x1: int16_t, y1: int16_t,
+        pub fn thickLineColor(renderer: *const SDL_Renderer, x1: int16_t, y1: int16_t,
                               x2: int16_t, y2: int16_t, width: uint8_t, color: uint32_t)
                               -> c_int;
-        pub fn thickLineRGBA(renderer: *SDL_Renderer, x1: int16_t, y1: int16_t,
+        pub fn thickLineRGBA(renderer: *const SDL_Renderer, x1: int16_t, y1: int16_t,
                              x2: int16_t, y2: int16_t, width: uint8_t, r: uint8_t,
                              g: uint8_t, b: uint8_t, a: uint8_t) -> c_int;
-        pub fn circleColor(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
+        pub fn circleColor(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
                            rad: int16_t, color: uint32_t) -> c_int;
-        pub fn circleRGBA(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
+        pub fn circleRGBA(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
                           rad: int16_t, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) ->
             c_int;
-        pub fn arcColor(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
+        pub fn arcColor(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
                         rad: int16_t, start: int16_t, end: int16_t, color: uint32_t) ->
             c_int;
-        pub fn arcRGBA(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
+        pub fn arcRGBA(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
                        rad: int16_t, start: int16_t, end: int16_t, r: uint8_t,
                        g: uint8_t, b: uint8_t, a: uint8_t) -> c_int;
-        pub fn aacircleColor(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
+        pub fn aacircleColor(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
                              rad: int16_t, color: uint32_t) -> c_int;
-        pub fn aacircleRGBA(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
+        pub fn aacircleRGBA(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
                             rad: int16_t, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t)
                             -> c_int;
-        pub fn filledCircleColor(renderer: *SDL_Renderer, x: int16_t,
+        pub fn filledCircleColor(renderer: *const SDL_Renderer, x: int16_t,
                                  y: int16_t, r: int16_t, color: uint32_t) -> c_int;
-        pub fn filledCircleRGBA(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
+        pub fn filledCircleRGBA(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
                                 rad: int16_t, r: uint8_t, g: uint8_t, b: uint8_t,
                                 a: uint8_t) -> c_int;
-        pub fn ellipseColor(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
+        pub fn ellipseColor(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
                             rx: int16_t, ry: int16_t, color: uint32_t) -> c_int;
-        pub fn ellipseRGBA(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
+        pub fn ellipseRGBA(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
                            rx: int16_t, ry: int16_t, r: uint8_t, g: uint8_t, b: uint8_t,
                            a: uint8_t) -> c_int;
-        pub fn aaellipseColor(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
+        pub fn aaellipseColor(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
                               rx: int16_t, ry: int16_t, color: uint32_t) -> c_int;
-        pub fn aaellipseRGBA(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
+        pub fn aaellipseRGBA(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
                              rx: int16_t, ry: int16_t, r: uint8_t, g: uint8_t, b: uint8_t,
                              a: uint8_t) -> c_int;
-        pub fn filledEllipseColor(renderer: *SDL_Renderer, x: int16_t,
+        pub fn filledEllipseColor(renderer: *const SDL_Renderer, x: int16_t,
                                   y: int16_t, rx: int16_t, ry: int16_t,
                                   color: uint32_t) -> c_int;
-        pub fn filledEllipseRGBA(renderer: *SDL_Renderer, x: int16_t,
+        pub fn filledEllipseRGBA(renderer: *const SDL_Renderer, x: int16_t,
                                  y: int16_t, rx: int16_t, ry: int16_t, r: uint8_t,
                                  g: uint8_t, b: uint8_t, a: uint8_t) -> c_int;
-        pub fn pieColor(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
+        pub fn pieColor(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
                         rad: int16_t, start: int16_t, end: int16_t, color: uint32_t) ->
             c_int;
-        pub fn pieRGBA(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
+        pub fn pieRGBA(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
                        rad: int16_t, start: int16_t, end: int16_t, r: uint8_t,
                        g: uint8_t, b: uint8_t, a: uint8_t) -> c_int;
-        pub fn filledPieColor(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
+        pub fn filledPieColor(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
                               rad: int16_t, start: int16_t, end: int16_t,
                               color: uint32_t) -> c_int;
-        pub fn filledPieRGBA(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
+        pub fn filledPieRGBA(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
                              rad: int16_t, start: int16_t, end: int16_t, r: uint8_t,
                              g: uint8_t, b: uint8_t, a: uint8_t) -> c_int;
-        pub fn trigonColor(renderer: *SDL_Renderer, x1: int16_t, y1: int16_t,
+        pub fn trigonColor(renderer: *const SDL_Renderer, x1: int16_t, y1: int16_t,
                            x2: int16_t, y2: int16_t, x3: int16_t, y3: int16_t,
                            color: uint32_t) -> c_int;
-        pub fn trigonRGBA(renderer: *SDL_Renderer, x1: int16_t, y1: int16_t,
+        pub fn trigonRGBA(renderer: *const SDL_Renderer, x1: int16_t, y1: int16_t,
                           x2: int16_t, y2: int16_t, x3: int16_t, y3: int16_t,
                           r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) -> c_int;
-        pub fn aatrigonColor(renderer: *SDL_Renderer, x1: int16_t, y1: int16_t,
+        pub fn aatrigonColor(renderer: *const SDL_Renderer, x1: int16_t, y1: int16_t,
                              x2: int16_t, y2: int16_t, x3: int16_t, y3: int16_t,
                              color: uint32_t) -> c_int;
-        pub fn aatrigonRGBA(renderer: *SDL_Renderer, x1: int16_t, y1: int16_t,
+        pub fn aatrigonRGBA(renderer: *const SDL_Renderer, x1: int16_t, y1: int16_t,
                             x2: int16_t, y2: int16_t, x3: int16_t, y3: int16_t,
                             r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) -> c_int;
-        pub fn filledTrigonColor(renderer: *SDL_Renderer, x1: int16_t,
+        pub fn filledTrigonColor(renderer: *const SDL_Renderer, x1: int16_t,
                                  y1: int16_t, x2: int16_t, y2: int16_t, x3: int16_t,
                                  y3: int16_t, color: uint32_t) -> c_int;
-        pub fn filledTrigonRGBA(renderer: *SDL_Renderer, x1: int16_t,
+        pub fn filledTrigonRGBA(renderer: *const SDL_Renderer, x1: int16_t,
                                 y1: int16_t, x2: int16_t, y2: int16_t, x3: int16_t,
                                 y3: int16_t, r: uint8_t, g: uint8_t, b: uint8_t,
                                 a: uint8_t) -> c_int;
-        pub fn polygonColor(renderer: *SDL_Renderer, vx: *int16_t, vy: *int16_t,
+        pub fn polygonColor(renderer: *const SDL_Renderer, vx: *const int16_t, vy: *const int16_t,
                             n: c_int, color: uint32_t) -> c_int;
-        pub fn polygonRGBA(renderer: *SDL_Renderer, vx: *int16_t, vy: *int16_t,
+        pub fn polygonRGBA(renderer: *const SDL_Renderer, vx: *const int16_t, vy: *const int16_t,
                            n: c_int, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) ->
             c_int;
-        pub fn aapolygonColor(renderer: *SDL_Renderer, vx: *int16_t,
-                              vy: *int16_t, n: c_int, color: uint32_t) -> c_int;
-        pub fn aapolygonRGBA(renderer: *SDL_Renderer, vx: *int16_t,
-                             vy: *int16_t, n: c_int, r: uint8_t, g: uint8_t, b: uint8_t,
+        pub fn aapolygonColor(renderer: *const SDL_Renderer, vx: *const int16_t,
+                              vy: *const int16_t, n: c_int, color: uint32_t) -> c_int;
+        pub fn aapolygonRGBA(renderer: *const SDL_Renderer, vx: *const int16_t,
+                             vy: *const int16_t, n: c_int, r: uint8_t, g: uint8_t, b: uint8_t,
                              a: uint8_t) -> c_int;
-        pub fn filledPolygonColor(renderer: *SDL_Renderer, vx: *int16_t,
-                                  vy: *int16_t, n: c_int, color: uint32_t) -> c_int;
-        pub fn filledPolygonRGBA(renderer: *SDL_Renderer, vx: *int16_t,
-                                 vy: *int16_t, n: c_int, r: uint8_t, g: uint8_t,
+        pub fn filledPolygonColor(renderer: *const SDL_Renderer, vx: *const int16_t,
+                                  vy: *const int16_t, n: c_int, color: uint32_t) -> c_int;
+        pub fn filledPolygonRGBA(renderer: *const SDL_Renderer, vx: *const int16_t,
+                                 vy: *const int16_t, n: c_int, r: uint8_t, g: uint8_t,
                                  b: uint8_t, a: uint8_t) -> c_int;
-        pub fn texturedPolygon(renderer: *SDL_Renderer, vx: *int16_t,
-                               vy: *int16_t, n: c_int, texture: *SDL_Surface,
+        pub fn texturedPolygon(renderer: *const SDL_Renderer, vx: *const int16_t,
+                               vy: *const int16_t, n: c_int, texture: *const SDL_Surface,
                                texture_dx: c_int, texture_dy: c_int) -> c_int;
-        pub fn bezierColor(renderer: *SDL_Renderer, vx: *int16_t, vy: *int16_t,
+        pub fn bezierColor(renderer: *const SDL_Renderer, vx: *const int16_t, vy: *const int16_t,
                            n: c_int, s: c_int, color: uint32_t) -> c_int;
-        pub fn bezierRGBA(renderer: *SDL_Renderer, vx: *int16_t, vy: *int16_t,
+        pub fn bezierRGBA(renderer: *const SDL_Renderer, vx: *const int16_t, vy: *const int16_t,
                           n: c_int, s: c_int, r: uint8_t, g: uint8_t, b: uint8_t,
                           a: uint8_t) -> c_int;
-        pub fn gfxPrimitivesSetFont(fontdata: *c_void, cw: uint32_t, ch: uint32_t);
+        pub fn gfxPrimitivesSetFont(fontdata: *const c_void, cw: uint32_t, ch: uint32_t);
         pub fn gfxPrimitivesSetFontRotation(rotation: uint32_t);
-        pub fn characterColor(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
+        pub fn characterColor(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
                               c: c_char, color: uint32_t) -> c_int;
-        pub fn characterRGBA(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
+        pub fn characterRGBA(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
                              c: c_char, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t)
                              -> c_int;
-        pub fn stringColor(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
-                           s: *c_char, color: uint32_t) -> c_int;
-        pub fn stringRGBA(renderer: *SDL_Renderer, x: int16_t, y: int16_t,
-                          s: *c_char, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) ->
+        pub fn stringColor(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
+                           s: *const c_char, color: uint32_t) -> c_int;
+        pub fn stringRGBA(renderer: *const SDL_Renderer, x: int16_t, y: int16_t,
+                          s: *const c_char, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) ->
             c_int;
     }
 }
@@ -483,7 +483,7 @@ impl<P> DrawRenderer for Renderer<P> {
     fn string<C: ToColor>(&self, x: i16, y: i16, s: &str, color: C) -> SdlResult<()> {
         let ret = unsafe {
             s.with_c_str(|buf| {
-                ll::stringColor(self.raw(), x, y, buf as *i8, color.as_u32())
+                ll::stringColor(self.raw(), x, y, buf as *const i8, color.as_u32())
             })
         };
         if ret == 0 { Ok(()) }
@@ -498,7 +498,7 @@ pub fn set_font(fontdata: Option<&[u8]>, cw: uint, ch: uint) {
         Some(v) => v.as_ptr()
     };
     unsafe {
-        ll::gfxPrimitivesSetFont(actual_fontdata as *c_void, cw as u32, ch as u32)
+        ll::gfxPrimitivesSetFont(actual_fontdata as *const c_void, cw as u32, ch as u32)
     }
 }
 

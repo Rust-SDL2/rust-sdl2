@@ -27,16 +27,16 @@ fn main() {
 }
 
 
-fn mainloop() -> Result<(), ~str> {
-    sdl2::init([sdl2::InitVideo]);
+fn mainloop() -> Result<(), String> {
+    sdl2::init(sdl2::INIT_VIDEO);
 
     let window = try!(sdl2::video::Window::new(
         "rust-sdl2_gfx: draw line & FPSManager", sdl2::video::PosCentered,
         sdl2::video::PosCentered, SCREEN_WIDTH, SCREEN_HEIGHT,
-        [sdl2::video::OpenGL]));
+        sdl2::video::OPENGL));
 
     let renderer = try!(sdl2::render::Renderer::from_window(
-            window, sdl2::render::DriverAuto, [sdl2::render::Accelerated]));
+            window, sdl2::render::DriverAuto, sdl2::render::ACCELERATED));
 
     try!(renderer.set_draw_color(pixels::RGB(0, 0, 0)));
 
@@ -44,7 +44,7 @@ fn mainloop() -> Result<(), ~str> {
 
     renderer.present();
 
-    let mut rng = rand::StdRng::new().unwrap();
+    let mut rng = rand::XorShiftRng::new_unseeded();
     let (mut lastx, mut lasty) = (0, 0);
 
     let mut fpsm = FPSManager::new();
@@ -62,8 +62,8 @@ fn mainloop() -> Result<(), ~str> {
                     if key == sdl2::keycode::EscapeKey {
                         break 'main
                     } else if key == sdl2::keycode::SpaceKey {
-                        for i in range(0, 400) {
-                            try!(renderer.pixel(i as i16, i as i16, 0xFF000FF));
+                        for i in range(0u, 400) {
+                            try!(renderer.pixel(i as i16, i as i16, 0xFF000FFu32));
                         }
                         renderer.present();
 
@@ -71,7 +71,7 @@ fn mainloop() -> Result<(), ~str> {
                 }
                 event::MouseButtonDownEvent(_, _, _, _, x, y) => {
                     let color : pixels::Color = Rand::rand(&mut rng);
-                    println!("color => {:?}", color);
+                    // println!("color => {:}", color);
                     try!(renderer.line(lastx, lasty, x as i16, y as i16, color));
                     lastx = x as i16;
                     lasty = y as i16;

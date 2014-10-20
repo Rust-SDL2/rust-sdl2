@@ -1,0 +1,20 @@
+[package]
+
+name = "rust-sdl2_gfx"
+version = "0.0.1"
+readme = "README.md"
+authors = ["ShuYu Wang<andelf@gmail.com>"]
+
+[lib]
+
+name = "sdl2_gfx"
+path = "src/sdl2_gfx/lib.rs"
+
+[dependencies.sdl2]
+
+git = "https://github.com/AngryLawyer/rust-sdl2"
+
+[[bin]]
+
+name = "demo"
+path = "src/demo/gfx_demo.rs"

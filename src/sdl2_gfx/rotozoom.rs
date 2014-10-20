@@ -12,27 +12,27 @@ mod ll {
     use libc::*;
     use sdl2::surface::ll::SDL_Surface;
     extern "C" {
-        pub fn rotozoomSurface(src: *SDL_Surface, angle: c_double,
-                               zoom: c_double, smooth: c_int) -> *SDL_Surface;
-        pub fn rotozoomSurfaceXY(src: *SDL_Surface, angle: c_double,
+        pub fn rotozoomSurface(src: *const SDL_Surface, angle: c_double,
+                               zoom: c_double, smooth: c_int) -> *const SDL_Surface;
+        pub fn rotozoomSurfaceXY(src: *const SDL_Surface, angle: c_double,
                                  zoomx: c_double, zoomy: c_double, smooth: c_int)
-                                 -> *SDL_Surface;
+                                 -> *const SDL_Surface;
         pub fn rotozoomSurfaceSize(width: c_int, height: c_int, angle: c_double,
-                                   zoom: c_double, dstwidth: *c_int,
-                                   dstheight: *c_int);
+                                   zoom: c_double, dstwidth: *const c_int,
+                                   dstheight: *const c_int);
         pub fn rotozoomSurfaceSizeXY(width: c_int, height: c_int, angle: c_double,
                                      zoomx: c_double, zoomy: c_double,
-                                     dstwidth: *c_int, dstheight: *c_int);
-        pub fn zoomSurface(src: *SDL_Surface, zoomx: c_double,
-                           zoomy: c_double, smooth: c_int) -> *SDL_Surface;
+                                     dstwidth: *const c_int, dstheight: *const c_int);
+        pub fn zoomSurface(src: *const SDL_Surface, zoomx: c_double,
+                           zoomy: c_double, smooth: c_int) -> *const SDL_Surface;
         pub fn zoomSurfaceSize(width: c_int, height: c_int, zoomx: c_double,
-                               zoomy: c_double, dstwidth: *c_int,
-                               dstheight: *c_int);
-        pub fn shrinkSurface(src: *SDL_Surface, factorx: c_int,
-                             factory: c_int) -> *SDL_Surface;
-        pub fn rotateSurface90Degrees(src: *SDL_Surface,
+                               zoomy: c_double, dstwidth: *const c_int,
+                               dstheight: *const c_int);
+        pub fn shrinkSurface(src: *const SDL_Surface, factorx: c_int,
+                             factory: c_int) -> *const SDL_Surface;
+        pub fn rotateSurface90Degrees(src: *const SDL_Surface,
                                       numClockwiseTurns: c_int) ->
-            *SDL_Surface;
+            *const SDL_Surface;
     }
 }
 

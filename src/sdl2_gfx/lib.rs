@@ -2,7 +2,7 @@
 A binding for SDL2_gfx.
  */
 
-#![crate_id="sdl2_gfx#sdl2_gfx:0.1"]
+#![crate_name="sdl2_gfx"]
 #![crate_type = "lib"]
 #![desc = "SDL2_gfx bindings and wrappers"]
 #![comment = "SDL2_gfx bindings and wrappers"]
