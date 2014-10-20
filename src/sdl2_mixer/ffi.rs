@@ -11,6 +11,7 @@ pub const MIX_INIT_MODPLUG: c_uint = 4;
 pub const MIX_INIT_MP3: c_uint = 8;
 pub const MIX_INIT_OGG: c_uint = 16;
 pub const MIX_INIT_FLUIDSYNTH: c_uint = 32;
+#[repr(C)]
 pub struct Struct_Mix_Chunk {
     pub allocated: c_int,
     pub abuf: *const uint8_t,

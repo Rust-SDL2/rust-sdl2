@@ -73,24 +73,24 @@ mod ll {
 
 pub type AudioFormat = uint16_t;
 
-pub const AudioU8     : AudioFormat = ll::AUDIO_U8;
-pub const AudioS8     : AudioFormat = ll::AUDIO_S8;
-pub const AudioU16LSB : AudioFormat = ll::AUDIO_U16LSB;
-pub const AudioS16LSB : AudioFormat = ll::AUDIO_S16LSB;
-pub const AudioU16MSB : AudioFormat = ll::AUDIO_U16MSB;
-pub const AudioS16MSB : AudioFormat = ll::AUDIO_S16MSB;
-pub const AudioU16    : AudioFormat = ll::AUDIO_U16;
-pub const AudioS16    : AudioFormat = ll::AUDIO_S16;
-pub const AudioS32LSB : AudioFormat = ll::AUDIO_S32LSB;
-pub const AudioS32MSB : AudioFormat = ll::AUDIO_S32MSB;
-pub const AudioS32    : AudioFormat = ll::AUDIO_S32;
-pub const AudioF32LSB : AudioFormat = ll::AUDIO_F32LSB;
-pub const AudioF32MSB : AudioFormat = ll::AUDIO_F32MSB;
-pub const AudioF32    : AudioFormat = ll::AUDIO_F32;
-pub const AudioU16SYS : AudioFormat = ll::AUDIO_U16SYS;
-pub const AudioS16SYS : AudioFormat = ll::AUDIO_S16SYS;
-pub const AudioS32SYS : AudioFormat = ll::AUDIO_S32SYS;
-pub const AudioF32SYS : AudioFormat = ll::AUDIO_F32SYS;
+pub const AUDIO_U8     : AudioFormat = ll::AUDIO_U8;
+pub const AUDIO_S8     : AudioFormat = ll::AUDIO_S8;
+pub const AUDIO_U16LSB : AudioFormat = ll::AUDIO_U16LSB;
+pub const AUDIO_S16LSB : AudioFormat = ll::AUDIO_S16LSB;
+pub const AUDIO_U16MSB : AudioFormat = ll::AUDIO_U16MSB;
+pub const AUDIO_S16MSB : AudioFormat = ll::AUDIO_S16MSB;
+pub const AUDIO_U16    : AudioFormat = ll::AUDIO_U16;
+pub const AUDIO_S16    : AudioFormat = ll::AUDIO_S16;
+pub const AUDIO_S32LSB : AudioFormat = ll::AUDIO_S32LSB;
+pub const AUDIO_S32MSB : AudioFormat = ll::AUDIO_S32MSB;
+pub const AUDIO_S32    : AudioFormat = ll::AUDIO_S32;
+pub const AUDIO_F32LSB : AudioFormat = ll::AUDIO_F32LSB;
+pub const AUDIO_F32MSB : AudioFormat = ll::AUDIO_F32MSB;
+pub const AUDIO_F32    : AudioFormat = ll::AUDIO_F32;
+pub const AUDIO_U16SYS : AudioFormat = ll::AUDIO_U16SYS;
+pub const AUDIO_S16SYS : AudioFormat = ll::AUDIO_S16SYS;
+pub const AUDIO_S32SYS : AudioFormat = ll::AUDIO_S32SYS;
+pub const AUDIO_F32SYS : AudioFormat = ll::AUDIO_F32SYS;
 
 /// The suggested default is signed 16bit samples in host byte order.
 pub const DEFAULT_FORMAT: AudioFormat = ll::AUDIO_S16SYS;
@@ -173,7 +173,7 @@ pub fn get_chunk_decoder(index: int) -> String {
 }
 
 /// The internal format for an audio chunk.
-#[deriving(PartialEq)] #[allow(raw_pointer_deriving, visible_private_types)]
+#[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct Chunk {
     pub raw: *const ffi::Mix_Chunk,
     pub owned: bool
@@ -599,7 +599,7 @@ extern "C" fn c_music_finished_hook() {
 }
 
 /// This is an opaque data type used for Music data.
-#[deriving(PartialEq)] #[allow(raw_pointer_deriving, visible_private_types)]
+#[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct Music {
     pub raw: *const ffi::Mix_Music,
     pub owned: bool,
