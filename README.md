@@ -48,5 +48,15 @@ To see an example of the code in use
 
 Some additional examples can be found in the [rs-sdl2-examples](https://github.com/jdeseno/rs-sdl2-examples) repo.
 
+# OpenGL
+
+If you want to use OpenGL, you also need the [gl-rs](https://github.com/bjz/gl-rs) package. Once you've imported gl-rs, you need to add this to add this initialization code to establish the bindings:
+
+    gl::load_with(|s| unsafe {
+        std::mem::transmute(sdl2::video::gl_get_proc_address(s))
+    });
+
+Note that these bindings are very raw, and many of the calls will require unsafe blocks.
+
 # When things go wrong
 Rust, and Rust-SDL2, are both still heavily in development, and you may run into teething issues when using this. Before panicking, check that you're using the latest version of both Rust and Cargo, check that you've updated Rust-SDL2 to the latest version, and run `cargo clean`. If that fails, please let us know on the issue tracker.
