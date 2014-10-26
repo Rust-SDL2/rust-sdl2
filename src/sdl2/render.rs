@@ -205,15 +205,20 @@ impl RendererInfo {
     }
 }
 
-#[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
-pub struct Renderer<S> {
+pub enum RendererParent {
+    SurfaceParent(Surface),
+    WindowParent(Window)
+}
+
+#[allow(raw_pointer_deriving)]
+pub struct Renderer {
     raw: *const ll::SDL_Renderer,
-    parent: Option<S>,
+    parent: Option<RendererParent>,
     owned: bool
 }
 
 #[unsafe_destructor]
-impl<S> Drop for Renderer<S> {
+impl Drop for Renderer {
     fn drop(&mut self) {
         if self.owned {
             unsafe {
@@ -223,8 +228,8 @@ impl<S> Drop for Renderer<S> {
     }
 }
 
-impl Renderer<Window> {
-    pub fn from_window(window: Window, index: RenderDriverIndex, renderer_flags: RendererFlags) -> SdlResult<Renderer<Window>> {
+impl Renderer {
+    pub fn from_window(window: Window, index: RenderDriverIndex, renderer_flags: RendererFlags) -> SdlResult<Renderer> {
         let index = match index {
             DriverAuto => -1,
             DriverIndex(x) => x
@@ -237,11 +242,11 @@ impl Renderer<Window> {
         if raw == ptr::null() {
             Err(get_error())
         } else {
-            Ok(Renderer{ raw: raw, parent: Some(window), owned: true,})
+            Ok(Renderer{ raw: raw, parent: Some(WindowParent(window)), owned: true,})
         }
     }
 
-    pub fn new_with_window(width: int, height: int, window_flags: video::WindowFlags) -> SdlResult<Renderer<Window>> {
+    pub fn new_with_window(width: int, height: int, window_flags: video::WindowFlags) -> SdlResult<Renderer> {
         let raw_window: *const video::ll::SDL_Window = ptr::null();
         let raw_renderer: *const ll::SDL_Renderer = ptr::null();
         let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, window_flags.bits(), &raw_window, &raw_renderer) == 0};
@@ -249,36 +254,32 @@ impl Renderer<Window> {
             let window = unsafe { Window::from_ll(raw_window, true) };
             Ok(Renderer {
                 raw: raw_renderer,
-                parent: Some(window),
+                parent: Some(WindowParent(window)),
                 owned: true
             })
         } else {
             Err(get_error())
         }
     }
-}
 
-impl Renderer<Surface> {
-    pub fn from_surface(surface: surface::Surface) -> SdlResult<Renderer<Surface>> {
+    pub fn from_surface(surface: surface::Surface) -> SdlResult<Renderer> {
         let result = unsafe { ll::SDL_CreateSoftwareRenderer(surface.raw()) };
         if result == ptr::null() {
             Ok(Renderer {
                 raw: result,
-                parent: Some(surface),
+                parent: Some(SurfaceParent(surface)),
                 owned: true
             })
         } else {
             Err(get_error())
         }
     }
-}
-
-impl<S> Renderer<S> {
-    #[inline]
-    pub fn get_parent<'a>(&'a self) -> &'a S { self.parent.as_ref().unwrap() }
 
     #[inline]
-    pub fn unwrap_parent(mut self) -> S {
+    pub fn get_parent<'a>(&'a self) -> &'a RendererParent { self.parent.as_ref().unwrap() }
+
+    #[inline]
+    pub fn unwrap_parent(mut self) -> RendererParent {
         use std::mem;
         mem::replace(&mut self.parent, None).unwrap()
     }
@@ -724,7 +725,7 @@ impl Texture {
     pub fn with_lock(&self, rect: Option<Rect>, func: |CVec<u8>, i32| -> ()) -> SdlResult<()> {
         match self.unsafe_lock(rect) {
             Ok((cvec, pitch)) => {
-                func(cvec, pitch); 
+                func(cvec, pitch);
                 self.unlock();
                 Ok(())
             }
