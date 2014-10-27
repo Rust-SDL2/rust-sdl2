@@ -126,6 +126,13 @@ impl Color {
         };
         RGBA(r, g, b, a)
     }
+
+    pub fn get_rgb(&self) -> (u8, u8, u8) {
+        match self {
+            &RGB(r, g, b) => (r, g, b), 
+            &RGBA(r, g, b, a) => (r, g, b)
+        }
+    }
 }
 
 impl rand::Rand for Color {
