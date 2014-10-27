@@ -130,7 +130,7 @@ impl Color {
     pub fn get_rgb(&self) -> (u8, u8, u8) {
         match self {
             &RGB(r, g, b) => (r, g, b), 
-            &RGBA(r, g, b, a) => (r, g, b)
+            &RGBA(r, g, b, _) => (r, g, b)
         }
     }
 }
