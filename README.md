@@ -49,7 +49,7 @@ Otherwise, clone this repo and run [cargo](http://crates.io/)
 
 To see an example of the code in use
 
-> cargo run demo
+> cargo run --example demo
 
 Some additional examples can be found in the [rs-sdl2-examples](https://github.com/jdeseno/rs-sdl2-examples) repo.
 

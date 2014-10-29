@@ -8,9 +8,3 @@ authors = [ "Tony Aldridge<zaragopha@hotmail.com>" ]
 
 name       = "sdl2"
 path       = "src/sdl2/lib.rs"
-
-[[bin]]
-
-name = "demo"
-path = "src/demo/main.rs"
-
