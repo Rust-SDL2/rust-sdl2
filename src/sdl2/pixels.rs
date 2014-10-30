@@ -207,7 +207,7 @@ impl PixelFormatFlag {
             Index8
                 => num_of_pixels * 1,
             Unknown | Index1LSB | Index1MSB | Index4LSB | Index4MSB
-                => fail!("not supported format: {}", *self),
+                => panic!("not supported format: {}", *self),
         }
     }
 
@@ -233,7 +233,7 @@ impl PixelFormatFlag {
             Index8
                 => 1,
             Unknown | Index1LSB | Index1MSB | Index4LSB | Index4MSB
-                => fail!("not supported format: {}", *self),
+                => panic!("not supported format: {}", *self),
         }
     }
 }
