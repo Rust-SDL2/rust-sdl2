@@ -760,7 +760,7 @@ impl Texture {
         unsafe {
             let texw: c_float = 0.0;
             let texh: c_float = 0.0;
-            if ll::SDL_GL_BindTexture(self.raw, &texw, &texh) != 0 { fail!("could not bind texture"); }
+            if ll::SDL_GL_BindTexture(self.raw, &texw, &texh) != 0 { panic!("could not bind texture"); }
             let rv = f(texw as f64, texh as f64);
             ll::SDL_GL_UnbindTexture(self.raw);
             rv
