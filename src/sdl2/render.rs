@@ -405,8 +405,12 @@ impl Renderer {
         (width as int, height as int)
     }
 
-    pub fn set_viewport(&self, rect: &Rect) -> SdlResult<()> {
-        let ret = unsafe { ll::SDL_RenderSetViewport(self.raw, rect) };
+    pub fn set_viewport(&self, rect: Option<Rect>) -> SdlResult<()> {
+        let ptr = match rect {
+            Some(ref rect) => rect as *const _,
+            None => ptr::null()
+        };
+        let ret = unsafe { ll::SDL_RenderSetViewport(self.raw, ptr) };
 
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
