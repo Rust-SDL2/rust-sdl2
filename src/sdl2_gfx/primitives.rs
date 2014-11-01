@@ -457,7 +457,7 @@ impl DrawRenderer for Renderer {
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    #[allow(unused_variable)]
+    #[allow(unused_variables)]
     fn textured_polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], texture: &Surface, texture_dx: i16, texture_dy: i16, color: C) -> SdlResult<()> {
         unimplemented!()
     }
