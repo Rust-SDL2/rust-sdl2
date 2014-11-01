@@ -126,7 +126,7 @@ pub trait LoadTexture {
     fn load_texture(&self, filename: &Path) -> SdlResult<Texture>;
 }
 
-impl<T> LoadTexture for Renderer<T> {
+impl LoadTexture for Renderer {
     fn load_texture(&self, filename: &Path) -> SdlResult<Texture> {
         //! Loads an SDL Texture from a file
         unsafe {
