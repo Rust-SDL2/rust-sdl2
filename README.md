@@ -1,7 +1,6 @@
 # Rust-SDL2_gfx
 
 [![Build Status](https://travis-ci.org/andelf/rust-sdl2_gfx.svg?branch=master)](https://travis-ci.org/andelf/rust-sdl2_gfx)
-[![Build Status](https://drone.io/github.com/andelf/rust-sdl2_gfx/status.png)](https://drone.io/github.com/andelf/rust-sdl2_gfx/latest)
 
 Rust bindings for SDL2_gfx
 
@@ -13,11 +12,12 @@ Rust bindings for SDL2_gfx
 
 ## Installation
 
+:) with cargo.
+
 ```
 # compile your rust-sdl2 somewhere
-git clone https://github.com/andelf/rust-sdl2_gfx
 cd rust-sdl2_gfx
-rustc -L. src/sdl2_gfx/lib.rs
+cargo build
 ```
 
     NOTE: sdl2_gfx doesn't support mac_framework.
@@ -25,6 +25,5 @@ rustc -L. src/sdl2_gfx/lib.rs
 ## Demo
 
 ```
-rustc -L. src/demo/gfx_demo.rs
-./gfx_demo
+cargo run
 ```
