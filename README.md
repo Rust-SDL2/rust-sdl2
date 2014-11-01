@@ -15,7 +15,7 @@ Rust bindings for SDL2_gfx
 :) with cargo.
 
 ```
-# compile your rust-sdl2 somewhere
+git clone https://github.com/andelf/rust-sdl2_gfx
 cd rust-sdl2_gfx
 cargo build
 ```
