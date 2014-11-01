@@ -11,29 +11,29 @@ pub fn main(png: &Path) {
             "rust-sdl2 demo: Video", sdl2::video::PosCentered,
             sdl2::video::PosCentered, 800, 600, sdl2::video::OPENGL) {
         Ok(window) => window,
-        Err(err) => fail!(format!("failed to create window: {}", err))
+        Err(err) => panic!(format!("failed to create window: {}", err))
     };
 
     let renderer = match sdl2::render::Renderer::from_window(
             window, sdl2::render::DriverAuto, sdl2::render::ACCELERATED) {
         Ok(renderer) => renderer,
-        Err(err) => fail!(format!("failed to create renderer: {}", err))
+        Err(err) => panic!(format!("failed to create renderer: {}", err))
     };
 
     // Load a surface, and convert it to a texture bound to the renderer
     let surface = match LoadSurface::from_file(png) {
         Ok(surface) => surface,
-        Err(err) => fail!(format!("Failed to load png: {}", err))
+        Err(err) => panic!(format!("Failed to load png: {}", err))
     };
     let texture = match renderer.create_texture_from_surface(&surface) {
         Ok(texture) => texture,
-        Err(err) => fail!(format!("Failed to create surface: {}", err))
+        Err(err) => panic!(format!("Failed to create surface: {}", err))
     };
 
     // // Load a texture directly via the renderer
     // let texture = match renderer.load_texture(png) {
     //     Ok(texture) => texture,
-    //     Err(err) => fail!(format!("Could not set render target: {}", err))
+    //     Err(err) => panic!(format!("Could not set render target: {}", err))
     // };
 
     let _ = renderer.copy(&texture, None, None);
