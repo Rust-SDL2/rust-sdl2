@@ -271,7 +271,7 @@ pub trait DrawRenderer {
     fn string<C: ToColor>(&self, x: i16, y: i16, s: &str, color: C) -> SdlResult<()>;
 }
 
-impl<P> DrawRenderer for Renderer<P> {
+impl DrawRenderer for Renderer {
     fn pixel<C: ToColor>(&self, x: i16, y: i16, color: C) -> SdlResult<()> {
         let ret = unsafe {
             ll::pixelColor(self.raw(), x, y, color.as_u32())
