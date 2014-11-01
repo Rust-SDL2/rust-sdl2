@@ -1,7 +1,9 @@
 Rust-SDL2_mixer
 ===============
 
-Rust bindings for SDL2_mixer
+[![Build Status](https://travis-ci.org/andelf/rust-sdl2_mixer.svg?branch=master)](https://travis-ci.org/andelf/rust-sdl2_mixer)
+
+Rust bindings for SDL2_mixer.
 
 Requirements
 ------------
@@ -15,9 +17,8 @@ Installation
 
 ```
 git clone https://github.com/andelf/rust-sdl2_mixer
-cd rust-sdl2_mixer
-rustc src/sdl2_mixer/lib.rs
-# OR if you are using the mac framework version
+cargo build
+# TODO: OR if you are using the mac framework version
 rustc --cfg mac_framework src/sdl2_mixer/lib.rs
 ```
 
@@ -25,6 +26,5 @@ Demo
 ----
 
 ```
-rustc -L. src/demo/demo.rs
-./demo mixer.[wav|mp3|ogg]
+cargo run /path/to/wav_file.wav
 ```
