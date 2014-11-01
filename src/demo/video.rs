@@ -6,7 +6,7 @@ static SCREEN_HEIGHT : int = 600;
 
 // fail when error
 macro_rules! trying(
-    ($e:expr) => (match $e { Ok(e) => e, Err(e) => fail!("failed: {}", e) })
+    ($e:expr) => (match $e { Ok(e) => e, Err(e) => panic!("failed: {}", e) })
 )
 
 // hadle the annoying Rect i32
@@ -39,7 +39,7 @@ pub fn main(filename: &Path) {
 
     let (w, h) = match texture.query() {
         Ok(q) => (q.width, q.height),
-        Err(err) => fail!(format!("Failed to query texture: {}", err))
+        Err(err) => panic!(format!("Failed to query texture: {}", err))
     };
     renderer.copy(&texture, None, Some(rect!((SCREEN_WIDTH - w)/ 2, (SCREEN_HEIGHT - h)/ 2, w, h)));
 
