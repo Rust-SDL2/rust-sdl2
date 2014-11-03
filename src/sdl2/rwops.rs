@@ -73,7 +73,7 @@ impl RWops {
         else { Ok(RWops{raw: raw, close_on_drop: false}) }
     }
 
-    fn len(&self) -> uint {
+    pub fn len(&self) -> uint {
         unsafe {
             ((*self.raw).size)(self.raw) as uint
         }
