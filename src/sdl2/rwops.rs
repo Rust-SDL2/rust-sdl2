@@ -72,6 +72,12 @@ impl RWops {
         if raw.is_null() { Err(get_error()) }
         else { Ok(RWops{raw: raw, close_on_drop: false}) }
     }
+
+    pub fn len(&self) -> uint {
+        unsafe {
+            ((*self.raw).size)(self.raw) as uint
+        }
+    }
 }
 
 impl Drop for RWops {
@@ -145,14 +151,6 @@ impl Seek for RWops {
             Err(io::IoError::last_error())
         } else {
             Ok(())
-        }
-    }
-}
-
-impl Collection for RWops {
-    fn len(&self) -> uint {
-        unsafe {
-            ((*self.raw).size)(self.raw) as uint
         }
     }
 }
