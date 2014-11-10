@@ -323,7 +323,6 @@ impl DrawRenderer for Renderer {
     }
     fn line<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, color: C) -> SdlResult<()> {
         let ret = unsafe {
-            println!("debug => {:X}", color.as_u32());
             ll::lineColor(self.raw(), x1, y1, x2, y2, color.as_u32())
         };
         if ret == 0 { Ok(()) }
