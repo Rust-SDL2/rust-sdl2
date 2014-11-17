@@ -32,7 +32,7 @@ mod mac {
     extern {}
 }
 
-#[cfg(all(target_os="windows", target_os="linux", target_os="freebsd"))]
+#[cfg(any(target_os="windows", target_os="linux", target_os="freebsd"))]
 mod others {
     #[link(name="SDL2_image")]
     extern {}
