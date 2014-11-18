@@ -529,41 +529,41 @@ pub enum EventType {
 #[deriving(Show)]
 /// An enum of window events.
 pub enum WindowEventId {
-    NoneWindowEventId,
-    ShownWindowEventId,
-    HiddenWindowEventId,
-    ExposedWindowEventId,
-    MovedWindowEventId,
-    ResizedWindowEventId,
-    SizeChangedWindowEventId,
-    MinimizedWindowEventId,
-    MaximizedWindowEventId,
-    RestoredWindowEventId,
-    EnterWindowEventId,
-    LeaveWindowEventId,
-    FocusGainedWindowEventId,
-    FocusLostWindowEventId,
-    CloseWindowEventId,
+    None,
+    Shown,
+    Hidden,
+    Exposed,
+    Moved,
+    Resized,
+    SizeChanged,
+    Minimized,
+    Maximized,
+    Restored,
+    Enter,
+    Leave,
+    FocusGained,
+    FocusLost,
+    Close,
 }
 
 impl WindowEventId {
     fn from_ll(id: u8) -> WindowEventId {
         match id {
-            1  => WindowEventId::ShownWindowEventId,
-            2  => WindowEventId::HiddenWindowEventId,
-            3  => WindowEventId::ExposedWindowEventId,
-            4  => WindowEventId::MovedWindowEventId,
-            5  => WindowEventId::ResizedWindowEventId,
-            6  => WindowEventId::SizeChangedWindowEventId,
-            7  => WindowEventId::MinimizedWindowEventId,
-            8  => WindowEventId::MaximizedWindowEventId,
-            9  => WindowEventId::RestoredWindowEventId,
-            10 => WindowEventId::EnterWindowEventId,
-            11 => WindowEventId::LeaveWindowEventId,
-            12 => WindowEventId::FocusGainedWindowEventId,
-            13 => WindowEventId::FocusLostWindowEventId,
-            14 => WindowEventId::CloseWindowEventId,
-            _  => WindowEventId::NoneWindowEventId
+            1  => WindowEventId::Shown,
+            2  => WindowEventId::Hidden,
+            3  => WindowEventId::Exposed,
+            4  => WindowEventId::Moved,
+            5  => WindowEventId::Resized,
+            6  => WindowEventId::SizeChanged,
+            7  => WindowEventId::Minimized,
+            8  => WindowEventId::Maximized,
+            9  => WindowEventId::Restored,
+            10 => WindowEventId::Enter,
+            11 => WindowEventId::Leave,
+            12 => WindowEventId::FocusGained,
+            13 => WindowEventId::FocusLost,
+            14 => WindowEventId::Close,
+            _  => WindowEventId::None
         }
     }
 }
