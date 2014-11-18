@@ -15,13 +15,20 @@ use joystick::HatState;
 use keyboard;
 use keyboard::Mod;
 use keyboard::ll::SDL_Keymod;
-use keycode::{KeyCode, UnknownKey};
+use keycode::KeyCode;
+use keycode::KeyCode::UnknownKey;
 use mouse;
 use mouse::{Mouse, MouseState};
-use scancode::{ScanCode, UnknownScanCode};
+use scancode::ScanCode;
+use scancode::ScanCode::UnknownScanCode;
 use video;
 use get_error;
 use SdlResult;
+
+// self enum reexports
+use self::WindowEventId::*;
+use self::Event::*;
+use self::EventType::*;
 
 #[doc(hidden)]
 #[allow(non_camel_case_types, non_snake_case)]

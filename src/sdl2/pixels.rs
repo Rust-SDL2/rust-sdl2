@@ -1,5 +1,8 @@
 extern crate rand;
 
+use self::PixelFormatFlag::*;
+use self::Color::*;
+
 #[allow(non_camel_case_types)]
 pub mod ll {
     use libc::{c_int, uint8_t, uint32_t};

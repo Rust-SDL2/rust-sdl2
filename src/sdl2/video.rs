@@ -11,6 +11,10 @@ use std::num::FromPrimitive;
 
 use get_error;
 
+use self::WindowPos::*;
+use self::ll::SDL_WindowFlags::*;
+use self::ll::SDL_GLattr::*;
+
 #[allow(non_camel_case_types)]
 pub mod ll {
     use rect::Rect;
@@ -186,29 +190,29 @@ pub mod ll {
 
 #[deriving(PartialEq)]
 pub enum GLAttr {
-    GLRedSize = ll::SDL_GL_RED_SIZE as int,
-    GLGreenSize = ll::SDL_GL_GREEN_SIZE as int,
-    GLBlueSize = ll::SDL_GL_BLUE_SIZE as int,
-    GLAlphaSize = ll::SDL_GL_ALPHA_SIZE as int,
-    GLBufferSize = ll::SDL_GL_BUFFER_SIZE as int,
-    GLDoubleBuffer = ll::SDL_GL_DOUBLEBUFFER as int,
-    GLDepthSize = ll::SDL_GL_DEPTH_SIZE as int,
-    GLStencilSize = ll::SDL_GL_STENCIL_SIZE as int,
-    GLAccumRedSize = ll::SDL_GL_ACCUM_RED_SIZE as int,
-    GLAccumGreenSize = ll::SDL_GL_ACCUM_GREEN_SIZE as int,
-    GLAccumBlueSize = ll::SDL_GL_ACCUM_BLUE_SIZE as int,
-    GLAccumAlphaSize = ll::SDL_GL_ACCUM_ALPHA_SIZE as int,
-    GLStereo = ll::SDL_GL_STEREO as int,
-    GLMultiSampleBuffers = ll::SDL_GL_MULTISAMPLEBUFFERS as int,
-    GLMultiSampleSamples = ll::SDL_GL_MULTISAMPLESAMPLES as int,
-    GLAcceleratedVisual = ll::SDL_GL_ACCELERATED_VISUAL as int,
-    GLRetailedBacking = ll::SDL_GL_RETAINED_BACKING as int,
-    GLContextMajorVersion = ll::SDL_GL_CONTEXT_MAJOR_VERSION as int,
-    GLContextMinorVersion = ll::SDL_GL_CONTEXT_MINOR_VERSION as int,
-    GLContextEGL = ll::SDL_GL_CONTEXT_EGL as int,
-    GLContextFlags = ll::SDL_GL_CONTEXT_FLAGS as int,
-    GLContextProfileMask = ll::SDL_GL_CONTEXT_PROFILE_MASK as int,
-    GLShareWithCurrentContext = ll::SDL_GL_SHARE_WITH_CURRENT_CONTEXT as int
+    GLRedSize = SDL_GL_RED_SIZE as int,
+    GLGreenSize = SDL_GL_GREEN_SIZE as int,
+    GLBlueSize = SDL_GL_BLUE_SIZE as int,
+    GLAlphaSize = SDL_GL_ALPHA_SIZE as int,
+    GLBufferSize = SDL_GL_BUFFER_SIZE as int,
+    GLDoubleBuffer = SDL_GL_DOUBLEBUFFER as int,
+    GLDepthSize = SDL_GL_DEPTH_SIZE as int,
+    GLStencilSize = SDL_GL_STENCIL_SIZE as int,
+    GLAccumRedSize = SDL_GL_ACCUM_RED_SIZE as int,
+    GLAccumGreenSize = SDL_GL_ACCUM_GREEN_SIZE as int,
+    GLAccumBlueSize = SDL_GL_ACCUM_BLUE_SIZE as int,
+    GLAccumAlphaSize = SDL_GL_ACCUM_ALPHA_SIZE as int,
+    GLStereo = SDL_GL_STEREO as int,
+    GLMultiSampleBuffers = SDL_GL_MULTISAMPLEBUFFERS as int,
+    GLMultiSampleSamples = SDL_GL_MULTISAMPLESAMPLES as int,
+    GLAcceleratedVisual = SDL_GL_ACCELERATED_VISUAL as int,
+    GLRetailedBacking = SDL_GL_RETAINED_BACKING as int,
+    GLContextMajorVersion = SDL_GL_CONTEXT_MAJOR_VERSION as int,
+    GLContextMinorVersion = SDL_GL_CONTEXT_MINOR_VERSION as int,
+    GLContextEGL = SDL_GL_CONTEXT_EGL as int,
+    GLContextFlags = SDL_GL_CONTEXT_FLAGS as int,
+    GLContextProfileMask = SDL_GL_CONTEXT_PROFILE_MASK as int,
+    GLShareWithCurrentContext = SDL_GL_SHARE_WITH_CURRENT_CONTEXT as int
 }
 
 fn empty_sdl_display_mode() -> ll::SDL_DisplayMode {
@@ -262,27 +266,27 @@ impl DisplayMode {
 
 bitflags! {
     flags WindowFlags: u32 {
-        const FULLSCREEN = ll::SDL_WINDOW_FULLSCREEN as u32,
-        const OPENGL = ll::SDL_WINDOW_OPENGL as u32,
-        const SHOWN = ll::SDL_WINDOW_SHOWN as u32,
-        const HIDDEN = ll::SDL_WINDOW_HIDDEN as u32,
-        const BORDERLESS = ll::SDL_WINDOW_BORDERLESS as u32,
-        const RESIZABLE = ll::SDL_WINDOW_RESIZABLE as u32,
-        const MINIMIZED = ll::SDL_WINDOW_MINIMIZED as u32,
-        const MAXIMIZED = ll::SDL_WINDOW_MAXIMIZED as u32,
-        const INPUT_GRABBED = ll::SDL_WINDOW_INPUT_GRABBED as u32,
-        const INPUT_FOCUS = ll::SDL_WINDOW_INPUT_FOCUS as u32,
-        const MOUSE_FOCUS = ll::SDL_WINDOW_MOUSE_FOCUS as u32,
-        const FULLSCREEN_DESKTOP = ll::SDL_WINDOW_FULLSCREEN_DESKTOP as u32,
-        const FOREIGN = ll::SDL_WINDOW_FOREIGN as u32
+        const FULLSCREEN = SDL_WINDOW_FULLSCREEN as u32,
+        const OPENGL = SDL_WINDOW_OPENGL as u32,
+        const SHOWN = SDL_WINDOW_SHOWN as u32,
+        const HIDDEN = SDL_WINDOW_HIDDEN as u32,
+        const BORDERLESS = SDL_WINDOW_BORDERLESS as u32,
+        const RESIZABLE = SDL_WINDOW_RESIZABLE as u32,
+        const MINIMIZED = SDL_WINDOW_MINIMIZED as u32,
+        const MAXIMIZED = SDL_WINDOW_MAXIMIZED as u32,
+        const INPUT_GRABBED = SDL_WINDOW_INPUT_GRABBED as u32,
+        const INPUT_FOCUS = SDL_WINDOW_INPUT_FOCUS as u32,
+        const MOUSE_FOCUS = SDL_WINDOW_MOUSE_FOCUS as u32,
+        const FULLSCREEN_DESKTOP = SDL_WINDOW_FULLSCREEN_DESKTOP as u32,
+        const FOREIGN = SDL_WINDOW_FOREIGN as u32
     }
 }
 
 #[deriving(PartialEq)]
 pub enum FullscreenType {
     FTOff = 0,
-    FTTrue = ll::SDL_WINDOW_FULLSCREEN as int,
-    FTDesktop = ll::SDL_WINDOW_FULLSCREEN_DESKTOP as int
+    FTTrue = SDL_WINDOW_FULLSCREEN as int,
+    FTDesktop = SDL_WINDOW_FULLSCREEN_DESKTOP as int
 }
 
 #[deriving(PartialEq)]

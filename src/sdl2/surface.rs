@@ -5,6 +5,7 @@ use SdlResult;
 use std::ptr;
 use libc::{c_int, uint32_t};
 use pixels;
+use pixels::Color;
 use render::BlendMode;
 use rwops;
 
@@ -255,8 +256,8 @@ impl Surface {
 
     pub fn set_color_mod(&self, color: pixels::Color) -> bool {
         let (r, g, b) = match color {
-            pixels::RGB(r, g, b) => (r, g, b),
-            pixels::RGBA(r, g, b, _) => (r, g, b)
+            Color::RGB(r, g, b) => (r, g, b),
+            Color::RGBA(r, g, b, _) => (r, g, b)
         };
 
         unsafe {
@@ -274,7 +275,7 @@ impl Surface {
         };
 
         if result {
-            Ok(pixels::RGB(r,g,b))
+            Ok(Color::RGB(r,g,b))
         } else {
             Err(get_error())
         }

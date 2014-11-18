@@ -11,6 +11,8 @@ use get_error;
 use rwops::RWops;
 use SdlResult;
 
+pub use self::AudioDevice::*;
+
 
 #[allow(non_camel_case_types)]
 pub mod ll {
