@@ -4,9 +4,11 @@ use std::ptr;
 use std::string;
 use std::vec;
 
-use keycode::{KeyCode, UnknownKey};
+use keycode::KeyCode;
+use keycode::KeyCode::UnknownKey;
 use rect::Rect;
-use scancode::{ScanCode, UnknownScanCode};
+use scancode::ScanCode;
+use scancode::ScanCode::UnknownScanCode;
 use video::Window;
 
 #[allow(non_camel_case_types)]

@@ -1,5 +1,8 @@
 use libc::c_int;
 
+use self::ControllerButton::*;
+use self::ControllerAxis::*;
+
 #[allow(non_camel_case_types)]
 pub mod ll {
     use libc::{c_int, c_char, c_uchar, c_uint, c_void, int16_t, uint8_t};

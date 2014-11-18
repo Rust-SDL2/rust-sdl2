@@ -3,6 +3,7 @@ use video::Window;
 use surface;
 use surface::Surface;
 use pixels;
+use pixels::Color;
 use get_error;
 use SdlResult;
 use std::ptr;
@@ -14,6 +15,14 @@ use rect::Rect;
 use std::num::FromPrimitive;
 use std::vec::Vec;
 use std::c_vec::CVec;
+
+// self enum reexport
+use self::RendererParent::*;
+use self::ll::SDL_RendererFlags::*;
+use self::ll::SDL_RendererFlip::*;
+use self::ll::SDL_BlendMode::*;
+use self::ll::SDL_TextureAccess::*;
+use self::RenderDriverIndex::*;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
@@ -147,17 +156,17 @@ pub enum RenderDriverIndex {
 
 #[deriving(PartialEq, FromPrimitive)]
 pub enum TextureAccess {
-    AccessStatic = ll::SDL_TEXTUREACCESS_STATIC as int,
-    AccessStreaming = ll::SDL_TEXTUREACCESS_STREAMING as int,
-    AccessTarget = ll::SDL_TEXTUREACCESS_TARGET as int
+    AccessStatic = SDL_TEXTUREACCESS_STATIC as int,
+    AccessStreaming = SDL_TEXTUREACCESS_STREAMING as int,
+    AccessTarget = SDL_TEXTUREACCESS_TARGET as int
 }
 
 bitflags! {
     flags RendererFlags: u32 {
-        const SOFTWARE = ll::SDL_RENDERER_SOFTWARE as u32,
-        const ACCELERATED = ll::SDL_RENDERER_ACCELERATED as u32,
-        const PRESENTVSYNC = ll::SDL_RENDERER_PRESENTVSYNC as u32,
-        const TARGETTEXTURE = ll::SDL_RENDERER_TARGETTEXTURE as u32
+        const SOFTWARE = SDL_RENDERER_SOFTWARE as u32,
+        const ACCELERATED = SDL_RENDERER_ACCELERATED as u32,
+        const PRESENTVSYNC = SDL_RENDERER_PRESENTVSYNC as u32,
+        const TARGETTEXTURE = SDL_RENDERER_TARGETTEXTURE as u32
     }
 }
 
@@ -172,17 +181,17 @@ pub struct RendererInfo {
 
 #[deriving(PartialEq, FromPrimitive)]
 pub enum BlendMode {
-    BlendNone = ll::SDL_BLENDMODE_NONE as int,
-    BlendBlend = ll::SDL_BLENDMODE_BLEND as int,
-    BlendAdd = ll::SDL_BLENDMODE_ADD as int,
-    BlendMod = ll::SDL_BLENDMODE_MOD as int
+    BlendNone = SDL_BLENDMODE_NONE as int,
+    BlendBlend = SDL_BLENDMODE_BLEND as int,
+    BlendAdd = SDL_BLENDMODE_ADD as int,
+    BlendMod = SDL_BLENDMODE_MOD as int
 }
 
 #[deriving(PartialEq)]
 pub enum RendererFlip {
-    FlipNone = ll::SDL_FLIP_NONE as int,
-    FlipHorizontal = ll::SDL_FLIP_HORIZONTAL as int,
-    FlipVertical = ll::SDL_FLIP_VERTICAL as int,
+    FlipNone = SDL_FLIP_NONE as int,
+    FlipHorizontal = SDL_FLIP_HORIZONTAL as int,
+    FlipVertical = SDL_FLIP_VERTICAL as int,
 }
 
 impl RendererInfo {
@@ -292,10 +301,10 @@ impl Renderer {
 
     pub fn set_draw_color(&self, color: pixels::Color) -> SdlResult<()> {
         let ret = match color {
-            pixels::RGB(r, g, b) => {
+            Color::RGB(r, g, b) => {
                 unsafe { ll::SDL_SetRenderDrawColor(self.raw, r, g, b, 255) }
             },
-            pixels::RGBA(r, g, b, a) => {
+            Color::RGBA(r, g, b, a) => {
                 unsafe { ll::SDL_SetRenderDrawColor(self.raw, r, g, b, a)  }
             }
         };
@@ -310,7 +319,7 @@ impl Renderer {
         let a: u8 = 0;
         let result = unsafe { ll::SDL_GetRenderDrawColor(self.raw, &r, &g, &b, &a) == 0 };
         if result {
-            Ok(pixels::RGBA(r, g, b, a))
+            Ok(Color::RGBA(r, g, b, a))
         } else {
             Err(get_error())
         }

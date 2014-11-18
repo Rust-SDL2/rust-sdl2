@@ -5,6 +5,8 @@ use SdlResult;
 use surface;
 use video;
 
+use self::Mouse::*;
+
 #[allow(non_camel_case_types)]
 pub mod ll {
     use libc::{c_int, c_uint, c_void, uint8_t, uint32_t};
