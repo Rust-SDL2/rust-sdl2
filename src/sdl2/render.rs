@@ -206,8 +206,8 @@ impl RendererInfo {
 }
 
 pub enum RendererParent {
-    SurfaceParent(Surface),
-    WindowParent(Window)
+    Surface(Surface),
+    Window(Window)
 }
 
 #[allow(raw_pointer_deriving)]
@@ -242,7 +242,7 @@ impl Renderer {
         if raw == ptr::null() {
             Err(get_error())
         } else {
-            Ok(Renderer{ raw: raw, parent: Some(RendererParent::WindowParent(window)), owned: true,})
+            Ok(Renderer{ raw: raw, parent: Some(RendererParent::Window(window)), owned: true,})
         }
     }
 
@@ -254,7 +254,7 @@ impl Renderer {
             let window = unsafe { Window::from_ll(raw_window, true) };
             Ok(Renderer {
                 raw: raw_renderer,
-                parent: Some(RendererParent::WindowParent(window)),
+                parent: Some(RendererParent::Window(window)),
                 owned: true
             })
         } else {
@@ -267,7 +267,7 @@ impl Renderer {
         if result == ptr::null() {
             Ok(Renderer {
                 raw: result,
-                parent: Some(RendererParent::SurfaceParent(surface)),
+                parent: Some(RendererParent::Surface(surface)),
                 owned: true
             })
         } else {
