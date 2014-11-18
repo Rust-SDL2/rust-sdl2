@@ -58,18 +58,18 @@ pub mod ll {
 #[deriving(PartialEq)]
 #[repr(u32)]
 pub enum SystemCursor {
-    ArrowCursor = ll::SDL_SYSTEM_CURSOR_ARROW,
-    IBeamCursor = ll::SDL_SYSTEM_CURSOR_IBEAM,
-    WaitCursor = ll::SDL_SYSTEM_CURSOR_WAIT,
-    CrosshairCursor = ll::SDL_SYSTEM_CURSOR_CROSSHAIR,
-    WaitArrowCursor = ll::SDL_SYSTEM_CURSOR_WAITARROW,
-    SizeNWSECursor = ll::SDL_SYSTEM_CURSOR_SIZENWSE,
-    SizeNESWCursor = ll::SDL_SYSTEM_CURSOR_SIZENESW,
-    SizeWECursor = ll::SDL_SYSTEM_CURSOR_SIZEWE,
-    SizeNSCursor = ll::SDL_SYSTEM_CURSOR_SIZENS,
-    SizeAllCursor = ll::SDL_SYSTEM_CURSOR_SIZEALL,
-    NoCursor = ll::SDL_SYSTEM_CURSOR_NO,
-    HandCursor = ll::SDL_SYSTEM_CURSOR_HAND,
+    Arrow = ll::SDL_SYSTEM_CURSOR_ARROW,
+    IBeam = ll::SDL_SYSTEM_CURSOR_IBEAM,
+    Wait = ll::SDL_SYSTEM_CURSOR_WAIT,
+    Crosshair = ll::SDL_SYSTEM_CURSOR_CROSSHAIR,
+    WaitArrow = ll::SDL_SYSTEM_CURSOR_WAITARROW,
+    SizeNWSE = ll::SDL_SYSTEM_CURSOR_SIZENWSE,
+    SizeNESW = ll::SDL_SYSTEM_CURSOR_SIZENESW,
+    SizeWE = ll::SDL_SYSTEM_CURSOR_SIZEWE,
+    SizeNS = ll::SDL_SYSTEM_CURSOR_SIZENS,
+    SizeAll = ll::SDL_SYSTEM_CURSOR_SIZEALL,
+    No = ll::SDL_SYSTEM_CURSOR_NO,
+    Hand = ll::SDL_SYSTEM_CURSOR_HAND,
 }
 
 #[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
