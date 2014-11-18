@@ -18,7 +18,7 @@ use std::c_vec::CVec;
 #[allow(non_camel_case_types)]
 pub mod ll {
 
-    use libc::{c_int, c_char, c_void, c_float, c_double};
+    use libc::{c_int, c_uint, c_char, c_void, c_float, c_double};
     use libc::{uint8_t, uint32_t};
     use rect::Rect;
     use rect::Point;
@@ -31,12 +31,11 @@ pub mod ll {
     pub type SDL_bool = c_int;
 
     //SDL_render.h
-    pub enum SDL_RendererFlags {
-        SDL_RENDERER_SOFTWARE = 0x00000001,
-        SDL_RENDERER_ACCELERATED = 0x00000002,
-        SDL_RENDERER_PRESENTVSYNC = 0x00000004,
-        SDL_RENDERER_TARGETTEXTURE = 0x00000008
-    }
+    pub type SDL_RendererFlags = c_uint;
+    pub const SDL_RENDERER_SOFTWARE : SDL_RendererFlags = 0x00000001;
+    pub const SDL_RENDERER_ACCELERATED : SDL_RendererFlags = 0x00000002;
+    pub const SDL_RENDERER_PRESENTVSYNC : SDL_RendererFlags = 0x00000004;
+    pub const SDL_RENDERER_TARGETTEXTURE : SDL_RendererFlags = 0x00000008;
 
     #[repr(C)]
     pub struct SDL_RendererInfo
@@ -49,25 +48,20 @@ pub mod ll {
         pub max_texture_height: c_int,
     }
 
-    pub enum SDL_TextureAccess {
-        SDL_TEXTUREACCESS_STATIC = 0,
-        SDL_TEXTUREACCESS_STREAMING = 1,
-        SDL_TEXTUREACCESS_TARGET = 2
-    }
+    pub type SDL_TextureAccess = c_uint;
+    pub const SDL_TEXTUREACCESS_STATIC : SDL_TextureAccess = 0;
+    pub const SDL_TEXTUREACCESS_STREAMING : SDL_TextureAccess = 1;
+    pub const SDL_TEXTUREACCESS_TARGET : SDL_TextureAccess = 2;
 
-    pub enum SDL_TextureModulate {
-        SDL_TEXTUREMODULATE_NONE = 0x00000000,
-        SDL_TEXTUREMODULATE_COLOR = 0x00000001,
-        SDL_TEXTUREMODULATE_ALPHA = 0x00000002
-    }
+    pub type SDL_TextureModulate = c_uint;
+    pub const SDL_TEXTUREMODULATE_NONE : SDL_TextureModulate = 0x00000000;
+    pub const SDL_TEXTUREMODULATE_COLOR : SDL_TextureModulate = 0x00000001;
+    pub const SDL_TEXTUREMODULATE_ALPHA : SDL_TextureModulate = 0x00000002;
 
-    #[deriving(FromPrimitive)]
-    #[repr(C)]
-    pub enum SDL_RendererFlip {
-        SDL_FLIP_NONE = 0x00000000,
-        SDL_FLIP_HORIZONTAL = 0x00000001,
-        SDL_FLIP_VERTICAL = 0x00000002
-    }
+    pub type SDL_RendererFlip = c_uint;
+    pub const SDL_FLIP_NONE : SDL_RendererFlip = 0x00000000;
+    pub const SDL_FLIP_HORIZONTAL : SDL_RendererFlip = 0x00000001;
+    pub const SDL_FLIP_VERTICAL : SDL_RendererFlip = 0x00000002;
 
     #[repr(C)]
     pub struct SDL_Renderer;
@@ -75,14 +69,11 @@ pub mod ll {
     pub struct SDL_Texture;
 
     //SDL_blendmode.h
-    #[deriving(FromPrimitive)]
-    #[repr(C)]
-    pub enum SDL_BlendMode {
-        SDL_BLENDMODE_NONE = 0x00000000,
-        SDL_BLENDMODE_BLEND = 0x00000001,
-        SDL_BLENDMODE_ADD = 0x00000002,
-        SDL_BLENDMODE_MOD = 0x00000004
-    }
+    pub type SDL_BlendMode = c_uint;
+    pub const SDL_BLENDMODE_NONE : SDL_BlendMode = 0x00000000;
+    pub const SDL_BLENDMODE_BLEND : SDL_BlendMode = 0x00000001;
+    pub const SDL_BLENDMODE_ADD : SDL_BlendMode = 0x00000002;
+    pub const SDL_BLENDMODE_MOD : SDL_BlendMode = 0x00000004;
 
     extern "C" {
         pub fn SDL_GetNumRenderDrivers() -> c_int;
@@ -147,17 +138,17 @@ pub enum RenderDriverIndex {
 
 #[deriving(PartialEq, FromPrimitive)]
 pub enum TextureAccess {
-    Static = ll::SDL_TextureAccess::SDL_TEXTUREACCESS_STATIC as int,
-    Streaming = ll::SDL_TextureAccess::SDL_TEXTUREACCESS_STREAMING as int,
-    Target = ll::SDL_TextureAccess::SDL_TEXTUREACCESS_TARGET as int
+    Static = ll::SDL_TEXTUREACCESS_STATIC as int,
+    Streaming = ll::SDL_TEXTUREACCESS_STREAMING as int,
+    Target = ll::SDL_TEXTUREACCESS_TARGET as int
 }
 
 bitflags! {
     flags RendererFlags: u32 {
-        const SOFTWARE = ll::SDL_RendererFlags::SDL_RENDERER_SOFTWARE as u32,
-        const ACCELERATED = ll::SDL_RendererFlags::SDL_RENDERER_ACCELERATED as u32,
-        const PRESENTVSYNC = ll::SDL_RendererFlags::SDL_RENDERER_PRESENTVSYNC as u32,
-        const TARGETTEXTURE = ll::SDL_RendererFlags::SDL_RENDERER_TARGETTEXTURE as u32
+        const SOFTWARE = ll::SDL_RENDERER_SOFTWARE as u32,
+        const ACCELERATED = ll::SDL_RENDERER_ACCELERATED as u32,
+        const PRESENTVSYNC = ll::SDL_RENDERER_PRESENTVSYNC as u32,
+        const TARGETTEXTURE = ll::SDL_RENDERER_TARGETTEXTURE as u32
     }
 }
 
@@ -172,17 +163,17 @@ pub struct RendererInfo {
 
 #[deriving(PartialEq, FromPrimitive)]
 pub enum BlendMode {
-    None = ll::SDL_BlendMode::SDL_BLENDMODE_NONE as int,
-    Blend = ll::SDL_BlendMode::SDL_BLENDMODE_BLEND as int,
-    Add = ll::SDL_BlendMode::SDL_BLENDMODE_ADD as int,
-    Mod = ll::SDL_BlendMode::SDL_BLENDMODE_MOD as int
+    None = ll::SDL_BLENDMODE_NONE as int,
+    Blend = ll::SDL_BLENDMODE_BLEND as int,
+    Add = ll::SDL_BLENDMODE_ADD as int,
+    Mod = ll::SDL_BLENDMODE_MOD as int
 }
 
 #[deriving(PartialEq)]
 pub enum RendererFlip {
-    None = ll::SDL_RendererFlip::SDL_FLIP_NONE as int,
-    Horizontal = ll::SDL_RendererFlip::SDL_FLIP_HORIZONTAL as int,
-    Vertical = ll::SDL_RendererFlip::SDL_FLIP_VERTICAL as int,
+    None = ll::SDL_FLIP_NONE as int,
+    Horizontal = ll::SDL_FLIP_HORIZONTAL as int,
+    Vertical = ll::SDL_FLIP_VERTICAL as int,
 }
 
 impl RendererInfo {
