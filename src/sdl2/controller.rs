@@ -140,12 +140,12 @@ pub enum ControllerAxis {
 
 pub fn wrap_controller_axis(bitflags: u8) -> ControllerAxis {
     match bitflags as c_int {
-        ll::SDL_CONTROLLER_AXIS_LEFTX        => LeftXAxis,
-        ll::SDL_CONTROLLER_AXIS_LEFTY        => LeftYAxis,
-        ll::SDL_CONTROLLER_AXIS_RIGHTX       => RightXAxis,
-        ll::SDL_CONTROLLER_AXIS_RIGHTY       => RightYAxis,
-        ll::SDL_CONTROLLER_AXIS_TRIGGERLEFT  => TriggerLeftAxis,
-        ll::SDL_CONTROLLER_AXIS_TRIGGERRIGHT => TriggerRightAxis,
+        ll::SDL_CONTROLLER_AXIS_LEFTX        => ControllerAxis::LeftXAxis,
+        ll::SDL_CONTROLLER_AXIS_LEFTY        => ControllerAxis::LeftYAxis,
+        ll::SDL_CONTROLLER_AXIS_RIGHTX       => ControllerAxis::RightXAxis,
+        ll::SDL_CONTROLLER_AXIS_RIGHTY       => ControllerAxis::RightYAxis,
+        ll::SDL_CONTROLLER_AXIS_TRIGGERLEFT  => ControllerAxis::TriggerLeftAxis,
+        ll::SDL_CONTROLLER_AXIS_TRIGGERRIGHT => ControllerAxis::TriggerRightAxis,
         _ => panic!("unhandled controller axis")
     }
 }
@@ -173,21 +173,21 @@ pub enum ControllerButton {
 
 pub fn wrap_controller_button(bitflags: u8) -> ControllerButton {
     match bitflags as c_int {
-        ll::SDL_CONTROLLER_BUTTON_A             => AButton,
-        ll::SDL_CONTROLLER_BUTTON_B             => BButton,
-        ll::SDL_CONTROLLER_BUTTON_X             => XButton,
-        ll::SDL_CONTROLLER_BUTTON_Y             => YButton,
-        ll::SDL_CONTROLLER_BUTTON_BACK          => BackButton,
-        ll::SDL_CONTROLLER_BUTTON_GUIDE         => GuideButton,
-        ll::SDL_CONTROLLER_BUTTON_START         => StartButton,
-        ll::SDL_CONTROLLER_BUTTON_LEFTSTICK     => LeftStickButton,
-        ll::SDL_CONTROLLER_BUTTON_RIGHTSTICK    => RightStickButton,
-        ll::SDL_CONTROLLER_BUTTON_LEFTSHOULDER  => LeftShoulderButton,
-        ll::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER => RightShoulderButton,
-        ll::SDL_CONTROLLER_BUTTON_DPAD_UP       => DPadUpButton,
-        ll::SDL_CONTROLLER_BUTTON_DPAD_DOWN     => DPadDownButton,
-        ll::SDL_CONTROLLER_BUTTON_DPAD_LEFT     => DPadLeftButton,
-        ll::SDL_CONTROLLER_BUTTON_DPAD_RIGHT    => DPadRightButton,
+        ll::SDL_CONTROLLER_BUTTON_A             => ControllerButton::AButton,
+        ll::SDL_CONTROLLER_BUTTON_B             => ControllerButton::BButton,
+        ll::SDL_CONTROLLER_BUTTON_X             => ControllerButton::XButton,
+        ll::SDL_CONTROLLER_BUTTON_Y             => ControllerButton::YButton,
+        ll::SDL_CONTROLLER_BUTTON_BACK          => ControllerButton::BackButton,
+        ll::SDL_CONTROLLER_BUTTON_GUIDE         => ControllerButton::GuideButton,
+        ll::SDL_CONTROLLER_BUTTON_START         => ControllerButton::StartButton,
+        ll::SDL_CONTROLLER_BUTTON_LEFTSTICK     => ControllerButton::LeftStickButton,
+        ll::SDL_CONTROLLER_BUTTON_RIGHTSTICK    => ControllerButton::RightStickButton,
+        ll::SDL_CONTROLLER_BUTTON_LEFTSHOULDER  => ControllerButton::LeftShoulderButton,
+        ll::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER => ControllerButton::RightShoulderButton,
+        ll::SDL_CONTROLLER_BUTTON_DPAD_UP       => ControllerButton::DPadUpButton,
+        ll::SDL_CONTROLLER_BUTTON_DPAD_DOWN     => ControllerButton::DPadDownButton,
+        ll::SDL_CONTROLLER_BUTTON_DPAD_LEFT     => ControllerButton::DPadLeftButton,
+        ll::SDL_CONTROLLER_BUTTON_DPAD_RIGHT    => ControllerButton::DPadRightButton,
         _ => panic!("unhandled controller button")
     }
 }

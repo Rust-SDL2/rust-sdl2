@@ -259,8 +259,8 @@ pub enum AudioDevice{
 impl AudioDevice {
     fn to_id(self) -> AudioDeviceID {
         match self {
-            PlaybackDevice(id)  => id,
-            RecordingDevice(id) => id
+            AudioDevice::PlaybackDevice(id)  => id,
+            AudioDevice::RecordingDevice(id) => id
         }
     }
 
@@ -282,9 +282,9 @@ impl AudioDevice {
                 Err(get_error())
             } else {
                 if iscapture == 0 { // plaback device
-                    Ok((PlaybackDevice(ret as AudioDeviceID), obtained))
+                    Ok((AudioDevice::PlaybackDevice(ret as AudioDeviceID), obtained))
                 } else {
-                    Ok((RecordingDevice(ret as AudioDeviceID), obtained))
+                    Ok((AudioDevice::RecordingDevice(ret as AudioDeviceID), obtained))
                 }
             }
         }

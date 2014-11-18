@@ -157,12 +157,12 @@ bitflags! {
 
 pub fn wrap_mouse(bitflags: u8) -> Mouse {
     match bitflags {
-        1 => LeftMouse,
-        2 => MiddleMouse,
-        3 => RightMouse,
-        4 => X1Mouse,
-        5 => X2Mouse,
-        _ => UnknownMouse(bitflags)
+        1 => Mouse::LeftMouse,
+        2 => Mouse::MiddleMouse,
+        3 => Mouse::RightMouse,
+        4 => Mouse::X1Mouse,
+        5 => Mouse::X2Mouse,
+        _ => Mouse::UnknownMouse(bitflags)
     }
 }
 

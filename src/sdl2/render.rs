@@ -147,17 +147,17 @@ pub enum RenderDriverIndex {
 
 #[deriving(PartialEq, FromPrimitive)]
 pub enum TextureAccess {
-    AccessStatic = ll::SDL_TEXTUREACCESS_STATIC as int,
-    AccessStreaming = ll::SDL_TEXTUREACCESS_STREAMING as int,
-    AccessTarget = ll::SDL_TEXTUREACCESS_TARGET as int
+    AccessStatic = ll::SDL_TextureAccess::SDL_TEXTUREACCESS_STATIC as int,
+    AccessStreaming = ll::SDL_TextureAccess::SDL_TEXTUREACCESS_STREAMING as int,
+    AccessTarget = ll::SDL_TextureAccess::SDL_TEXTUREACCESS_TARGET as int
 }
 
 bitflags! {
     flags RendererFlags: u32 {
-        const SOFTWARE = ll::SDL_RENDERER_SOFTWARE as u32,
-        const ACCELERATED = ll::SDL_RENDERER_ACCELERATED as u32,
-        const PRESENTVSYNC = ll::SDL_RENDERER_PRESENTVSYNC as u32,
-        const TARGETTEXTURE = ll::SDL_RENDERER_TARGETTEXTURE as u32
+        const SOFTWARE = ll::SDL_RendererFlags::SDL_RENDERER_SOFTWARE as u32,
+        const ACCELERATED = ll::SDL_RendererFlags::SDL_RENDERER_ACCELERATED as u32,
+        const PRESENTVSYNC = ll::SDL_RendererFlags::SDL_RENDERER_PRESENTVSYNC as u32,
+        const TARGETTEXTURE = ll::SDL_RendererFlags::SDL_RENDERER_TARGETTEXTURE as u32
     }
 }
 
@@ -172,17 +172,17 @@ pub struct RendererInfo {
 
 #[deriving(PartialEq, FromPrimitive)]
 pub enum BlendMode {
-    BlendNone = ll::SDL_BLENDMODE_NONE as int,
-    BlendBlend = ll::SDL_BLENDMODE_BLEND as int,
-    BlendAdd = ll::SDL_BLENDMODE_ADD as int,
-    BlendMod = ll::SDL_BLENDMODE_MOD as int
+    BlendNone = ll::SDL_BlendMode::SDL_BLENDMODE_NONE as int,
+    BlendBlend = ll::SDL_BlendMode::SDL_BLENDMODE_BLEND as int,
+    BlendAdd = ll::SDL_BlendMode::SDL_BLENDMODE_ADD as int,
+    BlendMod = ll::SDL_BlendMode::SDL_BLENDMODE_MOD as int
 }
 
 #[deriving(PartialEq)]
 pub enum RendererFlip {
-    FlipNone = ll::SDL_FLIP_NONE as int,
-    FlipHorizontal = ll::SDL_FLIP_HORIZONTAL as int,
-    FlipVertical = ll::SDL_FLIP_VERTICAL as int,
+    FlipNone = ll::SDL_RendererFlip::SDL_FLIP_NONE as int,
+    FlipHorizontal = ll::SDL_RendererFlip::SDL_FLIP_HORIZONTAL as int,
+    FlipVertical = ll::SDL_RendererFlip::SDL_FLIP_VERTICAL as int,
 }
 
 impl RendererInfo {
@@ -231,8 +231,8 @@ impl Drop for Renderer {
 impl Renderer {
     pub fn from_window(window: Window, index: RenderDriverIndex, renderer_flags: RendererFlags) -> SdlResult<Renderer> {
         let index = match index {
-            DriverAuto => -1,
-            DriverIndex(x) => x
+            RenderDriverIndex::DriverAuto => -1,
+            RenderDriverIndex::DriverIndex(x) => x
         };
 
         let raw = unsafe {
@@ -242,7 +242,7 @@ impl Renderer {
         if raw == ptr::null() {
             Err(get_error())
         } else {
-            Ok(Renderer{ raw: raw, parent: Some(WindowParent(window)), owned: true,})
+            Ok(Renderer{ raw: raw, parent: Some(RendererParent::WindowParent(window)), owned: true,})
         }
     }
 
@@ -254,7 +254,7 @@ impl Renderer {
             let window = unsafe { Window::from_ll(raw_window, true) };
             Ok(Renderer {
                 raw: raw_renderer,
-                parent: Some(WindowParent(window)),
+                parent: Some(RendererParent::WindowParent(window)),
                 owned: true
             })
         } else {
@@ -267,7 +267,7 @@ impl Renderer {
         if result == ptr::null() {
             Ok(Renderer {
                 raw: result,
-                parent: Some(SurfaceParent(surface)),
+                parent: Some(RendererParent::SurfaceParent(surface)),
                 owned: true
             })
         } else {
@@ -292,10 +292,10 @@ impl Renderer {
 
     pub fn set_draw_color(&self, color: pixels::Color) -> SdlResult<()> {
         let ret = match color {
-            pixels::RGB(r, g, b) => {
+            pixels::Color::RGB(r, g, b) => {
                 unsafe { ll::SDL_SetRenderDrawColor(self.raw, r, g, b, 255) }
             },
-            pixels::RGBA(r, g, b, a) => {
+            pixels::Color::RGBA(r, g, b, a) => {
                 unsafe { ll::SDL_SetRenderDrawColor(self.raw, r, g, b, a)  }
             }
         };
@@ -310,7 +310,7 @@ impl Renderer {
         let a: u8 = 0;
         let result = unsafe { ll::SDL_GetRenderDrawColor(self.raw, &r, &g, &b, &a) == 0 };
         if result {
-            Ok(pixels::RGBA(r, g, b, a))
+            Ok(pixels::Color::RGBA(r, g, b, a))
         } else {
             Err(get_error())
         }

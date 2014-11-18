@@ -106,10 +106,10 @@ pub enum Color {
 impl Color {
     pub fn to_u32(&self, format: &PixelFormat) -> u32 {
         match self {
-            &RGB(r, g, b) => {
+            &Color::RGB(r, g, b) => {
                 unsafe { ll::SDL_MapRGB(format.raw, r, g, b) }
             }
-            &RGBA(r, g, b, a) => {
+            &Color::RGBA(r, g, b, a) => {
                 unsafe { ll::SDL_MapRGBA(format.raw, r, g, b, a) }
             }
         }
@@ -124,21 +124,21 @@ impl Color {
         unsafe {
             ll::SDL_GetRGBA(pixel, format.raw, &r, &g, &b, &a)
         };
-        RGBA(r, g, b, a)
+        Color::RGBA(r, g, b, a)
     }
 
     pub fn get_rgb(&self) -> (u8, u8, u8) {
         match self {
-            &RGB(r, g, b) => (r, g, b), 
-            &RGBA(r, g, b, _) => (r, g, b)
+            &Color::RGB(r, g, b) => (r, g, b),
+            &Color::RGBA(r, g, b, _) => (r, g, b)
         }
     }
 }
 
 impl rand::Rand for Color {
     fn rand<R: rand::Rng>(rng: &mut R) -> Color {
-        if rng.gen() { RGBA(rng.gen(), rng.gen(), rng.gen(), rng.gen()) }
-        else { RGB(rng.gen(), rng.gen(), rng.gen()) }
+        if rng.gen() { Color::RGBA(rng.gen(), rng.gen(), rng.gen(), rng.gen()) }
+        else { Color::RGB(rng.gen(), rng.gen(), rng.gen()) }
     }
 }
 
@@ -193,53 +193,73 @@ pub enum PixelFormatFlag {
 impl PixelFormatFlag {
     pub fn byte_size_of_pixels(&self, num_of_pixels: uint) -> uint {
         match *self {
-            RGB332
+            PixelFormatFlag::RGB332
                 => num_of_pixels * 1,
-            RGB444 | RGB555 | BGR555 | ARGB4444 | RGBA4444 | ABGR4444 |
-            BGRA4444 | ARGB1555 | RGBA5551 | ABGR1555 | BGRA5551 | RGB565 |
-            BGR565
+            PixelFormatFlag::RGB444 | PixelFormatFlag::RGB555 |
+            PixelFormatFlag::BGR555 | PixelFormatFlag::ARGB4444 |
+            PixelFormatFlag::RGBA4444 | PixelFormatFlag::ABGR4444 |
+            PixelFormatFlag::BGRA4444 | PixelFormatFlag::ARGB1555 |
+            PixelFormatFlag::RGBA5551 | PixelFormatFlag::ABGR1555 |
+            PixelFormatFlag::BGRA5551 | PixelFormatFlag::RGB565 |
+            PixelFormatFlag::BGR565
                 => num_of_pixels * 2,
-            RGB24 | BGR24
+            PixelFormatFlag::RGB24 | PixelFormatFlag::BGR24
                 => num_of_pixels * 3,
-            RGB888 | RGBX8888 | BGR888 | BGRX8888 | ARGB8888 | RGBA8888 |
-            ABGR8888 | BGRA8888 | ARGB2101010
+            PixelFormatFlag::RGB888 | PixelFormatFlag::RGBX8888 |
+            PixelFormatFlag::BGR888 | PixelFormatFlag::BGRX8888 |
+            PixelFormatFlag::ARGB8888 | PixelFormatFlag::RGBA8888 |
+            PixelFormatFlag::ABGR8888 | PixelFormatFlag::BGRA8888 |
+            PixelFormatFlag::ARGB2101010
                 => num_of_pixels * 4,
             // YUV formats
             // FIXME: rounding error here?
-            YV12 | IYUV
+            PixelFormatFlag::YV12 | PixelFormatFlag::IYUV
                 => num_of_pixels / 2 * 3,
-            YUY2 | UYVY | YVYU
+            PixelFormatFlag::YUY2 | PixelFormatFlag::UYVY |
+            PixelFormatFlag::YVYU
                 => num_of_pixels * 2,
             // Unsupported formats
-            Index8
+            PixelFormatFlag::Index8
                 => num_of_pixels * 1,
-            Unknown | Index1LSB | Index1MSB | Index4LSB | Index4MSB
+            PixelFormatFlag::Unknown | PixelFormatFlag::Index1LSB |
+            PixelFormatFlag::Index1MSB | PixelFormatFlag::Index4LSB |
+            PixelFormatFlag::Index4MSB
                 => panic!("not supported format: {}", *self),
         }
     }
 
     pub fn byte_size_per_pixel(&self) -> uint {
         match *self {
-            RGB332
+            PixelFormatFlag::RGB332
                 => 1,
-            RGB444 | RGB555 | BGR555 | ARGB4444 | RGBA4444 | ABGR4444 |
-            BGRA4444 | ARGB1555 | RGBA5551 | ABGR1555 | BGRA5551 | RGB565 |
-            BGR565
+            PixelFormatFlag::RGB444 | PixelFormatFlag::RGB555 |
+            PixelFormatFlag::BGR555 | PixelFormatFlag::ARGB4444 |
+            PixelFormatFlag::RGBA4444 | PixelFormatFlag::ABGR4444 |
+            PixelFormatFlag::BGRA4444 | PixelFormatFlag::ARGB1555 |
+            PixelFormatFlag::RGBA5551 | PixelFormatFlag::ABGR1555 |
+            PixelFormatFlag::BGRA5551 | PixelFormatFlag::RGB565 |
+            PixelFormatFlag::BGR565
                 => 2,
-            RGB24 | BGR24
+            PixelFormatFlag::RGB24 | PixelFormatFlag::BGR24
                 => 3,
-            RGB888 | RGBX8888 | BGR888 | BGRX8888 | ARGB8888 | RGBA8888 |
-            ABGR8888 | BGRA8888 | ARGB2101010
+            PixelFormatFlag::RGB888 | PixelFormatFlag::RGBX8888 |
+            PixelFormatFlag::BGR888 | PixelFormatFlag::BGRX8888 |
+            PixelFormatFlag::ARGB8888 | PixelFormatFlag::RGBA8888 |
+            PixelFormatFlag::ABGR8888 | PixelFormatFlag::BGRA8888 |
+            PixelFormatFlag::ARGB2101010
                 => 4,
             // YUV formats
-            YV12 | IYUV
+            PixelFormatFlag::YV12 | PixelFormatFlag::IYUV
                 => 2,
-            YUY2 | UYVY | YVYU
+            PixelFormatFlag::YUY2 | PixelFormatFlag::UYVY |
+            PixelFormatFlag::YVYU
                 => 2,
             // Unsupported formats
-            Index8
+            PixelFormatFlag::Index8
                 => 1,
-            Unknown | Index1LSB | Index1MSB | Index4LSB | Index4MSB
+            PixelFormatFlag::Unknown | PixelFormatFlag::Index1LSB |
+            PixelFormatFlag::Index1MSB | PixelFormatFlag::Index4LSB |
+            PixelFormatFlag::Index4MSB
                 => panic!("not supported format: {}", *self),
         }
     }
