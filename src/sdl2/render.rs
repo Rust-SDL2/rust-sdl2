@@ -180,9 +180,9 @@ pub enum BlendMode {
 
 #[deriving(PartialEq)]
 pub enum RendererFlip {
-    FlipNone = ll::SDL_RendererFlip::SDL_FLIP_NONE as int,
-    FlipHorizontal = ll::SDL_RendererFlip::SDL_FLIP_HORIZONTAL as int,
-    FlipVertical = ll::SDL_RendererFlip::SDL_FLIP_VERTICAL as int,
+    None = ll::SDL_RendererFlip::SDL_FLIP_NONE as int,
+    Horizontal = ll::SDL_RendererFlip::SDL_FLIP_HORIZONTAL as int,
+    Vertical = ll::SDL_RendererFlip::SDL_FLIP_VERTICAL as int,
 }
 
 impl RendererInfo {
