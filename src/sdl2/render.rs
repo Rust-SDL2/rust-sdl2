@@ -172,10 +172,10 @@ pub struct RendererInfo {
 
 #[deriving(PartialEq, FromPrimitive)]
 pub enum BlendMode {
-    BlendNone = ll::SDL_BlendMode::SDL_BLENDMODE_NONE as int,
-    BlendBlend = ll::SDL_BlendMode::SDL_BLENDMODE_BLEND as int,
-    BlendAdd = ll::SDL_BlendMode::SDL_BLENDMODE_ADD as int,
-    BlendMod = ll::SDL_BlendMode::SDL_BLENDMODE_MOD as int
+    None = ll::SDL_BlendMode::SDL_BLENDMODE_NONE as int,
+    Blend = ll::SDL_BlendMode::SDL_BLENDMODE_BLEND as int,
+    Add = ll::SDL_BlendMode::SDL_BLENDMODE_ADD as int,
+    Mod = ll::SDL_BlendMode::SDL_BLENDMODE_MOD as int
 }
 
 #[deriving(PartialEq)]
