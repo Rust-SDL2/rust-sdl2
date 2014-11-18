@@ -147,9 +147,9 @@ pub enum RenderDriverIndex {
 
 #[deriving(PartialEq, FromPrimitive)]
 pub enum TextureAccess {
-    AccessStatic = ll::SDL_TextureAccess::SDL_TEXTUREACCESS_STATIC as int,
-    AccessStreaming = ll::SDL_TextureAccess::SDL_TEXTUREACCESS_STREAMING as int,
-    AccessTarget = ll::SDL_TextureAccess::SDL_TEXTUREACCESS_TARGET as int
+    Static = ll::SDL_TextureAccess::SDL_TEXTUREACCESS_STATIC as int,
+    Streaming = ll::SDL_TextureAccess::SDL_TEXTUREACCESS_STREAMING as int,
+    Target = ll::SDL_TextureAccess::SDL_TEXTUREACCESS_TARGET as int
 }
 
 bitflags! {
