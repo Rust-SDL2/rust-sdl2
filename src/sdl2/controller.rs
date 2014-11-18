@@ -129,23 +129,23 @@ pub mod ll {
 #[deriving(PartialEq)]
 #[repr(i32)]
 pub enum ControllerAxis {
-    InvalidAxis      = ll::SDL_CONTROLLER_AXIS_INVALID,
-    LeftXAxis        = ll::SDL_CONTROLLER_AXIS_LEFTX,
-    LeftYAxis        = ll::SDL_CONTROLLER_AXIS_LEFTY,
-    RightXAxis       = ll::SDL_CONTROLLER_AXIS_RIGHTX,
-    RightYAxis       = ll::SDL_CONTROLLER_AXIS_RIGHTY,
-    TriggerLeftAxis  = ll::SDL_CONTROLLER_AXIS_TRIGGERLEFT,
-    TriggerRightAxis = ll::SDL_CONTROLLER_AXIS_TRIGGERRIGHT,
+    Invalid      = ll::SDL_CONTROLLER_AXIS_INVALID,
+    LeftX        = ll::SDL_CONTROLLER_AXIS_LEFTX,
+    LeftY        = ll::SDL_CONTROLLER_AXIS_LEFTY,
+    RightX       = ll::SDL_CONTROLLER_AXIS_RIGHTX,
+    RightY       = ll::SDL_CONTROLLER_AXIS_RIGHTY,
+    TriggerLeft  = ll::SDL_CONTROLLER_AXIS_TRIGGERLEFT,
+    TriggerRight = ll::SDL_CONTROLLER_AXIS_TRIGGERRIGHT,
 }
 
 pub fn wrap_controller_axis(bitflags: u8) -> ControllerAxis {
     match bitflags as c_int {
-        ll::SDL_CONTROLLER_AXIS_LEFTX        => ControllerAxis::LeftXAxis,
-        ll::SDL_CONTROLLER_AXIS_LEFTY        => ControllerAxis::LeftYAxis,
-        ll::SDL_CONTROLLER_AXIS_RIGHTX       => ControllerAxis::RightXAxis,
-        ll::SDL_CONTROLLER_AXIS_RIGHTY       => ControllerAxis::RightYAxis,
-        ll::SDL_CONTROLLER_AXIS_TRIGGERLEFT  => ControllerAxis::TriggerLeftAxis,
-        ll::SDL_CONTROLLER_AXIS_TRIGGERRIGHT => ControllerAxis::TriggerRightAxis,
+        ll::SDL_CONTROLLER_AXIS_LEFTX        => ControllerAxis::LeftX,
+        ll::SDL_CONTROLLER_AXIS_LEFTY        => ControllerAxis::LeftY,
+        ll::SDL_CONTROLLER_AXIS_RIGHTX       => ControllerAxis::RightX,
+        ll::SDL_CONTROLLER_AXIS_RIGHTY       => ControllerAxis::RightY,
+        ll::SDL_CONTROLLER_AXIS_TRIGGERLEFT  => ControllerAxis::TriggerLeft,
+        ll::SDL_CONTROLLER_AXIS_TRIGGERRIGHT => ControllerAxis::TriggerRight,
         _ => panic!("unhandled controller axis")
     }
 }
