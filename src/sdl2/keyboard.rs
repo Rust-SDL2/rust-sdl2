@@ -87,7 +87,7 @@ pub fn get_keyboard_state() -> HashMap<ScanCode, bool> {
     let mut current = 0;
     while current < raw.len() {
         state.insert(FromPrimitive::from_int(current as int)
-                        .unwrap_or(ScanCode::UnknownScanCode),
+                        .unwrap_or(ScanCode::Unknown),
                      raw[current] == 1);
         current += 1;
     }
@@ -113,7 +113,7 @@ pub fn get_key_from_scancode(scancode: ScanCode) -> KeyCode {
 pub fn get_scancode_from_key(key: KeyCode) -> ScanCode {
     unsafe {
         FromPrimitive::from_int(ll::SDL_GetScancodeFromKey(key as i32) as int)
-            .unwrap_or(ScanCode::UnknownScanCode)
+            .unwrap_or(ScanCode::Unknown)
     }
 }
 
@@ -128,7 +128,7 @@ pub fn get_scancode_from_name(name: &str) -> ScanCode {
     unsafe {
         name.with_c_str(|name| {
             FromPrimitive::from_int(ll::SDL_GetScancodeFromName(name) as int)
-                .unwrap_or(ScanCode::UnknownScanCode)
+                .unwrap_or(ScanCode::Unknown)
         })
     }
 }

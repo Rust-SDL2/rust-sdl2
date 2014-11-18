@@ -787,7 +787,7 @@ impl Event {
                                FromPrimitive::from_int(event.keysym.sym as int)
                                   .unwrap_or(KeyCode::Unknown),
                                 FromPrimitive::from_int(event.keysym.scancode as int)
-                                  .unwrap_or(ScanCode::UnknownScanCode),
+                                  .unwrap_or(ScanCode::Unknown),
                                 keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap())
             }
             EventType::KeyUp => {
@@ -803,7 +803,7 @@ impl Event {
                              FromPrimitive::from_int(event.keysym.sym as int)
                                .unwrap_or(KeyCode::Unknown),
                              FromPrimitive::from_int(event.keysym.scancode as int)
-                               .unwrap_or(ScanCode::UnknownScanCode),
+                               .unwrap_or(ScanCode::Unknown),
                              keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap())
             }
             EventType::TextEditing => {
