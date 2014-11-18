@@ -141,8 +141,8 @@ pub mod ll {
 }
 
 pub enum RenderDriverIndex {
-    DriverAuto,
-    DriverIndex(int)
+    Auto,
+    Index(int)
 }
 
 #[deriving(PartialEq, FromPrimitive)]
@@ -231,8 +231,8 @@ impl Drop for Renderer {
 impl Renderer {
     pub fn from_window(window: Window, index: RenderDriverIndex, renderer_flags: RendererFlags) -> SdlResult<Renderer> {
         let index = match index {
-            RenderDriverIndex::DriverAuto => -1,
-            RenderDriverIndex::DriverIndex(x) => x
+            RenderDriverIndex::Auto => -1,
+            RenderDriverIndex::Index(x) => x
         };
 
         let raw = unsafe {
