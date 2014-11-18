@@ -785,7 +785,7 @@ impl Event {
 
                 Event::KeyDown(event.timestamp as uint, window,
                                FromPrimitive::from_int(event.keysym.sym as int)
-                                  .unwrap_or(KeyCode::UnknownKey),
+                                  .unwrap_or(KeyCode::Unknown),
                                 FromPrimitive::from_int(event.keysym.scancode as int)
                                   .unwrap_or(ScanCode::UnknownScanCode),
                                 keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap())
@@ -801,7 +801,7 @@ impl Event {
 
                 Event::KeyUp(event.timestamp as uint, window,
                              FromPrimitive::from_int(event.keysym.sym as int)
-                               .unwrap_or(KeyCode::UnknownKey),
+                               .unwrap_or(KeyCode::Unknown),
                              FromPrimitive::from_int(event.keysym.scancode as int)
                                .unwrap_or(ScanCode::UnknownScanCode),
                              keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap())

@@ -106,7 +106,7 @@ pub fn set_mod_state(flags: Mod) {
 pub fn get_key_from_scancode(scancode: ScanCode) -> KeyCode {
     unsafe {
         FromPrimitive::from_int(ll::SDL_GetKeyFromScancode(scancode as u32) as int)
-            .unwrap_or(KeyCode::UnknownKey)
+            .unwrap_or(KeyCode::Unknown)
     }
 }
 
@@ -144,7 +144,7 @@ pub fn get_key_from_name(name: &str) -> KeyCode {
     unsafe {
         name.with_c_str(|name| {
             FromPrimitive::from_int(ll::SDL_GetKeyFromName(name) as int)
-                .unwrap_or(KeyCode::UnknownKey)
+                .unwrap_or(KeyCode::Unknown)
         })
     }
 }
