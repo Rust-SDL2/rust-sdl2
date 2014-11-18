@@ -4,9 +4,9 @@ use std::ptr;
 use std::string;
 use std::vec;
 
-use keycode::{KeyCode, UnknownKey};
+use keycode::KeyCode;
 use rect::Rect;
-use scancode::{ScanCode, UnknownScanCode};
+use scancode::ScanCode;
 use video::Window;
 
 #[allow(non_camel_case_types)]
@@ -87,7 +87,7 @@ pub fn get_keyboard_state() -> HashMap<ScanCode, bool> {
     let mut current = 0;
     while current < raw.len() {
         state.insert(FromPrimitive::from_int(current as int)
-                        .unwrap_or(UnknownScanCode),
+                        .unwrap_or(ScanCode::Unknown),
                      raw[current] == 1);
         current += 1;
     }
@@ -106,14 +106,14 @@ pub fn set_mod_state(flags: Mod) {
 pub fn get_key_from_scancode(scancode: ScanCode) -> KeyCode {
     unsafe {
         FromPrimitive::from_int(ll::SDL_GetKeyFromScancode(scancode as u32) as int)
-            .unwrap_or(UnknownKey)
+            .unwrap_or(KeyCode::Unknown)
     }
 }
 
 pub fn get_scancode_from_key(key: KeyCode) -> ScanCode {
     unsafe {
         FromPrimitive::from_int(ll::SDL_GetScancodeFromKey(key as i32) as int)
-            .unwrap_or(UnknownScanCode)
+            .unwrap_or(ScanCode::Unknown)
     }
 }
 
@@ -128,7 +128,7 @@ pub fn get_scancode_from_name(name: &str) -> ScanCode {
     unsafe {
         name.with_c_str(|name| {
             FromPrimitive::from_int(ll::SDL_GetScancodeFromName(name) as int)
-                .unwrap_or(UnknownScanCode)
+                .unwrap_or(ScanCode::Unknown)
         })
     }
 }
@@ -144,7 +144,7 @@ pub fn get_key_from_name(name: &str) -> KeyCode {
     unsafe {
         name.with_c_str(|name| {
             FromPrimitive::from_int(ll::SDL_GetKeyFromName(name) as int)
-                .unwrap_or(UnknownKey)
+                .unwrap_or(KeyCode::Unknown)
         })
     }
 }

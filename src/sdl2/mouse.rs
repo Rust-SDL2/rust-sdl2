@@ -58,18 +58,18 @@ pub mod ll {
 #[deriving(PartialEq)]
 #[repr(u32)]
 pub enum SystemCursor {
-    ArrowCursor = ll::SDL_SYSTEM_CURSOR_ARROW,
-    IBeamCursor = ll::SDL_SYSTEM_CURSOR_IBEAM,
-    WaitCursor = ll::SDL_SYSTEM_CURSOR_WAIT,
-    CrosshairCursor = ll::SDL_SYSTEM_CURSOR_CROSSHAIR,
-    WaitArrowCursor = ll::SDL_SYSTEM_CURSOR_WAITARROW,
-    SizeNWSECursor = ll::SDL_SYSTEM_CURSOR_SIZENWSE,
-    SizeNESWCursor = ll::SDL_SYSTEM_CURSOR_SIZENESW,
-    SizeWECursor = ll::SDL_SYSTEM_CURSOR_SIZEWE,
-    SizeNSCursor = ll::SDL_SYSTEM_CURSOR_SIZENS,
-    SizeAllCursor = ll::SDL_SYSTEM_CURSOR_SIZEALL,
-    NoCursor = ll::SDL_SYSTEM_CURSOR_NO,
-    HandCursor = ll::SDL_SYSTEM_CURSOR_HAND,
+    Arrow = ll::SDL_SYSTEM_CURSOR_ARROW,
+    IBeam = ll::SDL_SYSTEM_CURSOR_IBEAM,
+    Wait = ll::SDL_SYSTEM_CURSOR_WAIT,
+    Crosshair = ll::SDL_SYSTEM_CURSOR_CROSSHAIR,
+    WaitArrow = ll::SDL_SYSTEM_CURSOR_WAITARROW,
+    SizeNWSE = ll::SDL_SYSTEM_CURSOR_SIZENWSE,
+    SizeNESW = ll::SDL_SYSTEM_CURSOR_SIZENESW,
+    SizeWE = ll::SDL_SYSTEM_CURSOR_SIZEWE,
+    SizeNS = ll::SDL_SYSTEM_CURSOR_SIZENS,
+    SizeAll = ll::SDL_SYSTEM_CURSOR_SIZEALL,
+    No = ll::SDL_SYSTEM_CURSOR_NO,
+    Hand = ll::SDL_SYSTEM_CURSOR_HAND,
 }
 
 #[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
@@ -137,12 +137,12 @@ impl Cursor {
 
 #[deriving(PartialEq)]
 pub enum Mouse {
-    LeftMouse,
-    MiddleMouse,
-    RightMouse,
-    X1Mouse,
-    X2Mouse,
-    UnknownMouse(u8)
+    Left,
+    Middle,
+    Right,
+    X1,
+    X2,
+    Unknown(u8)
 }
 
 bitflags! {
@@ -157,12 +157,12 @@ bitflags! {
 
 pub fn wrap_mouse(bitflags: u8) -> Mouse {
     match bitflags {
-        1 => LeftMouse,
-        2 => MiddleMouse,
-        3 => RightMouse,
-        4 => X1Mouse,
-        5 => X2Mouse,
-        _ => UnknownMouse(bitflags)
+        1 => Mouse::Left,
+        2 => Mouse::Middle,
+        3 => Mouse::Right,
+        4 => Mouse::X1,
+        5 => Mouse::X2,
+        _ => Mouse::Unknown(bitflags)
     }
 }
 

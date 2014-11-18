@@ -18,7 +18,7 @@ use std::c_vec::CVec;
 #[allow(non_camel_case_types)]
 pub mod ll {
 
-    use libc::{c_int, c_char, c_void, c_float, c_double};
+    use libc::{c_int, c_uint, c_char, c_void, c_float, c_double};
     use libc::{uint8_t, uint32_t};
     use rect::Rect;
     use rect::Point;
@@ -31,12 +31,11 @@ pub mod ll {
     pub type SDL_bool = c_int;
 
     //SDL_render.h
-    pub enum SDL_RendererFlags {
-        SDL_RENDERER_SOFTWARE = 0x00000001,
-        SDL_RENDERER_ACCELERATED = 0x00000002,
-        SDL_RENDERER_PRESENTVSYNC = 0x00000004,
-        SDL_RENDERER_TARGETTEXTURE = 0x00000008
-    }
+    pub type SDL_RendererFlags = c_uint;
+    pub const SDL_RENDERER_SOFTWARE : SDL_RendererFlags = 0x00000001;
+    pub const SDL_RENDERER_ACCELERATED : SDL_RendererFlags = 0x00000002;
+    pub const SDL_RENDERER_PRESENTVSYNC : SDL_RendererFlags = 0x00000004;
+    pub const SDL_RENDERER_TARGETTEXTURE : SDL_RendererFlags = 0x00000008;
 
     #[repr(C)]
     pub struct SDL_RendererInfo
@@ -49,25 +48,20 @@ pub mod ll {
         pub max_texture_height: c_int,
     }
 
-    pub enum SDL_TextureAccess {
-        SDL_TEXTUREACCESS_STATIC = 0,
-        SDL_TEXTUREACCESS_STREAMING = 1,
-        SDL_TEXTUREACCESS_TARGET = 2
-    }
+    pub type SDL_TextureAccess = c_uint;
+    pub const SDL_TEXTUREACCESS_STATIC : SDL_TextureAccess = 0;
+    pub const SDL_TEXTUREACCESS_STREAMING : SDL_TextureAccess = 1;
+    pub const SDL_TEXTUREACCESS_TARGET : SDL_TextureAccess = 2;
 
-    pub enum SDL_TextureModulate {
-        SDL_TEXTUREMODULATE_NONE = 0x00000000,
-        SDL_TEXTUREMODULATE_COLOR = 0x00000001,
-        SDL_TEXTUREMODULATE_ALPHA = 0x00000002
-    }
+    pub type SDL_TextureModulate = c_uint;
+    pub const SDL_TEXTUREMODULATE_NONE : SDL_TextureModulate = 0x00000000;
+    pub const SDL_TEXTUREMODULATE_COLOR : SDL_TextureModulate = 0x00000001;
+    pub const SDL_TEXTUREMODULATE_ALPHA : SDL_TextureModulate = 0x00000002;
 
-    #[deriving(FromPrimitive)]
-    #[repr(C)]
-    pub enum SDL_RendererFlip {
-        SDL_FLIP_NONE = 0x00000000,
-        SDL_FLIP_HORIZONTAL = 0x00000001,
-        SDL_FLIP_VERTICAL = 0x00000002
-    }
+    pub type SDL_RendererFlip = c_uint;
+    pub const SDL_FLIP_NONE : SDL_RendererFlip = 0x00000000;
+    pub const SDL_FLIP_HORIZONTAL : SDL_RendererFlip = 0x00000001;
+    pub const SDL_FLIP_VERTICAL : SDL_RendererFlip = 0x00000002;
 
     #[repr(C)]
     pub struct SDL_Renderer;
@@ -75,14 +69,11 @@ pub mod ll {
     pub struct SDL_Texture;
 
     //SDL_blendmode.h
-    #[deriving(FromPrimitive)]
-    #[repr(C)]
-    pub enum SDL_BlendMode {
-        SDL_BLENDMODE_NONE = 0x00000000,
-        SDL_BLENDMODE_BLEND = 0x00000001,
-        SDL_BLENDMODE_ADD = 0x00000002,
-        SDL_BLENDMODE_MOD = 0x00000004
-    }
+    pub type SDL_BlendMode = c_uint;
+    pub const SDL_BLENDMODE_NONE : SDL_BlendMode = 0x00000000;
+    pub const SDL_BLENDMODE_BLEND : SDL_BlendMode = 0x00000001;
+    pub const SDL_BLENDMODE_ADD : SDL_BlendMode = 0x00000002;
+    pub const SDL_BLENDMODE_MOD : SDL_BlendMode = 0x00000004;
 
     extern "C" {
         pub fn SDL_GetNumRenderDrivers() -> c_int;
@@ -141,15 +132,15 @@ pub mod ll {
 }
 
 pub enum RenderDriverIndex {
-    DriverAuto,
-    DriverIndex(int)
+    Auto,
+    Index(int)
 }
 
 #[deriving(PartialEq, FromPrimitive)]
 pub enum TextureAccess {
-    AccessStatic = ll::SDL_TEXTUREACCESS_STATIC as int,
-    AccessStreaming = ll::SDL_TEXTUREACCESS_STREAMING as int,
-    AccessTarget = ll::SDL_TEXTUREACCESS_TARGET as int
+    Static = ll::SDL_TEXTUREACCESS_STATIC as int,
+    Streaming = ll::SDL_TEXTUREACCESS_STREAMING as int,
+    Target = ll::SDL_TEXTUREACCESS_TARGET as int
 }
 
 bitflags! {
@@ -172,17 +163,17 @@ pub struct RendererInfo {
 
 #[deriving(PartialEq, FromPrimitive)]
 pub enum BlendMode {
-    BlendNone = ll::SDL_BLENDMODE_NONE as int,
-    BlendBlend = ll::SDL_BLENDMODE_BLEND as int,
-    BlendAdd = ll::SDL_BLENDMODE_ADD as int,
-    BlendMod = ll::SDL_BLENDMODE_MOD as int
+    None = ll::SDL_BLENDMODE_NONE as int,
+    Blend = ll::SDL_BLENDMODE_BLEND as int,
+    Add = ll::SDL_BLENDMODE_ADD as int,
+    Mod = ll::SDL_BLENDMODE_MOD as int
 }
 
 #[deriving(PartialEq)]
 pub enum RendererFlip {
-    FlipNone = ll::SDL_FLIP_NONE as int,
-    FlipHorizontal = ll::SDL_FLIP_HORIZONTAL as int,
-    FlipVertical = ll::SDL_FLIP_VERTICAL as int,
+    None = ll::SDL_FLIP_NONE as int,
+    Horizontal = ll::SDL_FLIP_HORIZONTAL as int,
+    Vertical = ll::SDL_FLIP_VERTICAL as int,
 }
 
 impl RendererInfo {
@@ -206,8 +197,8 @@ impl RendererInfo {
 }
 
 pub enum RendererParent {
-    SurfaceParent(Surface),
-    WindowParent(Window)
+    Surface(Surface),
+    Window(Window)
 }
 
 #[allow(raw_pointer_deriving)]
@@ -231,8 +222,8 @@ impl Drop for Renderer {
 impl Renderer {
     pub fn from_window(window: Window, index: RenderDriverIndex, renderer_flags: RendererFlags) -> SdlResult<Renderer> {
         let index = match index {
-            DriverAuto => -1,
-            DriverIndex(x) => x
+            RenderDriverIndex::Auto => -1,
+            RenderDriverIndex::Index(x) => x
         };
 
         let raw = unsafe {
@@ -242,7 +233,7 @@ impl Renderer {
         if raw == ptr::null() {
             Err(get_error())
         } else {
-            Ok(Renderer{ raw: raw, parent: Some(WindowParent(window)), owned: true,})
+            Ok(Renderer{ raw: raw, parent: Some(RendererParent::Window(window)), owned: true,})
         }
     }
 
@@ -254,7 +245,7 @@ impl Renderer {
             let window = unsafe { Window::from_ll(raw_window, true) };
             Ok(Renderer {
                 raw: raw_renderer,
-                parent: Some(WindowParent(window)),
+                parent: Some(RendererParent::Window(window)),
                 owned: true
             })
         } else {
@@ -267,7 +258,7 @@ impl Renderer {
         if result == ptr::null() {
             Ok(Renderer {
                 raw: result,
-                parent: Some(SurfaceParent(surface)),
+                parent: Some(RendererParent::Surface(surface)),
                 owned: true
             })
         } else {
@@ -292,10 +283,10 @@ impl Renderer {
 
     pub fn set_draw_color(&self, color: pixels::Color) -> SdlResult<()> {
         let ret = match color {
-            pixels::RGB(r, g, b) => {
+            pixels::Color::RGB(r, g, b) => {
                 unsafe { ll::SDL_SetRenderDrawColor(self.raw, r, g, b, 255) }
             },
-            pixels::RGBA(r, g, b, a) => {
+            pixels::Color::RGBA(r, g, b, a) => {
                 unsafe { ll::SDL_SetRenderDrawColor(self.raw, r, g, b, a)  }
             }
         };
@@ -310,7 +301,7 @@ impl Renderer {
         let a: u8 = 0;
         let result = unsafe { ll::SDL_GetRenderDrawColor(self.raw, &r, &g, &b, &a) == 0 };
         if result {
-            Ok(pixels::RGBA(r, g, b, a))
+            Ok(pixels::Color::RGBA(r, g, b, a))
         } else {
             Err(get_error())
         }

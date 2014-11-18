@@ -9,25 +9,25 @@ pub fn main() {
         Err(err) => panic!(format!("failed to create window: {}", err))
     };
 
-    let renderer = match sdl2::render::Renderer::from_window(window, sdl2::render::DriverAuto, sdl2::render::ACCELERATED) {
+    let renderer = match sdl2::render::Renderer::from_window(window, sdl2::render::RenderDriverIndex::Auto, sdl2::render::ACCELERATED) {
         Ok(renderer) => renderer,
         Err(err) => panic!(format!("failed to create renderer: {}", err))
     };
 
-    let _ = renderer.set_draw_color(sdl2::pixels::RGB(255, 0, 0));
+    let _ = renderer.set_draw_color(sdl2::pixels::Color::RGB(255, 0, 0));
     let _ = renderer.clear();
     renderer.present();
 
     'main : loop {
         'event : loop {
             match sdl2::event::poll_event() {
-                sdl2::event::QuitEvent(_) => break 'main,
-                sdl2::event::KeyDownEvent(_, _, key, _, _) => {
-                    if key == sdl2::keycode::EscapeKey {
+                sdl2::event::Quit(_) => break 'main,
+                sdl2::event::KeyDown(_, _, key, _, _) => {
+                    if key == sdl2::keycode::KeyCode::Escape {
                         break 'main
                     }
                 },
-                sdl2::event::NoEvent => break 'event,
+                sdl2::event::None => break 'event,
                 _ => {}
             }
         }
