@@ -137,12 +137,12 @@ impl Cursor {
 
 #[deriving(PartialEq)]
 pub enum Mouse {
-    LeftMouse,
-    MiddleMouse,
-    RightMouse,
-    X1Mouse,
-    X2Mouse,
-    UnknownMouse(u8)
+    Left,
+    Middle,
+    Right,
+    X1,
+    X2,
+    Unknown(u8)
 }
 
 bitflags! {
@@ -157,12 +157,12 @@ bitflags! {
 
 pub fn wrap_mouse(bitflags: u8) -> Mouse {
     match bitflags {
-        1 => Mouse::LeftMouse,
-        2 => Mouse::MiddleMouse,
-        3 => Mouse::RightMouse,
-        4 => Mouse::X1Mouse,
-        5 => Mouse::X2Mouse,
-        _ => Mouse::UnknownMouse(bitflags)
+        1 => Mouse::Left,
+        2 => Mouse::Middle,
+        3 => Mouse::Right,
+        4 => Mouse::X1,
+        5 => Mouse::X2,
+        _ => Mouse::Unknown(bitflags)
     }
 }
 
