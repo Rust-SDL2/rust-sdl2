@@ -585,9 +585,9 @@ pub enum Event {
     Window(uint, video::Window, WindowEventId, int, int),
     // TODO: SysWMEvent
 
-    /// (timestamp, window, keycode, scancode, keymod)
-    KeyDown(uint, video::Window, KeyCode, ScanCode, Mod),
-    KeyUp(uint, video::Window, KeyCode, ScanCode, Mod),
+    /// (timestamp, window, keycode, scancode, keymod, repeat)
+    KeyDown(uint, video::Window, KeyCode, ScanCode, Mod, bool),
+    KeyUp(uint, video::Window, KeyCode, ScanCode, Mod, bool),
     /// (timestamp, window, text, start, length)
     TextEditing(uint, video::Window, String, int, int),
     /// (timestamp, window, text)
@@ -788,7 +788,8 @@ impl Event {
                                   .unwrap_or(KeyCode::Unknown),
                                 FromPrimitive::from_int(event.keysym.scancode as int)
                                   .unwrap_or(ScanCode::Unknown),
-                                keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap())
+                                keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap(),
+                                event.repeat != 0)
             }
             EventType::KeyUp => {
                 let event = *raw.key();
@@ -804,7 +805,8 @@ impl Event {
                                .unwrap_or(KeyCode::Unknown),
                              FromPrimitive::from_int(event.keysym.scancode as int)
                                .unwrap_or(ScanCode::Unknown),
-                             keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap())
+                             keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap(),
+                             event.repeat != 0)
             }
             EventType::TextEditing => {
                 let event = *raw.edit();

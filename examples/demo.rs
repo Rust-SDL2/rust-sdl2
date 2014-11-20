@@ -22,7 +22,7 @@ pub fn main() {
         'event : loop {
             match sdl2::event::poll_event() {
                 sdl2::event::Quit(_) => break 'main,
-                sdl2::event::KeyDown(_, _, key, _, _) => {
+                sdl2::event::KeyDown(_, _, key, _, _, _) => {
                     if key == sdl2::keycode::KeyCode::Escape {
                         break 'main
                     }
