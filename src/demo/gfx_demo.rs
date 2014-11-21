@@ -5,7 +5,12 @@ extern crate sdl2;
 extern crate sdl2_gfx;
 
 use rand::Rand;
-use sdl2::{event, pixels};
+use sdl2::event;
+use sdl2::event::Event;
+use sdl2::pixels;
+use sdl2::keycode::KeyCode;
+
+
 use sdl2_gfx::primitives::DrawRenderer;
 use sdl2_gfx::framerate::FPSManager;
 
@@ -36,7 +41,7 @@ fn mainloop() -> Result<(), String> {
         sdl2::video::OPENGL));
 
     let renderer = try!(sdl2::render::Renderer::from_window(
-            window, sdl2::render::DriverAuto, sdl2::render::ACCELERATED));
+            window, sdl2::render::RenderDriverIndex::Auto, sdl2::render::ACCELERATED));
 
     try!(renderer.set_draw_color(pixels::RGB(0, 0, 0)));
 
@@ -57,11 +62,11 @@ fn mainloop() -> Result<(), String> {
             fpsm.delay();
 
             match event::poll_event() {
-                event::QuitEvent(_) => break 'main,
-                event::KeyDownEvent(_, _, key, _, _) => {
-                    if key == sdl2::keycode::EscapeKey {
+                Event::Quit(_) => break 'main,
+                Event::KeyDown(_, _, key, _, _, _) => {
+                    if key == KeyCode::Escape {
                         break 'main
-                    } else if key == sdl2::keycode::SpaceKey {
+                    } else if key == KeyCode::Space {
                         for i in range(0u, 400) {
                             try!(renderer.pixel(i as i16, i as i16, 0xFF000FFu32));
                         }
@@ -69,7 +74,7 @@ fn mainloop() -> Result<(), String> {
 
                     }
                 }
-                event::MouseButtonDownEvent(_, _, _, _, x, y) => {
+                Event::MouseButtonDown(_, _, _, _, x, y) => {
                     let color : pixels::Color = Rand::rand(&mut rng);
                     // println!("color => {:}", color);
                     try!(renderer.line(lastx, lasty, x as i16, y as i16, color));
