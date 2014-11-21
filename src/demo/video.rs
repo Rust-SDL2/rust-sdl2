@@ -25,7 +25,7 @@ pub fn main(filename: &Path) {
             sdl2::video::PosCentered, SCREEN_WIDTH, SCREEN_HEIGHT, sdl2::video::OPENGL));
 
     let renderer = trying!(sdl2::render::Renderer::from_window(
-            window, sdl2::render::DriverAuto, sdl2::render::ACCELERATED));
+            window, sdl2::render::RenderDriverIndex::Auto, sdl2::render::ACCELERATED));
 
     // Load a font
     let font = trying!(sdl2_ttf::Font::from_file(filename, 128));
@@ -48,9 +48,9 @@ pub fn main(filename: &Path) {
     'main : loop {
         'event : loop {
             match sdl2::event::poll_event() {
-                sdl2::event::QuitEvent(_) => break 'main,
-                sdl2::event::KeyDownEvent(_, _, key, _, _) => {
-                    if key == sdl2::keycode::EscapeKey {
+                sdl2::event::Event::Quit(_) => break 'main,
+                sdl2::event::Event::KeyDown(_, _, key, _, _, _) => {
+                    if key == sdl2::keycode::KeyCode::Escape {
                         break 'main
                     }
                 }

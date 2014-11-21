@@ -4,7 +4,6 @@ A binding for SDL2_ttf.
 
 #![feature(macro_rules)]
 
-#![crate_id="sdl2_ttf#sdl2_ttf:0.1"]
 #![crate_type = "lib"]
 #![desc = "SDL2_ttf bindings and wrappers"]
 #![comment = "SDL2_ttf bindings and wrappers"]
