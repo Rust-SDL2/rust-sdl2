@@ -36,7 +36,12 @@ If you're having issues, [see here](https://github.com/PistonDevelopers/rust-emp
 
 # Installation
 
-If you're using [cargo](http://crates.io/) to manage your project, just add these lines to your Cargo.toml:
+If you're using [cargo](http://crates.io/) to manage your project, you can download through Crates.io:
+
+    [dependencies]
+    sdl2 = "0.0.1"
+
+Alternatively, pull it from GitHub
 
     [dependencies.sdl2]
     git = "https://github.com/AngryLawyer/rust-sdl2"
