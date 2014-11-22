@@ -13,7 +13,7 @@ keywords = ["SDL", "windowing", "graphics", "font"]
 name = "sdl2_ttf"
 path = "src/sdl2_ttf/lib.rs"
 
-[dependencies]
+[dependencies.sdl2]
 
 git = "https://github.com/AngryLawyer/rust-sdl2"
 
