@@ -51,7 +51,8 @@ pub mod ll {
         SDL_WINDOW_INPUT_FOCUS = 0x00000200,
         SDL_WINDOW_MOUSE_FOCUS = 0x00000400,
         SDL_WINDOW_FULLSCREEN_DESKTOP = 0x00001001,
-        SDL_WINDOW_FOREIGN = 0x00000800
+        SDL_WINDOW_FOREIGN = 0x00000800,
+        SDL_WINDOW_ALLOW_HIGHDPI = 0x00002000
     }
 
     pub enum SDL_WindowEventID {
@@ -274,7 +275,8 @@ bitflags! {
         const INPUT_FOCUS = ll::SDL_WindowFlags::SDL_WINDOW_INPUT_FOCUS as u32,
         const MOUSE_FOCUS = ll::SDL_WindowFlags::SDL_WINDOW_MOUSE_FOCUS as u32,
         const FULLSCREEN_DESKTOP = ll::SDL_WindowFlags::SDL_WINDOW_FULLSCREEN_DESKTOP as u32,
-        const FOREIGN = ll::SDL_WindowFlags::SDL_WINDOW_FOREIGN as u32
+        const FOREIGN = ll::SDL_WindowFlags::SDL_WINDOW_FOREIGN as u32,
+        const ALLOW_HIGHDPI = ll::SDL_WindowFlags::SDL_WINDOW_ALLOW_HIGHDPI as u32
     }
 }
 
