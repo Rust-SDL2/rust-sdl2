@@ -25,12 +25,12 @@ bitflags! {
     }
 }
 
-pub fn show_simple_message_box(flags: MessageBoxFlag, title: &str, message: &str, window: Window) -> SdlResult<()> {
+pub fn show_simple_message_box(flags: MessageBoxFlag, title: &str, message: &str, window: &Window) -> SdlResult<()> {
     let result = unsafe {
         title.with_c_str(|title_cstr| {
-        message.with_c_str(|message_cstr| {
-            ll::SDL_ShowSimpleMessageBox(flags.bits(), title_cstr, message_cstr, window.raw())
-        })
+            message.with_c_str(|message_cstr| {
+                ll::SDL_ShowSimpleMessageBox(flags.bits(), title_cstr, message_cstr, window.raw())
+            })
         })
     } == 0;
 
