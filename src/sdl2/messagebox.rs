@@ -1,6 +1,7 @@
 use video::Window;
 use get_error;
 use SdlResult;
+use std::ptr;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
@@ -25,11 +26,15 @@ bitflags! {
     }
 }
 
-pub fn show_simple_message_box(flags: MessageBoxFlag, title: &str, message: &str, window: &Window) -> SdlResult<()> {
+pub fn show_simple_message_box(flags: MessageBoxFlag, title: &str, message: &str, window: Option<&Window>) -> SdlResult<()> {
     let result = unsafe {
         title.with_c_str(|title_cstr| {
             message.with_c_str(|message_cstr| {
-                ll::SDL_ShowSimpleMessageBox(flags.bits(), title_cstr, message_cstr, window.raw())
+                let raw_window = match window {
+                    Some(ref window) => window.raw(),
+                    None => ptr::null()
+                };
+                ll::SDL_ShowSimpleMessageBox(flags.bits(), title_cstr, message_cstr, raw_window)
             })
         })
     } == 0;
