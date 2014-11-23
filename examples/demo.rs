@@ -1,5 +1,4 @@
 extern crate sdl2;
-extern crate native;
 
 pub fn main() {
     sdl2::init(sdl2::INIT_VIDEO);
