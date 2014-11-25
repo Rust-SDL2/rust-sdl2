@@ -9,6 +9,7 @@ use libc::{c_int, size_t, c_void};
 use libc::{uint8_t};
 
 use get_error;
+use rwops::RWops;
 use SdlResult;
 
 
@@ -91,7 +92,7 @@ pub mod ll {
         pub fn SDL_GetAudioDeviceName(index: c_int, iscapture: c_int) -> *const c_char;
         pub fn SDL_OpenAudioDevice(device: *const c_char, iscapture: c_int,
                                    desired: *const SDL_AudioSpec,
-                                   obtained: *const SDL_AudioSpec,
+                                   obtained: *mut SDL_AudioSpec,
                                    allowed_changes: c_int) -> SDL_AudioDeviceID;
         pub fn SDL_GetAudioStatus() -> SDL_AudioStatus;
         pub fn SDL_GetAudioDeviceStatus(dev: SDL_AudioDeviceID) ->
@@ -99,9 +100,9 @@ pub mod ll {
         pub fn SDL_PauseAudio(pause_on: c_int);
         pub fn SDL_PauseAudioDevice(dev: SDL_AudioDeviceID, pause_on: c_int);
         pub fn SDL_LoadWAV_RW(src: *const SDL_RWops, freesrc: c_int,
-                              spec: *const SDL_AudioSpec,
-                              audio_buf: *const *const uint8_t, audio_len: *const uint32_t) -> *const SDL_AudioSpec;
-        pub fn SDL_FreeWAV(audio_buf: *const uint8_t);
+                              spec: *mut SDL_AudioSpec,
+                              audio_buf: *mut *mut uint8_t, audio_len: *mut uint32_t) -> *mut SDL_AudioSpec;
+        pub fn SDL_FreeWAV(audio_buf: *mut uint8_t);
         pub fn SDL_BuildAudioCVT(cvt: *mut SDL_AudioCVT,
                                  src_format: SDL_AudioFormat, src_channels: uint8_t,
                                  src_rate: c_int, dst_format: SDL_AudioFormat,
@@ -195,6 +196,48 @@ pub fn get_current_audio_driver() -> String {
     }
 }
 
+#[deriving(Clone, Show)]
+pub struct AudioSpecWAV {
+    pub freq: i32,
+    // TODO: Showing format should be prettier
+    pub format: AudioFormat,
+    pub channels: u8
+}
+
+impl AudioSpecWAV {
+    /// Loads a WAVE from the file path. Uses `SDL_LoadWAV_RW`.
+    pub fn load_wav(path: &Path) -> SdlResult<(AudioSpecWAV, CVec<u8>)> {
+        let ops = try!(RWops::from_file(path, "rb"));
+        AudioSpecWAV::load_wav_rw(&ops)
+    }
+
+    /// Loads a WAVE from the data source. Uses `SDL_LoadWAV_RW`.
+    pub fn load_wav_rw(src: &RWops) -> SdlResult<(AudioSpecWAV, CVec<u8>)> {
+        use std::mem::uninitialized;
+        use std::ptr::null_mut;
+
+        let mut desired = unsafe { uninitialized::<ll::SDL_AudioSpec>() };
+        let mut audio_buf: *mut u8 = null_mut();
+        let mut audio_len: u32 = 0;
+        unsafe {
+            let ret = ll::SDL_LoadWAV_RW(src.raw(), 0, &mut desired, &mut audio_buf, &mut audio_len);
+            if ret.is_null() {
+                Err(get_error())
+            } else {
+                let v = CVec::new_with_dtor(audio_buf as *mut u8, audio_len as uint, proc() {
+                    ll::SDL_FreeWAV(audio_buf)
+                });
+
+                Ok((AudioSpecWAV {
+                    freq: desired.freq,
+                    format: desired.format,
+                    channels: desired.channels
+                }, v))
+            }
+        }
+    }
+}
+
 pub trait AudioCallback<T> {
     fn callback(&mut self, &mut [T]);
 }
@@ -260,7 +303,7 @@ impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
         use std::mem::transmute;
         use std::ptr::null;
         use std::c_str::CString;
-        use libc::{c_char};
+        use libc::c_char;
         let desired = self.convert_to_ll();
 
         let mut obtained = unsafe { uninitialized::<ll::SDL_AudioSpec>() };
@@ -274,7 +317,7 @@ impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
                 Some(ref s) => s.as_ptr()
             };
             let iscapture_flag = match iscapture { false => 0, true => 1 };
-            let device_id = ll::SDL_OpenAudioDevice(device_cstr_ptr, iscapture_flag, transmute(&desired), transmute(&mut obtained), 0);
+            let device_id = ll::SDL_OpenAudioDevice(device_cstr_ptr, iscapture_flag, &desired, &mut obtained, 0);
             match device_id {
                 0 => {
                     // uninitialize the callback data to avoid memory leaks
