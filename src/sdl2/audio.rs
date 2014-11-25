@@ -298,6 +298,8 @@ impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
         }
     }
 
+    /// Opens a new audio device given the desired parameters and callback.
+    /// Uses `SDL_OpenAudioDevice`.
     pub fn open_audio_device(self, device: Option<&str>, iscapture: bool) -> SdlResult<AudioDevice<Box<CB>>> {
         use std::mem::uninitialized;
         use std::mem::transmute;
@@ -408,12 +410,15 @@ impl<CB> AudioDevice<CB> {
         }
     }
 
+    /// Get the obtained AudioSpec of the audio device.
     pub fn get_spec(&self) -> &AudioSpec { &self.spec }
 
+    /// Pauses playback of the audio device.
     pub fn pause(&self) {
         unsafe { ll::SDL_PauseAudioDevice(self.device_id.id(), 1) }
     }
 
+    /// Starts playback of the audio device.
     pub fn resume(&self) {
         unsafe { ll::SDL_PauseAudioDevice(self.device_id.id(), 0) }
     }
@@ -430,6 +435,10 @@ impl<CB> AudioDevice<CB> {
         }
     }
 
+    /// Closes the audio device and saves the callback data from being dropped.
+    ///
+    /// Note that simply dropping `AudioDevice` will close the audio device,
+    /// but the callback data will be dropped.
     pub fn close_and_get_callback(self) -> CB {
         drop(self.device_id);
         self.callback_data
