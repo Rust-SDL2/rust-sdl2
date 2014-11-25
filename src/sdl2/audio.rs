@@ -342,9 +342,36 @@ impl<T: AudioFormat<T>, CB: AudioCallback<T>> AudioDevice<T, CB> {
         unsafe { ll::SDL_PauseAudioDevice(self.device_id.id(), 0) }
     }
 
+    pub fn lock<'a>(&'a mut self) -> AudioDeviceLockGuard<'a, T, CB> {
+        unsafe { ll::SDL_LockAudioDevice(self.device_id.id()) };
+        AudioDeviceLockGuard {
+            device: self
+        }
+    }
+
     pub fn close_and_get_spec(self) -> AudioSpec<T, CB> {
         drop(self.device_id);
         self.spec
+    }
+}
+
+/// Similar to `std::sync::MutexGuard`, but for use with `AudioDevice::lock()`.
+pub struct AudioDeviceLockGuard<'a, T: AudioFormat<T>, CB: AudioCallback<T> + 'a> {
+    device: &'a mut AudioDevice<T, CB>
+}
+
+impl<'a, T: AudioFormat<T>, CB: AudioCallback<T>> Deref<CB> for AudioDeviceLockGuard<'a, T, CB> {
+    fn deref(&self) -> &CB { &*self.device.spec.callback }
+}
+
+impl<'a, T: AudioFormat<T>, CB: AudioCallback<T>> DerefMut<CB> for AudioDeviceLockGuard<'a, T, CB> {
+    fn deref_mut(&mut self) -> &mut CB { &mut *self.device.spec.callback }
+}
+
+#[unsafe_destructor]
+impl<'a, T: AudioFormat<T>, CB: AudioCallback<T>> Drop for AudioDeviceLockGuard<'a, T, CB> {
+    fn drop(&mut self) {
+        unsafe { ll::SDL_UnlockAudioDevice(self.device.device_id.id()) }
     }
 }
 
