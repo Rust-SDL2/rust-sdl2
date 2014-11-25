@@ -1,3 +1,5 @@
+//! Audio Functions
+
 use std::ptr;
 use std::mem;
 use std::c_str::CString;
@@ -120,6 +122,27 @@ pub mod ll {
 
 }
 
+pub type AudioFormat = ll::SDL_AudioFormat;
+
+pub const AUDIOU8     : AudioFormat = ll::AUDIO_U8;
+pub const AUDIOS8     : AudioFormat = ll::AUDIO_S8;
+pub const AUDIOU16LSB : AudioFormat = ll::AUDIO_U16LSB;
+pub const AUDIOS16LSB : AudioFormat = ll::AUDIO_S16LSB;
+pub const AUDIOU16MSB : AudioFormat = ll::AUDIO_U16MSB;
+pub const AUDIOS16MSB : AudioFormat = ll::AUDIO_S16MSB;
+pub const AUDIOU16    : AudioFormat = ll::AUDIO_U16;
+pub const AUDIOS16    : AudioFormat = ll::AUDIO_S16;
+pub const AUDIOS32LSB : AudioFormat = ll::AUDIO_S32LSB;
+pub const AUDIOS32MSB : AudioFormat = ll::AUDIO_S32MSB;
+pub const AUDIOS32    : AudioFormat = ll::AUDIO_S32;
+pub const AUDIOF32LSB : AudioFormat = ll::AUDIO_F32LSB;
+pub const AUDIOF32MSB : AudioFormat = ll::AUDIO_F32MSB;
+pub const AUDIOF32    : AudioFormat = ll::AUDIO_F32;
+pub const AUDIOU16SYS : AudioFormat = ll::AUDIO_U16SYS;
+pub const AUDIOS16SYS : AudioFormat = ll::AUDIO_S16SYS;
+pub const AUDIOS32SYS : AudioFormat = ll::AUDIO_S32SYS;
+pub const AUDIOF32SYS : AudioFormat = ll::AUDIO_F32SYS;
+
 #[repr(C)]
 #[deriving(Clone, PartialEq, Hash, Show, FromPrimitive)]
 pub enum AudioStatus {
@@ -179,22 +202,22 @@ pub trait AudioCallback<T> {
 /// A phantom type for retreiving the SDL_AudioFormat of a given generic type.
 /// All format types are returned as native-endian.
 ///
-/// Example: `assert_eq!(AudioFormat::<f32>::get_audio_format(), ll::AUDIO_F32);``
-pub trait AudioFormat<T> { fn get_audio_format() -> ll::SDL_AudioFormat; }
+/// Example: `assert_eq!(AudioFormatNum::<f32>::get_audio_format(), ll::AUDIO_F32);``
+pub trait AudioFormatNum<T> { fn get_audio_format() -> ll::SDL_AudioFormat; }
 /// AUDIO_S8
-impl AudioFormat<i8> for i8 { fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S8 } }
+impl AudioFormatNum<i8> for i8 { fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S8 } }
 /// AUDIO_U8
-impl AudioFormat<u8> for u8 { fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_U8 } }
+impl AudioFormatNum<u8> for u8 { fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_U8 } }
 /// AUDIO_S16
-impl AudioFormat<i16> for i16 { fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S16SYS } }
+impl AudioFormatNum<i16> for i16 { fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S16SYS } }
 /// AUDIO_U16
-impl AudioFormat<u16> for u16 { fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_U16SYS } }
+impl AudioFormatNum<u16> for u16 { fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_U16SYS } }
 /// AUDIO_S32
-impl AudioFormat<i32> for i32 { fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S32SYS } }
+impl AudioFormatNum<i32> for i32 { fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S32SYS } }
 /// AUDIO_F32
-impl AudioFormat<f32> for f32 { fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_F32SYS } }
+impl AudioFormatNum<f32> for f32 { fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_F32SYS } }
 
-extern "C" fn audio_callback_marshall<T: AudioFormat<T>, CB: AudioCallback<T>>
+extern "C" fn audio_callback_marshall<T: AudioFormatNum<T>, CB: AudioCallback<T>>
 (userdata: *const c_void, stream: *const uint8_t, len: c_int) {
     use std::raw::Slice;
     use std::mem::{size_of, transmute};
@@ -208,19 +231,19 @@ extern "C" fn audio_callback_marshall<T: AudioFormat<T>, CB: AudioCallback<T>>
     }
 }
 
-pub struct AudioSpecDesired<T: AudioFormat<T>, CB: AudioCallback<T>> {
+pub struct AudioSpecDesired<T: AudioFormatNum<T>, CB: AudioCallback<T>> {
     pub freq: i32,
     pub channels: u8,
     pub callback: Box<CB>
 }
 
-impl<T: AudioFormat<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
+impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
     fn convert_to_ll(self) -> ll::SDL_AudioSpec {
         use std::mem::transmute;
         unsafe {
             ll::SDL_AudioSpec {
                 freq: self.freq,
-                format: AudioFormat::<T>::get_audio_format(),
+                format: AudioFormatNum::<T>::get_audio_format(),
                 channels: self.channels,
                 silence: 0,
                 samples: 0,
@@ -287,7 +310,7 @@ pub struct AudioSpec {
 }
 
 impl AudioSpec {
-    fn convert_from_ll<T: AudioFormat<T>, CB: AudioCallback<T>>(spec: ll::SDL_AudioSpec)
+    fn convert_from_ll<T: AudioFormatNum<T>, CB: AudioCallback<T>>(spec: ll::SDL_AudioSpec)
             -> (AudioSpec, Box<CB>) {
         use std::mem::transmute;
         unsafe {
@@ -323,7 +346,8 @@ impl Drop for AudioDeviceID {
     }
 }
 
-pub struct AudioDevice<T: AudioFormat<T>, CB: AudioCallback<T>> {
+/// Wraps SDL_AudioDeviceID and owns the callback used by the audio device.
+pub struct AudioDevice<T: AudioFormatNum<T>, CB: AudioCallback<T>> {
     device_id: AudioDeviceID,
     /// Every audio device corresponds to an SDL_AudioSpec.
     spec: AudioSpec,
@@ -331,7 +355,7 @@ pub struct AudioDevice<T: AudioFormat<T>, CB: AudioCallback<T>> {
     callback: Box<CB>
 }
 
-impl<T: AudioFormat<T>, CB: AudioCallback<T>> AudioDevice<T, CB> {
+impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioDevice<T, CB> {
     pub fn get_status(&self) -> AudioStatus {
         unsafe {
             let status = ll::SDL_GetAudioDeviceStatus(self.device_id.id());
@@ -349,6 +373,11 @@ impl<T: AudioFormat<T>, CB: AudioCallback<T>> AudioDevice<T, CB> {
         unsafe { ll::SDL_PauseAudioDevice(self.device_id.id(), 0) }
     }
 
+    /// Locks the audio device using `SDL_LockAudioDevice`.
+    ///
+    /// When the returned lock guard is dropped, `SDL_UnlockAudioDevice` is
+    /// called.
+    /// Use this method to read and mutate callback data.
     pub fn lock<'a>(&'a mut self) -> AudioDeviceLockGuard<'a, T, CB> {
         unsafe { ll::SDL_LockAudioDevice(self.device_id.id()) };
         AudioDeviceLockGuard {
@@ -363,20 +392,20 @@ impl<T: AudioFormat<T>, CB: AudioCallback<T>> AudioDevice<T, CB> {
 }
 
 /// Similar to `std::sync::MutexGuard`, but for use with `AudioDevice::lock()`.
-pub struct AudioDeviceLockGuard<'a, T: AudioFormat<T>, CB: AudioCallback<T> + 'a> {
+pub struct AudioDeviceLockGuard<'a, T: AudioFormatNum<T>, CB: AudioCallback<T> + 'a> {
     device: &'a mut AudioDevice<T, CB>
 }
 
-impl<'a, T: AudioFormat<T>, CB: AudioCallback<T>> Deref<CB> for AudioDeviceLockGuard<'a, T, CB> {
+impl<'a, T: AudioFormatNum<T>, CB: AudioCallback<T>> Deref<CB> for AudioDeviceLockGuard<'a, T, CB> {
     fn deref(&self) -> &CB { &*self.device.callback }
 }
 
-impl<'a, T: AudioFormat<T>, CB: AudioCallback<T>> DerefMut<CB> for AudioDeviceLockGuard<'a, T, CB> {
+impl<'a, T: AudioFormatNum<T>, CB: AudioCallback<T>> DerefMut<CB> for AudioDeviceLockGuard<'a, T, CB> {
     fn deref_mut(&mut self) -> &mut CB { &mut *self.device.callback }
 }
 
 #[unsafe_destructor]
-impl<'a, T: AudioFormat<T>, CB: AudioCallback<T>> Drop for AudioDeviceLockGuard<'a, T, CB> {
+impl<'a, T: AudioFormatNum<T>, CB: AudioCallback<T>> Drop for AudioDeviceLockGuard<'a, T, CB> {
     fn drop(&mut self) {
         unsafe { ll::SDL_UnlockAudioDevice(self.device.device_id.id()) }
     }
