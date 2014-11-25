@@ -8,7 +8,6 @@ use SdlResult;
 use std::ptr;
 use libc;
 use libc::{c_int, uint32_t, c_float, c_double, c_void, size_t};
-use std::string;
 use rect::Point;
 use rect::Rect;
 use std::num::FromPrimitive;
@@ -186,7 +185,7 @@ impl RendererInfo {
             }).collect();
 
             RendererInfo {
-                name: string::raw::from_buf(info.name as *const _),
+                name: String::from_raw_buf(info.name as *const _),
                 flags: actual_flags,
                 texture_formats: texture_formats,
                 max_texture_width: info.max_texture_width as int,

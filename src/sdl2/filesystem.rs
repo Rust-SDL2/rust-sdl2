@@ -1,4 +1,3 @@
-use std::string;
 use SdlResult;
 use get_error;
 
@@ -15,7 +14,7 @@ pub mod ll {
 pub fn get_base_path() -> SdlResult<String> {
     let result = unsafe {
         let cstr = ll::SDL_GetBasePath();
-        string::raw::from_buf(cstr as *const u8)
+        String::from_raw_buf(cstr as *const u8)
     };
 
     if result.len() == 0 {
@@ -32,7 +31,7 @@ pub fn get_pref_path(org: &str, app: &str) -> SdlResult<String> {
             app.with_c_str(|app_cstr| {
                 ll::SDL_GetPrefPath(org_cstr, app_cstr)
             })});
-        string::raw::from_buf(cstr as *const u8)
+        String::from_raw_buf(cstr as *const u8)
     };
 
     if result.len() == 0 {

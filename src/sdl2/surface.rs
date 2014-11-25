@@ -180,8 +180,11 @@ impl Surface {
     pub fn with_lock<R>(&mut self, f: |pixels: &mut [u8]| -> R) -> R {
         unsafe {
             if ll::SDL_LockSurface(self.raw) != 0 { panic!("could not lock surface"); }
+
+            let raw_pixels = (*self.raw).pixels as *mut _;
             let len = (*self.raw).pitch as uint * ((*self.raw).h as uint);
-            let rv = ::std::slice::raw::mut_buf_as_slice((*self.raw).pixels as *mut _, len, f);
+            let pixels = ::std::slice::from_raw_mut_buf(&raw_pixels, len);
+            let rv = f(pixels);
             ll::SDL_UnlockSurface(self.raw);
             rv
         }
