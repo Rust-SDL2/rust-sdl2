@@ -24,6 +24,21 @@ cargo build
 rustc -L. --cfg mac_framework src/sdl2_ttf/lib.rs
 ```
 
+For cargo:
+
+```
+[dependencies]
+sdl2_ttf = "$version-here$"
+```
+
+or
+
+```
+[dependencies.sdl2_ttf]
+git = "https://github.com/andelf/rust-sdl2_ttf"
+```
+
+
 Demo
 ----
 
