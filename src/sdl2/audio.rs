@@ -377,7 +377,7 @@ impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
 
     fn callback_to_userdata(callback: CB) -> Box<AudioCallbackUserdata<CB>> {
         let mut task = box Task::new(None, None);
-        task.name = Some("SDL audio callback".into_maybe_owned());
+        task.name = Some("SDL audio callback".into_cow());
 
         box AudioCallbackUserdata {
             task: AudioCallbackTask { task: Some(task) },
