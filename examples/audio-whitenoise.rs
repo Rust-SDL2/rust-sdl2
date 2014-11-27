@@ -1,17 +1,18 @@
 extern crate sdl2;
+
 use sdl2::audio::{AudioCallback, AudioSpecDesired};
-use std::rand::{Rng, StdRng};
 
 struct MyCallback {
-    /// Random number generator for white noise
-    rng: StdRng,
     volume: f32
 }
 impl AudioCallback<f32> for MyCallback {
     fn callback(&mut self, out: &mut [f32]) {
+        use std::rand::{Rng, task_rng};
+        let mut rng = task_rng();
+
         // Generate white noise
         for x in out.iter_mut() {
-            *x = self.rng.next_f32() * self.volume;
+            *x = (rng.next_f32()*2.0 - 1.0) * self.volume;
         }
     }
 }
@@ -22,7 +23,7 @@ fn main() {
     let desired_spec = AudioSpecDesired {
         freq: 44100,
         channels: 1,
-        callback: MyCallback { rng: StdRng::new().unwrap(), volume: 1.0 }
+        callback: MyCallback { volume: 0.5 }
     };
 
     // None: use default device
@@ -44,7 +45,7 @@ fn main() {
     {
         // Acquire a lock. This lets us read and modify callback data.
         let mut lock = device.lock();
-        (*lock).volume = 0.5;
+        (*lock).volume = 0.25;
         // Lock guard is dropped here
     }
 
