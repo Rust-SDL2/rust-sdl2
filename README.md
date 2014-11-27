@@ -39,7 +39,7 @@ If you're having issues, [see here](https://github.com/PistonDevelopers/rust-emp
 If you're using [cargo](http://crates.io/) to manage your project, you can download through Crates.io:
 
     [dependencies]
-    sdl2 = "0.0.1"
+    sdl2 = "0.0.4"
 
 Alternatively, pull it from GitHub
 
