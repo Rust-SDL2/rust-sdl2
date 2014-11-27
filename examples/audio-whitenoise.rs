@@ -22,7 +22,7 @@ fn main() {
     let desired_spec = AudioSpecDesired {
         freq: 44100,
         channels: 1,
-        callback: box MyCallback { rng: StdRng::new().unwrap(), volume: 1.0 }
+        callback: MyCallback { rng: StdRng::new().unwrap(), volume: 1.0 }
     };
 
     // None: use default device

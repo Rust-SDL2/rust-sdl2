@@ -8,6 +8,7 @@
 
 extern crate libc;
 extern crate collections;
+extern crate rustrt;
 
 pub use sdl::*;
 
