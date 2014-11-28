@@ -15,7 +15,7 @@ pub fn main(png: &Path) {
     };
 
     let renderer = match sdl2::render::Renderer::from_window(
-            window, sdl2::render::DriverAuto, sdl2::render::ACCELERATED) {
+            window, sdl2::render::Auto, sdl2::render::ACCELERATED) {
         Ok(renderer) => renderer,
         Err(err) => panic!(format!("failed to create renderer: {}", err))
     };
@@ -42,9 +42,9 @@ pub fn main(png: &Path) {
     'main : loop {
         'event : loop {
             match sdl2::event::poll_event() {
-                sdl2::event::QuitEvent(_) => break 'main,
-                sdl2::event::KeyDownEvent(_, _, key, _, _) => {
-                    if key == sdl2::keycode::EscapeKey {
+                sdl2::event::Quit(_) => break 'main,
+                sdl2::event::KeyDown(_, _, key, _, _, _) => {
+                    if key == sdl2::keycode::Escape {
                         break 'main
                     }
                 }
