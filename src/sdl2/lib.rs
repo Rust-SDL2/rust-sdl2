@@ -24,6 +24,7 @@ pub mod gesture;
 pub mod touch;
 pub mod joystick;
 pub mod controller;
+pub mod haptic;
 pub mod keyboard;
 pub mod mouse;
 pub mod rect;
