@@ -3,7 +3,6 @@ use std::ptr;
 use video::Window;
 use get_error;
 use SdlResult;
-use std::ptr;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
