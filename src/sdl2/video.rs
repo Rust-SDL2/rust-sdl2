@@ -1,6 +1,5 @@
 use libc::{c_int, c_float, uint32_t};
 use std::ptr;
-use std::string;
 use std::vec::Vec;
 
 use rect::Rect;
@@ -442,7 +441,7 @@ impl Window {
     pub fn get_title(&self) -> String {
         unsafe {
             let cstr = ll::SDL_GetWindowTitle(self.raw);
-            string::raw::from_buf(cstr as *const _)
+            String::from_raw_buf(cstr as *const _)
         }
     }
 
@@ -630,7 +629,7 @@ pub fn get_num_video_drivers() -> SdlResult<int> {
 pub fn get_video_driver(id: int) -> String {
     unsafe {
         let cstr = ll::SDL_GetVideoDriver(id as c_int);
-        string::raw::from_buf(cstr as *const _)
+        String::from_raw_buf(cstr as *const _)
     }
 }
 
@@ -647,7 +646,7 @@ pub fn video_quit() {
 pub fn get_current_video_driver() -> String {
     unsafe {
         let cstr = ll::SDL_GetCurrentVideoDriver();
-        string::raw::from_buf(cstr as *const _)
+        String::from_raw_buf(cstr as *const _)
     }
 }
 
@@ -663,7 +662,7 @@ pub fn get_num_video_displays() -> SdlResult<int> {
 pub fn get_display_name(display_index: int) -> String {
     unsafe {
         let cstr = ll::SDL_GetDisplayName(display_index as c_int);
-        string::raw::from_buf(cstr as *const _)
+        String::from_raw_buf(cstr as *const _)
     }
 }
 

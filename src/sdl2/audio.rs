@@ -1,11 +1,13 @@
+//! Audio Functions
+
 use std::ptr;
 use std::mem;
 use std::c_str::CString;
 use std::c_vec::CVec;
 use libc;
 use libc::{c_int, size_t, c_void};
-use libc::{uint8_t, uint16_t, uint32_t};
-use std::raw::Slice;
+use libc::{uint8_t};
+use rustrt::task::Task;
 
 use get_error;
 use rwops::RWops;
@@ -91,7 +93,7 @@ pub mod ll {
         pub fn SDL_GetAudioDeviceName(index: c_int, iscapture: c_int) -> *const c_char;
         pub fn SDL_OpenAudioDevice(device: *const c_char, iscapture: c_int,
                                    desired: *const SDL_AudioSpec,
-                                   obtained: *const SDL_AudioSpec,
+                                   obtained: *mut SDL_AudioSpec,
                                    allowed_changes: c_int) -> SDL_AudioDeviceID;
         pub fn SDL_GetAudioStatus() -> SDL_AudioStatus;
         pub fn SDL_GetAudioDeviceStatus(dev: SDL_AudioDeviceID) ->
@@ -99,9 +101,9 @@ pub mod ll {
         pub fn SDL_PauseAudio(pause_on: c_int);
         pub fn SDL_PauseAudioDevice(dev: SDL_AudioDeviceID, pause_on: c_int);
         pub fn SDL_LoadWAV_RW(src: *const SDL_RWops, freesrc: c_int,
-                              spec: *const SDL_AudioSpec,
-                              audio_buf: *const *const uint8_t, audio_len: *const uint32_t) -> *const SDL_AudioSpec;
-        pub fn SDL_FreeWAV(audio_buf: *const uint8_t);
+                              spec: *mut SDL_AudioSpec,
+                              audio_buf: *mut *mut uint8_t, audio_len: *mut uint32_t) -> *mut SDL_AudioSpec;
+        pub fn SDL_FreeWAV(audio_buf: *mut uint8_t);
         pub fn SDL_BuildAudioCVT(cvt: *mut SDL_AudioCVT,
                                  src_format: SDL_AudioFormat, src_channels: uint8_t,
                                  src_rate: c_int, dst_format: SDL_AudioFormat,
@@ -121,7 +123,6 @@ pub mod ll {
     }
 
 }
-
 
 pub type AudioFormat = ll::SDL_AudioFormat;
 
@@ -196,126 +197,354 @@ pub fn get_current_audio_driver() -> String {
     }
 }
 
-pub struct AudioSpec<'a > {
-    pub freq: c_int,
+#[deriving(Clone, Show)]
+pub struct AudioSpecWAV {
+    pub freq: i32,
+    // TODO: Showing format should be prettier
     pub format: AudioFormat,
-    pub channels: uint8_t,
-    pub silence: uint8_t,
-    pub samples: uint16_t,
-    pub padding: uint16_t,
-    pub size: uint32_t,
-    c_callback: ll::SDL_AudioCallback,
-    pub callback: Option<&'a |&mut [u8]|:'a>, // same size as *c_void
+    pub channels: u8
 }
 
-extern "C" fn c_audio_callback(userdata: *const c_void, stream: *const uint8_t, len: c_int) {
-    unsafe {
-        let f : &mut |&mut [u8]| = mem::transmute(userdata);
-
-        // FIXME: lifetime error in calling
-        //slice::raw::mut_buf_as_slice(stream as *mut u8, len as uint, *f)
-        (*f)(mem::transmute(Slice {
-            data: stream,
-            len: len as uint
-        }))
-    }
-}
-
-
-impl<'a> AudioSpec<'a> {
-    pub fn load_wav(path: &Path) -> SdlResult<(AudioSpec<'a>, CVec<u8>)> {
+impl AudioSpecWAV {
+    /// Loads a WAVE from the file path. Uses `SDL_LoadWAV_RW`.
+    pub fn load_wav(path: &Path) -> SdlResult<(AudioSpecWAV, CVec<u8>)> {
         let ops = try!(RWops::from_file(path, "rb"));
-        AudioSpec::load_wav_rw(&ops)
+        AudioSpecWAV::load_wav_rw(&ops)
     }
 
-    pub fn load_wav_rw(src: &RWops) -> SdlResult<(AudioSpec<'a>, CVec<u8>)> {
-        assert_eq!(mem::size_of::<AudioSpec>(), mem::size_of::<ll::SDL_AudioSpec>());
-        let mut spec = unsafe { mem::uninitialized::<AudioSpec>() };
-        let audio_buf = ptr::null::<u8>();
-        let audio_len = 0u32;
+    /// Loads a WAVE from the data source. Uses `SDL_LoadWAV_RW`.
+    pub fn load_wav_rw(src: &RWops) -> SdlResult<(AudioSpecWAV, CVec<u8>)> {
+        use std::mem::uninitialized;
+        use std::ptr::null_mut;
+
+        let mut desired = unsafe { uninitialized::<ll::SDL_AudioSpec>() };
+        let mut audio_buf: *mut u8 = null_mut();
+        let mut audio_len: u32 = 0;
         unsafe {
-            let ret = ll::SDL_LoadWAV_RW(src.raw(), 0, mem::transmute(&spec), &audio_buf, &audio_len);
+            let ret = ll::SDL_LoadWAV_RW(src.raw(), 0, &mut desired, &mut audio_buf, &mut audio_len);
             if ret.is_null() {
                 Err(get_error())
             } else {
                 let v = CVec::new_with_dtor(audio_buf as *mut u8, audio_len as uint, proc() {
                     ll::SDL_FreeWAV(audio_buf)
                 });
-                spec.c_callback = Some(c_audio_callback);
-                Ok((spec, v))
+
+                Ok((AudioSpecWAV {
+                    freq: desired.freq,
+                    format: desired.format,
+                    channels: desired.channels
+                }, v))
             }
         }
     }
 }
 
-pub type AudioDeviceID = ll::SDL_AudioDeviceID;
-
-// use rust's type system to make it right.
-pub enum AudioDevice{
-    PlaybackDevice(AudioDeviceID),
-    RecordingDevice(AudioDeviceID),
+pub trait AudioCallback<T> {
+    fn callback(&mut self, &mut [T]);
 }
 
-impl AudioDevice {
-    fn to_id(self) -> AudioDeviceID {
-        match self {
-            AudioDevice::PlaybackDevice(id)  => id,
-            AudioDevice::RecordingDevice(id) => id
+/// The userdata as seen by the SDL callback.
+struct AudioCallbackUserdata<CB> {
+    task: AudioCallbackTask,
+    callback: CB
+}
+
+/// A Task is required to use libstd from SDL's audio callback.
+struct AudioCallbackTask {
+    /// Set to None if there was an error running a previous task.
+    task: Option<Box<Task>>
+}
+
+impl Drop for AudioCallbackTask {
+    /// Destroy the callback task.
+    fn drop(&mut self) {
+        use rustrt::local::Local;
+        use std::mem::replace;
+
+        // Swap out the task with None in order to own it, since drop() only
+        // provides a reference.
+        match replace(&mut self.task, None) {
+            Some(task) => {
+                // pop current task
+                let old_task = Local::take();
+
+                task.destroy();
+
+                // put task back
+                Local::put(old_task);
+            },
+            None => ()
+        };
+    }
+}
+
+/// A phantom type for retreiving the SDL_AudioFormat of a given generic type.
+/// All format types are returned as native-endian.
+///
+/// Example: `assert_eq!(AudioFormatNum::<f32>::get_audio_format(), ll::AUDIO_F32);``
+pub trait AudioFormatNum<T> {
+    fn get_audio_format() -> ll::SDL_AudioFormat;
+    fn zero() -> Self;
+}
+/// AUDIO_S8
+impl AudioFormatNum<i8> for i8 {
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S8 }
+    fn zero() -> i8 { 0 }
+}
+/// AUDIO_U8
+impl AudioFormatNum<u8> for u8 {
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_U8 }
+    fn zero() -> u8 { 0 }
+}
+/// AUDIO_S16
+impl AudioFormatNum<i16> for i16 {
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S16SYS }
+    fn zero() -> i16 { 0 }
+}
+/// AUDIO_U16
+impl AudioFormatNum<u16> for u16 {
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_U16SYS }
+    fn zero() -> u16 { 0 }
+}
+/// AUDIO_S32
+impl AudioFormatNum<i32> for i32 {
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S32SYS }
+    fn zero() -> i32 { 0 }
+}
+/// AUDIO_F32
+impl AudioFormatNum<f32> for f32 {
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_F32SYS }
+    fn zero() -> f32 { 0.0 }
+}
+
+extern "C" fn audio_callback_marshall<T: AudioFormatNum<T>, CB: AudioCallback<T>>
+(userdata: *const c_void, stream: *const uint8_t, len: c_int) {
+    use std::raw::Slice;
+    use std::mem::{replace, size_of, transmute};
+    unsafe {
+        let mut cb_userdata: &mut AudioCallbackUserdata<CB> = transmute(userdata);
+        let buf: &mut [T] = transmute(Slice {
+            data: stream,
+            len: len as uint / size_of::<T>()
+        });
+
+        // Perform a dance to move tasks around without compiler errors
+        let new_task = match replace(&mut cb_userdata.task.task, None) {
+            Some(task) => {
+                let n = task.run(|| {
+                    cb_userdata.callback.callback(buf);
+                });
+
+                if n.is_destroyed() { None }
+                else { Some(n) }
+            },
+            None => {
+                // Last callback had an error. Fill buffer with silence.
+                for x in buf.iter_mut() { *x = AudioFormatNum::zero(); }
+
+                None
+            }
+        };
+
+        replace(&mut cb_userdata.task.task, new_task);
+    }
+}
+
+pub struct AudioSpecDesired<T: AudioFormatNum<T>, CB: AudioCallback<T>> {
+    pub freq: i32,
+    pub channels: u8,
+    pub callback: CB
+}
+
+impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
+    fn convert_to_ll(freq: i32, channels: u8, userdata: &mut AudioCallbackUserdata<CB>) -> ll::SDL_AudioSpec {
+        use std::mem::transmute;
+
+        unsafe {
+            ll::SDL_AudioSpec {
+                freq: freq,
+                format: AudioFormatNum::<T>::get_audio_format(),
+                channels: channels,
+                silence: 0,
+                samples: 0,
+                padding: 0,
+                size: 0,
+                callback: Some(audio_callback_marshall::<T, CB>),
+                userdata: transmute(userdata)
+            }
         }
     }
 
-    pub fn open<'a>(device: Option<&str>, iscapture: int, spec: &AudioSpec)
-        -> SdlResult<(AudioDevice, AudioSpec<'a>)> {
-        //! SDL_OpenAudioDevice
-        let obtained = unsafe { mem::uninitialized::<AudioSpec>() };
+    fn callback_to_userdata(callback: CB) -> Box<AudioCallbackUserdata<CB>> {
+        let mut task = box Task::new(None, None);
+        task.name = Some("SDL audio callback".into_cow());
+
+        box AudioCallbackUserdata {
+            task: AudioCallbackTask { task: Some(task) },
+            callback: callback
+        }
+    }
+
+    /// Opens a new audio device given the desired parameters and callback.
+    /// Uses `SDL_OpenAudioDevice`.
+    pub fn open_audio_device(self, device: Option<&str>, iscapture: bool) -> SdlResult<AudioDevice<CB>> {
+        use std::mem::uninitialized;
+        use std::ptr::null;
+        use std::c_str::CString;
+        use libc::c_char;
+
+        let mut userdata = AudioSpecDesired::callback_to_userdata(self.callback);
+        let desired = AudioSpecDesired::convert_to_ll(self.freq, self.channels, &mut *userdata);
+
+        let mut obtained = unsafe { uninitialized::<ll::SDL_AudioSpec>() };
         unsafe {
-            let device_c_str = match device {
-                None => ptr::null(),
-                Some(device) => device.to_c_str().unwrap(),
+            let device_cstr: Option<CString> = match device {
+                None => None,
+                Some(d) => Some(d.to_c_str())
             };
-            let ret = ll::SDL_OpenAudioDevice(device_c_str,
-                                              iscapture as c_int,
-                                              mem::transmute(spec),
-                                              mem::transmute(&obtained),
-                                              0);
-            if ret == 0 {
-                Err(get_error())
-            } else {
-                if iscapture == 0 { // plaback device
-                    Ok((AudioDevice::PlaybackDevice(ret as AudioDeviceID), obtained))
-                } else {
-                    Ok((AudioDevice::RecordingDevice(ret as AudioDeviceID), obtained))
+            let device_cstr_ptr: *const c_char = match device_cstr {
+                None => null(),
+                Some(ref s) => s.as_ptr()
+            };
+            let iscapture_flag = match iscapture { false => 0, true => 1 };
+            let device_id = ll::SDL_OpenAudioDevice(device_cstr_ptr, iscapture_flag, &desired, &mut obtained, 0);
+            match device_id {
+                0 => {
+                    Err(get_error())
+                },
+                id => {
+                    let device_id = match iscapture {
+                        true => AudioDeviceID::RecordingDevice(id),
+                        false => AudioDeviceID::PlaybackDevice(id)
+                    };
+
+                    let spec = AudioSpec::convert_from_ll(obtained);
+
+                    Ok(AudioDevice {
+                        device_id: device_id,
+                        spec: spec,
+                        userdata: userdata
+                    })
                 }
             }
         }
     }
+}
 
-    pub fn get_status(self) -> AudioStatus {
+#[deriving(Clone, Show)]
+pub struct AudioSpec {
+    pub freq: i32,
+    // TODO: Showing format should be prettier
+    pub format: AudioFormat,
+    pub channels: u8,
+    pub silence: u8,
+    pub samples: u16,
+    pub size: u32
+}
+
+impl AudioSpec {
+    fn convert_from_ll(spec: ll::SDL_AudioSpec) -> AudioSpec {
+        AudioSpec {
+            freq: spec.freq,
+            format: spec.format,
+            channels: spec.channels,
+            silence: spec.silence,
+            samples: spec.samples,
+            size: spec.size
+        }
+    }
+}
+
+enum AudioDeviceID {
+    PlaybackDevice(ll::SDL_AudioDeviceID),
+    RecordingDevice(ll::SDL_AudioDeviceID)
+}
+
+impl AudioDeviceID {
+    fn id(&self) -> ll::SDL_AudioDeviceID {
+        match self {
+            &AudioDeviceID::PlaybackDevice(id)  => id,
+            &AudioDeviceID::RecordingDevice(id) => id
+        }
+    }
+}
+
+impl Drop for AudioDeviceID {
+    fn drop(&mut self) {
+        //! Shut down audio processing and close the audio device.
+        unsafe { ll::SDL_CloseAudioDevice(self.id()) }
+    }
+}
+
+/// Wraps SDL_AudioDeviceID and owns the callback data used by the audio device.
+pub struct AudioDevice<CB> {
+    device_id: AudioDeviceID,
+    /// Every audio device corresponds to an SDL_AudioSpec.
+    spec: AudioSpec,
+    /// Store the callback to keep it alive for the entire duration of `AudioDevice`.
+    userdata: Box<AudioCallbackUserdata<CB>>
+}
+
+impl<CB> AudioDevice<CB> {
+    pub fn get_status(&self) -> AudioStatus {
         unsafe {
-            let status = ll::SDL_GetAudioDeviceStatus(self.to_id());
+            let status = ll::SDL_GetAudioDeviceStatus(self.device_id.id());
             FromPrimitive::from_int(status as int).unwrap()
         }
     }
 
-    pub fn pause(self) {
-        unsafe { ll::SDL_PauseAudioDevice(self.to_id(), 1) }
+    /// Get the obtained AudioSpec of the audio device.
+    pub fn get_spec(&self) -> &AudioSpec { &self.spec }
+
+    /// Pauses playback of the audio device.
+    pub fn pause(&self) {
+        unsafe { ll::SDL_PauseAudioDevice(self.device_id.id(), 1) }
     }
 
-    pub fn resume(self) {
-        unsafe { ll::SDL_PauseAudioDevice(self.to_id(), 0) }
+    /// Starts playback of the audio device.
+    pub fn resume(&self) {
+        unsafe { ll::SDL_PauseAudioDevice(self.device_id.id(), 0) }
     }
 
-    pub fn lock(self) {
-        unsafe { ll::SDL_LockAudioDevice(self.to_id()) }
+    /// Locks the audio device using `SDL_LockAudioDevice`.
+    ///
+    /// When the returned lock guard is dropped, `SDL_UnlockAudioDevice` is
+    /// called.
+    /// Use this method to read and mutate callback data.
+    pub fn lock<'a>(&'a mut self) -> AudioDeviceLockGuard<'a, CB> {
+        unsafe { ll::SDL_LockAudioDevice(self.device_id.id()) };
+        AudioDeviceLockGuard {
+            device: self
+        }
     }
 
-    pub fn unlock(self) {
-        unsafe { ll::SDL_UnlockAudioDevice(self.to_id()) }
+    /// Closes the audio device and saves the callback data from being dropped.
+    ///
+    /// Note that simply dropping `AudioDevice` will close the audio device,
+    /// but the callback data will be dropped.
+    pub fn close_and_get_callback(self) -> CB {
+        drop(self.device_id);
+        self.userdata.callback
     }
+}
 
-    pub fn close(self) {
-        //! Shut down audio processing and close the audio device.
-        unsafe { ll::SDL_CloseAudioDevice(self.to_id()) }
+/// Similar to `std::sync::MutexGuard`, but for use with `AudioDevice::lock()`.
+pub struct AudioDeviceLockGuard<'a, CB: 'a> {
+    device: &'a mut AudioDevice<CB>
+}
+
+impl<'a, CB> Deref<CB> for AudioDeviceLockGuard<'a, CB> {
+    fn deref(&self) -> &CB { &self.device.userdata.callback }
+}
+
+impl<'a, CB> DerefMut<CB> for AudioDeviceLockGuard<'a, CB> {
+    fn deref_mut(&mut self) -> &mut CB { &mut self.device.userdata.callback }
+}
+
+#[unsafe_destructor]
+impl<'a, CB> Drop for AudioDeviceLockGuard<'a, CB> {
+    fn drop(&mut self) {
+        unsafe { ll::SDL_UnlockAudioDevice(self.device.device_id.id()) }
     }
 }
 
@@ -337,8 +566,8 @@ impl Drop for AudioCVT {
 }
 
 impl AudioCVT {
-    pub fn new(src_format: AudioFormat, src_channels: u8, src_rate: int,
-               dst_format: AudioFormat, dst_channels: u8, dst_rate: int) -> SdlResult<AudioCVT> {
+    pub fn new(src_format: ll::SDL_AudioFormat, src_channels: u8, src_rate: int,
+               dst_format: ll::SDL_AudioFormat, dst_channels: u8, dst_rate: int) -> SdlResult<AudioCVT> {
         unsafe {
             let c_cvt_p = libc::malloc(mem::size_of::<ll::SDL_AudioCVT>() as size_t) as *mut ll::SDL_AudioCVT;
             let ret = ll::SDL_BuildAudioCVT(c_cvt_p,

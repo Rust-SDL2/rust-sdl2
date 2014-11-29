@@ -59,7 +59,7 @@ impl_owned_accessors!(RWops, close_on_drop)
 impl RWops {
     pub fn from_file(path: &Path, mode: &str) -> SdlResult<RWops> {
         let raw = unsafe {
-            ll::SDL_RWFromFile(path.to_c_str().unwrap(), mode.to_c_str().unwrap())
+            ll::SDL_RWFromFile(path.to_c_str().into_inner(), mode.to_c_str().into_inner())
         };
         if raw.is_null() { Err(get_error()) }
         else { Ok(RWops{raw: raw, close_on_drop: true}) }

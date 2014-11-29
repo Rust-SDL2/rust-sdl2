@@ -1,8 +1,6 @@
 use std::collections::HashMap;
 use std::num::FromPrimitive;
 use std::ptr;
-use std::string;
-use std::vec;
 
 use keycode::KeyCode;
 use rect::Rect;
@@ -81,7 +79,7 @@ pub fn get_keyboard_state() -> HashMap<ScanCode, bool> {
     let mut state: HashMap<ScanCode, bool> = HashMap::new();
     let count = 0;
 
-    let raw = unsafe { vec::raw::from_buf(ll::SDL_GetKeyboardState(&count),
+    let raw = unsafe { Vec::from_raw_buf(ll::SDL_GetKeyboardState(&count),
                                           count as uint) };
 
     let mut current = 0;
@@ -120,7 +118,7 @@ pub fn get_scancode_from_key(key: KeyCode) -> ScanCode {
 pub fn get_scancode_name(scancode: ScanCode) -> String {
     unsafe {
         let scancode_name = ll::SDL_GetScancodeName(scancode as u32);
-        string::raw::from_buf(scancode_name as *const u8)
+        String::from_raw_buf(scancode_name as *const u8)
     }
 }
 
@@ -136,7 +134,7 @@ pub fn get_scancode_from_name(name: &str) -> ScanCode {
 pub fn get_key_name(key: KeyCode) -> String {
     unsafe {
         let key_name = ll::SDL_GetKeyName(key as i32);
-        string::raw::from_buf(key_name as *const u8)
+        String::from_raw_buf(key_name as *const u8)
     }
 }
 
