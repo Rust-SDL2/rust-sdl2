@@ -38,13 +38,17 @@ If you're having issues, [see here](https://github.com/PistonDevelopers/rust-emp
 
 If you're using [cargo](http://crates.io/) to manage your project, you can download through Crates.io:
 
+```toml
     [dependencies]
     sdl2 = "0.0.6"
+```
 
 Alternatively, pull it from GitHub
 
+```rust
     [dependencies.sdl2]
     git = "https://github.com/AngryLawyer/rust-sdl2"
+```
 
 Otherwise, clone this repo and run [cargo](http://crates.io/)
 
@@ -62,14 +66,18 @@ Some additional examples can be found in the [rs-sdl2-examples](https://github.c
 
 If you want to use OpenGL, you also need the [gl-rs](https://github.com/bjz/gl-rs) package. If you're using [cargo](http://crates.io/), just add these lines to your Cargo.toml:
 
+```toml
     [dependencies.gl]
     git = "https://github.com/bjz/gl-rs"
+```
 
 Then you need to add this to add this initialization code to establish the bindings:
 
+```rust
     gl::load_with(|s| unsafe {
         std::mem::transmute(sdl2::video::gl_get_proc_address(s))
     });
+```
 
 Note that these bindings are very raw, and many of the calls will require unsafe blocks.
 
