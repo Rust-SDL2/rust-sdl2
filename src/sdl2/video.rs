@@ -99,7 +99,8 @@ pub mod ll {
         SDL_GL_CONTEXT_EGL = 19,
         SDL_GL_CONTEXT_FLAGS = 20,
         SDL_GL_CONTEXT_PROFILE_MASK = 21,
-        SDL_GL_SHARE_WITH_CURRENT_CONTEXT = 22
+        SDL_GL_SHARE_WITH_CURRENT_CONTEXT = 22,
+        SDL_GL_FRAMEBUFFER_SRGB_CAPABLE = 23
     }
 
     pub enum SDL_GLprofile {
@@ -208,7 +209,8 @@ pub enum GLAttr {
     GLContextEGL = ll::SDL_GLattr::SDL_GL_CONTEXT_EGL as int,
     GLContextFlags = ll::SDL_GLattr::SDL_GL_CONTEXT_FLAGS as int,
     GLContextProfileMask = ll::SDL_GLattr::SDL_GL_CONTEXT_PROFILE_MASK as int,
-    GLShareWithCurrentContext = ll::SDL_GLattr::SDL_GL_SHARE_WITH_CURRENT_CONTEXT as int
+    GLShareWithCurrentContext = ll::SDL_GLattr::SDL_GL_SHARE_WITH_CURRENT_CONTEXT as int,
+    GLFramebufferSRGBCapable = ll::SDL_GLattr::SDL_GL_FRAMEBUFFER_SRGB_CAPABLE as int
 }
 
 fn empty_sdl_display_mode() -> ll::SDL_DisplayMode {
