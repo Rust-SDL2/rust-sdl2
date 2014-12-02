@@ -3,7 +3,7 @@ extern crate sdl2;
 pub fn main() {
     sdl2::init(sdl2::INIT_VIDEO);
 
-    let window = match sdl2::video::Window::new("rust-sdl2 demo: Video", sdl2::video::PosCentered, sdl2::video::PosCentered, 800, 600, sdl2::video::OPENGL) {
+    let window = match sdl2::video::Window::new("rust-sdl2 demo: Video", sdl2::video::WindowPos::PosCentered, sdl2::video::WindowPos::PosCentered, 800, 600, sdl2::video::OPENGL) {
         Ok(window) => window,
         Err(err) => panic!(format!("failed to create window: {}", err))
     };
@@ -20,13 +20,13 @@ pub fn main() {
     'main : loop {
         'event : loop {
             match sdl2::event::poll_event() {
-                sdl2::event::Quit(_) => break 'main,
-                sdl2::event::KeyDown(_, _, key, _, _, _) => {
+                sdl2::event::Event::Quit(_) => break 'main,
+                sdl2::event::Event::KeyDown(_, _, key, _, _, _) => {
                     if key == sdl2::keycode::KeyCode::Escape {
                         break 'main
                     }
                 },
-                sdl2::event::None => break 'event,
+                sdl2::event::Event::None => break 'event,
                 _ => {}
             }
         }

@@ -1,9 +1,6 @@
 #![crate_name = "sdl2"]
 #![crate_type = "lib"]
 
-#![desc = "SDL2 bindings"]
-#![license = "MIT"]
-
 #![feature(default_type_params, globs, macro_rules, slicing_syntax, unsafe_destructor)]
 
 extern crate libc;
