@@ -213,6 +213,14 @@ pub enum GLAttr {
     GLFramebufferSRGBCapable = ll::SDL_GLattr::SDL_GL_FRAMEBUFFER_SRGB_CAPABLE as int
 }
 
+#[deriving(PartialEq)]
+pub enum GLProfile {
+  GLCoreProfile = ll::SDL_GLprofile::SDL_GL_CONTEXT_PROFILE_CORE as int,
+  GLCompatibilityProfile = ll::SDL_GLprofile::SDL_GL_CONTEXT_PROFILE_COMPATIBILITY as int,
+  GLESProfile = ll::SDL_GLprofile::SDL_GL_CONTEXT_PROFILE_ES as int
+}
+
+
 fn empty_sdl_display_mode() -> ll::SDL_DisplayMode {
     ll::SDL_DisplayMode {
         format: 0,
