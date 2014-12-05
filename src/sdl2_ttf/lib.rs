@@ -48,8 +48,8 @@ mod ffi;
 #[inline]
 fn color_to_c_color(color: Color) -> SDL_Color {
     match color {
-        pixels::RGB(r, g, b)     => SDL_Color { r: r, g: g, b: b, a: 255 },
-        pixels::RGBA(r, g, b, a) => SDL_Color { r: r, g: g, b: b, a: a   }
+        pixels::Color::RGB(r, g, b)     => SDL_Color { r: r, g: g, b: b, a: 255 },
+        pixels::Color::RGBA(r, g, b, a) => SDL_Color { r: r, g: g, b: b, a: a   }
     }
 }
 
