@@ -36,14 +36,14 @@ fn mainloop() -> Result<(), String> {
     sdl2::init(sdl2::INIT_VIDEO);
 
     let window = try!(sdl2::video::Window::new(
-        "rust-sdl2_gfx: draw line & FPSManager", sdl2::video::PosCentered,
-        sdl2::video::PosCentered, SCREEN_WIDTH, SCREEN_HEIGHT,
+        "rust-sdl2_gfx: draw line & FPSManager", sdl2::video::WindowPos::PosCentered,
+        sdl2::video::WindowPos::PosCentered, SCREEN_WIDTH, SCREEN_HEIGHT,
         sdl2::video::OPENGL));
 
     let renderer = try!(sdl2::render::Renderer::from_window(
             window, sdl2::render::RenderDriverIndex::Auto, sdl2::render::ACCELERATED));
 
-    try!(renderer.set_draw_color(pixels::RGB(0, 0, 0)));
+    try!(renderer.set_draw_color(pixels::Color::RGB(0, 0, 0)));
 
     try!(renderer.clear());
 
