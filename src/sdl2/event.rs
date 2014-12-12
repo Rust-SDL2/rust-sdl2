@@ -730,36 +730,36 @@ impl Event {
         let event_type: EventType = FromPrimitive::from_uint(raw_type as uint).unwrap_or(EventType::User);
         unsafe { match event_type {
             EventType::Quit => {
-                let event = *raw.quit();
+                let ref event = *raw.quit();
                 Event::Quit(event.timestamp as uint)
             }
             EventType::AppTerminating => {
-                let event = *raw.common();
+                let ref event = *raw.common();
                 Event::AppTerminating(event.timestamp as uint)
             }
             EventType::AppLowMemory => {
-                let event = *raw.common();
+                let ref event = *raw.common();
                 Event::AppLowMemory(event.timestamp as uint)
             }
             EventType::AppWillEnterBackground => {
-                let event = *raw.common();
+                let ref event = *raw.common();
                 Event::AppWillEnterBackground(event.timestamp as uint)
             }
             EventType::AppDidEnterBackground => {
-                let event = *raw.common();
+                let ref event = *raw.common();
                 Event::AppDidEnterBackground(event.timestamp as uint)
             }
             EventType::AppWillEnterForeground => {
-                let event = *raw.common();
+                let ref event = *raw.common();
                 Event::AppWillEnterForeground(event.timestamp as uint)
             }
             EventType::AppDidEnterForeground => {
-                let event = *raw.common();
+                let ref event = *raw.common();
                 Event::AppDidEnterForeground(event.timestamp as uint)
             }
 
             EventType::Window => {
-                let event = *raw.window();
+                let ref event = *raw.window();
 
                 let window = video::Window::from_id(event.windowID);
                 let window = match window {
@@ -774,7 +774,7 @@ impl Event {
             // TODO: SysWMEventType
 
             EventType::KeyDown => {
-                let event = *raw.key();
+                let ref event = *raw.key();
 
                 let window = video::Window::from_id(event.windowID);
                 let window = match window {
@@ -791,7 +791,7 @@ impl Event {
                                 event.repeat != 0)
             }
             EventType::KeyUp => {
-                let event = *raw.key();
+                let ref event = *raw.key();
 
                 let window = video::Window::from_id(event.windowID);
                 let window = match window {
@@ -808,7 +808,7 @@ impl Event {
                              event.repeat != 0)
             }
             EventType::TextEditing => {
-                let event = *raw.edit();
+                let ref event = *raw.edit();
 
                 let window = video::Window::from_id(event.windowID);
                 let window = match window {
@@ -821,7 +821,7 @@ impl Event {
                                    event.start as int, event.length as int)
             }
             EventType::TextInput => {
-                let event = *raw.text();
+                let ref event = *raw.text();
 
                 let window = video::Window::from_id(event.windowID);
                 let window = match window {
@@ -834,7 +834,7 @@ impl Event {
             }
 
             EventType::MouseMotion => {
-                let event = *raw.motion();
+                let ref event = *raw.motion();
 
                 let window = video::Window::from_id(event.windowID);
                 let window = match window {
@@ -849,7 +849,7 @@ impl Event {
                                    event.xrel as int, event.yrel as int)
             }
             EventType::MouseButtonDown => {
-                let event = *raw.button();
+                let ref event = *raw.button();
 
                 let window = video::Window::from_id(event.windowID);
                 let window = match window {
@@ -863,7 +863,7 @@ impl Event {
                                        event.x as int, event.y as int)
             }
             EventType::MouseButtonUp => {
-                let event = *raw.button();
+                let ref event = *raw.button();
 
                 let window = video::Window::from_id(event.windowID);
                 let window = match window {
@@ -877,7 +877,7 @@ impl Event {
                                      event.x as int, event.y as int)
             }
             EventType::MouseWheel => {
-                let event = *raw.wheel();
+                let ref event = *raw.wheel();
 
                 let window = video::Window::from_id(event.windowID);
                 let window = match window {
@@ -891,48 +891,48 @@ impl Event {
             }
 
             EventType::JoyAxisMotion => {
-                let event = *raw.jaxis();
+                let ref event = *raw.jaxis();
                 Event::JoyAxisMotion(event.timestamp as uint,
                                      event.which as int, event.axis as int,
                                      event.value)
             }
             EventType::JoyBallMotion => {
-                let event = *raw.jball();
+                let ref event = *raw.jball();
                 Event::JoyBallMotion(event.timestamp as uint,
                                      event.which as int, event.ball as int,
                                      event.xrel, event.yrel)
             }
             EventType::JoyHatMotion => {
-                let event = *raw.jhat();
+                let ref event = *raw.jhat();
                 Event::JoyHatMotion(event.timestamp as uint,
                                     event.which as int, event.hat as int,
                                     joystick::HatState::from_bits(event.value).unwrap())
             }
             EventType::JoyButtonDown => {
-                let event = *raw.jbutton();
+                let ref event = *raw.jbutton();
                 Event::JoyButtonDown(event.timestamp as uint,
                                      event.which as int,
                                      event.button as int)
             }
             EventType::JoyButtonUp => {
-                let event = *raw.jbutton();
+                let ref event = *raw.jbutton();
                 Event::JoyButtonUp(event.timestamp as uint,
                                    event.which as int,
                                    event.button as int)
             }
             EventType::JoyDeviceAdded => {
-                let event = *raw.jdevice();
+                let ref event = *raw.jdevice();
                 Event::JoyDeviceAdded(event.timestamp as uint,
                                       event.which as int)
             }
             EventType::JoyDeviceRemoved => {
-                let event = *raw.jdevice();
+                let ref event = *raw.jdevice();
                 Event::JoyDeviceRemoved(event.timestamp as uint,
                                         event.which as int)
             }
 
             EventType::ControllerAxisMotion => {
-                let event = *raw.caxis();
+                let ref event = *raw.caxis();
                 let axis = controller::wrap_controller_axis(event.axis);
 
                 Event::ControllerAxisMotion(event.timestamp as uint,
@@ -940,51 +940,51 @@ impl Event {
                                             event.value)
             }
             EventType::ControllerButtonDown => {
-                let event = *raw.cbutton();
+                let ref event = *raw.cbutton();
                 let button = controller::wrap_controller_button(event.button);
 
                 Event::ControllerButtonDown(event.timestamp as uint,
                                             event.which as int, button)
             }
             EventType::ControllerButtonUp => {
-                let event = *raw.cbutton();
+                let ref event = *raw.cbutton();
                 let button = controller::wrap_controller_button(event.button);
 
                 Event::ControllerButtonUp(event.timestamp as uint,
                                           event.which as int, button)
             }
             EventType::ControllerDeviceAdded => {
-                let event = *raw.cdevice();
+                let ref event = *raw.cdevice();
                 Event::ControllerDeviceAdded(event.timestamp as uint,
                                              event.which as int)
             }
             EventType::ControllerDeviceRemoved => {
-                let event = *raw.cdevice();
+                let ref event = *raw.cdevice();
                 Event::ControllerDeviceRemoved(event.timestamp as uint,
                                                event.which as int)
             }
             EventType::ControllerDeviceRemapped => {
-                let event = *raw.cdevice();
+                let ref event = *raw.cdevice();
                 Event::ControllerDeviceRemapped(event.timestamp as uint,
                                                 event.which as int)
             }
 
             EventType::FingerDown => {
-                let event = *raw.tfinger();
+                let ref event = *raw.tfinger();
                 Event::FingerDown(event.timestamp as uint, event.touchId as i64,
                                   event.fingerId as i64, event.x as f64,
                                   event.y as f64, event.dx as f64,
                                   event.dy as f64, event.pressure as f64)
             }
             EventType::FingerUp => {
-                let event = *raw.tfinger();
+                let ref event = *raw.tfinger();
                 Event::FingerUp(event.timestamp as uint, event.touchId as i64,
                                 event.fingerId as i64, event.x as f64,
                                 event.y as f64, event.dx as f64,
                                 event.dy as f64, event.pressure as f64)
             }
             EventType::FingerMotion => {
-                let event = *raw.tfinger();
+                let ref event = *raw.tfinger();
                 Event::FingerMotion(event.timestamp as uint,
                                     event.touchId as i64, event.fingerId as i64,
                                     event.x as f64, event.y as f64,
@@ -992,7 +992,7 @@ impl Event {
                                     event.pressure as f64)
             }
             EventType::DollarGesture => {
-                let event = *raw.dgesture();
+                let ref event = *raw.dgesture();
                 Event::DollarGesture(event.timestamp as uint,
                                      event.touchId as i64,
                                      event.gestureId as i64,
@@ -1001,7 +1001,7 @@ impl Event {
                                      event.y as f64)
             }
             EventType::DollarRecord => {
-                let event = *raw.dgesture();
+                let ref event = *raw.dgesture();
                 Event::DollarRecord(event.timestamp as uint,
                                     event.touchId as i64,
                                     event.gestureId as i64,
@@ -1010,7 +1010,7 @@ impl Event {
                                     event.y as f64)
             }
             EventType::MultiGesture => {
-                let event = *raw.mgesture();
+                let ref event = *raw.mgesture();
                 Event::MultiGesture(event.timestamp as uint,
                                     event.touchId as i64, event.dTheta as f64,
                                     event.dDist as f64, event.x as f64,
@@ -1018,11 +1018,11 @@ impl Event {
             }
 
             EventType::ClipboardUpdate => {
-                let event = *raw.common();
+                let ref event = *raw.common();
                 Event::ClipboardUpdate(event.timestamp as uint)
             }
             EventType::DropFile => {
-                let event = *raw.drop();
+                let ref event = *raw.drop();
 
                 let text = String::from_raw_buf(event.file as *const u8);
                 ll::SDL_free(event.file as *const c_void);
@@ -1039,7 +1039,7 @@ impl Event {
                     return Event::None;
                 }
 
-                let event = *raw.user();
+                let ref event = *raw.user();
 
                 let window = video::Window::from_id(event.windowID);
                 let window = match window {
