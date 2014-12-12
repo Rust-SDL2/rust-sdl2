@@ -15,9 +15,8 @@ license = "MIT"
 name = "sdl2_gfx"
 path = "src/sdl2_gfx/lib.rs"
 
-[dependencies]
-
-sdl2 = "~0.0.3"
+[dependencies.sdl2]
+git = "https://github.com/AngryLawyer/rust-sdl2"
 
 [[bin]]
 
