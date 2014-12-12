@@ -296,7 +296,7 @@ pub enum FullscreenType {
     FTDesktop = ll::SDL_WindowFlags::SDL_WINDOW_FULLSCREEN_DESKTOP as int
 }
 
-#[deriving(PartialEq)]
+#[deriving(PartialEq, Copy)]
 pub enum WindowPos {
     PosUndefined,
     PosCentered,

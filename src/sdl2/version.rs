@@ -37,7 +37,7 @@ impl Version {
     /// Convert a raw *SDL_version to Version.
     pub fn from_ll(sv: *const ll::SDL_version) -> Version {
         unsafe {
-            let v = *sv;
+            let ref v = *sv;
             Version{ major: v.major as int, minor: v.minor as int, patch: v.patch as int }
         }
     }
