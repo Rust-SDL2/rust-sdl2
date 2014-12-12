@@ -40,7 +40,7 @@ If you're using [cargo](http://crates.io/) to manage your project, you can downl
 
 ```toml
     [dependencies]
-    sdl2 = "0.0.7"
+    sdl2 = "0.0.8"
 ```
 
 Alternatively, pull it from GitHub
