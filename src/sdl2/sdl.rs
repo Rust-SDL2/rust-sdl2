@@ -61,6 +61,7 @@ pub mod ll {
 }
 
 bitflags! {
+    #[deriving(Copy)]
     flags InitFlag: u32 {
         const INIT_TIMER = ll::SDL_INIT_TIMER,
         const INIT_AUDIO = ll::SDL_INIT_AUDIO,
@@ -74,7 +75,7 @@ bitflags! {
     }
 }
 
-#[deriving(PartialEq)]
+#[deriving(Copy, Clone, PartialEq)]
 pub enum Error {
     NoMemError = ll::SDL_ENOMEM as int,
     ReadError = ll::SDL_EFREAD as int,

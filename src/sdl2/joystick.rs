@@ -7,6 +7,7 @@ pub mod ll {
     pub type SDL_Joystick = c_void;
 
     #[allow(dead_code)]
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_JoystickGUID {
         data: [uint8_t, ..16u],
@@ -46,6 +47,7 @@ pub mod ll {
 }
 
 bitflags! {
+    #[deriving(Copy)]
     flags HatState: u8 {
         const CENTEREDHATSTATE = 0,
         const UPHATSTATE = 0x01,

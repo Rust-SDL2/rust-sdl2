@@ -55,7 +55,7 @@ pub mod ll {
     }
 }
 
-#[deriving(PartialEq)]
+#[deriving(Copy, Clone, PartialEq)]
 #[repr(u32)]
 pub enum SystemCursor {
     Arrow = ll::SDL_SYSTEM_CURSOR_ARROW,
@@ -135,7 +135,7 @@ impl Cursor {
     }
 }
 
-#[deriving(PartialEq)]
+#[deriving(Copy, Clone, PartialEq)]
 pub enum Mouse {
     Left,
     Middle,
@@ -146,6 +146,7 @@ pub enum Mouse {
 }
 
 bitflags! {
+    #[deriving(Copy)]
     flags MouseState: u32 {
         const LEFTMOUSESTATE = 0x01,
         const MIDDLEMOUSESTATE = 0x02,

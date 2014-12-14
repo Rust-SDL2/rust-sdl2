@@ -5,6 +5,7 @@ pub mod ll {
     use libc::{c_int, uint8_t, uint32_t};
 
     //SDL_pixels.h
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_Color {
         pub r: uint8_t,
@@ -13,6 +14,7 @@ pub mod ll {
         pub a: uint8_t,
     }
 
+    #[allow(missing_copy_implementations)]
     #[repr(C)]
     pub struct SDL_Palette {
         pub ncolors: c_int,
@@ -21,7 +23,7 @@ pub mod ll {
         pub refcount: c_int
     }
 
-    #[allow(non_snake_case)]
+    #[allow(non_snake_case, missing_copy_implementations)]
     #[repr(C)]
     pub struct SDL_PixelFormat {
         pub format: SDL_PixelFormatFlag,
@@ -90,7 +92,7 @@ pub mod ll {
         pub fn SDL_MapRGBA(format: *const SDL_PixelFormat, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) -> uint32_t;
     }
 }
-#[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
+#[deriving(PartialEq)] #[allow(raw_pointer_deriving, missing_copy_implementations)]
 pub struct Palette {
     raw: *const ll::SDL_Palette
 }
@@ -142,7 +144,7 @@ impl rand::Rand for Color {
     }
 }
 
-#[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
+#[deriving(PartialEq)] #[allow(raw_pointer_deriving, missing_copy_implementations)]
 pub struct PixelFormat {
     raw: *const ll::SDL_PixelFormat
 }
@@ -150,7 +152,7 @@ pub struct PixelFormat {
 impl_raw_accessors!(PixelFormat, *const ll::SDL_PixelFormat)
 impl_raw_constructor!(PixelFormat -> PixelFormat (raw: *const ll::SDL_PixelFormat))
 
-#[deriving(PartialEq, Show, FromPrimitive)]
+#[deriving(Copy, Clone, PartialEq, Show, FromPrimitive)]
 pub enum PixelFormatFlag {
     Unknown = ll::SDL_PIXELFORMAT_UNKNOWN as int,
     Index1LSB = ll::SDL_PIXELFORMAT_INDEX1LSB as int,

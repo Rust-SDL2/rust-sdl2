@@ -85,12 +85,14 @@ pub mod ll {
     pub const SDL_USEREVENT: SDL_EventType = 32768;
     pub const SDL_LASTEVENT: SDL_EventType = 65535;
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_CommonEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_WindowEvent {
         pub _type: uint32_t,
@@ -104,6 +106,7 @@ pub mod ll {
         pub data2: int32_t,
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_KeyboardEvent {
         pub _type: uint32_t,
@@ -116,6 +119,7 @@ pub mod ll {
         pub keysym: SDL_Keysym,
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_TextEditingEvent {
         pub _type: uint32_t,
@@ -126,6 +130,7 @@ pub mod ll {
         pub length: int32_t,
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_TextInputEvent {
         pub _type: uint32_t,
@@ -134,6 +139,7 @@ pub mod ll {
         pub text: [c_char, ..32u],
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_MouseMotionEvent {
         pub _type: uint32_t,
@@ -147,6 +153,7 @@ pub mod ll {
         pub yrel: int32_t,
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_MouseButtonEvent {
         pub _type: uint32_t,
@@ -161,6 +168,7 @@ pub mod ll {
         pub y: int32_t,
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_MouseWheelEvent {
         pub _type: uint32_t,
@@ -171,6 +179,7 @@ pub mod ll {
         pub y: int32_t,
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_JoyAxisEvent {
         pub _type: uint32_t,
@@ -184,6 +193,7 @@ pub mod ll {
         pub padding4: uint16_t,
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_JoyBallEvent {
         pub _type: uint32_t,
@@ -197,6 +207,7 @@ pub mod ll {
         pub yrel: int16_t,
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_JoyHatEvent {
         pub _type: uint32_t,
@@ -208,6 +219,7 @@ pub mod ll {
         pub padding2: uint8_t,
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_JoyButtonEvent {
         pub _type: uint32_t,
@@ -219,6 +231,7 @@ pub mod ll {
         pub padding2: uint8_t,
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_JoyDeviceEvent {
         pub _type: uint32_t,
@@ -226,6 +239,7 @@ pub mod ll {
         pub which: int32_t,
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_ControllerAxisEvent {
         pub _type: uint32_t,
@@ -239,6 +253,7 @@ pub mod ll {
         pub padding4: uint16_t,
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_ControllerButtonEvent {
         pub _type: uint32_t,
@@ -250,6 +265,7 @@ pub mod ll {
         pub padding2: uint8_t,
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_ControllerDeviceEvent {
         pub _type: uint32_t,
@@ -257,6 +273,7 @@ pub mod ll {
         pub which: int32_t,
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_TouchFingerEvent {
         pub _type: uint32_t,
@@ -270,6 +287,7 @@ pub mod ll {
         pub pressure: c_float,
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_MultiGestureEvent {
         pub _type: uint32_t,
@@ -283,6 +301,7 @@ pub mod ll {
         pub padding: uint16_t,
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_DollarGestureEvent {
         pub _type: uint32_t,
@@ -295,6 +314,7 @@ pub mod ll {
         pub y: c_float,
     }
 
+    #[allow(missing_copy_implementations)]
     #[repr(C)]
     pub struct SDL_DropEvent {
         pub _type: uint32_t,
@@ -302,18 +322,21 @@ pub mod ll {
         pub file: *const c_char,
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_QuitEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
     }
 
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_OSEvent {
         pub _type: uint32_t,
         pub timestamp: uint32_t,
     }
 
+    #[allow(missing_copy_implementations)]
     #[repr(C)]
     pub struct SDL_UserEvent {
         pub _type: uint32_t,
@@ -324,6 +347,7 @@ pub mod ll {
         pub data2: *const c_void,
     }
 
+    #[allow(missing_copy_implementations)]
     #[repr(C)]
     pub struct SDL_SysWMEvent {
         pub _type: uint32_t,
@@ -331,6 +355,7 @@ pub mod ll {
         pub msg: *const SDL_SysWMmsg,
     }
 
+    #[allow(missing_copy_implementations)]
     #[repr(C)]
     pub struct SDL_Event {
         pub data: [uint8_t, ..56u],
@@ -470,7 +495,7 @@ pub mod ll {
 }
 
 /// Types of events that can be delivered.
-#[deriving(FromPrimitive)]
+#[deriving(Copy, Clone, FromPrimitive)]
 #[repr(u32)]
 pub enum EventType {
     First = ll::SDL_FIRSTEVENT,
@@ -525,7 +550,7 @@ pub enum EventType {
     Last = ll::SDL_LASTEVENT,
 }
 
-#[deriving(Show)]
+#[deriving(Copy, Clone, Show)]
 /// An enum of window events.
 pub enum WindowEventId {
     None,

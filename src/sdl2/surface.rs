@@ -28,9 +28,11 @@ pub mod ll {
     pub const SDL_DONTFREE: SDL_SurfaceFlag = 0x00000004;
 
     //SDL_surface.h
+    #[allow(missing_copy_implementations)]
     #[repr(C)]
     pub struct SDL_BlitMap;
 
+    #[allow(missing_copy_implementations)]
     #[repr(C)]
     pub struct SDL_Surface {
         pub flags: uint32_t,
@@ -81,6 +83,7 @@ pub mod ll {
 }
 
 bitflags! {
+    #[deriving(Copy)]
     flags SurfaceFlag: u32 {
         const SWSURFACE = ll::SDL_SWSURFACE as u32,
         const PREALLOC = ll::SDL_PREALLOC as u32,
@@ -90,7 +93,7 @@ bitflags! {
 }
 
 #[deriving(PartialEq)]
-#[allow(raw_pointer_deriving)]
+#[allow(raw_pointer_deriving, missing_copy_implementations)]
 pub struct Surface {
     raw: *const ll::SDL_Surface,
     owned: bool

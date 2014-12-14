@@ -45,6 +45,7 @@ pub mod ll {
         ::std::option::Option<extern "C" fn
                                   (arg1: *const c_void, arg2: *const uint8_t,
                                    arg3: c_int)>;
+    #[allow(missing_copy_implementations)]
     #[repr(C)]
     pub struct SDL_AudioSpec {
         pub freq: c_int,
@@ -61,7 +62,7 @@ pub mod ll {
         ::std::option::Option<extern "C" fn
                                   (arg1: *const SDL_AudioCVT,
                                    arg2: SDL_AudioFormat)>;
-    #[allow(dead_code)]
+    #[allow(dead_code, missing_copy_implementations)]
     #[repr(C)]
     pub struct SDL_AudioCVT {
         pub needed: c_int,
@@ -146,7 +147,7 @@ pub const AUDIOS32SYS : AudioFormat = ll::AUDIO_S32SYS;
 pub const AUDIOF32SYS : AudioFormat = ll::AUDIO_F32SYS;
 
 #[repr(C)]
-#[deriving(Clone, PartialEq, Hash, Show, FromPrimitive)]
+#[deriving(Copy, Clone, PartialEq, Hash, Show, FromPrimitive)]
 pub enum AudioStatus {
     Stopped = ll::SDL_AUDIO_STOPPED as int,
     Playing = ll::SDL_AUDIO_PLAYING as int,
@@ -197,7 +198,7 @@ pub fn get_current_audio_driver() -> String {
     }
 }
 
-#[deriving(Clone, Show)]
+#[deriving(Copy, Clone, Show)]
 pub struct AudioSpecWAV {
     pub freq: i32,
     // TODO: Showing format should be prettier
@@ -431,7 +432,8 @@ impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
     }
 }
 
-#[deriving(Clone, Show)]
+#[allow(missing_copy_implementations)]
+#[deriving(Show)]
 pub struct AudioSpec {
     pub freq: i32,
     // TODO: Showing format should be prettier
