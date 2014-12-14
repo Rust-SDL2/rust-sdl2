@@ -21,9 +21,11 @@ pub mod ll {
     pub type SDL_bool = c_int;
 
     //SDL_video.h
+    #[allow(missing_copy_implementations)]
     #[repr(C)]
     pub struct SDL_Window;
 
+    #[allow(missing_copy_implementations)]
     #[repr(C)]
     pub struct SDL_DisplayMode {
         pub format: uint32_t,
@@ -37,6 +39,7 @@ pub mod ll {
     pub const SDL_WINDOWPOS_CENTERED: SDL_WindowPos = 0x2FFF0000;
     pub const SDL_WINDOWPOS_UNDEFINED: SDL_WindowPos = 0x1FFF0000;
 
+    #[deriving(Copy, Clone)]
     pub enum SDL_WindowFlags {
         SDL_WINDOW_FULLSCREEN = 0x00000001,
         SDL_WINDOW_OPENGL = 0x00000002,
@@ -54,6 +57,7 @@ pub mod ll {
         SDL_WINDOW_ALLOW_HIGHDPI = 0x00002000
     }
 
+    #[deriving(Copy, Clone)]
     pub enum SDL_WindowEventID {
         SDL_WINDOWEVENT_NONE,
         SDL_WINDOWEVENT_SHOWN,
@@ -74,7 +78,7 @@ pub mod ll {
 
     pub type SDL_GLContext = *const c_void;
 
-    #[deriving(FromPrimitive)]
+    #[deriving(Copy, Clone, FromPrimitive)]
     #[repr(C)]
     pub enum SDL_GLattr {
         SDL_GL_RED_SIZE = 0,
@@ -103,6 +107,7 @@ pub mod ll {
         SDL_GL_FRAMEBUFFER_SRGB_CAPABLE = 23
     }
 
+    #[deriving(Copy, Clone)]
     pub enum SDL_GLprofile {
         SDL_GL_CONTEXT_PROFILE_CORE = 0x0001,
         SDL_GL_CONTEXT_PROFILE_COMPATIBILITY = 0x0002,
@@ -185,7 +190,7 @@ pub mod ll {
     }
 }
 
-#[deriving(PartialEq)]
+#[deriving(Copy, Clone, PartialEq)]
 pub enum GLAttr {
     GLRedSize = ll::SDL_GLattr::SDL_GL_RED_SIZE as int,
     GLGreenSize = ll::SDL_GLattr::SDL_GL_GREEN_SIZE as int,
@@ -213,7 +218,7 @@ pub enum GLAttr {
     GLFramebufferSRGBCapable = ll::SDL_GLattr::SDL_GL_FRAMEBUFFER_SRGB_CAPABLE as int
 }
 
-#[deriving(PartialEq)]
+#[deriving(Copy, Clone, PartialEq)]
 pub enum GLProfile {
   GLCoreProfile = ll::SDL_GLprofile::SDL_GL_CONTEXT_PROFILE_CORE as int,
   GLCompatibilityProfile = ll::SDL_GLprofile::SDL_GL_CONTEXT_PROFILE_COMPATIBILITY as int,
@@ -231,7 +236,8 @@ fn empty_sdl_display_mode() -> ll::SDL_DisplayMode {
     }
 }
 
-#[deriving(PartialEq)]
+#[allow(missing_copy_implementations)]
+#[deriving(Clone, PartialEq)]
 pub struct DisplayMode {
     pub format: u32,
     pub w: int,
@@ -271,6 +277,7 @@ impl DisplayMode {
 }
 
 bitflags! {
+    #[deriving(Copy)]
     flags WindowFlags: u32 {
         const FULLSCREEN = ll::SDL_WindowFlags::SDL_WINDOW_FULLSCREEN as u32,
         const OPENGL = ll::SDL_WindowFlags::SDL_WINDOW_OPENGL as u32,
@@ -289,7 +296,7 @@ bitflags! {
     }
 }
 
-#[deriving(PartialEq)]
+#[deriving(Copy, Clone, PartialEq)]
 pub enum FullscreenType {
     FTOff = 0,
     FTTrue = ll::SDL_WindowFlags::SDL_WINDOW_FULLSCREEN as int,

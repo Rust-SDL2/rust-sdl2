@@ -21,6 +21,7 @@ pub mod ll {
     pub type SDL_Scancode = c_uint;
 
     // SDL_keyboard.h
+    #[deriving(Copy, Clone)]
     pub struct SDL_Keysym {
         pub scancode: SDL_Scancode,
         pub sym: SDL_Keycode,
@@ -49,6 +50,7 @@ pub mod ll {
 }
 
 bitflags! {
+    #[deriving(Copy)]
     flags Mod: u32 {
         const NOMOD = 0x0000,
         const LSHIFTMOD = 0x0001,

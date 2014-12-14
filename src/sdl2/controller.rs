@@ -16,6 +16,7 @@ pub mod ll {
     pub const SDL_CONTROLLER_BINDTYPE_HAT: SDL_GameControllerBindType = 3;
 
     #[allow(dead_code, non_snake_case)]
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_GameControllerButtonBind {
         bindType: SDL_GameControllerBindType,
@@ -23,12 +24,14 @@ pub mod ll {
     }
 
     #[allow(dead_code)]
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_GameControllerButtonBindData {
         data: [c_uchar, ..8u],
     }
 
     #[allow(dead_code)]
+    #[deriving(Copy, Clone)]
     pub struct SDL_GameControllerButtonBindDataHat {
         hat: c_int,
         hat_mask: c_int,
@@ -126,7 +129,7 @@ pub mod ll {
     }
 }
 
-#[deriving(PartialEq)]
+#[deriving(Copy, Clone, PartialEq)]
 #[repr(i32)]
 pub enum ControllerAxis {
     Invalid      = ll::SDL_CONTROLLER_AXIS_INVALID,
@@ -150,7 +153,7 @@ pub fn wrap_controller_axis(bitflags: u8) -> ControllerAxis {
     }
 }
 
-#[deriving(PartialEq)]
+#[deriving(Copy, Clone, PartialEq)]
 #[repr(i32)]
 pub enum ControllerButton {
     Invalid       = ll::SDL_CONTROLLER_BUTTON_INVALID,

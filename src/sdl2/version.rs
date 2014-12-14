@@ -9,6 +9,7 @@ use std::c_str::CString;
 #[allow(non_camel_case_types)]
 pub mod ll {
     use libc::{uint8_t, c_char, c_int};
+    #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_version {
         pub major: uint8_t,
@@ -23,7 +24,7 @@ pub mod ll {
 }
 
 /// A structure that contains information about the version of SDL in use.
-#[deriving(PartialEq, Clone)]
+#[deriving(PartialEq, Copy, Clone)]
 pub struct Version {
     /// major version
     pub major: int,

@@ -36,6 +36,7 @@ pub mod ll {
     pub const SDL_RENDERER_PRESENTVSYNC : SDL_RendererFlags = 0x00000004;
     pub const SDL_RENDERER_TARGETTEXTURE : SDL_RendererFlags = 0x00000008;
 
+    #[allow(missing_copy_implementations)]
     #[repr(C)]
     pub struct SDL_RendererInfo
     {
@@ -62,8 +63,10 @@ pub mod ll {
     pub const SDL_FLIP_HORIZONTAL : SDL_RendererFlip = 0x00000001;
     pub const SDL_FLIP_VERTICAL : SDL_RendererFlip = 0x00000002;
 
+    #[allow(missing_copy_implementations)]
     #[repr(C)]
     pub struct SDL_Renderer;
+    #[allow(missing_copy_implementations)]
     #[repr(C)]
     pub struct SDL_Texture;
 
@@ -130,12 +133,13 @@ pub mod ll {
     }
 }
 
+#[deriving(Copy, Clone)]
 pub enum RenderDriverIndex {
     Auto,
     Index(int)
 }
 
-#[deriving(PartialEq, FromPrimitive)]
+#[deriving(Copy, Clone, PartialEq, FromPrimitive)]
 pub enum TextureAccess {
     Static = ll::SDL_TEXTUREACCESS_STATIC as int,
     Streaming = ll::SDL_TEXTUREACCESS_STREAMING as int,
@@ -143,6 +147,7 @@ pub enum TextureAccess {
 }
 
 bitflags! {
+    #[deriving(Copy)]
     flags RendererFlags: u32 {
         const SOFTWARE = ll::SDL_RENDERER_SOFTWARE as u32,
         const ACCELERATED = ll::SDL_RENDERER_ACCELERATED as u32,
@@ -160,7 +165,7 @@ pub struct RendererInfo {
     pub max_texture_height: int
 }
 
-#[deriving(PartialEq, FromPrimitive)]
+#[deriving(Copy, Clone, PartialEq, FromPrimitive)]
 pub enum BlendMode {
     None = ll::SDL_BLENDMODE_NONE as int,
     Blend = ll::SDL_BLENDMODE_BLEND as int,
@@ -168,7 +173,7 @@ pub enum BlendMode {
     Mod = ll::SDL_BLENDMODE_MOD as int
 }
 
-#[deriving(PartialEq)]
+#[deriving(Copy, Clone, PartialEq)]
 pub enum RendererFlip {
     None = ll::SDL_FLIP_NONE as int,
     Horizontal = ll::SDL_FLIP_HORIZONTAL as int,
@@ -584,6 +589,8 @@ impl Renderer {
     }
 }
 
+
+#[deriving(Copy, Clone)]
 pub struct TextureQuery {
     pub format: pixels::PixelFormatFlag,
     pub access: TextureAccess,
