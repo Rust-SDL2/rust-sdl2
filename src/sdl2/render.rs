@@ -579,7 +579,7 @@ impl Renderer {
             let pitch = w * format.byte_size_per_pixel(); // calculated pitch
             let ret = ll::SDL_RenderReadPixels(self.raw, actual_rect, format as uint32_t, pixels as *const c_void, pitch as c_int);
             if ret == 0 {
-                Ok(CVec::new_with_dtor(pixels as *mut u8, size, proc() {
+                Ok(CVec::new_with_dtor(pixels as *mut u8, size, move || {
                     libc::free(pixels as *mut c_void)
                 }))
             } else {

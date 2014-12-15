@@ -226,7 +226,7 @@ impl AudioSpecWAV {
             if ret.is_null() {
                 Err(get_error())
             } else {
-                let v = CVec::new_with_dtor(audio_buf as *mut u8, audio_len as uint, proc() {
+                let v = CVec::new_with_dtor(audio_buf as *mut u8, audio_len as uint, move || {
                     ll::SDL_FreeWAV(audio_buf)
                 });
 
@@ -600,10 +600,10 @@ impl AudioCVT {
             // convert
             let ret = ll::SDL_ConvertAudio(self.raw);
             // return
-            let p = (*self.raw).buf as *mut c_void; // send to proc()
+            let p = (*self.raw).buf as *mut c_void; // send to move ||
             if ret == 0 {
                 Ok( CVec::new_with_dtor((*self.raw).buf as *mut u8, (*self.raw).len_cvt as uint,
-                                        proc() { libc::free(p) })
+                                        move || { libc::free(p) })
                     )
             } else {
                 Err(get_error())
