@@ -83,7 +83,6 @@ pub mod ll {
 }
 
 bitflags! {
-    #[deriving(Copy)]
     flags SurfaceFlag: u32 {
         const SWSURFACE = ll::SDL_SWSURFACE as u32,
         const PREALLOC = ll::SDL_PREALLOC as u32,

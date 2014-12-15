@@ -147,7 +147,6 @@ pub enum TextureAccess {
 }
 
 bitflags! {
-    #[deriving(Copy)]
     flags RendererFlags: u32 {
         const SOFTWARE = ll::SDL_RENDERER_SOFTWARE as u32,
         const ACCELERATED = ll::SDL_RENDERER_ACCELERATED as u32,

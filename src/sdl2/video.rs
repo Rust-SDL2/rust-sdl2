@@ -277,7 +277,6 @@ impl DisplayMode {
 }
 
 bitflags! {
-    #[deriving(Copy)]
     flags WindowFlags: u32 {
         const FULLSCREEN = ll::SDL_WindowFlags::SDL_WINDOW_FULLSCREEN as u32,
         const OPENGL = ll::SDL_WindowFlags::SDL_WINDOW_OPENGL as u32,

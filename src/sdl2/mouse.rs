@@ -146,7 +146,6 @@ pub enum Mouse {
 }
 
 bitflags! {
-    #[deriving(Copy)]
     flags MouseState: u32 {
         const LEFTMOUSESTATE = 0x01,
         const MIDDLEMOUSESTATE = 0x02,

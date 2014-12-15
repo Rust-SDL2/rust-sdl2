@@ -20,7 +20,6 @@ pub mod ll {
 }
 
 bitflags! {
-    #[deriving(Copy)]
     flags MessageBoxFlag: u32 {
         const MESSAGEBOX_ERROR = ll::SDL_MESSAGEBOX_ERROR,
         const MESSAGEBOX_WARNING = ll::SDL_MESSAGEBOX_WARNING,

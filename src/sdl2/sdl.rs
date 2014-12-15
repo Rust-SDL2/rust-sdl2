@@ -61,7 +61,6 @@ pub mod ll {
 }
 
 bitflags! {
-    #[deriving(Copy)]
     flags InitFlag: u32 {
         const INIT_TIMER = ll::SDL_INIT_TIMER,
         const INIT_AUDIO = ll::SDL_INIT_AUDIO,
