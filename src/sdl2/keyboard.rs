@@ -50,7 +50,6 @@ pub mod ll {
 }
 
 bitflags! {
-    #[deriving(Copy)]
     flags Mod: u32 {
         const NOMOD = 0x0000,
         const LSHIFTMOD = 0x0001,

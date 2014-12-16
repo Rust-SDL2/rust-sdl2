@@ -47,7 +47,6 @@ pub mod ll {
 }
 
 bitflags! {
-    #[deriving(Copy)]
     flags HatState: u8 {
         const CENTEREDHATSTATE = 0,
         const UPHATSTATE = 0x01,
