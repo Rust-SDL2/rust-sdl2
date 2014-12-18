@@ -47,7 +47,7 @@ pub struct Timer<'a> {
 }
 
 impl<'a> Timer<'a> {
-    pub fn new<'a>(delay: uint, callback: ||: 'a -> uint, remove_on_drop: bool) -> Timer<'a> {
+    pub fn new(delay: uint, callback: ||: 'a -> uint, remove_on_drop: bool) -> Timer<'a> {
         unsafe {
             let c_param = mem::transmute::<_, raw::Closure>(callback);
             Timer { delay: delay, raw: 0, closure: c_param, remove_on_drop: remove_on_drop }
