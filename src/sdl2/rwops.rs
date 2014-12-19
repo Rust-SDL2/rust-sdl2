@@ -52,8 +52,8 @@ pub struct RWops {
     close_on_drop: bool
 }
 
-impl_raw_accessors!(RWops, *const ll::SDL_RWops)
-impl_owned_accessors!(RWops, close_on_drop)
+impl_raw_accessors!(RWops, *const ll::SDL_RWops);
+impl_owned_accessors!(RWops, close_on_drop);
 
 /// A structure that provides an abstract interface to stream I/O.
 impl RWops {

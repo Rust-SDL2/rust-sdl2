@@ -108,9 +108,9 @@ impl Drop for Surface {
     }
 }
 
-impl_raw_accessors!(Surface, *const ll::SDL_Surface)
-impl_owned_accessors!(Surface, owned)
-impl_raw_constructor!(Surface -> Surface (raw: *const ll::SDL_Surface, owned: bool))
+impl_raw_accessors!(Surface, *const ll::SDL_Surface);
+impl_owned_accessors!(Surface, owned);
+impl_raw_constructor!(Surface -> Surface (raw: *const ll::SDL_Surface, owned: bool));
 
 impl Surface {
     pub fn new(surface_flags: SurfaceFlag, width: int, height: int, bpp: int,

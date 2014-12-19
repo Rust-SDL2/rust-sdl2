@@ -97,7 +97,7 @@ pub struct Palette {
     raw: *const ll::SDL_Palette
 }
 
-impl_raw_accessors!(Palette, *const ll::SDL_Palette)
+impl_raw_accessors!(Palette, *const ll::SDL_Palette);
 
 #[deriving(PartialEq, Clone, Copy)]
 pub enum Color {
@@ -149,8 +149,8 @@ pub struct PixelFormat {
     raw: *const ll::SDL_PixelFormat
 }
 
-impl_raw_accessors!(PixelFormat, *const ll::SDL_PixelFormat)
-impl_raw_constructor!(PixelFormat -> PixelFormat (raw: *const ll::SDL_PixelFormat))
+impl_raw_accessors!(PixelFormat, *const ll::SDL_PixelFormat);
+impl_raw_constructor!(PixelFormat -> PixelFormat (raw: *const ll::SDL_PixelFormat));
 
 #[deriving(Copy, Clone, PartialEq, Show, FromPrimitive)]
 pub enum PixelFormatFlag {
