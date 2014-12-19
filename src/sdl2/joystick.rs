@@ -10,7 +10,7 @@ pub mod ll {
     #[deriving(Copy, Clone)]
     #[repr(C)]
     pub struct SDL_JoystickGUID {
-        data: [uint8_t, ..16u],
+        pub data: [uint8_t, ..16u],
     }
 
     extern "C" {

@@ -1,6 +1,7 @@
 use std::mem;
 use libc::{uint32_t, c_void};
 use std::raw;
+use std::kinds::marker::ContravariantLifetime;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
@@ -44,13 +45,14 @@ pub struct Timer<'a> {
     raw: ll::SDL_TimerID,
     closure: raw::Closure,
     remove_on_drop: bool,
+    lifetime: ContravariantLifetime<'a>,
 }
 
 impl<'a> Timer<'a> {
-    pub fn new<'a>(delay: uint, callback: ||: 'a -> uint, remove_on_drop: bool) -> Timer<'a> {
+    pub fn new<'b>(delay: uint, callback: ||: 'b -> uint, remove_on_drop: bool) -> Timer<'b> {
         unsafe {
             let c_param = mem::transmute::<_, raw::Closure>(callback);
-            Timer { delay: delay, raw: 0, closure: c_param, remove_on_drop: remove_on_drop }
+            Timer { delay: delay, raw: 0, closure: c_param, remove_on_drop: remove_on_drop, lifetime: ContravariantLifetime }
         }
     }
 
