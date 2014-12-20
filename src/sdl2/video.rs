@@ -343,16 +343,16 @@ pub struct Window {
 impl_raw_accessors!(
     GLContext, ll::SDL_GLContext;
     Window, *const ll::SDL_Window
-)
+);
 
 impl_owned_accessors!(
     GLContext, owned;
     Window, owned
-)
+);
 
 impl_raw_constructor!(
     Window -> Window (raw: *const ll::SDL_Window, owned: bool)
-)
+);
 
 impl Drop for Window {
     fn drop(&mut self) {
