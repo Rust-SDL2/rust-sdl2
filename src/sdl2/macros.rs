@@ -9,7 +9,7 @@ macro_rules! impl_raw_accessors(
         }
         )+
     )
-)
+);
 
 macro_rules! impl_owned_accessors(
     ($($t:ty, $owned:ident);+) => (
@@ -20,7 +20,7 @@ macro_rules! impl_owned_accessors(
         }
         )+
     )
-)
+);
 
 macro_rules! impl_raw_constructor(
     ($($t:ty -> $te:ident ($($r:ident:$rt:ty),+));+) => (
@@ -33,4 +33,4 @@ macro_rules! impl_raw_constructor(
         }
         )+
     )
-)
+);
