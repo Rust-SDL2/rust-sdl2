@@ -556,8 +556,8 @@ pub struct AudioCVT {
     owned: bool,
 }
 
-impl_raw_accessors!(AudioCVT, *mut ll::SDL_AudioCVT)
-impl_owned_accessors!(AudioCVT, owned)
+impl_raw_accessors!(AudioCVT, *mut ll::SDL_AudioCVT);
+impl_owned_accessors!(AudioCVT, owned);
 
 impl Drop for AudioCVT {
     fn drop(&mut self) {
