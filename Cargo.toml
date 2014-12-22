@@ -8,7 +8,7 @@ authors = [ "xsleonard" ]
 
 name       = "sdl2_image"
 path       = "src/sdl2_image/lib.rs"
-crate-type = ["dylib"]
+
 
 [[bin]]
 

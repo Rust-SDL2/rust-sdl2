@@ -2,16 +2,10 @@
 
 extern crate sdl2;
 extern crate sdl2_image;
-extern crate native;
 
 use std::os;
 
 mod video;
-
-#[start]
-fn start(argc: int, argv: *const *const u8) -> int {
-    native::start(argc, argv, main)
-}
 
 #[main]
 fn main() {
