@@ -12,9 +12,6 @@ install:
     - cd SDL2-2.0.3
     - ./configure && make && sudo make install
     - cd -
-before_script:
-    - rustc -v
-    - cargo -V
 script:
     - cargo build -v
     - cargo test -v
