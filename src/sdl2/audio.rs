@@ -290,7 +290,7 @@ impl AudioFormatNum<f32> for f32 {
 extern "C" fn audio_callback_marshall<T: AudioFormatNum<T>, CB: AudioCallback<T>>
 (userdata: *const c_void, stream: *const uint8_t, len: c_int) {
     use std::raw::Slice;
-    use std::mem::{replace, size_of, transmute};
+    use std::mem::{size_of, transmute};
     unsafe {
         let mut cb_userdata: &mut AudioCallbackUserdata<CB> = transmute(userdata);
         let buf: &mut [T] = transmute(Slice {

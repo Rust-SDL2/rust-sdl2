@@ -306,8 +306,8 @@ impl Surface {
     }
 
     pub fn fill_rects(&mut self, rects: &[Option<Rect>], color: pixels::Color) -> SdlResult<()> {
-        for rect in rects.iter() {
-            let result = self.fill_rect(*rect, color);
+        for &rect in rects.iter() {
+            let result = self.fill_rect(rect, color);
             match result {
                 Err(e) => return Err(e),
                 _ => ()
