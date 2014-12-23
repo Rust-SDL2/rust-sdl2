@@ -58,7 +58,15 @@ impl<'a> Timer<'a> {
 
     pub fn start(&mut self) {
         unsafe {
-            let timer_id = ll::SDL_AddTimer(self.delay as u32, Some(c_timer_callback), mem::transmute(&self.closure));
+            let timer_id = ll::SDL_AddTimer(
+                    self.delay as u32, 
+                    Some(c_timer_callback as
+                        extern "C" fn (
+                            _interval: uint32_t, 
+                            param: *const c_void
+                        ) -> uint32_t), 
+                    mem::transmute(&self.closure)
+                );
             self.raw = timer_id;
         }
     }

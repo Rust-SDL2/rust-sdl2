@@ -1,4 +1,5 @@
 use std::c_str::CString;
+use std::borrow::ToOwned;
 
 // Setup linking for all targets.
 #[cfg(target_os="macos")]
@@ -115,7 +116,7 @@ pub fn was_inited(flags: InitFlag) -> InitFlag {
 pub fn get_error() -> String {
     unsafe {
         let cstr = CString::new(ll::SDL_GetError(), false);
-        cstr.as_str().unwrap().into_string()
+        cstr.as_str().unwrap().to_owned()
     }
 }
 

@@ -13,6 +13,7 @@ use rect::Rect;
 use std::num::FromPrimitive;
 use std::vec::Vec;
 use std::c_vec::CVec;
+use std::borrow::ToOwned;
 
 #[allow(non_camel_case_types)]
 pub mod ll {
@@ -748,7 +749,7 @@ impl Texture {
         if result {
             Ok((texw as f64, texh as f64))
         } else {
-            Err("Operation not supported".into_string())
+            Err("Operation not supported".to_owned())
         }
     }
 
