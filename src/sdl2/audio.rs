@@ -4,6 +4,7 @@ use std::ptr;
 use std::mem;
 use std::c_str::CString;
 use std::c_vec::CVec;
+use std::borrow::ToOwned;
 use libc;
 use libc::{c_int, size_t, c_void};
 use libc::{uint8_t};
@@ -160,7 +161,7 @@ pub fn get_num_audio_drivers() -> int {
 pub fn get_audio_driver(index: int) -> String {
     unsafe {
         let buf = ll::SDL_GetAudioDriver(index as c_int);
-        CString::new(buf, false).as_str().unwrap().into_string()
+        CString::new(buf, false).as_str().unwrap().to_owned()
     }
 }
 
@@ -171,7 +172,7 @@ pub fn get_num_audio_devices(iscapture: int) -> int {
 pub fn get_audio_device_name(index: int, iscapture: int) -> String {
     unsafe {
         let buf = ll::SDL_GetAudioDeviceName(index as c_int, iscapture as c_int);
-        CString::new(buf, false).as_str().unwrap().into_string()
+        CString::new(buf, false).as_str().unwrap().to_owned()
     }
 }
 
@@ -193,7 +194,7 @@ pub fn audio_quit() {
 pub fn get_current_audio_driver() -> String {
     unsafe {
         let buf = ll::SDL_GetCurrentAudioDriver();
-        CString::new(buf, false).as_str().unwrap().into_string()
+        CString::new(buf, false).as_str().unwrap().to_owned()
     }
 }
 
@@ -321,7 +322,11 @@ impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
                 samples: 0,
                 padding: 0,
                 size: 0,
-                callback: Some(audio_callback_marshall::<T, CB>),
+                callback: Some(audio_callback_marshall::<T, CB> 
+                    as extern "C" fn
+                        (arg1: *const c_void, 
+                         arg2: *const uint8_t,
+                         arg3: c_int)),
                 userdata: transmute(userdata)
             }
         }
@@ -535,7 +540,7 @@ impl AudioCVT {
 
         unsafe {
             if (*self.raw).needed != 1 {
-                return Err("no convertion needed!".into_string())
+                return Err("no convertion needed!".to_owned())
             }
             // set len
             (*self.raw).len = src.len() as c_int;

@@ -6,6 +6,7 @@ use std::mem;
 use libc::{c_int, c_void, uint32_t};
 use std::num::FromPrimitive;
 use std::ptr;
+use std::borrow::ToOwned;
 
 use controller;
 use controller::{ControllerAxis, ControllerButton};
@@ -841,7 +842,13 @@ impl Event {
                     Ok(window) => window,
                 };
 
-                let text = String::from_utf8_lossy(event.text.iter().take_while(|&b| (*b) != 0i8).map(|&b| b as u8).collect::<Vec<u8>>().as_slice()).into_string();
+                let text = String::from_utf8_lossy(
+                        event.text.iter()
+                            .take_while(|&b| (*b) != 0i8)
+                            .map(|&b| b as u8)
+                            .collect::<Vec<u8>>()
+                            .as_slice()
+                    ).to_owned().into_owned();
                 Event::TextEditing(event.timestamp as uint, window, text,
                                    event.start as int, event.length as int)
             }
@@ -854,7 +861,13 @@ impl Event {
                     Ok(window) => window,
                 };
 
-                let text = String::from_utf8_lossy(event.text.iter().take_while(|&b| (*b) != 0i8).map(|&b| b as u8).collect::<Vec<u8>>().as_slice()).into_string();
+                let text = String::from_utf8_lossy(
+                        event.text.iter()
+                            .take_while(|&b| (*b) != 0i8)
+                            .map(|&b| b as u8)
+                            .collect::<Vec<u8>>()
+                            .as_slice()
+                    ).to_owned().into_owned();
                 Event::TextInput(event.timestamp as uint, window, text)
             }
 
@@ -1201,7 +1214,7 @@ pub fn push_event(event: Event) -> SdlResult<()> {
             else { Err(get_error()) }
         },
         None => {
-            Err("Unsupport event type to push back to queue.".into_string())
+            Err("Unsupport event type to push back to queue.".to_owned())
         }
     }
 }

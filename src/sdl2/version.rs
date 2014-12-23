@@ -4,6 +4,7 @@ Querying SDL Version
 
 use std::fmt;
 use std::c_str::CString;
+use std::borrow::ToOwned;
 
 #[doc(hidden)]
 #[allow(non_camel_case_types)]
@@ -63,7 +64,7 @@ pub fn get_version() -> Version {
 pub fn get_revision() -> String {
     unsafe {
         let ret = ll::SDL_GetRevision();
-        CString::new(ret, false).as_str().unwrap().into_string()
+        CString::new(ret, false).as_str().unwrap().to_owned()
     }
 }
 
