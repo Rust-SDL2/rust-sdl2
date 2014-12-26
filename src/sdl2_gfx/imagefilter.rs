@@ -105,7 +105,7 @@ pub fn mmx_on() {
 fn cvec_with_size(sz: uint) -> CVec<u8> {
     unsafe {
         let p = libc::malloc(sz as size_t) as *mut u8;
-        CVec::new_with_dtor(p, sz, proc() {
+        CVec::new_with_dtor(p, sz, move || {
             libc::free(p as *mut c_void)
         })
     }
