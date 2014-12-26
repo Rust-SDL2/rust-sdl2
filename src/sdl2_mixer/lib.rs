@@ -4,9 +4,6 @@ A binding for SDL2_mixer.
 
 #![crate_name = "sdl2_mixer"]
 #![crate_type = "lib"]
-#![desc = "SDL2_mixer bindings and wrappers"]
-#![comment = "SDL2_mixer bindings and wrappers"]
-#![license = "MIT"]
 
 #![feature(globs, macro_rules)]
 
@@ -116,7 +113,7 @@ bitflags!(flags InitFlag : u32 {
     const INIT_MP3        = ffi::MIX_INIT_MP3 as u32,
     const INIT_OGG        = ffi::MIX_INIT_OGG as u32,
     const INIT_FLUIDSYNTH = ffi::MIX_INIT_FLUIDSYNTH as u32
-})
+});
 
 /// Loads dynamic libraries and prepares them for use.  Flags should be
 /// one or more flags from InitFlag.
@@ -168,7 +165,7 @@ pub fn get_chunk_decoders_number() -> int {
 pub fn get_chunk_decoder(index: int) -> String {
      unsafe {
         let name = ffi::Mix_GetChunkDecoder(index as c_int);
-        CString::new(name, false).as_str().unwrap().into_string()
+        CString::new(name, false).as_str().unwrap().to_string()
     }
 }
 
@@ -240,7 +237,7 @@ impl LoaderRWops for RWops {
 
 /// Fader effect type enumerations
 #[repr(C)]
-#[deriving(Clone, PartialEq, Hash, Show, FromPrimitive)]
+#[deriving(Copy, Clone, PartialEq, Hash, Show, FromPrimitive)]
 pub enum Fading {
     NoFading  = ffi::MIX_NO_FADING as int,
     FadingOut = ffi::MIX_FADING_OUT as int,
@@ -248,7 +245,7 @@ pub enum Fading {
 }
 
 /// Sound effect channel.
-#[deriving(PartialEq, Show)]
+#[deriving(Copy, PartialEq, Show)]
 pub struct Channel(int);
 
 /// Set the number of channels being mixed.
@@ -276,7 +273,7 @@ extern "C" fn c_channel_finished_callback(ch: c_int) {
 pub fn set_channel_finished(f: |Channel|:'static) {
     unsafe {
         channel_finished_callback = Some(mem::transmute::<_, raw::Closure>(f));
-        ffi::Mix_ChannelFinished(Some(c_channel_finished_callback));
+        ffi::Mix_ChannelFinished(Some(c_channel_finished_callback as extern "C" fn (ch: c_int)));
     }
 }
 
@@ -479,6 +476,7 @@ pub fn reserve_channels(num: int) -> int {
 }
 
 /// Sound effect channel grouping.
+#[deriving(Copy)]
 pub struct Group(int);
 
 impl default::Default for Group {
@@ -565,13 +563,13 @@ pub fn get_music_decoders_number() -> int {
 pub fn get_music_decoder(index: int) -> String {
     unsafe {
         let name = ffi::Mix_GetMusicDecoder(index as c_int);
-        CString::new(name, false).as_str().unwrap().into_string()
+        CString::new(name, false).as_str().unwrap().to_string()
     }
 }
 
 /// Music type enumerations
 #[repr(C)]
-#[deriving(Clone, PartialEq, Hash, Show, FromPrimitive)]
+#[deriving(Copy, Clone, PartialEq, Hash, Show, FromPrimitive)]
 pub enum MusicType {
     MusicNone    = ffi::MUS_NONE as int,
     MusicCmd     = ffi::MUS_CMD as int,
@@ -624,7 +622,7 @@ impl Music {
     /// Load music file to use.
     pub fn from_file(path: &Path) -> SdlResult<Music> {
         let raw = unsafe {
-            ffi::Mix_LoadMUS(path.to_c_str().unwrap())
+            ffi::Mix_LoadMUS(path.to_c_str().into_inner())
         };
         if raw.is_null() {
             Err(get_error())
@@ -716,7 +714,7 @@ impl Music {
     /// Setup a command line music player to use to play music.
     pub fn set_command(command: &str) -> SdlResult<()> {
         let ret = unsafe {
-            ffi::Mix_SetMusicCMD(command.to_c_str().unwrap())
+            ffi::Mix_SetMusicCMD(command.to_c_str().into_inner())
         };
         if ret == -1 {
             Err(get_error())
@@ -748,7 +746,7 @@ impl Music {
     pub fn hook_finished(f: ||) {
         unsafe {
             music_finished_hook = Some(mem::transmute(f));
-            ffi::Mix_HookMusicFinished(Some(c_music_finished_hook));
+            ffi::Mix_HookMusicFinished(Some(c_music_finished_hook as extern "C" fn ()));
         }
     }
 
