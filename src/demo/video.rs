@@ -8,14 +8,14 @@ pub fn main(png: &Path) {
     sdl2_image::init(sdl2_image::INIT_PNG | sdl2_image::INIT_JPG);
 
     let window = match sdl2::video::Window::new(
-            "rust-sdl2 demo: Video", sdl2::video::PosCentered,
-            sdl2::video::PosCentered, 800, 600, sdl2::video::OPENGL) {
+            "rust-sdl2 demo: Video", sdl2::video::WindowPos::PosCentered,
+            sdl2::video::WindowPos::PosCentered, 800, 600, sdl2::video::OPENGL) {
         Ok(window) => window,
         Err(err) => panic!(format!("failed to create window: {}", err))
     };
 
     let renderer = match sdl2::render::Renderer::from_window(
-            window, sdl2::render::Auto, sdl2::render::ACCELERATED) {
+            window, sdl2::render::RenderDriverIndex::Auto, sdl2::render::ACCELERATED) {
         Ok(renderer) => renderer,
         Err(err) => panic!(format!("failed to create renderer: {}", err))
     };
@@ -42,9 +42,9 @@ pub fn main(png: &Path) {
     'main : loop {
         'event : loop {
             match sdl2::event::poll_event() {
-                sdl2::event::Quit(_) => break 'main,
-                sdl2::event::KeyDown(_, _, key, _, _, _) => {
-                    if key == sdl2::keycode::Escape {
+                sdl2::event::Event::Quit(_) => break 'main,
+                sdl2::event::Event::KeyDown(_, _, key, _, _, _) => {
+                    if key == sdl2::keycode::KeyCode::Escape {
                         break 'main
                     }
                 }
