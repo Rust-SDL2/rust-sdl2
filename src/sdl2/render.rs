@@ -422,8 +422,16 @@ impl Renderer {
         rect
     }
 
-    pub fn set_clip_rect(&self, rect: &Rect) -> SdlResult<()> {
-        let ret = unsafe { ll::SDL_RenderSetClipRect(self.raw, rect) };
+    pub fn set_clip_rect(&self, rect: Option<Rect>) -> SdlResult<()> {
+        let ret = unsafe { 
+            ll::SDL_RenderSetClipRect(
+                self.raw, 
+                match rect {
+                    Some(ref rect) => rect as *const _,
+                    None => ptr::null()
+                }
+            ) 
+        };
 
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
