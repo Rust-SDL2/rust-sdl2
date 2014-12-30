@@ -125,7 +125,7 @@ pub mod ll {
         pub fn SDL_RenderFillRects(renderer: *const SDL_Renderer, rects: *const SDL_Rect, count: c_int) -> c_int;
         pub fn SDL_RenderCopy(renderer: *const SDL_Renderer, texture: *const SDL_Texture, srcrect: *const SDL_Rect, dstrect: *const SDL_Rect) -> c_int;
         pub fn SDL_RenderCopyEx(renderer: *const SDL_Renderer, texture: *const SDL_Texture, srcrect: *const SDL_Rect, dstrect: *const SDL_Rect, angle: c_double, center: *const SDL_Point, flip: SDL_RendererFlip) -> c_int;
-        pub fn SDL_RenderReadPixels(renderer: *const SDL_Renderer, rect: *const SDL_Rect, format: uint32_t, pixels: *const c_void, pitch: c_int) -> c_int;
+        pub fn SDL_RenderReadPixels(renderer: *const SDL_Renderer, rect: *const SDL_Rect, format: uint32_t, pixels: *mut c_void, pitch: c_int) -> c_int;
         pub fn SDL_RenderPresent(renderer: *const SDL_Renderer);
         pub fn SDL_DestroyTexture(texture: *const SDL_Texture);
         pub fn SDL_DestroyRenderer(renderer: *const SDL_Renderer);
@@ -583,12 +583,13 @@ impl Renderer {
                 }
             };
             let size = format.byte_size_of_pixels(w * h);
-            let pixels = libc::malloc(size as size_t) as *const u8;
+            let pixels = libc::malloc(size as size_t) as *mut u8;
             let pitch = w * format.byte_size_per_pixel(); // calculated pitch
-            let ret = ll::SDL_RenderReadPixels(self.raw, actual_rect, format as uint32_t, pixels as *const c_void, pitch as c_int);
+            let ret = ll::SDL_RenderReadPixels(self.raw, actual_rect, format as uint32_t, pixels as *mut c_void, pitch as c_int);
             if ret == 0 {
-                Ok(CVec::new_with_dtor(pixels as *mut u8, size, move || {
-                    libc::free(pixels as *mut c_void)
+                let pixels = ptr::Unique(pixels);
+                Ok(CVec::new_with_dtor(pixels.0 as *mut u8, size, move || {
+                    libc::free(pixels.0 as *mut c_void)
                 }))
             } else {
                 Err(get_error())
