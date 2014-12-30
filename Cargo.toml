@@ -18,6 +18,8 @@ path = "src/sdl2_mixer/lib.rs"
 name = "demo"
 path = "src/demo/main.rs"
 
-[dependencies]
+[dependencies.sdl2]
 
-sdl2 = "~0.0.3"
+git = "https://github.com/AngryLawyer/rust-sdl2"
+#version = "~0.0.3"
+
