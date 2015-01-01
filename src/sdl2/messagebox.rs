@@ -4,20 +4,7 @@ use video::Window;
 use get_error;
 use SdlResult;
 
-#[allow(non_camel_case_types)]
-pub mod ll {
-    use libc::{c_int, c_char, uint32_t};
-    use video::ll::SDL_Window;
-
-    pub type SDL_MessageBoxFlags = u32;
-    pub const SDL_MESSAGEBOX_ERROR : SDL_MessageBoxFlags = 0x00000010;
-    pub const SDL_MESSAGEBOX_WARNING : SDL_MessageBoxFlags = 0x00000020;
-    pub const SDL_MESSAGEBOX_INFORMATION : SDL_MessageBoxFlags = 0x00000040;
-
-    extern "C" {
-        pub fn SDL_ShowSimpleMessageBox(flags: uint32_t, title: *const c_char, message: *const c_char, window: *const SDL_Window) -> c_int;
-    }
-}
+pub use sys::messagebox as ll;
 
 bitflags! {
     flags MessageBoxFlag: u32 {

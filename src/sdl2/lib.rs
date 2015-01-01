@@ -5,6 +5,7 @@
 
 extern crate libc;
 extern crate collections;
+extern crate "sdl2-sys" as sys;
 
 pub use sdl::*;
 
