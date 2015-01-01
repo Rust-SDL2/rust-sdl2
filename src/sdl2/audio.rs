@@ -250,46 +250,58 @@ struct AudioCallbackUserdata<CB> {
     callback: CB
 }
 
+/// Get audio format for type.
+///
+/// Example: `assert_eq!(AudioFormatFor::<f32>.get_audio_format(), ll::AUDIO_F32);``
+pub struct AudioFormatFor<T>;
+
+impl<T: AudioFormatNum> AudioFormatFor<T> {
+    /// Gets audio format.
+    pub fn get_audio_format(self) -> ll::SDL_AudioFormat {
+        AudioFormatNum::get_audio_format(self)
+    }
+}
+
 /// A phantom type for retreiving the SDL_AudioFormat of a given generic type.
 /// All format types are returned as native-endian.
 ///
-/// Example: `assert_eq!(AudioFormatNum::<f32>::get_audio_format(), ll::AUDIO_F32);``
-pub trait AudioFormatNum<T> {
-    fn get_audio_format() -> ll::SDL_AudioFormat;
+/// Example: `assert_eq!(AudioFormatNum::get_audio_format(AudioFormatFor::<f32>), ll::AUDIO_F32);``
+pub trait AudioFormatNum {
+    fn get_audio_format(_: AudioFormatFor<Self>) -> ll::SDL_AudioFormat;
     fn zero() -> Self;
 }
 /// AUDIO_S8
-impl AudioFormatNum<i8> for i8 {
-    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S8 }
+impl AudioFormatNum for i8 {
+    fn get_audio_format(_: AudioFormatFor<i8>) -> ll::SDL_AudioFormat { ll::AUDIO_S8 }
     fn zero() -> i8 { 0 }
 }
 /// AUDIO_U8
-impl AudioFormatNum<u8> for u8 {
-    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_U8 }
+impl AudioFormatNum for u8 {
+    fn get_audio_format(_: AudioFormatFor<u8>) -> ll::SDL_AudioFormat { ll::AUDIO_U8 }
     fn zero() -> u8 { 0 }
 }
 /// AUDIO_S16
-impl AudioFormatNum<i16> for i16 {
-    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S16SYS }
+impl AudioFormatNum for i16 {
+    fn get_audio_format(_: AudioFormatFor<i16>) -> ll::SDL_AudioFormat { ll::AUDIO_S16SYS }
     fn zero() -> i16 { 0 }
 }
 /// AUDIO_U16
-impl AudioFormatNum<u16> for u16 {
-    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_U16SYS }
+impl AudioFormatNum for u16 {
+    fn get_audio_format(_: AudioFormatFor<u16>) -> ll::SDL_AudioFormat { ll::AUDIO_U16SYS }
     fn zero() -> u16 { 0 }
 }
 /// AUDIO_S32
-impl AudioFormatNum<i32> for i32 {
-    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S32SYS }
+impl AudioFormatNum for i32 {
+    fn get_audio_format(_: AudioFormatFor<i32>) -> ll::SDL_AudioFormat { ll::AUDIO_S32SYS }
     fn zero() -> i32 { 0 }
 }
 /// AUDIO_F32
-impl AudioFormatNum<f32> for f32 {
-    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_F32SYS }
+impl AudioFormatNum for f32 {
+    fn get_audio_format(_: AudioFormatFor<f32>) -> ll::SDL_AudioFormat { ll::AUDIO_F32SYS }
     fn zero() -> f32 { 0.0 }
 }
 
-extern "C" fn audio_callback_marshall<T: AudioFormatNum<T>, CB: AudioCallback<T>>
+extern "C" fn audio_callback_marshall<T: AudioFormatNum, CB: AudioCallback<T>>
 (userdata: *const c_void, stream: *const uint8_t, len: c_int) {
     use std::raw::Slice;
     use std::mem::{size_of, transmute};
@@ -304,20 +316,20 @@ extern "C" fn audio_callback_marshall<T: AudioFormatNum<T>, CB: AudioCallback<T>
     }
 }
 
-pub struct AudioSpecDesired<T: AudioFormatNum<T>, CB: AudioCallback<T>> {
+pub struct AudioSpecDesired<T: AudioFormatNum, CB: AudioCallback<T>> {
     pub freq: i32,
     pub channels: u8,
     pub callback: CB
 }
 
-impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
+impl<T: AudioFormatNum, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
     fn convert_to_ll(freq: i32, channels: u8, userdata: &mut AudioCallbackUserdata<CB>) -> ll::SDL_AudioSpec {
         use std::mem::transmute;
 
         unsafe {
             ll::SDL_AudioSpec {
                 freq: freq,
-                format: AudioFormatNum::<T>::get_audio_format(),
+                format: AudioFormatFor::<T>.get_audio_format(),
                 channels: channels,
                 silence: 0,
                 samples: 0,
