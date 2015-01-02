@@ -7,8 +7,8 @@ struct MyCallback {
 }
 impl AudioCallback<f32> for MyCallback {
     fn callback(&mut self, out: &mut [f32]) {
-        use std::rand::{Rng, task_rng};
-        let mut rng = task_rng();
+        use std::rand::{Rng, thread_rng};
+        let mut rng = thread_rng();
 
         // Generate white noise
         for x in out.iter_mut() {
