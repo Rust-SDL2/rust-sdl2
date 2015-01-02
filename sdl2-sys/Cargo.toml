@@ -1,0 +1,13 @@
+[package]
+
+name = "sdl2-sys"
+version = "0.0.0"
+authors = ["Tony Aldridge <tony@angry-lawyer.com>"]
+links = "SDL2"
+build = "build.rs"
+
+[lib]
+name = "sdl2-sys"
+
+[build-dependencies]
+pkg-config = "*"
