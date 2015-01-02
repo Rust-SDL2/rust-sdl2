@@ -4,7 +4,7 @@ use libc::{c_int, int64_t, size_t};
 #[allow(dead_code)]
 #[repr(C)]
 struct SDL_RWops_Anon {
-    data: [c_uchar, ..24],
+    data: [c_uchar; 24],
 }
 
 pub type SDL_bool = c_int;

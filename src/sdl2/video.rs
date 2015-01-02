@@ -407,7 +407,7 @@ impl Window {
         unsafe { ll::SDL_GetWindowBrightness(self.raw) as f64 }
     }
 
-    pub fn set_gamma_ramp(&self, red: Option<&[u16, ..256]>, green: Option<&[u16, ..256]>, blue: Option<&[u16, ..256]>) -> bool {
+    pub fn set_gamma_ramp(&self, red: Option<&[u16; 256]>, green: Option<&[u16; 256]>, blue: Option<&[u16; 256]>) -> bool {
         unsafe {
             let unwrapped_red = match red {
                 Some(values) => values.as_ptr(),

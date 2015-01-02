@@ -8,7 +8,7 @@ pub type SDL_Joystick = c_void;
 #[deriving(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_JoystickGUID {
-    pub data: [uint8_t, ..16u],
+    pub data: [uint8_t; 16u],
 }
 
 extern "C" {

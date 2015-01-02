@@ -24,7 +24,7 @@ pub type SDL_Haptic = c_void;
 #[repr(C)]
 pub struct SDL_HapticDirection {
     pub _type: uint8_t,
-    pub dir: [int32_t, ..3],
+    pub dir: [int32_t; 3],
 }
 
 #[deriving(Copy, Clone)]
@@ -71,12 +71,12 @@ pub struct SDL_HapticCondition {
     pub delay: uint16_t,
     pub button: uint16_t,
     pub interval: uint16_t,
-    pub right_sat: [uint16_t, ..3],
-    pub left_sat: [uint16_t, ..3],
-    pub right_coeff: [int16_t, ..3],
-    pub left_coeff: [int16_t, ..3],
-    pub deadband: [uint16_t, ..3],
-    pub center: [int16_t, ..3],
+    pub right_sat: [uint16_t; 3],
+    pub left_sat: [uint16_t; 3],
+    pub right_coeff: [int16_t; 3],
+    pub left_coeff: [int16_t; 3],
+    pub deadband: [uint16_t; 3],
+    pub center: [int16_t; 3],
 }
 
 #[deriving(Copy, Clone)]
@@ -126,7 +126,7 @@ pub struct SDL_HapticCustom {
 #[allow(missing_copy_implementations)]
 #[repr(C)]
 pub struct SDL_HapticEffect {
-    pub data: [uint8_t, ..72u],
+    pub data: [uint8_t; 72u],
 }
 
 impl SDL_HapticEffect {

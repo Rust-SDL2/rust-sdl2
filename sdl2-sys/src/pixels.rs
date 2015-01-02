@@ -26,7 +26,7 @@ pub struct SDL_PixelFormat {
     pub palette: *const SDL_Palette,
     pub BitsPerPixel: uint8_t,
     pub BytesPerPixel: uint8_t,
-    pub padding: [uint8_t, ..2],
+    pub padding: [uint8_t; 2],
     pub Rmask: uint8_t,
     pub Gmask: uint8_t,
     pub Bmask: uint8_t,
