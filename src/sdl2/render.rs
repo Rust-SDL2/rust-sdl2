@@ -17,13 +17,13 @@ use std::borrow::ToOwned;
 
 pub use sys::render as ll;
 
-#[deriving(Copy, Clone)]
+#[derive(Copy, Clone)]
 pub enum RenderDriverIndex {
     Auto,
     Index(int)
 }
 
-#[deriving(Copy, Clone, PartialEq, FromPrimitive)]
+#[derive(Copy, Clone, PartialEq, FromPrimitive)]
 pub enum TextureAccess {
     Static = ll::SDL_TEXTUREACCESS_STATIC as int,
     Streaming = ll::SDL_TEXTUREACCESS_STREAMING as int,
@@ -39,7 +39,7 @@ bitflags! {
     }
 }
 
-#[deriving(PartialEq)]
+#[derive(PartialEq)]
 pub struct RendererInfo {
     pub name: String,
     pub flags: RendererFlags,
@@ -48,7 +48,7 @@ pub struct RendererInfo {
     pub max_texture_height: int
 }
 
-#[deriving(Copy, Clone, PartialEq, FromPrimitive)]
+#[derive(Copy, Clone, PartialEq, FromPrimitive)]
 pub enum BlendMode {
     None = ll::SDL_BLENDMODE_NONE as int,
     Blend = ll::SDL_BLENDMODE_BLEND as int,
@@ -56,7 +56,7 @@ pub enum BlendMode {
     Mod = ll::SDL_BLENDMODE_MOD as int
 }
 
-#[deriving(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum RendererFlip {
     None = ll::SDL_FLIP_NONE as int,
     Horizontal = ll::SDL_FLIP_HORIZONTAL as int,
@@ -482,7 +482,7 @@ impl Renderer {
 }
 
 
-#[deriving(Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct TextureQuery {
     pub format: pixels::PixelFormatFlag,
     pub access: TextureAccess,
@@ -490,7 +490,7 @@ pub struct TextureQuery {
     pub height: int
 }
 
-#[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
+#[derive(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct Texture {
     pub raw: *const ll::SDL_Texture,
     pub owned: bool

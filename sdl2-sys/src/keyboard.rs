@@ -10,7 +10,7 @@ pub type SDL_Keymod = c_uint;
 pub type SDL_Scancode = c_uint;
 
 // SDL_keyboard.h
-#[deriving(Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_Keysym {
     pub scancode: SDL_Scancode,
     pub sym: SDL_Keycode,

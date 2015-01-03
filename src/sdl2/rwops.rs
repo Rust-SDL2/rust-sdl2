@@ -6,7 +6,7 @@ use SdlResult;
 
 pub use sys::rwops as ll;
 
-#[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
+#[derive(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct RWops {
     raw: *const ll::SDL_RWops,
     close_on_drop: bool

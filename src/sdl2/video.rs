@@ -12,7 +12,7 @@ use get_error;
 
 pub use sys::video as ll;
 
-#[deriving(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum GLAttr {
     GLRedSize = 0,
     GLGreenSize = 1,
@@ -40,7 +40,7 @@ pub enum GLAttr {
     GLFramebufferSRGBCapable = 23,
 }
 
-#[deriving(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum GLProfile {
   GLCoreProfile = 0x0001,
   GLCompatibilityProfile = 0x0002,
@@ -59,7 +59,7 @@ fn empty_sdl_display_mode() -> ll::SDL_DisplayMode {
 }
 
 #[allow(missing_copy_implementations)]
-#[deriving(Clone, PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct DisplayMode {
     pub format: u32,
     pub w: int,
@@ -117,14 +117,14 @@ bitflags! {
     }
 }
 
-#[deriving(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum FullscreenType {
     FTOff = 0,
     FTTrue = 0x00000001,
     FTDesktop = 0x00001001,
 }
 
-#[deriving(PartialEq, Copy)]
+#[derive(PartialEq, Copy)]
 pub enum WindowPos {
     PosUndefined,
     PosCentered,
@@ -139,7 +139,7 @@ fn unwrap_windowpos (pos: WindowPos) -> ll::SDL_WindowPos {
     }
 }
 
-#[deriving(PartialEq)]
+#[derive(PartialEq)]
 pub struct GLContext {
     raw: ll::SDL_GLContext,
     owned: bool
@@ -155,7 +155,7 @@ impl Drop for GLContext {
     }
 }
 
-#[deriving(PartialEq)]
+#[derive(PartialEq)]
 #[allow(raw_pointer_deriving)]
 pub struct Window {
     raw: *const ll::SDL_Window,

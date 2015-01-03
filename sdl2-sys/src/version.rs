@@ -2,7 +2,7 @@
 
 use libc::{uint8_t, c_char, c_int};
 
-#[deriving(Copy, Clone)]
+#[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_version {
     pub major: uint8_t,

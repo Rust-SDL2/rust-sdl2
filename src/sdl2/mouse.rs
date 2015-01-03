@@ -7,7 +7,7 @@ use video;
 
 pub use sys::mouse as ll;
 
-#[deriving(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 #[repr(u32)]
 pub enum SystemCursor {
     Arrow = ll::SDL_SYSTEM_CURSOR_ARROW,
@@ -24,7 +24,7 @@ pub enum SystemCursor {
     Hand = ll::SDL_SYSTEM_CURSOR_HAND,
 }
 
-#[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
+#[derive(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct Cursor {
     raw: *const ll::SDL_Cursor,
     owned: bool
@@ -87,7 +87,7 @@ impl Cursor {
     }
 }
 
-#[deriving(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum Mouse {
     Left,
     Middle,
