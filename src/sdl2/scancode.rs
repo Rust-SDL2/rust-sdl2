@@ -1,4 +1,4 @@
-use std::hash::{mod, Hash};
+use std::hash::{self, Hash};
 
 #[deriving(PartialEq, Eq, FromPrimitive, Show, Copy)]
 pub enum ScanCode {
