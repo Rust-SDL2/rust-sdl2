@@ -4,6 +4,7 @@ use get_error;
 use SdlResult;
 use std::ptr;
 use libc::{c_int, uint32_t};
+use std::num::FromPrimitive;
 use pixels;
 use render::BlendMode;
 use rwops;
