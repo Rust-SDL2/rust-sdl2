@@ -24,7 +24,7 @@ pub struct SDL_RendererInfo
     pub name: *const c_char,
     pub flags: uint32_t,
     pub num_texture_formats: uint32_t,
-    pub texture_formats: [uint32_t, ..16],
+    pub texture_formats: [uint32_t; 16],
     pub max_texture_width: c_int,
     pub max_texture_height: c_int,
 }

@@ -1,12 +1,13 @@
 use std::io;
 use std::io::IoResult;
+use std::c_str::ToCStr;
 use libc::{c_void, c_int, size_t};
 use get_error;
 use SdlResult;
 
 pub use sys::rwops as ll;
 
-#[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
+#[derive(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct RWops {
     raw: *const ll::SDL_RWops,
     close_on_drop: bool

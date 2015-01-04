@@ -7,6 +7,7 @@ use libc::{c_int, uint32_t};
 use pixels;
 use render::BlendMode;
 use rwops;
+use std::num::FromPrimitive;
 
 pub use sys::surface as ll;
 
@@ -19,7 +20,7 @@ bitflags! {
     }
 }
 
-#[deriving(PartialEq)]
+#[derive(PartialEq)]
 #[allow(raw_pointer_deriving, missing_copy_implementations)]
 pub struct Surface {
     raw: *const ll::SDL_Surface,

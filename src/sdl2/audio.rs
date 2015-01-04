@@ -1,13 +1,14 @@
 //! Audio Functions
-
 use std::ptr;
 use std::mem;
-use std::c_str::CString;
+use std::c_str::{CString, ToCStr};
 use std::c_vec::CVec;
 use std::borrow::ToOwned;
 use libc;
 use libc::{c_int, size_t, c_void};
 use libc::{uint8_t};
+use std::num::FromPrimitive;
+use std::ops::{Deref, DerefMut};
 
 use get_error;
 use rwops::RWops;
@@ -37,7 +38,7 @@ pub const AUDIOS32SYS : AudioFormat = ll::AUDIO_S32SYS;
 pub const AUDIOF32SYS : AudioFormat = ll::AUDIO_F32SYS;
 
 #[repr(C)]
-#[deriving(Copy, Clone, PartialEq, Hash, Show, FromPrimitive)]
+#[derive(Copy, Clone, PartialEq, Hash, Show, FromPrimitive)]
 pub enum AudioStatus {
     Stopped = ll::SDL_AUDIO_STOPPED as int,
     Playing = ll::SDL_AUDIO_PLAYING as int,
@@ -88,7 +89,7 @@ pub fn get_current_audio_driver() -> String {
     }
 }
 
-#[deriving(Copy, Clone, Show)]
+#[derive(Copy, Clone, Show)]
 pub struct AudioSpecWAV {
     pub freq: i32,
     // TODO: Showing format should be prettier
@@ -278,7 +279,7 @@ impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
 }
 
 #[allow(missing_copy_implementations)]
-#[deriving(Show)]
+#[derive(Show)]
 pub struct AudioSpec {
     pub freq: i32,
     // TODO: Showing format should be prettier
@@ -380,11 +381,12 @@ pub struct AudioDeviceLockGuard<'a, CB: 'a> {
     device: &'a mut AudioDevice<CB>
 }
 
-impl<'a, CB> Deref<CB> for AudioDeviceLockGuard<'a, CB> {
+impl<'a, CB: 'a> Deref for AudioDeviceLockGuard<'a, CB> {
+    type Target = CB;
     fn deref(&self) -> &CB { &self.device.userdata.callback }
 }
 
-impl<'a, CB> DerefMut<CB> for AudioDeviceLockGuard<'a, CB> {
+impl<'a, CB: 'a> DerefMut for AudioDeviceLockGuard<'a, CB> {
     fn deref_mut(&mut self) -> &mut CB { &mut self.device.userdata.callback }
 }
 
@@ -395,7 +397,7 @@ impl<'a, CB> Drop for AudioDeviceLockGuard<'a, CB> {
     }
 }
 
-#[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
+#[derive(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct AudioCVT {
     raw: *mut ll::SDL_AudioCVT,
     owned: bool,

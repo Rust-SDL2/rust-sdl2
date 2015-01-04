@@ -1,4 +1,4 @@
-use std::c_str::CString;
+use std::c_str::{CString, ToCStr};
 use std::borrow::ToOwned;
 
 use sys::sdl as ll;
@@ -17,7 +17,7 @@ bitflags! {
     }
 }
 
-#[deriving(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum Error {
     NoMemError = ll::SDL_ENOMEM as int,
     ReadError = ll::SDL_EFREAD as int,

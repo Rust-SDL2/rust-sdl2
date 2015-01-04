@@ -25,7 +25,7 @@ pub type SDL_WindowPos = c_int;
 pub const SDL_WINDOWPOS_CENTERED: SDL_WindowPos = 0x2FFF0000;
 pub const SDL_WINDOWPOS_UNDEFINED: SDL_WindowPos = 0x1FFF0000;
 
-#[deriving(Copy, Clone)]
+#[derive(Copy, Clone)]
 pub enum SDL_WindowFlags {
     SDL_WINDOW_FULLSCREEN = 0x00000001,
     SDL_WINDOW_OPENGL = 0x00000002,
@@ -43,7 +43,7 @@ pub enum SDL_WindowFlags {
     SDL_WINDOW_ALLOW_HIGHDPI = 0x00002000
 }
 
-#[deriving(Copy, Clone)]
+#[derive(Copy, Clone)]
 pub enum SDL_WindowEventID {
     SDL_WINDOWEVENT_NONE,
     SDL_WINDOWEVENT_SHOWN,
@@ -64,7 +64,7 @@ pub enum SDL_WindowEventID {
 
 pub type SDL_GLContext = *const c_void;
 
-#[deriving(Copy, Clone, FromPrimitive)]
+#[derive(Copy, Clone, FromPrimitive)]
 #[repr(C)]
 pub enum SDL_GLattr {
     SDL_GL_RED_SIZE = 0,
@@ -93,7 +93,7 @@ pub enum SDL_GLattr {
     SDL_GL_FRAMEBUFFER_SRGB_CAPABLE = 23
 }
 
-#[deriving(Copy, Clone)]
+#[derive(Copy, Clone)]
 pub enum SDL_GLprofile {
     SDL_GL_CONTEXT_PROFILE_CORE = 0x0001,
     SDL_GL_CONTEXT_PROFILE_COMPATIBILITY = 0x0002,

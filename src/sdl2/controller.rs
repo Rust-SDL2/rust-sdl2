@@ -2,7 +2,7 @@ use libc::c_int;
 
 pub use sys::controller as ll;
 
-#[deriving(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 #[repr(i32)]
 pub enum ControllerAxis {
     Invalid      = ll::SDL_CONTROLLER_AXIS_INVALID,
@@ -26,7 +26,7 @@ pub fn wrap_controller_axis(bitflags: u8) -> ControllerAxis {
     }
 }
 
-#[deriving(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 #[repr(i32)]
 pub enum ControllerButton {
     Invalid       = ll::SDL_CONTROLLER_BUTTON_INVALID,

@@ -26,7 +26,7 @@ use SdlResult;
 pub use sys::event as ll;
 
 /// Types of events that can be delivered.
-#[deriving(Copy, Clone, FromPrimitive)]
+#[derive(Copy, Clone, FromPrimitive)]
 #[repr(u32)]
 pub enum EventType {
     First = ll::SDL_FIRSTEVENT,
@@ -81,7 +81,7 @@ pub enum EventType {
     Last = ll::SDL_LASTEVENT,
 }
 
-#[deriving(Copy, Clone, Show)]
+#[derive(Copy, Clone, Show)]
 /// An enum of window events.
 pub enum WindowEventId {
     None,
@@ -203,7 +203,7 @@ pub enum Event {
 
 impl ::std::fmt::Show for Event {
     fn fmt(&self, out: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        out.write(match *self {
+        out.write_str(match *self {
             Event::None => "Event::None",
             Event::Quit(..) => "Event::Quit",
             Event::AppTerminating(..) => "Event::AppTerminating",
@@ -243,7 +243,7 @@ impl ::std::fmt::Show for Event {
             Event::ClipboardUpdate(..) => "Event::ClipboardUpdate",
             Event::DropFile(..) => "Event::DropFile",
             Event::User(..) => "Event::User",
-        }.as_bytes())
+        })
     }
 }
 
@@ -625,7 +625,7 @@ impl Event {
 }
 
 fn null_event() -> ll::SDL_Event {
-    ll::SDL_Event { data: [0, ..56] }
+    ll::SDL_Event { data: [0; 56] }
 }
 
 /// Pump the event loop, gathering events from the input devices.

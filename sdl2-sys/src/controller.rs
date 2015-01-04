@@ -12,7 +12,7 @@ pub const SDL_CONTROLLER_BINDTYPE_AXIS: SDL_GameControllerBindType = 2;
 pub const SDL_CONTROLLER_BINDTYPE_HAT: SDL_GameControllerBindType = 3;
 
 #[allow(dead_code, non_snake_case)]
-#[deriving(Copy, Clone)]
+#[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_GameControllerButtonBind {
     bindType: SDL_GameControllerBindType,
@@ -20,14 +20,14 @@ pub struct SDL_GameControllerButtonBind {
 }
 
 #[allow(dead_code)]
-#[deriving(Copy, Clone)]
+#[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_GameControllerButtonBindData {
-    data: [c_uchar, ..8u],
+    data: [c_uchar; 8u],
 }
 
 #[allow(dead_code)]
-#[deriving(Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_GameControllerButtonBindDataHat {
     hat: c_int,
     hat_mask: c_int,
