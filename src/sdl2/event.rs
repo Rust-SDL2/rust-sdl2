@@ -26,7 +26,7 @@ use SdlResult;
 pub use sys::event as ll;
 
 /// Types of events that can be delivered.
-#[deriving(Copy, Clone, FromPrimitive)]
+#[derive(Copy, Clone, FromPrimitive)]
 #[repr(u32)]
 pub enum EventType {
     First = ll::SDL_FIRSTEVENT,
@@ -81,7 +81,7 @@ pub enum EventType {
     Last = ll::SDL_LASTEVENT,
 }
 
-#[deriving(Copy, Clone, Show)]
+#[derive(Copy, Clone, Show)]
 /// An enum of window events.
 pub enum WindowEventId {
     None,

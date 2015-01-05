@@ -38,7 +38,7 @@ pub const AUDIOS32SYS : AudioFormat = ll::AUDIO_S32SYS;
 pub const AUDIOF32SYS : AudioFormat = ll::AUDIO_F32SYS;
 
 #[repr(C)]
-#[deriving(Copy, Clone, PartialEq, Hash, Show, FromPrimitive)]
+#[derive(Copy, Clone, PartialEq, Hash, Show, FromPrimitive)]
 pub enum AudioStatus {
     Stopped = ll::SDL_AUDIO_STOPPED as int,
     Playing = ll::SDL_AUDIO_PLAYING as int,
@@ -89,7 +89,7 @@ pub fn get_current_audio_driver() -> String {
     }
 }
 
-#[deriving(Copy, Clone, Show)]
+#[derive(Copy, Clone, Show)]
 pub struct AudioSpecWAV {
     pub freq: i32,
     // TODO: Showing format should be prettier
@@ -279,7 +279,7 @@ impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
 }
 
 #[allow(missing_copy_implementations)]
-#[deriving(Show)]
+#[derive(Show)]
 pub struct AudioSpec {
     pub freq: i32,
     // TODO: Showing format should be prettier
@@ -396,7 +396,7 @@ impl<'a, CB> Drop for AudioDeviceLockGuard<'a, CB> {
     }
 }
 
-#[deriving(PartialEq)] #[allow(raw_pointer_deriving)]
+#[derive(PartialEq)] #[allow(raw_pointer_deriving)]
 pub struct AudioCVT {
     raw: *mut ll::SDL_AudioCVT,
     owned: bool,

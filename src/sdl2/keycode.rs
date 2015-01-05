@@ -1,7 +1,7 @@
 use std::hash::{self, Hash};
 use std::num::{FromPrimitive, ToPrimitive};
 
-#[deriving(PartialEq, Eq, FromPrimitive, Show, Copy)]
+#[derive(PartialEq, Eq, FromPrimitive, Show, Copy)]
 pub enum KeyCode {
     Unknown            = 0,
     Backspace          = 8,

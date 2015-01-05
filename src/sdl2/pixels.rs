@@ -2,14 +2,14 @@ extern crate rand;
 
 pub use sys::pixels as ll;
 
-#[deriving(PartialEq)] #[allow(raw_pointer_deriving, missing_copy_implementations)]
+#[derive(PartialEq)] #[allow(raw_pointer_deriving, missing_copy_implementations)]
 pub struct Palette {
     raw: *const ll::SDL_Palette
 }
 
 impl_raw_accessors!(Palette, *const ll::SDL_Palette);
 
-#[deriving(PartialEq, Clone, Copy)]
+#[derive(PartialEq, Clone, Copy)]
 pub enum Color {
     RGB(u8, u8, u8),
     RGBA(u8, u8, u8, u8)
@@ -54,7 +54,7 @@ impl rand::Rand for Color {
     }
 }
 
-#[deriving(PartialEq)] #[allow(raw_pointer_deriving, missing_copy_implementations)]
+#[derive(PartialEq)] #[allow(raw_pointer_deriving, missing_copy_implementations)]
 pub struct PixelFormat {
     raw: *const ll::SDL_PixelFormat
 }
@@ -62,7 +62,7 @@ pub struct PixelFormat {
 impl_raw_accessors!(PixelFormat, *const ll::SDL_PixelFormat);
 impl_raw_constructor!(PixelFormat -> PixelFormat (raw: *const ll::SDL_PixelFormat));
 
-#[deriving(Copy, Clone, PartialEq, Show, FromPrimitive)]
+#[derive(Copy, Clone, PartialEq, Show, FromPrimitive)]
 pub enum PixelFormatFlag {
     Unknown = ll::SDL_PIXELFORMAT_UNKNOWN as int,
     Index1LSB = ll::SDL_PIXELFORMAT_INDEX1LSB as int,

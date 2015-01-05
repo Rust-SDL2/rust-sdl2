@@ -1,7 +1,7 @@
 use libc::{c_int, uint8_t, uint32_t};
 
 //SDL_pixels.h
-#[deriving(Copy, Clone)]
+#[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_Color {
     pub r: uint8_t,
