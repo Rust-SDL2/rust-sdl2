@@ -625,7 +625,7 @@ impl Event {
 }
 
 fn null_event() -> ll::SDL_Event {
-    ll::SDL_Event { data: [0, ..56] }
+    ll::SDL_Event { data: [0; 56] }
 }
 
 /// Pump the event loop, gathering events from the input devices.
