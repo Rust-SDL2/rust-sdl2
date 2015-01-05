@@ -1,14 +1,14 @@
 //! Audio Functions
-
 use std::ptr;
 use std::mem;
-use std::c_str::CString;
+use std::c_str::{CString, ToCStr};
 use std::c_vec::CVec;
 use std::borrow::ToOwned;
 use std::num::FromPrimitive;
 use libc;
 use libc::{c_int, size_t, c_void};
 use libc::{uint8_t};
+use std::ops::{Deref, DerefMut};
 
 use get_error;
 use rwops::RWops;
@@ -381,11 +381,12 @@ pub struct AudioDeviceLockGuard<'a, CB: 'a> {
     device: &'a mut AudioDevice<CB>
 }
 
-impl<'a, CB> Deref<CB> for AudioDeviceLockGuard<'a, CB> {
+impl<'a, CB: 'a> Deref for AudioDeviceLockGuard<'a, CB> {
+    type Target = CB;
     fn deref(&self) -> &CB { &self.device.userdata.callback }
 }
 
-impl<'a, CB> DerefMut<CB> for AudioDeviceLockGuard<'a, CB> {
+impl<'a, CB: 'a> DerefMut for AudioDeviceLockGuard<'a, CB> {
     fn deref_mut(&mut self) -> &mut CB { &mut self.device.userdata.callback }
 }
 

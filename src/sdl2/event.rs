@@ -203,7 +203,7 @@ pub enum Event {
 
 impl ::std::fmt::Show for Event {
     fn fmt(&self, out: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        out.write(match *self {
+        out.write_str(match *self {
             Event::None => "Event::None",
             Event::Quit(..) => "Event::Quit",
             Event::AppTerminating(..) => "Event::AppTerminating",
@@ -243,7 +243,7 @@ impl ::std::fmt::Show for Event {
             Event::ClipboardUpdate(..) => "Event::ClipboardUpdate",
             Event::DropFile(..) => "Event::DropFile",
             Event::User(..) => "Event::User",
-        }.as_bytes())
+        })
     }
 }
 

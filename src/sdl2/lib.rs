@@ -1,7 +1,7 @@
 #![crate_name = "sdl2"]
 #![crate_type = "lib"]
 
-#![feature(default_type_params, globs, macro_rules, slicing_syntax, unsafe_destructor)]
+#![feature(default_type_params, globs, macro_rules, slicing_syntax, unsafe_destructor, associated_types, old_orphan_check)]
 
 extern crate libc;
 extern crate collections;
