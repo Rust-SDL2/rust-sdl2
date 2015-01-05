@@ -40,7 +40,7 @@ If you're using [cargo](http://crates.io/) to manage your project, you can downl
 
 ```toml
     [dependencies]
-    sdl2 = "0.0.13"
+    sdl2 = "0.0.14"
 ```
 
 Alternatively, pull it from GitHub
@@ -59,6 +59,7 @@ Otherwise, clone this repo and run [cargo](http://crates.io/)
 We have some simple example projects included:
 
 > cargo run --example demo
+
 > cargo run --example audio-whitenoise
 
 Some additional examples can be found in the [rs-sdl2-examples](https://github.com/jdeseno/rs-sdl2-examples) repo.
