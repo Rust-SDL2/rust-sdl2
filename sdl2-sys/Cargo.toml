@@ -8,6 +8,12 @@ build = "build.rs"
 
 [lib]
 name = "sdl2-sys"
+path = "src/lib.rs"
 
 [build-dependencies]
 pkg-config = "*"
+
+[features]
+
+default = []
+use-pkgconfig = []
