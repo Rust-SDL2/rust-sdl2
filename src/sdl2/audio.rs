@@ -5,6 +5,7 @@ use std::mem;
 use std::c_str::CString;
 use std::c_vec::CVec;
 use std::borrow::ToOwned;
+use std::num::FromPrimitive;
 use libc;
 use libc::{c_int, size_t, c_void};
 use libc::{uint8_t};

@@ -1,4 +1,5 @@
 use std::hash::{self, Hash};
+use std::num::{FromPrimitive, ToPrimitive};
 
 #[deriving(PartialEq, Eq, FromPrimitive, Show, Copy)]
 pub enum KeyCode {
