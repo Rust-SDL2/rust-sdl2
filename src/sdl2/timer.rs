@@ -24,15 +24,16 @@ pub fn delay(ms: uint) {
 pub struct Timer<'a> {
     delay: uint,
     raw: ll::SDL_TimerID,
-    closure: raw::Closure,
+    closure: raw::TraitObject,
     remove_on_drop: bool,
     lifetime: ContravariantLifetime<'a>,
 }
 
 impl<'a> Timer<'a> {
-    pub fn new(delay: uint, callback: ||: 'a -> uint, remove_on_drop: bool) -> Timer<'a> {
+    pub fn new<F>(delay: uint, callback: F, remove_on_drop: bool) -> Timer<'a>
+    where F: Fn() -> uint, F: 'a {
         unsafe {
-            let c_param = mem::transmute::<_, raw::Closure>(callback);
+            let c_param = mem::transmute(&callback as &Fn() -> uint);
             Timer { delay: delay, raw: 0, closure: c_param, remove_on_drop: remove_on_drop, lifetime: ContravariantLifetime }
         }
     }
@@ -74,6 +75,6 @@ impl<'a> Drop for Timer<'a> {
 }
 
 extern "C" fn c_timer_callback(_interval: uint32_t, param: *const c_void) -> uint32_t {
-    let f : &mut || -> uint = unsafe { mem::transmute(param) };
+    let f: &&Fn() -> uint = unsafe { mem::transmute(param) };
     (*f)() as uint32_t
 }
