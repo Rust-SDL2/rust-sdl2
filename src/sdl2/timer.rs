@@ -1,7 +1,5 @@
 use std::mem;
 use libc::{uint32_t, c_void};
-use std::raw;
-use std::kinds::marker::ContravariantLifetime;
 
 pub use sys::timer as ll;
 
@@ -24,17 +22,12 @@ pub fn delay(ms: uint) {
 pub struct Timer<'a> {
     delay: uint,
     raw: ll::SDL_TimerID,
-    closure: raw::Closure,
-    remove_on_drop: bool,
-    lifetime: ContravariantLifetime<'a>,
+    closure: Box<FnMut() -> uint + 'a>,
 }
 
 impl<'a> Timer<'a> {
-    pub fn new(delay: uint, callback: ||: 'a -> uint, remove_on_drop: bool) -> Timer<'a> {
-        unsafe {
-            let c_param = mem::transmute::<_, raw::Closure>(callback);
-            Timer { delay: delay, raw: 0, closure: c_param, remove_on_drop: remove_on_drop, lifetime: ContravariantLifetime }
-        }
+    pub fn new(delay: uint, callback: Box<FnMut() -> uint + 'a>) -> Timer<'a> {
+        Timer { delay: delay, raw: 0, closure: callback }
     }
 
     pub fn start(&mut self) {
@@ -64,16 +57,39 @@ impl<'a> Timer<'a> {
 #[unsafe_destructor]
 impl<'a> Drop for Timer<'a> {
     fn drop(&mut self) {
-        if self.remove_on_drop {
-            let ret = unsafe { ll::SDL_RemoveTimer(self.raw) };
-            if ret != 1 {
-                println!("error dropping timer {}, maybe already removed.", self.raw);
-            }
+        let ret = unsafe { ll::SDL_RemoveTimer(self.raw) };
+        if ret != 1 {
+            println!("error dropping timer {}, maybe already removed.", self.raw);
         }
     }
 }
 
 extern "C" fn c_timer_callback(_interval: uint32_t, param: *const c_void) -> uint32_t {
-    let f : &mut || -> uint = unsafe { mem::transmute(param) };
+    let f: &mut Box<FnMut() -> uint> = unsafe { mem::transmute(param) };
     (*f)() as uint32_t
+}
+
+#[test]
+fn test_timer() {
+    use std::sync::{Arc, Mutex};
+
+    let local_num: Arc<Mutex<u32>> = Arc::new(Mutex::new(0));
+    let timer_num = local_num.clone();
+    {
+        let f: Box<FnMut() -> uint> = box |&mut:| {
+            let mut num = timer_num.lock().unwrap();
+            *num = *num + 1;
+            10
+        };
+        let mut timer = Timer::new(10, f);
+        timer.start();
+        delay(100);
+        let num = local_num.lock().unwrap();
+        assert!(*num == 9);
+    }
+
+    // Check that timer has stopped
+    delay(100);
+    let num = local_num.lock().unwrap();
+    assert!(*num == 9);
 }

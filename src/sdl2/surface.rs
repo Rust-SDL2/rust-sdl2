@@ -108,7 +108,7 @@ impl Surface {
     }
 
     /// Locks a surface so that the pixels can be directly accessed safely.
-    pub fn with_lock<R>(&mut self, f: |pixels: &mut [u8]| -> R) -> R {
+    pub fn with_lock<R, F: FnOnce(&mut [u8]) -> R>(&mut self, f: F) -> R {
         unsafe {
             if ll::SDL_LockSurface(self.raw) != 0 { panic!("could not lock surface"); }
 
