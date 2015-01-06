@@ -22,11 +22,11 @@ pub fn delay(ms: uint) {
 pub struct Timer<'a> {
     delay: uint,
     raw: ll::SDL_TimerID,
-    closure: Box<FnMut() -> uint + 'a>,
+    closure: &'a Box<FnMut() -> uint + 'a>,
 }
 
 impl<'a> Timer<'a> {
-    pub fn new(delay: uint, callback: Box<FnMut() -> uint + 'a>) -> Timer<'a> {
+    pub fn new(delay: uint, callback: &'a Box<FnMut() -> uint + 'a>) -> Timer<'a> {
         Timer { delay: delay, raw: 0, closure: callback }
     }
 
@@ -39,7 +39,7 @@ impl<'a> Timer<'a> {
                             _interval: uint32_t, 
                             param: *const c_void
                         ) -> uint32_t), 
-                    mem::transmute(&self.closure)
+                    mem::transmute(self.closure)
                 );
             self.raw = timer_id;
         }
@@ -70,7 +70,7 @@ extern "C" fn c_timer_callback(_interval: uint32_t, param: *const c_void) -> uin
 }
 
 #[test]
-fn test_timer() {
+fn test_timer_1() {
     use std::sync::{Arc, Mutex};
 
     let local_num: Arc<Mutex<u32>> = Arc::new(Mutex::new(0));
@@ -81,7 +81,7 @@ fn test_timer() {
             *num = *num + 1;
             10
         };
-        let mut timer = Timer::new(10, f);
+        let mut timer = Timer::new(10, &f);
         timer.start();
         delay(100);
         let num = local_num.lock().unwrap();
@@ -92,4 +92,22 @@ fn test_timer() {
     delay(100);
     let num = local_num.lock().unwrap();
     assert!(*num == 9);
+}
+
+#[test]
+fn test_timer_2() {
+    // Check that the closure lives long enough outside the block where
+    // the timer was started.
+    let f: Box<FnMut() -> uint> = box |&:| { 0 };
+    let _ = {
+        let mut timer = Timer::new(1000, &f);
+        timer.start();
+        timer
+    };
+    delay(200);
+    delay(200);
+    delay(200);
+    delay(200);
+    delay(200);
+    delay(200);
 }
