@@ -1,4 +1,4 @@
-use libc::{c_int, c_float, uint34_t};
+use libc::{c_int, c_float, uint32_t};
 use std::ffi::{c_str_to_bytes, CString};
 use std::ptr;
 use std::vec::Vec;

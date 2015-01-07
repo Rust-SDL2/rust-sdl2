@@ -1,12 +1,8 @@
 //! Audio Functions
-use std::ptr;
 <<<<<<< HEAD
+use std::ptr;
 use std::mem;
 use std::ffi::{c_str_to_bytes, CString};
-=======
-use std::c_str::{CString, ToCStr};
-use std::c_vec::CVec;
->>>>>>> Remove AudioCVT for now.
 use std::borrow::ToOwned;
 use std::num::FromPrimitive;
 use libc::{c_int, c_void};
@@ -92,23 +88,23 @@ pub fn get_current_audio_driver() -> String {
     }
 }
 
-#[derive(Copy, Clone, Show)]
 pub struct AudioSpecWAV {
     pub freq: i32,
-    // TODO: Showing format should be prettier
     pub format: AudioFormat,
-    pub channels: u8
+    pub channels: u8,
+    audio_buf: *mut u8,
+    audio_len: u32
 }
 
 impl AudioSpecWAV {
     /// Loads a WAVE from the file path. Uses `SDL_LoadWAV_RW`.
-    pub fn load_wav(path: &Path) -> SdlResult<(AudioSpecWAV, CVec<u8>)> {
+    pub fn load_wav(path: &Path) -> SdlResult<AudioSpecWAV> {
         let ops = try!(RWops::from_file(path, "rb"));
         AudioSpecWAV::load_wav_rw(&ops)
     }
 
     /// Loads a WAVE from the data source. Uses `SDL_LoadWAV_RW`.
-    pub fn load_wav_rw(src: &RWops) -> SdlResult<(AudioSpecWAV, CVec<u8>)> {
+    pub fn load_wav_rw(src: &RWops) -> SdlResult<AudioSpecWAV> {
         use std::mem::uninitialized;
         use std::ptr::null_mut;
 
@@ -120,18 +116,32 @@ impl AudioSpecWAV {
             if ret.is_null() {
                 Err(get_error())
             } else {
-                let audio_buf = ptr::Unique(audio_buf);
-                let v = CVec::new_with_dtor(audio_buf.0 as *mut u8, audio_len as uint, move || {
-                    ll::SDL_FreeWAV(audio_buf.0)
-                });
-
-                Ok((AudioSpecWAV {
+                Ok(AudioSpecWAV {
                     freq: desired.freq,
                     format: desired.format,
-                    channels: desired.channels
-                }, v))
+                    channels: desired.channels,
+                    audio_buf: audio_buf,
+                    audio_len: audio_len
+                })
             }
         }
+    }
+
+    pub fn get_buffer(&self) -> &[u8] {
+        use std::raw::Slice;
+        use std::mem::transmute;
+        unsafe {
+            transmute(Slice {
+                data: self.audio_buf,
+                len: self.audio_len as uint
+            })
+        }
+    }
+}
+
+impl Drop for AudioSpecWAV {
+    fn drop(&mut self) {
+        unsafe { ll::SDL_FreeWAV(self.audio_buf); }
     }
 }
 
