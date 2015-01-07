@@ -2,9 +2,6 @@
 
 #![crate_name="sdl2_image"]
 #![crate_type = "lib"]
-#![desc = "SDL2_image bindings and wrappers"]
-#![comment = "SDL2_image bindings and wrappers"]
-#![license = "MIT"]
 
 
 extern crate sdl2;
