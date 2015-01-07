@@ -6,8 +6,8 @@ pub use sys::clipboard as ll;
 
 pub fn set_clipboard_text(text: &String) -> SdlResult<()> {
     unsafe {
-		let buff = CString::from_slice(text.as_slice().as_bytes());
-	 	let result = ll::SDL_SetClipboardText(buff.as_ptr());
+        let buff = CString::from_slice(text.as_slice().as_bytes());
+        let result = ll::SDL_SetClipboardText(buff.as_ptr());
 
         if result == 0 {
             Err(get_error())

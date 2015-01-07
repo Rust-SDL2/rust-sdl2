@@ -20,8 +20,8 @@ impl_owned_accessors!(RWops, close_on_drop);
 impl RWops {
     pub fn from_file(path: &Path, mode: &str) -> SdlResult<RWops> {
         let raw = unsafe {
-			let path_c = CString::from_slice(path.as_vec()).as_ptr();
-			let mode_c = CString::from_slice(mode.as_bytes()).as_ptr();
+            let path_c = CString::from_slice(path.as_vec()).as_ptr();
+            let mode_c = CString::from_slice(mode.as_bytes()).as_ptr();
             ll::SDL_RWFromFile(path_c, mode_c)
         };
         if raw.is_null() { Err(get_error()) }

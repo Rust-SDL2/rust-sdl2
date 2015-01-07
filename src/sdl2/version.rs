@@ -46,7 +46,7 @@ pub fn get_version() -> Version {
 /// Get the code revision of SDL that is linked against your program.
 pub fn get_revision() -> String {
     unsafe {
-		let rev = ll::SDL_GetRevision();
+        let rev = ll::SDL_GetRevision();
         String::from_utf8_lossy(c_str_to_bytes(&rev)).to_string()
     }
 }

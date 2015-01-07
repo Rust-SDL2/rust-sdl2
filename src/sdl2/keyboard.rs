@@ -86,10 +86,10 @@ pub fn get_scancode_name(scancode: ScanCode) -> String {
 
 pub fn get_scancode_from_name(name: &str) -> ScanCode {
     unsafe {
-		let name = CString::from_slice(name.as_bytes()).as_ptr();
-		FromPrimitive::from_int(ll::SDL_GetScancodeFromName(name) as int)
-			.unwrap_or(ScanCode::Unknown)
-	}
+        let name = CString::from_slice(name.as_bytes()).as_ptr();
+        FromPrimitive::from_int(ll::SDL_GetScancodeFromName(name) as int)
+            .unwrap_or(ScanCode::Unknown)
+    }
 }
 
 pub fn get_key_name(key: KeyCode) -> String {
@@ -101,9 +101,9 @@ pub fn get_key_name(key: KeyCode) -> String {
 
 pub fn get_key_from_name(name: &str) -> KeyCode {
     unsafe {
-		let name = CString::from_slice(name.as_bytes()).as_ptr();
-		FromPrimitive::from_int(ll::SDL_GetKeyFromName(name) as int)
-			.unwrap_or(KeyCode::Unknown)
+        let name = CString::from_slice(name.as_bytes()).as_ptr();
+        FromPrimitive::from_int(ll::SDL_GetKeyFromName(name) as int)
+            .unwrap_or(KeyCode::Unknown)
     }
 }
 

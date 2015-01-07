@@ -1,4 +1,4 @@
-use libc::{c_int, c_float, uint32_t};
+use libc::{c_int, c_float, uint34_t};
 use std::ffi::{c_str_to_bytes, CString};
 use std::ptr;
 use std::vec::Vec;
@@ -190,7 +190,7 @@ impl Drop for Window {
 impl Window {
     pub fn new(title: &str, x: WindowPos, y: WindowPos, width: int, height: int, window_flags: WindowFlags) -> SdlResult<Window> {
         unsafe {
-			let buff = CString::from_slice(title.as_bytes()).as_ptr();
+            let buff = CString::from_slice(title.as_bytes()).as_ptr();
             let raw = ll::SDL_CreateWindow(
                     buff,
                     unwrap_windowpos(x),
@@ -198,7 +198,7 @@ impl Window {
                     width as c_int,
                     height as c_int,
                     window_flags.bits()
-			);
+            );
 
             if raw == ptr::null() {
                 Err(get_error())
@@ -271,8 +271,8 @@ impl Window {
     }
 
     pub fn set_title(&self, title: &str) {
-		let buff = CString::from_slice(title.as_bytes()).as_ptr();
-		unsafe { ll::SDL_SetWindowTitle(self.raw, buff) }
+        let buff = CString::from_slice(title.as_bytes()).as_ptr();
+        unsafe { ll::SDL_SetWindowTitle(self.raw, buff) }
     }
 
     pub fn get_title(&self) -> String {
@@ -471,8 +471,8 @@ pub fn get_video_driver(id: int) -> String {
 }
 
 pub fn video_init(name: &str) -> bool {
-	let buf = CString::from_slice(name.as_bytes()).as_ptr();
-	unsafe { ll::SDL_VideoInit(buf) == 0 }
+    let buf = CString::from_slice(name.as_bytes()).as_ptr();
+    unsafe { ll::SDL_VideoInit(buf) == 0 }
 }
 
 pub fn video_quit() {
@@ -582,13 +582,13 @@ pub fn disable_screen_saver() {
 
 pub fn gl_load_library(path: &str) -> SdlResult<()> {
     unsafe {
-		let path = CString::from_slice(path.as_bytes()).as_ptr();
+        let path = CString::from_slice(path.as_bytes()).as_ptr();
 
-		if ll::SDL_GL_LoadLibrary(path) == 0 {
-			Ok(())
-		} else {
-			Err(get_error())
-		}
+        if ll::SDL_GL_LoadLibrary(path) == 0 {
+            Ok(())
+        } else {
+            Err(get_error())
+        }
     }
 }
 
@@ -598,14 +598,14 @@ pub fn gl_unload_library() {
 
 pub fn gl_get_proc_address(procname: &str) -> Option<extern "system" fn()> {
     unsafe {
-		let procname = CString::from_slice(procname.as_bytes()).as_ptr();
-		ll::SDL_GL_GetProcAddress(procname)
+        let procname = CString::from_slice(procname.as_bytes()).as_ptr();
+        ll::SDL_GL_GetProcAddress(procname)
     }
 }
 
 pub fn gl_extension_supported(extension: &str) -> bool {
-	let buff = CString::from_slice(extension.as_bytes()).as_ptr();
-	unsafe { ll::SDL_GL_ExtensionSupported(buff) == 1 }
+    let buff = CString::from_slice(extension.as_bytes()).as_ptr();
+    unsafe { ll::SDL_GL_ExtensionSupported(buff) == 1 }
 }
 
 pub fn gl_set_attribute(attr: GLAttr, value: int) -> bool {

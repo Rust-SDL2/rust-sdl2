@@ -62,8 +62,8 @@ pub fn get_error() -> String {
 }
 
 pub fn set_error(err: &str) {
-	let buf = CString::from_slice(err.as_bytes()).as_ptr();
-	unsafe { ll::SDL_SetError(buf); }
+    let buf = CString::from_slice(err.as_bytes()).as_ptr();
+    unsafe { ll::SDL_SetError(buf); }
 }
 
 pub fn set_error_from_code(err: Error) {
