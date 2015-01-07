@@ -1,9 +1,6 @@
 //! Audio Functions
-<<<<<<< HEAD
-use std::ptr;
-use std::mem;
+
 use std::ffi::{c_str_to_bytes, CString};
-use std::borrow::ToOwned;
 use std::num::FromPrimitive;
 use libc::{c_int, c_void};
 use libc::{uint8_t};

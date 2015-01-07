@@ -307,7 +307,7 @@ impl Renderer {
     }
 
     pub fn set_clip_rect(&self, rect: Option<Rect>) -> SdlResult<()> {
-        let ret = unsafe { 
+        let ret = unsafe {
             ll::SDL_RenderSetClipRect(
                 self.raw, 
                 match rect {
@@ -467,17 +467,17 @@ impl Renderer {
                 }
             };
             let size = format.byte_size_of_pixels(w * h);
-			let pixels = Vec::with_capacity(size);
+            let pixels = Vec::with_capacity(size);
             let pitch = w * format.byte_size_per_pixel(); // calculated pitch
 
             // Pass the interior of `pixels: Vec<u8>` to SDL
-			let ret = { 
-				let pixels_ref: raw::Slice<u8> = mem::transmute(pixels.as_slice());
-				ll::SDL_RenderReadPixels(self.raw, actual_rect, format as uint32_t, pixels_ref.data as *mut c_void, pitch as c_int)
-			};
+            let ret = {
+                let pixels_ref: raw::Slice<u8> = mem::transmute(pixels.as_slice());
+                ll::SDL_RenderReadPixels(self.raw, actual_rect, format as uint32_t, pixels_ref.data as *mut c_void, pitch as c_int)
+            };
 
             if ret == 0 {
-				Ok(pixels)
+                Ok(pixels)
             } else {
                 Err(get_error())
             }
@@ -601,12 +601,12 @@ impl Texture {
     }
 
     pub fn with_lock<F: FnOnce(&[u8], i32) -> ()>(&self, rect: Option<Rect>, func: F) -> SdlResult<()> {
-		// Call to SDL to populate pixel data
-		let loaded = unsafe {
-			let q = try!(self.query());
-			let pixels : *const c_void = ptr::null();
-			let pitch = 0i32;
-			let size = q.format.byte_size_of_pixels((q.width * q.height) as uint);
+        // Call to SDL to populate pixel data
+        let loaded = unsafe {
+            let q = try!(self.query());
+            let pixels : *const c_void = ptr::null();
+            let pitch = 0i32;
+            let size = q.format.byte_size_of_pixels((q.width * q.height) as uint);
         
             let actual_rect = match rect {
                 Some(ref rect) => rect as *const _,
@@ -615,7 +615,7 @@ impl Texture {
 
             let ret = ll::SDL_LockTexture(self.raw, actual_rect, &pixels, &pitch);
             if ret == 0 {
-				Ok( (raw::Slice { data: pixels as *const u8, len: size }, pitch) )
+                Ok( (raw::Slice { data: pixels as *const u8, len: size }, pitch) )
             } else {
                 Err(get_error())
             }
