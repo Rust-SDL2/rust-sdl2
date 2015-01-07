@@ -600,7 +600,7 @@ impl Texture {
         else { Err(get_error()) }
     }
 
-    pub fn with_lock<F: FnOnce(&[u8], i32) -> ()>(&self, rect: Option<Rect>, func: F) -> SdlResult<()> {
+    pub fn with_lock<F: FnOnce(&mut [u8], i32) -> ()>(&self, rect: Option<Rect>, func: F) -> SdlResult<()> {
         // Call to SDL to populate pixel data
         let loaded = unsafe {
             let q = try!(self.query());
