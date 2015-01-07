@@ -1,5 +1,3 @@
-use std::c_str::ToCStr;
-
 use SdlResult;
 use get_error;
 

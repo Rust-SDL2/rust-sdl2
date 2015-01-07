@@ -1,5 +1,4 @@
 use std::ptr;
-use std::c_str::ToCStr;
 
 use video::Window;
 use get_error;

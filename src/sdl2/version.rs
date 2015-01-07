@@ -3,7 +3,7 @@ Querying SDL Version
  */
 
 use std::fmt;
-use std::c_str::CString;
+use std::ffi::CString;
 use std::borrow::ToOwned;
 
 pub use sys::version as ll;

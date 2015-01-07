@@ -1,7 +1,6 @@
 use libc::{c_int, c_float, uint32_t};
 use std::ptr;
 use std::vec::Vec;
-use std::c_str::ToCStr;
 
 use rect::Rect;
 use surface::Surface;

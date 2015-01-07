@@ -1,7 +1,7 @@
 //! Audio Functions
 use std::ptr;
 use std::mem;
-use std::c_str::{CString, ToCStr};
+use std::ffi::CString;
 use std::c_vec::CVec;
 use std::borrow::ToOwned;
 use std::num::FromPrimitive;
@@ -216,9 +216,9 @@ impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
                 samples: 0,
                 padding: 0,
                 size: 0,
-                callback: Some(audio_callback_marshall::<T, CB> 
+                callback: Some(audio_callback_marshall::<T, CB>
                     as extern "C" fn
-                        (arg1: *const c_void, 
+                        (arg1: *const c_void,
                          arg2: *const uint8_t,
                          arg3: c_int)),
                 userdata: transmute(userdata)
@@ -237,7 +237,6 @@ impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
     pub fn open_audio_device(self, device: Option<&str>, iscapture: bool) -> SdlResult<AudioDevice<CB>> {
         use std::mem::uninitialized;
         use std::ptr::null;
-        use std::c_str::CString;
         use libc::c_char;
 
         let mut userdata = AudioSpecDesired::callback_to_userdata(self.callback);
