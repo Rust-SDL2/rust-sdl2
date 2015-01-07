@@ -1,6 +1,5 @@
 use SdlResult;
 use get_error;
-use std::c_str::ToCStr;
 
 pub use sys::clipboard as ll;
 

@@ -1,4 +1,4 @@
-use std::c_str::{CString, ToCStr};
+use std::ffi::CString;
 use std::borrow::ToOwned;
 
 use sys::sdl as ll;
