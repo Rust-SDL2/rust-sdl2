@@ -12,7 +12,6 @@ use rect::Point;
 use rect::Rect;
 use std::num::FromPrimitive;
 use std::vec::Vec;
-use std::c_vec::CVec;
 use std::borrow::ToOwned;
 
 pub use sys::render as ll;

@@ -1,8 +1,7 @@
 //! Audio Functions
 use std::ptr;
 use std::mem;
-use std::c_str::{CString, ToCStr};
-use std::c_vec::CVec;
+use std::ffi::CString;
 use std::borrow::ToOwned;
 use std::num::FromPrimitive;
 use libc;
@@ -237,7 +236,6 @@ impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
     pub fn open_audio_device(self, device: Option<&str>, iscapture: bool) -> SdlResult<AudioDevice<CB>> {
         use std::mem::uninitialized;
         use std::ptr::null;
-        use std::c_str::CString;
         use libc::c_char;
 
         let mut userdata = AudioSpecDesired::callback_to_userdata(self.callback);

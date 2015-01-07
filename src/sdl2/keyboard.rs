@@ -1,7 +1,7 @@
 use std::collections::HashMap;
+use std::ffi::CString;
 use std::num::FromPrimitive;
 use std::ptr;
-use std::c_str::ToCStr;
 
 use keycode::KeyCode;
 use rect::Rect;

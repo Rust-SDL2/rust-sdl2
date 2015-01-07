@@ -1,5 +1,4 @@
-use std::c_str::ToCStr;
-
+use std::ffi::CString;
 use SdlResult;
 use get_error;
 

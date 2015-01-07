@@ -1,5 +1,5 @@
-use std::c_str::{CString, ToCStr};
 use std::borrow::ToOwned;
+use std::ffi::CString;
 
 use sys::sdl as ll;
 

@@ -1,6 +1,6 @@
+use std::ffi::CString;
 use std::io;
 use std::io::IoResult;
-use std::c_str::ToCStr;
 use libc::{c_void, c_int, size_t};
 use get_error;
 use SdlResult;
@@ -20,7 +20,7 @@ impl_owned_accessors!(RWops, close_on_drop);
 impl RWops {
     pub fn from_file(path: &Path, mode: &str) -> SdlResult<RWops> {
         let raw = unsafe {
-            ll::SDL_RWFromFile(path.to_c_str().into_inner(), mode.to_c_str().into_inner())
+            ll::SDL_RWFromFile(CString::from_slice(path), CString::from_slice(mode))
         };
         if raw.is_null() { Err(get_error()) }
         else { Ok(RWops{raw: raw, close_on_drop: true}) }
