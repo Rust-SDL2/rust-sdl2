@@ -615,7 +615,7 @@ impl Texture {
         }
     }
 
-    pub fn with_lock(&self, rect: Option<Rect>, func: |CVec<u8>, i32| -> ()) -> SdlResult<()> {
+    pub fn with_lock<F: FnOnce(CVec<u8>, i32) -> ()>(&self, rect: Option<Rect>, func: F) -> SdlResult<()> {
         match self.unsafe_lock(rect) {
             Ok((cvec, pitch)) => {
                 func(cvec, pitch);
@@ -649,7 +649,7 @@ impl Texture {
         unsafe { ll::SDL_GL_UnbindTexture(self.raw) == 0 }
     }
 
-    pub fn gl_with_bind<R>(&self, f: |tex_w: f64, tex_h: f64| -> R) -> R {
+    pub fn gl_with_bind<R, F: FnOnce(f64, f64) -> R>(&self, f: F) -> R {
         unsafe {
             let texw: c_float = 0.0;
             let texh: c_float = 0.0;
