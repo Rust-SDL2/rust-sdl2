@@ -1,5 +1,5 @@
 use libc::{c_int, c_float, uint32_t};
-use std::ffi::CString;
+use std::ffi::{c_str_to_bytes, CString};
 use std::ptr;
 use std::vec::Vec;
 
@@ -190,16 +190,15 @@ impl Drop for Window {
 impl Window {
     pub fn new(title: &str, x: WindowPos, y: WindowPos, width: int, height: int, window_flags: WindowFlags) -> SdlResult<Window> {
         unsafe {
-            let raw = title.with_c_str(|buff| {
-                ll::SDL_CreateWindow(
+			let buff = CString::from_slice(title.as_bytes()).as_ptr();
+            let raw = ll::SDL_CreateWindow(
                     buff,
                     unwrap_windowpos(x),
                     unwrap_windowpos(y),
                     width as c_int,
                     height as c_int,
                     window_flags.bits()
-                )
-            });
+			);
 
             if raw == ptr::null() {
                 Err(get_error())
@@ -272,15 +271,14 @@ impl Window {
     }
 
     pub fn set_title(&self, title: &str) {
-        title.with_c_str(|buff| {
-            unsafe { ll::SDL_SetWindowTitle(self.raw, buff) }
-        })
+		let buff = CString::from_slice(title.as_bytes()).as_ptr();
+		unsafe { ll::SDL_SetWindowTitle(self.raw, buff) }
     }
 
     pub fn get_title(&self) -> String {
         unsafe {
-            let cstr = ll::SDL_GetWindowTitle(self.raw);
-            String::from_raw_buf(cstr as *const _)
+            let buf = ll::SDL_GetWindowTitle(self.raw);
+            String::from_utf8_lossy(c_str_to_bytes(&buf)).to_string()
         }
     }
 
@@ -467,15 +465,14 @@ pub fn get_num_video_drivers() -> SdlResult<int> {
 
 pub fn get_video_driver(id: int) -> String {
     unsafe {
-        let cstr = ll::SDL_GetVideoDriver(id as c_int);
-        String::from_raw_buf(cstr as *const _)
+        let buf = ll::SDL_GetVideoDriver(id as c_int);
+        String::from_utf8_lossy(c_str_to_bytes(&buf)).to_string()
     }
 }
 
 pub fn video_init(name: &str) -> bool {
-    name.with_c_str(|buf| {
-        unsafe { ll::SDL_VideoInit(buf) == 0 }
-    })
+	let buf = CString::from_slice(name.as_bytes()).as_ptr();
+	unsafe { ll::SDL_VideoInit(buf) == 0 }
 }
 
 pub fn video_quit() {
@@ -484,8 +481,8 @@ pub fn video_quit() {
 
 pub fn get_current_video_driver() -> String {
     unsafe {
-        let cstr = ll::SDL_GetCurrentVideoDriver();
-        String::from_raw_buf(cstr as *const _)
+        let video = ll::SDL_GetCurrentVideoDriver();
+        String::from_utf8_lossy(c_str_to_bytes(&video)).to_string()
     }
 }
 
@@ -500,8 +497,8 @@ pub fn get_num_video_displays() -> SdlResult<int> {
 
 pub fn get_display_name(display_index: int) -> String {
     unsafe {
-        let cstr = ll::SDL_GetDisplayName(display_index as c_int);
-        String::from_raw_buf(cstr as *const _)
+        let display = ll::SDL_GetDisplayName(display_index as c_int);
+        String::from_utf8_lossy(c_str_to_bytes(&display)).to_string()
     }
 }
 
@@ -585,13 +582,13 @@ pub fn disable_screen_saver() {
 
 pub fn gl_load_library(path: &str) -> SdlResult<()> {
     unsafe {
-        path.with_c_str(|path| {
-            if ll::SDL_GL_LoadLibrary(path) == 0 {
-                Ok(())
-            } else {
-                Err(get_error())
-            }
-        })
+		let path = CString::from_slice(path.as_bytes()).as_ptr();
+
+		if ll::SDL_GL_LoadLibrary(path) == 0 {
+			Ok(())
+		} else {
+			Err(get_error())
+		}
     }
 }
 
@@ -601,16 +598,14 @@ pub fn gl_unload_library() {
 
 pub fn gl_get_proc_address(procname: &str) -> Option<extern "system" fn()> {
     unsafe {
-        procname.with_c_str(|procname| {
-            ll::SDL_GL_GetProcAddress(procname)
-        })
+		let procname = CString::from_slice(procname.as_bytes()).as_ptr();
+		ll::SDL_GL_GetProcAddress(procname)
     }
 }
 
 pub fn gl_extension_supported(extension: &str) -> bool {
-    extension.with_c_str(|buff| {
-        unsafe { ll::SDL_GL_ExtensionSupported(buff) == 1 }
-    })
+	let buff = CString::from_slice(extension.as_bytes()).as_ptr();
+	unsafe { ll::SDL_GL_ExtensionSupported(buff) == 1 }
 }
 
 pub fn gl_set_attribute(attr: GLAttr, value: int) -> bool {

@@ -8,8 +8,10 @@ use SdlResult;
 use std::ptr;
 use libc;
 use libc::{c_int, uint32_t, c_float, c_double, c_void, size_t};
+use ::c_vec::CVec;
 use rect::Point;
 use rect::Rect;
+use std::ffi::c_str_to_bytes;
 use std::num::FromPrimitive;
 use std::vec::Vec;
 use std::borrow::ToOwned;
@@ -72,7 +74,7 @@ impl RendererInfo {
             }).collect();
 
             RendererInfo {
-                name: String::from_raw_buf(info.name as *const _),
+                name: String::from_utf8_lossy(c_str_to_bytes(&info.name)).to_string(),
                 flags: actual_flags,
                 texture_formats: texture_formats,
                 max_texture_width: info.max_texture_width as int,

@@ -1,5 +1,4 @@
-use std::borrow::ToOwned;
-use std::ffi::CString;
+use std::ffi::{c_str_to_bytes, CString};
 
 use sys::sdl as ll;
 
@@ -57,15 +56,14 @@ pub fn was_inited(flags: InitFlag) -> InitFlag {
 
 pub fn get_error() -> String {
     unsafe {
-        let cstr = CString::new(ll::SDL_GetError(), false);
-        cstr.as_str().unwrap().to_owned()
+        let err = ll::SDL_GetError();
+        String::from_utf8_lossy(c_str_to_bytes(&err)).to_string()
     }
 }
 
 pub fn set_error(err: &str) {
-    err.with_c_str(|buf| {
-        unsafe { ll::SDL_SetError(buf); }
-    })
+	let buf = CString::from_slice(err.as_bytes()).as_ptr();
+	unsafe { ll::SDL_SetError(buf); }
 }
 
 pub fn set_error_from_code(err: Error) {

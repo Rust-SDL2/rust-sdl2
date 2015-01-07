@@ -1,7 +1,7 @@
 //! Audio Functions
 use std::ptr;
 use std::mem;
-use std::ffi::CString;
+use std::ffi::{c_str_to_bytes, CString};
 use std::borrow::ToOwned;
 use std::num::FromPrimitive;
 use libc;
@@ -50,8 +50,8 @@ pub fn get_num_audio_drivers() -> int {
 
 pub fn get_audio_driver(index: int) -> String {
     unsafe {
-        let buf = ll::SDL_GetAudioDriver(index as c_int);
-        CString::new(buf, false).as_str().unwrap().to_owned()
+        let driver = ll::SDL_GetAudioDriver(index as c_int);
+        String::from_utf8_lossy(c_str_to_bytes(&driver)).to_string()
     }
 }
 
@@ -61,15 +61,15 @@ pub fn get_num_audio_devices(iscapture: int) -> int {
 
 pub fn get_audio_device_name(index: int, iscapture: int) -> String {
     unsafe {
-        let buf = ll::SDL_GetAudioDeviceName(index as c_int, iscapture as c_int);
-        CString::new(buf, false).as_str().unwrap().to_owned()
+        let dev_name = ll::SDL_GetAudioDeviceName(index as c_int, iscapture as c_int);
+        String::from_utf8_lossy(c_str_to_bytes(&dev_name)).to_string()
     }
 }
 
 pub fn audio_init(name: &str) -> SdlResult<()> {
-    let ret = name.with_c_str(|buf| {
-            unsafe { ll::SDL_AudioInit(buf) }
-        });
+    let buf = CString::from_slice(name.as_bytes()).as_ptr();
+    let ret = unsafe { ll::SDL_AudioInit(buf) };
+
     if ret == 0 {
         Ok(())
     } else {
@@ -83,8 +83,8 @@ pub fn audio_quit() {
 
 pub fn get_current_audio_driver() -> String {
     unsafe {
-        let buf = ll::SDL_GetCurrentAudioDriver();
-        CString::new(buf, false).as_str().unwrap().to_owned()
+        let driver = ll::SDL_GetCurrentAudioDriver();
+        String::from_utf8_lossy(c_str_to_bytes(&driver)).to_string()
     }
 }
 
@@ -245,7 +245,7 @@ impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
         unsafe {
             let device_cstr: Option<CString> = match device {
                 None => None,
-                Some(d) => Some(d.to_c_str())
+                Some(d) => Some(CString::from_slice(d.as_bytes()))
             };
             let device_cstr_ptr: *const c_char = match device_cstr {
                 None => null(),
