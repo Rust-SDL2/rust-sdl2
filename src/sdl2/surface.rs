@@ -21,7 +21,7 @@ bitflags! {
 }
 
 #[derive(PartialEq)]
-#[allow(raw_pointer_deriving, missing_copy_implementations)]
+#[allow(raw_pointer_derive, missing_copy_implementations)]
 pub struct Surface {
     raw: *const ll::SDL_Surface,
     owned: bool

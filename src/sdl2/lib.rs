@@ -1,7 +1,7 @@
 #![crate_name = "sdl2"]
 #![crate_type = "lib"]
 
-#![feature(default_type_params, globs, macro_rules, slicing_syntax, unsafe_destructor, associated_types, old_orphan_check)]
+#![feature(slicing_syntax, unsafe_destructor, old_orphan_check)]
 
 extern crate libc;
 extern crate collections;
@@ -14,7 +14,7 @@ pub mod scancode;
 
 pub mod clipboard;
 pub mod cpuinfo;
-pub mod macros;
+#[macro_use] pub mod macros;
 pub mod event;
 pub mod filesystem;
 pub mod gesture;

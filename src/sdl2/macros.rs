@@ -1,5 +1,3 @@
-#![macro_escape]
-
 macro_rules! impl_raw_accessors(
     ($($t:ty, $raw:ty);+) => (
         $(

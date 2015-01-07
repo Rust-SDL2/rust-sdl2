@@ -89,7 +89,7 @@ pub enum RendererParent {
     Window(Window)
 }
 
-#[allow(raw_pointer_deriving)]
+#[allow(raw_pointer_derive)]
 pub struct Renderer {
     raw: *const ll::SDL_Renderer,
     parent: Option<RendererParent>,
@@ -491,7 +491,7 @@ pub struct TextureQuery {
     pub height: int
 }
 
-#[derive(PartialEq)] #[allow(raw_pointer_deriving)]
+#[derive(PartialEq)] #[allow(raw_pointer_derive)]
 pub struct Texture {
     pub raw: *const ll::SDL_Texture,
     pub owned: bool

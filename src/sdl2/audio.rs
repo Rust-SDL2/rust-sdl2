@@ -395,7 +395,7 @@ impl<'a, CB> Drop for AudioDeviceLockGuard<'a, CB> {
     }
 }
 
-#[derive(PartialEq)] #[allow(raw_pointer_deriving)]
+#[derive(PartialEq)] #[allow(raw_pointer_derive)]
 pub struct AudioCVT {
     raw: *mut ll::SDL_AudioCVT,
     owned: bool,
