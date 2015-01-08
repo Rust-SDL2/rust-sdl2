@@ -3,6 +3,8 @@
 name    = "sdl2_image"
 version = "0.0.1-alpha.1"
 authors = [ "xsleonard" ]
+description = "SDL2_image bindings and wrappers"
+license = "MIT"
 
 [lib]
 
