@@ -466,9 +466,11 @@ impl Renderer {
                     (ptr::null(), w as uint, h as uint)
                 }
             };
-            let size = format.byte_size_of_pixels(w * h);
-            let pixels = Vec::with_capacity(size);
+            
             let pitch = w * format.byte_size_per_pixel(); // calculated pitch
+            let size = format.byte_size_of_pixels(w * h);
+            let mut pixels = Vec::with_capacity(size);
+            pixels.set_len(size);
 
             // Pass the interior of `pixels: Vec<u8>` to SDL
             let ret = {
