@@ -1,13 +1,13 @@
+use std::ffi::CString;
 use std::io;
 use std::io::IoResult;
-use std::c_str::ToCStr;
 use libc::{c_void, c_int, size_t};
 use get_error;
 use SdlResult;
 
 pub use sys::rwops as ll;
 
-#[derive(PartialEq)] #[allow(raw_pointer_deriving)]
+#[derive(PartialEq)] #[allow(raw_pointer_derive)]
 pub struct RWops {
     raw: *const ll::SDL_RWops,
     close_on_drop: bool
@@ -20,7 +20,9 @@ impl_owned_accessors!(RWops, close_on_drop);
 impl RWops {
     pub fn from_file(path: &Path, mode: &str) -> SdlResult<RWops> {
         let raw = unsafe {
-            ll::SDL_RWFromFile(path.to_c_str().into_inner(), mode.to_c_str().into_inner())
+            let path_c = CString::from_slice(path.as_vec()).as_ptr();
+            let mode_c = CString::from_slice(mode.as_bytes()).as_ptr();
+            ll::SDL_RWFromFile(path_c, mode_c)
         };
         if raw.is_null() { Err(get_error()) }
         else { Ok(RWops{raw: raw, close_on_drop: true}) }

@@ -21,7 +21,7 @@ bitflags! {
 }
 
 #[derive(PartialEq)]
-#[allow(raw_pointer_deriving, missing_copy_implementations)]
+#[allow(raw_pointer_derive, missing_copy_implementations)]
 pub struct Surface {
     raw: *const ll::SDL_Surface,
     owned: bool
@@ -135,9 +135,9 @@ impl Surface {
     }
 
     pub fn save_bmp(&self, path: &Path) -> SdlResult<()> {
-	let ret = unsafe {
+    let ret = unsafe {
             ll::SDL_SaveBMP_RW(self.raw, try!(rwops::RWops::from_file(path, "rb")).raw(), 0)
-	};
+    };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }

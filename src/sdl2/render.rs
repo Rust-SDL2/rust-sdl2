@@ -5,14 +5,15 @@ use surface::Surface;
 use pixels;
 use get_error;
 use SdlResult;
+use std::mem;
 use std::ptr;
-use libc;
-use libc::{c_int, uint32_t, c_float, c_double, c_void, size_t};
+use std::raw;
+use libc::{c_int, uint32_t, c_float, c_double, c_void};
 use rect::Point;
 use rect::Rect;
+use std::ffi::c_str_to_bytes;
 use std::num::FromPrimitive;
 use std::vec::Vec;
-use std::c_vec::CVec;
 use std::borrow::ToOwned;
 
 pub use sys::render as ll;
@@ -73,7 +74,7 @@ impl RendererInfo {
             }).collect();
 
             RendererInfo {
-                name: String::from_raw_buf(info.name as *const _),
+                name: String::from_utf8_lossy(c_str_to_bytes(&info.name)).to_string(),
                 flags: actual_flags,
                 texture_formats: texture_formats,
                 max_texture_width: info.max_texture_width as int,
@@ -88,7 +89,7 @@ pub enum RendererParent {
     Window(Window)
 }
 
-#[allow(raw_pointer_deriving)]
+#[allow(raw_pointer_derive)]
 pub struct Renderer {
     raw: *const ll::SDL_Renderer,
     parent: Option<RendererParent>,
@@ -306,7 +307,7 @@ impl Renderer {
     }
 
     pub fn set_clip_rect(&self, rect: Option<Rect>) -> SdlResult<()> {
-        let ret = unsafe { 
+        let ret = unsafe {
             ll::SDL_RenderSetClipRect(
                 self.raw, 
                 match rect {
@@ -456,7 +457,7 @@ impl Renderer {
         else { Err(get_error()) }
     }
 
-    pub fn read_pixels(&self, rect: Option<Rect>, format: pixels::PixelFormatFlag) -> SdlResult<CVec<u8>> {
+    pub fn read_pixels(&self, rect: Option<Rect>, format: pixels::PixelFormatFlag) -> SdlResult<Vec<u8>> {
         unsafe {
             let (actual_rect, w, h) = match rect {
                 Some(ref rect) => (rect as *const _, rect.w as uint, rect.h as uint),
@@ -465,15 +466,20 @@ impl Renderer {
                     (ptr::null(), w as uint, h as uint)
                 }
             };
-            let size = format.byte_size_of_pixels(w * h);
-            let pixels = libc::malloc(size as size_t) as *mut u8;
+            
             let pitch = w * format.byte_size_per_pixel(); // calculated pitch
-            let ret = ll::SDL_RenderReadPixels(self.raw, actual_rect, format as uint32_t, pixels as *mut c_void, pitch as c_int);
+            let size = format.byte_size_of_pixels(w * h);
+            let mut pixels = Vec::with_capacity(size);
+            pixels.set_len(size);
+
+            // Pass the interior of `pixels: Vec<u8>` to SDL
+            let ret = {
+                let pixels_ref: raw::Slice<u8> = mem::transmute(pixels.as_slice());
+                ll::SDL_RenderReadPixels(self.raw, actual_rect, format as uint32_t, pixels_ref.data as *mut c_void, pitch as c_int)
+            };
+
             if ret == 0 {
-                let pixels = ptr::Unique(pixels);
-                Ok(CVec::new_with_dtor(pixels.0 as *mut u8, size, move || {
-                    libc::free(pixels.0 as *mut c_void)
-                }))
+                Ok(pixels)
             } else {
                 Err(get_error())
             }
@@ -490,7 +496,7 @@ pub struct TextureQuery {
     pub height: int
 }
 
-#[derive(PartialEq)] #[allow(raw_pointer_deriving)]
+#[derive(PartialEq)] #[allow(raw_pointer_derive)]
 pub struct Texture {
     pub raw: *const ll::SDL_Texture,
     pub owned: bool
@@ -596,29 +602,30 @@ impl Texture {
         else { Err(get_error()) }
     }
 
-    fn unsafe_lock(&self, rect: Option<Rect>) -> SdlResult<(CVec<u8>, i32)> {
-        let q = try!(self.query());
-        unsafe {
+    pub fn with_lock<F: FnOnce(&mut [u8], i32) -> ()>(&self, rect: Option<Rect>, func: F) -> SdlResult<()> {
+        // Call to SDL to populate pixel data
+        let loaded = unsafe {
+            let q = try!(self.query());
+            let pixels : *const c_void = ptr::null();
+            let pitch = 0i32;
+            let size = q.format.byte_size_of_pixels((q.width * q.height) as uint);
+        
             let actual_rect = match rect {
                 Some(ref rect) => rect as *const _,
                 None => ptr::null()
             };
-            let pixels : *const c_void = ptr::null();
-            let pitch = 0i32;
+
             let ret = ll::SDL_LockTexture(self.raw, actual_rect, &pixels, &pitch);
-            let size = q.format.byte_size_of_pixels((q.width * q.height) as uint);
             if ret == 0 {
-                Ok((CVec::new(pixels as *mut u8, size), pitch))
+                Ok( (raw::Slice { data: pixels as *const u8, len: size }, pitch) )
             } else {
                 Err(get_error())
             }
-        }
-    }
+        };
 
-    pub fn with_lock<F: FnOnce(CVec<u8>, i32) -> ()>(&self, rect: Option<Rect>, func: F) -> SdlResult<()> {
-        match self.unsafe_lock(rect) {
-            Ok((cvec, pitch)) => {
-                func(cvec, pitch);
+        match loaded {
+            Ok((interior,pitch)) => {
+                unsafe{ func(mem::transmute(interior), pitch); }
                 self.unlock();
                 Ok(())
             }

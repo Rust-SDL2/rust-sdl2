@@ -1,7 +1,7 @@
 use std::collections::HashMap;
+use std::ffi::{c_str_to_bytes, CString};
 use std::num::FromPrimitive;
 use std::ptr;
-use std::c_str::ToCStr;
 
 use keycode::KeyCode;
 use rect::Rect;
@@ -80,32 +80,30 @@ pub fn get_scancode_from_key(key: KeyCode) -> ScanCode {
 pub fn get_scancode_name(scancode: ScanCode) -> String {
     unsafe {
         let scancode_name = ll::SDL_GetScancodeName(scancode as u32);
-        String::from_raw_buf(scancode_name as *const u8)
+        String::from_utf8_lossy(c_str_to_bytes(&scancode_name)).to_string()
     }
 }
 
 pub fn get_scancode_from_name(name: &str) -> ScanCode {
     unsafe {
-        name.with_c_str(|name| {
-            FromPrimitive::from_int(ll::SDL_GetScancodeFromName(name) as int)
-                .unwrap_or(ScanCode::Unknown)
-        })
+        let name = CString::from_slice(name.as_bytes()).as_ptr();
+        FromPrimitive::from_int(ll::SDL_GetScancodeFromName(name) as int)
+            .unwrap_or(ScanCode::Unknown)
     }
 }
 
 pub fn get_key_name(key: KeyCode) -> String {
     unsafe {
         let key_name = ll::SDL_GetKeyName(key as i32);
-        String::from_raw_buf(key_name as *const u8)
+        String::from_utf8_lossy(c_str_to_bytes(&key_name)).to_string()
     }
 }
 
 pub fn get_key_from_name(name: &str) -> KeyCode {
     unsafe {
-        name.with_c_str(|name| {
-            FromPrimitive::from_int(ll::SDL_GetKeyFromName(name) as int)
-                .unwrap_or(KeyCode::Unknown)
-        })
+        let name = CString::from_slice(name.as_bytes()).as_ptr();
+        FromPrimitive::from_int(ll::SDL_GetKeyFromName(name) as int)
+            .unwrap_or(KeyCode::Unknown)
     }
 }
 

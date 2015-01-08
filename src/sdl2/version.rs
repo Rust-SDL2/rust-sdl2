@@ -2,9 +2,8 @@
 Querying SDL Version
  */
 
+use std::ffi::c_str_to_bytes;
 use std::fmt;
-use std::c_str::CString;
-use std::borrow::ToOwned;
 
 pub use sys::version as ll;
 
@@ -47,8 +46,8 @@ pub fn get_version() -> Version {
 /// Get the code revision of SDL that is linked against your program.
 pub fn get_revision() -> String {
     unsafe {
-        let ret = ll::SDL_GetRevision();
-        CString::new(ret, false).as_str().unwrap().to_owned()
+        let rev = ll::SDL_GetRevision();
+        String::from_utf8_lossy(c_str_to_bytes(&rev)).to_string()
     }
 }
 
