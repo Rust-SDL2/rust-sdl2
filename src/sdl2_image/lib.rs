@@ -2,9 +2,6 @@
 
 #![crate_name="sdl2_image"]
 #![crate_type = "lib"]
-#![desc = "SDL2_image bindings and wrappers"]
-#![comment = "SDL2_image bindings and wrappers"]
-#![license = "MIT"]
 
 
 extern crate sdl2;
@@ -12,7 +9,7 @@ extern crate libc;
 
 use libc::{c_int, c_char};
 use std::ptr;
-use std::c_str::ToCStr;
+use std::ffi::CString;
 use sdl2::surface::Surface;
 use sdl2::render::Texture;
 use sdl2::render::Renderer;
@@ -72,7 +69,7 @@ impl LoadSurface for Surface {
     fn from_file(filename: &Path) -> SdlResult<Surface> {
         //! Loads an SDL Surface from a file
         unsafe {
-            let raw = ffi::IMG_Load(filename.to_c_str().into_inner());
+            let raw = ffi::IMG_Load(CString::from_slice(filename.as_vec()).as_ptr());
             if raw == ptr::null() {
                 Err(get_error())
             } else {
@@ -98,8 +95,7 @@ impl SaveSurface for Surface {
     fn save(&self, filename: &Path) -> SdlResult<()> {
         //! Saves an SDL Surface to a file
         unsafe {
-            let status = ffi::IMG_SavePNG(self.raw(),
-                                          filename.to_c_str().into_inner());
+            let status = ffi::IMG_SavePNG(self.raw(), CString::from_slice(filename.as_vec()).as_ptr());
             if status != 0 {
                 Err(get_error())
             } else {
@@ -131,8 +127,7 @@ impl LoadTexture for Renderer {
     fn load_texture(&self, filename: &Path) -> SdlResult<Texture> {
         //! Loads an SDL Texture from a file
         unsafe {
-            let raw = ffi::IMG_LoadTexture(self.raw(),
-                                           filename.to_c_str().into_inner());
+            let raw = ffi::IMG_LoadTexture(self.raw(), CString::from_slice(filename.as_vec()).as_ptr());
             if raw == ptr::null() {
                 Err(get_error())
             } else {
@@ -219,7 +214,7 @@ impl ImageRWops for RWops {
     }
     fn load_typed(&self, _type: &str) -> SdlResult<Surface> {
         let raw = unsafe {
-            ffi::IMG_LoadTyped_RW(self.raw(), 0, _type.to_c_str().into_inner())
+            ffi::IMG_LoadTyped_RW(self.raw(), 0, CString::from_slice(_type.as_bytes()).as_ptr())
         };
         to_surface_result(raw)
     }
