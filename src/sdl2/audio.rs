@@ -237,9 +237,9 @@ impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
     }
 
     fn callback_to_userdata(callback: CB) -> Box<AudioCallbackUserdata<CB>> {
-        box AudioCallbackUserdata {
+        Box::new(AudioCallbackUserdata {
             callback: callback
-        }
+        })
     }
 
     /// Opens a new audio device given the desired parameters and callback.

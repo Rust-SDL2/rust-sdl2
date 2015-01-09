@@ -7,7 +7,7 @@ pub struct Palette {
     raw: *const ll::SDL_Palette
 }
 
-impl_raw_accessors!(Palette, *const ll::SDL_Palette);
+impl_raw_accessors!((Palette, *const ll::SDL_Palette));
 
 #[derive(PartialEq, Clone, Copy)]
 pub enum Color {
@@ -59,8 +59,8 @@ pub struct PixelFormat {
     raw: *const ll::SDL_PixelFormat
 }
 
-impl_raw_accessors!(PixelFormat, *const ll::SDL_PixelFormat);
-impl_raw_constructor!(PixelFormat -> PixelFormat (raw: *const ll::SDL_PixelFormat));
+impl_raw_accessors!((PixelFormat, *const ll::SDL_PixelFormat));
+impl_raw_constructor!((PixelFormat, PixelFormat (raw: *const ll::SDL_PixelFormat)));
 
 #[derive(Copy, Clone, PartialEq, Show, FromPrimitive)]
 pub enum PixelFormatFlag {
@@ -136,7 +136,7 @@ impl PixelFormatFlag {
             PixelFormatFlag::Unknown | PixelFormatFlag::Index1LSB |
             PixelFormatFlag::Index1MSB | PixelFormatFlag::Index4LSB |
             PixelFormatFlag::Index4MSB
-                => panic!("not supported format: {}", *self),
+                => panic!("not supported format: {:?}", *self),
         }
     }
 
@@ -172,7 +172,7 @@ impl PixelFormatFlag {
             PixelFormatFlag::Unknown | PixelFormatFlag::Index1LSB |
             PixelFormatFlag::Index1MSB | PixelFormatFlag::Index4LSB |
             PixelFormatFlag::Index4MSB
-                => panic!("not supported format: {}", *self),
+                => panic!("not supported format: {:?}", *self),
         }
     }
 }

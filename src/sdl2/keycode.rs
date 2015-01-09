@@ -241,7 +241,7 @@ pub enum KeyCode {
     Sleep              = 1073742106,
 }
 
-impl<S: hash::Writer> Hash<S> for KeyCode {
+impl<S: hash::Hasher + hash::Writer> Hash<S> for KeyCode {
     #[inline]
     fn hash(&self, state: &mut S) {
         (*self as i32).hash(state);
