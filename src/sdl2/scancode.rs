@@ -266,7 +266,7 @@ impl ToPrimitive for ScanCode {
     }
 
     #[inline]
-    fn to_int(&self) -> Option<int> {
-        Some(*self as int)
+    fn to_int(&self) -> Option<isize> {
+        Some(*self as isize)
     }
 }

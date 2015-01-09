@@ -21,14 +21,14 @@ pub use sys::render as ll;
 #[derive(Copy, Clone)]
 pub enum RenderDriverIndex {
     Auto,
-    Index(int)
+    Index(isize)
 }
 
 #[derive(Copy, Clone, PartialEq, FromPrimitive)]
 pub enum TextureAccess {
-    Static = ll::SDL_TEXTUREACCESS_STATIC as int,
-    Streaming = ll::SDL_TEXTUREACCESS_STREAMING as int,
-    Target = ll::SDL_TEXTUREACCESS_TARGET as int
+    Static = ll::SDL_TEXTUREACCESS_STATIC as isize,
+    Streaming = ll::SDL_TEXTUREACCESS_STREAMING as isize,
+    Target = ll::SDL_TEXTUREACCESS_TARGET as isize
 }
 
 bitflags! {
@@ -45,23 +45,23 @@ pub struct RendererInfo {
     pub name: String,
     pub flags: RendererFlags,
     pub texture_formats: Vec<pixels::PixelFormatFlag>,
-    pub max_texture_width: int,
-    pub max_texture_height: int
+    pub max_texture_width: isize,
+    pub max_texture_height: isize
 }
 
 #[derive(Copy, Clone, PartialEq, FromPrimitive)]
 pub enum BlendMode {
-    None = ll::SDL_BLENDMODE_NONE as int,
-    Blend = ll::SDL_BLENDMODE_BLEND as int,
-    Add = ll::SDL_BLENDMODE_ADD as int,
-    Mod = ll::SDL_BLENDMODE_MOD as int
+    None = ll::SDL_BLENDMODE_NONE as isize,
+    Blend = ll::SDL_BLENDMODE_BLEND as isize,
+    Add = ll::SDL_BLENDMODE_ADD as isize,
+    Mod = ll::SDL_BLENDMODE_MOD as isize
 }
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum RendererFlip {
-    None = ll::SDL_FLIP_NONE as int,
-    Horizontal = ll::SDL_FLIP_HORIZONTAL as int,
-    Vertical = ll::SDL_FLIP_VERTICAL as int,
+    None = ll::SDL_FLIP_NONE as isize,
+    Horizontal = ll::SDL_FLIP_HORIZONTAL as isize,
+    Vertical = ll::SDL_FLIP_VERTICAL as isize,
 }
 
 impl RendererInfo {
@@ -69,7 +69,7 @@ impl RendererInfo {
         let actual_flags = RendererFlags::from_bits(info.flags).unwrap();
 
         unsafe {
-            let texture_formats: Vec<pixels::PixelFormatFlag> = info.texture_formats[0..(info.num_texture_formats as uint)].iter().map(|&format| {
+            let texture_formats: Vec<pixels::PixelFormatFlag> = info.texture_formats[0..(info.num_texture_formats as usize)].iter().map(|&format| {
                 FromPrimitive::from_i64(format as i64).unwrap()
             }).collect();
 
@@ -77,8 +77,8 @@ impl RendererInfo {
                 name: String::from_utf8_lossy(c_str_to_bytes(&info.name)).to_string(),
                 flags: actual_flags,
                 texture_formats: texture_formats,
-                max_texture_width: info.max_texture_width as int,
-                max_texture_height: info.max_texture_height as int
+                max_texture_width: info.max_texture_width as isize,
+                max_texture_height: info.max_texture_height as isize
             }
         }
     }
@@ -125,7 +125,7 @@ impl Renderer {
         }
     }
 
-    pub fn new_with_window(width: int, height: int, window_flags: video::WindowFlags) -> SdlResult<Renderer> {
+    pub fn new_with_window(width: isize, height: isize, window_flags: video::WindowFlags) -> SdlResult<Renderer> {
         let raw_window: *const video::ll::SDL_Window = ptr::null();
         let raw_renderer: *const ll::SDL_Renderer = ptr::null();
         let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, window_flags.bits(), &raw_window, &raw_renderer) == 0};
@@ -205,20 +205,20 @@ impl Renderer {
         unsafe { ll::SDL_RenderPresent(self.raw) }
     }
 
-    pub fn get_output_size(&self) -> SdlResult<(int, int)> {
+    pub fn get_output_size(&self) -> SdlResult<(isize, isize)> {
         let width: c_int = 0;
         let height: c_int = 0;
 
         let result = unsafe { ll::SDL_GetRendererOutputSize(self.raw, &width, &height) == 0 };
 
         if result {
-            Ok((width as int, height as int))
+            Ok((width as isize, height as isize))
         } else {
             Err(get_error())
         }
     }
 
-    pub fn create_texture(&self, format: pixels::PixelFormatFlag, access: TextureAccess, width: int, height: int) -> SdlResult<Texture> {
+    pub fn create_texture(&self, format: pixels::PixelFormatFlag, access: TextureAccess, width: isize, height: isize) -> SdlResult<Texture> {
         let result = unsafe { ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int) };
         if result == ptr::null() {
             Err(get_error())
@@ -267,21 +267,21 @@ impl Renderer {
         }
     }
 
-    pub fn set_logical_size(&self, width: int, height: int) -> SdlResult<()> {
+    pub fn set_logical_size(&self, width: isize, height: isize) -> SdlResult<()> {
         let ret = unsafe { ll::SDL_RenderSetLogicalSize(self.raw, width as c_int, height as c_int) };
 
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
 
-    pub fn get_logical_size(&self) -> (int, int) {
+    pub fn get_logical_size(&self) -> (isize, isize) {
 
         let width: c_int = 0;
         let height: c_int = 0;
 
         unsafe { ll::SDL_RenderGetLogicalSize(self.raw, &width, &height) };
 
-        (width as int, height as int)
+        (width as isize, height as isize)
     }
 
     pub fn set_viewport(&self, rect: Option<Rect>) -> SdlResult<()> {
@@ -460,10 +460,10 @@ impl Renderer {
     pub fn read_pixels(&self, rect: Option<Rect>, format: pixels::PixelFormatFlag) -> SdlResult<Vec<u8>> {
         unsafe {
             let (actual_rect, w, h) = match rect {
-                Some(ref rect) => (rect as *const _, rect.w as uint, rect.h as uint),
+                Some(ref rect) => (rect as *const _, rect.w as usize, rect.h as usize),
                 None => {
                     let (w, h) = try!(self.get_output_size());
-                    (ptr::null(), w as uint, h as uint)
+                    (ptr::null(), w as usize, h as usize)
                 }
             };
             
@@ -492,8 +492,8 @@ impl Renderer {
 pub struct TextureQuery {
     pub format: pixels::PixelFormatFlag,
     pub access: TextureAccess,
-    pub width: int,
-    pub height: int
+    pub width: isize,
+    pub height: isize
 }
 
 #[derive(PartialEq)] #[allow(raw_pointer_derive)]
@@ -525,8 +525,8 @@ impl Texture {
             Ok(TextureQuery {
                format: FromPrimitive::from_i64(format as i64).unwrap(),
                access: FromPrimitive::from_i64(access as i64).unwrap(),
-               width: width as int,
-               height: height as int
+               width: width as isize,
+               height: height as isize
             })
         } else {
             Err(get_error())
@@ -588,7 +588,7 @@ impl Texture {
         }
     }
 
-    pub fn update(&self, rect: Option<Rect>, pixel_data: &[u8], pitch: int) -> SdlResult<()> {
+    pub fn update(&self, rect: Option<Rect>, pixel_data: &[u8], pitch: isize) -> SdlResult<()> {
         let ret = unsafe {
             let actual_rect = match rect {
                 Some(ref rect) => rect as *const _,
@@ -608,7 +608,7 @@ impl Texture {
             let q = try!(self.query());
             let pixels : *const c_void = ptr::null();
             let pitch = 0i32;
-            let size = q.format.byte_size_of_pixels((q.width * q.height) as uint);
+            let size = q.format.byte_size_of_pixels((q.width * q.height) as usize);
         
             let actual_rect = match rect {
                 Some(ref rect) => rect as *const _,
@@ -669,16 +669,16 @@ impl Texture {
 }
 
 
-pub fn get_num_render_drivers() -> SdlResult<int> {
+pub fn get_num_render_drivers() -> SdlResult<isize> {
     let result = unsafe { ll::SDL_GetNumRenderDrivers() };
     if result > 0 {
-        Ok(result as int)
+        Ok(result as isize)
     } else {
         Err(get_error())
     }
 }
 
-pub fn get_render_driver_info(index: int) -> SdlResult<RendererInfo> {
+pub fn get_render_driver_info(index: isize) -> SdlResult<RendererInfo> {
     let out = ll::SDL_RendererInfo {
         name: ptr::null(),
         flags: 0,

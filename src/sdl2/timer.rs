@@ -2,8 +2,8 @@ use libc::{uint32_t, c_void};
 
 pub use sys::timer as ll;
 
-pub fn get_ticks() -> uint {
-    unsafe { ll::SDL_GetTicks() as uint }
+pub fn get_ticks() -> usize {
+    unsafe { ll::SDL_GetTicks() as usize }
 }
 
 pub fn get_performance_counter() -> u64 {
@@ -14,14 +14,14 @@ pub fn get_performance_frequency() -> u64 {
     unsafe { ll::SDL_GetPerformanceFrequency() }
 }
 
-pub fn delay(ms: uint) {
+pub fn delay(ms: usize) {
     unsafe { ll::SDL_Delay(ms as u32) }
 }
 
 pub type TimerCallback = extern "C" fn (interval: uint32_t, param: *const c_void) -> u32;
 
 pub struct Timer {
-    delay: uint,
+    delay: usize,
     raw: ll::SDL_TimerID,
     callback: TimerCallback,
     param: *const c_void,
@@ -29,7 +29,7 @@ pub struct Timer {
 }
 
 impl Timer {
-    pub fn new(delay: uint, callback: TimerCallback, param: *const c_void, remove_on_drop: bool) -> Timer {
+    pub fn new(delay: usize, callback: TimerCallback, param: *const c_void, remove_on_drop: bool) -> Timer {
         Timer { delay: delay, raw: 0, callback: callback, param: param, remove_on_drop: remove_on_drop }
     }
 
