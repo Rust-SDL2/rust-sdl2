@@ -158,27 +158,27 @@ pub enum Event {
     MouseWheel(u32, video::Window, u32, i32, i32),
 
     /// (timestamp, whichId, axisIdx, value)
-    JoyAxisMotion(u32, isize, isize, i16),
+    JoyAxisMotion(u32, i32, u8, i16),
     /// (timestamp, whichId, ballIdx, xrel, yrel)
-    JoyBallMotion(u32, isize, isize, i16, i16),
+    JoyBallMotion(u32, i32, u8, i16, i16),
     /// (timestamp, whichId, hatIdx, state)
-    JoyHatMotion(u32, isize, isize, HatState),
+    JoyHatMotion(u32, i32, u8, HatState),
     /// (timestamp, whichId, buttonIdx)
-    JoyButtonDown(u32, isize, isize),
-    JoyButtonUp(u32, isize, isize),
+    JoyButtonDown(u32, i32, u8),
+    JoyButtonUp(u32, i32, u8),
     /// (timestamp, whichId)
-    JoyDeviceAdded(u32, isize),
-    JoyDeviceRemoved(u32, isize),
+    JoyDeviceAdded(u32, i32),
+    JoyDeviceRemoved(u32, i32),
 
     /// (timestamp, whichId, axis, value)
-    ControllerAxisMotion(u32, isize, ControllerAxis, i16),
+    ControllerAxisMotion(u32, i32, ControllerAxis, i16),
     /// (timestamp, whichId, button)
-    ControllerButtonDown(u32, isize, ControllerButton),
-    ControllerButtonUp(u32, isize, ControllerButton),
+    ControllerButtonDown(u32, i32, ControllerButton),
+    ControllerButtonUp(u32, i32, ControllerButton),
     /// (timestamp, whichIdx)
-    ControllerDeviceAdded(u32, isize),
-    ControllerDeviceRemoved(u32, isize),
-    ControllerDeviceRemapped(u32, isize),
+    ControllerDeviceAdded(u32, i32),
+    ControllerDeviceRemoved(u32, i32),
+    ControllerDeviceRemapped(u32, i32),
 
     /// (timestamp, touchId, fingerId, x, y, dx, dy, pressure)
     FingerDown(u32, i64, i64, f64, f64, f64, f64, f64),
@@ -456,81 +456,66 @@ impl Event {
 
             EventType::JoyAxisMotion => {
                 let ref event = *raw.jaxis();
-                Event::JoyAxisMotion(event.timestamp,
-                                     event.which as isize, event.axis as isize,
-                                     event.value)
+                Event::JoyAxisMotion(event.timestamp, event.which,
+                                     event.axis, event.value)
             }
             EventType::JoyBallMotion => {
                 let ref event = *raw.jball();
-                Event::JoyBallMotion(event.timestamp,
-                                     event.which as isize, event.ball as isize,
-                                     event.xrel, event.yrel)
+                Event::JoyBallMotion(event.timestamp, event.which,
+                                     event.ball, event.xrel, event.yrel)
             }
             EventType::JoyHatMotion => {
                 let ref event = *raw.jhat();
-                Event::JoyHatMotion(event.timestamp,
-                                    event.which as isize, event.hat as isize,
+                Event::JoyHatMotion(event.timestamp, event.which, event.hat,
                                     joystick::HatState::from_bits(event.value).unwrap())
             }
             EventType::JoyButtonDown => {
                 let ref event = *raw.jbutton();
-                Event::JoyButtonDown(event.timestamp,
-                                     event.which as isize,
-                                     event.button as isize)
+                Event::JoyButtonDown(event.timestamp, event.which, event.button)
             }
             EventType::JoyButtonUp => {
                 let ref event = *raw.jbutton();
-                Event::JoyButtonUp(event.timestamp,
-                                   event.which as isize,
-                                   event.button as isize)
+                Event::JoyButtonUp(event.timestamp, event.which, event.button)
             }
             EventType::JoyDeviceAdded => {
                 let ref event = *raw.jdevice();
-                Event::JoyDeviceAdded(event.timestamp,
-                                      event.which as isize)
+                Event::JoyDeviceAdded(event.timestamp, event.which)
             }
             EventType::JoyDeviceRemoved => {
                 let ref event = *raw.jdevice();
-                Event::JoyDeviceRemoved(event.timestamp,
-                                        event.which as isize)
+                Event::JoyDeviceRemoved(event.timestamp, event.which)
             }
 
             EventType::ControllerAxisMotion => {
                 let ref event = *raw.caxis();
                 let axis = controller::wrap_controller_axis(event.axis);
 
-                Event::ControllerAxisMotion(event.timestamp,
-                                            event.which as isize, axis,
-                                            event.value)
+                Event::ControllerAxisMotion(event.timestamp, event.which,
+                                            axis, event.value)
             }
             EventType::ControllerButtonDown => {
                 let ref event = *raw.cbutton();
                 let button = controller::wrap_controller_button(event.button);
 
-                Event::ControllerButtonDown(event.timestamp,
-                                            event.which as isize, button)
+                Event::ControllerButtonDown(event.timestamp, event.which, button)
             }
             EventType::ControllerButtonUp => {
                 let ref event = *raw.cbutton();
                 let button = controller::wrap_controller_button(event.button);
 
-                Event::ControllerButtonUp(event.timestamp,
-                                          event.which as isize, button)
+                Event::ControllerButtonUp(event.timestamp, event.which, button)
             }
             EventType::ControllerDeviceAdded => {
                 let ref event = *raw.cdevice();
-                Event::ControllerDeviceAdded(event.timestamp,
-                                             event.which as isize)
+                Event::ControllerDeviceAdded(event.timestamp, event.which)
             }
             EventType::ControllerDeviceRemoved => {
                 let ref event = *raw.cdevice();
-                Event::ControllerDeviceRemoved(event.timestamp,
-                                               event.which as isize)
+                Event::ControllerDeviceRemoved(event.timestamp, event.which)
             }
             EventType::ControllerDeviceRemapped => {
                 let ref event = *raw.cdevice();
-                Event::ControllerDeviceRemapped(event.timestamp,
-                                                event.which as isize)
+                Event::ControllerDeviceRemapped(event.timestamp, event.which)
             }
 
             EventType::FingerDown => {
