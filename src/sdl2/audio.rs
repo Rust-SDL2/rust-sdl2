@@ -440,8 +440,12 @@ impl AudioCVT {
         }
     }
 
+    #[unstable="Certain conversions may cause buffer overflows. See AngryLawyer/rust-sdl2 issue #270."]
     pub fn convert(&self, mut src: Vec<u8>) -> SdlResult<Vec<u8>> {
         //! Convert audio data to a desired audio format.
+        //!
+        //! The `src` vector is adjusted to the capacity necessary to perform
+        //! the conversion in place; then it is passed to the SDL library.
         unsafe {
             if (*self.raw).needed != 1 {
                 return Err("no conversion needed!".to_owned())
