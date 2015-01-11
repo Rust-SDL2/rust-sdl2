@@ -186,10 +186,10 @@ pub enum Event {
     FingerMotion(u32, i64, i64, f32, f32, f32, f32, f32),
 
     /// (timestamp, touchId, gestureId, numFingers, error, x, y)
-    DollarGesture(u32, i64, i64, u32, f64, f64, f64),
-    DollarRecord(u32, i64, i64, u32, f64, f64, f64),
+    DollarGesture(u32, i64, i64, u32, f32, f32, f32),
+    DollarRecord(u32, i64, i64, u32, f32, f32, f32),
     /// (timestamp, touchId, dTheta, dDist, x, y, numFingers)
-    MultiGesture(u32, i64, f64, f64, f64, f64, u16),
+    MultiGesture(u32, i64, f32, f32, f32, f32, u16),
 
     /// (timestamp)
     ClipboardUpdate(u32),
@@ -542,28 +542,21 @@ impl Event {
             }
             EventType::DollarGesture => {
                 let ref event = *raw.dgesture();
-                Event::DollarGesture(event.timestamp,
-                                     event.touchId as i64,
-                                     event.gestureId as i64,
-                                     event.numFingers,
-                                     event.error as f64, event.x as f64,
-                                     event.y as f64)
+                Event::DollarGesture(event.timestamp, event.touchId,
+                                     event.gestureId, event.numFingers,
+                                     event.error, event.x, event.y)
             }
             EventType::DollarRecord => {
                 let ref event = *raw.dgesture();
-                Event::DollarRecord(event.timestamp,
-                                    event.touchId as i64,
-                                    event.gestureId as i64,
-                                    event.numFingers,
-                                    event.error as f64, event.x as f64,
-                                    event.y as f64)
+                Event::DollarRecord(event.timestamp, event.touchId,
+                                    event.gestureId, event.numFingers,
+                                    event.error, event.x, event.y)
             }
             EventType::MultiGesture => {
                 let ref event = *raw.mgesture();
-                Event::MultiGesture(event.timestamp,
-                                    event.touchId as i64, event.dTheta as f64,
-                                    event.dDist as f64, event.x as f64,
-                                    event.y as f64, event.numFingers)
+                Event::MultiGesture(event.timestamp, event.touchId,
+                                    event.dTheta, event.dDist,
+                                    event.x, event.y, event.numFingers)
             }
 
             EventType::ClipboardUpdate => {
