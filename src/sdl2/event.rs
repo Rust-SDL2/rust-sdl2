@@ -181,9 +181,9 @@ pub enum Event {
     ControllerDeviceRemapped(u32, i32),
 
     /// (timestamp, touchId, fingerId, x, y, dx, dy, pressure)
-    FingerDown(u32, i64, i64, f64, f64, f64, f64, f64),
-    FingerUp(u32, i64, i64, f64, f64, f64, f64, f64),
-    FingerMotion(u32, i64, i64, f64, f64, f64, f64, f64),
+    FingerDown(u32, i64, i64, f32, f32, f32, f32, f32),
+    FingerUp(u32, i64, i64, f32, f32, f32, f32, f32),
+    FingerMotion(u32, i64, i64, f32, f32, f32, f32, f32),
 
     /// (timestamp, touchId, gestureId, numFingers, error, x, y)
     DollarGesture(u32, i64, i64, usize, f64, f64, f64),
@@ -520,25 +520,25 @@ impl Event {
 
             EventType::FingerDown => {
                 let ref event = *raw.tfinger();
-                Event::FingerDown(event.timestamp, event.touchId as i64,
-                                  event.fingerId as i64, event.x as f64,
-                                  event.y as f64, event.dx as f64,
-                                  event.dy as f64, event.pressure as f64)
+                Event::FingerDown(event.timestamp, event.touchId,
+                                  event.fingerId, event.x,
+                                  event.y, event.dx,
+                                  event.dy, event.pressure)
             }
             EventType::FingerUp => {
                 let ref event = *raw.tfinger();
-                Event::FingerUp(event.timestamp, event.touchId as i64,
-                                event.fingerId as i64, event.x as f64,
-                                event.y as f64, event.dx as f64,
-                                event.dy as f64, event.pressure as f64)
+                Event::FingerUp(event.timestamp, event.touchId,
+                                event.fingerId, event.x,
+                                event.y, event.dx,
+                                event.dy, event.pressure)
             }
             EventType::FingerMotion => {
                 let ref event = *raw.tfinger();
                 Event::FingerMotion(event.timestamp,
-                                    event.touchId as i64, event.fingerId as i64,
-                                    event.x as f64, event.y as f64,
-                                    event.dx as f64, event.dy as f64,
-                                    event.pressure as f64)
+                                    event.touchId, event.fingerId,
+                                    event.x, event.y,
+                                    event.dx, event.dy,
+                                    event.pressure)
             }
             EventType::DollarGesture => {
                 let ref event = *raw.dgesture();
