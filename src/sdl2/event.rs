@@ -138,7 +138,7 @@ pub enum Event {
     AppDidEnterForeground(u32),
 
     /// (timestamp, window, winEventId, data1, data2)
-    Window(u32, video::Window, WindowEventId, isize, isize),
+    Window(u32, video::Window, WindowEventId, i32, i32),
     // TODO: SysWMEvent
 
     /// (timestamp, window, keycode, scancode, keymod, repeat)
@@ -326,7 +326,7 @@ impl Event {
 
                 Event::Window(event.timestamp, window,
                               WindowEventId::from_ll(event.event),
-                              event.data1 as isize, event.data2 as isize)
+                              event.data1, event.data2)
             }
             // TODO: SysWMEventType
 
