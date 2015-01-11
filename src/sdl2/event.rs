@@ -198,7 +198,7 @@ pub enum Event {
     DropFile(u32, String),
 
     /// (timestamp, Window, type, code)
-    User(u32, video::Window, usize, isize),
+    User(u32, video::Window, u32, i32),
 }
 
 impl ::std::fmt::Show for Event {
@@ -597,8 +597,7 @@ impl Event {
                     Ok(window) => window,
                 };
 
-                Event::User(event.timestamp, window, raw_type as usize,
-                            event.code as isize)
+                Event::User(event.timestamp, window, raw_type, event.code)
             }
         }}                      // close unsafe & match
 
