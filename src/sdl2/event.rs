@@ -145,7 +145,7 @@ pub enum Event {
     KeyDown(u32, video::Window, KeyCode, ScanCode, Mod, bool),
     KeyUp(u32, video::Window, KeyCode, ScanCode, Mod, bool),
     /// (timestamp, window, text, start, length)
-    TextEditing(u32, video::Window, String, isize, isize),
+    TextEditing(u32, video::Window, String, i32, i32),
     /// (timestamp, window, text)
     TextInput(u32, video::Window, String),
 
@@ -340,12 +340,12 @@ impl Event {
                 };
 
                 Event::KeyDown(event.timestamp, window,
-                               FromPrimitive::from_int(event.keysym.sym as isize)
-                                  .unwrap_or(KeyCode::Unknown),
-                                FromPrimitive::from_int(event.keysym.scancode as isize)
-                                  .unwrap_or(ScanCode::Unknown),
-                                keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap(),
-                                event.repeat != 0)
+                               FromPrimitive::from_i32(event.keysym.sym)
+                                 .unwrap_or(KeyCode::Unknown),
+                               FromPrimitive::from_u32(event.keysym.scancode)
+                                 .unwrap_or(ScanCode::Unknown),
+                               keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap(),
+                               event.repeat != 0)
             }
             EventType::KeyUp => {
                 let ref event = *raw.key();
@@ -357,9 +357,9 @@ impl Event {
                 };
 
                 Event::KeyUp(event.timestamp, window,
-                             FromPrimitive::from_int(event.keysym.sym as isize)
+                             FromPrimitive::from_i32(event.keysym.sym)
                                .unwrap_or(KeyCode::Unknown),
-                             FromPrimitive::from_int(event.keysym.scancode as isize)
+                             FromPrimitive::from_u32(event.keysym.scancode)
                                .unwrap_or(ScanCode::Unknown),
                              keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap(),
                              event.repeat != 0)
@@ -381,7 +381,7 @@ impl Event {
                             .as_slice()
                     ).to_owned().into_owned();
                 Event::TextEditing(event.timestamp, window, text,
-                                   event.start as isize, event.length as isize)
+                                   event.start, event.length)
             }
             EventType::TextInput => {
                 let ref event = *raw.text();
