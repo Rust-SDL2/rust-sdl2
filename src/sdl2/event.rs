@@ -150,13 +150,12 @@ pub enum Event {
     TextInput(u32, video::Window, String),
 
     /// (timestamp, window, which, [MouseState], x, y, xrel, yrel)
-    MouseMotion(u32, video::Window, usize, MouseState, isize, isize,
-                     isize, isize),
+    MouseMotion(u32, video::Window, u32, MouseState, i32, i32, i32, i32),
     /// (timestamp, window, which, MouseBtn, x, y)
-    MouseButtonDown(u32, video::Window, usize, Mouse, isize, isize),
-    MouseButtonUp(u32, video::Window, usize, Mouse, isize, isize),
+    MouseButtonDown(u32, video::Window, u32, Mouse, i32, i32),
+    MouseButtonUp(u32, video::Window, u32, Mouse, i32, i32),
     /// (timestamp, window, whichId, x, y)
-    MouseWheel(u32, video::Window, usize, isize, isize),
+    MouseWheel(u32, video::Window, u32, i32, i32),
 
     /// (timestamp, whichId, axisIdx, value)
     JoyAxisMotion(u32, isize, isize, i16),
@@ -411,11 +410,10 @@ impl Event {
                     Ok(window) => window,
                 };
 
-                Event::MouseMotion(event.timestamp, window,
-                                   event.which as usize,
+                Event::MouseMotion(event.timestamp, window, event.which,
                                    mouse::MouseState::from_bits(event.state).unwrap(),
-                                   event.x as isize, event.y as isize,
-                                   event.xrel as isize, event.yrel as isize)
+                                   event.x, event.y,
+                                   event.xrel, event.yrel)
             }
             EventType::MouseButtonDown => {
                 let ref event = *raw.button();
@@ -426,10 +424,9 @@ impl Event {
                     Ok(window) => window,
                 };
 
-                Event::MouseButtonDown(event.timestamp, window,
-                                       event.which as usize,
+                Event::MouseButtonDown(event.timestamp, window, event.which,
                                        mouse::wrap_mouse(event.button),
-                                       event.x as isize, event.y as isize)
+                                       event.x, event.y)
             }
             EventType::MouseButtonUp => {
                 let ref event = *raw.button();
@@ -440,10 +437,9 @@ impl Event {
                     Ok(window) => window,
                 };
 
-                Event::MouseButtonUp(event.timestamp, window,
-                                     event.which as usize,
+                Event::MouseButtonUp(event.timestamp, window, event.which,
                                      mouse::wrap_mouse(event.button),
-                                     event.x as isize, event.y as isize)
+                                     event.x, event.y)
             }
             EventType::MouseWheel => {
                 let ref event = *raw.wheel();
@@ -454,9 +450,8 @@ impl Event {
                     Ok(window) => window,
                 };
 
-                Event::MouseWheel(event.timestamp, window,
-                                  event.which as usize, event.x as isize,
-                                  event.y as isize)
+                Event::MouseWheel(event.timestamp, window, event.which,
+                                  event.x, event.y)
             }
 
             EventType::JoyAxisMotion => {
