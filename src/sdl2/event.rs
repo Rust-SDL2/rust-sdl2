@@ -186,10 +186,10 @@ pub enum Event {
     FingerMotion(u32, i64, i64, f32, f32, f32, f32, f32),
 
     /// (timestamp, touchId, gestureId, numFingers, error, x, y)
-    DollarGesture(u32, i64, i64, usize, f64, f64, f64),
-    DollarRecord(u32, i64, i64, usize, f64, f64, f64),
+    DollarGesture(u32, i64, i64, u32, f64, f64, f64),
+    DollarRecord(u32, i64, i64, u32, f64, f64, f64),
     /// (timestamp, touchId, dTheta, dDist, x, y, numFingers)
-    MultiGesture(u32, i64, f64, f64, f64, f64, usize),
+    MultiGesture(u32, i64, f64, f64, f64, f64, u16),
 
     /// (timestamp)
     ClipboardUpdate(u32),
@@ -545,7 +545,7 @@ impl Event {
                 Event::DollarGesture(event.timestamp,
                                      event.touchId as i64,
                                      event.gestureId as i64,
-                                     event.numFingers as usize,
+                                     event.numFingers,
                                      event.error as f64, event.x as f64,
                                      event.y as f64)
             }
@@ -554,7 +554,7 @@ impl Event {
                 Event::DollarRecord(event.timestamp,
                                     event.touchId as i64,
                                     event.gestureId as i64,
-                                    event.numFingers as usize,
+                                    event.numFingers,
                                     event.error as f64, event.x as f64,
                                     event.y as f64)
             }
@@ -563,7 +563,7 @@ impl Event {
                 Event::MultiGesture(event.timestamp,
                                     event.touchId as i64, event.dTheta as f64,
                                     event.dDist as f64, event.x as f64,
-                                    event.y as f64, event.numFingers as usize)
+                                    event.y as f64, event.numFingers)
             }
 
             EventType::ClipboardUpdate => {
