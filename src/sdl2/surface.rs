@@ -37,12 +37,12 @@ impl Drop for Surface {
     }
 }
 
-impl_raw_accessors!(Surface, *const ll::SDL_Surface);
-impl_owned_accessors!(Surface, owned);
-impl_raw_constructor!(Surface -> Surface (raw: *const ll::SDL_Surface, owned: bool));
+impl_raw_accessors!((Surface, *const ll::SDL_Surface));
+impl_owned_accessors!((Surface, owned));
+impl_raw_constructor!((Surface, Surface (raw: *const ll::SDL_Surface, owned: bool)));
 
 impl Surface {
-    pub fn new(surface_flags: SurfaceFlag, width: int, height: int, bpp: int,
+    pub fn new(surface_flags: SurfaceFlag, width: isize, height: isize, bpp: isize,
                rmask: u32, gmask: u32, bmask: u32, amask: u32) -> SdlResult<Surface> {
         unsafe {
             let raw = ll::SDL_CreateRGBSurface(surface_flags.bits(), width as c_int, height as c_int, bpp as c_int,
@@ -56,7 +56,7 @@ impl Surface {
         }
     }
 
-    pub fn from_data(data: &mut [u8], width: int, height: int, bpp: int, pitch: int,
+    pub fn from_data(data: &mut [u8], width: isize, height: isize, bpp: isize, pitch: isize,
                      rmask: u32, gmask: u32, bmask: u32, amask: u32) -> SdlResult<Surface> {
 
         unsafe {
@@ -72,19 +72,19 @@ impl Surface {
         }
     }
 
-    pub fn get_width(&self) -> int {
-        unsafe { (*self.raw).w as int }
+    pub fn get_width(&self) -> isize {
+        unsafe { (*self.raw).w as isize }
     }
 
-    pub fn get_height(&self) -> int {
-        unsafe { (*self.raw).h as int }
+    pub fn get_height(&self) -> isize {
+        unsafe { (*self.raw).h as isize }
     }
 
-    pub fn get_pitch(&self) -> int {
-        unsafe { (*self.raw).pitch as int }
+    pub fn get_pitch(&self) -> isize {
+        unsafe { (*self.raw).pitch as isize }
     }
 
-    pub fn get_size(&self) -> (int, int) {
+    pub fn get_size(&self) -> (isize, isize) {
         (self.get_width(), self.get_height())
     }
 
@@ -113,7 +113,7 @@ impl Surface {
             if ll::SDL_LockSurface(self.raw) != 0 { panic!("could not lock surface"); }
 
             let raw_pixels = (*self.raw).pixels as *mut _;
-            let len = (*self.raw).pitch as uint * ((*self.raw).h as uint);
+            let len = (*self.raw).pitch as usize * ((*self.raw).h as usize);
             let pixels = ::std::slice::from_raw_mut_buf(&raw_pixels, len);
             let rv = f(pixels);
             ll::SDL_UnlockSurface(self.raw);
@@ -271,7 +271,7 @@ impl Surface {
 
     pub fn set_blend_mode(&mut self, mode: BlendMode) -> SdlResult<()> {
         let result = unsafe {
-            ll::SDL_SetSurfaceBlendMode(self.raw, FromPrimitive::from_int(mode as int).unwrap())
+            ll::SDL_SetSurfaceBlendMode(self.raw, FromPrimitive::from_int(mode as isize).unwrap())
         };
 
         match result {
@@ -287,7 +287,7 @@ impl Surface {
         };
 
         match result {
-            0 => Ok(FromPrimitive::from_int(mode as int).unwrap()),
+            0 => Ok(FromPrimitive::from_int(mode as isize).unwrap()),
             _ => Err(get_error())
         }
     }

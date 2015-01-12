@@ -241,7 +241,7 @@ pub enum KeyCode {
     Sleep              = 1073742106,
 }
 
-impl<S: hash::Writer> Hash<S> for KeyCode {
+impl<S: hash::Hasher + hash::Writer> Hash<S> for KeyCode {
     #[inline]
     fn hash(&self, state: &mut S) {
         (*self as i32).hash(state);
@@ -260,7 +260,7 @@ impl ToPrimitive for KeyCode {
     }
 
     #[inline]
-    fn to_int(&self) -> Option<int> {
-        Some(*self as int)
+    fn to_int(&self) -> Option<isize> {
+        Some(*self as isize)
     }
 }

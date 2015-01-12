@@ -247,7 +247,7 @@ pub enum ScanCode {
     Num                = 512,
 }
 
-impl<S: hash::Writer> Hash<S> for ScanCode {
+impl<S: hash::Hasher + hash::Writer> Hash<S> for ScanCode {
     #[inline]
     fn hash(&self, state: &mut S) {
         (*self as i32).hash(state);
@@ -266,7 +266,7 @@ impl ToPrimitive for ScanCode {
     }
 
     #[inline]
-    fn to_int(&self) -> Option<int> {
-        Some(*self as int)
+    fn to_int(&self) -> Option<isize> {
+        Some(*self as isize)
     }
 }

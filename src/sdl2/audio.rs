@@ -36,27 +36,27 @@ pub const AUDIOF32SYS : AudioFormat = ll::AUDIO_F32SYS;
 #[repr(C)]
 #[derive(Copy, Clone, PartialEq, Hash, Show, FromPrimitive)]
 pub enum AudioStatus {
-    Stopped = ll::SDL_AUDIO_STOPPED as int,
-    Playing = ll::SDL_AUDIO_PLAYING as int,
-    Paused  = ll::SDL_AUDIO_PAUSED  as int,
+    Stopped = ll::SDL_AUDIO_STOPPED as isize,
+    Playing = ll::SDL_AUDIO_PLAYING as isize,
+    Paused  = ll::SDL_AUDIO_PAUSED  as isize,
 }
 
-pub fn get_num_audio_drivers() -> int {
-    unsafe { ll::SDL_GetNumAudioDrivers() as int }
+pub fn get_num_audio_drivers() -> isize {
+    unsafe { ll::SDL_GetNumAudioDrivers() as isize }
 }
 
-pub fn get_audio_driver(index: int) -> String {
+pub fn get_audio_driver(index: isize) -> String {
     unsafe {
         let driver = ll::SDL_GetAudioDriver(index as c_int);
         String::from_utf8_lossy(c_str_to_bytes(&driver)).to_string()
     }
 }
 
-pub fn get_num_audio_devices(iscapture: int) -> int {
-    unsafe { ll::SDL_GetNumAudioDevices(iscapture as c_int) as int }
+pub fn get_num_audio_devices(iscapture: isize) -> isize {
+    unsafe { ll::SDL_GetNumAudioDevices(iscapture as c_int) as isize }
 }
 
-pub fn get_audio_device_name(index: int, iscapture: int) -> String {
+pub fn get_audio_device_name(index: isize, iscapture: isize) -> String {
     unsafe {
         let dev_name = ll::SDL_GetAudioDeviceName(index as c_int, iscapture as c_int);
         String::from_utf8_lossy(c_str_to_bytes(&dev_name)).to_string()
@@ -130,7 +130,7 @@ impl AudioSpecWAV {
         unsafe {
             transmute(Slice {
                 data: self.audio_buf,
-                len: self.audio_len as uint
+                len: self.audio_len as usize
             })
         }
     }
@@ -198,7 +198,7 @@ extern "C" fn audio_callback_marshall<T: AudioFormatNum<T>, CB: AudioCallback<T>
         let mut cb_userdata: &mut AudioCallbackUserdata<CB> = transmute(userdata);
         let buf: &mut [T] = transmute(Slice {
             data: stream,
-            len: len as uint / size_of::<T>()
+            len: len as usize / size_of::<T>()
         });
 
         cb_userdata.callback.callback(buf);
@@ -237,9 +237,9 @@ impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
     }
 
     fn callback_to_userdata(callback: CB) -> Box<AudioCallbackUserdata<CB>> {
-        box AudioCallbackUserdata {
+        Box::new(AudioCallbackUserdata {
             callback: callback
-        }
+        })
     }
 
     /// Opens a new audio device given the desired parameters and callback.
@@ -346,7 +346,7 @@ impl<CB> AudioDevice<CB> {
     pub fn get_status(&self) -> AudioStatus {
         unsafe {
             let status = ll::SDL_GetAudioDeviceStatus(self.device_id.id());
-            FromPrimitive::from_int(status as int).unwrap()
+            FromPrimitive::from_int(status as isize).unwrap()
         }
     }
 

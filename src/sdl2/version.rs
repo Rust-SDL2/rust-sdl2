@@ -11,11 +11,11 @@ pub use sys::version as ll;
 #[derive(PartialEq, Copy, Clone)]
 pub struct Version {
     /// major version
-    pub major: int,
+    pub major: isize,
     /// minor version
-    pub minor: int,
+    pub minor: isize,
     /// update version (patchlevel)
-    pub patch: int,
+    pub patch: isize,
 }
 
 impl Version {
@@ -23,7 +23,7 @@ impl Version {
     pub fn from_ll(sv: *const ll::SDL_version) -> Version {
         unsafe {
             let ref v = *sv;
-            Version{ major: v.major as int, minor: v.minor as int, patch: v.patch as int }
+            Version{ major: v.major as isize, minor: v.minor as isize, patch: v.patch as isize }
         }
     }
 }
@@ -52,8 +52,8 @@ pub fn get_revision() -> String {
 }
 
 /// Get the revision number of SDL that is linked against your program.
-pub fn get_revision_number() -> int {
+pub fn get_revision_number() -> isize {
     unsafe {
-        ll::SDL_GetRevisionNumber() as int
+        ll::SDL_GetRevisionNumber() as isize
     }
 }

@@ -18,11 +18,11 @@ bitflags! {
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum Error {
-    NoMemError = ll::SDL_ENOMEM as int,
-    ReadError = ll::SDL_EFREAD as int,
-    WriteError = ll::SDL_EFWRITE as int,
-    SeekError = ll::SDL_EFSEEK as int,
-    UnsupportedError = ll::SDL_UNSUPPORTED as int
+    NoMemError = ll::SDL_ENOMEM as isize,
+    ReadError = ll::SDL_EFREAD as isize,
+    WriteError = ll::SDL_EFWRITE as isize,
+    SeekError = ll::SDL_EFSEEK as isize,
+    UnsupportedError = ll::SDL_UNSUPPORTED as isize
 }
 
 pub type SdlResult<T> = Result<T, String>;

@@ -63,14 +63,14 @@ fn empty_sdl_display_mode() -> ll::SDL_DisplayMode {
 #[derive(Clone, PartialEq)]
 pub struct DisplayMode {
     pub format: u32,
-    pub w: int,
-    pub h: int,
-    pub refresh_rate: int
+    pub w: isize,
+    pub h: isize,
+    pub refresh_rate: isize
 }
 
 impl DisplayMode {
 
-    pub fn new(format: u32, w: int, h: int, refresh_rate: int) -> DisplayMode {
+    pub fn new(format: u32, w: isize, h: isize, refresh_rate: isize) -> DisplayMode {
         DisplayMode {
             format: format,
             w: w,
@@ -82,9 +82,9 @@ impl DisplayMode {
     pub fn from_ll(raw: &ll::SDL_DisplayMode) -> DisplayMode {
         DisplayMode::new(
             raw.format as u32,
-            raw.w as int,
-            raw.h as int,
-            raw.refresh_rate as int
+            raw.w as isize,
+            raw.h as isize,
+            raw.refresh_rate as isize
         )
     }
 
@@ -129,7 +129,7 @@ pub enum FullscreenType {
 pub enum WindowPos {
     PosUndefined,
     PosCentered,
-    Positioned(int)
+    Positioned(isize)
 }
 
 fn unwrap_windowpos (pos: WindowPos) -> ll::SDL_WindowPos {
@@ -164,17 +164,17 @@ pub struct Window {
 }
 
 impl_raw_accessors!(
-    GLContext, ll::SDL_GLContext;
-    Window, *const ll::SDL_Window
+    (GLContext, ll::SDL_GLContext),
+    (Window, *const ll::SDL_Window)
 );
 
 impl_owned_accessors!(
-    GLContext, owned;
-    Window, owned
+    (GLContext, owned),
+    (Window, owned)
 );
 
 impl_raw_constructor!(
-    Window -> Window (raw: *const ll::SDL_Window, owned: bool)
+    (Window, Window (raw: *const ll::SDL_Window, owned: bool))
 );
 
 impl Drop for Window {
@@ -188,7 +188,7 @@ impl Drop for Window {
 }
 
 impl Window {
-    pub fn new(title: &str, x: WindowPos, y: WindowPos, width: int, height: int, window_flags: WindowFlags) -> SdlResult<Window> {
+    pub fn new(title: &str, x: WindowPos, y: WindowPos, width: isize, height: isize, window_flags: WindowFlags) -> SdlResult<Window> {
         unsafe {
             let buff = CString::from_slice(title.as_bytes()).as_ptr();
             let raw = ll::SDL_CreateWindow(
@@ -217,12 +217,12 @@ impl Window {
         }
     }
 
-    pub fn get_display_index(&self) -> SdlResult<int> {
+    pub fn get_display_index(&self) -> SdlResult<isize> {
         let result = unsafe { ll::SDL_GetWindowDisplayIndex(self.raw) };
         if result < 0 {
             return Err(get_error())
         } else {
-            Ok(result as int)
+            Ok(result as isize)
         }
     }
 
@@ -293,51 +293,51 @@ impl Window {
         unsafe { ll::SDL_SetWindowPosition(self.raw, unwrap_windowpos(x), unwrap_windowpos(y)) }
     }
 
-    pub fn get_position(&self) -> (int, int) {
+    pub fn get_position(&self) -> (isize, isize) {
         let x: c_int = 0;
         let y: c_int = 0;
         unsafe { ll::SDL_GetWindowPosition(self.raw, &x, &y) };
-        (x as int, y as int)
+        (x as isize, y as isize)
     }
 
-    pub fn set_size(&self, w: int, h: int) {
+    pub fn set_size(&self, w: isize, h: isize) {
         unsafe { ll::SDL_SetWindowSize(self.raw, w as c_int, h as c_int) }
     }
 
-    pub fn get_size(&self) -> (int, int) {
+    pub fn get_size(&self) -> (isize, isize) {
         let w: c_int = 0;
         let h: c_int = 0;
         unsafe { ll::SDL_GetWindowSize(self.raw, &w, &h) };
-        (w as int, h as int)
+        (w as isize, h as isize)
     }
 
-    pub fn get_drawable_size(&self) -> (int, int) {
+    pub fn get_drawable_size(&self) -> (isize, isize) {
         let w: c_int = 0;
         let h: c_int = 0;
         unsafe { ll::SDL_GL_GetDrawableSize(self.raw, &w, &h) };
-        (w as int, h as int)
+        (w as isize, h as isize)
     }
 
-    pub fn set_minimum_size(&self, w: int, h: int) {
+    pub fn set_minimum_size(&self, w: isize, h: isize) {
         unsafe { ll::SDL_SetWindowMinimumSize(self.raw, w as c_int, h as c_int) }
     }
 
-    pub fn get_minimum_size(&self) -> (int, int) {
+    pub fn get_minimum_size(&self) -> (isize, isize) {
         let w: c_int = 0;
         let h: c_int = 0;
         unsafe { ll::SDL_GetWindowMinimumSize(self.raw, &w, &h) };
-        (w as int, h as int)
+        (w as isize, h as isize)
     }
 
-    pub fn set_maximum_size(&self, w: int, h: int) {
+    pub fn set_maximum_size(&self, w: isize, h: isize) {
         unsafe { ll::SDL_SetWindowMaximumSize(self.raw, w as c_int, h as c_int) }
     }
 
-    pub fn get_maximum_size(&self) -> (int, int) {
+    pub fn get_maximum_size(&self) -> (isize, isize) {
         let w: c_int = 0;
         let h: c_int = 0;
         unsafe { ll::SDL_GetWindowMaximumSize(self.raw, &w, &h) };
-        (w as int, h as int)
+        (w as isize, h as isize)
     }
 
     pub fn set_bordered(&self, bordered: bool) {
@@ -454,16 +454,16 @@ impl Window {
     }
 }
 
-pub fn get_num_video_drivers() -> SdlResult<int> {
+pub fn get_num_video_drivers() -> SdlResult<isize> {
     let result = unsafe { ll::SDL_GetNumVideoDrivers() };
     if result < 0 {
         Err(get_error())
     } else {
-        Ok(result as int)
+        Ok(result as isize)
     }
 }
 
-pub fn get_video_driver(id: int) -> String {
+pub fn get_video_driver(id: isize) -> String {
     unsafe {
         let buf = ll::SDL_GetVideoDriver(id as c_int);
         String::from_utf8_lossy(c_str_to_bytes(&buf)).to_string()
@@ -486,23 +486,23 @@ pub fn get_current_video_driver() -> String {
     }
 }
 
-pub fn get_num_video_displays() -> SdlResult<int> {
+pub fn get_num_video_displays() -> SdlResult<isize> {
     let result = unsafe { ll::SDL_GetNumVideoDisplays() };
     if result < 0 {
         Err(get_error())
     } else {
-        Ok(result as int)
+        Ok(result as isize)
     }
 }
 
-pub fn get_display_name(display_index: int) -> String {
+pub fn get_display_name(display_index: isize) -> String {
     unsafe {
         let display = ll::SDL_GetDisplayName(display_index as c_int);
         String::from_utf8_lossy(c_str_to_bytes(&display)).to_string()
     }
 }
 
-pub fn get_display_bounds(display_index: int) -> SdlResult<Rect> {
+pub fn get_display_bounds(display_index: isize) -> SdlResult<Rect> {
     let out: Rect = Rect::new(0, 0, 0, 0);
     let result = unsafe { ll::SDL_GetDisplayBounds(display_index as c_int, &out) == 0 };
 
@@ -513,16 +513,16 @@ pub fn get_display_bounds(display_index: int) -> SdlResult<Rect> {
     }
 }
 
-pub fn get_num_display_modes(display_index: int) -> SdlResult<int> {
+pub fn get_num_display_modes(display_index: isize) -> SdlResult<isize> {
     let result = unsafe { ll::SDL_GetNumDisplayModes(display_index as c_int) };
     if result < 0 {
         Err(get_error())
     } else {
-        Ok(result as int)
+        Ok(result as isize)
     }
 }
 
-pub fn get_display_mode(display_index: int, mode_index: int) -> SdlResult<DisplayMode> {
+pub fn get_display_mode(display_index: isize, mode_index: isize) -> SdlResult<DisplayMode> {
     let dm = empty_sdl_display_mode();
     let result = unsafe { ll::SDL_GetDisplayMode(display_index as c_int, mode_index as c_int, &dm) == 0};
 
@@ -533,7 +533,7 @@ pub fn get_display_mode(display_index: int, mode_index: int) -> SdlResult<Displa
     }
 }
 
-pub fn get_desktop_display_mode(display_index: int) -> SdlResult<DisplayMode> {
+pub fn get_desktop_display_mode(display_index: isize) -> SdlResult<DisplayMode> {
     let dm = empty_sdl_display_mode();
     let result = unsafe { ll::SDL_GetDesktopDisplayMode(display_index as c_int, &dm) == 0};
 
@@ -544,7 +544,7 @@ pub fn get_desktop_display_mode(display_index: int) -> SdlResult<DisplayMode> {
     }
 }
 
-pub fn get_current_display_mode(display_index: int) -> SdlResult<DisplayMode> {
+pub fn get_current_display_mode(display_index: isize) -> SdlResult<DisplayMode> {
     let dm = empty_sdl_display_mode();
     let result = unsafe { ll::SDL_GetCurrentDisplayMode(display_index as c_int, &dm) == 0};
 
@@ -555,7 +555,7 @@ pub fn get_current_display_mode(display_index: int) -> SdlResult<DisplayMode> {
     }
 }
 
-pub fn get_closest_display_mode(display_index: int, mode: &DisplayMode) -> SdlResult<DisplayMode> {
+pub fn get_closest_display_mode(display_index: isize, mode: &DisplayMode) -> SdlResult<DisplayMode> {
     let input = mode.to_ll();
     let out = empty_sdl_display_mode();
 
@@ -608,16 +608,16 @@ pub fn gl_extension_supported(extension: &str) -> bool {
     unsafe { ll::SDL_GL_ExtensionSupported(buff) == 1 }
 }
 
-pub fn gl_set_attribute(attr: GLAttr, value: int) -> bool {
+pub fn gl_set_attribute(attr: GLAttr, value: isize) -> bool {
     unsafe { ll::SDL_GL_SetAttribute(FromPrimitive::from_u64(attr as u64).unwrap(), value as c_int) == 0 }
 }
 
-pub fn gl_get_attribute(attr: GLAttr) -> SdlResult<int> {
+pub fn gl_get_attribute(attr: GLAttr) -> SdlResult<isize> {
     let out: c_int = 0;
 
     let result = unsafe { ll::SDL_GL_GetAttribute(FromPrimitive::from_u64(attr as u64).unwrap(), &out) } == 0;
     if result {
-        Ok(out as int)
+        Ok(out as isize)
     } else {
         Err(get_error())
     }
@@ -641,10 +641,10 @@ pub fn gl_get_current_context() -> SdlResult<GLContext> {
     }
 }
 
-pub fn gl_set_swap_interval(interval: int) -> bool {
+pub fn gl_set_swap_interval(interval: isize) -> bool {
     unsafe { ll::SDL_GL_SetSwapInterval(interval as c_int) == 0 }
 }
 
-pub fn gl_get_swap_interval() -> int {
-    unsafe { ll::SDL_GL_GetSwapInterval() as int }
+pub fn gl_get_swap_interval() -> isize {
+    unsafe { ll::SDL_GL_GetSwapInterval() as isize }
 }

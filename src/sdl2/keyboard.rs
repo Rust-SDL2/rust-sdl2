@@ -42,11 +42,11 @@ pub fn get_keyboard_state() -> HashMap<ScanCode, bool> {
     let count = 0;
 
     let raw = unsafe { Vec::from_raw_buf(ll::SDL_GetKeyboardState(&count),
-                                          count as uint) };
+                                          count as usize) };
 
     let mut current = 0;
     while current < raw.len() {
-        state.insert(FromPrimitive::from_int(current as int)
+        state.insert(FromPrimitive::from_int(current as isize)
                         .unwrap_or(ScanCode::Unknown),
                      raw[current] == 1);
         current += 1;
@@ -65,14 +65,14 @@ pub fn set_mod_state(flags: Mod) {
 
 pub fn get_key_from_scancode(scancode: ScanCode) -> KeyCode {
     unsafe {
-        FromPrimitive::from_int(ll::SDL_GetKeyFromScancode(scancode as u32) as int)
+        FromPrimitive::from_int(ll::SDL_GetKeyFromScancode(scancode as u32) as isize)
             .unwrap_or(KeyCode::Unknown)
     }
 }
 
 pub fn get_scancode_from_key(key: KeyCode) -> ScanCode {
     unsafe {
-        FromPrimitive::from_int(ll::SDL_GetScancodeFromKey(key as i32) as int)
+        FromPrimitive::from_int(ll::SDL_GetScancodeFromKey(key as i32) as isize)
             .unwrap_or(ScanCode::Unknown)
     }
 }
@@ -87,7 +87,7 @@ pub fn get_scancode_name(scancode: ScanCode) -> String {
 pub fn get_scancode_from_name(name: &str) -> ScanCode {
     unsafe {
         let name = CString::from_slice(name.as_bytes()).as_ptr();
-        FromPrimitive::from_int(ll::SDL_GetScancodeFromName(name) as int)
+        FromPrimitive::from_int(ll::SDL_GetScancodeFromName(name) as isize)
             .unwrap_or(ScanCode::Unknown)
     }
 }
@@ -102,7 +102,7 @@ pub fn get_key_name(key: KeyCode) -> String {
 pub fn get_key_from_name(name: &str) -> KeyCode {
     unsafe {
         let name = CString::from_slice(name.as_bytes()).as_ptr();
-        FromPrimitive::from_int(ll::SDL_GetKeyFromName(name) as int)
+        FromPrimitive::from_int(ll::SDL_GetKeyFromName(name) as isize)
             .unwrap_or(KeyCode::Unknown)
     }
 }

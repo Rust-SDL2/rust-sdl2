@@ -30,11 +30,11 @@ fn main() {
     // false: Playback
     let mut device = match desired_spec.open_audio_device(None, false) {
         Ok(device) => device,
-        Err(s) => panic!("{}", s)
+        Err(s) => panic!("{:?}", s)
     };
 
     // Show obtained AudioSpec
-    println!("{}", device.get_spec());
+    println!("{:?}", device.get_spec());
 
     // Start playback
     device.resume();

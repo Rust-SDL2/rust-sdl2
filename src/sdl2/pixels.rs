@@ -7,7 +7,7 @@ pub struct Palette {
     raw: *const ll::SDL_Palette
 }
 
-impl_raw_accessors!(Palette, *const ll::SDL_Palette);
+impl_raw_accessors!((Palette, *const ll::SDL_Palette));
 
 #[derive(PartialEq, Clone, Copy)]
 pub enum Color {
@@ -59,51 +59,51 @@ pub struct PixelFormat {
     raw: *const ll::SDL_PixelFormat
 }
 
-impl_raw_accessors!(PixelFormat, *const ll::SDL_PixelFormat);
-impl_raw_constructor!(PixelFormat -> PixelFormat (raw: *const ll::SDL_PixelFormat));
+impl_raw_accessors!((PixelFormat, *const ll::SDL_PixelFormat));
+impl_raw_constructor!((PixelFormat, PixelFormat (raw: *const ll::SDL_PixelFormat)));
 
 #[derive(Copy, Clone, PartialEq, Show, FromPrimitive)]
 pub enum PixelFormatFlag {
-    Unknown = ll::SDL_PIXELFORMAT_UNKNOWN as int,
-    Index1LSB = ll::SDL_PIXELFORMAT_INDEX1LSB as int,
-    Index1MSB = ll::SDL_PIXELFORMAT_INDEX1MSB as int,
-    Index4LSB = ll::SDL_PIXELFORMAT_INDEX4LSB as int,
-    Index4MSB = ll::SDL_PIXELFORMAT_INDEX4MSB as int,
-    Index8 = ll::SDL_PIXELFORMAT_INDEX8 as int,
-    RGB332 = ll::SDL_PIXELFORMAT_RGB332 as int,
-    RGB444 = ll::SDL_PIXELFORMAT_RGB444 as int,
-    RGB555 = ll::SDL_PIXELFORMAT_RGB555 as int,
-    BGR555 = ll::SDL_PIXELFORMAT_BGR555 as int,
-    ARGB4444 = ll::SDL_PIXELFORMAT_ARGB4444 as int,
-    RGBA4444 = ll::SDL_PIXELFORMAT_RGBA4444 as int,
-    ABGR4444 = ll::SDL_PIXELFORMAT_ABGR4444 as int,
-    BGRA4444 = ll::SDL_PIXELFORMAT_BGRA4444 as int,
-    ARGB1555 = ll::SDL_PIXELFORMAT_ARGB1555 as int,
-    RGBA5551 = ll::SDL_PIXELFORMAT_RGBA5551 as int,
-    ABGR1555 = ll::SDL_PIXELFORMAT_ABGR1555 as int,
-    BGRA5551 = ll::SDL_PIXELFORMAT_BGRA5551 as int,
-    RGB565 = ll::SDL_PIXELFORMAT_RGB565 as int,
-    BGR565 = ll::SDL_PIXELFORMAT_BGR565 as int,
-    RGB24 = ll::SDL_PIXELFORMAT_RGB24 as int,
-    BGR24 = ll::SDL_PIXELFORMAT_BGR24 as int,
-    RGB888 = ll::SDL_PIXELFORMAT_RGB888 as int,
-    RGBX8888 = ll::SDL_PIXELFORMAT_RGBX8888 as int,
-    BGR888 = ll::SDL_PIXELFORMAT_BGR888 as int,
-    BGRX8888 = ll::SDL_PIXELFORMAT_BGRX8888 as int,
-    ARGB8888 = ll::SDL_PIXELFORMAT_ARGB8888 as int,
-    RGBA8888 = ll::SDL_PIXELFORMAT_RGBA8888 as int,
-    ABGR8888 = ll::SDL_PIXELFORMAT_ABGR8888 as int,
-    BGRA8888 = ll::SDL_PIXELFORMAT_BGRA8888 as int,
-    ARGB2101010 = ll::SDL_PIXELFORMAT_ARGB2101010 as int,
-    YV12 = ll::SDL_PIXELFORMAT_YV12 as int,
-    IYUV = ll::SDL_PIXELFORMAT_IYUV as int,
-    YUY2 = ll::SDL_PIXELFORMAT_YUY2 as int,
-    UYVY = ll::SDL_PIXELFORMAT_UYVY as int,
-    YVYU = ll::SDL_PIXELFORMAT_YVYU as int
+    Unknown = ll::SDL_PIXELFORMAT_UNKNOWN as isize,
+    Index1LSB = ll::SDL_PIXELFORMAT_INDEX1LSB as isize,
+    Index1MSB = ll::SDL_PIXELFORMAT_INDEX1MSB as isize,
+    Index4LSB = ll::SDL_PIXELFORMAT_INDEX4LSB as isize,
+    Index4MSB = ll::SDL_PIXELFORMAT_INDEX4MSB as isize,
+    Index8 = ll::SDL_PIXELFORMAT_INDEX8 as isize,
+    RGB332 = ll::SDL_PIXELFORMAT_RGB332 as isize,
+    RGB444 = ll::SDL_PIXELFORMAT_RGB444 as isize,
+    RGB555 = ll::SDL_PIXELFORMAT_RGB555 as isize,
+    BGR555 = ll::SDL_PIXELFORMAT_BGR555 as isize,
+    ARGB4444 = ll::SDL_PIXELFORMAT_ARGB4444 as isize,
+    RGBA4444 = ll::SDL_PIXELFORMAT_RGBA4444 as isize,
+    ABGR4444 = ll::SDL_PIXELFORMAT_ABGR4444 as isize,
+    BGRA4444 = ll::SDL_PIXELFORMAT_BGRA4444 as isize,
+    ARGB1555 = ll::SDL_PIXELFORMAT_ARGB1555 as isize,
+    RGBA5551 = ll::SDL_PIXELFORMAT_RGBA5551 as isize,
+    ABGR1555 = ll::SDL_PIXELFORMAT_ABGR1555 as isize,
+    BGRA5551 = ll::SDL_PIXELFORMAT_BGRA5551 as isize,
+    RGB565 = ll::SDL_PIXELFORMAT_RGB565 as isize,
+    BGR565 = ll::SDL_PIXELFORMAT_BGR565 as isize,
+    RGB24 = ll::SDL_PIXELFORMAT_RGB24 as isize,
+    BGR24 = ll::SDL_PIXELFORMAT_BGR24 as isize,
+    RGB888 = ll::SDL_PIXELFORMAT_RGB888 as isize,
+    RGBX8888 = ll::SDL_PIXELFORMAT_RGBX8888 as isize,
+    BGR888 = ll::SDL_PIXELFORMAT_BGR888 as isize,
+    BGRX8888 = ll::SDL_PIXELFORMAT_BGRX8888 as isize,
+    ARGB8888 = ll::SDL_PIXELFORMAT_ARGB8888 as isize,
+    RGBA8888 = ll::SDL_PIXELFORMAT_RGBA8888 as isize,
+    ABGR8888 = ll::SDL_PIXELFORMAT_ABGR8888 as isize,
+    BGRA8888 = ll::SDL_PIXELFORMAT_BGRA8888 as isize,
+    ARGB2101010 = ll::SDL_PIXELFORMAT_ARGB2101010 as isize,
+    YV12 = ll::SDL_PIXELFORMAT_YV12 as isize,
+    IYUV = ll::SDL_PIXELFORMAT_IYUV as isize,
+    YUY2 = ll::SDL_PIXELFORMAT_YUY2 as isize,
+    UYVY = ll::SDL_PIXELFORMAT_UYVY as isize,
+    YVYU = ll::SDL_PIXELFORMAT_YVYU as isize
 }
 
 impl PixelFormatFlag {
-    pub fn byte_size_of_pixels(&self, num_of_pixels: uint) -> uint {
+    pub fn byte_size_of_pixels(&self, num_of_pixels: usize) -> usize {
         match *self {
             PixelFormatFlag::RGB332
                 => num_of_pixels * 1,
@@ -136,11 +136,11 @@ impl PixelFormatFlag {
             PixelFormatFlag::Unknown | PixelFormatFlag::Index1LSB |
             PixelFormatFlag::Index1MSB | PixelFormatFlag::Index4LSB |
             PixelFormatFlag::Index4MSB
-                => panic!("not supported format: {}", *self),
+                => panic!("not supported format: {:?}", *self),
         }
     }
 
-    pub fn byte_size_per_pixel(&self) -> uint {
+    pub fn byte_size_per_pixel(&self) -> usize {
         match *self {
             PixelFormatFlag::RGB332
                 => 1,
@@ -172,7 +172,7 @@ impl PixelFormatFlag {
             PixelFormatFlag::Unknown | PixelFormatFlag::Index1LSB |
             PixelFormatFlag::Index1MSB | PixelFormatFlag::Index4LSB |
             PixelFormatFlag::Index4MSB
-                => panic!("not supported format: {}", *self),
+                => panic!("not supported format: {:?}", *self),
         }
     }
 }

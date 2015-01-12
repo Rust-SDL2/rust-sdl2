@@ -13,8 +13,8 @@ pub struct RWops {
     close_on_drop: bool
 }
 
-impl_raw_accessors!(RWops, *const ll::SDL_RWops);
-impl_owned_accessors!(RWops, close_on_drop);
+impl_raw_accessors!((RWops, *const ll::SDL_RWops));
+impl_owned_accessors!((RWops, close_on_drop));
 
 /// A structure that provides an abstract interface to stream I/O.
 impl RWops {
@@ -36,9 +36,9 @@ impl RWops {
         else { Ok(RWops{raw: raw, close_on_drop: false}) }
     }
 
-    pub fn len(&self) -> uint {
+    pub fn len(&self) -> usize {
         unsafe {
-            ((*self.raw).size)(self.raw) as uint
+            ((*self.raw).size)(self.raw) as usize
         }
     }
 }
@@ -56,7 +56,7 @@ impl Drop for RWops {
 }
 
 impl Reader for RWops {
-    fn read(&mut self, buf: &mut [u8]) -> IoResult<uint> {
+    fn read(&mut self, buf: &mut [u8]) -> IoResult<usize> {
         let out_len = buf.len() as size_t;
         // FIXME: it's better to use as_mut_ptr().
         // number of objects read, or 0 at error or end of file.
@@ -66,7 +66,7 @@ impl Reader for RWops {
         if ret == 0 {
             Err(io::standard_error(io::EndOfFile))
         } else {
-            Ok(ret as uint)
+            Ok(ret as usize)
         }
     }
 }
