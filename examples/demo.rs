@@ -17,18 +17,15 @@ pub fn main() {
     let _ = renderer.clear();
     renderer.present();
 
-    'main : loop {
-        'event : loop {
-            match sdl2::event::poll_event() {
-                sdl2::event::Event::Quit(_) => break 'main,
-                sdl2::event::Event::KeyDown(_, _, key, _, _, _) => {
-                    if key == sdl2::keycode::KeyCode::Escape {
-                        break 'main
-                    }
-                },
-                sdl2::event::Event::None => break 'event,
-                _ => {}
-            }
+    loop {
+        match sdl2::event::poll_event() {
+            sdl2::event::Event::Quit(_) => break,
+            sdl2::event::Event::KeyDown(_, _, key, _, _, _) => {
+                if key == sdl2::keycode::KeyCode::Escape {
+                    break
+                }
+            },
+            _ => {}
         }
     }
 
