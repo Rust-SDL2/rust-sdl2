@@ -4,6 +4,7 @@
 extern crate sdl2;
 extern crate libc;
 
+use std::ffi::{c_str_to_bytes, CString};
 use libc::{c_int, c_char};
 use std::ptr;
 use sdl2::surface::Surface;
@@ -65,7 +66,7 @@ impl LoadSurface for Surface {
     fn from_file(filename: &Path) -> SdlResult<Surface> {
         //! Loads an SDL Surface from a file
         unsafe {
-            let raw = ffi::IMG_Load(filename.to_c_str().into_inner());
+            let raw = ffi::IMG_Load(CString::from_slice(filename.as_vec()).as_ptr());
             if raw == ptr::null() {
                 Err(get_error())
             } else {
@@ -92,7 +93,7 @@ impl SaveSurface for Surface {
         //! Saves an SDL Surface to a file
         unsafe {
             let status = ffi::IMG_SavePNG(self.raw(),
-                                          filename.to_c_str().into_inner());
+                                          CString::from_slice(filename.as_vec()).as_ptr());
             if status != 0 {
                 Err(get_error())
             } else {
@@ -125,7 +126,7 @@ impl LoadTexture for Renderer {
         //! Loads an SDL Texture from a file
         unsafe {
             let raw = ffi::IMG_LoadTexture(self.raw(),
-                                           filename.to_c_str().into_inner());
+                                           CString::from_slice(filename.as_vec()).as_ptr());
             if raw == ptr::null() {
                 Err(get_error())
             } else {
@@ -212,7 +213,7 @@ impl ImageRWops for RWops {
     }
     fn load_typed(&self, _type: &str) -> SdlResult<Surface> {
         let raw = unsafe {
-            ffi::IMG_LoadTyped_RW(self.raw(), 0, _type.to_c_str().into_inner())
+            ffi::IMG_LoadTyped_RW(self.raw(), 0, CString::from_slice(_type.as_bytes()).as_ptr())
         };
         to_surface_result(raw)
     }

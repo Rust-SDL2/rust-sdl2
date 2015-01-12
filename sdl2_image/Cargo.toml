@@ -10,4 +10,4 @@ name       = "sdl2_image"
 crate-type = ["dylib"]
 
 [dependencies.sdl2]
-sdl2 = "^0"
+version = "^0"
