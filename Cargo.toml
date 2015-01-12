@@ -13,7 +13,16 @@ keywords = ["SDL", "windowing", "graphics"]
 name       = "sdl2"
 path       = "src/sdl2/lib.rs"
 
+[features]
+
+image = ["sdl2_image"]
+
 [dependencies.sdl2-sys]
 
 path = "sdl2-sys"
 version = "0.0.16"
+
+[dependencies.sdl2_image]
+
+optional = true
+path = "sdl2_image"

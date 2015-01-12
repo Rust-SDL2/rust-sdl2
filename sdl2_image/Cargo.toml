@@ -1,0 +1,13 @@
+[package]
+
+name    = "sdl2_image"
+version = "0.0.1-alpha.1"
+authors = [ "xsleonard" ]
+
+[lib]
+
+name       = "sdl2_image"
+crate-type = ["dylib"]
+
+[dependencies.sdl2]
+version = "^0"
