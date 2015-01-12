@@ -423,8 +423,8 @@ impl Drop for AudioCVT {
 }
 
 impl AudioCVT {
-    pub fn new(src_format: ll::SDL_AudioFormat, src_channels: u8, src_rate: int,
-               dst_format: ll::SDL_AudioFormat, dst_channels: u8, dst_rate: int) -> SdlResult<AudioCVT> {
+    pub fn new(src_format: ll::SDL_AudioFormat, src_channels: u8, src_rate: i32,
+               dst_format: ll::SDL_AudioFormat, dst_channels: u8, dst_rate: i32) -> SdlResult<AudioCVT> {
         
         use std::mem;
         unsafe {
