@@ -1,17 +1,12 @@
 language: rust
-os:
-    - linux
-    - osx
 env:
     global:
         - secure: jS3X2wCwnJgAUnCP7MmeSFR/o7kX9MZxcLQcfWwFIFHe83qGys4Xa+csLz7y/5e7n64UYJtn8ZwIgLfCZawalOPQN3SaFrtv1AAnU47YOQhvk++9A8mmg6R/lMuObSqqQteIvL0lkaGmOWBtB81QPg3vsYWgFhdjqGE1seWUsxE=
         - LD_LIBRARY_PATH: /usr/local/lib
 install:
-    - wget http://www.libsdl.org/release/SDL2-2.0.3.tar.gz
-    - tar -zxvf SDL2-2.0.3.tar.gz
-    - cd SDL2-2.0.3
-    - ./configure && make && sudo make install
-    - cd -
+    - sudo add-apt-repository ppa:team-xbmc/ppa -y
+    - sudo apt-get update -q
+    - sudo apt-get install libsdl2-dev
 script:
     - cargo build -v
     - cargo test -v
