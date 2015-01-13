@@ -1,9 +1,8 @@
 //! Audio Functions
-
+use std::borrow::ToOwned;
 use std::ffi::{c_str_to_bytes, CString};
 use std::num::FromPrimitive;
-use libc::{c_int, c_void};
-use libc::{uint8_t};
+use libc::{self, c_int, c_void, size_t, uint8_t};
 use std::ops::{Deref, DerefMut};
 
 use get_error;
@@ -403,5 +402,97 @@ impl<'a, CB: 'a> DerefMut for AudioDeviceLockGuard<'a, CB> {
 impl<'a, CB> Drop for AudioDeviceLockGuard<'a, CB> {
     fn drop(&mut self) {
         unsafe { ll::SDL_UnlockAudioDevice(self.device.device_id.id()) }
+    }
+}
+
+#[derive(PartialEq)] #[allow(raw_pointer_derive)]
+pub struct AudioCVT {
+    raw: *mut ll::SDL_AudioCVT,
+    owned: bool,
+}
+
+impl_raw_accessors!( (AudioCVT, *mut ll::SDL_AudioCVT) );
+impl_owned_accessors!( (AudioCVT, owned) );
+
+impl Drop for AudioCVT {
+    fn drop(&mut self) {
+        if self.owned {
+            unsafe { libc::free(self.raw as *mut c_void) }
+        }
+    }
+}
+
+impl AudioCVT {
+    pub fn new(src_format: ll::SDL_AudioFormat, src_channels: u8, src_rate: i32,
+               dst_format: ll::SDL_AudioFormat, dst_channels: u8, dst_rate: i32) -> SdlResult<AudioCVT> {
+        
+        use std::mem;
+        unsafe {
+            let c_cvt_p = libc::malloc(mem::size_of::<ll::SDL_AudioCVT>() as size_t) as *mut ll::SDL_AudioCVT;
+            let ret = ll::SDL_BuildAudioCVT(c_cvt_p,
+                                            src_format, src_channels, src_rate as c_int,
+                                            dst_format, dst_channels, dst_rate as c_int);
+            if ret == 1 || ret == 0 {
+                Ok(AudioCVT { raw: c_cvt_p, owned: true })
+            } else {
+                Err(get_error())
+            }
+        }
+    }
+
+    #[unstable="Certain conversions may cause buffer overflows. See AngryLawyer/rust-sdl2 issue #270."]
+    pub fn convert(&self, mut src: Vec<u8>) -> SdlResult<Vec<u8>> {
+        //! Convert audio data to a desired audio format.
+        //!
+        //! The `src` vector is adjusted to the capacity necessary to perform
+        //! the conversion in place; then it is passed to the SDL library.
+        unsafe {
+            if (*self.raw).needed != 1 {
+                return Err("no conversion needed!".to_owned())
+            }
+
+            // calculate the size of the dst buffer
+            (*self.raw).len = src.len() as c_int;
+            let dst_size = ( (*self.raw).len * (*self.raw).len_mult ) as usize;
+            let needed = dst_size - src.len();
+            src.reserve_exact(needed);
+
+            // perform the conversion in place
+            (*self.raw).buf = src.as_mut_ptr();
+            let ret = ll::SDL_ConvertAudio(self.raw);
+
+            // return original buffer back to caller
+            if ret == 0 {
+                debug_assert!( (*self.raw).len_cvt > 0 );
+                debug_assert!( (*self.raw).len_cvt as usize <= src.capacity() );
+
+                src.set_len((*self.raw).len_cvt as usize);
+                Ok(src)
+            } else {
+                Err(get_error())
+            }
+        }
+    }
+}
+
+
+#[cfg(test)]
+mod test {
+    use super::{AudioCVT, AUDIOU8};
+
+    #[test]
+    fn test_audio_cvt() {
+        use std::iter::repeat;
+
+        // 0,1,2,3, ...
+        let buffer: Vec<u8> = range(0, 255).collect();
+
+        // 0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3, ...
+        let new_buffer_expected: Vec<u8> = range(0, 255).flat_map(|v| repeat(v).take(2)).collect();
+
+        let cvt = AudioCVT::new(AUDIOU8, 1, 44100, AUDIOU8, 2, 44100).unwrap();
+        let new_buffer = cvt.convert(buffer).unwrap();
+        assert_eq!(new_buffer.len(), new_buffer_expected.len());
+        assert_eq!(new_buffer, new_buffer_expected);
     }
 }
