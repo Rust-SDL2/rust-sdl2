@@ -17,3 +17,8 @@ path       = "src/sdl2/lib.rs"
 
 path = "sdl2-sys"
 version = "0.0.16"
+
+[features]
+
+default = []
+use-pkgconfig = [ "sdl2-sys/use-pkgconfig" ]
