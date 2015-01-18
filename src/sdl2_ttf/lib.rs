@@ -316,13 +316,13 @@ impl Font {
         }
     }
 
-    pub fn size_of_bytes(&self, text: &str) -> SdlResult<(isize, isize)> {
+    pub fn size_of_bytes(&self, text: &[u8]) -> SdlResult<(isize, isize)> {
         //! Get size of LATIN1 text string as would be rendered.
         let w = 0;
         let h = 0;
         let ret = unsafe {
-            let ctext = CString::from_slice(text.as_bytes());
-            ffi::TTF_SizeText(self.raw, ctext.as_ptr(), &w, &h)
+            let ctext = CString::from_slice(text).as_ptr();
+            ffi::TTF_SizeText(self.raw, ctext, &w, &h)
         };
         if ret != 0 {
             Err(get_error())
@@ -346,11 +346,11 @@ impl Font {
         }
     }
 
-    pub fn render_bytes_solid(&self, text: &str, fg: Color) -> SdlResult<Surface> {
+    pub fn render_bytes_solid(&self, text: &[u8], fg: Color) -> SdlResult<Surface> {
         //! Draw LATIN1 text in solid mode.
         unsafe {
-            let ctext = CString::from_slice(text.as_bytes());
-            let raw = ffi::TTF_RenderText_Solid(self.raw, ctext.as_ptr(), color_to_c_color(fg));
+            let ctext = CString::from_slice(text).as_ptr();
+            let raw = ffi::TTF_RenderText_Solid(self.raw, ctext, color_to_c_color(fg));
             if raw.is_null() {
                 Err(get_error())
             } else {
@@ -384,11 +384,11 @@ impl Font {
         }
     }
 
-    pub fn render_bytes_shaded(&self, text: &str, fg: Color, bg: Color) -> SdlResult<Surface> {
+    pub fn render_bytes_shaded(&self, text: &[u8], fg: Color, bg: Color) -> SdlResult<Surface> {
         //! Draw LATIN1 text in shaded mode.
         unsafe {
-            let ctext = CString::from_slice(text.as_bytes());
-            let raw = ffi::TTF_RenderText_Shaded(self.raw, ctext.as_ptr(), color_to_c_color(fg), color_to_c_color(bg));
+            let ctext = CString::from_slice(text).as_ptr();
+            let raw = ffi::TTF_RenderText_Shaded(self.raw, ctext, color_to_c_color(fg), color_to_c_color(bg));
             if raw.is_null() {
                 Err(get_error())
             } else {
@@ -422,11 +422,11 @@ impl Font {
         }
     }
 
-    pub fn render_bytes_blended(&self, text: &str, fg: Color) -> SdlResult<Surface> {
+    pub fn render_bytes_blended(&self, text: &[u8], fg: Color) -> SdlResult<Surface> {
         //! Draw LATIN1 text in blended mode.
         unsafe {
-            let ctext = CString::from_slice(text.as_bytes());
-            let raw = ffi::TTF_RenderText_Blended(self.raw, ctext.as_ptr(), color_to_c_color(fg));
+            let ctext = CString::from_slice(text).as_ptr();
+            let raw = ffi::TTF_RenderText_Blended(self.raw, ctext, color_to_c_color(fg));
             if raw.is_null() {
                 Err(get_error())
             } else {
