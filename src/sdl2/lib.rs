@@ -5,6 +5,8 @@
 
 extern crate libc;
 extern crate collections;
+#[macro_use]
+extern crate bitflags;
 extern crate "sdl2-sys" as sys;
 
 pub use sdl::*;

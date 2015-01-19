@@ -13,6 +13,9 @@ keywords = ["SDL", "windowing", "graphics"]
 name       = "sdl2"
 path       = "src/sdl2/lib.rs"
 
+[dependencies]
+bitflags = "0.1"
+
 [dependencies.sdl2-sys]
 
 path = "sdl2-sys"
