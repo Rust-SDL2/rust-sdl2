@@ -1,13 +1,13 @@
 pub use sys::cpuinfo as ll;
 
-pub const CACHELINESIZE: isize = 128;
+pub const CACHELINESIZE: u8 = 128;
 
-pub fn get_cpu_count() -> isize {
-    unsafe { ll::SDL_GetCPUCount() as isize }
+pub fn get_cpu_count() -> i32 {
+    unsafe { ll::SDL_GetCPUCount() }
 }
 
-pub fn get_cpu_cache_line_size() -> isize {
-    unsafe { ll::SDL_GetCPUCacheLineSize() as isize}
+pub fn get_cpu_cache_line_size() -> i32 {
+    unsafe { ll::SDL_GetCPUCacheLineSize() }
 }
 
 pub fn has_rdtsc() -> bool {
@@ -50,6 +50,6 @@ pub fn has_avx() -> bool {
     unsafe { ll::SDL_HasAVX() == 1 }
 }
 
-pub fn get_system_ram() -> isize {
-    unsafe { ll::SDL_GetSystemRAM() as isize }
+pub fn get_system_ram() -> i32 {
+    unsafe { ll::SDL_GetSystemRAM() }
 }
