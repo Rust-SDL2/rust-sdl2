@@ -20,8 +20,8 @@ pub fn main() {
         Err(err) => panic!("failed to create renderer: {}", err)
     };
 
-    let _ = renderer.set_draw_color(Color::RGB(255, 0, 0));
-    let _ = renderer.clear();
+    renderer.set_draw_color(Color::RGB(255, 0, 0)).unwrap();
+    renderer.clear().unwrap();
     renderer.present();
 
     loop {
