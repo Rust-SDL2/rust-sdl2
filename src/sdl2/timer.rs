@@ -2,8 +2,8 @@ use libc::{uint32_t, c_void};
 
 pub use sys::timer as ll;
 
-pub fn get_ticks() -> usize {
-    unsafe { ll::SDL_GetTicks() as usize }
+pub fn get_ticks() -> u32 {
+    unsafe { ll::SDL_GetTicks() }
 }
 
 pub fn get_performance_counter() -> u64 {
@@ -14,8 +14,8 @@ pub fn get_performance_frequency() -> u64 {
     unsafe { ll::SDL_GetPerformanceFrequency() }
 }
 
-pub fn delay(ms: usize) {
-    unsafe { ll::SDL_Delay(ms as u32) }
+pub fn delay(ms: u32) {
+    unsafe { ll::SDL_Delay(ms) }
 }
 
 pub type TimerCallback = extern "C" fn (interval: uint32_t, param: *const c_void) -> u32;
