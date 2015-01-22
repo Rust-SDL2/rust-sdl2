@@ -23,3 +23,6 @@ path = "src/demo/main.rs"
 git = "https://github.com/AngryLawyer/rust-sdl2"
 #version = "~0.0.3"
 
+[dependencies]
+
+bitflags = "*"

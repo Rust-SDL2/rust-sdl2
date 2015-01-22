@@ -5,6 +5,8 @@ A binding for SDL2_mixer.
 #![crate_name = "sdl2_mixer"]
 #![crate_type = "lib"]
 
+#[macro_use]
+extern crate bitflags;
 extern crate libc;
 extern crate sdl2;
 
