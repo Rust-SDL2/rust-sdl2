@@ -41,7 +41,7 @@ impl Drop for Cursor {
 }
 
 impl Cursor {
-    pub fn new(data: &[u8], mask: &[u8], width: isize, height: isize, hot_x: isize, hot_y: isize) -> SdlResult<Cursor> {
+    pub fn new(data: &[u8], mask: &[u8], width: i32, height: i32, hot_x: i32, hot_y: i32) -> SdlResult<Cursor> {
         unsafe {
             let raw = ll::SDL_CreateCursor(data.as_ptr(),
                                            mask.as_ptr(),
@@ -57,10 +57,9 @@ impl Cursor {
     }
 
     // TODO: figure out how to pass Surface in here correctly
-    pub fn from_surface(surface: &surface::Surface, hot_x: isize, hot_y: isize) -> SdlResult<Cursor> {
+    pub fn from_surface(surface: &surface::Surface, hot_x: i32, hot_y: i32) -> SdlResult<Cursor> {
         unsafe {
-            let raw = ll::SDL_CreateColorCursor(surface.raw(), hot_x as i32,
-                                                hot_y as i32);
+            let raw = ll::SDL_CreateColorCursor(surface.raw(), hot_x, hot_y);
 
             if raw == ptr::null() {
                 Err(get_error())
@@ -127,21 +126,21 @@ pub fn get_mouse_focus() -> Option<video::Window> {
     }
 }
 
-pub fn get_mouse_state() -> (MouseState, isize, isize) {
+pub fn get_mouse_state() -> (MouseState, i32, i32) {
     let x = 0;
     let y = 0;
     unsafe {
         let raw = ll::SDL_GetMouseState(&x, &y);
-        return (MouseState::from_bits(raw).unwrap(), x as isize, y as isize);
+        return (MouseState::from_bits(raw).unwrap(), x as i32, y as i32);
     }
 }
 
-pub fn get_relative_mouse_state() -> (MouseState, isize, isize) {
+pub fn get_relative_mouse_state() -> (MouseState, i32, i32) {
     let x = 0;
     let y = 0;
     unsafe {
         let raw = ll::SDL_GetRelativeMouseState(&x, &y);
-        return (MouseState::from_bits(raw).unwrap(), x as isize, y as isize);
+        return (MouseState::from_bits(raw).unwrap(), x as i32, y as i32);
     }
 }
 
