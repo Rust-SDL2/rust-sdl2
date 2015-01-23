@@ -42,7 +42,7 @@ impl_owned_accessors!((Surface, owned));
 impl_raw_constructor!((Surface, Surface (raw: *const ll::SDL_Surface, owned: bool)));
 
 impl Surface {
-    pub fn new(surface_flags: SurfaceFlag, width: isize, height: isize, bpp: isize,
+    pub fn new(surface_flags: SurfaceFlag, width: i32, height: i32, bpp: i32,
                rmask: u32, gmask: u32, bmask: u32, amask: u32) -> SdlResult<Surface> {
         unsafe {
             let raw = ll::SDL_CreateRGBSurface(surface_flags.bits(), width as c_int, height as c_int, bpp as c_int,
@@ -56,7 +56,7 @@ impl Surface {
         }
     }
 
-    pub fn from_data(data: &mut [u8], width: isize, height: isize, bpp: isize, pitch: isize,
+    pub fn from_data(data: &mut [u8], width: i32, height: i32, bpp: i32, pitch: i32,
                      rmask: u32, gmask: u32, bmask: u32, amask: u32) -> SdlResult<Surface> {
 
         unsafe {
@@ -72,19 +72,19 @@ impl Surface {
         }
     }
 
-    pub fn get_width(&self) -> isize {
-        unsafe { (*self.raw).w as isize }
+    pub fn get_width(&self) -> i32 {
+        unsafe { (*self.raw).w as i32 }
     }
 
-    pub fn get_height(&self) -> isize {
-        unsafe { (*self.raw).h as isize }
+    pub fn get_height(&self) -> i32 {
+        unsafe { (*self.raw).h as i32 }
     }
 
-    pub fn get_pitch(&self) -> isize {
-        unsafe { (*self.raw).pitch as isize }
+    pub fn get_pitch(&self) -> i32 {
+        unsafe { (*self.raw).pitch as i32 }
     }
 
-    pub fn get_size(&self) -> (isize, isize) {
+    pub fn get_size(&self) -> (i32, i32) {
         (self.get_width(), self.get_height())
     }
 
@@ -271,7 +271,7 @@ impl Surface {
 
     pub fn set_blend_mode(&mut self, mode: BlendMode) -> SdlResult<()> {
         let result = unsafe {
-            ll::SDL_SetSurfaceBlendMode(self.raw, FromPrimitive::from_int(mode as isize).unwrap())
+            ll::SDL_SetSurfaceBlendMode(self.raw, mode as c_int)
         };
 
         match result {
@@ -281,13 +281,13 @@ impl Surface {
     }
 
     pub fn get_blend_mode(&self) -> SdlResult<BlendMode> {
-        let mode: ll::SDL_BlendMode = FromPrimitive::from_int(0).unwrap();
+        let mode: ll::SDL_BlendMode = 0;
         let result = unsafe {
             ll::SDL_GetSurfaceBlendMode(self.raw, &mode)
         };
 
         match result {
-            0 => Ok(FromPrimitive::from_int(mode as isize).unwrap()),
+            0 => Ok(FromPrimitive::from_i32(mode as i32).unwrap()),
             _ => Err(get_error())
         }
     }
