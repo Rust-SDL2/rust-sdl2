@@ -40,22 +40,22 @@ pub enum AudioStatus {
     Paused  = ll::SDL_AUDIO_PAUSED  as isize,
 }
 
-pub fn get_num_audio_drivers() -> isize {
-    unsafe { ll::SDL_GetNumAudioDrivers() as isize }
+pub fn get_num_audio_drivers() -> i32 {
+    unsafe { ll::SDL_GetNumAudioDrivers() as i32 }
 }
 
-pub fn get_audio_driver(index: isize) -> String {
+pub fn get_audio_driver(index: i32) -> String {
     unsafe {
         let driver = ll::SDL_GetAudioDriver(index as c_int);
         String::from_utf8_lossy(c_str_to_bytes(&driver)).to_string()
     }
 }
 
-pub fn get_num_audio_devices(iscapture: isize) -> isize {
-    unsafe { ll::SDL_GetNumAudioDevices(iscapture as c_int) as isize }
+pub fn get_num_audio_devices(iscapture: i32) -> i32 {
+    unsafe { ll::SDL_GetNumAudioDevices(iscapture as c_int) as i32 }
 }
 
-pub fn get_audio_device_name(index: isize, iscapture: isize) -> String {
+pub fn get_audio_device_name(index: i32, iscapture: i32) -> String {
     unsafe {
         let dev_name = ll::SDL_GetAudioDeviceName(index as c_int, iscapture as c_int);
         String::from_utf8_lossy(c_str_to_bytes(&dev_name)).to_string()
@@ -345,7 +345,7 @@ impl<CB> AudioDevice<CB> {
     pub fn get_status(&self) -> AudioStatus {
         unsafe {
             let status = ll::SDL_GetAudioDeviceStatus(self.device_id.id());
-            FromPrimitive::from_int(status as isize).unwrap()
+            FromPrimitive::from_i32(status as i32).unwrap()
         }
     }
 
