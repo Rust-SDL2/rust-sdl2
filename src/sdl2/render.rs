@@ -511,8 +511,8 @@ pub struct TextureQuery {
 
 #[derive(PartialEq)] #[allow(raw_pointer_derive)]
 pub struct Texture {
-    pub raw: *const ll::SDL_Texture,
-    pub owned: bool
+    raw: *const ll::SDL_Texture,
+    owned: bool
 }
 
 impl Drop for Texture {
