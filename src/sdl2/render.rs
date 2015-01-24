@@ -163,12 +163,6 @@ impl Renderer {
         mem::replace(&mut self.parent, None).unwrap()
     }
 
-    #[inline]
-    pub fn raw(&self) -> *const ll::SDL_Renderer { self.raw }
-
-    #[inline]
-    pub fn owned(&self) -> bool { self.owned }
-
     pub fn set_draw_color(&self, color: pixels::Color) -> SdlResult<()> {
         let ret = match color {
             pixels::Color::RGB(r, g, b) => {
@@ -309,12 +303,12 @@ impl Renderer {
     pub fn set_clip_rect(&self, rect: Option<Rect>) -> SdlResult<()> {
         let ret = unsafe {
             ll::SDL_RenderSetClipRect(
-                self.raw, 
+                self.raw,
                 match rect {
                     Some(ref rect) => rect as *const _,
                     None => ptr::null()
                 }
-            ) 
+            )
         };
 
         if ret == 0 { Ok(()) }
@@ -466,7 +460,7 @@ impl Renderer {
                     (ptr::null(), w as usize, h as usize)
                 }
             };
-            
+
             let pitch = w * format.byte_size_per_pixel(); // calculated pitch
             let size = format.byte_size_of_pixels(w * h);
             let mut pixels = Vec::with_capacity(size);
@@ -609,7 +603,7 @@ impl Texture {
             let pixels : *const c_void = ptr::null();
             let pitch = 0i32;
             let size = q.format.byte_size_of_pixels((q.width * q.height) as usize);
-        
+
             let actual_rect = match rect {
                 Some(ref rect) => rect as *const _,
                 None => ptr::null()

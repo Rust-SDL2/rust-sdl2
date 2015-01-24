@@ -411,9 +411,6 @@ pub struct AudioCVT {
     owned: bool,
 }
 
-impl_raw_accessors!( (AudioCVT, *mut ll::SDL_AudioCVT) );
-impl_owned_accessors!( (AudioCVT, owned) );
-
 impl Drop for AudioCVT {
     fn drop(&mut self) {
         if self.owned {
@@ -425,7 +422,7 @@ impl Drop for AudioCVT {
 impl AudioCVT {
     pub fn new(src_format: ll::SDL_AudioFormat, src_channels: u8, src_rate: i32,
                dst_format: ll::SDL_AudioFormat, dst_channels: u8, dst_rate: i32) -> SdlResult<AudioCVT> {
-        
+
         use std::mem;
         unsafe {
             let c_cvt_p = libc::malloc(mem::size_of::<ll::SDL_AudioCVT>() as size_t) as *mut ll::SDL_AudioCVT;
