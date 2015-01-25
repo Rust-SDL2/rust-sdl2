@@ -8,7 +8,7 @@ use SdlResult;
 use std::mem;
 use std::ptr;
 use std::raw;
-use libc::{c_int, uint32_t, c_float, c_double, c_void};
+use libc::{c_int, c_uint, uint32_t, c_float, c_double, c_void};
 use rect::Point;
 use rect::Rect;
 use std::ffi::c_str_to_bytes;
@@ -190,6 +190,23 @@ impl Renderer {
         let result = unsafe { ll::SDL_GetRenderDrawColor(self.raw, &r, &g, &b, &a) == 0 };
         if result {
             Ok(pixels::Color::RGBA(r, g, b, a))
+        } else {
+            Err(get_error())
+        }
+    }
+
+    pub fn set_blend_mode(&self, blend: BlendMode) -> SdlResult<()> {
+        let ret = unsafe { ll::SDL_SetRenderDrawBlendMode(self.raw, FromPrimitive::from_i64(blend as i64).unwrap()) };
+
+        if ret == 0 { Ok(()) }
+        else { Err(get_error()) }
+    }
+
+    pub fn get_blend_mode(&self) -> SdlResult<BlendMode> {
+        let blend: c_uint = 0;
+        let result = unsafe { ll::SDL_GetRenderDrawBlendMode(self.raw, &blend) == 0 };
+        if result {
+            Ok(FromPrimitive::from_i64(blend as i64).unwrap())
         } else {
             Err(get_error())
         }
@@ -579,8 +596,8 @@ impl Texture {
     }
 
     pub fn get_blend_mode(&self) -> SdlResult<BlendMode> {
-        let blend: i64 = 0;
-        let result = unsafe { ll::SDL_GetTextureBlendMode(self.raw, &FromPrimitive::from_i64(blend as i64).unwrap()) == 0 };
+        let blend: c_uint = 0;
+        let result = unsafe { ll::SDL_GetTextureBlendMode(self.raw, &blend) == 0 };
         if result {
             Ok(FromPrimitive::from_i64(blend as i64).unwrap())
         } else {
