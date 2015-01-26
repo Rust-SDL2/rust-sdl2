@@ -131,7 +131,7 @@ pub fn get_mouse_state() -> (MouseState, i32, i32) {
     let y = 0;
     unsafe {
         let raw = ll::SDL_GetMouseState(&x, &y);
-        return (MouseState::from_bits(raw).unwrap(), x as i32, y as i32);
+        return (MouseState::from_bits_truncate(raw), x as i32, y as i32);
     }
 }
 
@@ -140,7 +140,7 @@ pub fn get_relative_mouse_state() -> (MouseState, i32, i32) {
     let y = 0;
     unsafe {
         let raw = ll::SDL_GetRelativeMouseState(&x, &y);
-        return (MouseState::from_bits(raw).unwrap(), x as i32, y as i32);
+        return (MouseState::from_bits_truncate(raw), x as i32, y as i32);
     }
 }
 
