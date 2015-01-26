@@ -14,7 +14,7 @@ name = "sdl2-sys"
 path = "src/lib.rs"
 
 [build-dependencies]
-pkg-config = "*"
+pkg-config = "0.1.6"
 
 [features]
 

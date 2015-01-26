@@ -411,7 +411,7 @@ impl Event {
                 };
 
                 Event::MouseMotion(event.timestamp, window, event.which,
-                                   mouse::MouseState::from_bits(event.state).unwrap(),
+                                   mouse::MouseState::from_bits_truncate(event.state),
                                    event.x, event.y,
                                    event.xrel, event.yrel)
             }
