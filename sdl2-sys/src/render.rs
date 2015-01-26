@@ -52,7 +52,7 @@ pub struct SDL_Renderer;
 pub struct SDL_Texture;
 
 //SDL_blendmode.h
-pub type SDL_BlendMode = c_uint;
+pub type SDL_BlendMode = c_int;
 pub const SDL_BLENDMODE_NONE : SDL_BlendMode = 0x00000000;
 pub const SDL_BLENDMODE_BLEND : SDL_BlendMode = 0x00000001;
 pub const SDL_BLENDMODE_ADD : SDL_BlendMode = 0x00000002;

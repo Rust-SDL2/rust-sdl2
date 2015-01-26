@@ -648,7 +648,7 @@ pub fn wait_event() -> SdlResult<Event> {
 }
 
 /// Wait until the specified timeout (in milliseconds) for the next available event.
-pub fn wait_event_timeout(timeout: isize) -> SdlResult<Event> {
+pub fn wait_event_timeout(timeout: i32) -> SdlResult<Event> {
     let raw = null_event();
     let success = unsafe { ll::SDL_WaitEventTimeout(&raw, timeout as c_int) ==
                            1 as c_int };
@@ -700,12 +700,12 @@ pub fn get_event_state(_type: EventType) -> bool {
 }
 
 /// allocate a set of user-defined events, and return the beginning event number for that set of events
-pub fn register_events(num: isize) -> Option<usize> {
-    let ret = unsafe { ll::SDL_RegisterEvents(num as c_int) };
+pub fn register_events(num_events: i32) -> Option<u32> {
+    let ret = unsafe { ll::SDL_RegisterEvents(num_events as c_int) };
     if ret == (-1 as uint32_t) {
         None
     } else {
-        Some(ret as usize)
+        Some(ret as u32)
     }
 }
 
