@@ -197,7 +197,7 @@ impl Renderer {
     }
 
     pub fn get_blend_mode(&self) -> SdlResult<BlendMode> {
-        let blend: c_uint = 0;
+        let blend = 0;
         let result = unsafe { ll::SDL_GetRenderDrawBlendMode(self.raw, &blend) == 0 };
         if result {
             Ok(FromPrimitive::from_i64(blend as i64).unwrap())
@@ -590,7 +590,7 @@ impl Texture {
     }
 
     pub fn get_blend_mode(&self) -> SdlResult<BlendMode> {
-        let blend: c_uint = 0;
+        let blend = 0;
         let result = unsafe { ll::SDL_GetTextureBlendMode(self.raw, &blend) == 0 };
         if result {
             Ok(FromPrimitive::from_i64(blend as i64).unwrap())
