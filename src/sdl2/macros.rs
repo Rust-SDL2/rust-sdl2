@@ -3,7 +3,7 @@ macro_rules! impl_raw_accessors(
         $(
         impl $t {
             #[inline]
-            pub fn raw(&self) -> $raw { self.raw }
+            pub unsafe fn raw(&self) -> $raw { self.raw }
         }
         )+
     )
@@ -14,7 +14,7 @@ macro_rules! impl_owned_accessors(
         $(
         impl $t {
             #[inline]
-            pub fn $owned(&self) -> bool { self.$owned }
+            pub unsafe fn $owned(&self) -> bool { self.$owned }
         }
         )+
     )
