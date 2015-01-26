@@ -91,22 +91,15 @@ pub enum RendererParent {
     Window(Window)
 }
 
-#[allow(raw_pointer_derive)]
 pub struct Renderer {
     raw: *const ll::SDL_Renderer,
     parent: Option<RendererParent>,
-    render_target: RefCell<RenderTarget>,
-    owned: bool
+    render_target: RefCell<RenderTarget>
 }
 
-#[unsafe_destructor]
 impl Drop for Renderer {
     fn drop(&mut self) {
-        if self.owned {
-            unsafe {
-                ll::SDL_DestroyRenderer(self.raw);
-            }
-        }
+        unsafe { ll::SDL_DestroyRenderer(self.raw) };
     }
 }
 
@@ -127,8 +120,7 @@ impl Renderer {
             Ok(Renderer {
                 raw: raw,
                 parent: Some(RendererParent::Window(window)),
-                render_target: RefCell::new(RenderTarget { raw: raw }),
-                owned: true
+                render_target: RefCell::new(RenderTarget { raw: raw })
             })
         }
     }
@@ -144,8 +136,7 @@ impl Renderer {
             Ok(Renderer {
                 raw: raw_renderer,
                 parent: Some(RendererParent::Window(window)),
-                render_target: RefCell::new(RenderTarget { raw: raw_renderer }),
-                owned: true
+                render_target: RefCell::new(RenderTarget { raw: raw_renderer })
             })
         } else {
             Err(get_error())
@@ -158,8 +149,7 @@ impl Renderer {
             Ok(Renderer {
                 raw: raw_renderer,
                 parent: Some(RendererParent::Surface(surface)),
-                render_target: RefCell::new(RenderTarget { raw: raw_renderer }),
-                owned: true
+                render_target: RefCell::new(RenderTarget { raw: raw_renderer })
             })
         } else {
             Err(get_error())
