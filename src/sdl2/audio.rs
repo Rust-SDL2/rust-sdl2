@@ -207,11 +207,12 @@ extern "C" fn audio_callback_marshall<T: AudioFormatNum<T>, CB: AudioCallback<T>
 pub struct AudioSpecDesired<T: AudioFormatNum<T>, CB: AudioCallback<T>> {
     pub freq: i32,
     pub channels: u8,
+    pub samples: u16,
     pub callback: CB
 }
 
 impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
-    fn convert_to_ll(freq: i32, channels: u8, userdata: &mut AudioCallbackUserdata<CB>) -> ll::SDL_AudioSpec {
+    fn convert_to_ll(freq: i32, channels: u8, samples: u16, userdata: &mut AudioCallbackUserdata<CB>) -> ll::SDL_AudioSpec {
         use std::mem::transmute;
 
         let format_num: T = AudioFormatNum::zero();
@@ -222,7 +223,7 @@ impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
                 format: format_num.get_audio_format(),
                 channels: channels,
                 silence: 0,
-                samples: 0,
+                samples: samples,
                 padding: 0,
                 size: 0,
                 callback: Some(audio_callback_marshall::<T, CB>
@@ -249,7 +250,7 @@ impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
         use libc::c_char;
 
         let mut userdata = AudioSpecDesired::callback_to_userdata(self.callback);
-        let desired = AudioSpecDesired::convert_to_ll(self.freq, self.channels, &mut *userdata);
+        let desired = AudioSpecDesired::convert_to_ll(self.freq, self.channels, self.samples, &mut *userdata);
 
         let mut obtained = unsafe { uninitialized::<ll::SDL_AudioSpec>() };
         unsafe {

@@ -23,6 +23,7 @@ fn main() {
     let desired_spec = AudioSpecDesired {
         freq: 44100,
         channels: 1,
+        samples: 0,
         callback: MyCallback { volume: 0.5 }
     };
 
