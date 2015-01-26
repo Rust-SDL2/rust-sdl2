@@ -509,6 +509,30 @@ impl RenderTarget {
         }
     }
 
+    /// Creates a new texture and sets it as the render target.
+    pub fn create_and_set(&mut self, format: pixels::PixelFormatFlag, width: i32, height: i32) -> SdlResult<Texture> {
+        let new_texture_raw = unsafe {
+            let access = ll::SDL_TEXTUREACCESS_TARGET;
+            ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int)
+        };
+
+        if new_texture_raw == ptr::null() {
+            Err(get_error())
+        } else {
+            unsafe {
+                if ll::SDL_SetRenderTarget(self.raw, new_texture_raw) == 0 {
+                    Ok(Texture {
+                        raw: new_texture_raw,
+                        owned: false,
+                        _marker: ContravariantLifetime
+                    })
+                } else {
+                    Err(get_error())
+                }
+            }
+        }
+    }
+
     /// Gets the current render target.
     /// Returns None if the default render target is set.
     pub fn get(&mut self) -> Option<Texture> {
