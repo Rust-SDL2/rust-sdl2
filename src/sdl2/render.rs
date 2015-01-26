@@ -11,6 +11,7 @@ use std::raw;
 use libc::{c_int, c_uint, uint32_t, c_float, c_double, c_void};
 use rect::Point;
 use rect::Rect;
+use std::cell::{RefCell, RefMut};
 use std::ffi::c_str_to_bytes;
 use std::num::FromPrimitive;
 use std::vec::Vec;
@@ -94,6 +95,7 @@ pub enum RendererParent {
 pub struct Renderer {
     raw: *const ll::SDL_Renderer,
     parent: Option<RendererParent>,
+    render_target: RefCell<RenderTarget>,
     owned: bool
 }
 
@@ -122,7 +124,12 @@ impl Renderer {
         if raw == ptr::null() {
             Err(get_error())
         } else {
-            Ok(Renderer{ raw: raw, parent: Some(RendererParent::Window(window)), owned: true,})
+            Ok(Renderer {
+                raw: raw,
+                parent: Some(RendererParent::Window(window)),
+                render_target: RefCell::new(RenderTarget { raw: raw }),
+                owned: true
+            })
         }
     }
 
@@ -137,6 +144,7 @@ impl Renderer {
             Ok(Renderer {
                 raw: raw_renderer,
                 parent: Some(RendererParent::Window(window)),
+                render_target: RefCell::new(RenderTarget { raw: raw_renderer }),
                 owned: true
             })
         } else {
@@ -145,11 +153,12 @@ impl Renderer {
     }
 
     pub fn from_surface(surface: surface::Surface) -> SdlResult<Renderer> {
-        let result = unsafe { ll::SDL_CreateSoftwareRenderer(surface.raw()) };
-        if result == ptr::null() {
+        let raw_renderer = unsafe { ll::SDL_CreateSoftwareRenderer(surface.raw()) };
+        if raw_renderer == ptr::null() {
             Ok(Renderer {
-                raw: result,
+                raw: raw_renderer,
                 parent: Some(RendererParent::Surface(surface)),
+                render_target: RefCell::new(RenderTarget { raw: raw_renderer }),
                 owned: true
             })
         } else {
@@ -254,31 +263,11 @@ impl Renderer {
         unsafe { ll::SDL_RenderTargetSupported(self.raw) == 1 }
     }
 
-    pub fn set_render_target<'a>(&'a self, texture: Option<&Texture<'a>>) -> SdlResult<()> {
-        unsafe {
-            let actual_texture = match texture {
-                Some(texture) => texture.raw,
-                None => ptr::null()
-            };
-            if ll::SDL_SetRenderTarget(self.raw, actual_texture) == 0 {
-                Ok(())
-            } else {
-                Err(get_error())
-            }
-        }
-    }
-
-    pub fn get_render_target(&self) -> Option<Texture> {
-        let raw = unsafe { ll::SDL_GetRenderTarget(self.raw) };
-
-        if raw == ptr::null() {
-            None
+    pub fn render_target(&self) -> Option<RefMut<RenderTarget>> {
+        if self.render_target_supported() {
+            Some(self.render_target.borrow_mut())
         } else {
-            Some(Texture{
-                raw: raw,
-                owned: false,
-                _marker: ContravariantLifetime
-            })
+            None
         }
     }
 
@@ -502,6 +491,50 @@ impl Renderer {
     }
 }
 
+pub struct RenderTarget {
+    raw: *const ll::SDL_Renderer
+}
+
+impl RenderTarget {
+    /// Resets the render target to the default render target.
+    pub fn reset(&mut self) -> SdlResult<()> {
+        unsafe {
+            if ll::SDL_SetRenderTarget(self.raw, ptr::null()) == 0 {
+                Ok(())
+            } else {
+                Err(get_error())
+            }
+        }
+    }
+
+    /// Sets the render target to the provided texture.
+    /// The texture must be created with the texture access: `sdl2::render::TextureAccess::Target`.
+    pub fn set(&mut self, texture: Texture) -> SdlResult<()> {
+        unsafe {
+            if ll::SDL_SetRenderTarget(self.raw, texture.raw) == 0 {
+                Ok(())
+            } else {
+                Err(get_error())
+            }
+        }
+    }
+
+    /// Gets the current render target.
+    /// Returns None if the default render target is set.
+    pub fn get(&mut self) -> Option<Texture> {
+        let texture_raw = unsafe {  ll::SDL_GetRenderTarget(self.raw) };
+
+        if texture_raw == ptr::null() {
+            None
+        } else {
+            Some(Texture {
+                raw: texture_raw,
+                owned: false,
+                _marker: ContravariantLifetime
+            })
+        }
+    }
+}
 
 #[derive(Copy, Clone)]
 pub struct TextureQuery {
