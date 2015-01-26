@@ -15,6 +15,7 @@ use std::ffi::c_str_to_bytes;
 use std::num::FromPrimitive;
 use std::vec::Vec;
 use std::borrow::ToOwned;
+use std::marker::ContravariantLifetime;
 
 use sys::render as ll;
 
@@ -236,7 +237,7 @@ impl Renderer {
         if result == ptr::null() {
             Err(get_error())
         } else {
-            Ok(Texture { raw: result, owned: true } )
+            Ok(Texture { raw: result, owned: true, _marker: ContravariantLifetime } )
         }
     }
 
@@ -245,7 +246,7 @@ impl Renderer {
         if result == ptr::null() {
             Err(get_error())
         } else {
-            Ok(Texture { raw: result, owned: true } )
+            Ok(Texture { raw: result, owned: true, _marker: ContravariantLifetime } )
         }
     }
 
@@ -253,7 +254,7 @@ impl Renderer {
         unsafe { ll::SDL_RenderTargetSupported(self.raw) == 1 }
     }
 
-    pub fn set_render_target(&self, texture: Option<&Texture>) -> SdlResult<()> {
+    pub fn set_render_target<'a>(&'a self, texture: Option<&Texture<'a>>) -> SdlResult<()> {
         unsafe {
             let actual_texture = match texture {
                 Some(texture) => texture.raw,
@@ -275,7 +276,8 @@ impl Renderer {
         } else {
             Some(Texture{
                 raw: raw,
-                owned: false
+                owned: false,
+                _marker: ContravariantLifetime
             })
         }
     }
@@ -510,12 +512,16 @@ pub struct TextureQuery {
 }
 
 #[derive(PartialEq)] #[allow(raw_pointer_derive)]
-pub struct Texture {
+pub struct Texture<'renderer> {
     raw: *const ll::SDL_Texture,
-    owned: bool
+    owned: bool,
+    /// Textures cannot live longer than the Renderer it was born from: 'a
+    /// All SDL textures contain an internal reference to a Renderer
+    _marker: ContravariantLifetime<'renderer>
 }
 
-impl Drop for Texture {
+#[unsafe_destructor]
+impl<'renderer> Drop for Texture<'renderer> {
     fn drop(&mut self) {
         if self.owned {
             unsafe {
@@ -525,7 +531,7 @@ impl Drop for Texture {
     }
 }
 
-impl Texture {
+impl<'renderer> Texture<'renderer> {
 
     pub fn query(&self) -> SdlResult<TextureQuery> {
         let format: uint32_t = 0;
