@@ -404,7 +404,7 @@ impl Renderer {
         else { Err(get_error()) }
     }
 
-    pub fn copy(&self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>) -> SdlResult<()> {
+    pub fn copy(&self, texture: &mut Texture, src: Option<Rect>, dst: Option<Rect>) -> SdlResult<()> {
         let ret = unsafe {
             ll::SDL_RenderCopy(
                 self.raw,
@@ -425,7 +425,7 @@ impl Renderer {
     }
 
     //TODO: Check whether RendererFlip is supposed to be combinable
-    pub fn copy_ex(&self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>, angle: f64, center: Option<Point>, flip: RendererFlip) -> SdlResult<()> {
+    pub fn copy_ex(&self, texture: &mut Texture, src: Option<Rect>, dst: Option<Rect>, angle: f64, center: Option<Point>, flip: RendererFlip) -> SdlResult<()> {
         let ret = unsafe {
             ll::SDL_RenderCopyEx(
                 self.raw,
@@ -599,7 +599,7 @@ impl<'renderer> Texture<'renderer> {
         }
     }
 
-    pub fn set_color_mod(&self, red: u8, green: u8, blue: u8) -> SdlResult<()> {
+    pub fn set_color_mod(&mut self, red: u8, green: u8, blue: u8) -> SdlResult<()> {
         let ret = unsafe { ll::SDL_SetTextureColorMod(self.raw, red, green, blue) };
 
         if ret == 0 { Ok(()) }
@@ -619,7 +619,7 @@ impl<'renderer> Texture<'renderer> {
         }
     }
 
-    pub fn set_alpha_mod(&self, alpha: u8) -> SdlResult<()> {
+    pub fn set_alpha_mod(&mut self, alpha: u8) -> SdlResult<()> {
         let ret = unsafe { ll::SDL_SetTextureAlphaMod(self.raw, alpha) };
 
         if ret == 0 { Ok(()) }
@@ -637,7 +637,7 @@ impl<'renderer> Texture<'renderer> {
         }
     }
 
-    pub fn set_blend_mode(&self, blend: BlendMode) -> SdlResult<()> {
+    pub fn set_blend_mode(&mut self, blend: BlendMode) -> SdlResult<()> {
         let ret = unsafe { ll::SDL_SetTextureBlendMode(self.raw, FromPrimitive::from_i64(blend as i64).unwrap()) };
 
         if ret == 0 { Ok(()) }
@@ -654,7 +654,7 @@ impl<'renderer> Texture<'renderer> {
         }
     }
 
-    pub fn update(&self, rect: Option<Rect>, pixel_data: &[u8], pitch: i32) -> SdlResult<()> {
+    pub fn update(&mut self, rect: Option<Rect>, pixel_data: &[u8], pitch: i32) -> SdlResult<()> {
         let ret = unsafe {
             let actual_rect = match rect {
                 Some(ref rect) => rect as *const _,
@@ -668,7 +668,7 @@ impl<'renderer> Texture<'renderer> {
         else { Err(get_error()) }
     }
 
-    pub fn with_lock<F: FnOnce(&mut [u8], i32) -> ()>(&self, rect: Option<Rect>, func: F) -> SdlResult<()> {
+    pub fn with_lock<F: FnOnce(&mut [u8], i32) -> ()>(&mut self, rect: Option<Rect>, func: F) -> SdlResult<()> {
         // Call to SDL to populate pixel data
         let loaded = unsafe {
             let q = try!(self.query());
@@ -691,19 +691,17 @@ impl<'renderer> Texture<'renderer> {
 
         match loaded {
             Ok((interior,pitch)) => {
-                unsafe{ func(mem::transmute(interior), pitch); }
-                self.unlock();
+                unsafe {
+                    func(mem::transmute(interior), pitch);
+                    ll::SDL_UnlockTexture(self.raw);
+                }
                 Ok(())
             }
             Err(e) => Err(e),
         }
     }
 
-    fn unlock(&self) {
-        unsafe { ll::SDL_UnlockTexture(self.raw) }
-    }
-
-    pub fn gl_bind_texture(&self) -> SdlResult<(f64, f64)> {
+    pub unsafe fn gl_bind_texture(&mut self) -> SdlResult<(f64, f64)> {
         let texw: c_float = 0.0;
         let texh: c_float = 0.0;
 
@@ -718,11 +716,11 @@ impl<'renderer> Texture<'renderer> {
         }
     }
 
-    pub fn gl_unbind_texture(&self) -> bool {
+    pub unsafe fn gl_unbind_texture(&mut self) -> bool {
         unsafe { ll::SDL_GL_UnbindTexture(self.raw) == 0 }
     }
 
-    pub fn gl_with_bind<R, F: FnOnce(f64, f64) -> R>(&self, f: F) -> R {
+    pub fn gl_with_bind<R, F: FnOnce(f64, f64) -> R>(&mut self, f: F) -> R {
         unsafe {
             let texw: c_float = 0.0;
             let texh: c_float = 0.0;
