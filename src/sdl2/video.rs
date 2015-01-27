@@ -255,7 +255,7 @@ impl Window {
         }
     }
 
-    pub fn get_window_pixel_format(&self) -> pixels::PixelFormatFlag {
+    pub fn get_window_pixel_format(&self) -> pixels::PixelFormatEnum {
         unsafe{ FromPrimitive::from_u64(ll::SDL_GetWindowPixelFormat(self.raw) as u64).unwrap() }
     }
 

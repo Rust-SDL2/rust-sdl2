@@ -46,7 +46,7 @@ bitflags! {
 pub struct RendererInfo {
     pub name: String,
     pub flags: RendererFlags,
-    pub texture_formats: Vec<pixels::PixelFormatFlag>,
+    pub texture_formats: Vec<pixels::PixelFormatEnum>,
     pub max_texture_width: i32,
     pub max_texture_height: i32
 }
@@ -64,7 +64,7 @@ impl RendererInfo {
         let actual_flags = RendererFlags::from_bits(info.flags).unwrap();
 
         unsafe {
-            let texture_formats: Vec<pixels::PixelFormatFlag> = info.texture_formats[0..(info.num_texture_formats as usize)].iter().map(|&format| {
+            let texture_formats: Vec<pixels::PixelFormatEnum> = info.texture_formats[0..(info.num_texture_formats as usize)].iter().map(|&format| {
                 FromPrimitive::from_i64(format as i64).unwrap()
             }).collect();
 
@@ -158,7 +158,7 @@ impl Renderer {
         mem::replace(&mut self.parent, None).unwrap()
     }
 
-    pub fn create_texture(&self, format: pixels::PixelFormatFlag, access: TextureAccess, size: (i32, i32)) -> SdlResult<Texture> {
+    pub fn create_texture(&self, format: pixels::PixelFormatEnum, access: TextureAccess, size: (i32, i32)) -> SdlResult<Texture> {
         let (width, height) = size;
         let result = unsafe { ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int) };
         if result == ptr::null() {
@@ -169,17 +169,17 @@ impl Renderer {
     }
 
     /// Shorthand for `create_texture(format, TextureAccess::Static, size)`
-    pub fn create_texture_static(&self, format: pixels::PixelFormatFlag, size: (i32, i32)) -> SdlResult<Texture> {
+    pub fn create_texture_static(&self, format: pixels::PixelFormatEnum, size: (i32, i32)) -> SdlResult<Texture> {
         self.create_texture(format, TextureAccess::Static, size)
     }
 
     /// Shorthand for `create_texture(format, TextureAccess::Streaming, size)`
-    pub fn create_texture_streaming(&self, format: pixels::PixelFormatFlag, size: (i32, i32)) -> SdlResult<Texture> {
+    pub fn create_texture_streaming(&self, format: pixels::PixelFormatEnum, size: (i32, i32)) -> SdlResult<Texture> {
         self.create_texture(format, TextureAccess::Streaming, size)
     }
 
     /// Shorthand for `create_texture(format, TextureAccess::Target, size)`
-    pub fn create_texture_target(&self, format: pixels::PixelFormatFlag, size: (i32, i32)) -> SdlResult<Texture> {
+    pub fn create_texture_target(&self, format: pixels::PixelFormatEnum, size: (i32, i32)) -> SdlResult<Texture> {
         self.create_texture(format, TextureAccess::Target, size)
     }
 
@@ -473,7 +473,7 @@ impl RenderDrawer {
         }
     }
 
-    pub fn read_pixels(&self, rect: Option<Rect>, format: pixels::PixelFormatFlag) -> SdlResult<Vec<u8>> {
+    pub fn read_pixels(&self, rect: Option<Rect>, format: pixels::PixelFormatEnum) -> SdlResult<Vec<u8>> {
         unsafe {
             let (actual_rect, w, h) = match rect {
                 Some(ref rect) => (rect as *const _, rect.w as usize, rect.h as usize),
@@ -532,7 +532,7 @@ impl RenderTarget {
     }
 
     /// Creates a new texture and sets it as the render target.
-    pub fn create_and_set(&mut self, format: pixels::PixelFormatFlag, width: i32, height: i32) -> SdlResult<Texture> {
+    pub fn create_and_set(&mut self, format: pixels::PixelFormatEnum, width: i32, height: i32) -> SdlResult<Texture> {
         let new_texture_raw = unsafe {
             let access = ll::SDL_TEXTUREACCESS_TARGET;
             ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int)
@@ -574,7 +574,7 @@ impl RenderTarget {
 
 #[derive(Copy, Clone)]
 pub struct TextureQuery {
-    pub format: pixels::PixelFormatFlag,
+    pub format: pixels::PixelFormatEnum,
     pub access: TextureAccess,
     pub width: i32,
     pub height: i32
