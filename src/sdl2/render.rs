@@ -206,7 +206,7 @@ impl RenderDrawer {
         else { None }
     }
 
-    pub fn set_draw_color(&mut self, color: pixels::Color) -> SdlResult<()> {
+    pub fn set_draw_color(&mut self, color: pixels::Color) {
         let ret = match color {
             pixels::Color::RGB(r, g, b) => {
                 unsafe { ll::SDL_SetRenderDrawColor(self.raw, r, g, b, 255) }
@@ -215,44 +215,38 @@ impl RenderDrawer {
                 unsafe { ll::SDL_SetRenderDrawColor(self.raw, r, g, b, a)  }
             }
         };
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+        // Should only fail on an invalid renderer
+        if ret != 0 { panic!(get_error()) }
     }
 
-    pub fn get_draw_color(&self) -> SdlResult<pixels::Color> {
+    pub fn get_draw_color(&self) -> pixels::Color {
         let r: u8 = 0;
         let g: u8 = 0;
         let b: u8 = 0;
         let a: u8 = 0;
-        let result = unsafe { ll::SDL_GetRenderDrawColor(self.raw, &r, &g, &b, &a) == 0 };
-        if result {
-            Ok(pixels::Color::RGBA(r, g, b, a))
-        } else {
-            Err(get_error())
-        }
+        let ret = unsafe { ll::SDL_GetRenderDrawColor(self.raw, &r, &g, &b, &a) };
+        // Should only fail on an invalid renderer
+        if ret != 0 { panic!(get_error()) }
+        else { pixels::Color::RGBA(r, g, b, a) }
     }
 
-    pub fn set_blend_mode(&mut self, blend: BlendMode) -> SdlResult<()> {
+    pub fn set_blend_mode(&mut self, blend: BlendMode) {
         let ret = unsafe { ll::SDL_SetRenderDrawBlendMode(self.raw, FromPrimitive::from_i64(blend as i64).unwrap()) };
-
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+        // Should only fail on an invalid renderer
+        if ret != 0 { panic!(get_error()) }
     }
 
-    pub fn get_blend_mode(&self) -> SdlResult<BlendMode> {
+    pub fn get_blend_mode(&self) -> BlendMode {
         let blend = 0;
-        let result = unsafe { ll::SDL_GetRenderDrawBlendMode(self.raw, &blend) == 0 };
-        if result {
-            Ok(FromPrimitive::from_i64(blend as i64).unwrap())
-        } else {
-            Err(get_error())
-        }
+        let ret = unsafe { ll::SDL_GetRenderDrawBlendMode(self.raw, &blend) };
+        // Should only fail on an invalid renderer
+        if ret != 0 { panic!(get_error()) }
+        else { FromPrimitive::from_i64(blend as i64).unwrap() }
     }
 
-    pub fn clear(&mut self) -> SdlResult<()> {
+    pub fn clear(&mut self) {
         let ret = unsafe { ll::SDL_RenderClear(self.raw) };
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+        if ret != 0 { panic!("Could not clear: {}", get_error()) }
     }
 
     pub fn present(&mut self) {
@@ -272,11 +266,9 @@ impl RenderDrawer {
         }
     }
 
-    pub fn set_logical_size(&mut self, width: i32, height: i32) -> SdlResult<()> {
+    pub fn set_logical_size(&mut self, width: i32, height: i32) {
         let ret = unsafe { ll::SDL_RenderSetLogicalSize(self.raw, width as c_int, height as c_int) };
-
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+        if ret != 0 { panic!("Could not set logical size: {}", get_error()) }
     }
 
     pub fn get_logical_size(&self) -> (i32, i32) {
@@ -289,15 +281,13 @@ impl RenderDrawer {
         (width as i32, height as i32)
     }
 
-    pub fn set_viewport(&mut self, rect: Option<Rect>) -> SdlResult<()> {
+    pub fn set_viewport(&mut self, rect: Option<Rect>) {
         let ptr = match rect {
             Some(ref rect) => rect as *const _,
             None => ptr::null()
         };
         let ret = unsafe { ll::SDL_RenderSetViewport(self.raw, ptr) };
-
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+        if ret != 0 { panic!("Could not set viewport: {}", get_error()) }
     }
 
     pub fn get_viewport(&self) -> Rect {
@@ -311,7 +301,7 @@ impl RenderDrawer {
         rect
     }
 
-    pub fn set_clip_rect(&mut self, rect: Option<Rect>) -> SdlResult<()> {
+    pub fn set_clip_rect(&mut self, rect: Option<Rect>) {
         let ret = unsafe {
             ll::SDL_RenderSetClipRect(
                 self.raw,
@@ -321,9 +311,7 @@ impl RenderDrawer {
                 }
             )
         };
-
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+        if ret != 0 { panic!("Could not set clip rect: {}", get_error()) }
     }
 
     pub fn get_clip_rect(&self) -> Rect {
@@ -337,11 +325,10 @@ impl RenderDrawer {
         rect
     }
 
-    pub fn set_scale(&mut self, scale_x: f64, scale_y: f64) -> SdlResult<()> {
+    pub fn set_scale(&mut self, scale_x: f64, scale_y: f64) {
         let ret = unsafe { ll::SDL_RenderSetScale(self.raw, scale_x as c_float, scale_y as c_float) };
-
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+        // Should only fail on an invalid renderer
+        if ret != 0 { panic!(get_error()) }
     }
 
     pub fn get_scale(&self) -> (f64, f64) {
@@ -351,71 +338,71 @@ impl RenderDrawer {
         (scale_x as f64, scale_y as f64)
     }
 
-    pub fn draw_point(&mut self, point: Point) -> SdlResult<()> {
-        let ret = unsafe { ll::SDL_RenderDrawPoint(self.raw, point.x, point.y) };
-
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+    pub fn draw_point(&mut self, point: Point) {
+        unsafe {
+            if ll::SDL_RenderDrawPoint(self.raw, point.x, point.y) != 0 {
+                panic!("Error drawing point: {}", get_error())
+            }
+        }
     }
 
-    pub fn draw_points(&mut self, points: &[Point]) -> SdlResult<()> {
-        let ret = unsafe {
-            ll::SDL_RenderDrawPoints(self.raw, points.as_ptr(), points.len() as c_int)
-        };
-
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+    pub fn draw_points(&mut self, points: &[Point]) {
+        unsafe {
+            if ll::SDL_RenderDrawPoints(self.raw, points.as_ptr(), points.len() as c_int) != 0 {
+                panic!("Error drawing points: {}", get_error())
+            }
+        }
     }
 
-    pub fn draw_line(&mut self, start: Point, end: Point) -> SdlResult<()> {
-        let ret = unsafe { ll::SDL_RenderDrawLine(self.raw, start.x, start.y, end.x, end.y) };
-
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+    pub fn draw_line(&mut self, start: Point, end: Point) {
+        unsafe {
+            if ll::SDL_RenderDrawLine(self.raw, start.x, start.y, end.x, end.y) != 0 {
+                panic!("Error drawing line: {}", get_error())
+            }
+        }
     }
 
-    pub fn draw_lines(&mut self, points: &[Point]) -> SdlResult<()> {
-        let ret = unsafe {
-            ll::SDL_RenderDrawLines(self.raw, points.as_ptr(), points.len() as c_int)
-        };
-
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+    pub fn draw_lines(&mut self, points: &[Point]) {
+        unsafe {
+            if ll::SDL_RenderDrawLines(self.raw, points.as_ptr(), points.len() as c_int) != 0 {
+                panic!("Error drawing lines: {}", get_error())
+            }
+        }
     }
 
-    pub fn draw_rect(&mut self, rect: &Rect) -> SdlResult<()> {
-        let ret = unsafe { ll::SDL_RenderDrawRect(self.raw, rect) };
-
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+    pub fn draw_rect(&mut self, rect: &Rect) {
+        unsafe {
+            if ll::SDL_RenderDrawRect(self.raw, rect) != 0 {
+                panic!("Error drawing rect: {}", get_error())
+            }
+        }
     }
 
-    pub fn draw_rects(&mut self, rects: &[Rect]) -> SdlResult<()> {
-        let ret = unsafe {
-            ll::SDL_RenderDrawRects(self.raw, rects.as_ptr(), rects.len() as c_int)
-        };
-
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+    pub fn draw_rects(&mut self, rects: &[Rect]) {
+        unsafe {
+            if ll::SDL_RenderDrawRects(self.raw, rects.as_ptr(), rects.len() as c_int) != 0 {
+                panic!("Error drawing rects: {}", get_error())
+            }
+        }
     }
 
-    pub fn fill_rect(&mut self, rect: &Rect) -> SdlResult<()> {
-        let ret = unsafe { ll::SDL_RenderFillRect(self.raw, rect) };
-
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+    pub fn fill_rect(&mut self, rect: &Rect) {
+        unsafe {
+            if ll::SDL_RenderFillRect(self.raw, rect) != 0 {
+                panic!("Error filling rect: {}", get_error())
+            }
+        }
     }
 
-    pub fn fill_rects(&mut self, rects: &[Rect]) -> SdlResult<()> {
-        let ret = unsafe {
-            ll::SDL_RenderFillRects(self.raw, rects.as_ptr(), rects.len() as c_int)
-        };
-
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+    pub fn fill_rects(&mut self, rects: &[Rect]) {
+        unsafe {
+            if ll::SDL_RenderFillRects(self.raw, rects.as_ptr(), rects.len() as c_int) != 0 {
+                panic!("Error filling rects: {}", get_error())
+            }
+        }
     }
 
-    pub fn copy(&mut self, texture: &mut Texture, src: Option<Rect>, dst: Option<Rect>) -> SdlResult<()> {
+    pub fn copy(&mut self, texture: &mut Texture, src: Option<Rect>, dst: Option<Rect>) {
         let ret = unsafe {
             ll::SDL_RenderCopy(
                 self.raw,
@@ -431,11 +418,12 @@ impl RenderDrawer {
             )
         };
 
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+        if ret != 0 {
+            panic!("Error copying texture: {}", get_error())
+        }
     }
 
-    pub fn copy_ex(&mut self, texture: &mut Texture, src: Option<Rect>, dst: Option<Rect>, angle: f64, center: Option<Point>, (flip_horizontal, flip_vertical): (bool, bool)) -> SdlResult<()> {
+    pub fn copy_ex(&mut self, texture: &mut Texture, src: Option<Rect>, dst: Option<Rect>, angle: f64, center: Option<Point>, (flip_horizontal, flip_vertical): (bool, bool)) {
         let flip = match (flip_horizontal, flip_vertical) {
             (false, false) => ll::SDL_FLIP_NONE,
             (true, false) => ll::SDL_FLIP_HORIZONTAL,
@@ -464,8 +452,9 @@ impl RenderDrawer {
             )
         };
 
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+        if ret != 0 {
+            panic!("Error copying texture (ex): {}", get_error())
+        }
     }
 
     pub fn read_pixels(&self, rect: Option<Rect>, format: pixels::PixelFormatFlag) -> SdlResult<Vec<u8>> {
