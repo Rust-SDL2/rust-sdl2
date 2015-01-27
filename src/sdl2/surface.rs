@@ -9,7 +9,7 @@ use pixels;
 use render::BlendMode;
 use rwops;
 
-pub use sys::surface as ll;
+use sys::surface as ll;
 
 bitflags! {
     flags SurfaceFlag: u32 {

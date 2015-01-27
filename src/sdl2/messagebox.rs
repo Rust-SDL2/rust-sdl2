@@ -5,7 +5,7 @@ use video::Window;
 use get_error;
 use SdlResult;
 
-pub use sys::messagebox as ll;
+use sys::messagebox as ll;
 
 bitflags! {
     flags MessageBoxFlag: u32 {

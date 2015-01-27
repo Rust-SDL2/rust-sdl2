@@ -1,6 +1,6 @@
 extern crate rand;
 
-pub use sys::pixels as ll;
+use sys::pixels as ll;
 
 #[derive(PartialEq)] #[allow(raw_pointer_derive, missing_copy_implementations)]
 pub struct Palette {

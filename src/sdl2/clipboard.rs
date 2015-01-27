@@ -2,7 +2,7 @@ use std::ffi::{c_str_to_bytes, CString};
 use SdlResult;
 use get_error;
 
-pub use sys::clipboard as ll;
+use sys::clipboard as ll;
 
 pub fn set_clipboard_text(text: &String) -> SdlResult<()> {
     unsafe {

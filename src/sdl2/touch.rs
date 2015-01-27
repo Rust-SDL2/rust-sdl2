@@ -1,6 +1,6 @@
 use std::ptr;
 
-pub use sys::touch as ll;
+use sys::touch as ll;
 
 pub type Finger = ll::Finger;
 pub type TouchDevice = ll::TouchDevice;

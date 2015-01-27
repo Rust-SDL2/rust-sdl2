@@ -5,7 +5,7 @@ use libc::{c_void, c_int, size_t};
 use get_error;
 use SdlResult;
 
-pub use sys::rwops as ll;
+use sys::rwops as ll;
 
 #[derive(PartialEq)] #[allow(raw_pointer_derive)]
 pub struct RWops {

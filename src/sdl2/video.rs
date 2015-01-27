@@ -11,7 +11,7 @@ use std::num::FromPrimitive;
 
 use get_error;
 
-pub use sys::video as ll;
+use sys::video as ll;
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum GLAttr {

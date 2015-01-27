@@ -1,6 +1,6 @@
 use libc::c_int;
 
-pub use sys::controller as ll;
+use sys::controller as ll;
 
 #[derive(Copy, Clone, PartialEq)]
 #[repr(i32)]
