@@ -59,13 +59,6 @@ pub enum BlendMode {
     Mod = ll::SDL_BLENDMODE_MOD as isize
 }
 
-#[derive(Copy, Clone, PartialEq)]
-pub enum RendererFlip {
-    None = ll::SDL_FLIP_NONE as isize,
-    Horizontal = ll::SDL_FLIP_HORIZONTAL as isize,
-    Vertical = ll::SDL_FLIP_VERTICAL as isize,
-}
-
 impl RendererInfo {
     pub fn from_ll(info: &ll::SDL_RendererInfo) -> RendererInfo {
         let actual_flags = RendererFlags::from_bits(info.flags).unwrap();
@@ -424,8 +417,14 @@ impl Renderer {
         else { Err(get_error()) }
     }
 
-    //TODO: Check whether RendererFlip is supposed to be combinable
-    pub fn copy_ex(&self, texture: &mut Texture, src: Option<Rect>, dst: Option<Rect>, angle: f64, center: Option<Point>, flip: RendererFlip) -> SdlResult<()> {
+    pub fn copy_ex(&self, texture: &mut Texture, src: Option<Rect>, dst: Option<Rect>, angle: f64, center: Option<Point>, (flip_horizontal, flip_vertical): (bool, bool)) -> SdlResult<()> {
+        let flip = match (flip_horizontal, flip_vertical) {
+            (false, false) => ll::SDL_FLIP_NONE,
+            (true, false) => ll::SDL_FLIP_HORIZONTAL,
+            (false, true) => ll::SDL_FLIP_VERTICAL,
+            (true, true) => ll::SDL_FLIP_HORIZONTAL | ll::SDL_FLIP_VERTICAL,
+        };
+
         let ret = unsafe {
             ll::SDL_RenderCopyEx(
                 self.raw,
@@ -443,7 +442,7 @@ impl Renderer {
                     Some(ref point) => point as *const _,
                     None => ptr::null()
                 },
-                FromPrimitive::from_i64(flip as i64).unwrap()
+                flip
             )
         };
 
