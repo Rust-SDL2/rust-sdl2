@@ -20,9 +20,10 @@ pub fn main() {
         Err(err) => panic!("failed to create renderer: {}", err)
     };
 
-    renderer.set_draw_color(Color::RGB(255, 0, 0)).unwrap();
-    renderer.clear().unwrap();
-    renderer.present();
+    let mut drawer = renderer.drawer();
+    drawer.set_draw_color(Color::RGB(255, 0, 0));
+    drawer.clear();
+    drawer.present();
 
     loop {
         match poll_event() {
@@ -38,4 +39,3 @@ pub fn main() {
 
     sdl2::quit();
 }
-
