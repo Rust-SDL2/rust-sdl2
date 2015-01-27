@@ -87,7 +87,7 @@ pub enum RendererParent {
 pub struct Renderer {
     raw: *const ll::SDL_Renderer,
     parent: Option<RendererParent>,
-    render_target: RefCell<RenderTarget>
+    drawer: RefCell<RenderDrawer>
 }
 
 impl Drop for Renderer {
@@ -113,7 +113,7 @@ impl Renderer {
             Ok(Renderer {
                 raw: raw,
                 parent: Some(RendererParent::Window(window)),
-                render_target: RefCell::new(RenderTarget { raw: raw })
+                drawer: RefCell::new(RenderDrawer::new(raw))
             })
         }
     }
@@ -129,7 +129,7 @@ impl Renderer {
             Ok(Renderer {
                 raw: raw_renderer,
                 parent: Some(RendererParent::Window(window)),
-                render_target: RefCell::new(RenderTarget { raw: raw_renderer })
+                drawer: RefCell::new(RenderDrawer::new(raw_renderer))
             })
         } else {
             Err(get_error())
@@ -142,7 +142,7 @@ impl Renderer {
             Ok(Renderer {
                 raw: raw_renderer,
                 parent: Some(RendererParent::Surface(surface)),
-                render_target: RefCell::new(RenderTarget { raw: raw_renderer })
+                drawer: RefCell::new(RenderDrawer::new(raw_renderer))
             })
         } else {
             Err(get_error())
@@ -150,12 +150,60 @@ impl Renderer {
     }
 
     #[inline]
-    pub fn get_parent<'a>(&'a self) -> &'a RendererParent { self.parent.as_ref().unwrap() }
+    pub fn get_parent(&self) -> &RendererParent { self.parent.as_ref().unwrap() }
 
     #[inline]
     pub fn unwrap_parent(mut self) -> RendererParent {
         use std::mem;
         mem::replace(&mut self.parent, None).unwrap()
+    }
+
+    pub fn create_texture(&self, format: pixels::PixelFormatFlag, access: TextureAccess, width: i32, height: i32) -> SdlResult<Texture> {
+        let result = unsafe { ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int) };
+        if result == ptr::null() {
+            Err(get_error())
+        } else {
+            Ok(Texture { raw: result, owned: true, _marker: ContravariantLifetime } )
+        }
+    }
+
+    pub fn create_texture_from_surface(&self, surface: &surface::Surface) -> SdlResult<Texture> {
+        let result = unsafe { ll::SDL_CreateTextureFromSurface(self.raw, surface.raw()) };
+        if result == ptr::null() {
+            Err(get_error())
+        } else {
+            Ok(Texture { raw: result, owned: true, _marker: ContravariantLifetime } )
+        }
+    }
+
+    pub fn drawer(&self) -> RefMut<RenderDrawer> {
+        match self.drawer.try_borrow_mut() {
+            Some(drawer) => drawer,
+            None => panic!("Renderer drawer already borrowed")
+        }
+    }
+}
+
+pub struct RenderDrawer {
+    raw: *const ll::SDL_Renderer,
+    render_target: RenderTarget
+}
+
+impl RenderDrawer {
+    fn new(raw: *const ll::SDL_Renderer) -> RenderDrawer {
+        RenderDrawer {
+            raw: raw,
+            render_target: RenderTarget { raw: raw }
+        }
+    }
+
+    pub fn render_target_supported(&self) -> bool {
+        unsafe { ll::SDL_RenderTargetSupported(self.raw) == 1 }
+    }
+
+    pub fn render_target(&mut self) -> Option<&mut RenderTarget> {
+        if self.render_target_supported() { Some(&mut self.render_target) }
+        else { None }
     }
 
     pub fn set_draw_color(&self, color: pixels::Color) -> SdlResult<()> {
@@ -221,39 +269,6 @@ impl Renderer {
             Ok((width as i32, height as i32))
         } else {
             Err(get_error())
-        }
-    }
-
-    pub fn create_texture(&self, format: pixels::PixelFormatFlag, access: TextureAccess, width: i32, height: i32) -> SdlResult<Texture> {
-        let result = unsafe { ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int) };
-        if result == ptr::null() {
-            Err(get_error())
-        } else {
-            Ok(Texture { raw: result, owned: true, _marker: ContravariantLifetime } )
-        }
-    }
-
-    pub fn create_texture_from_surface(&self, surface: &surface::Surface) -> SdlResult<Texture> {
-        let result = unsafe { ll::SDL_CreateTextureFromSurface(self.raw, surface.raw()) };
-        if result == ptr::null() {
-            Err(get_error())
-        } else {
-            Ok(Texture { raw: result, owned: true, _marker: ContravariantLifetime } )
-        }
-    }
-
-    pub fn render_target_supported(&self) -> bool {
-        unsafe { ll::SDL_RenderTargetSupported(self.raw) == 1 }
-    }
-
-    pub fn render_target(&self) -> Option<RefMut<RenderTarget>> {
-        if self.render_target_supported() {
-            match self.render_target.try_borrow_mut() {
-                Some(render_target) => Some(render_target),
-                None => panic!("Render target already borrowed")
-            }
-        } else {
-            None
         }
     }
 
