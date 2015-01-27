@@ -2,7 +2,7 @@ use std::ffi::{c_str_to_bytes, CString};
 use SdlResult;
 use get_error;
 
-pub use sys::filesystem as ll;
+use sys::filesystem as ll;
 
 pub fn get_base_path() -> SdlResult<String> {
     let result = unsafe {

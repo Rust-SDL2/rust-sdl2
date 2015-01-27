@@ -16,7 +16,7 @@ use std::num::FromPrimitive;
 use std::vec::Vec;
 use std::borrow::ToOwned;
 
-pub use sys::render as ll;
+use sys::render as ll;
 
 #[derive(Copy, Clone)]
 pub enum RenderDriverIndex {
@@ -126,7 +126,9 @@ impl Renderer {
     }
 
     pub fn new_with_window(width: i32, height: i32, window_flags: video::WindowFlags) -> SdlResult<Renderer> {
-        let raw_window: *const video::ll::SDL_Window = ptr::null();
+        use sys::video::SDL_Window;
+
+        let raw_window: *const SDL_Window = ptr::null();
         let raw_renderer: *const ll::SDL_Renderer = ptr::null();
         let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, window_flags.bits(), &raw_window, &raw_renderer) == 0};
         if result {

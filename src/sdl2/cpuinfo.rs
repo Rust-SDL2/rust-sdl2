@@ -1,4 +1,4 @@
-pub use sys::cpuinfo as ll;
+use sys::cpuinfo as ll;
 
 pub const CACHELINESIZE: u8 = 128;
 

@@ -9,7 +9,7 @@ use get_error;
 use rwops::RWops;
 use SdlResult;
 
-pub use sys::audio as ll;
+use sys::audio as ll;
 
 pub type AudioFormat = ll::SDL_AudioFormat;
 

@@ -15,7 +15,7 @@ use joystick;
 use joystick::HatState;
 use keyboard;
 use keyboard::Mod;
-use keyboard::ll::SDL_Keymod;
+use sys::keyboard::SDL_Keymod;
 use keycode::KeyCode;
 use mouse;
 use mouse::{Mouse, MouseState};
@@ -24,7 +24,7 @@ use video;
 use get_error;
 use SdlResult;
 
-pub use sys::event as ll;
+use sys::event as ll;
 
 /// Types of events that can be delivered.
 #[derive(Copy, Clone, FromPrimitive)]

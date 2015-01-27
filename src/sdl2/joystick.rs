@@ -1,4 +1,4 @@
-pub use sys::joystick as ll;
+use sys::joystick as ll;
 
 bitflags! {
     flags HatState: u8 {

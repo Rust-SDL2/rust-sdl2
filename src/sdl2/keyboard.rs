@@ -8,7 +8,7 @@ use rect::Rect;
 use scancode::ScanCode;
 use video::Window;
 
-pub use sys::keyboard as ll;
+use sys::keyboard as ll;
 
 bitflags! {
     flags Mod: u32 {

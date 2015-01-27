@@ -1,6 +1,6 @@
 use libc::{uint32_t, c_void};
 
-pub use sys::timer as ll;
+use sys::timer as ll;
 
 pub fn get_ticks() -> u32 {
     unsafe { ll::SDL_GetTicks() }

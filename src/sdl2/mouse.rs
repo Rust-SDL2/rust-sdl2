@@ -5,7 +5,7 @@ use SdlResult;
 use surface;
 use video;
 
-pub use sys::mouse as ll;
+use sys::mouse as ll;
 
 #[derive(Copy, Clone, PartialEq)]
 #[repr(u32)]
