@@ -158,13 +158,29 @@ impl Renderer {
         mem::replace(&mut self.parent, None).unwrap()
     }
 
-    pub fn create_texture(&self, format: pixels::PixelFormatFlag, access: TextureAccess, width: i32, height: i32) -> SdlResult<Texture> {
+    pub fn create_texture(&self, format: pixels::PixelFormatFlag, access: TextureAccess, size: (i32, i32)) -> SdlResult<Texture> {
+        let (width, height) = size;
         let result = unsafe { ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int) };
         if result == ptr::null() {
             Err(get_error())
         } else {
             Ok(Texture { raw: result, owned: true, _marker: ContravariantLifetime } )
         }
+    }
+
+    /// Shorthand for `create_texture(format, TextureAccess::Static, size)`
+    pub fn create_texture_static(&self, format: pixels::PixelFormatFlag, size: (i32, i32)) -> SdlResult<Texture> {
+        self.create_texture(format, TextureAccess::Static, size)
+    }
+
+    /// Shorthand for `create_texture(format, TextureAccess::Streaming, size)`
+    pub fn create_texture_streaming(&self, format: pixels::PixelFormatFlag, size: (i32, i32)) -> SdlResult<Texture> {
+        self.create_texture(format, TextureAccess::Streaming, size)
+    }
+
+    /// Shorthand for `create_texture(format, TextureAccess::Target, size)` 
+    pub fn create_texture_target(&self, format: pixels::PixelFormatFlag, size: (i32, i32)) -> SdlResult<Texture> {
+        self.create_texture(format, TextureAccess::Target, size)
     }
 
     pub fn create_texture_from_surface(&self, surface: &surface::Surface) -> SdlResult<Texture> {
