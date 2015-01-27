@@ -206,7 +206,7 @@ impl RenderDrawer {
         else { None }
     }
 
-    pub fn set_draw_color(&self, color: pixels::Color) -> SdlResult<()> {
+    pub fn set_draw_color(&mut self, color: pixels::Color) -> SdlResult<()> {
         let ret = match color {
             pixels::Color::RGB(r, g, b) => {
                 unsafe { ll::SDL_SetRenderDrawColor(self.raw, r, g, b, 255) }
@@ -232,7 +232,7 @@ impl RenderDrawer {
         }
     }
 
-    pub fn set_blend_mode(&self, blend: BlendMode) -> SdlResult<()> {
+    pub fn set_blend_mode(&mut self, blend: BlendMode) -> SdlResult<()> {
         let ret = unsafe { ll::SDL_SetRenderDrawBlendMode(self.raw, FromPrimitive::from_i64(blend as i64).unwrap()) };
 
         if ret == 0 { Ok(()) }
@@ -249,13 +249,13 @@ impl RenderDrawer {
         }
     }
 
-    pub fn clear(&self) -> SdlResult<()> {
+    pub fn clear(&mut self) -> SdlResult<()> {
         let ret = unsafe { ll::SDL_RenderClear(self.raw) };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
 
-    pub fn present(&self) {
+    pub fn present(&mut self) {
         unsafe { ll::SDL_RenderPresent(self.raw) }
     }
 
@@ -272,7 +272,7 @@ impl RenderDrawer {
         }
     }
 
-    pub fn set_logical_size(&self, width: i32, height: i32) -> SdlResult<()> {
+    pub fn set_logical_size(&mut self, width: i32, height: i32) -> SdlResult<()> {
         let ret = unsafe { ll::SDL_RenderSetLogicalSize(self.raw, width as c_int, height as c_int) };
 
         if ret == 0 { Ok(()) }
@@ -289,7 +289,7 @@ impl RenderDrawer {
         (width as i32, height as i32)
     }
 
-    pub fn set_viewport(&self, rect: Option<Rect>) -> SdlResult<()> {
+    pub fn set_viewport(&mut self, rect: Option<Rect>) -> SdlResult<()> {
         let ptr = match rect {
             Some(ref rect) => rect as *const _,
             None => ptr::null()
@@ -311,7 +311,7 @@ impl RenderDrawer {
         rect
     }
 
-    pub fn set_clip_rect(&self, rect: Option<Rect>) -> SdlResult<()> {
+    pub fn set_clip_rect(&mut self, rect: Option<Rect>) -> SdlResult<()> {
         let ret = unsafe {
             ll::SDL_RenderSetClipRect(
                 self.raw,
@@ -337,7 +337,7 @@ impl RenderDrawer {
         rect
     }
 
-    pub fn set_scale(&self, scale_x: f64, scale_y: f64) -> SdlResult<()> {
+    pub fn set_scale(&mut self, scale_x: f64, scale_y: f64) -> SdlResult<()> {
         let ret = unsafe { ll::SDL_RenderSetScale(self.raw, scale_x as c_float, scale_y as c_float) };
 
         if ret == 0 { Ok(()) }
@@ -351,14 +351,14 @@ impl RenderDrawer {
         (scale_x as f64, scale_y as f64)
     }
 
-    pub fn draw_point(&self, point: Point) -> SdlResult<()> {
+    pub fn draw_point(&mut self, point: Point) -> SdlResult<()> {
         let ret = unsafe { ll::SDL_RenderDrawPoint(self.raw, point.x, point.y) };
 
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
 
-    pub fn draw_points(&self, points: &[Point]) -> SdlResult<()> {
+    pub fn draw_points(&mut self, points: &[Point]) -> SdlResult<()> {
         let ret = unsafe {
             ll::SDL_RenderDrawPoints(self.raw, points.as_ptr(), points.len() as c_int)
         };
@@ -367,14 +367,14 @@ impl RenderDrawer {
         else { Err(get_error()) }
     }
 
-    pub fn draw_line(&self, start: Point, end: Point) -> SdlResult<()> {
+    pub fn draw_line(&mut self, start: Point, end: Point) -> SdlResult<()> {
         let ret = unsafe { ll::SDL_RenderDrawLine(self.raw, start.x, start.y, end.x, end.y) };
 
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
 
-    pub fn draw_lines(&self, points: &[Point]) -> SdlResult<()> {
+    pub fn draw_lines(&mut self, points: &[Point]) -> SdlResult<()> {
         let ret = unsafe {
             ll::SDL_RenderDrawLines(self.raw, points.as_ptr(), points.len() as c_int)
         };
@@ -383,14 +383,14 @@ impl RenderDrawer {
         else { Err(get_error()) }
     }
 
-    pub fn draw_rect(&self, rect: &Rect) -> SdlResult<()> {
+    pub fn draw_rect(&mut self, rect: &Rect) -> SdlResult<()> {
         let ret = unsafe { ll::SDL_RenderDrawRect(self.raw, rect) };
 
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
 
-    pub fn draw_rects(&self, rects: &[Rect]) -> SdlResult<()> {
+    pub fn draw_rects(&mut self, rects: &[Rect]) -> SdlResult<()> {
         let ret = unsafe {
             ll::SDL_RenderDrawRects(self.raw, rects.as_ptr(), rects.len() as c_int)
         };
@@ -399,14 +399,14 @@ impl RenderDrawer {
         else { Err(get_error()) }
     }
 
-    pub fn fill_rect(&self, rect: &Rect) -> SdlResult<()> {
+    pub fn fill_rect(&mut self, rect: &Rect) -> SdlResult<()> {
         let ret = unsafe { ll::SDL_RenderFillRect(self.raw, rect) };
 
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
 
-    pub fn fill_rects(&self, rects: &[Rect]) -> SdlResult<()> {
+    pub fn fill_rects(&mut self, rects: &[Rect]) -> SdlResult<()> {
         let ret = unsafe {
             ll::SDL_RenderFillRects(self.raw, rects.as_ptr(), rects.len() as c_int)
         };
@@ -415,7 +415,7 @@ impl RenderDrawer {
         else { Err(get_error()) }
     }
 
-    pub fn copy(&self, texture: &mut Texture, src: Option<Rect>, dst: Option<Rect>) -> SdlResult<()> {
+    pub fn copy(&mut self, texture: &mut Texture, src: Option<Rect>, dst: Option<Rect>) -> SdlResult<()> {
         let ret = unsafe {
             ll::SDL_RenderCopy(
                 self.raw,
@@ -435,7 +435,7 @@ impl RenderDrawer {
         else { Err(get_error()) }
     }
 
-    pub fn copy_ex(&self, texture: &mut Texture, src: Option<Rect>, dst: Option<Rect>, angle: f64, center: Option<Point>, (flip_horizontal, flip_vertical): (bool, bool)) -> SdlResult<()> {
+    pub fn copy_ex(&mut self, texture: &mut Texture, src: Option<Rect>, dst: Option<Rect>, angle: f64, center: Option<Point>, (flip_horizontal, flip_vertical): (bool, bool)) -> SdlResult<()> {
         let flip = match (flip_horizontal, flip_vertical) {
             (false, false) => ll::SDL_FLIP_NONE,
             (true, false) => ll::SDL_FLIP_HORIZONTAL,
