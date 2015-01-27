@@ -248,7 +248,10 @@ impl Renderer {
 
     pub fn render_target(&self) -> Option<RefMut<RenderTarget>> {
         if self.render_target_supported() {
-            Some(self.render_target.borrow_mut())
+            match self.render_target.try_borrow_mut() {
+                Some(render_target) => Some(render_target),
+                None => panic!("Render target already borrowed")
+            }
         } else {
             None
         }
