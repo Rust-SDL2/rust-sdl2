@@ -178,7 +178,7 @@ impl Renderer {
         self.create_texture(format, TextureAccess::Streaming, size)
     }
 
-    /// Shorthand for `create_texture(format, TextureAccess::Target, size)` 
+    /// Shorthand for `create_texture(format, TextureAccess::Target, size)`
     pub fn create_texture_target(&self, format: pixels::PixelFormatFlag, size: (i32, i32)) -> SdlResult<Texture> {
         self.create_texture(format, TextureAccess::Target, size)
     }
@@ -690,12 +690,24 @@ impl<'renderer> Texture<'renderer> {
         else { Err(get_error()) }
     }
 
-    pub fn with_lock<F: FnOnce(&mut [u8], i32) -> ()>(&mut self, rect: Option<Rect>, func: F) -> SdlResult<()> {
+    /// Locks the texture for **write-only** pixel access.
+    /// The texture must have been created with streaming access.
+    ///
+    /// `F` is a function that is passed the write-only texture buffer,
+    /// and the pitch of the texture (size of a row in bytes).
+    /// # Remarks
+    /// As an optimization, the pixels made available for editing don't
+    /// necessarily contain the old texture data.
+    /// This is a write-only operation, and if you need to keep a copy of the
+    /// texture data you should do that at the application level.
+    pub fn with_lock<F, R>(&mut self, rect: Option<Rect>, func: F) -> SdlResult<R>
+    where F: FnOnce(&mut [u8], usize) -> R
+    {
         // Call to SDL to populate pixel data
         let loaded = unsafe {
             let q = try!(self.query());
             let pixels : *const c_void = ptr::null();
-            let pitch = 0i32;
+            let pitch = 0;
             let size = q.format.byte_size_of_pixels((q.width * q.height) as usize);
 
             let actual_rect = match rect {
@@ -712,12 +724,13 @@ impl<'renderer> Texture<'renderer> {
         };
 
         match loaded {
-            Ok((interior,pitch)) => {
+            Ok((interior, pitch)) => {
+                let result;
                 unsafe {
-                    func(mem::transmute(interior), pitch);
+                    result = func(mem::transmute(interior), pitch as usize);
                     ll::SDL_UnlockTexture(self.raw);
                 }
-                Ok(())
+                Ok(result)
             }
             Err(e) => Err(e),
         }
