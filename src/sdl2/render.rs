@@ -703,33 +703,44 @@ impl<'renderer> Texture<'renderer> {
         }
     }
 
-    pub unsafe fn gl_bind_texture(&mut self) -> SdlResult<(f64, f64)> {
-        let texw: c_float = 0.0;
-        let texh: c_float = 0.0;
+    pub unsafe fn gl_bind_texture(&mut self) -> (f32, f32) {
+        unsafe {
+            let texw = 0.0;
+            let texh = 0.0;
 
-        let result = unsafe {
-            ll::SDL_GL_BindTexture(self.raw, &texw, &texh) == 0
-        };
-
-        if result {
-            Ok((texw as f64, texh as f64))
-        } else {
-            Err("Operation not supported".to_owned())
+            if ll::SDL_GL_BindTexture(self.raw, &texw, &texh) == 0 {
+                (texw, texh)
+            } else {
+                panic!("OpenGL texture binding not supported");
+            }
         }
     }
 
-    pub unsafe fn gl_unbind_texture(&mut self) -> bool {
-        unsafe { ll::SDL_GL_UnbindTexture(self.raw) == 0 }
+    pub unsafe fn gl_unbind_texture(&mut self) {
+        unsafe {
+            if ll::SDL_GL_UnbindTexture(self.raw) != 0 {
+                panic!("OpenGL texture unbinding not supported");
+            }
+        }
     }
 
-    pub fn gl_with_bind<R, F: FnOnce(f64, f64) -> R>(&mut self, f: F) -> R {
+    pub fn gl_with_bind<R, F: FnOnce(f32, f32) -> R>(&mut self, f: F) -> R {
         unsafe {
-            let texw: c_float = 0.0;
-            let texh: c_float = 0.0;
-            if ll::SDL_GL_BindTexture(self.raw, &texw, &texh) != 0 { panic!("could not bind texture"); }
-            let rv = f(texw as f64, texh as f64);
-            ll::SDL_GL_UnbindTexture(self.raw);
-            rv
+            let texw = 0.0;
+            let texh = 0.0;
+
+            if ll::SDL_GL_BindTexture(self.raw, &texw, &texh) == 0 {
+                let return_value = f(texw, texh);
+
+                if ll::SDL_GL_UnbindTexture(self.raw) == 0 {
+                    return_value
+                } else {
+                    // This should never happen...
+                    panic!();
+                }
+            } else {
+                panic!("OpenGL texture binding not supported");
+            }
         }
     }
 }
