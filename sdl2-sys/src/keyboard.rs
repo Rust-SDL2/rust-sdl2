@@ -1,4 +1,4 @@
-use libc::{c_int, c_char, c_uint, int32_t, uint8_t, uint16_t,
+use libc::{c_int, c_char, uint8_t, uint16_t,
                 uint32_t};
 use rect::Rect;
 use video::SDL_Window;
