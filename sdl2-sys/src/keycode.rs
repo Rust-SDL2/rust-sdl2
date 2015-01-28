@@ -1,3 +1,6 @@
+
+#![allow(non_upper_case_globals)]
+
 use libc;
 
 pub type SDL_Keycode = libc::int32_t;
