@@ -15,7 +15,7 @@ use joystick;
 use joystick::HatState;
 use keyboard;
 use keyboard::Mod;
-use sys::keyboard::SDL_Keymod;
+use sys::keycode::SDL_Keymod;
 use keycode::KeyCode;
 use mouse;
 use mouse::{Mouse, MouseState};
