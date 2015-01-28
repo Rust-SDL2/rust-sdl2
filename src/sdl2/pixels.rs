@@ -63,7 +63,7 @@ impl_raw_accessors!((PixelFormat, *const ll::SDL_PixelFormat));
 impl_raw_constructor!((PixelFormat, PixelFormat (raw: *const ll::SDL_PixelFormat)));
 
 #[derive(Copy, Clone, PartialEq, Show, FromPrimitive)]
-pub enum PixelFormatFlag {
+pub enum PixelFormatEnum {
     Unknown = ll::SDL_PIXELFORMAT_UNKNOWN as isize,
     Index1LSB = ll::SDL_PIXELFORMAT_INDEX1LSB as isize,
     Index1MSB = ll::SDL_PIXELFORMAT_INDEX1MSB as isize,
@@ -102,76 +102,76 @@ pub enum PixelFormatFlag {
     YVYU = ll::SDL_PIXELFORMAT_YVYU as isize
 }
 
-impl PixelFormatFlag {
+impl PixelFormatEnum {
     pub fn byte_size_of_pixels(&self, num_of_pixels: usize) -> usize {
         match *self {
-            PixelFormatFlag::RGB332
+            PixelFormatEnum::RGB332
                 => num_of_pixels * 1,
-            PixelFormatFlag::RGB444 | PixelFormatFlag::RGB555 |
-            PixelFormatFlag::BGR555 | PixelFormatFlag::ARGB4444 |
-            PixelFormatFlag::RGBA4444 | PixelFormatFlag::ABGR4444 |
-            PixelFormatFlag::BGRA4444 | PixelFormatFlag::ARGB1555 |
-            PixelFormatFlag::RGBA5551 | PixelFormatFlag::ABGR1555 |
-            PixelFormatFlag::BGRA5551 | PixelFormatFlag::RGB565 |
-            PixelFormatFlag::BGR565
+            PixelFormatEnum::RGB444 | PixelFormatEnum::RGB555 |
+            PixelFormatEnum::BGR555 | PixelFormatEnum::ARGB4444 |
+            PixelFormatEnum::RGBA4444 | PixelFormatEnum::ABGR4444 |
+            PixelFormatEnum::BGRA4444 | PixelFormatEnum::ARGB1555 |
+            PixelFormatEnum::RGBA5551 | PixelFormatEnum::ABGR1555 |
+            PixelFormatEnum::BGRA5551 | PixelFormatEnum::RGB565 |
+            PixelFormatEnum::BGR565
                 => num_of_pixels * 2,
-            PixelFormatFlag::RGB24 | PixelFormatFlag::BGR24
+            PixelFormatEnum::RGB24 | PixelFormatEnum::BGR24
                 => num_of_pixels * 3,
-            PixelFormatFlag::RGB888 | PixelFormatFlag::RGBX8888 |
-            PixelFormatFlag::BGR888 | PixelFormatFlag::BGRX8888 |
-            PixelFormatFlag::ARGB8888 | PixelFormatFlag::RGBA8888 |
-            PixelFormatFlag::ABGR8888 | PixelFormatFlag::BGRA8888 |
-            PixelFormatFlag::ARGB2101010
+            PixelFormatEnum::RGB888 | PixelFormatEnum::RGBX8888 |
+            PixelFormatEnum::BGR888 | PixelFormatEnum::BGRX8888 |
+            PixelFormatEnum::ARGB8888 | PixelFormatEnum::RGBA8888 |
+            PixelFormatEnum::ABGR8888 | PixelFormatEnum::BGRA8888 |
+            PixelFormatEnum::ARGB2101010
                 => num_of_pixels * 4,
             // YUV formats
             // FIXME: rounding error here?
-            PixelFormatFlag::YV12 | PixelFormatFlag::IYUV
+            PixelFormatEnum::YV12 | PixelFormatEnum::IYUV
                 => num_of_pixels / 2 * 3,
-            PixelFormatFlag::YUY2 | PixelFormatFlag::UYVY |
-            PixelFormatFlag::YVYU
+            PixelFormatEnum::YUY2 | PixelFormatEnum::UYVY |
+            PixelFormatEnum::YVYU
                 => num_of_pixels * 2,
             // Unsupported formats
-            PixelFormatFlag::Index8
+            PixelFormatEnum::Index8
                 => num_of_pixels * 1,
-            PixelFormatFlag::Unknown | PixelFormatFlag::Index1LSB |
-            PixelFormatFlag::Index1MSB | PixelFormatFlag::Index4LSB |
-            PixelFormatFlag::Index4MSB
+            PixelFormatEnum::Unknown | PixelFormatEnum::Index1LSB |
+            PixelFormatEnum::Index1MSB | PixelFormatEnum::Index4LSB |
+            PixelFormatEnum::Index4MSB
                 => panic!("not supported format: {:?}", *self),
         }
     }
 
     pub fn byte_size_per_pixel(&self) -> usize {
         match *self {
-            PixelFormatFlag::RGB332
+            PixelFormatEnum::RGB332
                 => 1,
-            PixelFormatFlag::RGB444 | PixelFormatFlag::RGB555 |
-            PixelFormatFlag::BGR555 | PixelFormatFlag::ARGB4444 |
-            PixelFormatFlag::RGBA4444 | PixelFormatFlag::ABGR4444 |
-            PixelFormatFlag::BGRA4444 | PixelFormatFlag::ARGB1555 |
-            PixelFormatFlag::RGBA5551 | PixelFormatFlag::ABGR1555 |
-            PixelFormatFlag::BGRA5551 | PixelFormatFlag::RGB565 |
-            PixelFormatFlag::BGR565
+            PixelFormatEnum::RGB444 | PixelFormatEnum::RGB555 |
+            PixelFormatEnum::BGR555 | PixelFormatEnum::ARGB4444 |
+            PixelFormatEnum::RGBA4444 | PixelFormatEnum::ABGR4444 |
+            PixelFormatEnum::BGRA4444 | PixelFormatEnum::ARGB1555 |
+            PixelFormatEnum::RGBA5551 | PixelFormatEnum::ABGR1555 |
+            PixelFormatEnum::BGRA5551 | PixelFormatEnum::RGB565 |
+            PixelFormatEnum::BGR565
                 => 2,
-            PixelFormatFlag::RGB24 | PixelFormatFlag::BGR24
+            PixelFormatEnum::RGB24 | PixelFormatEnum::BGR24
                 => 3,
-            PixelFormatFlag::RGB888 | PixelFormatFlag::RGBX8888 |
-            PixelFormatFlag::BGR888 | PixelFormatFlag::BGRX8888 |
-            PixelFormatFlag::ARGB8888 | PixelFormatFlag::RGBA8888 |
-            PixelFormatFlag::ABGR8888 | PixelFormatFlag::BGRA8888 |
-            PixelFormatFlag::ARGB2101010
+            PixelFormatEnum::RGB888 | PixelFormatEnum::RGBX8888 |
+            PixelFormatEnum::BGR888 | PixelFormatEnum::BGRX8888 |
+            PixelFormatEnum::ARGB8888 | PixelFormatEnum::RGBA8888 |
+            PixelFormatEnum::ABGR8888 | PixelFormatEnum::BGRA8888 |
+            PixelFormatEnum::ARGB2101010
                 => 4,
             // YUV formats
-            PixelFormatFlag::YV12 | PixelFormatFlag::IYUV
+            PixelFormatEnum::YV12 | PixelFormatEnum::IYUV
                 => 2,
-            PixelFormatFlag::YUY2 | PixelFormatFlag::UYVY |
-            PixelFormatFlag::YVYU
+            PixelFormatEnum::YUY2 | PixelFormatEnum::UYVY |
+            PixelFormatEnum::YVYU
                 => 2,
             // Unsupported formats
-            PixelFormatFlag::Index8
+            PixelFormatEnum::Index8
                 => 1,
-            PixelFormatFlag::Unknown | PixelFormatFlag::Index1LSB |
-            PixelFormatFlag::Index1MSB | PixelFormatFlag::Index4LSB |
-            PixelFormatFlag::Index4MSB
+            PixelFormatEnum::Unknown | PixelFormatEnum::Index1LSB |
+            PixelFormatEnum::Index1MSB | PixelFormatEnum::Index4LSB |
+            PixelFormatEnum::Index4MSB
                 => panic!("not supported format: {:?}", *self),
         }
     }

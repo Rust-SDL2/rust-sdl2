@@ -317,7 +317,7 @@ impl Surface {
         }
     }
 
-    pub fn convert_format(&self, format: pixels::PixelFormatFlag) -> SdlResult<Surface> {
+    pub fn convert_format(&self, format: pixels::PixelFormatEnum) -> SdlResult<Surface> {
         let surface_ptr = unsafe { ll::SDL_ConvertSurfaceFormat(self.raw, format as uint32_t, 0u32) };
 
         if surface_ptr == ptr::null() {
