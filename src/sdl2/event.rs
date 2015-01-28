@@ -175,7 +175,7 @@ pub enum Event {
     /// (timestamp, whichId, button)
     ControllerButtonDown(u32, i32, ControllerButton),
     ControllerButtonUp(u32, i32, ControllerButton),
-    /// (timestamp, whichIdx)
+    /// (timestamp, whichId)
     ControllerDeviceAdded(u32, i32),
     ControllerDeviceRemoved(u32, i32),
     ControllerDeviceRemapped(u32, i32),
