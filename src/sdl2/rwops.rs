@@ -1,6 +1,6 @@
 use std::ffi::CString;
-use std::io;
-use std::io::IoResult;
+use std::old_io as io;
+use std::old_io::IoResult;
 use libc::{c_void, c_int, size_t};
 use get_error;
 use SdlResult;
@@ -72,7 +72,7 @@ impl Reader for RWops {
 }
 
 impl Writer for RWops {
-    fn write(&mut self, buf: &[u8]) -> IoResult<()> {
+    fn write_all(&mut self, buf: &[u8]) -> IoResult<()> {
         let in_len = buf.len() as size_t;
         let ret = unsafe {
             ((*self.raw).write)(self.raw, buf.as_ptr() as *const c_void, 1, in_len)
