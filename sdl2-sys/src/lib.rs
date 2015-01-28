@@ -2,6 +2,9 @@
 
 extern crate libc;
 
+pub mod scancode;
+pub mod keycode;
+
 pub mod audio;
 pub mod clipboard;
 pub mod controller;

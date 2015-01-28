@@ -1,13 +1,12 @@
-use libc::{c_int, c_char, c_uint, int32_t, uint8_t, uint16_t,
+use libc::{c_int, c_char, uint8_t, uint16_t,
                 uint32_t};
 use rect::Rect;
 use video::SDL_Window;
+use scancode::SDL_Scancode;
+use keycode::{SDL_Keycode, SDL_Keymod};
 
 pub type SDL_bool = c_int;
 pub type SDL_Rect = Rect;
-pub type SDL_Keycode = int32_t;
-pub type SDL_Keymod = c_uint;
-pub type SDL_Scancode = c_uint;
 
 // SDL_keyboard.h
 #[derive(Copy, Clone)]

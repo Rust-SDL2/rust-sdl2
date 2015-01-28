@@ -98,11 +98,11 @@ pub enum Mouse {
 
 bitflags! {
     flags MouseState: u32 {
-        const LEFTMOUSESTATE = 0x01,
-        const MIDDLEMOUSESTATE = 0x02,
-        const RIGHTMOUSESTATE = 0x04,
-        const X1MOUSESTATE = 0x08,
-        const X2MOUSESTATE = 0x10
+        const LEFTMOUSESTATE = ll::SDL_BUTTON_LMASK,
+        const MIDDLEMOUSESTATE = ll::SDL_BUTTON_MMASK,
+        const RIGHTMOUSESTATE = ll::SDL_BUTTON_RMASK,
+        const X1MOUSESTATE = ll::SDL_BUTTON_X1MASK,
+        const X2MOUSESTATE = ll::SDL_BUTTON_X2MASK,
     }
 }
 
