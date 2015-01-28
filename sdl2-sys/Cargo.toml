@@ -3,7 +3,7 @@
 name = "sdl2-sys"
 description = "Raw SDL2 bindings for Rust, used internally rust-sdl2"
 repository = "https://github.com/AngryLawyer/rust-sdl2"
-version = "0.0.19"
+version = "0.0.20"
 authors = ["Tony Aldridge <tony@angry-lawyer.com>"]
 license = "MIT"
 links = "SDL2"
