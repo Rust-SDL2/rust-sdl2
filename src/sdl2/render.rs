@@ -149,6 +149,14 @@ impl Renderer {
         }
     }
 
+    pub fn get_info(&self) -> RendererInfo {
+        unsafe {
+            let renderer_info_raw: ll::SDL_RendererInfo = mem::uninitialized();
+            ll::SDL_GetRendererInfo(self.raw, &renderer_info_raw);
+            RendererInfo::from_ll(&renderer_info_raw)
+        }
+    }
+
     #[inline]
     pub fn get_parent(&self) -> &RendererParent { self.parent.as_ref().unwrap() }
 
