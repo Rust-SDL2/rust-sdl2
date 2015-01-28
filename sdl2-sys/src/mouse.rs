@@ -25,6 +25,18 @@ pub const SDL_DISABLE: SDL_MouseState = 0;
 pub const SDL_ENABLE: SDL_MouseState = 1;
 pub const SDL_QUERY: SDL_MouseState = -1;
 
+pub const SDL_BUTTON_LEFT: u8 = 1;
+pub const SDL_BUTTON_MIDDLE: u8 = 2;
+pub const SDL_BUTTON_RIGHT: u8 = 3;
+pub const SDL_BUTTON_X1: u8 = 4;
+pub const SDL_BUTTON_X2: u8 = 5;
+pub const SDL_BUTTON_LMASK: u32  = 0x01;
+pub const SDL_BUTTON_MMASK: u32  = 0x02;
+pub const SDL_BUTTON_RMASK: u32  = 0x04;
+pub const SDL_BUTTON_X1MASK: u32 = 0x08;
+pub const SDL_BUTTON_X2MASK: u32 = 0x10;
+
+
 extern "C" {
     pub fn SDL_GetMouseFocus() -> *const SDL_Window;
     pub fn SDL_GetMouseState(x: *const c_int, y: *const c_int) -> uint32_t;
