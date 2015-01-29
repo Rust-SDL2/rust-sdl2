@@ -8,14 +8,13 @@ use SdlResult;
 use std::mem;
 use std::ptr;
 use std::raw;
-use libc::{c_int, c_uint, uint32_t, c_float, c_double, c_void};
+use libc::{c_int, uint32_t, c_float, c_double, c_void};
 use rect::Point;
 use rect::Rect;
 use std::cell::{RefCell, RefMut};
 use std::ffi::c_str_to_bytes;
 use std::num::FromPrimitive;
 use std::vec::Vec;
-use std::borrow::ToOwned;
 use std::marker::ContravariantLifetime;
 
 use sys::render as ll;
@@ -515,6 +514,7 @@ impl RenderDrawer {
     }
 }
 
+#[allow(missing_copy_implementations)]
 pub struct RenderTarget {
     raw: *const ll::SDL_Renderer
 }
@@ -749,23 +749,19 @@ impl<'renderer> Texture<'renderer> {
     }
 
     pub unsafe fn gl_bind_texture(&mut self) -> (f32, f32) {
-        unsafe {
-            let texw = 0.0;
-            let texh = 0.0;
+        let texw = 0.0;
+        let texh = 0.0;
 
-            if ll::SDL_GL_BindTexture(self.raw, &texw, &texh) == 0 {
-                (texw, texh)
-            } else {
-                panic!("OpenGL texture binding not supported");
-            }
+        if ll::SDL_GL_BindTexture(self.raw, &texw, &texh) == 0 {
+            (texw, texh)
+        } else {
+            panic!("OpenGL texture binding not supported");
         }
     }
 
     pub unsafe fn gl_unbind_texture(&mut self) {
-        unsafe {
-            if ll::SDL_GL_UnbindTexture(self.raw) != 0 {
-                panic!("OpenGL texture unbinding not supported");
-            }
+        if ll::SDL_GL_UnbindTexture(self.raw) != 0 {
+            panic!("OpenGL texture unbinding not supported");
         }
     }
 

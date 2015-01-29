@@ -201,7 +201,7 @@ pub enum Event {
     User(u32, video::Window, u32, i32),
 }
 
-impl ::std::fmt::Show for Event {
+impl ::std::fmt::Debug for Event {
     fn fmt(&self, out: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         out.write_str(match *self {
             Event::None => "Event::None",
