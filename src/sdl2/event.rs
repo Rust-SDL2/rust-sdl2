@@ -128,7 +128,7 @@ impl WindowEventId {
 pub enum Event {
     None,
 
-    /// (timestamp)
+
     Quit { timestamp: u32 },
     AppTerminating { timestamp: u32 },
     AppLowMemory { timestamp: u32 },
@@ -137,7 +137,6 @@ pub enum Event {
     AppWillEnterForeground { timestamp: u32 },
     AppDidEnterForeground { timestamp: u32 },
 
-    /// (timestamp, window, winEventId, data1, data2)
     Window {
         timestamp: u32 ,
         window: video::Window,
@@ -147,7 +146,6 @@ pub enum Event {
     },
     // TODO: SysWMEvent
 
-    /// (timestamp, window, keycode, scancode, keymod, repeat)
     KeyDown {
         timestamp: u32 ,
         window: video::Window,
@@ -164,8 +162,7 @@ pub enum Event {
         keymod: Mod,
         repeat: bool
     },
-    
-    /// (timestamp, window, text, start, length)
+
     TextEditing {
         timestamp: u32,
         window: video::Window,
@@ -173,15 +170,13 @@ pub enum Event {
         start: i32,
         length: i32
     },
-    
-    /// (timestamp, window, text)
+
     TextInput {
         timestamp: u32,
         window: video::Window,
         text: String
     },
 
-    /// (timestamp, window, which, [MouseState], x, y, xrel, yrel)
     MouseMotion {
         timestamp: u32,
         window: video::Window,
@@ -192,8 +187,7 @@ pub enum Event {
         xrel: i32,
         yrel: i32
     },
-    
-    /// (timestamp, window, which, MouseBtn, x, y)
+
     MouseButtonDown {
         timestamp: u32,
         window: video::Window,
@@ -210,8 +204,7 @@ pub enum Event {
         x: i32,
         y: i32
     },
-    
-    /// (timestamp, window, which, x, y)
+
     MouseWheel {
         timestamp: u32,
         window: video::Window,
@@ -220,15 +213,13 @@ pub enum Event {
         y: i32
     },
 
-    /// (timestamp, which, axisIdx, value)
     JoyAxisMotion {
         timestamp: u32,
         which: i32,
         axis_idx: u8,
         value: i16
     },
-    
-    /// (timestamp, which, ballIdx, xrel, yrel)
+
     JoyBallMotion {
         timestamp: u32,
         which: i32,
@@ -236,16 +227,14 @@ pub enum Event {
         xrel: i16,
         yrel: i16
     },
-    
-    /// (timestamp, which, hatIdx, state)
+
     JoyHatMotion {
         timestamp: u32,
         which: i32,
         hat_idx: u8,
         state: HatState
     },
-    
-    /// (timestamp, which, buttonIdx)
+
     JoyButtonDown {
         timestamp: u32,
         which: i32,
@@ -256,8 +245,7 @@ pub enum Event {
         which: i32,
         button_idx: u8
     },
-    
-    /// (timestamp, which)
+
     JoyDeviceAdded {
         timestamp: u32,
         which: i32
@@ -267,15 +255,13 @@ pub enum Event {
         which: i32
     },
 
-    /// (timestamp, which, axis, value)
     ControllerAxisMotion {
         timestamp: u32,
         which: i32,
         axis: ControllerAxis,
         value: i16
     },
-    
-    /// (timestamp, which, button)
+
     ControllerButtonDown {
         timestamp: u32,
         which: i32,
@@ -286,8 +272,7 @@ pub enum Event {
         which: i32,
         button: ControllerButton
     },
-    
-    /// (timestamp, which)
+
     ControllerDeviceAdded {
         timestamp: u32,
         which: i32
@@ -301,7 +286,6 @@ pub enum Event {
         which: i32
     },
 
-    /// (timestamp, touchId, fingerId, x, y, dx, dy, pressure)
     FingerDown {
         timestamp: u32,
         touch_id: i64,
@@ -333,7 +317,6 @@ pub enum Event {
         pressure: f32
     },
 
-    /// (timestamp, touchId, gestureId, numFingers, error, x, y)
     DollarGesture {
         timestamp: u32,
         touch_id: i64,
@@ -352,8 +335,7 @@ pub enum Event {
         x: f32,
         y: f32
     },
-    
-    /// (timestamp, touchId, dTheta, dDist, x, y, numFingers)
+
     MultiGesture {
         timestamp: u32,
         touch_id: i64,
@@ -364,18 +346,15 @@ pub enum Event {
         num_fingers: u16
     },
 
-    /// (timestamp)
     ClipboardUpdate {
         timestamp: u32
     },
 
-    /// (timestamp, filename)
     DropFile {
         timestamp: u32,
         filename: String
     },
 
-    /// (timestamp, Window, type, code)
     User {
         timestamp: u32,
         window: video::Window,
