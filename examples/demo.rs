@@ -26,8 +26,8 @@ pub fn main() {
 
     loop {
         match poll_event() {
-            Quit(_) => break,
-            KeyDown(_, _, key, _, _, _) => {
+            Quit{..} => break,
+            KeyDown { keycode: key, .. } => {
                 if key == KeyCode::Escape {
                     break;
                 }
