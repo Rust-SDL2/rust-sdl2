@@ -423,18 +423,18 @@ impl RenderDrawer {
     }
 
     /// Sets the drawing scale for rendering on the current target.
-    pub fn set_scale(&mut self, scale_x: f64, scale_y: f64) {
-        let ret = unsafe { ll::SDL_RenderSetScale(self.raw, scale_x as c_float, scale_y as c_float) };
+    pub fn set_scale(&mut self, scale_x: f32, scale_y: f32) {
+        let ret = unsafe { ll::SDL_RenderSetScale(self.raw, scale_x, scale_y) };
         // Should only fail on an invalid renderer
         if ret != 0 { panic!(get_error()) }
     }
 
     /// Gets the drawing scale for the current target.
-    pub fn get_scale(&self) -> (f64, f64) {
-        let scale_x: c_float = 0.0;
-        let scale_y: c_float = 0.0;
+    pub fn get_scale(&self) -> (f32, f32) {
+        let scale_x = 0.0;
+        let scale_y = 0.0;
         unsafe { ll::SDL_RenderGetScale(self.raw, &scale_x, &scale_y) };
-        (scale_x as f64, scale_y as f64)
+        (scale_x, scale_y)
     }
 
     /// Draws a point on the current rendering target.
