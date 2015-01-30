@@ -1,6 +1,7 @@
 extern crate sdl2;
 
 use sdl2::{joystick, controller};
+use sdl2::keycode::KeyCode;
 use sdl2::event::Event;
 use sdl2::controller::GameController;
 use std::old_io::timer::sleep;
@@ -53,7 +54,7 @@ fn main() {
 
     loop {
         match sdl2::event::poll_event() {
-            Event::ControllerAxisMotion(_, _, axis, val) => {
+            Event::ControllerAxisMotion{ axis, value: val, .. } => {
                 // Axis motion is an absolute value in the range
                 // [-32768, 32767]. Let's simulate a very rough dead
                 // zone to ignore spurious events.
@@ -61,14 +62,19 @@ fn main() {
                     println!("Axis {:?} moved to {}", axis, val);
                 }
             }
-            Event::ControllerButtonDown(_, _, button) =>
+            Event::ControllerButtonDown{ button, .. } =>
                 println!("Button {:?} down", button),
-            Event::ControllerButtonUp(_, _, button) =>
+            Event::ControllerButtonUp{ button, .. } =>
                 println!("Button {:?} up", button),
             Event::None =>
                 // Don't hog the CPU while waiting for events
                 sleep(Duration::milliseconds(100)),
-            _ => (),
+            Event::KeyDown { keycode: key, .. } => {
+                if key == KeyCode::Escape {
+                    break;
+                }
+            },
+            _ => ()
         }
     }
 
