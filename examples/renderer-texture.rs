@@ -35,10 +35,9 @@ pub fn main() {
     }).unwrap();
 
     let mut drawer = renderer.drawer();
-    // drawer.set_draw_color(Color::RGB(255, 0, 0));
     drawer.clear();
-    drawer.copy(&mut texture, None, Some(Rect::new(100, 100, 256, 256)));
-    drawer.copy_ex(&mut texture, None, Some(Rect::new(450, 100, 256, 256)), 30.0, None, (false, false));
+    drawer.copy(&texture, None, Some(Rect::new(100, 100, 256, 256)));
+    drawer.copy_ex(&texture, None, Some(Rect::new(450, 100, 256, 256)), 30.0, None, (false, false));
     drawer.present();
 
     loop {
