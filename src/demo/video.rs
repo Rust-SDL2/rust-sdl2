@@ -32,18 +32,19 @@ pub fn main(filename: &Path) {
 
     // render a surface, and convert it to a texture bound to the renderer
     let surface = trying!(font.render_str_blended("Hello Rust!", sdl2::pixels::Color::RGBA(255, 0, 0, 255)));
-    let texture = trying!(renderer.create_texture_from_surface(&surface));
+    let mut texture = trying!(renderer.create_texture_from_surface(&surface));
 
-    renderer.set_draw_color(sdl2::pixels::Color::RGBA(195, 217, 255, 255));
-    renderer.clear();
+    let mut drawer = renderer.drawer();
+    drawer.set_draw_color(sdl2::pixels::Color::RGBA(195, 217, 255, 255));
+    drawer.clear();
 
     let (w, h) = match texture.query() {
         Ok(q) => (q.width, q.height),
         Err(err) => panic!(format!("Failed to query texture: {}", err))
     };
-    renderer.copy(&texture, None, Some(rect!((SCREEN_WIDTH - w)/ 2, (SCREEN_HEIGHT - h)/ 2, w, h)));
+    drawer.copy(&mut texture, None, Some(rect!((SCREEN_WIDTH - w)/ 2, (SCREEN_HEIGHT - h)/ 2, w, h)));
 
-    renderer.present();
+    drawer.present();
 
     'main : loop {
         'event : loop {
