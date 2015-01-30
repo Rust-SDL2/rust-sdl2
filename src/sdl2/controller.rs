@@ -1,10 +1,15 @@
-use libc::c_int;
+ use libc::{c_int, c_char};
+use std::ffi::{CString, c_str_to_bytes};
+
+use SdlResult;
+use get_error;
 
 use sys::controller as ll;
+use sys::event::{SDL_QUERY, SDL_ENABLE};
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Show)]
 #[repr(i32)]
-pub enum ControllerAxis {
+pub enum Axis {
     Invalid      = ll::SDL_CONTROLLER_AXIS_INVALID,
     LeftX        = ll::SDL_CONTROLLER_AXIS_LEFTX,
     LeftY        = ll::SDL_CONTROLLER_AXIS_LEFTY,
@@ -14,21 +19,43 @@ pub enum ControllerAxis {
     TriggerRight = ll::SDL_CONTROLLER_AXIS_TRIGGERRIGHT,
 }
 
-pub fn wrap_controller_axis(bitflags: u8) -> ControllerAxis {
+impl Axis {
+    /// Return the Axis from a string description in the same format
+    /// used by the game controller mapping strings.
+    pub fn from_string(axis: &str) -> Axis {
+        let name_c = CString::from_slice(axis.as_bytes()).as_ptr();
+
+        let id = unsafe { ll::SDL_GameControllerGetAxisFromString(name_c) };
+
+        wrap_controller_axis(id as u8)
+    }
+
+    /// Return a string for a given axis in the same format using by
+    /// the game controller mapping strings
+    pub fn get_string(self) -> String {
+        let axis = self as ll::SDL_GameControllerAxis;
+
+        let string = unsafe { ll::SDL_GameControllerGetStringForAxis(axis) };
+
+        c_str_to_string(string)
+    }
+}
+
+pub fn wrap_controller_axis(bitflags: u8) -> Axis {
     match bitflags as c_int {
-        ll::SDL_CONTROLLER_AXIS_LEFTX        => ControllerAxis::LeftX,
-        ll::SDL_CONTROLLER_AXIS_LEFTY        => ControllerAxis::LeftY,
-        ll::SDL_CONTROLLER_AXIS_RIGHTX       => ControllerAxis::RightX,
-        ll::SDL_CONTROLLER_AXIS_RIGHTY       => ControllerAxis::RightY,
-        ll::SDL_CONTROLLER_AXIS_TRIGGERLEFT  => ControllerAxis::TriggerLeft,
-        ll::SDL_CONTROLLER_AXIS_TRIGGERRIGHT => ControllerAxis::TriggerRight,
+        ll::SDL_CONTROLLER_AXIS_LEFTX        => Axis::LeftX,
+        ll::SDL_CONTROLLER_AXIS_LEFTY        => Axis::LeftY,
+        ll::SDL_CONTROLLER_AXIS_RIGHTX       => Axis::RightX,
+        ll::SDL_CONTROLLER_AXIS_RIGHTY       => Axis::RightY,
+        ll::SDL_CONTROLLER_AXIS_TRIGGERLEFT  => Axis::TriggerLeft,
+        ll::SDL_CONTROLLER_AXIS_TRIGGERRIGHT => Axis::TriggerRight,
         _ => panic!("unhandled controller axis")
     }
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Show)]
 #[repr(i32)]
-pub enum ControllerButton {
+pub enum Button {
     Invalid       = ll::SDL_CONTROLLER_BUTTON_INVALID,
     A             = ll::SDL_CONTROLLER_BUTTON_A,
     B             = ll::SDL_CONTROLLER_BUTTON_B,
@@ -47,23 +74,157 @@ pub enum ControllerButton {
     DPadRight     = ll::SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
 }
 
-pub fn wrap_controller_button(bitflags: u8) -> ControllerButton {
+impl Button {
+    /// Return the Button from a string description in the same format
+    /// used by the game controller mapping strings.
+    pub fn from_string(button: &str) -> Button {
+        let name_c = CString::from_slice(button.as_bytes()).as_ptr();
+
+        let id = unsafe { ll::SDL_GameControllerGetButtonFromString(name_c) };
+
+        wrap_controller_button(id as u8)
+    }
+
+    /// Return a string for a given button in the same format using by
+    /// the game controller mapping strings
+    pub fn get_string(self) -> String {
+        let button = self as ll::SDL_GameControllerButton;
+
+        let string = unsafe { ll::SDL_GameControllerGetStringForButton(button) };
+
+        c_str_to_string(string)
+    }
+
+}
+
+pub fn wrap_controller_button(bitflags: u8) -> Button {
     match bitflags as c_int {
-        ll::SDL_CONTROLLER_BUTTON_A             => ControllerButton::A,
-        ll::SDL_CONTROLLER_BUTTON_B             => ControllerButton::B,
-        ll::SDL_CONTROLLER_BUTTON_X             => ControllerButton::X,
-        ll::SDL_CONTROLLER_BUTTON_Y             => ControllerButton::Y,
-        ll::SDL_CONTROLLER_BUTTON_BACK          => ControllerButton::Back,
-        ll::SDL_CONTROLLER_BUTTON_GUIDE         => ControllerButton::Guide,
-        ll::SDL_CONTROLLER_BUTTON_START         => ControllerButton::Start,
-        ll::SDL_CONTROLLER_BUTTON_LEFTSTICK     => ControllerButton::LeftStick,
-        ll::SDL_CONTROLLER_BUTTON_RIGHTSTICK    => ControllerButton::RightStick,
-        ll::SDL_CONTROLLER_BUTTON_LEFTSHOULDER  => ControllerButton::LeftShoulder,
-        ll::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER => ControllerButton::RightShoulder,
-        ll::SDL_CONTROLLER_BUTTON_DPAD_UP       => ControllerButton::DPadUp,
-        ll::SDL_CONTROLLER_BUTTON_DPAD_DOWN     => ControllerButton::DPadDown,
-        ll::SDL_CONTROLLER_BUTTON_DPAD_LEFT     => ControllerButton::DPadLeft,
-        ll::SDL_CONTROLLER_BUTTON_DPAD_RIGHT    => ControllerButton::DPadRight,
+        ll::SDL_CONTROLLER_BUTTON_A             => Button::A,
+        ll::SDL_CONTROLLER_BUTTON_B             => Button::B,
+        ll::SDL_CONTROLLER_BUTTON_X             => Button::X,
+        ll::SDL_CONTROLLER_BUTTON_Y             => Button::Y,
+        ll::SDL_CONTROLLER_BUTTON_BACK          => Button::Back,
+        ll::SDL_CONTROLLER_BUTTON_GUIDE         => Button::Guide,
+        ll::SDL_CONTROLLER_BUTTON_START         => Button::Start,
+        ll::SDL_CONTROLLER_BUTTON_LEFTSTICK     => Button::LeftStick,
+        ll::SDL_CONTROLLER_BUTTON_RIGHTSTICK    => Button::RightStick,
+        ll::SDL_CONTROLLER_BUTTON_LEFTSHOULDER  => Button::LeftShoulder,
+        ll::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER => Button::RightShoulder,
+        ll::SDL_CONTROLLER_BUTTON_DPAD_UP       => Button::DPadUp,
+        ll::SDL_CONTROLLER_BUTTON_DPAD_DOWN     => Button::DPadDown,
+        ll::SDL_CONTROLLER_BUTTON_DPAD_LEFT     => Button::DPadLeft,
+        ll::SDL_CONTROLLER_BUTTON_DPAD_RIGHT    => Button::DPadRight,
         _ => panic!("unhandled controller button")
+    }
+}
+
+/// Return true if the joystick at index `id` is a game controller.
+pub fn is_game_controller(id: i32) -> bool {
+    unsafe { ll::SDL_IsGameController(id) != 0 }
+}
+
+/// Return the name of the controller at index `id` or an empty string
+/// if no name is found.
+pub fn name_for_index(id: i32) -> String {
+    let name = unsafe { ll::SDL_GameControllerNameForIndex(id) };
+
+    c_str_to_string(name)
+}
+
+/// Force controller update when not using the event loop
+pub fn update() {
+    unsafe { ll::SDL_GameControllerUpdate() };
+}
+
+/// If state is `true` controller events are processed, otherwise
+/// they're ignored.
+pub fn set_event_state(state: bool) {
+    unsafe { ll::SDL_GameControllerEventState(state as i32) };
+}
+
+/// Return `true` if controller events are processed.
+pub fn get_event_state() -> bool {
+    unsafe { ll::SDL_GameControllerEventState(SDL_QUERY as i32)
+             == SDL_ENABLE as i32 }
+}
+
+/// Possible return values for `add_mapping`
+#[derive(Copy)]
+pub enum MappingStatus {
+    Added   = 1,
+    Updated = 0,
+}
+
+/// Add a new mapping from a mapping string
+pub fn add_mapping(mapping: &str) -> SdlResult<MappingStatus> {
+    let mapping_c = CString::from_slice(mapping.as_bytes()).as_ptr();
+
+    let result = unsafe { ll::SDL_GameControllerAddMapping(mapping_c) };
+
+    match result {
+        1 => Ok(MappingStatus::Added),
+        0 => Ok(MappingStatus::Updated),
+        _ => Err(get_error()),
+    }
+}
+
+pub struct GameController {
+    raw: *const ll::SDL_GameController,
+}
+
+impl GameController {
+
+    /// Attempt to open the controller number `id` and return
+    /// it. Controller IDs are the same as joystick IDs and the
+    /// maximum number can be retreived using the `SDL_NumJoysticks`
+    /// function.
+    pub fn open(id: i32) -> SdlResult<GameController> {
+        let controller = unsafe { ll::SDL_GameControllerOpen(id) };
+
+        if controller.is_null() {
+            Err(get_error())
+        } else {
+            Ok(GameController { raw: controller })
+        }
+    }
+
+    /// Return the name of the controller or an empty string if no
+    /// name is found.
+    pub fn name(&self) -> String {
+        let name = unsafe { ll::SDL_GameControllerName(self.raw) };
+
+        c_str_to_string(name)
+    }
+
+    /// Return a String describing the controller's button and axis
+    /// mappings
+    pub fn mapping(&self) -> String {
+        let mapping = unsafe { ll::SDL_GameControllerMapping(self.raw) };
+
+        c_str_to_string(mapping)
+    }
+
+    /// Return true if the controller has been opened and currently
+    /// connected.
+    pub fn attached(&self) -> bool {
+        unsafe { ll::SDL_GameControllerGetAttached(self.raw) != 0 }
+    }
+}
+
+impl Drop for GameController {
+    fn drop(&mut self) {
+        unsafe { ll::SDL_GameControllerClose(self.raw) }
+    }
+}
+
+/// Convert C string `c_str` to a String. Return an empty string if
+/// c_str is NULL.
+fn c_str_to_string(c_str: *const c_char) -> String {
+    if c_str.is_null() {
+        String::new()
+    } else {
+        let bytes = unsafe { c_str_to_bytes(&c_str) };
+
+        String::from_utf8_lossy(bytes).to_string()
     }
 }

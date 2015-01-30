@@ -92,7 +92,7 @@ fn test_timer_1() {
     };
 
     // Check that timer has stopped
-    delay(500);
+    delay(1000);
     let num = local_num.lock().unwrap();
     assert!(*num == final_num);
 }
