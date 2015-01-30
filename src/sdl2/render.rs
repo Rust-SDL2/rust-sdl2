@@ -742,84 +742,83 @@ impl<'renderer> Drop for Texture<'renderer> {
 
 impl<'renderer> Texture<'renderer> {
     /// Queries the attributes of the texture.
-    pub fn query(&self) -> SdlResult<TextureQuery> {
+    pub fn query(&self) -> TextureQuery {
         let format: uint32_t = 0;
         let access: c_int = 0;
         let width: c_int = 0;
         let height: c_int = 0;
 
-        let result = unsafe { ll::SDL_QueryTexture(self.raw, &format, &access, &width, &height) == 0 };
-        if result {
-            Ok(TextureQuery {
+        let ret = unsafe { ll::SDL_QueryTexture(self.raw, &format, &access, &width, &height) };
+        // Should only fail on an invalid texture
+        if ret != 0 {
+            panic!(get_error())
+        } else {
+            TextureQuery {
                format: FromPrimitive::from_i64(format as i64).unwrap(),
                access: FromPrimitive::from_i64(access as i64).unwrap(),
                width: width as i32,
                height: height as i32
-            })
-        } else {
-            Err(get_error())
+            }
         }
     }
 
     /// Sets an additional color value multiplied into render copy operations.
-    pub fn set_color_mod(&mut self, red: u8, green: u8, blue: u8) -> SdlResult<()> {
+    pub fn set_color_mod(&mut self, red: u8, green: u8, blue: u8) {
         let ret = unsafe { ll::SDL_SetTextureColorMod(self.raw, red, green, blue) };
 
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+        if ret != 0 {
+            panic!("Error setting color mod: {}", get_error())
+        }
     }
 
     /// Gets the additional color value multiplied into render copy operations.
-    pub fn get_color_mod(&self) -> SdlResult<(u8, u8, u8)> {
+    pub fn get_color_mod(&self) -> (u8, u8, u8) {
         let r = 0;
         let g = 0;
         let b = 0;
-        let result = unsafe { ll::SDL_GetTextureColorMod(self.raw, &r, &g, &b) == 0 };
+        let ret = unsafe { ll::SDL_GetTextureColorMod(self.raw, &r, &g, &b) };
 
-        if result {
-            Ok((r, g, b))
-        } else {
-            Err(get_error())
-        }
+        // Should only fail on an invalid texture
+        if ret != 0 { panic!(get_error()) }
+        else { (r, g, b) }
     }
 
     /// Sets an additional alpha value multiplied into render copy operations.
-    pub fn set_alpha_mod(&mut self, alpha: u8) -> SdlResult<()> {
+    pub fn set_alpha_mod(&mut self, alpha: u8) {
         let ret = unsafe { ll::SDL_SetTextureAlphaMod(self.raw, alpha) };
 
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+        if ret != 0 {
+            panic!("Error setting alpha mod: {}", get_error())
+        }
     }
 
     /// Gets the additional alpha value multiplied into render copy operations.
-    pub fn get_alpha_mod(&self) -> SdlResult<u8> {
+    pub fn get_alpha_mod(&self) -> u8 {
         let alpha = 0;
-        let result = unsafe { ll::SDL_GetTextureAlphaMod(self.raw, &alpha) == 0 };
+        let ret = unsafe { ll::SDL_GetTextureAlphaMod(self.raw, &alpha) };
 
-        if result {
-            Ok(alpha)
-        } else {
-            Err(get_error())
-        }
+        // Should only fail on an invalid texture
+        if ret != 0 { panic!(get_error()) }
+        else { alpha }
     }
 
     /// Sets the blend mode for a texture, used by `RenderDrawer::copy()`.
-    pub fn set_blend_mode(&mut self, blend: BlendMode) -> SdlResult<()> {
+    pub fn set_blend_mode(&mut self, blend: BlendMode) {
         let ret = unsafe { ll::SDL_SetTextureBlendMode(self.raw, FromPrimitive::from_i64(blend as i64).unwrap()) };
 
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+        if ret != 0 {
+            panic!("Error setting blend: {}", get_error())
+        }
     }
 
     /// Gets the blend mode used for texture copy operations.
-    pub fn get_blend_mode(&self) -> SdlResult<BlendMode> {
+    pub fn get_blend_mode(&self) -> BlendMode {
         let blend = 0;
-        let result = unsafe { ll::SDL_GetTextureBlendMode(self.raw, &blend) == 0 };
-        if result {
-            Ok(FromPrimitive::from_i64(blend as i64).unwrap())
-        } else {
-            Err(get_error())
-        }
+        let ret = unsafe { ll::SDL_GetTextureBlendMode(self.raw, &blend) };
+
+        // Should only fail on an invalid texture
+        if ret != 0 { panic!(get_error()) }
+        else { FromPrimitive::from_i64(blend as i64).unwrap() }
     }
 
     /// Updates the given texture rectangle with new pixel data.
@@ -857,7 +856,7 @@ impl<'renderer> Texture<'renderer> {
     {
         // Call to SDL to populate pixel data
         let loaded = unsafe {
-            let q = try!(self.query());
+            let q = self.query();
             let pixels : *const c_void = ptr::null();
             let pitch = 0;
             let size = q.format.byte_size_of_pixels((q.width * q.height) as usize);
