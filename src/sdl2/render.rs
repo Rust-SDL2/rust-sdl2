@@ -80,6 +80,8 @@ bitflags! {
     }
 }
 
+/// A structure that contains information on the capabilities of a render driver
+/// or the current render context.
 #[derive(PartialEq)]
 pub struct RendererInfo {
     pub name: String,
@@ -122,6 +124,7 @@ pub enum RendererParent {
     Window(Window)
 }
 
+/// 2D rendering context
 pub struct Renderer {
     raw: *const ll::SDL_Renderer,
     parent: Option<RendererParent>,
@@ -250,11 +253,13 @@ impl Renderer {
     }
 }
 
+/// Drawing functionality for the render context.
 pub struct RenderDrawer {
     raw: *const ll::SDL_Renderer,
     render_target: RenderTarget
 }
 
+/// Render target methods for the drawer
 impl RenderDrawer {
     fn new(raw: *const ll::SDL_Renderer) -> RenderDrawer {
         RenderDrawer {
@@ -263,15 +268,23 @@ impl RenderDrawer {
         }
     }
 
+    /// Determine whether a window supports the use of render targets.
     pub fn render_target_supported(&self) -> bool {
         unsafe { ll::SDL_RenderTargetSupported(self.raw) == 1 }
     }
 
+    /// Gets the render target handle.
+    ///
+    /// Returns `None` if the window does not support the use of render targets.
     pub fn render_target(&mut self) -> Option<&mut RenderTarget> {
         if self.render_target_supported() { Some(&mut self.render_target) }
         else { None }
     }
+}
 
+/// Drawing methods
+impl RenderDrawer {
+    /// Sets the color used for drawing operations (Rect, Line and Clear).
     pub fn set_draw_color(&mut self, color: pixels::Color) {
         let ret = match color {
             pixels::Color::RGB(r, g, b) => {
@@ -285,6 +298,7 @@ impl RenderDrawer {
         if ret != 0 { panic!(get_error()) }
     }
 
+    /// Gets the color used for drawing operations (Rect, Line and Clear).
     pub fn get_draw_color(&self) -> pixels::Color {
         let r: u8 = 0;
         let g: u8 = 0;
@@ -296,12 +310,14 @@ impl RenderDrawer {
         else { pixels::Color::RGBA(r, g, b, a) }
     }
 
+    /// Sets the blend mode used for drawing operations (Fill and Line).
     pub fn set_blend_mode(&mut self, blend: BlendMode) {
         let ret = unsafe { ll::SDL_SetRenderDrawBlendMode(self.raw, FromPrimitive::from_i64(blend as i64).unwrap()) };
         // Should only fail on an invalid renderer
         if ret != 0 { panic!(get_error()) }
     }
 
+    /// Gets the blend mode used for drawing operations.
     pub fn get_blend_mode(&self) -> BlendMode {
         let blend = 0;
         let ret = unsafe { ll::SDL_GetRenderDrawBlendMode(self.raw, &blend) };
@@ -310,15 +326,24 @@ impl RenderDrawer {
         else { FromPrimitive::from_i64(blend as i64).unwrap() }
     }
 
+    /// Clears the current rendering target with the drawing color.
     pub fn clear(&mut self) {
         let ret = unsafe { ll::SDL_RenderClear(self.raw) };
         if ret != 0 { panic!("Could not clear: {}", get_error()) }
     }
 
+    /// Updates the screen with any rendering performed since the previous call.
+    ///
+    /// SDL's rendering functions operate on a backbuffer; that is, calling a
+    /// rendering function such as `draw_line()` does not directly put a line on
+    /// the screen, but rather updates the backbuffer.
+    /// As such, you compose your entire scene and present the composed
+    /// backbuffer to the screen as a complete picture.
     pub fn present(&mut self) {
         unsafe { ll::SDL_RenderPresent(self.raw) }
     }
 
+    /// Gets the output size of a rendering context.
     pub fn get_output_size(&self) -> SdlResult<(i32, i32)> {
         let width: c_int = 0;
         let height: c_int = 0;
@@ -332,11 +357,13 @@ impl RenderDrawer {
         }
     }
 
+    /// Sets a device independent resolution for rendering.
     pub fn set_logical_size(&mut self, width: i32, height: i32) {
         let ret = unsafe { ll::SDL_RenderSetLogicalSize(self.raw, width as c_int, height as c_int) };
         if ret != 0 { panic!("Could not set logical size: {}", get_error()) }
     }
 
+    /// Gets device independent resolution for rendering.
     pub fn get_logical_size(&self) -> (i32, i32) {
 
         let width: c_int = 0;
@@ -347,6 +374,7 @@ impl RenderDrawer {
         (width as i32, height as i32)
     }
 
+    /// Sets the drawing area for rendering on the current target.
     pub fn set_viewport(&mut self, rect: Option<Rect>) {
         let ptr = match rect {
             Some(ref rect) => rect as *const _,
@@ -356,6 +384,7 @@ impl RenderDrawer {
         if ret != 0 { panic!("Could not set viewport: {}", get_error()) }
     }
 
+    /// Gets the drawing area for the current target.
     pub fn get_viewport(&self) -> Rect {
         let rect = Rect{
             x: 0,
@@ -367,6 +396,7 @@ impl RenderDrawer {
         rect
     }
 
+    /// Sets the clip rectangle for rendering on the specified target.
     pub fn set_clip_rect(&mut self, rect: Option<Rect>) {
         let ret = unsafe {
             ll::SDL_RenderSetClipRect(
@@ -380,6 +410,7 @@ impl RenderDrawer {
         if ret != 0 { panic!("Could not set clip rect: {}", get_error()) }
     }
 
+    /// Gets the clip rectangle for the current target.
     pub fn get_clip_rect(&self) -> Rect {
         let rect = Rect{
             x: 0,
@@ -391,12 +422,14 @@ impl RenderDrawer {
         rect
     }
 
+    /// Sets the drawing scale for rendering on the current target.
     pub fn set_scale(&mut self, scale_x: f64, scale_y: f64) {
         let ret = unsafe { ll::SDL_RenderSetScale(self.raw, scale_x as c_float, scale_y as c_float) };
         // Should only fail on an invalid renderer
         if ret != 0 { panic!(get_error()) }
     }
 
+    /// Gets the drawing scale for the current target.
     pub fn get_scale(&self) -> (f64, f64) {
         let scale_x: c_float = 0.0;
         let scale_y: c_float = 0.0;
@@ -404,6 +437,9 @@ impl RenderDrawer {
         (scale_x as f64, scale_y as f64)
     }
 
+    /// Draws a point on the current rendering target.
+    /// # Panics
+    /// Panics if drawing fails for any reason (e.g. driver failure)
     pub fn draw_point(&mut self, point: Point) {
         unsafe {
             if ll::SDL_RenderDrawPoint(self.raw, point.x, point.y) != 0 {
@@ -412,6 +448,9 @@ impl RenderDrawer {
         }
     }
 
+    /// Draws multiple points on the current rendering target.
+    /// # Panics
+    /// Panics if drawing fails for any reason (e.g. driver failure)
     pub fn draw_points(&mut self, points: &[Point]) {
         unsafe {
             if ll::SDL_RenderDrawPoints(self.raw, points.as_ptr(), points.len() as c_int) != 0 {
@@ -420,6 +459,9 @@ impl RenderDrawer {
         }
     }
 
+    // Draws a line on the current rendering target.
+    /// # Panics
+    /// Panics if drawing fails for any reason (e.g. driver failure)
     pub fn draw_line(&mut self, start: Point, end: Point) {
         unsafe {
             if ll::SDL_RenderDrawLine(self.raw, start.x, start.y, end.x, end.y) != 0 {
@@ -428,6 +470,9 @@ impl RenderDrawer {
         }
     }
 
+    /// Draws a series of connected lines on the current rendering target.
+    /// # Panics
+    /// Panics if drawing fails for any reason (e.g. driver failure)
     pub fn draw_lines(&mut self, points: &[Point]) {
         unsafe {
             if ll::SDL_RenderDrawLines(self.raw, points.as_ptr(), points.len() as c_int) != 0 {
@@ -436,6 +481,9 @@ impl RenderDrawer {
         }
     }
 
+    /// Draws a rectangle on the current rendering target.
+    /// # Panics
+    /// Panics if drawing fails for any reason (e.g. driver failure)
     pub fn draw_rect(&mut self, rect: &Rect) {
         unsafe {
             if ll::SDL_RenderDrawRect(self.raw, rect) != 0 {
@@ -444,6 +492,9 @@ impl RenderDrawer {
         }
     }
 
+    /// Draws some number of rectangles on the current rendering target.
+    /// # Panics
+    /// Panics if drawing fails for any reason (e.g. driver failure)
     pub fn draw_rects(&mut self, rects: &[Rect]) {
         unsafe {
             if ll::SDL_RenderDrawRects(self.raw, rects.as_ptr(), rects.len() as c_int) != 0 {
@@ -452,6 +503,10 @@ impl RenderDrawer {
         }
     }
 
+    /// Fills a rectangle on the current rendering target with the drawing
+    /// color.
+    /// # Panics
+    /// Panics if drawing fails for any reason (e.g. driver failure)
     pub fn fill_rect(&mut self, rect: &Rect) {
         unsafe {
             if ll::SDL_RenderFillRect(self.raw, rect) != 0 {
@@ -460,6 +515,10 @@ impl RenderDrawer {
         }
     }
 
+    /// Fills some number of rectangles on the current rendering target with
+    /// the drawing color.
+    /// # Panics
+    /// Panics if drawing fails for any reason (e.g. driver failure)
     pub fn fill_rects(&mut self, rects: &[Rect]) {
         unsafe {
             if ll::SDL_RenderFillRects(self.raw, rects.as_ptr(), rects.len() as c_int) != 0 {
@@ -468,6 +527,15 @@ impl RenderDrawer {
         }
     }
 
+    /// Copies a portion of the texture to the current rendering target.
+    ///
+    /// * If `src` is `None`, the entire texture is copied.
+    /// * If `dst` is `None`, the texture will be stretched to fill the given
+    ///   rectangle.
+    ///
+    /// # Panics
+    /// Panics if drawing fails for any reason (e.g. driver failure),
+    /// or if the provided texture does not belong to the renderer.
     pub fn copy(&mut self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>) {
         let ret = unsafe {
             ll::SDL_RenderCopy(
@@ -489,6 +557,20 @@ impl RenderDrawer {
         }
     }
 
+    /// Copies a portion of the texture to the current rendering target,
+    /// optionally rotating it by angle around the given center and also
+    /// flipping it top-bottom and/or left-right.
+    ///
+    /// * If `src` is `None`, the entire texture is copied.
+    /// * If `dst` is `None`, the texture will be stretched to fill the given
+    ///   rectangle.
+    /// * If `center` is `None`, rotation will be done around the center point
+    ///   of `dst`, or `src` if `dst` is None.
+    ///
+    /// # Panics
+    /// Panics if drawing fails for any reason (e.g. driver failure),
+    /// if the provided texture does not belong to the renderer,
+    /// or if the driver does not support RenderCopyEx.
     pub fn copy_ex(&mut self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>, angle: f64, center: Option<Point>, (flip_horizontal, flip_vertical): (bool, bool)) {
         let flip = match (flip_horizontal, flip_vertical) {
             (false, false) => ll::SDL_FLIP_NONE,
@@ -523,6 +605,9 @@ impl RenderDrawer {
         }
     }
 
+    /// Reads pixels from the current rendering target.
+    /// # Remarks
+    /// WARNING: This is a very slow operation, and should not be used frequently.
     pub fn read_pixels(&self, rect: Option<Rect>, format: pixels::PixelFormatEnum) -> SdlResult<Vec<u8>> {
         unsafe {
             let (actual_rect, w, h) = match rect {
@@ -553,6 +638,7 @@ impl RenderDrawer {
     }
 }
 
+/// A handle for getting/setting the render target of the render context.
 pub struct RenderTarget {
     raw: *const ll::SDL_Renderer
 }
@@ -630,6 +716,10 @@ pub struct TextureQuery {
     pub height: i32
 }
 
+/// A texture for a rendering context.
+///
+/// Textures are owned by and cannot live longer than the parent `Renderer`.
+/// Each texture is bound to the `'renderer` contravariant lifetime.
 #[derive(PartialEq)] #[allow(raw_pointer_derive)]
 pub struct Texture<'renderer> {
     raw: *const ll::SDL_Texture,
@@ -651,7 +741,7 @@ impl<'renderer> Drop for Texture<'renderer> {
 }
 
 impl<'renderer> Texture<'renderer> {
-
+    /// Queries the attributes of the texture.
     pub fn query(&self) -> SdlResult<TextureQuery> {
         let format: uint32_t = 0;
         let access: c_int = 0;
@@ -671,6 +761,7 @@ impl<'renderer> Texture<'renderer> {
         }
     }
 
+    /// Sets an additional color value multiplied into render copy operations.
     pub fn set_color_mod(&mut self, red: u8, green: u8, blue: u8) -> SdlResult<()> {
         let ret = unsafe { ll::SDL_SetTextureColorMod(self.raw, red, green, blue) };
 
@@ -678,6 +769,7 @@ impl<'renderer> Texture<'renderer> {
         else { Err(get_error()) }
     }
 
+    /// Gets the additional color value multiplied into render copy operations.
     pub fn get_color_mod(&self) -> SdlResult<(u8, u8, u8)> {
         let r = 0;
         let g = 0;
@@ -691,6 +783,7 @@ impl<'renderer> Texture<'renderer> {
         }
     }
 
+    /// Sets an additional alpha value multiplied into render copy operations.
     pub fn set_alpha_mod(&mut self, alpha: u8) -> SdlResult<()> {
         let ret = unsafe { ll::SDL_SetTextureAlphaMod(self.raw, alpha) };
 
@@ -698,6 +791,7 @@ impl<'renderer> Texture<'renderer> {
         else { Err(get_error()) }
     }
 
+    /// Gets the additional alpha value multiplied into render copy operations.
     pub fn get_alpha_mod(&self) -> SdlResult<u8> {
         let alpha = 0;
         let result = unsafe { ll::SDL_GetTextureAlphaMod(self.raw, &alpha) == 0 };
@@ -709,6 +803,7 @@ impl<'renderer> Texture<'renderer> {
         }
     }
 
+    /// Sets the blend mode for a texture, used by `RenderDrawer::copy()`.
     pub fn set_blend_mode(&mut self, blend: BlendMode) -> SdlResult<()> {
         let ret = unsafe { ll::SDL_SetTextureBlendMode(self.raw, FromPrimitive::from_i64(blend as i64).unwrap()) };
 
@@ -716,6 +811,7 @@ impl<'renderer> Texture<'renderer> {
         else { Err(get_error()) }
     }
 
+    /// Gets the blend mode used for texture copy operations.
     pub fn get_blend_mode(&self) -> SdlResult<BlendMode> {
         let blend = 0;
         let result = unsafe { ll::SDL_GetTextureBlendMode(self.raw, &blend) == 0 };
@@ -726,6 +822,12 @@ impl<'renderer> Texture<'renderer> {
         }
     }
 
+    /// Updates the given texture rectangle with new pixel data.
+    ///
+    /// `pitch` is the number of bytes in a row of pixel data, including padding
+    /// between lines
+    ///
+    /// * If `rect` is `None`, the entire texture is updated.
     pub fn update(&mut self, rect: Option<Rect>, pixel_data: &[u8], pitch: i32) -> SdlResult<()> {
         let ret = unsafe {
             let actual_rect = match rect {
@@ -786,6 +888,8 @@ impl<'renderer> Texture<'renderer> {
         }
     }
 
+    /// Binds an OpenGL/ES/ES2 texture to the current
+    /// context for use with when rendering OpenGL primitives directly.
     pub unsafe fn gl_bind_texture(&mut self) -> (f32, f32) {
         unsafe {
             let texw = 0.0;
@@ -799,6 +903,7 @@ impl<'renderer> Texture<'renderer> {
         }
     }
 
+    /// Unbinds an OpenGL/ES/ES2 texture from the current context.
     pub unsafe fn gl_unbind_texture(&mut self) {
         unsafe {
             if ll::SDL_GL_UnbindTexture(self.raw) != 0 {
@@ -807,6 +912,7 @@ impl<'renderer> Texture<'renderer> {
         }
     }
 
+    /// Binds and unbinds an OpenGL/ES/ES2 texture from the current context.
     pub fn gl_with_bind<R, F: FnOnce(f32, f32) -> R>(&mut self, f: F) -> R {
         unsafe {
             let texw = 0.0;
