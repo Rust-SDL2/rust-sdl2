@@ -46,7 +46,7 @@ use SdlResult;
 use std::mem;
 use std::ptr;
 use std::raw;
-use libc::{c_int, uint32_t, c_float, c_double, c_void};
+use libc::{c_int, uint32_t, c_double, c_void};
 use rect::Point;
 use rect::Rect;
 use std::cell::{RefCell, RefMut};
