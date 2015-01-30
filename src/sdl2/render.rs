@@ -430,7 +430,7 @@ impl RenderDrawer {
         }
     }
 
-    pub fn copy(&mut self, texture: &mut Texture, src: Option<Rect>, dst: Option<Rect>) {
+    pub fn copy(&mut self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>) {
         let ret = unsafe {
             ll::SDL_RenderCopy(
                 self.raw,
@@ -451,7 +451,7 @@ impl RenderDrawer {
         }
     }
 
-    pub fn copy_ex(&mut self, texture: &mut Texture, src: Option<Rect>, dst: Option<Rect>, angle: f64, center: Option<Point>, (flip_horizontal, flip_vertical): (bool, bool)) {
+    pub fn copy_ex(&mut self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>, angle: f64, center: Option<Point>, (flip_horizontal, flip_vertical): (bool, bool)) {
         let flip = match (flip_horizontal, flip_vertical) {
             (false, false) => ll::SDL_FLIP_NONE,
             (true, false) => ll::SDL_FLIP_HORIZONTAL,
