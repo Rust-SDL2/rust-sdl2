@@ -1,3 +1,41 @@
+//! Official C documentation: https://wiki.libsdl.org/CategoryRender
+//! # Introduction
+//!
+//! This module contains functions for 2D accelerated rendering.
+//!
+//! This API supports the following features:
+//!
+//! * single pixel points
+//! * single pixel lines
+//! * filled rectangles
+//! * texture images
+//! * All of these may be drawn in opaque, blended, or additive modes.
+//!
+//! The texture images can have an additional color tint or alpha modulation
+//! applied to them, and may also be stretched with linear interpolation,
+//! rotated or flipped/mirrored.
+//!
+//! For advanced functionality like particle effects or actual 3D you should use
+//! SDL's OpenGL/Direct3D support or one of the many available 3D engines.
+//!
+//! This API is not designed to be used from multiple threads, see
+//! [this bug](http://bugzilla.libsdl.org/show_bug.cgi?id=1995) for details.
+//!
+//! # Rust differences
+//!
+//! The Rust version of the render API deviates slightly from the original,
+//! in order to be more idiomatic with Rust and to adhere to its notion of
+//! memory safety.
+//!
+//! All `Texture` types are restricted to live for only as long as
+//! the parent `Renderer`.
+//! Consequentially, this means that `Renderer` never mutates and that all
+//! drawing functionality is put behind interior mutability using
+//! `RefCell<RenderDrawer>`.
+//!
+//! None of the draw methods in `RenderDrawer` are expected to fail.
+//! If they do, a panic is raised and the program is aborted.
+
 use video;
 use video::Window;
 use surface;
