@@ -225,11 +225,16 @@ impl Renderer {
     /// belong to the Renderer.
     ///
     /// # Examples
-    /// ```
-    /// let mut drawer = renderer.drawer();
-    /// drawer.clear();
-    /// drawer.draw_rect(&Rect::new(50, 50, 150, 175));
-    /// drawer.present();
+    /// ```no_run
+    /// use sdl2::render::Renderer;
+    /// use sdl2::rect::Rect;
+    ///
+    /// fn test_draw(renderer: &Renderer) {
+    ///     let mut drawer = renderer.drawer();
+    ///     drawer.clear();
+    ///     drawer.draw_rect(&Rect::new(50, 50, 150, 175));
+    ///     drawer.present();
+    /// }
     /// ```
     pub fn drawer(&self) -> RefMut<RenderDrawer> {
         match self.drawer.try_borrow_mut() {
