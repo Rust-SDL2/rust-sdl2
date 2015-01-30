@@ -10,7 +10,7 @@ use std::ptr;
 use std::borrow::ToOwned;
 
 use controller;
-use controller::{ControllerAxis, ControllerButton};
+use controller::{Axis, Button};
 use joystick;
 use joystick::HatState;
 use keyboard;
@@ -258,19 +258,19 @@ pub enum Event {
     ControllerAxisMotion {
         timestamp: u32,
         which: i32,
-        axis: ControllerAxis,
+        axis: Axis,
         value: i16
     },
 
     ControllerButtonDown {
         timestamp: u32,
         which: i32,
-        button: ControllerButton
+        button: Button
     },
     ControllerButtonUp {
         timestamp: u32,
         which: i32,
-        button: ControllerButton
+        button: Button
     },
 
     ControllerDeviceAdded {
