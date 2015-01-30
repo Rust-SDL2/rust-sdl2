@@ -1,8 +1,8 @@
 use sdl2;
 use sdl2_ttf;
 
-static SCREEN_WIDTH : isize = 800;
-static SCREEN_HEIGHT : isize = 600;
+static SCREEN_WIDTH : i32 = 800;
+static SCREEN_HEIGHT : i32 = 600;
 
 // fail when error
 macro_rules! trying(
