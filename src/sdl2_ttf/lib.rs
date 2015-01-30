@@ -9,6 +9,10 @@ A binding for SDL2_ttf.
 
 extern crate libc;
 extern crate sdl2;
+extern crate "sdl2-sys" as sdl2_sys;
+
+#[macro_use]
+extern crate bitflags;
 
 use libc::{c_int, c_long};
 use std::ffi::{c_str_to_bytes, CString};
@@ -17,7 +21,7 @@ use sdl2::surface::Surface;
 use sdl2::get_error;
 use sdl2::pixels;
 use sdl2::pixels::Color;
-use sdl2::pixels::ll::SDL_Color;
+use sdl2_sys::pixels::SDL_Color;
 use sdl2::rwops::RWops;
 use sdl2::version::Version;
 use sdl2::SdlResult;
@@ -52,13 +56,15 @@ fn color_to_c_color(color: Color) -> SDL_Color {
 }
 
 /// Font Style
-bitflags!(flags FontStyle : c_int {
+bitflags! {
+    flags FontStyle : c_int {
     const StyleNormal = ffi::TTF_STYLE_NORMAL,
     const StyleBold   = ffi::TTF_STYLE_BOLD,
     const StyleItalic = ffi::TTF_STYLE_ITALIC,
     const StyleUnderline = ffi::TTF_STYLE_UNDERLINE,
-    const StyleStrikeThrough = ffi::TTF_STYLE_STRIKETHROUGH
-});
+    const StyleStrikeThrough = ffi::TTF_STYLE_STRIKETHROUGH,
+    }
+}
 
 #[derive(Show, PartialEq, FromPrimitive)]
 pub enum Hinting {
