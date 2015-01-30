@@ -165,6 +165,9 @@ impl Renderer {
     pub fn get_parent(&self) -> &RendererParent { self.parent.as_ref().unwrap() }
 
     #[inline]
+    pub unsafe fn raw(&self) -> *const ll::SDL_Renderer { self.raw }
+
+    #[inline]
     pub fn unwrap_parent(mut self) -> RendererParent {
         use std::mem;
         mem::replace(&mut self.parent, None).unwrap()

@@ -19,7 +19,7 @@ bitflags = "0.1"
 [dependencies.sdl2-sys]
 
 path = "sdl2-sys"
-version = "0.0.20"
+version = "0.0.21"
 
 [features]
 
