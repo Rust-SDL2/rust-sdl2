@@ -138,6 +138,7 @@ impl Drop for Renderer {
 }
 
 impl Renderer {
+    /// Creates a 2D rendering context for a window.
     pub fn from_window(window: Window, index: RenderDriverIndex, renderer_flags: RendererFlags) -> SdlResult<Renderer> {
         let index = match index {
             RenderDriverIndex::Auto => -1,
@@ -159,6 +160,7 @@ impl Renderer {
         }
     }
 
+    /// Creates a window and default renderer.
     pub fn new_with_window(width: i32, height: i32, window_flags: video::WindowFlags) -> SdlResult<Renderer> {
         use sys::video::SDL_Window;
 
@@ -177,6 +179,7 @@ impl Renderer {
         }
     }
 
+    /// Creates a 2D software rendering context for a surface.
     pub fn from_surface(surface: surface::Surface) -> SdlResult<Renderer> {
         let raw_renderer = unsafe { ll::SDL_CreateSoftwareRenderer(surface.raw()) };
         if raw_renderer == ptr::null() {
@@ -190,6 +193,7 @@ impl Renderer {
         }
     }
 
+    /// Gets information about the rendering context.
     pub fn get_info(&self) -> RendererInfo {
         unsafe {
             let renderer_info_raw: ll::SDL_RendererInfo = mem::uninitialized();
@@ -202,15 +206,44 @@ impl Renderer {
         }
     }
 
+    /// Gets the window or surface the rendering context was created from.
     #[inline]
     pub fn get_parent(&self) -> &RendererParent { self.parent.as_ref().unwrap() }
 
+    /// Unwraps the window or surface the rendering context was created from.
     #[inline]
     pub fn unwrap_parent(mut self) -> RendererParent {
         use std::mem;
         mem::replace(&mut self.parent, None).unwrap()
     }
 
+    /// Provides drawing methods for the renderer.
+    ///
+    /// # Remarks
+    /// This method uses interior mutability (`RefCell`) to preserve the
+    /// Renderer's lifetime, and therefore the lifetimes of any Textures that
+    /// belong to the Renderer.
+    ///
+    /// # Examples
+    /// ```
+    /// let mut drawer = renderer.drawer();
+    /// drawer.clear();
+    /// drawer.draw_rect(&Rect::new(50, 50, 150, 175));
+    /// drawer.present();
+    /// ```
+    pub fn drawer(&self) -> RefMut<RenderDrawer> {
+        match self.drawer.try_borrow_mut() {
+            Some(drawer) => drawer,
+            None => panic!("Renderer drawer already borrowed")
+        }
+    }
+}
+
+/// Texture-creating methods for the renderer
+impl Renderer {
+    /// Creates a texture for a rendering context.
+    ///
+    /// `size` is the width and height of the texture.
     pub fn create_texture(&self, format: pixels::PixelFormatEnum, access: TextureAccess, size: (i32, i32)) -> SdlResult<Texture> {
         let (width, height) = size;
         let result = unsafe { ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int) };
@@ -236,19 +269,15 @@ impl Renderer {
         self.create_texture(format, TextureAccess::Target, size)
     }
 
+    /// Creates a texture from an existing surface.
+    /// # Remarks
+    /// The access hint for the created texture is `TextureAccess::Static`.
     pub fn create_texture_from_surface(&self, surface: &surface::Surface) -> SdlResult<Texture> {
         let result = unsafe { ll::SDL_CreateTextureFromSurface(self.raw, surface.raw()) };
         if result == ptr::null() {
             Err(get_error())
         } else {
             Ok(Texture { raw: result, owned: true, _marker: ContravariantLifetime } )
-        }
-    }
-
-    pub fn drawer(&self) -> RefMut<RenderDrawer> {
-        match self.drawer.try_borrow_mut() {
-            Some(drawer) => drawer,
-            None => panic!("Renderer drawer already borrowed")
         }
     }
 }
