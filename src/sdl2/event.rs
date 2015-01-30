@@ -882,11 +882,11 @@ impl Event {
                 };
 
                 Event::User {
-					timestamp: event.timestamp,
-					window: window,
-					_type: raw_type,
-					code: event.code
-				}
+                    timestamp: event.timestamp,
+                    window: window,
+                    _type: raw_type,
+                    code: event.code
+                }
             }
         }}                      // close unsafe & match
 
