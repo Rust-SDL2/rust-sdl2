@@ -442,7 +442,7 @@ impl AudioCVT {
 
                 // calculate the size of the dst buffer
                 raw.len = num::cast(src.len()).expect("Buffer length overflow");
-                let dst_size = (raw.len * raw.len_mult) as usize;
+                let dst_size = self.get_capacity(src.len());
                 let needed = dst_size - src.len();
                 src.reserve_exact(needed);
 
@@ -465,6 +465,17 @@ impl AudioCVT {
             }
         }
     }
+
+    /// Checks if any conversion is needed. i.e. if the buffer that goes
+    /// into `convert()` is unchanged from the result.
+    pub fn is_conversion_needed(&self) -> bool { self.raw.needed != 0 }
+
+    /// Gets the buffer capacity that can contain both the original and
+    /// converted data.
+    pub fn get_capacity(&self, src_len: usize) -> usize {
+        use std::num::Int;
+        src_len.checked_mul(self.raw.len_mult as usize).expect("Interger overflow")
+    }
 }
 
 
@@ -483,6 +494,9 @@ mod test {
         let new_buffer_expected: Vec<u8> = range(0, 255).flat_map(|v| repeat(v).take(2)).collect();
 
         let cvt = AudioCVT::new(AUDIOU8, 1, 44100, AUDIOU8, 2, 44100).unwrap();
+        assert!(cvt.is_conversion_needed());
+        assert_eq!(cvt.get_capacity(255), 255*2);
+
         let new_buffer = cvt.convert(buffer);
         assert_eq!(new_buffer.len(), new_buffer_expected.len());
         assert_eq!(new_buffer, new_buffer_expected);
