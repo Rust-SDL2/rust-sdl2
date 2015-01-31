@@ -390,6 +390,8 @@ pub struct AudioDeviceLockGuard<'a, CB: 'a> {
     device: &'a mut AudioDevice<CB>
 }
 
+impl<'a, CB: 'a> !Send for AudioDeviceLockGuard<'a, CB> {}
+
 impl<'a, CB: 'a> Deref for AudioDeviceLockGuard<'a, CB> {
     type Target = CB;
     fn deref(&self) -> &CB { &self.device.userdata.callback }
