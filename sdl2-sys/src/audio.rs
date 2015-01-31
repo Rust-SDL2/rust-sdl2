@@ -44,7 +44,8 @@ pub type SDL_AudioFilter =
     ::std::option::Option<extern "C" fn
                               (arg1: *const SDL_AudioCVT,
                                arg2: SDL_AudioFormat)>;
-#[allow(dead_code, missing_copy_implementations)]
+#[allow(dead_code, missing_copy_implementations, raw_pointer_derive)]
+#[derive(Copy)]
 #[repr(C)]
 pub struct SDL_AudioCVT {
     pub needed: c_int,
