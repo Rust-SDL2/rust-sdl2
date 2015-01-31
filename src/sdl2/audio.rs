@@ -141,7 +141,7 @@ impl Drop for AudioSpecWAV {
     }
 }
 
-pub trait AudioCallback<T> {
+pub trait AudioCallback<T>: Send {
     fn callback(&mut self, &mut [T]);
 }
 
