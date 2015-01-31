@@ -2,7 +2,7 @@
 use std::ffi::{CString, c_str_to_bytes};
 
 use SdlResult;
-use get_error;
+use {get_error, clear_error};
 
 use sys::controller as ll;
 use sys::event::{SDL_QUERY, SDL_ENABLE};
@@ -168,6 +168,7 @@ pub fn add_mapping(mapping: &str) -> SdlResult<MappingStatus> {
     }
 }
 
+/// Wrapper around the SDL_GameController object
 pub struct GameController {
     raw: *const ll::SDL_GameController,
 }
@@ -206,8 +207,61 @@ impl GameController {
 
     /// Return true if the controller has been opened and currently
     /// connected.
-    pub fn attached(&self) -> bool {
+    pub fn get_attached(&self) -> bool {
         unsafe { ll::SDL_GameControllerGetAttached(self.raw) != 0 }
+    }
+
+    /// Get the position of the given `axis`
+    pub fn get_axis(&self, axis: Axis) -> SdlResult<i16> {
+        // This interface is a bit messed up: 0 is a valid position
+        // but can also mean that an error occured. As far as I can
+        // tell the only way to know if an error happened is to see if
+        // get_error() returns a non-empty string.
+        clear_error();
+
+        let axis = axis as ll::SDL_GameControllerAxis;
+
+        let pos = unsafe { ll::SDL_GameControllerGetAxis(self.raw, axis) };
+
+        if pos != 0 {
+            Ok(pos)
+        } else {
+            let err = get_error();
+
+            if err.is_empty() {
+                Ok(pos)
+            } else {
+                Err(err)
+            }
+        }
+    }
+
+    /// Return `Ok(true)` if `button` is pressed.
+    pub fn get_button(&self, button: Button) -> SdlResult<bool> {
+        // Same deal as get_axis, 0 can mean both unpressed or
+        // error...
+        clear_error();
+
+        let button = button as ll::SDL_GameControllerButton;
+
+        let pressed =
+            unsafe { ll::SDL_GameControllerGetButton(self.raw, button) };
+
+        match pressed {
+            1 => Ok(true),
+            0 => {
+                let err = get_error();
+
+                if err.is_empty() {
+                    // Button is not pressed
+                    Ok(false)
+                } else {
+                    Err(err)
+                }
+            }
+            // Should be unreachable
+            _ => Err(get_error()),
+        }
     }
 }
 
