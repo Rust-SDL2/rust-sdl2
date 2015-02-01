@@ -139,7 +139,7 @@ pub enum Event {
 
     Window {
         timestamp: u32 ,
-        window: video::Window,
+        window_id: u32,
         win_event_id: WindowEventId,
         data1: i32,
         data2: i32
@@ -148,7 +148,7 @@ pub enum Event {
 
     KeyDown {
         timestamp: u32 ,
-        window: video::Window,
+        window_id: u32,
         keycode: KeyCode,
         scancode: ScanCode,
         keymod: Mod,
@@ -156,7 +156,7 @@ pub enum Event {
     },
     KeyUp {
         timestamp: u32 ,
-        window: video::Window,
+        window_id: u32,
         keycode: KeyCode,
         scancode: ScanCode,
         keymod: Mod,
@@ -165,7 +165,7 @@ pub enum Event {
 
     TextEditing {
         timestamp: u32,
-        window: video::Window,
+        window_id: u32,
         text: String,
         start: i32,
         length: i32
@@ -173,13 +173,13 @@ pub enum Event {
 
     TextInput {
         timestamp: u32,
-        window: video::Window,
+        window_id: u32,
         text: String
     },
 
     MouseMotion {
         timestamp: u32,
-        window: video::Window,
+        window_id: u32,
         which: u32,
         mousestate: MouseState,
         x: i32,
@@ -190,7 +190,7 @@ pub enum Event {
 
     MouseButtonDown {
         timestamp: u32,
-        window: video::Window,
+        window_id: u32,
         which: u32,
         mouse_btn: Mouse,
         x: i32,
@@ -198,7 +198,7 @@ pub enum Event {
     },
     MouseButtonUp {
         timestamp: u32,
-        window: video::Window,
+        window_id: u32,
         which: u32,
         mouse_btn: Mouse,
         x: i32,
@@ -207,7 +207,7 @@ pub enum Event {
 
     MouseWheel {
         timestamp: u32,
-        window: video::Window,
+        window_id: u32,
         which: u32,
         x: i32,
         y: i32
@@ -357,7 +357,7 @@ pub enum Event {
 
     User {
         timestamp: u32,
-        window: video::Window,
+        window_id: u32,
         // sdl-sys uses _type instead of type_, so we follow that convention (for now?)
         _type: u32,
         code: i32
@@ -416,11 +416,11 @@ impl Event {
         let ret = null_event();
         match self {
             // just ignore timestamp
-            Event::User { ref window, _type, code, .. } => {
+            Event::User { window_id, _type, code, .. } => {
                 let event = ll::SDL_UserEvent {
                     _type: _type as uint32_t,
                     timestamp: 0,
-                    windowID: window.get_id(),
+                    windowID: window_id,
                     code: code as i32,
                     data1: ptr::null(),
                     data2: ptr::null(),
@@ -480,15 +480,9 @@ impl Event {
             EventType::Window => {
                 let ref event = *raw.window();
 
-                let window = video::Window::from_id(event.windowID);
-                let window = match window {
-                    Err(_) => return Event::None,
-                    Ok(window) => window,
-                };
-
                 Event::Window {
                     timestamp: event.timestamp,
-                    window: window,
+                    window_id: event.windowID,
                     win_event_id: WindowEventId::from_ll(event.event),
                     data1: event.data1,
                     data2: event.data2
@@ -499,15 +493,9 @@ impl Event {
             EventType::KeyDown => {
                 let ref event = *raw.key();
 
-                let window = video::Window::from_id(event.windowID);
-                let window = match window {
-                    Err(_) => return Event::None,
-                    Ok(window) => window,
-                };
-
                 Event::KeyDown {
                     timestamp: event.timestamp,
-                    window: window,
+                    window_id: event.windowID,
                     keycode: FromPrimitive::from_i32(event.keysym.sym)
                                  .unwrap_or(KeyCode::Unknown),
                     scancode: FromPrimitive::from_u32(event.keysym.scancode)
@@ -519,15 +507,9 @@ impl Event {
             EventType::KeyUp => {
                 let ref event = *raw.key();
 
-                let window = video::Window::from_id(event.windowID);
-                let window = match window {
-                    Err(_) => return Event::None,
-                    Ok(window) => window,
-                };
-
                 Event::KeyUp {
                     timestamp: event.timestamp,
-                    window: window,
+                    window_id: event.windowID,
                     keycode: FromPrimitive::from_i32(event.keysym.sym)
                                .unwrap_or(KeyCode::Unknown),
                     scancode: FromPrimitive::from_u32(event.keysym.scancode)
@@ -539,12 +521,6 @@ impl Event {
             EventType::TextEditing => {
                 let ref event = *raw.edit();
 
-                let window = video::Window::from_id(event.windowID);
-                let window = match window {
-                    Err(_) => return Event::None,
-                    Ok(window) => window,
-                };
-
                 let text = String::from_utf8_lossy(
                         event.text.iter()
                             .take_while(|&b| (*b) != 0i8)
@@ -554,7 +530,7 @@ impl Event {
                     ).to_owned().into_owned();
                 Event::TextEditing {
                     timestamp: event.timestamp,
-                    window: window,
+                    window_id: event.windowID,
                     text: text,
                     start: event.start,
                     length: event.length
@@ -562,12 +538,6 @@ impl Event {
             }
             EventType::TextInput => {
                 let ref event = *raw.text();
-
-                let window = video::Window::from_id(event.windowID);
-                let window = match window {
-                    Err(_) => return Event::None,
-                    Ok(window) => window,
-                };
 
                 let text = String::from_utf8_lossy(
                         event.text.iter()
@@ -578,7 +548,7 @@ impl Event {
                     ).to_owned().into_owned();
                 Event::TextInput {
                     timestamp: event.timestamp,
-                    window: window,
+                    window_id: event.windowID,
                     text: text
                 }
             }
@@ -586,15 +556,9 @@ impl Event {
             EventType::MouseMotion => {
                 let ref event = *raw.motion();
 
-                let window = video::Window::from_id(event.windowID);
-                let window = match window {
-                    Err(_) => return Event::None,
-                    Ok(window) => window,
-                };
-
                 Event::MouseMotion {
                     timestamp: event.timestamp,
-                    window: window,
+                    window_id: event.windowID,
                     which: event.which,
                     mousestate: mouse::MouseState::from_bits_truncate(event.state),
                     x: event.x,
@@ -606,15 +570,9 @@ impl Event {
             EventType::MouseButtonDown => {
                 let ref event = *raw.button();
 
-                let window = video::Window::from_id(event.windowID);
-                let window = match window {
-                    Err(_) => return Event::None,
-                    Ok(window) => window,
-                };
-
                 Event::MouseButtonDown {
                     timestamp: event.timestamp,
-                    window: window,
+                    window_id: event.windowID,
                     which: event.which,
                     mouse_btn: mouse::wrap_mouse(event.button),
                     x: event.x,
@@ -624,15 +582,9 @@ impl Event {
             EventType::MouseButtonUp => {
                 let ref event = *raw.button();
 
-                let window = video::Window::from_id(event.windowID);
-                let window = match window {
-                    Err(_) => return Event::None,
-                    Ok(window) => window,
-                };
-
                 Event::MouseButtonUp {
                     timestamp: event.timestamp,
-                    window: window,
+                    window_id: event.windowID,
                     which: event.which,
                     mouse_btn: mouse::wrap_mouse(event.button),
                     x: event.x,
@@ -642,15 +594,9 @@ impl Event {
             EventType::MouseWheel => {
                 let ref event = *raw.wheel();
 
-                let window = video::Window::from_id(event.windowID);
-                let window = match window {
-                    Err(_) => return Event::None,
-                    Ok(window) => window,
-                };
-
                 Event::MouseWheel {
                     timestamp: event.timestamp,
-                    window: window,
+                    window_id: event.windowID,
                     which: event.which,
                     x: event.x,
                     y: event.y
@@ -875,15 +821,9 @@ impl Event {
 
                 let ref event = *raw.user();
 
-                let window = video::Window::from_id(event.windowID);
-                let window = match window {
-                    Err(_) => return Event::None,
-                    Ok(window) => window,
-                };
-
                 Event::User {
                     timestamp: event.timestamp,
-                    window: window,
+                    window_id: event.windowID,
                     _type: raw_type,
                     code: event.code
                 }
