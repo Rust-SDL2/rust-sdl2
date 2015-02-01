@@ -1,3 +1,5 @@
+#![feature(path)]
+
 extern crate sdl2;
 
 #[test]
