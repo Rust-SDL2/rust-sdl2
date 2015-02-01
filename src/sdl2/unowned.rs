@@ -1,3 +1,4 @@
+use std::marker::ContravariantLifetime;
 use std::mem;
 use std::ops::{Deref, DerefMut};
 
@@ -8,32 +9,36 @@ use std::ops::{Deref, DerefMut};
 ///
 /// This does not free the underlying value when dropped.
 /// Instead, `std::mem::forget()` is called on the value when dropped.
-pub struct Unowned<T> {
+pub struct Unowned<'a, T> {
     /// The reason `Option` is used is because `std::mem::forget` consumes
     /// a value. The only way to obtain the value from drop() is to swap this
     /// field with a non-dropping variant such as None.
-    value: Option<T>
+    value: Option<T>,
+    _marker: ContravariantLifetime<'a>
 }
 
 #[unsafe_destructor]
-impl<T> Drop for Unowned<T> {
+impl<'a, T> Drop for Unowned<'a, T> {
     fn drop(&mut self) {
         unsafe { mem::forget(mem::replace(&mut self.value, None)) };
     }
 }
 
-impl<T> Deref for Unowned<T> {
+impl<'a, T> Deref for Unowned<'a, T> {
     type Target = T;
 
     fn deref(&self) -> &T { self.value.as_ref().unwrap() }
 }
 
-impl<T> DerefMut for Unowned<T> {
+impl<'a, T> DerefMut for Unowned<'a, T> {
     fn deref_mut(&mut self) -> &mut T { self.value.as_mut().unwrap() }
 }
 
-impl<T> Unowned<T> {
-    pub unsafe fn new(value: T) -> Unowned<T> {
-        Unowned { value: Some(value) }
+impl<'a, T> Unowned<'a, T> {
+    pub unsafe fn new<'l>(value: T) -> Unowned<'l, T> {
+        Unowned {
+            value: Some(value),
+            _marker: ContravariantLifetime::<'l>
+        }
     }
 }
