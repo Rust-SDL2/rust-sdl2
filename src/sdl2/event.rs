@@ -82,7 +82,7 @@ pub enum EventType {
     Last = ll::SDL_LASTEVENT,
 }
 
-#[derive(Copy, Clone, Show)]
+#[derive(Copy, Clone, Debug)]
 /// An enum of window events.
 pub enum WindowEventId {
     None,
