@@ -183,7 +183,7 @@ impl Renderer {
     /// Creates a 2D software rendering context for a surface.
     pub fn from_surface(surface: surface::Surface) -> SdlResult<Renderer> {
         let raw_renderer = unsafe { ll::SDL_CreateSoftwareRenderer(surface.raw()) };
-        if raw_renderer == ptr::null() {
+        if raw_renderer != ptr::null() {
             Ok(Renderer {
                 raw: raw_renderer,
                 parent: Some(RendererParent::Surface(surface)),
