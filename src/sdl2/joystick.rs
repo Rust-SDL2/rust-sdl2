@@ -6,7 +6,6 @@ use clear_error;
 use sys::event::{SDL_QUERY, SDL_ENABLE};
 use std::ffi::{CString, c_str_to_bytes};
 use std::fmt::{Display, Formatter, Error};
-use libc::c_int;
 use libc::c_char;
 
 /// Retreive the total number of attached joysticks *and* controllers
@@ -318,7 +317,7 @@ impl Display for Guid {
 /// combinations make sense: 5 for instance would mean up and down at
 /// the same time... To simplify things I turn it into an enum which
 /// is how the SDL2 docs present it anyway (using macros).
-#[derive(Copy, Show)]
+#[derive(Copy, Debug)]
 pub enum HatState {
     Centered  = 0,
     Up        = 0x01,

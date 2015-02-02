@@ -1,8 +1,7 @@
 //! Audio Functions
-use std::borrow::ToOwned;
 use std::ffi::{c_str_to_bytes, CString};
 use std::num::FromPrimitive;
-use libc::{self, c_int, c_void, size_t, uint8_t};
+use libc::{c_int, c_void, uint8_t};
 use std::ops::{Deref, DerefMut};
 
 use get_error;

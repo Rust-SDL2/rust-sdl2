@@ -20,7 +20,6 @@ use keycode::KeyCode;
 use mouse;
 use mouse::{Mouse, MouseState};
 use scancode::ScanCode;
-use video;
 use get_error;
 use SdlResult;
 
