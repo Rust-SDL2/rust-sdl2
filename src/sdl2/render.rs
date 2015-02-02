@@ -43,7 +43,7 @@ use surface::Surface;
 use pixels;
 use get_error;
 use SdlResult;
-use Unowned;
+use {Unowned, UnownedMut};
 use std::mem;
 use std::ptr;
 use std::raw;
@@ -706,7 +706,7 @@ impl RenderTarget {
     }
 
     /// Creates a new texture and sets it as the render target.
-    pub fn create_and_set(&mut self, format: pixels::PixelFormatEnum, width: i32, height: i32) -> SdlResult<Unowned<Texture>> {
+    pub fn create_and_set(&mut self, format: pixels::PixelFormatEnum, width: i32, height: i32) -> SdlResult<UnownedMut<Texture>> {
         let new_texture_raw = unsafe {
             let access = ll::SDL_TEXTUREACCESS_TARGET;
             ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int)
@@ -717,7 +717,7 @@ impl RenderTarget {
         } else {
             unsafe {
                 if ll::SDL_SetRenderTarget(self.raw, new_texture_raw) == 0 {
-                    Ok(Unowned::new(Texture {
+                    Ok(UnownedMut::new(Texture {
                         raw: new_texture_raw,
                         _marker: ContravariantLifetime
                     }))
@@ -730,7 +730,7 @@ impl RenderTarget {
 
     /// Gets the current render target.
     /// Returns None if the default render target is set.
-    pub fn get(&mut self) -> Option<Unowned<Texture>> {
+    pub fn get(&self) -> Option<Unowned<Texture>> {
         let texture_raw = unsafe {  ll::SDL_GetRenderTarget(self.raw) };
 
         if texture_raw == ptr::null() {
@@ -738,6 +738,23 @@ impl RenderTarget {
         } else {
             unsafe {
                 Some(Unowned::new(Texture {
+                    raw: texture_raw,
+                    _marker: ContravariantLifetime
+                }))
+            }
+        }
+    }
+
+    /// Gets the current render target.
+    /// Returns None if the default render target is set.
+    pub fn get_mut(&mut self) -> Option<UnownedMut<Texture>> {
+        let texture_raw = unsafe {  ll::SDL_GetRenderTarget(self.raw) };
+
+        if texture_raw == ptr::null() {
+            None
+        } else {
+            unsafe {
+                Some(UnownedMut::new(Texture {
                     raw: texture_raw,
                     _marker: ContravariantLifetime
                 }))

@@ -10,7 +10,7 @@ extern crate bitflags;
 extern crate "sdl2-sys" as sys;
 
 pub use sdl::*;
-pub use unowned::Unowned;
+pub use unowned::{Unowned, UnownedMut};
 
 pub mod keycode;
 pub mod scancode;
