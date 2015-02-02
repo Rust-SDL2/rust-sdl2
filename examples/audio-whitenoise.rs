@@ -1,3 +1,5 @@
+#![feature(rand)]
+
 extern crate sdl2;
 
 use sdl2::audio::{AudioCallback, AudioSpecDesired};
