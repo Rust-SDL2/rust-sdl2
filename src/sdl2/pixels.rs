@@ -62,7 +62,7 @@ pub struct PixelFormat {
 impl_raw_accessors!((PixelFormat, *const ll::SDL_PixelFormat));
 impl_raw_constructor!((PixelFormat, PixelFormat (raw: *const ll::SDL_PixelFormat)));
 
-#[derive(Copy, Clone, PartialEq, Show, FromPrimitive)]
+#[derive(Copy, Clone, PartialEq, Debug, FromPrimitive)]
 pub enum PixelFormatEnum {
     Unknown = ll::SDL_PIXELFORMAT_UNKNOWN as isize,
     Index1LSB = ll::SDL_PIXELFORMAT_INDEX1LSB as isize,

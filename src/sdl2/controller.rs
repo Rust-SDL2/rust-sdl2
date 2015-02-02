@@ -8,7 +8,7 @@ use joystick;
 use sys::controller as ll;
 use sys::event::{SDL_QUERY, SDL_ENABLE};
 
-#[derive(Copy, Clone, PartialEq, Show)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 #[repr(i32)]
 pub enum Axis {
     Invalid      = ll::SDL_CONTROLLER_AXIS_INVALID,
@@ -54,7 +54,7 @@ pub fn wrap_controller_axis(bitflags: u8) -> Axis {
     }
 }
 
-#[derive(Copy, Clone, PartialEq, Show)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 #[repr(i32)]
 pub enum Button {
     Invalid       = ll::SDL_CONTROLLER_BUTTON_INVALID,

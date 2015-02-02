@@ -33,7 +33,7 @@ pub const AUDIOS32SYS : AudioFormat = ll::AUDIO_S32SYS;
 pub const AUDIOF32SYS : AudioFormat = ll::AUDIO_F32SYS;
 
 #[repr(C)]
-#[derive(Copy, Clone, PartialEq, Hash, Show, FromPrimitive)]
+#[derive(Copy, Clone, PartialEq, Hash, Debug, FromPrimitive)]
 pub enum AudioStatus {
     Stopped = ll::SDL_AUDIO_STOPPED as isize,
     Playing = ll::SDL_AUDIO_PLAYING as isize,
@@ -288,7 +288,7 @@ impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
 }
 
 #[allow(missing_copy_implementations)]
-#[derive(Show)]
+#[derive(Debug)]
 pub struct AudioSpec {
     pub freq: i32,
     // TODO: Showing format should be prettier

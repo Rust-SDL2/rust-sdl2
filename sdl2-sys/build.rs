@@ -1,3 +1,5 @@
+#![feature(os)]
+
 extern crate "pkg-config" as pkg_config;
 
 fn main() {

@@ -1,5 +1,7 @@
 #![allow(non_camel_case_types)]
 
+#![feature(core, libc)]
+
 extern crate libc;
 
 pub mod scancode;
