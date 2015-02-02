@@ -43,6 +43,7 @@ use surface::Surface;
 use pixels;
 use get_error;
 use SdlResult;
+use {Unowned, UnownedMut};
 use std::mem;
 use std::ptr;
 use std::raw;
@@ -257,7 +258,7 @@ impl Renderer {
         if result == ptr::null() {
             Err(get_error())
         } else {
-            Ok(Texture { raw: result, owned: true, _marker: ContravariantLifetime } )
+            Ok(Texture { raw: result, _marker: ContravariantLifetime } )
         }
     }
 
@@ -284,7 +285,7 @@ impl Renderer {
         if result == ptr::null() {
             Err(get_error())
         } else {
-            Ok(Texture { raw: result, owned: true, _marker: ContravariantLifetime } )
+            Ok(Texture { raw: result, _marker: ContravariantLifetime } )
         }
     }
 }
@@ -705,7 +706,7 @@ impl RenderTarget {
     }
 
     /// Creates a new texture and sets it as the render target.
-    pub fn create_and_set(&mut self, format: pixels::PixelFormatEnum, width: i32, height: i32) -> SdlResult<Texture> {
+    pub fn create_and_set(&mut self, format: pixels::PixelFormatEnum, width: i32, height: i32) -> SdlResult<UnownedMut<Texture>> {
         let new_texture_raw = unsafe {
             let access = ll::SDL_TEXTUREACCESS_TARGET;
             ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int)
@@ -716,11 +717,10 @@ impl RenderTarget {
         } else {
             unsafe {
                 if ll::SDL_SetRenderTarget(self.raw, new_texture_raw) == 0 {
-                    Ok(Texture {
+                    Ok(UnownedMut::new(Texture {
                         raw: new_texture_raw,
-                        owned: false,
                         _marker: ContravariantLifetime
-                    })
+                    }))
                 } else {
                     Err(get_error())
                 }
@@ -730,17 +730,35 @@ impl RenderTarget {
 
     /// Gets the current render target.
     /// Returns None if the default render target is set.
-    pub fn get(&mut self) -> Option<Texture> {
+    pub fn get(&self) -> Option<Unowned<Texture>> {
         let texture_raw = unsafe {  ll::SDL_GetRenderTarget(self.raw) };
 
         if texture_raw == ptr::null() {
             None
         } else {
-            Some(Texture {
-                raw: texture_raw,
-                owned: false,
-                _marker: ContravariantLifetime
-            })
+            unsafe {
+                Some(Unowned::new(Texture {
+                    raw: texture_raw,
+                    _marker: ContravariantLifetime
+                }))
+            }
+        }
+    }
+
+    /// Gets the current render target.
+    /// Returns None if the default render target is set.
+    pub fn get_mut(&mut self) -> Option<UnownedMut<Texture>> {
+        let texture_raw = unsafe {  ll::SDL_GetRenderTarget(self.raw) };
+
+        if texture_raw == ptr::null() {
+            None
+        } else {
+            unsafe {
+                Some(UnownedMut::new(Texture {
+                    raw: texture_raw,
+                    _marker: ContravariantLifetime
+                }))
+            }
         }
     }
 }
@@ -760,7 +778,6 @@ pub struct TextureQuery {
 #[derive(PartialEq)] #[allow(raw_pointer_derive)]
 pub struct Texture<'renderer> {
     raw: *const ll::SDL_Texture,
-    owned: bool,
     /// Textures cannot live longer than the Renderer it was born from: 'a
     /// All SDL textures contain an internal reference to a Renderer
     _marker: ContravariantLifetime<'renderer>
@@ -769,11 +786,7 @@ pub struct Texture<'renderer> {
 #[unsafe_destructor]
 impl<'renderer> Drop for Texture<'renderer> {
     fn drop(&mut self) {
-        if self.owned {
-            unsafe {
-                ll::SDL_DestroyTexture(self.raw);
-            }
-        }
+        unsafe { ll::SDL_DestroyTexture(self.raw) };
     }
 }
 
