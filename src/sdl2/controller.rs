@@ -1,8 +1,9 @@
- use libc::{c_int, c_char};
+use libc::{c_int, c_char};
 use std::ffi::{CString, c_str_to_bytes};
 
 use SdlResult;
-use get_error;
+use {get_error, clear_error};
+use joystick;
 
 use sys::controller as ll;
 use sys::event::{SDL_QUERY, SDL_ENABLE};
@@ -94,7 +95,6 @@ impl Button {
 
         c_str_to_string(string)
     }
-
 }
 
 pub fn wrap_controller_button(bitflags: u8) -> Button {
@@ -123,12 +123,11 @@ pub fn is_game_controller(id: i32) -> bool {
     unsafe { ll::SDL_IsGameController(id) != 0 }
 }
 
-/// Return the name of the controller at index `id` or an empty string
-/// if no name is found.
-pub fn name_for_index(id: i32) -> String {
+/// Return the name of the controller at index `id`
+pub fn name_for_index(id: i32) -> SdlResult<String> {
     let name = unsafe { ll::SDL_GameControllerNameForIndex(id) };
 
-    c_str_to_string(name)
+    c_str_to_string_or_err(name)
 }
 
 /// Force controller update when not using the event loop
@@ -168,6 +167,13 @@ pub fn add_mapping(mapping: &str) -> SdlResult<MappingStatus> {
     }
 }
 
+pub fn mapping_for_guid(guid: joystick::Guid) -> SdlResult<String> {
+    let c_str = unsafe { ll::SDL_GameControllerMappingForGUID(guid.raw()) };
+
+    c_str_to_string_or_err(c_str)
+}
+
+/// Wrapper around the SDL_GameController object
 pub struct GameController {
     raw: *const ll::SDL_GameController,
 }
@@ -206,8 +212,61 @@ impl GameController {
 
     /// Return true if the controller has been opened and currently
     /// connected.
-    pub fn attached(&self) -> bool {
+    pub fn get_attached(&self) -> bool {
         unsafe { ll::SDL_GameControllerGetAttached(self.raw) != 0 }
+    }
+
+    /// Get the position of the given `axis`
+    pub fn get_axis(&self, axis: Axis) -> SdlResult<i16> {
+        // This interface is a bit messed up: 0 is a valid position
+        // but can also mean that an error occured. As far as I can
+        // tell the only way to know if an error happened is to see if
+        // get_error() returns a non-empty string.
+        clear_error();
+
+        let axis = axis as ll::SDL_GameControllerAxis;
+
+        let pos = unsafe { ll::SDL_GameControllerGetAxis(self.raw, axis) };
+
+        if pos != 0 {
+            Ok(pos)
+        } else {
+            let err = get_error();
+
+            if err.is_empty() {
+                Ok(pos)
+            } else {
+                Err(err)
+            }
+        }
+    }
+
+    /// Return `Ok(true)` if `button` is pressed.
+    pub fn get_button(&self, button: Button) -> SdlResult<bool> {
+        // Same deal as get_axis, 0 can mean both unpressed or
+        // error...
+        clear_error();
+
+        let button = button as ll::SDL_GameControllerButton;
+
+        let pressed =
+            unsafe { ll::SDL_GameControllerGetButton(self.raw, button) };
+
+        match pressed {
+            1 => Ok(true),
+            0 => {
+                let err = get_error();
+
+                if err.is_empty() {
+                    // Button is not pressed
+                    Ok(false)
+                } else {
+                    Err(err)
+                }
+            }
+            // Should be unreachable
+            _ => Err(get_error()),
+        }
     }
 }
 
@@ -226,5 +285,17 @@ fn c_str_to_string(c_str: *const c_char) -> String {
         let bytes = unsafe { c_str_to_bytes(&c_str) };
 
         String::from_utf8_lossy(bytes).to_string()
+    }
+}
+
+/// Convert C string `c_str` to a String. Return an SDL error if
+/// `c_str` is NULL.
+fn c_str_to_string_or_err(c_str: *const c_char) -> SdlResult<String> {
+    if c_str.is_null() {
+        Err(get_error())
+    } else {
+        let bytes = unsafe { c_str_to_bytes(&c_str) };
+
+        Ok(String::from_utf8_lossy(bytes).to_string())
     }
 }

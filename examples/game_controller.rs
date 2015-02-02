@@ -1,7 +1,6 @@
 extern crate sdl2;
 
 use sdl2::{joystick, controller};
-use sdl2::keycode::KeyCode;
 use sdl2::event::Event;
 use sdl2::controller::GameController;
 use std::old_io::timer::sleep;
@@ -25,14 +24,13 @@ fn main() {
     // controllers.
     for id in 0..available {
         if controller::is_game_controller(id) {
-            print!("Attempting to open controller \"{}\"... ",
-                   controller::name_for_index(id));
+            println!("Attempting to open controller {}", id);
 
             match GameController::open(id) {
                 Ok(c) => {
                     // We managed to find and open a game controller,
                     // exit the loop
-                    println!("Success");
+                    println!("Success: opened \"{}\"", c.name());
                     controller = Some(c);
                     break;
                 },
@@ -66,15 +64,11 @@ fn main() {
                 println!("Button {:?} down", button),
             Event::ControllerButtonUp{ button, .. } =>
                 println!("Button {:?} up", button),
+            Event::Quit{..} => break,
             Event::None =>
                 // Don't hog the CPU while waiting for events
                 sleep(Duration::milliseconds(100)),
-            Event::KeyDown { keycode: key, .. } => {
-                if key == KeyCode::Escape {
-                    break;
-                }
-            },
-            _ => ()
+            _ => (),
         }
     }
 

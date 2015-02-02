@@ -682,7 +682,7 @@ impl Event {
                     timestamp: event.timestamp,
                     which: event.which,
                     hat_idx: event.hat,
-                    state: joystick::HatState::from_bits(event.value).unwrap()
+                    state: joystick::HatState::from_raw(event.value),
                 }
             }
             EventType::JoyButtonDown => {
