@@ -153,11 +153,9 @@ impl Renderer {
         if raw == ptr::null() {
             Err(get_error())
         } else {
-            Ok(Renderer {
-                raw: raw,
-                parent: Some(RendererParent::Window(window)),
-                drawer_borrow: RefCell::new(())
-            })
+            unsafe {
+                Ok(Renderer::from_ll(raw, RendererParent::Window(window)))
+            }
         }
     }
 
@@ -170,11 +168,9 @@ impl Renderer {
         let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, window_flags.bits(), &raw_window, &raw_renderer) == 0};
         if result {
             let window = unsafe { Window::from_ll(raw_window, true) };
-            Ok(Renderer {
-                raw: raw_renderer,
-                parent: Some(RendererParent::Window(window)),
-                drawer_borrow: RefCell::new(())
-            })
+            unsafe {
+                Ok(Renderer::from_ll(raw_renderer, RendererParent::Window(window)))
+            }
         } else {
             Err(get_error())
         }
@@ -184,11 +180,9 @@ impl Renderer {
     pub fn from_surface(surface: surface::Surface) -> SdlResult<Renderer> {
         let raw_renderer = unsafe { ll::SDL_CreateSoftwareRenderer(surface.raw()) };
         if raw_renderer != ptr::null() {
-            Ok(Renderer {
-                raw: raw_renderer,
-                parent: Some(RendererParent::Surface(surface)),
-                drawer_borrow: RefCell::new(())
-            })
+            unsafe {
+                Ok(Renderer::from_ll(raw_renderer, RendererParent::Surface(surface)))
+            }
         } else {
             Err(get_error())
         }
@@ -281,8 +275,17 @@ impl Renderer {
     }
 
     /// Unwraps the window or surface the rendering context was created from.
-    #[inline]
     pub unsafe fn raw(&self) -> *const ll::SDL_Renderer { self.raw }
+
+    pub unsafe fn from_ll(raw: *const ll::SDL_Renderer, parent: RendererParent)
+    -> Renderer
+    {
+        Renderer {
+            raw: raw,
+            parent: Some(parent),
+            drawer_borrow: RefCell::new(())
+        }
+    }
 }
 
 /// Texture-creating methods for the renderer
@@ -296,7 +299,7 @@ impl Renderer {
         if result == ptr::null() {
             Err(get_error())
         } else {
-            Ok(Texture { raw: result, owned: true, _marker: ContravariantLifetime } )
+            unsafe { Ok(Texture::from_ll(result)) }
         }
     }
 
@@ -323,7 +326,7 @@ impl Renderer {
         if result == ptr::null() {
             Err(get_error())
         } else {
-            Ok(Texture { raw: result, owned: true, _marker: ContravariantLifetime } )
+            unsafe { Ok(Texture::from_ll(result)) }
         }
     }
 }
@@ -1005,6 +1008,25 @@ impl<'renderer> Texture<'renderer> {
             }
         }
     }
+
+    pub unsafe fn from_ll<'l>(raw: *const ll::SDL_Texture) -> Texture<'l> {
+        Texture {
+            raw: raw,
+            owned: true,
+            _marker: ContravariantLifetime
+        }
+    }
+
+    #[unstable="Will likely be removed with ownership reform"]
+    pub unsafe fn from_ll_unowned<'l>(raw: *const ll::SDL_Texture) -> Texture<'l> {
+        Texture {
+            raw: raw,
+            owned: false,
+            _marker: ContravariantLifetime
+        }
+    }
+
+    pub unsafe fn raw(&self) -> *const ll::SDL_Texture { self.raw }
 }
 
 
