@@ -1,5 +1,5 @@
 use libc::{uint32_t, c_void};
-
+use std::mem;
 use sys::timer as ll;
 
 pub fn get_ticks() -> u32 {
@@ -18,103 +18,91 @@ pub fn delay(ms: u32) {
     unsafe { ll::SDL_Delay(ms) }
 }
 
-pub type TimerCallback = extern "C" fn (interval: uint32_t, param: *const c_void) -> u32;
-
-pub struct Timer {
-    delay: usize,
+pub struct Timer<F> {
+    _callback: Box<F>,
+    _delay: usize,
     raw: ll::SDL_TimerID,
-    callback: TimerCallback,
-    param: *const c_void,
-    remove_on_drop: bool,
 }
 
-impl Timer {
-    pub fn new(delay: usize, callback: TimerCallback, param: *const c_void, remove_on_drop: bool) -> Timer {
-        Timer { delay: delay, raw: 0, callback: callback, param: param, remove_on_drop: remove_on_drop }
-    }
+impl<F> Timer<F> {
+    #[unstable]
+    /// Constructs a new timer using the boxed closure `callback`.
+    /// The timer is started immediately, it will be cancelled either:
+    ///   * when the timer is dropped
+    ///   * or when the callback returns a non-positive continuation interval
+    pub fn new(delay: usize, callback: Box<F>) -> Timer<F>
+    where F: Fn() -> u32, F: Send {
 
-    pub fn start(&mut self) {
-        unsafe {
-            let timer_id = ll::SDL_AddTimer(self.delay as u32, Some(self.callback), self.param);
-            self.raw = timer_id;
-        }
-    }
+        let timer = unsafe {
+            let timer_id = ll::SDL_AddTimer(delay as u32,
+                                            Some(c_timer_callback::<F>),
+                                            mem::transmute_copy(&callback));
 
-    pub fn remove(&mut self) -> bool {
-        let ret = unsafe { ll::SDL_RemoveTimer(self.raw) };
-        if self.raw != 0 {
-            self.raw = 0
-        }
-        ret == 1
+            Timer {
+                _callback: callback,
+                _delay: delay,
+                raw: timer_id,
+            }
+        };
+
+        return timer;
     }
 }
 
 #[unsafe_destructor]
-impl Drop for Timer {
+impl<F> Drop for Timer<F> {
     fn drop(&mut self) {
-        if self.remove_on_drop {
-            let ret = unsafe { ll::SDL_RemoveTimer(self.raw) };
-            if ret != 1 {
-                println!("error dropping timer {}, maybe already removed.", self.raw);
-            }
+        let ret = unsafe { ll::SDL_RemoveTimer(self.raw) };
+        if ret != 1 {
+            println!("error dropping timer {}, maybe already removed.", self.raw);
         }
     }
 }
 
-#[cfg(test)]
-extern "C" fn test_timer_1_callback(_interval: uint32_t, param: *const c_void) -> uint32_t {
-    use std::sync::{Arc, Mutex};
-    use std::mem;
-
-    let locked_num: &Arc<Mutex<u32>> = unsafe { mem::transmute(param) };
-    let mut num = locked_num.lock().unwrap();
-    *num = *num + 1;
-    10
+extern "C" fn c_timer_callback<F>(_interval: u32, param: *const c_void) -> uint32_t
+where F: Fn() -> u32, F: Send {
+    unsafe {
+        let f: *const F = mem::transmute(param);
+        (*f)() as uint32_t
+    }
 }
 
 #[test]
-fn test_timer_1() {
+fn test_timer_runs_multiple_times() {
     use std::sync::{Arc, Mutex};
-    use std::mem;
 
-    let local_num: Arc<Mutex<u32>> = Arc::new(Mutex::new(0));
+    let local_num = Arc::new(Mutex::new(0));
     let timer_num = local_num.clone();
-    
-    let final_num = {
-        let param = unsafe { mem::transmute(&timer_num) };
-        let mut timer = Timer::new(10, test_timer_1_callback, param, true);
-        timer.start();
-        delay(500);
-        let num = local_num.lock().unwrap();
-        assert!(*num > 0);
-        
-        *num
-    };
 
-    // Check that timer has stopped
-    delay(1000);
-    let num = local_num.lock().unwrap();
-    assert!(*num == final_num);
-}
+    let timer = Timer::new(100, Box::new(move|| {
+        // increment up to 10 times (0 -> 9)
+        // tick again in 100ms after each increment
+        //
+        let mut num = timer_num.lock().unwrap();
+        if *num < 9 {
+            *num += 1;
+            100
+        } else { 0 }
+    }));
 
-#[cfg(test)]
-extern "C" fn test_timer_2_callback(_interval: uint32_t, _param: *const c_void) -> uint32_t {
-    0
+    delay(1200);                         // tick the timer at least 10 times w/ 200ms of "buffer"
+    let num = local_num.lock().unwrap(); // read the number back
+    assert_eq!(*num, 9);                 // it should have incremented at least 10 times...
 }
 
 #[test]
-fn test_timer_2() {
-    use std::ptr;
+fn test_timer_runs_at_least_once() {
+    use std::sync::{Arc, Mutex};
 
-    let _ = {
-        let mut timer = Timer::new(1000, test_timer_2_callback, ptr::null(), true);
-        timer.start();
-        timer
-    };
-    delay(200);
-    delay(200);
-    delay(200);
-    delay(200);
-    delay(200);
-    delay(200);
+    let local_flag = Arc::new(Mutex::new(false));
+    let timer_flag = local_flag.clone();
+
+    let timer = Timer::new(500, Box::new(move|| {
+        let mut flag = timer_flag.lock().unwrap();
+        *flag = true; 0
+    }));
+
+    delay(700);
+    let flag = local_flag.lock().unwrap();
+    assert_eq!(*flag, true);
 }
