@@ -211,14 +211,42 @@ impl Renderer {
     #[inline]
     pub fn get_parent(&self) -> &RendererParent { self.parent.as_ref().unwrap() }
 
-    /// Unwraps the window or surface the rendering context was created from.
     #[inline]
-    pub unsafe fn raw(&self) -> *const ll::SDL_Renderer { self.raw }
+    pub fn get_parent_as_window(&self) -> Option<&Window> {
+        match self.get_parent() {
+            &RendererParent::Window(ref window) => Some(window),
+            _ => None
+        }
+    }
+
+    #[inline]
+    pub fn get_parent_as_surface(&self) -> Option<&Surface> {
+        match self.get_parent() {
+            &RendererParent::Surface(ref surface) => Some(surface),
+            _ => None
+        }
+    }
 
     #[inline]
     pub fn unwrap_parent(mut self) -> RendererParent {
         use std::mem;
         mem::replace(&mut self.parent, None).unwrap()
+    }
+
+    #[inline]
+    pub fn unwrap_parent_as_window(self) -> Option<Window> {
+        match self.unwrap_parent() {
+            RendererParent::Window(window) => Some(window),
+            _ => None
+        }
+    }
+
+    #[inline]
+    pub fn unwrap_parent_as_surface(self) -> Option<Surface> {
+        match self.unwrap_parent() {
+            RendererParent::Surface(surface) => Some(surface),
+            _ => None
+        }
     }
 
     /// Provides drawing methods for the renderer.
@@ -251,6 +279,10 @@ impl Renderer {
             None => panic!("Renderer drawer already borrowed")
         }
     }
+
+    /// Unwraps the window or surface the rendering context was created from.
+    #[inline]
+    pub unsafe fn raw(&self) -> *const ll::SDL_Renderer { self.raw }
 }
 
 /// Texture-creating methods for the renderer
