@@ -101,21 +101,19 @@ pub enum BlendMode {
 }
 
 impl RendererInfo {
-    pub fn from_ll(info: &ll::SDL_RendererInfo) -> RendererInfo {
+    pub unsafe fn from_ll(info: &ll::SDL_RendererInfo) -> RendererInfo {
         let actual_flags = RendererFlags::from_bits(info.flags).unwrap();
 
-        unsafe {
-            let texture_formats: Vec<pixels::PixelFormatEnum> = info.texture_formats[0..(info.num_texture_formats as usize)].iter().map(|&format| {
-                FromPrimitive::from_i64(format as i64).unwrap()
-            }).collect();
+        let texture_formats: Vec<pixels::PixelFormatEnum> = info.texture_formats[0..(info.num_texture_formats as usize)].iter().map(|&format| {
+            FromPrimitive::from_i64(format as i64).unwrap()
+        }).collect();
 
-            RendererInfo {
-                name: String::from_utf8_lossy(c_str_to_bytes(&info.name)).to_string(),
-                flags: actual_flags,
-                texture_formats: texture_formats,
-                max_texture_width: info.max_texture_width as i32,
-                max_texture_height: info.max_texture_height as i32
-            }
+        RendererInfo {
+            name: String::from_utf8_lossy(c_str_to_bytes(&info.name)).to_string(),
+            flags: actual_flags,
+            texture_formats: texture_formats,
+            max_texture_width: info.max_texture_width as i32,
+            max_texture_height: info.max_texture_height as i32
         }
     }
 }
@@ -1050,7 +1048,7 @@ pub fn get_render_driver_info(index: i32) -> SdlResult<RendererInfo> {
     };
     let result = unsafe { ll::SDL_GetRenderDriverInfo(index as c_int, &out) == 0 };
     if result {
-        Ok(RendererInfo::from_ll(&out))
+        unsafe { Ok(RendererInfo::from_ll(&out)) }
     } else {
         Err(get_error())
     }
