@@ -1,3 +1,5 @@
+//! 2D accelerated rendering
+//!
 //! Official C documentation: https://wiki.libsdl.org/CategoryRender
 //! # Introduction
 //!
@@ -31,7 +33,7 @@
 //! the parent `Renderer`.
 //! Consequentially, this means that `Renderer` never mutates and that all
 //! drawing functionality is put behind interior mutability using
-//! `RefCell<RenderDrawer>`.
+//! `RenderDrawer<'renderer>`.
 //!
 //! None of the draw methods in `RenderDrawer` are expected to fail.
 //! If they do, a panic is raised and the program is aborted.
@@ -99,21 +101,19 @@ pub enum BlendMode {
 }
 
 impl RendererInfo {
-    pub fn from_ll(info: &ll::SDL_RendererInfo) -> RendererInfo {
+    pub unsafe fn from_ll(info: &ll::SDL_RendererInfo) -> RendererInfo {
         let actual_flags = RendererFlags::from_bits(info.flags).unwrap();
 
-        unsafe {
-            let texture_formats: Vec<pixels::PixelFormatEnum> = info.texture_formats[0..(info.num_texture_formats as usize)].iter().map(|&format| {
-                FromPrimitive::from_i64(format as i64).unwrap()
-            }).collect();
+        let texture_formats: Vec<pixels::PixelFormatEnum> = info.texture_formats[0..(info.num_texture_formats as usize)].iter().map(|&format| {
+            FromPrimitive::from_i64(format as i64).unwrap()
+        }).collect();
 
-            RendererInfo {
-                name: String::from_utf8_lossy(c_str_to_bytes(&info.name)).to_string(),
-                flags: actual_flags,
-                texture_formats: texture_formats,
-                max_texture_width: info.max_texture_width as i32,
-                max_texture_height: info.max_texture_height as i32
-            }
+        RendererInfo {
+            name: String::from_utf8_lossy(c_str_to_bytes(&info.name)).to_string(),
+            flags: actual_flags,
+            texture_formats: texture_formats,
+            max_texture_width: info.max_texture_width as i32,
+            max_texture_height: info.max_texture_height as i32
         }
     }
 }
@@ -127,7 +127,7 @@ pub enum RendererParent {
 pub struct Renderer {
     raw: *const ll::SDL_Renderer,
     parent: Option<RendererParent>,
-    drawer: RefCell<RenderDrawer>
+    drawer_borrow: RefCell<()>
 }
 
 impl Drop for Renderer {
@@ -151,11 +151,9 @@ impl Renderer {
         if raw == ptr::null() {
             Err(get_error())
         } else {
-            Ok(Renderer {
-                raw: raw,
-                parent: Some(RendererParent::Window(window)),
-                drawer: RefCell::new(RenderDrawer::new(raw))
-            })
+            unsafe {
+                Ok(Renderer::from_ll(raw, RendererParent::Window(window)))
+            }
         }
     }
 
@@ -168,11 +166,9 @@ impl Renderer {
         let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, window_flags.bits(), &raw_window, &raw_renderer) == 0};
         if result {
             let window = unsafe { Window::from_ll(raw_window, true) };
-            Ok(Renderer {
-                raw: raw_renderer,
-                parent: Some(RendererParent::Window(window)),
-                drawer: RefCell::new(RenderDrawer::new(raw_renderer))
-            })
+            unsafe {
+                Ok(Renderer::from_ll(raw_renderer, RendererParent::Window(window)))
+            }
         } else {
             Err(get_error())
         }
@@ -181,12 +177,10 @@ impl Renderer {
     /// Creates a 2D software rendering context for a surface.
     pub fn from_surface(surface: surface::Surface) -> SdlResult<Renderer> {
         let raw_renderer = unsafe { ll::SDL_CreateSoftwareRenderer(surface.raw()) };
-        if raw_renderer == ptr::null() {
-            Ok(Renderer {
-                raw: raw_renderer,
-                parent: Some(RendererParent::Surface(surface)),
-                drawer: RefCell::new(RenderDrawer::new(raw_renderer))
-            })
+        if raw_renderer != ptr::null() {
+            unsafe {
+                Ok(Renderer::from_ll(raw_renderer, RendererParent::Surface(surface)))
+            }
         } else {
             Err(get_error())
         }
@@ -209,9 +203,21 @@ impl Renderer {
     #[inline]
     pub fn get_parent(&self) -> &RendererParent { self.parent.as_ref().unwrap() }
 
-    /// Unwraps the window or surface the rendering context was created from.
     #[inline]
-    pub unsafe fn raw(&self) -> *const ll::SDL_Renderer { self.raw }
+    pub fn get_parent_as_window(&self) -> Option<&Window> {
+        match self.get_parent() {
+            &RendererParent::Window(ref window) => Some(window),
+            _ => None
+        }
+    }
+
+    #[inline]
+    pub fn get_parent_as_surface(&self) -> Option<&Surface> {
+        match self.get_parent() {
+            &RendererParent::Surface(ref surface) => Some(surface),
+            _ => None
+        }
+    }
 
     #[inline]
     pub fn unwrap_parent(mut self) -> RendererParent {
@@ -219,12 +225,33 @@ impl Renderer {
         mem::replace(&mut self.parent, None).unwrap()
     }
 
+    #[inline]
+    pub fn unwrap_parent_as_window(self) -> Option<Window> {
+        match self.unwrap_parent() {
+            RendererParent::Window(window) => Some(window),
+            _ => None
+        }
+    }
+
+    #[inline]
+    pub fn unwrap_parent_as_surface(self) -> Option<Surface> {
+        match self.unwrap_parent() {
+            RendererParent::Surface(surface) => Some(surface),
+            _ => None
+        }
+    }
+
     /// Provides drawing methods for the renderer.
     ///
     /// # Remarks
-    /// This method uses interior mutability (`RefCell`) to preserve the
+    /// This method is not `&mut self`.
+    /// It uses interior mutability via `RenderDrawer<'renderer>` to preserve the
     /// Renderer's lifetime, and therefore the lifetimes of any Textures that
     /// belong to the Renderer.
+    ///
+    /// Only one `RenderDrawer` per `Renderer` can be active at a time.
+    /// If this method is called and an existing `RenderDrawer` from this
+    /// instance is active, the program will panic.
     ///
     /// # Examples
     /// ```no_run
@@ -234,14 +261,27 @@ impl Renderer {
     /// fn test_draw(renderer: &Renderer) {
     ///     let mut drawer = renderer.drawer();
     ///     drawer.clear();
-    ///     drawer.draw_rect(&Rect::new(50, 50, 150, 175));
+    ///     drawer.draw_rect(Rect::new(50, 50, 150, 175));
     ///     drawer.present();
     /// }
     /// ```
-    pub fn drawer(&self) -> RefMut<RenderDrawer> {
-        match self.drawer.try_borrow_mut() {
-            Some(drawer) => drawer,
+    pub fn drawer(&self) -> RenderDrawer {
+        match self.drawer_borrow.try_borrow_mut() {
+            Some(borrow) => RenderDrawer::new(self.raw, borrow),
             None => panic!("Renderer drawer already borrowed")
+        }
+    }
+
+    /// Unwraps the window or surface the rendering context was created from.
+    pub unsafe fn raw(&self) -> *const ll::SDL_Renderer { self.raw }
+
+    pub unsafe fn from_ll(raw: *const ll::SDL_Renderer, parent: RendererParent)
+    -> Renderer
+    {
+        Renderer {
+            raw: raw,
+            parent: Some(parent),
+            drawer_borrow: RefCell::new(())
         }
     }
 }
@@ -257,7 +297,7 @@ impl Renderer {
         if result == ptr::null() {
             Err(get_error())
         } else {
-            Ok(Texture { raw: result, owned: true, _marker: ContravariantLifetime } )
+            unsafe { Ok(Texture::from_ll(result)) }
         }
     }
 
@@ -284,23 +324,23 @@ impl Renderer {
         if result == ptr::null() {
             Err(get_error())
         } else {
-            Ok(Texture { raw: result, owned: true, _marker: ContravariantLifetime } )
+            unsafe { Ok(Texture::from_ll(result)) }
         }
     }
 }
 
 /// Drawing functionality for the render context.
-pub struct RenderDrawer {
+pub struct RenderDrawer<'renderer> {
     raw: *const ll::SDL_Renderer,
-    render_target: RenderTarget
+    _borrow: RefMut<'renderer, ()>
 }
 
 /// Render target methods for the drawer
-impl RenderDrawer {
-    fn new(raw: *const ll::SDL_Renderer) -> RenderDrawer {
+impl<'renderer> RenderDrawer<'renderer> {
+    fn new<'l>(raw: *const ll::SDL_Renderer, borrow: RefMut<'l, ()>) -> RenderDrawer<'l> {
         RenderDrawer {
             raw: raw,
-            render_target: RenderTarget { raw: raw }
+            _borrow: borrow
         }
     }
 
@@ -312,14 +352,20 @@ impl RenderDrawer {
     /// Gets the render target handle.
     ///
     /// Returns `None` if the window does not support the use of render targets.
-    pub fn render_target(&mut self) -> Option<&mut RenderTarget> {
-        if self.render_target_supported() { Some(&mut self.render_target) }
-        else { None }
+    pub fn render_target(&mut self) -> Option<RenderTarget> {
+        if self.render_target_supported() {
+            Some(RenderTarget {
+                raw: self.raw,
+                _marker: ContravariantLifetime
+            })
+        } else {
+            None
+        }
     }
 }
 
 /// Drawing methods
-impl RenderDrawer {
+impl<'renderer> RenderDrawer<'renderer> {
     /// Sets the color used for drawing operations (Rect, Line and Clear).
     pub fn set_draw_color(&mut self, color: pixels::Color) {
         let ret = match color {
@@ -520,9 +566,9 @@ impl RenderDrawer {
     /// Draws a rectangle on the current rendering target.
     /// # Panics
     /// Panics if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_rect(&mut self, rect: &Rect) {
+    pub fn draw_rect(&mut self, rect: Rect) {
         unsafe {
-            if ll::SDL_RenderDrawRect(self.raw, rect) != 0 {
+            if ll::SDL_RenderDrawRect(self.raw, &rect) != 0 {
                 panic!("Error drawing rect: {}", get_error())
             }
         }
@@ -543,9 +589,9 @@ impl RenderDrawer {
     /// color.
     /// # Panics
     /// Panics if drawing fails for any reason (e.g. driver failure)
-    pub fn fill_rect(&mut self, rect: &Rect) {
+    pub fn fill_rect(&mut self, rect: Rect) {
         unsafe {
-            if ll::SDL_RenderFillRect(self.raw, rect) != 0 {
+            if ll::SDL_RenderFillRect(self.raw, &rect) != 0 {
                 panic!("Error filling rect: {}", get_error())
             }
         }
@@ -675,12 +721,12 @@ impl RenderDrawer {
 }
 
 /// A handle for getting/setting the render target of the render context.
-#[allow(missing_copy_implementations)]
-pub struct RenderTarget {
-    raw: *const ll::SDL_Renderer
+pub struct RenderTarget<'render_drawer> {
+    raw: *const ll::SDL_Renderer,
+    _marker: ContravariantLifetime<'render_drawer>
 }
 
-impl RenderTarget {
+impl<'render_drawer> RenderTarget<'render_drawer> {
     /// Resets the render target to the default render target.
     pub fn reset(&mut self) -> SdlResult<()> {
         unsafe {
@@ -964,6 +1010,25 @@ impl<'renderer> Texture<'renderer> {
             }
         }
     }
+
+    pub unsafe fn from_ll<'l>(raw: *const ll::SDL_Texture) -> Texture<'l> {
+        Texture {
+            raw: raw,
+            owned: true,
+            _marker: ContravariantLifetime
+        }
+    }
+
+    #[unstable="Will likely be removed with ownership reform"]
+    pub unsafe fn from_ll_unowned<'l>(raw: *const ll::SDL_Texture) -> Texture<'l> {
+        Texture {
+            raw: raw,
+            owned: false,
+            _marker: ContravariantLifetime
+        }
+    }
+
+    pub unsafe fn raw(&self) -> *const ll::SDL_Texture { self.raw }
 }
 
 
@@ -987,7 +1052,7 @@ pub fn get_render_driver_info(index: i32) -> SdlResult<RendererInfo> {
     };
     let result = unsafe { ll::SDL_GetRenderDriverInfo(index as c_int, &out) == 0 };
     if result {
-        Ok(RendererInfo::from_ll(&out))
+        unsafe { Ok(RendererInfo::from_ll(&out)) }
     } else {
         Err(get_error())
     }
