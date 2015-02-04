@@ -261,7 +261,7 @@ impl Renderer {
     /// fn test_draw(renderer: &Renderer) {
     ///     let mut drawer = renderer.drawer();
     ///     drawer.clear();
-    ///     drawer.draw_rect(&Rect::new(50, 50, 150, 175));
+    ///     drawer.draw_rect(Rect::new(50, 50, 150, 175));
     ///     drawer.present();
     /// }
     /// ```
@@ -566,9 +566,9 @@ impl<'renderer> RenderDrawer<'renderer> {
     /// Draws a rectangle on the current rendering target.
     /// # Panics
     /// Panics if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_rect(&mut self, rect: &Rect) {
+    pub fn draw_rect(&mut self, rect: Rect) {
         unsafe {
-            if ll::SDL_RenderDrawRect(self.raw, rect) != 0 {
+            if ll::SDL_RenderDrawRect(self.raw, &rect) != 0 {
                 panic!("Error drawing rect: {}", get_error())
             }
         }
@@ -589,9 +589,9 @@ impl<'renderer> RenderDrawer<'renderer> {
     /// color.
     /// # Panics
     /// Panics if drawing fails for any reason (e.g. driver failure)
-    pub fn fill_rect(&mut self, rect: &Rect) {
+    pub fn fill_rect(&mut self, rect: Rect) {
         unsafe {
-            if ll::SDL_RenderFillRect(self.raw, rect) != 0 {
+            if ll::SDL_RenderFillRect(self.raw, &rect) != 0 {
                 panic!("Error filling rect: {}", get_error())
             }
         }
