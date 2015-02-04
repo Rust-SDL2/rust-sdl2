@@ -332,7 +332,6 @@ impl Renderer {
 /// Drawing functionality for the render context.
 pub struct RenderDrawer<'renderer> {
     raw: *const ll::SDL_Renderer,
-    render_target: RenderTarget,
     _borrow: RefMut<'renderer, ()>
 }
 
@@ -341,7 +340,6 @@ impl<'renderer> RenderDrawer<'renderer> {
     fn new<'l>(raw: *const ll::SDL_Renderer, borrow: RefMut<'l, ()>) -> RenderDrawer<'l> {
         RenderDrawer {
             raw: raw,
-            render_target: RenderTarget { raw: raw },
             _borrow: borrow
         }
     }
@@ -354,9 +352,15 @@ impl<'renderer> RenderDrawer<'renderer> {
     /// Gets the render target handle.
     ///
     /// Returns `None` if the window does not support the use of render targets.
-    pub fn render_target(&mut self) -> Option<&mut RenderTarget> {
-        if self.render_target_supported() { Some(&mut self.render_target) }
-        else { None }
+    pub fn render_target(&mut self) -> Option<RenderTarget> {
+        if self.render_target_supported() {
+            Some(RenderTarget {
+                raw: self.raw,
+                _marker: ContravariantLifetime
+            })
+        } else {
+            None
+        }
     }
 }
 
@@ -717,12 +721,12 @@ impl<'renderer> RenderDrawer<'renderer> {
 }
 
 /// A handle for getting/setting the render target of the render context.
-#[allow(missing_copy_implementations)]
-pub struct RenderTarget {
-    raw: *const ll::SDL_Renderer
+pub struct RenderTarget<'render_drawer> {
+    raw: *const ll::SDL_Renderer,
+    _marker: ContravariantLifetime<'render_drawer>
 }
 
-impl RenderTarget {
+impl<'render_drawer> RenderTarget<'render_drawer> {
     /// Resets the render target to the default render target.
     pub fn reset(&mut self) -> SdlResult<()> {
         unsafe {
