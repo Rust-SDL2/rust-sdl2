@@ -20,7 +20,7 @@ pub fn delay(ms: u32) {
 
 #[unstable = "Unstable because of move to unboxed closures and `box` syntax"]
 pub struct Timer<F> {
-    _callback: Box<F>,
+    callback: Option<Box<F>>,
     _delay: usize,
     raw: ll::SDL_TimerID,
 }
@@ -39,7 +39,7 @@ impl<F> Timer<F> {
                                             mem::transmute_copy(&callback));
 
             Timer {
-                _callback: callback,
+                callback: Some(callback),
                 _delay: delay,
                 raw: timer_id,
             }
@@ -47,6 +47,8 @@ impl<F> Timer<F> {
 
         return timer;
     }
+
+    pub fn into_inner(mut self) -> Box<F> { self.callback.take().unwrap() }
 }
 
 #[unsafe_destructor]
@@ -105,4 +107,31 @@ fn test_timer_runs_at_least_once() {
     delay(700);
     let flag = local_flag.lock().unwrap();
     assert_eq!(*flag, true);
+}
+
+#[test]
+fn test_timer_can_be_recreated() {
+    use std::sync::{Arc, Mutex};
+
+    let local_num = Arc::new(Mutex::new(0));
+    let timer_num = local_num.clone();
+
+    // run the timer once and reclaim its closure
+    let mut timer_1 = Timer::new(100, Box::new(move|| {
+        let mut num = timer_num.lock().unwrap();
+        *num += 1; // increment the number
+        0          // do not run timer again
+    }));
+
+    // reclaim closure after timer runs
+    delay(200);
+    let closure = timer_1.into_inner();
+
+    // create a second timer and increment again
+    let timer_2 = Timer::new(100, closure);
+    delay(200);
+
+    // check that timer was incremented twice
+    let num = local_num.lock().unwrap();
+    assert_eq!(*num, 2);
 }
