@@ -21,7 +21,7 @@ pub fn delay(ms: u32) {
 #[unstable = "Unstable because of move to unboxed closures and `box` syntax"]
 pub struct Timer<F> {
     callback: Option<Box<F>>,
-    _delay: usize,
+    _delay: u32,
     raw: ll::SDL_TimerID,
 }
 
@@ -30,11 +30,10 @@ impl<F> Timer<F> {
     /// The timer is started immediately, it will be cancelled either:
     ///   * when the timer is dropped
     ///   * or when the callback returns a non-positive continuation interval
-    pub fn new(delay: usize, callback: Box<F>) -> Timer<F>
+    pub fn new(delay: u32, callback: Box<F>) -> Timer<F>
     where F: Fn() -> u32, F: Send {
-
-        let timer = unsafe {
-            let timer_id = ll::SDL_AddTimer(delay as u32,
+        unsafe {
+            let timer_id = ll::SDL_AddTimer(delay,
                                             Some(c_timer_callback::<F>),
                                             mem::transmute_copy(&callback));
 
@@ -43,9 +42,7 @@ impl<F> Timer<F> {
                 _delay: delay,
                 raw: timer_id,
             }
-        };
-
-        return timer;
+        }
     }
 
     pub fn into_inner(mut self) -> Box<F> { self.callback.take().unwrap() }
