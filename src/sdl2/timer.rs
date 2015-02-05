@@ -18,6 +18,7 @@ pub fn delay(ms: u32) {
     unsafe { ll::SDL_Delay(ms) }
 }
 
+#[unstable = "Unstable because of move to unboxed closures and `box` syntax"]
 pub struct Timer<F> {
     _callback: Box<F>,
     _delay: usize,
@@ -25,7 +26,6 @@ pub struct Timer<F> {
 }
 
 impl<F> Timer<F> {
-    #[unstable]
     /// Constructs a new timer using the boxed closure `callback`.
     /// The timer is started immediately, it will be cancelled either:
     ///   * when the timer is dropped
