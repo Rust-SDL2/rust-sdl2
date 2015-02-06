@@ -18,23 +18,25 @@ pub fn delay(ms: u32) {
     unsafe { ll::SDL_Delay(ms) }
 }
 
+pub type TimerCallback = Box<FnMut() -> u32+'static+Sync>;
+
 #[unstable = "Unstable because of move to unboxed closures and `box` syntax"]
-pub struct Timer<F> {
-    callback: Option<Box<F>>,
+pub struct Timer {
+    callback: Option<Box<TimerCallback>>,
     _delay: u32,
     raw: ll::SDL_TimerID,
 }
 
-impl<F> Timer<F> {
+impl Timer {
     /// Constructs a new timer using the boxed closure `callback`.
     /// The timer is started immediately, it will be cancelled either:
     ///   * when the timer is dropped
     ///   * or when the callback returns a non-positive continuation interval
-    pub fn new(delay: u32, callback: Box<F>) -> Timer<F>
-    where F: Fn() -> u32, F: Send {
+    pub fn new(delay: u32, callback: TimerCallback) -> Timer {
         unsafe {
+			let callback = Box::new(callback);
             let timer_id = ll::SDL_AddTimer(delay,
-                                            Some(c_timer_callback::<F>),
+                                            Some(c_timer_callback),
                                             mem::transmute_copy(&callback));
 
             Timer {
@@ -45,11 +47,15 @@ impl<F> Timer<F> {
         }
     }
 
-    pub fn into_inner(mut self) -> Box<F> { self.callback.take().unwrap() }
+	/// Returns the closure as a trait-object and cancels the timer
+	/// by consuming it...
+	pub fn into_inner(mut self) -> TimerCallback {
+		*self.callback.take().unwrap()
+	}
 }
 
 #[unsafe_destructor]
-impl<F> Drop for Timer<F> {
+impl Drop for Timer {
     fn drop(&mut self) {
         let ret = unsafe { ll::SDL_RemoveTimer(self.raw) };
         if ret != 1 {
@@ -58,13 +64,13 @@ impl<F> Drop for Timer<F> {
     }
 }
 
-extern "C" fn c_timer_callback<F>(_interval: u32, param: *const c_void) -> uint32_t
-where F: Fn() -> u32, F: Send {
+extern "C" fn c_timer_callback(_interval: u32, param: *const c_void) -> uint32_t {
     unsafe {
-        let f: *const F = mem::transmute(param);
+        let f: *const  Box<Fn() -> u32> = mem::transmute(param);
         (*f)() as uint32_t
     }
 }
+
 
 #[test]
 fn test_timer_runs_multiple_times() {
