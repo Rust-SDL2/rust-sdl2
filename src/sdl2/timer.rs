@@ -1,5 +1,5 @@
 use libc::{uint32_t, c_void};
-
+use std::mem;
 use sys::timer as ll;
 
 pub fn get_ticks() -> u32 {
@@ -18,103 +18,123 @@ pub fn delay(ms: u32) {
     unsafe { ll::SDL_Delay(ms) }
 }
 
-pub type TimerCallback = extern "C" fn (interval: uint32_t, param: *const c_void) -> u32;
+pub type TimerCallback<'a> = Box<FnMut() -> u32+'a+Sync>;
 
-pub struct Timer {
-    delay: usize,
+#[unstable = "Unstable because of move to unboxed closures and `box` syntax"]
+pub struct Timer<'a> {
+    callback: Option<Box<TimerCallback<'a>>>,
+    _delay: u32,
     raw: ll::SDL_TimerID,
-    callback: TimerCallback,
-    param: *const c_void,
-    remove_on_drop: bool,
 }
 
-impl Timer {
-    pub fn new(delay: usize, callback: TimerCallback, param: *const c_void, remove_on_drop: bool) -> Timer {
-        Timer { delay: delay, raw: 0, callback: callback, param: param, remove_on_drop: remove_on_drop }
-    }
-
-    pub fn start(&mut self) {
+impl<'a> Timer<'a> {
+    /// Constructs a new timer using the boxed closure `callback`.
+    /// The timer is started immediately, it will be cancelled either:
+    ///   * when the timer is dropped
+    ///   * or when the callback returns a non-positive continuation interval
+    pub fn new(delay: u32, callback: TimerCallback<'a>) -> Timer<'a> {
         unsafe {
-            let timer_id = ll::SDL_AddTimer(self.delay as u32, Some(self.callback), self.param);
-            self.raw = timer_id;
-        }
-    }
+			let callback = Box::new(callback);
+            let timer_id = ll::SDL_AddTimer(delay,
+                                            Some(c_timer_callback),
+                                            mem::transmute_copy(&callback));
 
-    pub fn remove(&mut self) -> bool {
-        let ret = unsafe { ll::SDL_RemoveTimer(self.raw) };
-        if self.raw != 0 {
-            self.raw = 0
-        }
-        ret == 1
-    }
-}
-
-#[unsafe_destructor]
-impl Drop for Timer {
-    fn drop(&mut self) {
-        if self.remove_on_drop {
-            let ret = unsafe { ll::SDL_RemoveTimer(self.raw) };
-            if ret != 1 {
-                println!("error dropping timer {}, maybe already removed.", self.raw);
+            Timer {
+                callback: Some(callback),
+                _delay: delay,
+                raw: timer_id,
             }
         }
     }
+
+	/// Returns the closure as a trait-object and cancels the timer
+	/// by consuming it...
+	pub fn into_inner(mut self) -> TimerCallback<'a> {
+		*self.callback.take().unwrap()
+	}
 }
 
-#[cfg(test)]
-extern "C" fn test_timer_1_callback(_interval: uint32_t, param: *const c_void) -> uint32_t {
-    use std::sync::{Arc, Mutex};
-    use std::mem;
-
-    let locked_num: &Arc<Mutex<u32>> = unsafe { mem::transmute(param) };
-    let mut num = locked_num.lock().unwrap();
-    *num = *num + 1;
-    10
+#[unsafe_destructor]
+impl<'a> Drop for Timer<'a> {
+    fn drop(&mut self) {
+        let ret = unsafe { ll::SDL_RemoveTimer(self.raw) };
+        if ret != 1 {
+            println!("error dropping timer {}, maybe already removed.", self.raw);
+        }
+    }
 }
+
+extern "C" fn c_timer_callback(_interval: u32, param: *const c_void) -> uint32_t {
+    unsafe {
+        let f: *const  Box<Fn() -> u32> = mem::transmute(param);
+        (*f)() as uint32_t
+    }
+}
+
 
 #[test]
-fn test_timer_1() {
+fn test_timer_runs_multiple_times() {
     use std::sync::{Arc, Mutex};
-    use std::mem;
 
-    let local_num: Arc<Mutex<u32>> = Arc::new(Mutex::new(0));
+    let local_num = Arc::new(Mutex::new(0));
     let timer_num = local_num.clone();
-    
-    let final_num = {
-        let param = unsafe { mem::transmute(&timer_num) };
-        let mut timer = Timer::new(10, test_timer_1_callback, param, true);
-        timer.start();
-        delay(500);
-        let num = local_num.lock().unwrap();
-        assert!(*num > 0);
-        
-        *num
-    };
 
-    // Check that timer has stopped
-    delay(1000);
-    let num = local_num.lock().unwrap();
-    assert!(*num == final_num);
-}
+    let timer = Timer::new(100, Box::new(|| {
+        // increment up to 10 times (0 -> 9)
+        // tick again in 100ms after each increment
+        //
+        let mut num = timer_num.lock().unwrap();
+        if *num < 9 {
+            *num += 1;
+            100
+        } else { 0 }
+    }));
 
-#[cfg(test)]
-extern "C" fn test_timer_2_callback(_interval: uint32_t, _param: *const c_void) -> uint32_t {
-    0
+    delay(1200);                         // tick the timer at least 10 times w/ 200ms of "buffer"
+    let num = local_num.lock().unwrap(); // read the number back
+    assert_eq!(*num, 9);                 // it should have incremented at least 10 times...
 }
 
 #[test]
-fn test_timer_2() {
-    use std::ptr;
+fn test_timer_runs_at_least_once() {
+    use std::sync::{Arc, Mutex};
 
-    let _ = {
-        let mut timer = Timer::new(1000, test_timer_2_callback, ptr::null(), true);
-        timer.start();
-        timer
-    };
+    let local_flag = Arc::new(Mutex::new(false));
+    let timer_flag = local_flag.clone();
+
+    let timer = Timer::new(500, Box::new(|| {
+        let mut flag = timer_flag.lock().unwrap();
+        *flag = true; 0
+    }));
+
+    delay(700);
+    let flag = local_flag.lock().unwrap();
+    assert_eq!(*flag, true);
+}
+
+#[test]
+fn test_timer_can_be_recreated() {
+    use std::sync::{Arc, Mutex};
+
+    let local_num = Arc::new(Mutex::new(0));
+    let timer_num = local_num.clone();
+
+    // run the timer once and reclaim its closure
+    let mut timer_1 = Timer::new(100, Box::new(move|| {
+        let mut num = timer_num.lock().unwrap();
+        *num += 1; // increment the number
+        0          // do not run timer again
+    }));
+
+    // reclaim closure after timer runs
     delay(200);
+    let closure = timer_1.into_inner();
+
+    // create a second timer and increment again
+    let timer_2 = Timer::new(100, closure);
     delay(200);
-    delay(200);
-    delay(200);
-    delay(200);
-    delay(200);
+
+    // check that timer was incremented twice
+    let num = local_num.lock().unwrap();
+    assert_eq!(*num, 2);
 }
