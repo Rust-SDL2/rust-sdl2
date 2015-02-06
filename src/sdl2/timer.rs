@@ -34,7 +34,7 @@ impl<'a> Timer<'a> {
     ///   * or when the callback returns a non-positive continuation interval
     pub fn new(delay: u32, callback: TimerCallback<'a>) -> Timer<'a> {
         unsafe {
-			let callback = Box::new(callback);
+            let callback = Box::new(callback);
             let timer_id = ll::SDL_AddTimer(delay,
                                             Some(c_timer_callback),
                                             mem::transmute_copy(&callback));
@@ -47,11 +47,11 @@ impl<'a> Timer<'a> {
         }
     }
 
-	/// Returns the closure as a trait-object and cancels the timer
-	/// by consuming it...
-	pub fn into_inner(mut self) -> TimerCallback<'a> {
-		*self.callback.take().unwrap()
-	}
+    /// Returns the closure as a trait-object and cancels the timer
+    /// by consuming it...
+    pub fn into_inner(mut self) -> TimerCallback<'a> {
+        *self.callback.take().unwrap()
+    }
 }
 
 #[unsafe_destructor]
