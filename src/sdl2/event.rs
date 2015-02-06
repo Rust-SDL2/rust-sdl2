@@ -125,9 +125,6 @@ impl WindowEventId {
 
 /// Different event types.
 pub enum Event {
-    None,
-
-
     Quit { timestamp: u32 },
     AppTerminating { timestamp: u32 },
     AppLowMemory { timestamp: u32 },
@@ -361,12 +358,16 @@ pub enum Event {
         _type: u32,
         code: i32
     },
+
+    Unknown {
+        timestamp: u32,
+        type_: u32
+    }
 }
 
 impl ::std::fmt::Debug for Event {
     fn fmt(&self, out: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         out.write_str(match *self {
-            Event::None => "Event::None",
             Event::Quit{..} => "Event::Quit",
             Event::AppTerminating{..} => "Event::AppTerminating",
             Event::AppLowMemory{..} => "Event::AppLowMemory",
@@ -405,6 +406,7 @@ impl ::std::fmt::Debug for Event {
             Event::ClipboardUpdate{..} => "Event::ClipboardUpdate",
             Event::DropFile{..} => "Event::DropFile",
             Event::User{..} => "Event::User",
+            Event::Unknown{..} => "Event::Unknown",
         })
     }
 }
@@ -412,7 +414,7 @@ impl ::std::fmt::Debug for Event {
 // TODO: Remove this when from_utf8 is updated in Rust
 impl Event {
     fn to_ll(self) -> Option<ll::SDL_Event> {
-        let ret = null_event();
+        let ret = unsafe { mem::uninitialized() };
         match self {
             // just ignore timestamp
             Event::User { window_id, _type, code, .. } => {
@@ -439,7 +441,7 @@ impl Event {
     fn from_ll(raw: &ll::SDL_Event) -> Event {
         let raw_type = raw._type();
         let raw_type = if raw_type.is_null() {
-            return Event::None;
+            panic!("Event payload is null")
         } else {
             unsafe { *raw_type }
         };
@@ -809,32 +811,34 @@ impl Event {
                 }
             }
 
-            EventType::First | EventType::Last => Event::None,
+            EventType::First => panic!("Unused event, EventType::First, was encountered"),
+            EventType::Last => panic!("Unusable event, EventType::Last, was encountered"),
 
             // If we have no other match and the event type is >= 32768
             // this is a user event
             EventType::User => {
                 if raw_type < 32768 {
-                    return Event::None;
-                }
+                    // The type is unknown to us.
+                    // It's a newer SDL2 type.
+                    let ref event = *raw.common();
 
-                let ref event = *raw.user();
+                    Event::Unknown {
+                        timestamp: event.timestamp,
+                        type_: event._type
+                    }
+                } else {
+                    let ref event = *raw.user();
 
-                Event::User {
-                    timestamp: event.timestamp,
-                    window_id: event.windowID,
-                    _type: raw_type,
-                    code: event.code
+                    Event::User {
+                        timestamp: event.timestamp,
+                        window_id: event.windowID,
+                        _type: raw_type,
+                        code: event.code
+                    }
                 }
             }
         }}                      // close unsafe & match
-
-
     }
-}
-
-fn null_event() -> ll::SDL_Event {
-    ll::SDL_Event { data: [0; 56] }
 }
 
 /// Pump the event loop, gathering events from the input devices.
@@ -863,19 +867,17 @@ pub fn flush_events(min: EventType, max: EventType) {
 }
 
 /// Poll for currently pending events.
-pub fn poll_event() -> Event {
-    pump_events();
+pub fn poll_event() -> Option<Event> {
+    let raw = unsafe { mem::uninitialized() };
+    let has_pending = unsafe { ll::SDL_PollEvent(&raw) == 1 as c_int };
 
-    let raw = null_event();
-    let success = unsafe { ll::SDL_PollEvent(&raw) == 1 as c_int };
-
-    if success { Event::from_ll(&raw) }
-    else { Event::None }
+    if has_pending { Some(Event::from_ll(&raw)) }
+    else { None }
 }
 
 /// Wait indefinitely for the next available event.
 pub fn wait_event() -> SdlResult<Event> {
-    let raw = null_event();
+    let raw = unsafe { mem::uninitialized() };
     let success = unsafe { ll::SDL_WaitEvent(&raw) == 1 as c_int };
 
     if success { Ok(Event::from_ll(&raw)) }
@@ -884,7 +886,7 @@ pub fn wait_event() -> SdlResult<Event> {
 
 /// Wait until the specified timeout (in milliseconds) for the next available event.
 pub fn wait_event_timeout(timeout: i32) -> SdlResult<Event> {
-    let raw = null_event();
+    let raw = unsafe { mem::uninitialized() };
     let success = unsafe { ll::SDL_WaitEventTimeout(&raw, timeout as c_int) ==
                            1 as c_int };
 
