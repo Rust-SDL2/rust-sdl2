@@ -18,21 +18,21 @@ pub fn delay(ms: u32) {
     unsafe { ll::SDL_Delay(ms) }
 }
 
-pub type TimerCallback = Box<FnMut() -> u32+'static+Sync>;
+pub type TimerCallback<'a> = Box<FnMut() -> u32+'a+Sync>;
 
 #[unstable = "Unstable because of move to unboxed closures and `box` syntax"]
-pub struct Timer {
-    callback: Option<Box<TimerCallback>>,
+pub struct Timer<'a> {
+    callback: Option<Box<TimerCallback<'a>>>,
     _delay: u32,
     raw: ll::SDL_TimerID,
 }
 
-impl Timer {
+impl<'a> Timer<'a> {
     /// Constructs a new timer using the boxed closure `callback`.
     /// The timer is started immediately, it will be cancelled either:
     ///   * when the timer is dropped
     ///   * or when the callback returns a non-positive continuation interval
-    pub fn new(delay: u32, callback: TimerCallback) -> Timer {
+    pub fn new(delay: u32, callback: TimerCallback<'a>) -> Timer<'a> {
         unsafe {
 			let callback = Box::new(callback);
             let timer_id = ll::SDL_AddTimer(delay,
@@ -49,13 +49,13 @@ impl Timer {
 
 	/// Returns the closure as a trait-object and cancels the timer
 	/// by consuming it...
-	pub fn into_inner(mut self) -> TimerCallback {
+	pub fn into_inner(mut self) -> TimerCallback<'a> {
 		*self.callback.take().unwrap()
 	}
 }
 
 #[unsafe_destructor]
-impl Drop for Timer {
+impl<'a> Drop for Timer<'a> {
     fn drop(&mut self) {
         let ret = unsafe { ll::SDL_RemoveTimer(self.raw) };
         if ret != 1 {
@@ -79,7 +79,7 @@ fn test_timer_runs_multiple_times() {
     let local_num = Arc::new(Mutex::new(0));
     let timer_num = local_num.clone();
 
-    let timer = Timer::new(100, Box::new(move|| {
+    let timer = Timer::new(100, Box::new(|| {
         // increment up to 10 times (0 -> 9)
         // tick again in 100ms after each increment
         //
@@ -102,7 +102,7 @@ fn test_timer_runs_at_least_once() {
     let local_flag = Arc::new(Mutex::new(false));
     let timer_flag = local_flag.clone();
 
-    let timer = Timer::new(500, Box::new(move|| {
+    let timer = Timer::new(500, Box::new(|| {
         let mut flag = timer_flag.lock().unwrap();
         *flag = true; 0
     }));
