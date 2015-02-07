@@ -1,6 +1,6 @@
 #![allow(non_camel_case_types)]
 
-#![feature(core, libc)]
+#![feature(core)]
 
 extern crate libc;
 
