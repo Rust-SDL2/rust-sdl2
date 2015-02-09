@@ -13,6 +13,9 @@ build = "build.rs"
 name = "sdl2-sys"
 path = "src/lib.rs"
 
+[dependencies]
+libc = "*"
+
 [build-dependencies]
 pkg-config = "0.1.7"
 
