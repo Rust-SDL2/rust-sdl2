@@ -38,10 +38,8 @@ pub fn main(filename: &Path) {
     drawer.set_draw_color(sdl2::pixels::Color::RGBA(195, 217, 255, 255));
     drawer.clear();
 
-    let (w, h) = match texture.query() {
-        Ok(q) => (q.width, q.height),
-        Err(err) => panic!(format!("Failed to query texture: {}", err))
-    };
+    let (w, h) = { let q = texture.query(); (q.width, q.height) };
+
     drawer.copy(&mut texture, None, Some(rect!((SCREEN_WIDTH - w)/ 2, (SCREEN_HEIGHT - h)/ 2, w, h)));
 
     drawer.present();
@@ -49,8 +47,8 @@ pub fn main(filename: &Path) {
     'main : loop {
         'event : loop {
             match sdl2::event::poll_event() {
-                sdl2::event::Event::Quit(_) => break 'main,
-                sdl2::event::Event::KeyDown(_, _, key, _, _, _) => {
+                sdl2::event::Event::Quit{..} => break 'main,
+                sdl2::event::Event::KeyDown { keycode: key, .. } => {
                     if key == sdl2::keycode::KeyCode::Escape {
                         break 'main
                     }
