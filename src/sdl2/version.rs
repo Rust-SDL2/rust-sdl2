@@ -5,7 +5,7 @@ Querying SDL Version
 use std::ffi::c_str_to_bytes;
 use std::fmt;
 
-use sys::version as ll;
+pub use sys::version as ll;
 
 /// A structure that contains information about the version of SDL in use.
 #[derive(PartialEq, Copy, Clone)]
