@@ -114,7 +114,7 @@ impl Surface {
 
             let raw_pixels = (*self.raw).pixels as *mut _;
             let len = (*self.raw).pitch as usize * ((*self.raw).h as usize);
-            let pixels = ::std::slice::from_raw_mut_buf(&raw_pixels, len);
+            let pixels = ::std::slice::from_raw_parts_mut(raw_pixels, len);
             let rv = f(pixels);
             ll::SDL_UnlockSurface(self.raw);
             rv
