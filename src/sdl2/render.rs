@@ -942,7 +942,6 @@ impl<'renderer> Texture<'renderer> {
             let q = self.query();
             let pixels : *const c_void = ptr::null();
             let pitch = 0;
-            let size = q.format.byte_size_of_pixels((q.width * q.height) as usize);
 
             let actual_rect = match rect {
                 Some(ref rect) => rect as *const _,
@@ -951,6 +950,7 @@ impl<'renderer> Texture<'renderer> {
 
             let ret = ll::SDL_LockTexture(self.raw, actual_rect, &pixels, &pitch);
             if ret == 0 {
+                let size = pitch as usize * q.height as usize;
                 Ok( (raw::Slice { data: pixels as *const u8, len: size }, pitch) )
             } else {
                 Err(get_error())
