@@ -743,6 +743,7 @@ impl<'render_drawer> RenderTarget<'render_drawer> {
     pub fn set(&mut self, texture: Texture) -> SdlResult<()> {
         unsafe {
             if ll::SDL_SetRenderTarget(self.raw, texture.raw) == 0 {
+                mem::forget(texture);
                 Ok(())
             } else {
                 Err(get_error())
