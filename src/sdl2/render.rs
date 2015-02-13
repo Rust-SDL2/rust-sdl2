@@ -352,7 +352,7 @@ impl<'renderer> RenderDrawer<'renderer> {
     /// Gets the render target handle.
     ///
     /// Returns `None` if the window does not support the use of render targets.
-    pub fn render_target(&mut self) -> Option<RenderTarget> {
+    pub fn render_target<'a>(&'a mut self) -> Option<RenderTarget<'renderer, 'a>> {
         if self.render_target_supported() {
             Some(RenderTarget {
                 raw: self.raw,
@@ -721,17 +721,24 @@ impl<'renderer> RenderDrawer<'renderer> {
 }
 
 /// A handle for getting/setting the render target of the render context.
-pub struct RenderTarget<'render_drawer> {
+pub struct RenderTarget<'renderer, 'render_drawer> {
     raw: *const ll::SDL_Renderer,
     _marker: ContravariantLifetime<'render_drawer>
 }
 
-impl<'render_drawer> RenderTarget<'render_drawer> {
+impl<'renderer, 'render_drawer> RenderTarget<'renderer, 'render_drawer> {
     /// Resets the render target to the default render target.
-    pub fn reset(&mut self) -> SdlResult<()> {
+    ///
+    /// The old render target is returned if the function is successful.
+    pub fn reset(&mut self) -> SdlResult<Option<Texture<'renderer>>> {
         unsafe {
+            let old_texture_raw = ll::SDL_GetRenderTarget(self.raw);
+
             if ll::SDL_SetRenderTarget(self.raw, ptr::null()) == 0 {
-                Ok(())
+                Ok(match old_texture_raw.is_null() {
+                    true => None,
+                    false => Some(Texture::from_ll(old_texture_raw))
+                })
             } else {
                 Err(get_error())
             }
@@ -740,11 +747,18 @@ impl<'render_drawer> RenderTarget<'render_drawer> {
 
     /// Sets the render target to the provided texture.
     /// The texture must be created with the texture access: `sdl2::render::TextureAccess::Target`.
-    pub fn set(&mut self, texture: Texture) -> SdlResult<()> {
+    ///
+    /// The old render target is returned if the function is successful.
+    pub fn set(&mut self, texture: Texture) -> SdlResult<Option<Texture<'renderer>>> {
         unsafe {
+            let old_texture_raw = ll::SDL_GetRenderTarget(self.raw);
+
             if ll::SDL_SetRenderTarget(self.raw, texture.raw) == 0 {
                 mem::forget(texture);
-                Ok(())
+                Ok(match old_texture_raw.is_null() {
+                    true => None,
+                    false => Some(Texture::from_ll(old_texture_raw))
+                })
             } else {
                 Err(get_error())
             }
@@ -752,7 +766,9 @@ impl<'render_drawer> RenderTarget<'render_drawer> {
     }
 
     /// Creates a new texture and sets it as the render target.
-    pub fn create_and_set(&mut self, format: pixels::PixelFormatEnum, width: i32, height: i32) -> SdlResult<Texture> {
+    ///
+    /// The old render target is returned if the function is successful.
+    pub fn create_and_set(&mut self, format: pixels::PixelFormatEnum, width: i32, height: i32) -> SdlResult<Option<Texture<'renderer>>> {
         let new_texture_raw = unsafe {
             let access = ll::SDL_TEXTUREACCESS_TARGET;
             ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int)
@@ -762,11 +778,12 @@ impl<'render_drawer> RenderTarget<'render_drawer> {
             Err(get_error())
         } else {
             unsafe {
+                let old_texture_raw = ll::SDL_GetRenderTarget(self.raw);
+
                 if ll::SDL_SetRenderTarget(self.raw, new_texture_raw) == 0 {
-                    Ok(Texture {
-                        raw: new_texture_raw,
-                        owned: false,
-                        _marker: ContravariantLifetime
+                    Ok(match old_texture_raw.is_null() {
+                        true => None,
+                        false => Some(Texture::from_ll(old_texture_raw))
                     })
                 } else {
                     Err(get_error())
