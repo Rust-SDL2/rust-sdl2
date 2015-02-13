@@ -3,7 +3,7 @@
 extern crate "pkg-config" as pkg_config;
 
 fn main() {
-    if std::env::var("CARGO_FEATURE_USE_PKGCONFIG").is_some() {
+    if std::env::var("CARGO_FEATURE_USE_PKGCONFIG").is_ok() {
       if build_pkgconfig() { return; }
       panic!("Could not find SDL2 via pkgconfig");
     } else {
