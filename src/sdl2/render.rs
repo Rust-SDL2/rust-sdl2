@@ -728,12 +728,21 @@ pub struct RenderTarget<'render_drawer> {
 
 impl<'render_drawer> RenderTarget<'render_drawer> {
     /// Resets the render target to the default render target.
-    pub fn reset(&mut self) -> SdlResult<()> {
+    pub fn reset<'a>(&mut self) -> SdlResult<Option<Texture<'a>>> {
         unsafe {
-            if ll::SDL_SetRenderTarget(self.raw, ptr::null()) == 0 {
-                Ok(())
+            let texture_raw = ll::SDL_GetRenderTarget(self.raw);
+
+            if ll::SDL_SetRenderTarget(self.raw, ptr::null()) != 0 {
+                return Err(get_error());
+            }
+            if texture_raw == ptr::null() {
+                Ok(None)
             } else {
-                Err(get_error())
+                Ok(Some(Texture {
+                    raw: texture_raw,
+                    owned: false,
+                    _marker: ContravariantLifetime
+                }))
             }
         }
     }
