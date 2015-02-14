@@ -43,6 +43,7 @@ use video::Window;
 use surface;
 use surface::Surface;
 use pixels;
+use pixels::PixelFormatEnum;
 use get_error;
 use SdlResult;
 use std::mem;
@@ -293,6 +294,18 @@ impl Renderer {
     /// `size` is the width and height of the texture.
     pub fn create_texture(&self, format: pixels::PixelFormatEnum, access: TextureAccess, size: (i32, i32)) -> SdlResult<Texture> {
         let (width, height) = size;
+
+        // If the pixel format is YUV 4:2:0 and planar, the width and height must
+        // be multiples-of-two. See issue #334 for details.
+        match format {
+            PixelFormatEnum::YV12 | PixelFormatEnum::IYUV => {
+                if width % 2 != 0 || height % 2 != 0 {
+                    return Err(format!("The width and height must be multiples-of-two for planar YUV 4:2:0 pixel formats"));
+                }
+            },
+            _ => ()
+        }
+
         let result = unsafe { ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int) };
         if result == ptr::null() {
             Err(get_error())
@@ -930,12 +943,32 @@ impl<'renderer> Texture<'renderer> {
     /// * If `rect` is `None`, the entire texture is updated.
     pub fn update(&mut self, rect: Option<Rect>, pixel_data: &[u8], pitch: i32) -> SdlResult<()> {
         let ret = unsafe {
-            let actual_rect = match rect {
+            let rect_raw_ptr = match rect {
                 Some(ref rect) => rect as *const _,
                 None => ptr::null()
             };
 
-            ll::SDL_UpdateTexture(self.raw, actual_rect, pixel_data.as_ptr() as *const _, pitch as c_int)
+            // Check if the rectangle's position or size is odd, and if the pitch is odd.
+            // This needs to be done in case the texture's pixel format is planar YUV.
+            // See issue #334 for details.
+            let rect_is_odd = match rect {
+                Some(r) => (r.x % 2 != 0) || (r.y % 2 != 0) || (r.w % 2 != 0) || (r.h % 2 != 0),
+                None => false
+            };
+            let pitch_is_odd = pitch % 2 != 0;
+
+            if rect_is_odd || pitch_is_odd {
+                // Query the texture's format
+                match self.query() {
+                    TextureQuery { format: PixelFormatEnum::YV12, .. } |
+                    TextureQuery { format: PixelFormatEnum::IYUV, .. } => {
+                        return Err(format!("The rectangle dimensions and pitch must be multiples-of-two for planar YUV 4:2:0 pixel formats"));
+                    },
+                    _ => ()
+                }
+            }
+
+            ll::SDL_UpdateTexture(self.raw, rect_raw_ptr, pixel_data.as_ptr() as *const _, pitch as c_int)
         };
 
         if ret == 0 { Ok(()) }
@@ -961,14 +994,14 @@ impl<'renderer> Texture<'renderer> {
             let pixels : *const c_void = ptr::null();
             let pitch = 0;
 
-            let actual_rect = match rect {
-                Some(ref rect) => rect as *const _,
-                None => ptr::null()
+            let (rect_raw_ptr, height) = match rect {
+                Some(ref rect) => (rect as *const _, rect.h as usize),
+                None => (ptr::null(), q.height as usize)
             };
 
-            let ret = ll::SDL_LockTexture(self.raw, actual_rect, &pixels, &pitch);
+            let ret = ll::SDL_LockTexture(self.raw, rect_raw_ptr, &pixels, &pitch);
             if ret == 0 {
-                let size = q.format.byte_size_from_pitch_and_height(pitch as usize, q.height as usize);
+                let size = q.format.byte_size_from_pitch_and_height(pitch as usize, height);
                 Ok( (raw::Slice { data: pixels as *const u8, len: size }, pitch) )
             } else {
                 Err(get_error())
