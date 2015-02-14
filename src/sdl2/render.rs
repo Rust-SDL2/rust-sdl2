@@ -975,6 +975,55 @@ impl<'renderer> Texture<'renderer> {
         else { Err(get_error()) }
     }
 
+    /// Updates a rectangle within a planar YV12 or IYUV texture with new pixel data.
+    pub fn update_yuv(&mut self, rect: Option<Rect>, y_plane: &[u8], y_pitch: i32, u_plane: &[u8], u_pitch: i32, v_plane: &[u8], v_pitch: i32) -> SdlResult<()> {
+        let rect_raw_ptr = match rect {
+            Some(ref rect) => rect as *const _,
+            None => ptr::null()
+        };
+
+        let rect_is_odd = match rect {
+            Some(r) => (r.x % 2 != 0) || (r.y % 2 != 0) || (r.w % 2 != 0) || (r.h % 2 != 0),
+            None => false
+        };
+
+        if rect_is_odd {
+            return Err(format!("The rectangle dimensions must be multiples-of-two for planar YUV 4:2:0 pixel formats"));
+        }
+
+        // We need the height in order to check the array slice lengths.
+        // Checking the lengths can prevent buffer overruns in SDL_UpdateYUVTexture.
+        let height = match rect {
+            Some(r) => r.h,
+            None => self.query().height
+        };
+
+        let wrong_length =
+            (y_plane.len() != (y_pitch * height) as usize) ||
+            (u_plane.len() != (u_pitch * height/2) as usize) ||
+            (v_plane.len() != (v_pitch * height/2) as usize);
+
+        if wrong_length {
+            return Err(format!("One or more of the plane lengths is not correct (should be pitch * height)."));
+        }
+
+        unsafe {
+            let result = ll::SDL_UpdateYUVTexture(
+                self.raw,
+                rect_raw_ptr,
+                y_plane.as_ptr(),
+                y_pitch,
+                u_plane.as_ptr(),
+                u_pitch,
+                v_plane.as_ptr(),
+                v_pitch
+            );
+
+            if result == 0 { Ok(()) }
+            else { Err(get_error()) }
+        }
+    }
+
     /// Locks the texture for **write-only** pixel access.
     /// The texture must have been created with streaming access.
     ///
