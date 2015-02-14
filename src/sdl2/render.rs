@@ -734,6 +734,28 @@ impl<'renderer> RenderDrawer<'renderer> {
 }
 
 /// A handle for getting/setting the render target of the render context.
+///
+/// # Example
+/// ```no_run
+/// use sdl2::pixels::{Color, PixelFormatEnum};
+/// use sdl2::rect::Rect;
+/// use sdl2::render::{RenderDrawer, Texture};
+///
+/// // Draw a red rectangle to a new texture
+/// fn draw_to_texture<'renderer>(drawer: &mut RenderDrawer<'renderer>) -> Texture<'renderer> {
+///     drawer.render_target()
+///         .expect("This platform doesn't support render targets")
+///         .create_and_set(PixelFormatEnum::RGBA8888, 512, 512);
+///
+///     // Start drawing
+///     drawer.clear();
+///     drawer.set_draw_color(Color::RGB(255, 0, 0));
+///     drawer.fill_rect(Rect::new(100, 100, 256, 256));
+///
+///     let texture: Option<Texture> = drawer.render_target().unwrap().reset().unwrap();
+///     texture.unwrap()
+/// }
+/// ```
 pub struct RenderTarget<'renderer, 'render_drawer> {
     raw: *const ll::SDL_Renderer,
     _marker: ContravariantLifetime<'render_drawer>
