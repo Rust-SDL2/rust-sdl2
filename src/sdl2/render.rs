@@ -727,23 +727,40 @@ pub struct RenderTarget<'render_drawer> {
 }
 
 impl<'render_drawer> RenderTarget<'render_drawer> {
+    fn get_with_lifetime<'a>(&self) -> Option<Texture<'a>> {
+        let texture_raw = unsafe{ ll::SDL_GetRenderTarget(self.raw) };
+        if texture_raw == ptr::null() {
+            None
+        }
+        else {
+            Some(Texture {
+                raw: texture_raw,
+                owned: false,
+                _marker: ContravariantLifetime
+            })
+        }
+    }
+
     /// Resets the render target to the default render target.
-    pub fn reset(&mut self) -> SdlResult<()> {
+    pub fn reset<'a>(&mut self) -> SdlResult<Option<Texture<'a>>> {
+        let target = self.get_with_lifetime::<'a>();
         unsafe {
             if ll::SDL_SetRenderTarget(self.raw, ptr::null()) == 0 {
-                Ok(())
-            } else {
-                Err(get_error())
+                Ok(target)
+            }
+            else {
+                return Err(get_error());
             }
         }
     }
 
     /// Sets the render target to the provided texture.
     /// The texture must be created with the texture access: `sdl2::render::TextureAccess::Target`.
-    pub fn set(&mut self, texture: Texture) -> SdlResult<()> {
+    pub fn set<'a>(&mut self, texture: Texture) -> SdlResult<Option<Texture<'a>>> {
+        let target = self.get_with_lifetime::<'a>();
         unsafe {
             if ll::SDL_SetRenderTarget(self.raw, texture.raw) == 0 {
-                Ok(())
+                Ok(target)
             } else {
                 Err(get_error())
             }
@@ -751,7 +768,8 @@ impl<'render_drawer> RenderTarget<'render_drawer> {
     }
 
     /// Creates a new texture and sets it as the render target.
-    pub fn create_and_set(&mut self, format: pixels::PixelFormatEnum, width: i32, height: i32) -> SdlResult<Texture> {
+    pub fn create_and_set<'a>(&mut self, format: pixels::PixelFormatEnum, width: i32, height: i32) -> SdlResult<Option<Texture<'a>>> {
+        let target = self.get_with_lifetime::<'a>();
         let new_texture_raw = unsafe {
             let access = ll::SDL_TEXTUREACCESS_TARGET;
             ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int)
@@ -762,11 +780,7 @@ impl<'render_drawer> RenderTarget<'render_drawer> {
         } else {
             unsafe {
                 if ll::SDL_SetRenderTarget(self.raw, new_texture_raw) == 0 {
-                    Ok(Texture {
-                        raw: new_texture_raw,
-                        owned: false,
-                        _marker: ContravariantLifetime
-                    })
+                    Ok(target)
                 } else {
                     Err(get_error())
                 }
