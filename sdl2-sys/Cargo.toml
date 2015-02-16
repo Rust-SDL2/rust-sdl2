@@ -16,10 +16,11 @@ path = "src/lib.rs"
 [dependencies]
 libc = "*"
 
-[build-dependencies]
-pkg-config = "0.1.7"
+[build-dependencies.pkg-config]
+version = "0.1.7"
+optional = true
 
 [features]
 
 default = []
-use-pkgconfig = []
+use-pkgconfig = ["pkg-config"]

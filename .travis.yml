@@ -9,6 +9,7 @@ install:
     - sudo apt-get install libsdl2-dev
 script:
     - cargo build -v
+    - cargo build -v --features "use-pkgconfig"
     - cargo test -v
     - cargo doc -v
 after_success:
