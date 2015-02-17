@@ -51,7 +51,7 @@ use std::raw;
 use libc::{c_int, uint32_t, c_double, c_void};
 use rect::Point;
 use rect::Rect;
-use std::cell::{RefCell, RefMut};
+use std::cell::{RefCell, RefMut, BorrowState};
 use std::ffi::c_str_to_bytes;
 use std::num::FromPrimitive;
 use std::vec::Vec;
@@ -266,9 +266,9 @@ impl Renderer {
     /// }
     /// ```
     pub fn drawer(&self) -> RenderDrawer {
-        match self.drawer_borrow.try_borrow_mut() {
-            Some(borrow) => RenderDrawer::new(self.raw, borrow),
-            None => panic!("Renderer drawer already borrowed")
+        match self.drawer_borrow.borrow_state() {
+            BorrowState::Unused => RenderDrawer::new(self.raw, self.drawer_borrow.borrow_mut()),
+            _ => panic!("Renderer drawer already borrowed")
         }
     }
 

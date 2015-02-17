@@ -16,6 +16,7 @@ path       = "src/sdl2/lib.rs"
 [dependencies]
 bitflags = "0.1"
 libc = "*"
+rand = "*"
 
 [dependencies.sdl2-sys]
 
