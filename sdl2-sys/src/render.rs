@@ -77,6 +77,7 @@ extern "C" {
     pub fn SDL_SetTextureBlendMode(texture: *const SDL_Texture, blendMode: SDL_BlendMode) -> c_int;
     pub fn SDL_GetTextureBlendMode(texture: *const SDL_Texture, blendMode: *const SDL_BlendMode) -> c_int;
     pub fn SDL_UpdateTexture(texture: *const SDL_Texture, rect: *const SDL_Rect, pixels: *const c_void, pitch: c_int) -> c_int;
+    pub fn SDL_UpdateYUVTexture(texture: *const SDL_Texture, rect: *const SDL_Rect, Yplane: *const uint8_t, Ypitch: c_int, Uplane: *const uint8_t, Upitch: c_int, Vplane: *const uint8_t, Vpitch: c_int) -> c_int;
     pub fn SDL_LockTexture(texture: *const SDL_Texture, rect: *const SDL_Rect, pixels: *const *const c_void, pitch: *const c_int) -> c_int;
     pub fn SDL_UnlockTexture(texture: *const SDL_Texture);
     pub fn SDL_RenderTargetSupported(renderer: *const SDL_Renderer) -> SDL_bool;

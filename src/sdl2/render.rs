@@ -43,6 +43,7 @@ use video::Window;
 use surface;
 use surface::Surface;
 use pixels;
+use pixels::PixelFormatEnum;
 use get_error;
 use SdlResult;
 use std::mem;
@@ -293,6 +294,18 @@ impl Renderer {
     /// `size` is the width and height of the texture.
     pub fn create_texture(&self, format: pixels::PixelFormatEnum, access: TextureAccess, size: (i32, i32)) -> SdlResult<Texture> {
         let (width, height) = size;
+
+        // If the pixel format is YUV 4:2:0 and planar, the width and height must
+        // be multiples-of-two. See issue #334 for details.
+        match format {
+            PixelFormatEnum::YV12 | PixelFormatEnum::IYUV => {
+                if width % 2 != 0 || height % 2 != 0 {
+                    return Err(format!("The width and height must be multiples-of-two for planar YUV 4:2:0 pixel formats"));
+                }
+            },
+            _ => ()
+        }
+
         let result = unsafe { ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int) };
         if result == ptr::null() {
             Err(get_error())
@@ -352,7 +365,7 @@ impl<'renderer> RenderDrawer<'renderer> {
     /// Gets the render target handle.
     ///
     /// Returns `None` if the window does not support the use of render targets.
-    pub fn render_target(&mut self) -> Option<RenderTarget> {
+    pub fn render_target<'a>(&'a mut self) -> Option<RenderTarget<'renderer, 'a>> {
         if self.render_target_supported() {
             Some(RenderTarget {
                 raw: self.raw,
@@ -721,17 +734,46 @@ impl<'renderer> RenderDrawer<'renderer> {
 }
 
 /// A handle for getting/setting the render target of the render context.
-pub struct RenderTarget<'render_drawer> {
+///
+/// # Example
+/// ```no_run
+/// use sdl2::pixels::{Color, PixelFormatEnum};
+/// use sdl2::rect::Rect;
+/// use sdl2::render::{RenderDrawer, Texture};
+///
+/// // Draw a red rectangle to a new texture
+/// fn draw_to_texture<'renderer>(drawer: &mut RenderDrawer<'renderer>) -> Texture<'renderer> {
+///     drawer.render_target()
+///         .expect("This platform doesn't support render targets")
+///         .create_and_set(PixelFormatEnum::RGBA8888, 512, 512);
+///
+///     // Start drawing
+///     drawer.clear();
+///     drawer.set_draw_color(Color::RGB(255, 0, 0));
+///     drawer.fill_rect(Rect::new(100, 100, 256, 256));
+///
+///     let texture: Option<Texture> = drawer.render_target().unwrap().reset().unwrap();
+///     texture.unwrap()
+/// }
+/// ```
+pub struct RenderTarget<'renderer, 'render_drawer> {
     raw: *const ll::SDL_Renderer,
     _marker: ContravariantLifetime<'render_drawer>
 }
 
-impl<'render_drawer> RenderTarget<'render_drawer> {
+impl<'renderer, 'render_drawer> RenderTarget<'renderer, 'render_drawer> {
     /// Resets the render target to the default render target.
-    pub fn reset(&mut self) -> SdlResult<()> {
+    ///
+    /// The old render target is returned if the function is successful.
+    pub fn reset(&mut self) -> SdlResult<Option<Texture<'renderer>>> {
         unsafe {
+            let old_texture_raw = ll::SDL_GetRenderTarget(self.raw);
+
             if ll::SDL_SetRenderTarget(self.raw, ptr::null()) == 0 {
-                Ok(())
+                Ok(match old_texture_raw.is_null() {
+                    true => None,
+                    false => Some(Texture::from_ll(old_texture_raw))
+                })
             } else {
                 Err(get_error())
             }
@@ -740,10 +782,18 @@ impl<'render_drawer> RenderTarget<'render_drawer> {
 
     /// Sets the render target to the provided texture.
     /// The texture must be created with the texture access: `sdl2::render::TextureAccess::Target`.
-    pub fn set(&mut self, texture: Texture) -> SdlResult<()> {
+    ///
+    /// The old render target is returned if the function is successful.
+    pub fn set(&mut self, texture: Texture) -> SdlResult<Option<Texture<'renderer>>> {
         unsafe {
+            let old_texture_raw = ll::SDL_GetRenderTarget(self.raw);
+
             if ll::SDL_SetRenderTarget(self.raw, texture.raw) == 0 {
-                Ok(())
+                mem::forget(texture);
+                Ok(match old_texture_raw.is_null() {
+                    true => None,
+                    false => Some(Texture::from_ll(old_texture_raw))
+                })
             } else {
                 Err(get_error())
             }
@@ -751,7 +801,9 @@ impl<'render_drawer> RenderTarget<'render_drawer> {
     }
 
     /// Creates a new texture and sets it as the render target.
-    pub fn create_and_set(&mut self, format: pixels::PixelFormatEnum, width: i32, height: i32) -> SdlResult<Texture> {
+    ///
+    /// The old render target is returned if the function is successful.
+    pub fn create_and_set(&mut self, format: pixels::PixelFormatEnum, width: i32, height: i32) -> SdlResult<Option<Texture<'renderer>>> {
         let new_texture_raw = unsafe {
             let access = ll::SDL_TEXTUREACCESS_TARGET;
             ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int)
@@ -761,11 +813,12 @@ impl<'render_drawer> RenderTarget<'render_drawer> {
             Err(get_error())
         } else {
             unsafe {
+                let old_texture_raw = ll::SDL_GetRenderTarget(self.raw);
+
                 if ll::SDL_SetRenderTarget(self.raw, new_texture_raw) == 0 {
-                    Ok(Texture {
-                        raw: new_texture_raw,
-                        owned: false,
-                        _marker: ContravariantLifetime
+                    Ok(match old_texture_raw.is_null() {
+                        true => None,
+                        false => Some(Texture::from_ll(old_texture_raw))
                     })
                 } else {
                     Err(get_error())
@@ -912,16 +965,85 @@ impl<'renderer> Texture<'renderer> {
     /// * If `rect` is `None`, the entire texture is updated.
     pub fn update(&mut self, rect: Option<Rect>, pixel_data: &[u8], pitch: i32) -> SdlResult<()> {
         let ret = unsafe {
-            let actual_rect = match rect {
+            let rect_raw_ptr = match rect {
                 Some(ref rect) => rect as *const _,
                 None => ptr::null()
             };
 
-            ll::SDL_UpdateTexture(self.raw, actual_rect, pixel_data.as_ptr() as *const _, pitch as c_int)
+            // Check if the rectangle's position or size is odd, and if the pitch is odd.
+            // This needs to be done in case the texture's pixel format is planar YUV.
+            // See issue #334 for details.
+            let rect_is_odd = match rect {
+                Some(r) => (r.x % 2 != 0) || (r.y % 2 != 0) || (r.w % 2 != 0) || (r.h % 2 != 0),
+                None => false
+            };
+            let pitch_is_odd = pitch % 2 != 0;
+
+            if rect_is_odd || pitch_is_odd {
+                // Query the texture's format
+                match self.query() {
+                    TextureQuery { format: PixelFormatEnum::YV12, .. } |
+                    TextureQuery { format: PixelFormatEnum::IYUV, .. } => {
+                        return Err(format!("The rectangle dimensions and pitch must be multiples-of-two for planar YUV 4:2:0 pixel formats"));
+                    },
+                    _ => ()
+                }
+            }
+
+            ll::SDL_UpdateTexture(self.raw, rect_raw_ptr, pixel_data.as_ptr() as *const _, pitch as c_int)
         };
 
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
+    }
+
+    /// Updates a rectangle within a planar YV12 or IYUV texture with new pixel data.
+    pub fn update_yuv(&mut self, rect: Option<Rect>, y_plane: &[u8], y_pitch: i32, u_plane: &[u8], u_pitch: i32, v_plane: &[u8], v_pitch: i32) -> SdlResult<()> {
+        let rect_raw_ptr = match rect {
+            Some(ref rect) => rect as *const _,
+            None => ptr::null()
+        };
+
+        let rect_is_odd = match rect {
+            Some(r) => (r.x % 2 != 0) || (r.y % 2 != 0) || (r.w % 2 != 0) || (r.h % 2 != 0),
+            None => false
+        };
+
+        if rect_is_odd {
+            return Err(format!("The rectangle dimensions must be multiples-of-two for planar YUV 4:2:0 pixel formats"));
+        }
+
+        // We need the height in order to check the array slice lengths.
+        // Checking the lengths can prevent buffer overruns in SDL_UpdateYUVTexture.
+        let height = match rect {
+            Some(r) => r.h,
+            None => self.query().height
+        };
+
+        let wrong_length =
+            (y_plane.len() != (y_pitch * height) as usize) ||
+            (u_plane.len() != (u_pitch * height/2) as usize) ||
+            (v_plane.len() != (v_pitch * height/2) as usize);
+
+        if wrong_length {
+            return Err(format!("One or more of the plane lengths is not correct (should be pitch * height)."));
+        }
+
+        unsafe {
+            let result = ll::SDL_UpdateYUVTexture(
+                self.raw,
+                rect_raw_ptr,
+                y_plane.as_ptr(),
+                y_pitch,
+                u_plane.as_ptr(),
+                u_pitch,
+                v_plane.as_ptr(),
+                v_pitch
+            );
+
+            if result == 0 { Ok(()) }
+            else { Err(get_error()) }
+        }
     }
 
     /// Locks the texture for **write-only** pixel access.
@@ -943,14 +1065,14 @@ impl<'renderer> Texture<'renderer> {
             let pixels : *const c_void = ptr::null();
             let pitch = 0;
 
-            let actual_rect = match rect {
-                Some(ref rect) => rect as *const _,
-                None => ptr::null()
+            let (rect_raw_ptr, height) = match rect {
+                Some(ref rect) => (rect as *const _, rect.h as usize),
+                None => (ptr::null(), q.height as usize)
             };
 
-            let ret = ll::SDL_LockTexture(self.raw, actual_rect, &pixels, &pitch);
+            let ret = ll::SDL_LockTexture(self.raw, rect_raw_ptr, &pixels, &pitch);
             if ret == 0 {
-                let size = pitch as usize * q.height as usize;
+                let size = q.format.byte_size_from_pitch_and_height(pitch as usize, height);
                 Ok( (raw::Slice { data: pixels as *const u8, len: size }, pitch) )
             } else {
                 Err(get_error())
