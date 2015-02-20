@@ -353,6 +353,20 @@ impl Surface {
         }
     }
 
+    pub fn blit_scaled(&self, src_rect: Option<Rect>,
+                             dst: &mut Surface, dst_rect: Option<Rect>) -> SdlResult<()> {
+
+        match unsafe {
+            let src_rect_ptr = mem::transmute(src_rect.as_ref());
+            let dst_rect_ptr = mem::transmute(dst_rect.as_ref());
+            ll::SDL_UpperBlitScaled(self.raw, src_rect_ptr, dst.raw, dst_rect_ptr)
+        } {
+            0 => Ok(()),
+            _ => Err(get_error())
+        }
+    }
+
+    #[deprecated]
     pub fn upper_blit_scaled(&self, src_rect: Option<Rect>,
                              dst: &mut Surface, dst_rect: Option<Rect>) -> SdlResult<()> {
 
