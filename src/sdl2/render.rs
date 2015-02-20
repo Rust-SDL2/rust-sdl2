@@ -369,7 +369,8 @@ impl<'renderer> RenderDrawer<'renderer> {
         if self.render_target_supported() {
             Some(RenderTarget {
                 raw: self.raw,
-                _marker: ContravariantLifetime
+                _marker_renderer: ContravariantLifetime,
+                _marker_render_drawer: ContravariantLifetime
             })
         } else {
             None
@@ -758,7 +759,8 @@ impl<'renderer> RenderDrawer<'renderer> {
 /// ```
 pub struct RenderTarget<'renderer, 'render_drawer> {
     raw: *const ll::SDL_Renderer,
-    _marker: ContravariantLifetime<'render_drawer>
+    _marker_renderer: ContravariantLifetime<'renderer>,
+    _marker_render_drawer: ContravariantLifetime<'render_drawer>
 }
 
 impl<'renderer, 'render_drawer> RenderTarget<'renderer, 'render_drawer> {
@@ -856,7 +858,6 @@ pub struct TextureQuery {
 ///
 /// Textures are owned by and cannot live longer than the parent `Renderer`.
 /// Each texture is bound to the `'renderer` contravariant lifetime.
-#[derive(PartialEq)] #[allow(raw_pointer_derive)]
 pub struct Texture<'renderer> {
     raw: *const ll::SDL_Texture,
     owned: bool,
