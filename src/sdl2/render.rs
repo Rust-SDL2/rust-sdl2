@@ -56,7 +56,7 @@ use std::cell::{RefCell, RefMut, BorrowState};
 use std::ffi::c_str_to_bytes;
 use std::num::FromPrimitive;
 use std::vec::Vec;
-use std::marker::ContravariantLifetime;
+use std::marker::PhantomData;
 
 use sys::render as ll;
 
@@ -369,8 +369,8 @@ impl<'renderer> RenderDrawer<'renderer> {
         if self.render_target_supported() {
             Some(RenderTarget {
                 raw: self.raw,
-                _marker_renderer: ContravariantLifetime,
-                _marker_render_drawer: ContravariantLifetime
+                _marker_renderer: PhantomData,
+                _marker_render_drawer: PhantomData
             })
         } else {
             None
@@ -759,8 +759,8 @@ impl<'renderer> RenderDrawer<'renderer> {
 /// ```
 pub struct RenderTarget<'renderer, 'render_drawer> {
     raw: *const ll::SDL_Renderer,
-    _marker_renderer: ContravariantLifetime<'renderer>,
-    _marker_render_drawer: ContravariantLifetime<'render_drawer>
+    _marker_renderer: PhantomData<&'renderer ()>,
+    _marker_render_drawer: PhantomData<&'render_drawer ()>
 }
 
 impl<'renderer, 'render_drawer> RenderTarget<'renderer, 'render_drawer> {
@@ -840,7 +840,7 @@ impl<'renderer, 'render_drawer> RenderTarget<'renderer, 'render_drawer> {
             Some(Texture {
                 raw: texture_raw,
                 owned: false,
-                _marker: ContravariantLifetime
+                _marker: PhantomData
             })
         }
     }
@@ -863,7 +863,7 @@ pub struct Texture<'renderer> {
     owned: bool,
     /// Textures cannot live longer than the Renderer it was born from: 'a
     /// All SDL textures contain an internal reference to a Renderer
-    _marker: ContravariantLifetime<'renderer>
+    _marker: PhantomData<&'renderer ()>
 }
 
 #[unsafe_destructor]
@@ -1138,7 +1138,7 @@ impl<'renderer> Texture<'renderer> {
         Texture {
             raw: raw,
             owned: true,
-            _marker: ContravariantLifetime
+            _marker: PhantomData
         }
     }
 
@@ -1147,7 +1147,7 @@ impl<'renderer> Texture<'renderer> {
         Texture {
             raw: raw,
             owned: false,
-            _marker: ContravariantLifetime
+            _marker: PhantomData
         }
     }
 
