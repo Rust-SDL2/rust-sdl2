@@ -157,37 +157,37 @@ struct AudioCallbackUserdata<CB> {
 /// A phantom type for retreiving the SDL_AudioFormat of a given generic type.
 /// All format types are returned as native-endian.
 pub trait AudioFormatNum<T>: PhantomFn<T> {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat;
+    fn get_audio_format() -> ll::SDL_AudioFormat;
     fn zero() -> Self;
 }
 /// AUDIO_S8
 impl AudioFormatNum<i8> for i8 {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat { ll::AUDIO_S8 }
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S8 }
     fn zero() -> i8 { 0 }
 }
 /// AUDIO_U8
 impl AudioFormatNum<u8> for u8 {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat { ll::AUDIO_U8 }
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_U8 }
     fn zero() -> u8 { 0 }
 }
 /// AUDIO_S16
 impl AudioFormatNum<i16> for i16 {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat { ll::AUDIO_S16SYS }
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S16SYS }
     fn zero() -> i16 { 0 }
 }
 /// AUDIO_U16
 impl AudioFormatNum<u16> for u16 {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat { ll::AUDIO_U16SYS }
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_U16SYS }
     fn zero() -> u16 { 0 }
 }
 /// AUDIO_S32
 impl AudioFormatNum<i32> for i32 {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat { ll::AUDIO_S32SYS }
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S32SYS }
     fn zero() -> i32 { 0 }
 }
 /// AUDIO_F32
 impl AudioFormatNum<f32> for f32 {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat { ll::AUDIO_F32SYS }
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_F32SYS }
     fn zero() -> f32 { 0.0 }
 }
 
@@ -217,12 +217,10 @@ impl<CB: AudioCallback> AudioSpecDesired<CB> {
     fn convert_to_ll(freq: i32, channels: u8, samples: u16, userdata: &mut AudioCallbackUserdata<CB>) -> ll::SDL_AudioSpec {
         use std::mem::transmute;
 
-        let format_num: CB::Channel = AudioFormatNum::zero();
-
         unsafe {
             ll::SDL_AudioSpec {
                 freq: freq,
-                format: format_num.get_audio_format(),
+                format: <CB::Channel as AudioFormatNum<CB::Channel>>::get_audio_format(),
                 channels: channels,
                 silence: 0,
                 samples: samples,
