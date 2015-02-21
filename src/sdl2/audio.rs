@@ -3,6 +3,7 @@ use std::ffi::{c_str_to_bytes, CString};
 use std::num::FromPrimitive;
 use libc::{c_int, c_void, uint8_t};
 use std::ops::{Deref, DerefMut};
+use std::marker::{PhantomFn, PhantomData};
 
 use get_error;
 use rwops::RWops;
@@ -153,7 +154,7 @@ struct AudioCallbackUserdata<CB> {
 /// All format types are returned as native-endian.
 ///
 /// Example: `assert_eq!(AudioFormatNum::<f32>::get_audio_format(), ll::AUDIO_F32);``
-pub trait AudioFormatNum<T> {
+pub trait AudioFormatNum<T> : PhantomFn<T> {
     fn get_audio_format(self) -> ll::SDL_AudioFormat;
     fn zero() -> Self;
 }
@@ -207,7 +208,8 @@ pub struct AudioSpecDesired<T: AudioFormatNum<T>, CB: AudioCallback<T>> {
     pub freq: i32,
     pub channels: u8,
     pub samples: u16,
-    pub callback: CB
+    pub callback: CB,
+    _marker : PhantomData<T>
 }
 
 impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {

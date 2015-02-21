@@ -249,9 +249,9 @@ pub enum ScanCode {
     Num                = ll::SDL_NUM_SCANCODES as isize,
 }
 
-impl<S: hash::Hasher + hash::Writer> Hash<S> for ScanCode {
+impl Hash for ScanCode {
     #[inline]
-    fn hash(&self, state: &mut S) {
+    fn hash<S: hash::Hasher>(&self, state: &mut S) {
         (*self as i32).hash(state);
     }
 }

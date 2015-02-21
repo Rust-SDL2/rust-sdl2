@@ -243,9 +243,9 @@ pub enum KeyCode {
     Sleep              = ll::SDLK_SLEEP as isize,
 }
 
-impl<S: hash::Hasher + hash::Writer> Hash<S> for KeyCode {
+impl Hash for KeyCode {
     #[inline]
-    fn hash(&self, state: &mut S) {
+    fn hash<S: hash::Hasher>(&self, state: &mut S) {
         (*self as i32).hash(state);
     }
 }

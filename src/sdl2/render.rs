@@ -56,7 +56,7 @@ use std::cell::{RefCell, RefMut, BorrowState};
 use std::ffi::c_str_to_bytes;
 use std::num::FromPrimitive;
 use std::vec::Vec;
-use std::marker::ContravariantLifetime;
+use std::marker::PhantomData;
 
 use sys::render as ll;
 
@@ -369,7 +369,7 @@ impl<'renderer> RenderDrawer<'renderer> {
         if self.render_target_supported() {
             Some(RenderTarget {
                 raw: self.raw,
-                _marker: ContravariantLifetime
+                _marker: PhantomData
             })
         } else {
             None
@@ -758,7 +758,7 @@ impl<'renderer> RenderDrawer<'renderer> {
 /// ```
 pub struct RenderTarget<'renderer, 'render_drawer> {
     raw: *const ll::SDL_Renderer,
-    _marker: ContravariantLifetime<'render_drawer>
+    _marker: PhantomData<(&'renderer ll::SDL_Renderer, &'render_drawer ll::SDL_Renderer)>,
 }
 
 impl<'renderer, 'render_drawer> RenderTarget<'renderer, 'render_drawer> {
@@ -838,7 +838,7 @@ impl<'renderer, 'render_drawer> RenderTarget<'renderer, 'render_drawer> {
             Some(Texture {
                 raw: texture_raw,
                 owned: false,
-                _marker: ContravariantLifetime
+                _marker: PhantomData
             })
         }
     }
@@ -862,7 +862,7 @@ pub struct Texture<'renderer> {
     owned: bool,
     /// Textures cannot live longer than the Renderer it was born from: 'a
     /// All SDL textures contain an internal reference to a Renderer
-    _marker: ContravariantLifetime<'renderer>
+    _marker: PhantomData<&'renderer ll::SDL_Texture>
 }
 
 #[unsafe_destructor]
@@ -1137,7 +1137,7 @@ impl<'renderer> Texture<'renderer> {
         Texture {
             raw: raw,
             owned: true,
-            _marker: ContravariantLifetime
+            _marker: PhantomData
         }
     }
 
@@ -1146,7 +1146,7 @@ impl<'renderer> Texture<'renderer> {
         Texture {
             raw: raw,
             owned: false,
-            _marker: ContravariantLifetime
+            _marker: PhantomData
         }
     }
 
