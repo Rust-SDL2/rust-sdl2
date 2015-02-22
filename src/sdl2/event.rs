@@ -8,6 +8,8 @@ use libc::{c_int, c_void, uint32_t};
 use std::num::FromPrimitive;
 use std::ptr;
 use std::borrow::ToOwned;
+use std::iter::FromIterator;
+use std::marker::{NoCopy, PhantomData};
 
 use controller;
 use controller::{Axis, Button};
@@ -841,112 +843,203 @@ impl Event {
     }
 }
 
-/// Pump the event loop, gathering events from the input devices.
-pub fn pump_events() {
-    unsafe { ll::SDL_PumpEvents(); }
+/// A thread-safe type that encapsulates SDL event-pumping functions.
+pub struct EventPump<'sdl> {
+    _marker: NoCopy,
+    _sdl: PhantomData<&'sdl ()>
 }
 
-/// Check for the existence of certain event types in the event queue.
-pub fn has_event(_type: EventType) -> bool {
-    unsafe { ll::SDL_HasEvent(_type as uint32_t ) == 1 }
-}
+/// Prevents the event pump from moving to other threads.
+/// SDL events can only be pumped on the main thread.
+impl<'sdl> !Send for EventPump<'sdl> {}
 
-/// Check for the existence of a range of event types in the event queue.
-pub fn has_events(min: EventType, max: EventType) -> bool {
-    unsafe { ll::SDL_HasEvents(min as uint32_t, max as uint32_t) == 1 }
-}
+impl<'sdl> EventPump<'sdl> {
+    /// Polls for currently pending events.
+    ///
+    /// If no events are pending, `None` is returned.
+    pub fn poll_event(&mut self) -> Option<Event> {
+        let raw = unsafe { mem::uninitialized() };
+        let has_pending = unsafe { ll::SDL_PollEvent(&raw) == 1 as c_int };
 
-/// Clear events from the event queue.
-pub fn flush_event(_type: EventType) {
-    unsafe { ll::SDL_FlushEvent(_type as uint32_t) }
-}
+        if has_pending { Some(Event::from_ll(&raw)) }
+        else { None }
+    }
 
-/// Clear events from the event queue of a range of event types.
-pub fn flush_events(min: EventType, max: EventType) {
-    unsafe { ll::SDL_FlushEvents(min as uint32_t, max as uint32_t) }
-}
+    /// Returns a polling iterator that calls `poll_event()`.
+    /// The iterator will terminate once there are no more pending events.
+    ///
+    /// # Example
+    /// ```no_run
+    /// let mut sdl_context = sdl2::init(sdl2::INIT_EVERYTHING).unwrap();
+    ///
+    /// let mut event_pump = sdl_context.event_pump();
+    /// for event in event_pump.poll_iter() {
+    ///     use sdl2::event::Event;
+    ///     match event {
+    ///         Event::KeyDown {..} => { /*...*/ },
+    ///         _ => ()
+    ///     }
+    /// }
+    /// ```
+    pub fn poll_iter(&mut self) -> EventPollIterator {
+        EventPollIterator {
+            event_pump: unsafe { EventPump::_unchecked_new() }
+        }
+    }
 
-/// Poll for currently pending events.
-pub fn poll_event() -> Option<Event> {
-    let raw = unsafe { mem::uninitialized() };
-    let has_pending = unsafe { ll::SDL_PollEvent(&raw) == 1 as c_int };
+    /// Pumps the event loop, gathering events from the input devices.
+    pub fn pump_events(&mut self) {
+        unsafe { ll::SDL_PumpEvents(); };
+    }
 
-    if has_pending { Some(Event::from_ll(&raw)) }
-    else { None }
-}
+    /// Waits indefinitely for the next available event.
+    pub fn wait_event(&mut self) -> Event {
+        unsafe {
+            let raw = mem::uninitialized();
+            let success = ll::SDL_WaitEvent(&raw) == 1;
 
-/// Wait indefinitely for the next available event.
-pub fn wait_event() -> SdlResult<Event> {
-    let raw = unsafe { mem::uninitialized() };
-    let success = unsafe { ll::SDL_WaitEvent(&raw) == 1 as c_int };
+            if success { Event::from_ll(&raw) }
+            else { panic!(get_error()) }
+        }
+    }
 
-    if success { Ok(Event::from_ll(&raw)) }
-    else { Err(get_error()) }
-}
+    /// Waits until the specified timeout (in milliseconds) for the next available event.
+    pub fn wait_event_timeout(&mut self, timeout: u32) -> Option<Event> {
+        unsafe {
+            let raw = mem::uninitialized();
+            let success = ll::SDL_WaitEventTimeout(&raw, timeout as c_int) == 1;
 
-/// Wait until the specified timeout (in milliseconds) for the next available event.
-pub fn wait_event_timeout(timeout: i32) -> SdlResult<Event> {
-    let raw = unsafe { mem::uninitialized() };
-    let success = unsafe { ll::SDL_WaitEventTimeout(&raw, timeout as c_int) ==
-                           1 as c_int };
+            if success { Some(Event::from_ll(&raw)) }
+            else { None }
+        }
+    }
 
-    if success { Ok(Event::from_ll(&raw)) }
-    else { Err(get_error()) }
-}
+    /// Returns a waiting iterator that calls `wait_event()`.
+    ///
+    /// Note: The iterator will never terminate.
+    pub fn wait_iter(&mut self) -> EventWaitIterator {
+        EventWaitIterator {
+            event_pump: unsafe { EventPump::_unchecked_new() }
+        }
+    }
 
-extern "C" fn event_filter_wrapper(userdata: *const c_void, event: *const ll::SDL_Event) -> c_int {
-    let filter: extern fn(event: Event) -> bool = unsafe { mem::transmute(userdata) };
-    if event.is_null() { 1 }
-    else { filter(Event::from_ll(unsafe { &*event })) as c_int }
-}
+    /// Returns a waiting iterator that calls `wait_event_timeout()`.
+    ///
+    /// Note: The iterator will never terminate, unless waiting for an event
+    /// exceeds the specified timeout.
+    pub fn wait_timeout_iter(&mut self, timeout: u32) -> EventWaitTimeoutIterator {
+        EventWaitTimeoutIterator {
+            event_pump: unsafe { EventPump::_unchecked_new() },
+            timeout: timeout
+        }
+    }
 
-/// Set up a filter to process all events before they change internal state and are posted to the internal event queue.
-pub fn set_event_filter(filter_func: extern fn(event: Event) -> bool) {
-    unsafe { ll::SDL_SetEventFilter(event_filter_wrapper,
-                                    filter_func as *const _) }
-}
-
-/// Add a callback to be triggered when an event is added to the event queue.
-pub fn add_event_watch(filter_func: extern fn(event: Event) -> bool) {
-    unsafe { ll::SDL_AddEventWatch(event_filter_wrapper,
-                                   filter_func as *const _) }
-}
-
-/// Remove an event watch callback added.
-pub fn delete_event_watch(filter_func: extern fn(event: Event) -> bool) {
-    unsafe { ll::SDL_DelEventWatch(event_filter_wrapper,
-                                   filter_func as *const _) }
-}
-
-/// Run a specific filter function on the current event queue, removing any events for which the filter returns 0.
-pub fn filter_events(filter_func: extern fn(event: Event) -> bool) {
-    unsafe { ll::SDL_FilterEvents(event_filter_wrapper,
-                                  filter_func as *const _) }
-}
-
-/// Set the state of processing events.
-pub fn set_event_state(_type: EventType, state: bool) {
-    unsafe { ll::SDL_EventState(_type as uint32_t,
-                                state as ll::SDL_EventState); }
-}
-
-/// Get the state of processing events.
-pub fn get_event_state(_type: EventType) -> bool {
-    unsafe { ll::SDL_EventState(_type as uint32_t, ll::SDL_QUERY)
-             == ll::SDL_ENABLE }
-}
-
-/// allocate a set of user-defined events, and return the beginning event number for that set of events
-pub fn register_events(num_events: i32) -> Option<u32> {
-    let ret = unsafe { ll::SDL_RegisterEvents(num_events as c_int) };
-    if ret == (-1 as uint32_t) {
-        None
-    } else {
-        Some(ret as u32)
+    /// Internal use only; used by `sdl2::Sdl::event_pump()`
+    #[doc(hidden)]
+    pub unsafe fn _unchecked_new<'a>() -> EventPump<'a> {
+        EventPump {
+            _marker: NoCopy,
+            _sdl: PhantomData
+        }
     }
 }
 
-/// add an event to the event queue
+/// An iterator that calls `EventPump::poll_event()`.
+#[must_use = "iterators are lazy and do nothing unless consumed"]
+pub struct EventPollIterator<'a> {
+    event_pump: EventPump<'a>
+}
+
+impl<'a> Iterator for EventPollIterator<'a> {
+    pub type Item = Event;
+
+    fn next(&mut self) -> Option<Event> {
+        self.event_pump.poll_event()
+    }
+}
+
+/// An iterator that calls `EventPump::wait_event()`.
+#[must_use = "iterators are lazy and do nothing unless consumed"]
+pub struct EventWaitIterator<'a> {
+    event_pump: EventPump<'a>
+}
+
+impl<'a> Iterator for EventWaitIterator<'a> {
+    pub type Item = Event;
+    fn next(&mut self) -> Option<Event> { Some(self.event_pump.wait_event()) }
+}
+
+/// An iterator that calls `EventPump::wait_event_timeout()`.
+#[must_use = "iterators are lazy and do nothing unless consumed"]
+pub struct EventWaitTimeoutIterator<'a> {
+    event_pump: EventPump<'a>,
+    timeout: u32
+}
+
+impl<'a> Iterator for EventWaitTimeoutIterator<'a> {
+    pub type Item = Event;
+    fn next(&mut self) -> Option<Event> { self.event_pump.wait_event_timeout(self.timeout) }
+}
+
+/// Removes all events in the event queue that match the specified event type.
+pub fn flush_event(event_type: EventType) {
+    unsafe { ll::SDL_FlushEvent(event_type as uint32_t) };
+}
+
+/// Removes all events in the event queue that match the specified type range.
+pub fn flush_events(min_type: u32, max_type: u32) {
+    unsafe { ll::SDL_FlushEvents(min_type, max_type) };
+}
+
+/// Reads the events at the front of the event queue, until the maximum amount
+/// of events is read.
+///
+/// The events will _not_ be removed from the queue.
+///
+/// # Example
+/// ```no_run
+/// use sdl2::event::{Event, peek_events};
+///
+/// // Read up to 1024 events
+/// let events: Vec<Event> = peek_events(1024);
+///
+/// // Print each one
+/// for event in events {
+///     println!("{:?}", event);
+/// }
+/// ```
+pub fn peek_events<B>(max_amount: u32) -> B
+where B: FromIterator<Event>
+{
+    unsafe {
+        let mut events = Vec::with_capacity(max_amount as usize);
+
+        let result = {
+            let events_ptr = events.as_mut_slice().as_mut_ptr();
+
+            ll::SDL_PeepEvents(
+                events_ptr,
+                max_amount as c_int,
+                ll::SDL_PEEKEVENT,
+                ll::SDL_FIRSTEVENT,
+                ll::SDL_LASTEVENT
+            )
+        };
+
+        if result < 0 {
+            // The only error possible is "Couldn't lock event queue"
+            panic!(get_error());
+        } else {
+            events.set_len(max_amount as usize);
+
+            events.iter().map(|event_raw| {
+                Event::from_ll(event_raw)
+            }).collect()
+        }
+    }
+}
+
+/// Pushes an event to the event queue.
 pub fn push_event(event: Event) -> SdlResult<()> {
     match event.to_ll() {
         Some(raw_event) => {
@@ -955,7 +1048,7 @@ pub fn push_event(event: Event) -> SdlResult<()> {
             else { Err(get_error()) }
         },
         None => {
-            Err("Unsupport event type to push back to queue.".to_owned())
+            Err(format!("Cannot push unsupported event type to the queue"))
         }
     }
 }

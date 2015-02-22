@@ -2,6 +2,7 @@ use std::ffi::{c_str_to_bytes, CString};
 use std::marker::{NoCopy, PhantomData};
 
 use sys::sdl as ll;
+use event::EventPump;
 
 bitflags! {
     flags InitFlag: u32 {
@@ -77,6 +78,11 @@ impl Sdl {
             flags & InitFlag::from_bits(raw).unwrap()
         }
     }
+
+    /// Obtains the SDL event pump.
+    pub fn event_pump(&self) -> EventPump {
+        unsafe { EventPump::_unchecked_new() }
+    }
 }
 
 impl Drop for Sdl {
@@ -132,7 +138,9 @@ pub fn init(flags: InitFlag) -> SdlResult<Sdl> {
             Err(format!("Cannot have more than one `Sdl` in use at the same time"))
         } else {
             if ll::SDL_Init(flags.bits()) == 0 {
-                Ok(Sdl { _marker: NoCopy })
+                Ok(Sdl {
+                    _marker: NoCopy
+                })
             } else {
                 IS_SDL_CONTEXT_ALIVE.swap(false, Ordering::Relaxed);
                 Err(get_error())
