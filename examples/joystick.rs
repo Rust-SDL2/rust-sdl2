@@ -7,7 +7,7 @@ use std::time::duration::Duration;
 use std::num::SignedInt;
 
 fn main() {
-    sdl2::init(sdl2::INIT_JOYSTICK);
+    let sdl_context = sdl2::init(sdl2::INIT_JOYSTICK).unwrap();
 
     let available =
         match num_joysticks() {
@@ -59,6 +59,4 @@ fn main() {
             _ => (),
         }
     }
-
-    sdl2::quit();
 }

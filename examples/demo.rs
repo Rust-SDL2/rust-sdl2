@@ -8,7 +8,7 @@ use sdl2::event::Event::{Quit, KeyDown};
 use sdl2::keycode::KeyCode;
 
 pub fn main() {
-    sdl2::init(sdl2::INIT_VIDEO);
+    let sdl_context = sdl2::init(sdl2::INIT_VIDEO).unwrap();
 
     let window = match Window::new("rust-sdl2 demo: Video", WindowPos::PosCentered, WindowPos::PosCentered, 800, 600, OPENGL) {
         Ok(window) => window,
@@ -36,6 +36,4 @@ pub fn main() {
             _ => {}
         }
     }
-
-    sdl2::quit();
 }
