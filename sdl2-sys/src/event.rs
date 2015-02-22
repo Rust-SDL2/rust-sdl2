@@ -100,7 +100,7 @@ pub struct SDL_TextEditingEvent {
     pub _type: uint32_t,
     pub timestamp: uint32_t,
     pub windowID: uint32_t,
-    pub text: [c_char; 32us],
+    pub text: [c_char; 32],
     pub start: int32_t,
     pub length: int32_t,
 }
@@ -111,7 +111,7 @@ pub struct SDL_TextInputEvent {
     pub _type: uint32_t,
     pub timestamp: uint32_t,
     pub windowID: uint32_t,
-    pub text: [c_char; 32us],
+    pub text: [c_char; 32],
 }
 
 #[derive(Copy, Clone)]
@@ -333,7 +333,7 @@ pub struct SDL_SysWMEvent {
 #[allow(missing_copy_implementations)]
 #[repr(C)]
 pub struct SDL_Event {
-    pub data: [uint8_t; 56us],
+    pub data: [uint8_t; 56],
 }
 
 impl SDL_Event {
