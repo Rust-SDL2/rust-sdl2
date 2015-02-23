@@ -1,14 +1,14 @@
 extern crate sdl2;
 extern crate rand;
 
-use std::marker::PhantomData;
-
 use sdl2::audio::{AudioCallback, AudioSpecDesired};
 
 struct MyCallback {
     volume: f32
 }
-impl AudioCallback<f32> for MyCallback {
+impl AudioCallback for MyCallback {
+    pub type Channel = f32;
+
     fn callback(&mut self, out: &mut [f32]) {
         use self::rand::{Rng, thread_rng};
         let mut rng = thread_rng();
@@ -28,7 +28,6 @@ fn main() {
         channels: 1,
         samples: 0,
         callback: MyCallback { volume: 0.5 },
-        _phdata: PhantomData,
     };
 
     // None: use default device

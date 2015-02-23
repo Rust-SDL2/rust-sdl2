@@ -3,7 +3,7 @@ use std::ffi::{CStr, CString};
 use std::num::FromPrimitive;
 use libc::{c_int, c_void, uint8_t};
 use std::ops::{Deref, DerefMut};
-use std::marker::PhantomData;
+use std::marker::PhantomFn;
 
 use get_error;
 use rwops::RWops;
@@ -141,8 +141,12 @@ impl Drop for AudioSpecWAV {
     }
 }
 
-pub trait AudioCallback<T>: Send {
-    fn callback(&mut self, &mut [T]);
+pub trait AudioCallback: Send
+where Self::Channel: AudioFormatNum<Self::Channel>
+{
+    type Channel;
+
+    fn callback(&mut self, &mut [Self::Channel]);
 }
 
 /// The userdata as seen by the SDL callback.
@@ -152,83 +156,78 @@ struct AudioCallbackUserdata<CB> {
 
 /// A phantom type for retreiving the SDL_AudioFormat of a given generic type.
 /// All format types are returned as native-endian.
-///
-/// Example: `assert_eq!(AudioFormatNum::<f32>::get_audio_format(), ll::AUDIO_F32);``
-pub trait AudioFormatNum {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat;
+pub trait AudioFormatNum<T>: PhantomFn<T> {
+    fn get_audio_format() -> ll::SDL_AudioFormat;
     fn zero() -> Self;
 }
 
 /// AUDIO_S8
-impl AudioFormatNum for i8 {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat { ll::AUDIO_S8 }
+impl AudioFormatNum<i8> for i8 {
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S8 }
     fn zero() -> i8 { 0 }
 }
 /// AUDIO_U8
-impl AudioFormatNum for u8 {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat { ll::AUDIO_U8 }
+impl AudioFormatNum<u8> for u8 {
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_U8 }
     fn zero() -> u8 { 0 }
 }
 /// AUDIO_S16
-impl AudioFormatNum for i16 {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat { ll::AUDIO_S16SYS }
+impl AudioFormatNum<i16> for i16 {
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S16SYS }
     fn zero() -> i16 { 0 }
 }
 /// AUDIO_U16
-impl AudioFormatNum for u16 {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat { ll::AUDIO_U16SYS }
+impl AudioFormatNum<u16> for u16 {
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_U16SYS }
     fn zero() -> u16 { 0 }
 }
 /// AUDIO_S32
-impl AudioFormatNum for i32 {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat { ll::AUDIO_S32SYS }
+impl AudioFormatNum<i32> for i32 {
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S32SYS }
     fn zero() -> i32 { 0 }
 }
 /// AUDIO_F32
-impl AudioFormatNum for f32 {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat { ll::AUDIO_F32SYS }
+impl AudioFormatNum<f32> for f32 {
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_F32SYS }
     fn zero() -> f32 { 0.0 }
 }
 
-extern "C" fn audio_callback_marshall<T: AudioFormatNum, CB: AudioCallback<T>>
+extern "C" fn audio_callback_marshall<CB: AudioCallback>
 (userdata: *const c_void, stream: *const uint8_t, len: c_int) {
     use std::raw::Slice;
     use std::mem::{size_of, transmute};
     unsafe {
         let mut cb_userdata: &mut AudioCallbackUserdata<CB> = transmute(userdata);
-        let buf: &mut [T] = transmute(Slice {
+        let buf: &mut [CB::Channel] = transmute(Slice {
             data: stream,
-            len: len as usize / size_of::<T>()
+            len: len as usize / size_of::<CB::Channel>()
         });
 
         cb_userdata.callback.callback(buf);
     }
 }
 
-pub struct AudioSpecDesired<T: AudioFormatNum, CB: AudioCallback<T>> {
+pub struct AudioSpecDesired<CB: AudioCallback> {
     pub freq: i32,
     pub channels: u8,
     pub samples: u16,
     pub callback: CB,
-    pub _phdata: PhantomData<T>
 }
 
-impl<T: AudioFormatNum, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
+impl<CB: AudioCallback> AudioSpecDesired<CB> {
     fn convert_to_ll(freq: i32, channels: u8, samples: u16, userdata: &mut AudioCallbackUserdata<CB>) -> ll::SDL_AudioSpec {
         use std::mem::transmute;
-
-        let format_num: T = AudioFormatNum::zero();
 
         unsafe {
             ll::SDL_AudioSpec {
                 freq: freq,
-                format: format_num.get_audio_format(),
+                format: <CB::Channel as AudioFormatNum<CB::Channel>>::get_audio_format(),
                 channels: channels,
                 silence: 0,
                 samples: samples,
                 padding: 0,
                 size: 0,
-                callback: Some(audio_callback_marshall::<T, CB>
+                callback: Some(audio_callback_marshall::<CB>
                     as extern "C" fn
                         (arg1: *const c_void,
                          arg2: *const uint8_t,
