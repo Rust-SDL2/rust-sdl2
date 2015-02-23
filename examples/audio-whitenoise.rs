@@ -7,7 +7,9 @@ use sdl2::audio::{AudioCallback, AudioSpecDesired};
 struct MyCallback {
     volume: f32
 }
-impl AudioCallback<f32> for MyCallback {
+impl AudioCallback for MyCallback {
+    pub type Channel = f32;
+
     fn callback(&mut self, out: &mut [f32]) {
         use std::rand::{Rng, thread_rng};
         let mut rng = thread_rng();
