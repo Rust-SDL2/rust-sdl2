@@ -1,4 +1,4 @@
-use std::hash::{self, Hash};
+use std::hash::{Hash, Hasher};
 use std::num::ToPrimitive;
 
 use sys::keycode as ll;
@@ -243,9 +243,9 @@ pub enum KeyCode {
     Sleep              = ll::SDLK_SLEEP as isize,
 }
 
-impl<S: hash::Hasher + hash::Writer> Hash<S> for KeyCode {
+impl Hash for KeyCode {
     #[inline]
-    fn hash(&self, state: &mut S) {
+    fn hash<H>(&self, state: &mut H) where H: Hasher {
         (*self as i32).hash(state);
     }
 }

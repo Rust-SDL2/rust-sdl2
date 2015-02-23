@@ -78,13 +78,13 @@ extern "C" fn c_timer_callback(_interval: u32, param: *const c_void) -> uint32_t
 #[test]
 fn test_timer_runs_multiple_times() {
     use std::sync::{Arc, Mutex};
-    let running = TIMER_INIT_LOCK.lock().unwrap();
-    ::sdl::init(::sdl::INIT_TIMER);
+    let _running = TIMER_INIT_LOCK.lock().unwrap();
+    ::sdl::init(::sdl::INIT_TIMER).unwrap();
 
     let local_num = Arc::new(Mutex::new(0));
     let timer_num = local_num.clone();
 
-    let timer = Timer::new(20, Box::new(|| {
+    let _timer = Timer::new(20, Box::new(|| {
         // increment up to 10 times (0 -> 9)
         // tick again in 100ms after each increment
         //
@@ -103,13 +103,13 @@ fn test_timer_runs_multiple_times() {
 #[test]
 fn test_timer_runs_at_least_once() {
     use std::sync::{Arc, Mutex};
-    let running = TIMER_INIT_LOCK.lock().unwrap();
-    ::sdl::init(::sdl::INIT_TIMER);
+    let _running = TIMER_INIT_LOCK.lock().unwrap();
+    ::sdl::init(::sdl::INIT_TIMER).unwrap();
 
     let local_flag = Arc::new(Mutex::new(false));
     let timer_flag = local_flag.clone();
 
-    let timer = Timer::new(20, Box::new(|| {
+    let _timer = Timer::new(20, Box::new(|| {
         let mut flag = timer_flag.lock().unwrap();
         *flag = true; 0
     }));
@@ -122,14 +122,14 @@ fn test_timer_runs_at_least_once() {
 #[test]
 fn test_timer_can_be_recreated() {
     use std::sync::{Arc, Mutex};
-    let running = TIMER_INIT_LOCK.lock().unwrap();
-    ::sdl::init(::sdl::INIT_TIMER);
+    let _running = TIMER_INIT_LOCK.lock().unwrap();
+    ::sdl::init(::sdl::INIT_TIMER).unwrap();
 
     let local_num = Arc::new(Mutex::new(0));
     let timer_num = local_num.clone();
 
     // run the timer once and reclaim its closure
-    let mut timer_1 = Timer::new(20, Box::new(move|| {
+    let timer_1 = Timer::new(20, Box::new(move|| {
         let mut num = timer_num.lock().unwrap();
         *num += 1; // increment the number
         0          // do not run timer again
@@ -140,7 +140,7 @@ fn test_timer_can_be_recreated() {
     let closure = timer_1.into_inner();
 
     // create a second timer and increment again
-    let timer_2 = Timer::new(20, closure);
+    let _timer_2 = Timer::new(20, closure);
     delay(50);
 
     // check that timer was incremented twice

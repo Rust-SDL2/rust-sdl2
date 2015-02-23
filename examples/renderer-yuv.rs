@@ -4,12 +4,10 @@ use sdl2::video::{Window, WindowPos, SHOWN};
 use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer};
 use sdl2::pixels::PixelFormatEnum;
 use sdl2::rect::Rect;
-use sdl2::event::poll_event;
-use sdl2::event::Event::{Quit, KeyDown};
 use sdl2::keycode::KeyCode;
 
 pub fn main() {
-    sdl2::init(sdl2::INIT_VIDEO);
+    let sdl_context = sdl2::init(sdl2::INIT_VIDEO).unwrap();
 
     let window = match Window::new("rust-sdl2 demo: YUV", WindowPos::PosCentered, WindowPos::PosCentered, 800, 600, SHOWN) {
         Ok(window) => window,
@@ -31,8 +29,8 @@ pub fn main() {
         let h = 256;
 
         // Set Y (constant)
-        for y in 0us..h {
-            for x in 0us..w {
+        for y in 0..h {
+            for x in 0..w {
                 let offset = y*pitch + x;
                 buffer[offset] = 128;
             }
@@ -41,8 +39,8 @@ pub fn main() {
         let y_size = pitch*h;
 
         // Set U and V (X and Y)
-        for y in 0us..h/2 {
-            for x in 0us..w/2 {
+        for y in 0..h/2 {
+            for x in 0..w/2 {
                 let u_offset = y_size + y*pitch/2 + x;
                 let v_offset = y_size + (pitch/2 * h/2) + y*pitch/2 + x;
                 buffer[u_offset] = (x*2) as u8;
@@ -56,17 +54,20 @@ pub fn main() {
     drawer.copy(&texture, None, Some(Rect::new(100, 100, 256, 256)));
     drawer.present();
 
-    loop {
-        match poll_event() {
-            Quit{..} => break,
-            KeyDown { keycode: key, .. } => {
-                if key == KeyCode::Escape {
-                    break;
-                }
-            }
-            _ => {}
-        }
-    }
+    let mut running = true;
+    let mut event_pump = sdl_context.event_pump();
 
-    sdl2::quit();
+    while running {
+        for event in event_pump.poll_iter() {
+            use sdl2::event::Event;
+
+            match event {
+                Event::Quit {..} | Event::KeyDown { keycode: KeyCode::Escape, .. } => {
+                    running = false
+                },
+                _ => {}
+            }
+        }
+        // The rest of the game loop goes here...
+    }
 }

@@ -1,5 +1,5 @@
 use libc::{c_int, c_char};
-use std::ffi::{CString, c_str_to_bytes};
+use std::ffi::{CString, CStr, NulError};
 
 use SdlResult;
 use {get_error, clear_error};
@@ -23,12 +23,16 @@ pub enum Axis {
 impl Axis {
     /// Return the Axis from a string description in the same format
     /// used by the game controller mapping strings.
-    pub fn from_string(axis: &str) -> Axis {
-        let name_c = CString::from_slice(axis.as_bytes()).as_ptr();
+    pub fn from_string(axis: &str) -> Result<Axis, NulError> {
+        let name_c =
+        match CString::new(axis) {
+            Ok(s) => s.as_ptr(),
+            Err(e) => return Err(e),
+        };
 
         let id = unsafe { ll::SDL_GameControllerGetAxisFromString(name_c) };
 
-        wrap_controller_axis(id as u8)
+        Ok(wrap_controller_axis(id as u8))
     }
 
     /// Return a string for a given axis in the same format using by
@@ -78,12 +82,16 @@ pub enum Button {
 impl Button {
     /// Return the Button from a string description in the same format
     /// used by the game controller mapping strings.
-    pub fn from_string(button: &str) -> Button {
-        let name_c = CString::from_slice(button.as_bytes()).as_ptr();
+    pub fn from_string(button: &str) -> Result<Button, NulError> {
+        let name_c =
+        match CString::new(button) {
+            Ok(s) => s.as_ptr(),
+            Err(e) => return Err(e),
+        };
 
         let id = unsafe { ll::SDL_GameControllerGetButtonFromString(name_c) };
 
-        wrap_controller_button(id as u8)
+        Ok(wrap_controller_button(id as u8))
     }
 
     /// Return a string for a given button in the same format using by
@@ -156,7 +164,7 @@ pub enum MappingStatus {
 
 /// Add a new mapping from a mapping string
 pub fn add_mapping(mapping: &str) -> SdlResult<MappingStatus> {
-    let mapping_c = CString::from_slice(mapping.as_bytes()).as_ptr();
+    let mapping_c = CString::new(mapping).unwrap().as_ptr();
 
     let result = unsafe { ll::SDL_GameControllerAddMapping(mapping_c) };
 
@@ -282,7 +290,7 @@ fn c_str_to_string(c_str: *const c_char) -> String {
     if c_str.is_null() {
         String::new()
     } else {
-        let bytes = unsafe { c_str_to_bytes(&c_str) };
+        let bytes = unsafe { CStr::from_ptr(c_str).to_bytes() };
 
         String::from_utf8_lossy(bytes).to_string()
     }
@@ -294,7 +302,7 @@ fn c_str_to_string_or_err(c_str: *const c_char) -> SdlResult<String> {
     if c_str.is_null() {
         Err(get_error())
     } else {
-        let bytes = unsafe { c_str_to_bytes(&c_str) };
+        let bytes = unsafe { CStr::from_ptr(c_str).to_bytes() };
 
         Ok(String::from_utf8_lossy(bytes).to_string())
     }

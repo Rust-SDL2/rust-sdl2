@@ -2,7 +2,7 @@
 Querying SDL Version
  */
 
-use std::ffi::c_str_to_bytes;
+use std::ffi::CStr;
 use std::fmt;
 
 use sys::version as ll;
@@ -47,7 +47,7 @@ pub fn get_version() -> Version {
 pub fn get_revision() -> String {
     unsafe {
         let rev = ll::SDL_GetRevision();
-        String::from_utf8_lossy(c_str_to_bytes(&rev)).to_string()
+        String::from_utf8_lossy(CStr::from_ptr(rev).to_bytes()).to_string()
     }
 }
 

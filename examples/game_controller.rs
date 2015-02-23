@@ -1,16 +1,13 @@
-#![feature(io, std_misc, core)]
+#![feature(core)]
 
 extern crate sdl2;
 
 use sdl2::{joystick, controller};
-use sdl2::event::Event;
 use sdl2::controller::GameController;
-use std::old_io::timer::sleep;
-use std::time::duration::Duration;
 use std::num::SignedInt;
 
 fn main() {
-    sdl2::init(sdl2::INIT_GAME_CONTROLLER);
+    let sdl_context = sdl2::init(sdl2::INIT_GAME_CONTROLLER).unwrap();
 
     let available =
         match joystick::num_joysticks() {
@@ -44,7 +41,7 @@ fn main() {
         }
     }
 
-    let controller = 
+    let controller =
         match controller {
             Some(c) => c,
             None     => panic!("Couldn't open any controller"),
@@ -52,8 +49,12 @@ fn main() {
 
     println!("Controller mapping: {}", controller.mapping());
 
-    loop {
-        match sdl2::event::poll_event() {
+    let mut event_pump = sdl_context.event_pump();
+
+    for event in event_pump.wait_iter() {
+        use sdl2::event::Event;
+
+        match event {
             Event::ControllerAxisMotion{ axis, value: val, .. } => {
                 // Axis motion is an absolute value in the range
                 // [-32768, 32767]. Let's simulate a very rough dead
@@ -67,12 +68,7 @@ fn main() {
             Event::ControllerButtonUp{ button, .. } =>
                 println!("Button {:?} up", button),
             Event::Quit{..} => break,
-            Event::None =>
-                // Don't hog the CPU while waiting for events
-                sleep(Duration::milliseconds(100)),
             _ => (),
         }
     }
-
-    sdl2::quit();
 }

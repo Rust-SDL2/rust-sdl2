@@ -1,8 +1,9 @@
 //! Audio Functions
-use std::ffi::{c_str_to_bytes, CString};
+use std::ffi::{CStr, CString};
 use std::num::FromPrimitive;
 use libc::{c_int, c_void, uint8_t};
 use std::ops::{Deref, DerefMut};
+use std::marker::PhantomFn;
 
 use get_error;
 use rwops::RWops;
@@ -46,7 +47,7 @@ pub fn get_num_audio_drivers() -> i32 {
 pub fn get_audio_driver(index: i32) -> String {
     unsafe {
         let driver = ll::SDL_GetAudioDriver(index as c_int);
-        String::from_utf8_lossy(c_str_to_bytes(&driver)).to_string()
+        String::from_utf8_lossy(CStr::from_ptr(driver).to_bytes()).to_string()
     }
 }
 
@@ -57,12 +58,12 @@ pub fn get_num_audio_devices(iscapture: i32) -> i32 {
 pub fn get_audio_device_name(index: i32, iscapture: i32) -> String {
     unsafe {
         let dev_name = ll::SDL_GetAudioDeviceName(index as c_int, iscapture as c_int);
-        String::from_utf8_lossy(c_str_to_bytes(&dev_name)).to_string()
+        String::from_utf8_lossy(CStr::from_ptr(dev_name).to_bytes()).to_string()
     }
 }
 
 pub fn audio_init(name: &str) -> SdlResult<()> {
-    let buf = CString::from_slice(name.as_bytes()).as_ptr();
+    let buf = CString::new(name.as_bytes()).unwrap().as_ptr();
     let ret = unsafe { ll::SDL_AudioInit(buf) };
 
     if ret == 0 {
@@ -79,7 +80,7 @@ pub fn audio_quit() {
 pub fn get_current_audio_driver() -> String {
     unsafe {
         let driver = ll::SDL_GetCurrentAudioDriver();
-        String::from_utf8_lossy(c_str_to_bytes(&driver)).to_string()
+        String::from_utf8_lossy(CStr::from_ptr(driver).to_bytes()).to_string()
     }
 }
 
@@ -140,8 +141,12 @@ impl Drop for AudioSpecWAV {
     }
 }
 
-pub trait AudioCallback<T>: Send {
-    fn callback(&mut self, &mut [T]);
+pub trait AudioCallback: Send
+where Self::Channel: AudioFormatNum<Self::Channel>
+{
+    type Channel;
+
+    fn callback(&mut self, &mut [Self::Channel]);
 }
 
 /// The userdata as seen by the SDL callback.
@@ -151,81 +156,78 @@ struct AudioCallbackUserdata<CB> {
 
 /// A phantom type for retreiving the SDL_AudioFormat of a given generic type.
 /// All format types are returned as native-endian.
-///
-/// Example: `assert_eq!(AudioFormatNum::<f32>::get_audio_format(), ll::AUDIO_F32);``
-pub trait AudioFormatNum<T> {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat;
+pub trait AudioFormatNum<T>: PhantomFn<T> {
+    fn get_audio_format() -> ll::SDL_AudioFormat;
     fn zero() -> Self;
 }
+
 /// AUDIO_S8
 impl AudioFormatNum<i8> for i8 {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat { ll::AUDIO_S8 }
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S8 }
     fn zero() -> i8 { 0 }
 }
 /// AUDIO_U8
 impl AudioFormatNum<u8> for u8 {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat { ll::AUDIO_U8 }
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_U8 }
     fn zero() -> u8 { 0 }
 }
 /// AUDIO_S16
 impl AudioFormatNum<i16> for i16 {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat { ll::AUDIO_S16SYS }
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S16SYS }
     fn zero() -> i16 { 0 }
 }
 /// AUDIO_U16
 impl AudioFormatNum<u16> for u16 {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat { ll::AUDIO_U16SYS }
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_U16SYS }
     fn zero() -> u16 { 0 }
 }
 /// AUDIO_S32
 impl AudioFormatNum<i32> for i32 {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat { ll::AUDIO_S32SYS }
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S32SYS }
     fn zero() -> i32 { 0 }
 }
 /// AUDIO_F32
 impl AudioFormatNum<f32> for f32 {
-    fn get_audio_format(self) -> ll::SDL_AudioFormat { ll::AUDIO_F32SYS }
+    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_F32SYS }
     fn zero() -> f32 { 0.0 }
 }
 
-extern "C" fn audio_callback_marshall<T: AudioFormatNum<T>, CB: AudioCallback<T>>
+extern "C" fn audio_callback_marshall<CB: AudioCallback>
 (userdata: *const c_void, stream: *const uint8_t, len: c_int) {
     use std::raw::Slice;
     use std::mem::{size_of, transmute};
     unsafe {
         let mut cb_userdata: &mut AudioCallbackUserdata<CB> = transmute(userdata);
-        let buf: &mut [T] = transmute(Slice {
+        let buf: &mut [CB::Channel] = transmute(Slice {
             data: stream,
-            len: len as usize / size_of::<T>()
+            len: len as usize / size_of::<CB::Channel>()
         });
 
         cb_userdata.callback.callback(buf);
     }
 }
 
-pub struct AudioSpecDesired<T: AudioFormatNum<T>, CB: AudioCallback<T>> {
+pub struct AudioSpecDesired<CB: AudioCallback> {
     pub freq: i32,
     pub channels: u8,
     pub samples: u16,
-    pub callback: CB
+    pub callback: CB,
 }
 
-impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
+impl<CB: AudioCallback> AudioSpecDesired<CB> {
     fn convert_to_ll(freq: i32, channels: u8, samples: u16, userdata: &mut AudioCallbackUserdata<CB>) -> ll::SDL_AudioSpec {
         use std::mem::transmute;
-
-        let format_num: T = AudioFormatNum::zero();
 
         unsafe {
             ll::SDL_AudioSpec {
                 freq: freq,
-                format: format_num.get_audio_format(),
+                format: <CB::Channel as AudioFormatNum<CB::Channel>>::get_audio_format(),
                 channels: channels,
                 silence: 0,
                 samples: samples,
                 padding: 0,
                 size: 0,
-                callback: Some(audio_callback_marshall::<T, CB>
+                callback: Some(audio_callback_marshall::<CB>
                     as extern "C" fn
                         (arg1: *const c_void,
                          arg2: *const uint8_t,
@@ -255,7 +257,7 @@ impl<T: AudioFormatNum<T>, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
         unsafe {
             let device_cstr: Option<CString> = match device {
                 None => None,
-                Some(d) => Some(CString::from_slice(d.as_bytes()))
+                Some(d) => Some(CString::new(d.as_bytes()).unwrap()),
             };
             let device_cstr_ptr: *const c_char = match device_cstr {
                 None => null(),

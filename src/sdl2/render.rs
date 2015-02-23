@@ -53,10 +53,10 @@ use libc::{c_int, uint32_t, c_double, c_void};
 use rect::Point;
 use rect::Rect;
 use std::cell::{RefCell, RefMut, BorrowState};
-use std::ffi::c_str_to_bytes;
+use std::ffi::CStr;
 use std::num::FromPrimitive;
 use std::vec::Vec;
-use std::marker::ContravariantLifetime;
+use std::marker::PhantomData;
 
 use sys::render as ll;
 
@@ -110,7 +110,7 @@ impl RendererInfo {
         }).collect();
 
         RendererInfo {
-            name: String::from_utf8_lossy(c_str_to_bytes(&info.name)).to_string(),
+            name: String::from_utf8_lossy(CStr::from_ptr(info.name).to_bytes()).to_string(),
             flags: actual_flags,
             texture_formats: texture_formats,
             max_texture_width: info.max_texture_width as i32,
@@ -365,11 +365,11 @@ impl<'renderer> RenderDrawer<'renderer> {
     /// Gets the render target handle.
     ///
     /// Returns `None` if the window does not support the use of render targets.
-    pub fn render_target<'a>(&'a mut self) -> Option<RenderTarget<'renderer, 'a>> {
+    pub fn render_target<'a>(&'a mut self) -> Option<RenderTarget<'a>> {
         if self.render_target_supported() {
             Some(RenderTarget {
                 raw: self.raw,
-                _marker: ContravariantLifetime
+                _marker_renderer: PhantomData,
             })
         } else {
             None
@@ -742,7 +742,7 @@ impl<'renderer> RenderDrawer<'renderer> {
 /// use sdl2::render::{RenderDrawer, Texture};
 ///
 /// // Draw a red rectangle to a new texture
-/// fn draw_to_texture<'renderer>(drawer: &mut RenderDrawer<'renderer>) -> Texture<'renderer> {
+/// fn draw_to_texture<'renderer>(drawer: &'renderer mut RenderDrawer<'renderer>) -> Texture<'renderer> {
 ///     drawer.render_target()
 ///         .expect("This platform doesn't support render targets")
 ///         .create_and_set(PixelFormatEnum::RGBA8888, 512, 512);
@@ -756,12 +756,12 @@ impl<'renderer> RenderDrawer<'renderer> {
 ///     texture.unwrap()
 /// }
 /// ```
-pub struct RenderTarget<'renderer, 'render_drawer> {
+pub struct RenderTarget<'renderer> {
     raw: *const ll::SDL_Renderer,
-    _marker: ContravariantLifetime<'render_drawer>
+    _marker_renderer: PhantomData<&'renderer ()>
 }
 
-impl<'renderer, 'render_drawer> RenderTarget<'renderer, 'render_drawer> {
+impl<'renderer> RenderTarget<'renderer> {
     /// Resets the render target to the default render target.
     ///
     /// The old render target is returned if the function is successful.
@@ -838,7 +838,7 @@ impl<'renderer, 'render_drawer> RenderTarget<'renderer, 'render_drawer> {
             Some(Texture {
                 raw: texture_raw,
                 owned: false,
-                _marker: ContravariantLifetime
+                _marker: PhantomData
             })
         }
     }
@@ -856,13 +856,12 @@ pub struct TextureQuery {
 ///
 /// Textures are owned by and cannot live longer than the parent `Renderer`.
 /// Each texture is bound to the `'renderer` contravariant lifetime.
-#[derive(PartialEq)] #[allow(raw_pointer_derive)]
 pub struct Texture<'renderer> {
     raw: *const ll::SDL_Texture,
     owned: bool,
     /// Textures cannot live longer than the Renderer it was born from: 'a
     /// All SDL textures contain an internal reference to a Renderer
-    _marker: ContravariantLifetime<'renderer>
+    _marker: PhantomData<&'renderer ()>
 }
 
 #[unsafe_destructor]
@@ -1137,7 +1136,7 @@ impl<'renderer> Texture<'renderer> {
         Texture {
             raw: raw,
             owned: true,
-            _marker: ContravariantLifetime
+            _marker: PhantomData
         }
     }
 
@@ -1146,7 +1145,7 @@ impl<'renderer> Texture<'renderer> {
         Texture {
             raw: raw,
             owned: false,
-            _marker: ContravariantLifetime
+            _marker: PhantomData
         }
     }
 
