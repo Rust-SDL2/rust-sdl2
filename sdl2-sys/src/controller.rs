@@ -23,7 +23,7 @@ pub struct SDL_GameControllerButtonBind {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_GameControllerButtonBindData {
-    data: [c_uchar; 8],
+    data: [c_uchar; 8usize],
 }
 
 #[allow(dead_code)]

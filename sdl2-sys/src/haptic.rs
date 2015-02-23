@@ -126,7 +126,7 @@ pub struct SDL_HapticCustom {
 #[allow(missing_copy_implementations)]
 #[repr(C)]
 pub struct SDL_HapticEffect {
-    pub data: [uint8_t; 72],
+    pub data: [uint8_t; 72usize],
 }
 
 impl SDL_HapticEffect {
@@ -191,4 +191,3 @@ extern "C" {
     pub fn SDL_HapticRumblePlay(haptic: *const SDL_Haptic, strength: c_float, length: uint32_t) -> c_int;
     pub fn SDL_HapticRumbleStop(haptic: *const SDL_Haptic) -> c_int;
 }
-

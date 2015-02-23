@@ -57,7 +57,7 @@ pub struct SDL_AudioCVT {
     pub len_cvt: c_int,
     pub len_mult: c_int,
     pub len_ratio: c_double,
-    filters: [SDL_AudioFilter; 10],
+    filters: [SDL_AudioFilter; 10usize],
     filter_index: c_int,
 }
 pub type SDL_AudioDeviceID = uint32_t;
