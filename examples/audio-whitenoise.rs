@@ -22,7 +22,7 @@ impl AudioCallback for MyCallback {
 }
 
 fn main() {
-    sdl2::init(sdl2::INIT_AUDIO);
+    let _sdl_context = sdl2::init(sdl2::INIT_AUDIO).unwrap();
 
     let desired_spec = AudioSpecDesired {
         freq: 44100,
