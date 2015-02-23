@@ -31,8 +31,8 @@ pub fn main() {
         let h = 256;
 
         // Set Y (constant)
-        for y in 0us..h {
-            for x in 0us..w {
+        for y in 0..h {
+            for x in 0..w {
                 let offset = y*pitch + x;
                 buffer[offset] = 128;
             }
@@ -41,8 +41,8 @@ pub fn main() {
         let y_size = pitch*h;
 
         // Set U and V (X and Y)
-        for y in 0us..h/2 {
-            for x in 0us..w/2 {
+        for y in 0..h/2 {
+            for x in 0..w/2 {
                 let u_offset = y_size + y*pitch/2 + x;
                 let v_offset = y_size + (pitch/2 * h/2) + y*pitch/2 + x;
                 buffer[u_offset] = (x*2) as u8;

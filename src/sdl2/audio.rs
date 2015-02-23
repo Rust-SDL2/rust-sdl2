@@ -1,9 +1,9 @@
 //! Audio Functions
-use std::ffi::{c_str_to_bytes, CString};
+use std::ffi::{CStr, CString};
 use std::num::FromPrimitive;
 use libc::{c_int, c_void, uint8_t};
 use std::ops::{Deref, DerefMut};
-use std::marker::{PhantomFn, PhantomData};
+use std::marker::PhantomData;
 
 use get_error;
 use rwops::RWops;
@@ -47,7 +47,7 @@ pub fn get_num_audio_drivers() -> i32 {
 pub fn get_audio_driver(index: i32) -> String {
     unsafe {
         let driver = ll::SDL_GetAudioDriver(index as c_int);
-        String::from_utf8_lossy(c_str_to_bytes(&driver)).to_string()
+        String::from_utf8_lossy(CStr::from_ptr(driver).to_bytes()).to_string()
     }
 }
 
@@ -58,12 +58,12 @@ pub fn get_num_audio_devices(iscapture: i32) -> i32 {
 pub fn get_audio_device_name(index: i32, iscapture: i32) -> String {
     unsafe {
         let dev_name = ll::SDL_GetAudioDeviceName(index as c_int, iscapture as c_int);
-        String::from_utf8_lossy(c_str_to_bytes(&dev_name)).to_string()
+        String::from_utf8_lossy(CStr::from_ptr(dev_name).to_bytes()).to_string()
     }
 }
 
 pub fn audio_init(name: &str) -> SdlResult<()> {
-    let buf = CString::from_slice(name.as_bytes()).as_ptr();
+    let buf = CString::new(name.as_bytes()).unwrap().as_ptr();
     let ret = unsafe { ll::SDL_AudioInit(buf) };
 
     if ret == 0 {
@@ -80,7 +80,7 @@ pub fn audio_quit() {
 pub fn get_current_audio_driver() -> String {
     unsafe {
         let driver = ll::SDL_GetCurrentAudioDriver();
-        String::from_utf8_lossy(c_str_to_bytes(&driver)).to_string()
+        String::from_utf8_lossy(CStr::from_ptr(driver).to_bytes()).to_string()
     }
 }
 
@@ -210,7 +210,7 @@ pub struct AudioSpecDesired<T: AudioFormatNum, CB: AudioCallback<T>> {
     pub channels: u8,
     pub samples: u16,
     pub callback: CB,
-    _phdata: PhantomData<T>
+    pub _phdata: PhantomData<T>
 }
 
 impl<T: AudioFormatNum, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
@@ -258,7 +258,7 @@ impl<T: AudioFormatNum, CB: AudioCallback<T>> AudioSpecDesired<T, CB> {
         unsafe {
             let device_cstr: Option<CString> = match device {
                 None => None,
-                Some(d) => Some(CString::from_slice(d.as_bytes()))
+                Some(d) => Some(CString::new(d.as_bytes()).unwrap()),
             };
             let device_cstr_ptr: *const c_char = match device_cstr {
                 None => null(),

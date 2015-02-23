@@ -1,4 +1,4 @@
-use std::ffi::{c_str_to_bytes, CString};
+use std::ffi::{CString, CStr};
 use SdlResult;
 use get_error;
 
@@ -6,7 +6,7 @@ use sys::clipboard as ll;
 
 pub fn set_clipboard_text(text: &String) -> SdlResult<()> {
     unsafe {
-        let buff = CString::from_slice(text.as_slice().as_bytes());
+        let buff = CString::new(text.clone()).unwrap();
         let result = ll::SDL_SetClipboardText(buff.as_ptr());
 
         if result == 0 {
@@ -20,7 +20,7 @@ pub fn set_clipboard_text(text: &String) -> SdlResult<()> {
 pub fn get_clipboard_text() -> SdlResult<String> {
     let result = unsafe {
         let buf = ll::SDL_GetClipboardText();
-        String::from_utf8_lossy(c_str_to_bytes(&buf)).to_string()
+        String::from_utf8_lossy(CStr::from_ptr(buf).to_bytes()).into_owned()
     };
 
     if result.len() == 0 {

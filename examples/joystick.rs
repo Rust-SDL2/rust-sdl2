@@ -1,3 +1,5 @@
+#![feature(old_io, std_misc, core)]
+
 extern crate sdl2;
 
 use sdl2::joystick::{Joystick, num_joysticks};

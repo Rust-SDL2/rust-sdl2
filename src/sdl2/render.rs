@@ -53,7 +53,7 @@ use libc::{c_int, uint32_t, c_double, c_void};
 use rect::Point;
 use rect::Rect;
 use std::cell::{RefCell, RefMut, BorrowState};
-use std::ffi::c_str_to_bytes;
+use std::ffi::CStr;
 use std::num::FromPrimitive;
 use std::vec::Vec;
 use std::marker::PhantomData;
@@ -110,7 +110,7 @@ impl RendererInfo {
         }).collect();
 
         RendererInfo {
-            name: String::from_utf8_lossy(c_str_to_bytes(&info.name)).to_string(),
+            name: String::from_utf8_lossy(CStr::from_ptr(info.name).to_bytes()).to_string(),
             flags: actual_flags,
             texture_formats: texture_formats,
             max_texture_width: info.max_texture_width as i32,
@@ -742,7 +742,7 @@ impl<'renderer> RenderDrawer<'renderer> {
 /// use sdl2::render::{RenderDrawer, Texture};
 ///
 /// // Draw a red rectangle to a new texture
-/// fn draw_to_texture<'renderer>(drawer: &mut RenderDrawer<'renderer>) -> Texture<'renderer> {
+/// fn draw_to_texture<'renderer>(drawer: &'renderer mut RenderDrawer<'renderer>) -> Texture<'renderer> {
 ///     drawer.render_target()
 ///         .expect("This platform doesn't support render targets")
 ///         .create_and_set(PixelFormatEnum::RGBA8888, 512, 512);

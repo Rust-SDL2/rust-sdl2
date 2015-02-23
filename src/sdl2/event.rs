@@ -2,7 +2,7 @@
 Event Handling
  */
 
-use std::ffi::{c_str_to_bytes};
+use std::ffi::CStr;
 use std::mem;
 use libc::{c_int, c_void, uint32_t};
 use std::num::FromPrimitive;
@@ -799,7 +799,7 @@ impl Event {
             EventType::DropFile => {
                 let ref event = *raw.drop();
 
-                let buf = c_str_to_bytes(&event.file);
+                let buf = CStr::from_ptr(event.file).to_bytes();
                 let text = String::from_utf8_lossy(buf).to_string();
                 ll::SDL_free(event.file as *const c_void);
 

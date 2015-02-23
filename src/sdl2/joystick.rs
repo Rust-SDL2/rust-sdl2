@@ -4,7 +4,7 @@ use SdlResult;
 use get_error;
 use clear_error;
 use sys::event::{SDL_QUERY, SDL_ENABLE};
-use std::ffi::{CString, c_str_to_bytes};
+use std::ffi::{CString, CStr, NulError};
 use std::fmt::{Display, Formatter, Error};
 use libc::c_char;
 
@@ -261,13 +261,17 @@ pub struct Guid {
 }
 
 impl Guid {
-    /// Create a GUID from a string representation. No error checking.
-    pub fn from_string(guid: &str) -> Guid {
-        let guid_c = CString::from_slice(guid.as_bytes()).as_ptr();
+    /// Create a GUID from a string representation.
+    pub fn from_string(guid: &str) -> Result<Guid, NulError> {
+        let guid_c =
+        match CString::new(guid) {
+            Ok(s) => s.as_ptr(),
+            Err(e) => return Err(e),
+        };
 
         let raw = unsafe { ll::SDL_JoystickGetGUIDFromString(guid_c) };
 
-        Guid { raw: raw }
+        Ok(Guid { raw: raw })
     }
 
     /// Return `true` if GUID is full 0s
@@ -353,7 +357,7 @@ fn c_str_to_string(c_str: *const c_char) -> String {
     if c_str.is_null() {
         String::new()
     } else {
-        let bytes = unsafe { c_str_to_bytes(&c_str) };
+        let bytes = unsafe { CStr::from_ptr(c_str).to_bytes() };
 
         String::from_utf8_lossy(bytes).to_string()
     }
@@ -365,7 +369,7 @@ fn c_str_to_string_or_err(c_str: *const c_char) -> SdlResult<String> {
     if c_str.is_null() {
         Err(get_error())
     } else {
-        let bytes = unsafe { c_str_to_bytes(&c_str) };
+        let bytes = unsafe { CStr::from_ptr(c_str).to_bytes() };
 
         Ok(String::from_utf8_lossy(bytes).to_string())
     }

@@ -1,4 +1,4 @@
-use std::ffi::{c_str_to_bytes, CString};
+use std::ffi::{CStr, CString};
 
 use sys::sdl as ll;
 
@@ -57,12 +57,12 @@ pub fn was_inited(flags: InitFlag) -> InitFlag {
 pub fn get_error() -> String {
     unsafe {
         let err = ll::SDL_GetError();
-        String::from_utf8_lossy(c_str_to_bytes(&err)).to_string()
+        String::from_utf8_lossy(CStr::from_ptr(err).to_bytes()).to_string()
     }
 }
 
 pub fn set_error(err: &str) {
-    let buf = CString::from_slice(err.as_bytes()).as_ptr();
+    let buf = CString::new(err).unwrap().as_ptr();
     unsafe { ll::SDL_SetError(buf); }
 }
 

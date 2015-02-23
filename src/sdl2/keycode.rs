@@ -1,4 +1,4 @@
-use std::hash::{self, Hash, Hasher};
+use std::hash::{Hash, Hasher};
 use std::num::ToPrimitive;
 
 use sys::keycode as ll;

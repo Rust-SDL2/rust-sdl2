@@ -1,4 +1,4 @@
-#![feature(io, std_misc, core)]
+#![feature(old_io, std_misc, core)]
 
 extern crate sdl2;
 

@@ -1,4 +1,4 @@
-use std::ffi::CString;
+use std::ffi::{CString, AsOsStr};
 use std::old_io as io;
 use std::old_io::IoResult;
 use libc::{c_void, c_int, size_t};
@@ -20,8 +20,9 @@ impl_owned_accessors!((RWops, close_on_drop));
 impl RWops {
     pub fn from_file(path: &Path, mode: &str) -> SdlResult<RWops> {
         let raw = unsafe {
-            let path_c = CString::from_slice(path.as_vec()).as_ptr();
-            let mode_c = CString::from_slice(mode.as_bytes()).as_ptr();
+            let path_c = CString::new(
+                path.as_os_str().to_str().unwrap()).unwrap().as_ptr();
+            let mode_c = CString::new(mode).unwrap().as_ptr();
             ll::SDL_RWFromFile(path_c, mode_c)
         };
         if raw.is_null() { Err(get_error()) }
