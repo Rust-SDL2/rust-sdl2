@@ -444,9 +444,9 @@ pub type SDL_EventFilter =
 extern "C" {
     pub fn SDL_free(mem: *const c_void);
     pub fn SDL_PumpEvents();
-    /*pub fn SDL_PeepEvents(events: &[SDL_Event], numevents: c_int,
-                                action: SDL_eventaction, minType: uint32_t,
-                                maxType: uint32_t) -> c_int;*/
+    pub fn SDL_PeepEvents(events: *mut SDL_Event, numevents: c_int,
+                                action: SDL_eventaction,
+                                minType: uint32_t, maxType: uint32_t) -> c_int;
     pub fn SDL_HasEvent(_type: uint32_t) -> SDL_bool;
     pub fn SDL_HasEvents(minType: uint32_t, maxType: uint32_t) ->
               SDL_bool;
