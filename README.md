@@ -40,7 +40,7 @@ If you're running OSX, it's a good idea to install these via
 
 If you're having issues, [see here][pdev-issue].
 
-On Windows, make certain you are using the MinGW version of SDL -- the native
+On Windows, make certain you are using the MinGW version of SDL; the native
 version will crash on `sdl2::init`.
 
 # Installation
