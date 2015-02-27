@@ -112,4 +112,4 @@ on the issue tracker.
 [crates]: http://crates.io/
 [examples]: https://github.com/jdeseno/rs-sdl2-examples
 [gl-rs]: https://github.com/bjz/gl-rs
-[pdev]: https://github.com/PistonDevelopers/rust-empty/issues/175
+[pdev-issue]: https://github.com/PistonDevelopers/rust-empty/issues/175
