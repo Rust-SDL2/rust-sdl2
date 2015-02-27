@@ -126,7 +126,7 @@ pub struct SDL_HapticCustom {
 #[allow(missing_copy_implementations)]
 #[repr(C)]
 pub struct SDL_HapticEffect {
-    pub data: [uint8_t; 72usize],
+    pub data: [uint8_t; 72],
 }
 
 impl SDL_HapticEffect {
