@@ -30,9 +30,14 @@ We currently compile against the *Master* branch. I'd recommend using the
 Nightly installer, as that has the greatest chance of working.
 
 ## *SDL2.0  development libraries*
+### Linux
 Install these through your favourite package management tool, or via
 http://www.libsdl.org/
 
+Ubuntu example:
+> sudo apt-get install libsdl2-dev
+
+### Mac OS X
 If you're running OSX, it's a good idea to install these via
 [homebrew][homebrew]
 
@@ -40,8 +45,23 @@ If you're running OSX, it's a good idea to install these via
 
 If you're having issues, [see here][pdev-issue].
 
+### Windows (MinGW)
 On Windows, make certain you are using the MinGW version of SDL; the native
 version will crash on `sdl2::init`.
+
+1. Download mingw development libraries from
+http://www.libsdl.org/ (SDL2-devel-2.0.x-mingw.tar.gz).
+2. Unpack to a folder of your choosing (You can delete it afterwards).
+3. Copy all lib files from
+    > SDL2-devel-2.0.x-mingw\SDL2-2.0.x\x86_64-w64-mingw32\lib
+
+    inside
+    > C:\Rust\bin\rustlib\x86_64-pc-windows-gnu\lib
+
+4. Copy SDL2.dll from
+    > SDL2-devel-2.0.x-mingw\SDL2-2.0.x\x86_64-w64-mingw32\bin
+
+    into your cargo project, right next to your Cargo.toml.
 
 # Installation
 
