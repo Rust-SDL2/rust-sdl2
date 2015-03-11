@@ -664,3 +664,12 @@ pub fn gl_set_swap_interval(interval: i32) -> bool {
 pub fn gl_get_swap_interval() -> i32 {
     unsafe { ll::SDL_GL_GetSwapInterval() as i32 }
 }
+
+
+pub fn set_hint(name: &str, value: &str) {
+    let name = CString::new(name).unwrap().as_ptr();
+    let value = CString::new(value).unwrap().as_ptr();
+    unsafe {
+        ll::SDL_SetHint(name, value);
+    }
+}

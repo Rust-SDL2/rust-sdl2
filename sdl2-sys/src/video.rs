@@ -138,6 +138,7 @@ extern "C" {
     pub fn SDL_SetWindowMaximumSize(window: *const SDL_Window, max_w: c_int, max_h: c_int);
     pub fn SDL_GetWindowMaximumSize(window: *const SDL_Window, w: *const c_int, h: *const c_int);
     pub fn SDL_SetWindowBordered(window: *const SDL_Window, bordered: SDL_bool);
+    pub fn SDL_SetHint(name: *const c_char, value: *const c_char) -> SDL_bool;
     pub fn SDL_ShowWindow(window: *const SDL_Window);
     pub fn SDL_HideWindow(window: *const SDL_Window);
     pub fn SDL_RaiseWindow(window: *const SDL_Window);
