@@ -429,7 +429,7 @@ impl Event {
                     data2: ptr::null(),
                 };
                 unsafe {
-                    ptr::copy_memory(mem::transmute::<_,*mut ll::SDL_UserEvent>(&ret), &event, 1);
+                    ptr::copy(mem::transmute::<_,*mut ll::SDL_UserEvent>(&ret), &event, 1);
                 }
                 Some(ret)
             },
@@ -449,7 +449,7 @@ impl Event {
         };
 
         // if event type has not been defined, treat it as a UserEvent
-        let event_type: EventType = FromPrimitive::from_uint(raw_type as usize).unwrap_or(EventType::User);
+        let event_type: EventType = FromPrimitive::from_usize(raw_type as usize).unwrap_or(EventType::User);
         unsafe { match event_type {
             EventType::Quit => {
                 let ref event = *raw.quit();
@@ -951,7 +951,7 @@ pub struct EventPollIterator<'a> {
 }
 
 impl<'a> Iterator for EventPollIterator<'a> {
-    pub type Item = Event;
+    type Item = Event;
 
     fn next(&mut self) -> Option<Event> {
         self.event_pump.poll_event()
@@ -965,7 +965,7 @@ pub struct EventWaitIterator<'a> {
 }
 
 impl<'a> Iterator for EventWaitIterator<'a> {
-    pub type Item = Event;
+    type Item = Event;
     fn next(&mut self) -> Option<Event> { Some(self.event_pump.wait_event()) }
 }
 
@@ -977,7 +977,7 @@ pub struct EventWaitTimeoutIterator<'a> {
 }
 
 impl<'a> Iterator for EventWaitTimeoutIterator<'a> {
-    pub type Item = Event;
+    type Item = Event;
     fn next(&mut self) -> Option<Event> { self.event_pump.wait_event_timeout(self.timeout) }
 }
 
