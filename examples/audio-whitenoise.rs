@@ -7,7 +7,7 @@ struct MyCallback {
     volume: f32
 }
 impl AudioCallback for MyCallback {
-    pub type Channel = f32;
+    type Channel = f32;
 
     fn callback(&mut self, out: &mut [f32]) {
         use self::rand::{Rng, thread_rng};
