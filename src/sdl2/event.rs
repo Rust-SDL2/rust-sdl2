@@ -951,7 +951,7 @@ pub struct EventPollIterator<'a> {
 }
 
 impl<'a> Iterator for EventPollIterator<'a> {
-    pub type Item = Event;
+    type Item = Event;
 
     fn next(&mut self) -> Option<Event> {
         self.event_pump.poll_event()
@@ -965,7 +965,7 @@ pub struct EventWaitIterator<'a> {
 }
 
 impl<'a> Iterator for EventWaitIterator<'a> {
-    pub type Item = Event;
+    type Item = Event;
     fn next(&mut self) -> Option<Event> { Some(self.event_pump.wait_event()) }
 }
 
@@ -977,7 +977,7 @@ pub struct EventWaitTimeoutIterator<'a> {
 }
 
 impl<'a> Iterator for EventWaitTimeoutIterator<'a> {
-    pub type Item = Event;
+    type Item = Event;
     fn next(&mut self) -> Option<Event> { self.event_pump.wait_event_timeout(self.timeout) }
 }
 
