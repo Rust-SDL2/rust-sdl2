@@ -1,9 +1,9 @@
+use core::prelude::*;
 use libc::{uint32_t, uint64_t, c_void, c_int};
 
 //SDL_timer.h
 pub type SDL_TimerCallback =
-    ::std::option::Option<extern "C" fn(arg1: uint32_t, arg2: *const c_void)
-                                        -> uint32_t>;
+    Option<extern "C" fn(arg1: uint32_t, arg2: *const c_void) -> uint32_t>;
 pub type SDL_TimerID = c_int;
 extern "C" {
     pub fn SDL_GetTicks() -> uint32_t;
