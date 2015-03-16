@@ -2,7 +2,8 @@
 Rectangle Functions
  */
 
-use std::mem;
+use core::prelude::*;
+use core::intrinsics::transmute;
 use libc::c_int;
 
 /// A structure that defines a two dimensional point.
@@ -71,7 +72,7 @@ impl Rect {
             ll::SDL_EnclosePoints(
                 points.as_ptr(),
                 points.len() as c_int,
-                mem::transmute(clip.as_ref()),
+                transmute(clip.as_ref()),
                 &out
             ) != 0
         };

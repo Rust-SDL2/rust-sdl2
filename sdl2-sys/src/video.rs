@@ -1,6 +1,7 @@
 use rect::Rect;
 use surface::SDL_Surface;
 
+use core::prelude::*;
 use libc::{c_void, c_int, c_float, c_char, uint16_t, uint32_t};
 
 pub type SDL_Rect = Rect;

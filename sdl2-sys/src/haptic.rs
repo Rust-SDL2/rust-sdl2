@@ -1,4 +1,5 @@
 use joystick::SDL_Joystick;
+use core::prelude::*;
 use libc::{c_int, c_uint, c_char, c_float, c_void, int16_t, int32_t, uint8_t, uint16_t, uint32_t};
 
 pub const SDL_HAPTIC_CONSTANT: uint16_t = 1 << 0;
