@@ -14,8 +14,7 @@ fn build_pkgconfig() -> bool {
 
 #[cfg(feature="pkg-config")]
 fn build_pkgconfig() -> bool {
-    let opts = pkg_config::default_options("sdl2");
-    if pkg_config::find_library_opts("sdl2", &opts).is_err() {
+    if pkg_config::find_library("sdl2").is_err() {
         panic!("Could not find SDL2 via pkgconfig");
     }
     true
