@@ -1,4 +1,5 @@
 use std::mem;
+use std::path::Path;
 use rect::Rect;
 use get_error;
 use SdlResult;

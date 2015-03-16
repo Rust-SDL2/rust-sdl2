@@ -1,8 +1,8 @@
 #![crate_name = "sdl2"]
 #![crate_type = "lib"]
 
-#![feature(unsafe_destructor, optin_builtin_traits, std_misc, old_io, core)]
-#![feature(collections, old_path)]
+#![feature(unsafe_destructor, optin_builtin_traits, std_misc, core, io)]
+#![feature(collections)]
 
 extern crate libc;
 extern crate collections;
