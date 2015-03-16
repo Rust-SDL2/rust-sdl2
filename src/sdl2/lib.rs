@@ -2,7 +2,7 @@
 #![crate_type = "lib"]
 
 #![feature(unsafe_destructor, optin_builtin_traits, std_misc, old_io, core)]
-#![feature(collections, old_path, os)]
+#![feature(collections, old_path)]
 
 extern crate libc;
 extern crate collections;
