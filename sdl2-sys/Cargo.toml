@@ -17,7 +17,7 @@ path = "src/lib.rs"
 libc = "*"
 
 [build-dependencies.pkg-config]
-version = "0.1.7"
+version = "*"
 optional = true
 
 [features]
