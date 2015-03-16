@@ -2,10 +2,8 @@
 #![crate_type = "lib"]
 
 #![feature(unsafe_destructor, optin_builtin_traits, std_misc, core, io)]
-#![feature(collections)]
 
 extern crate libc;
-extern crate collections;
 #[macro_use]
 extern crate bitflags;
 extern crate "sdl2-sys" as sys;
