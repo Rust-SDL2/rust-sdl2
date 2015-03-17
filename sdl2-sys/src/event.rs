@@ -6,6 +6,7 @@ use gesture::SDL_GestureID;
 use keyboard::SDL_Keysym;
 use touch::SDL_FingerID;
 use touch::SDL_TouchID;
+use core::prelude::*;
 
 pub type SDL_bool = c_int;
 

@@ -1,6 +1,6 @@
 use std::ffi::{CString, AsOsStr};
-use std::old_io as io;
-use std::old_io::IoResult;
+use std::io;
+use std::path::Path;
 use libc::{c_void, c_int, size_t};
 use get_error;
 use SdlResult;
@@ -56,65 +56,47 @@ impl Drop for RWops {
     }
 }
 
-impl Reader for RWops {
-    fn read(&mut self, buf: &mut [u8]) -> IoResult<usize> {
+impl io::Read for RWops {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         let out_len = buf.len() as size_t;
         // FIXME: it's better to use as_mut_ptr().
         // number of objects read, or 0 at error or end of file.
         let ret = unsafe {
             ((*self.raw).read)(self.raw, buf.as_ptr() as *const c_void, 1, out_len)
         };
-        if ret == 0 {
-            Err(io::standard_error(io::EndOfFile))
-        } else {
-            Ok(ret as usize)
-        }
+        Ok(ret as usize)
     }
 }
 
-impl Writer for RWops {
-    fn write_all(&mut self, buf: &[u8]) -> IoResult<()> {
+impl io::Write for RWops {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         let in_len = buf.len() as size_t;
         let ret = unsafe {
             ((*self.raw).write)(self.raw, buf.as_ptr() as *const c_void, 1, in_len)
         };
-        if ret == 0 {
-            Err(io::standard_error(io::EndOfFile))
-        } else if ret != in_len {
-            // FIXME: what error should we return here?
-            Err(io::standard_error(io::EndOfFile))
-        } else {
-            Ok(())
-        }
+        Ok(ret as usize)
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
     }
 }
 
-impl Seek for RWops {
-    fn tell(&self) -> IoResult<u64> {
+impl io::Seek for RWops {
+    fn seek(&mut self, pos: io::SeekFrom) -> io::Result<u64> {
+        // whence code is different from SeekStyle
+        let (whence, offset) = match pos {
+            io::SeekFrom::Start(pos) => (ll::RW_SEEK_SET, pos as i64),
+            io::SeekFrom::End(pos) => (ll::RW_SEEK_END, pos),
+            io::SeekFrom::Current(pos) => (ll::RW_SEEK_CUR, pos)
+        };
         let ret = unsafe {
-            ((*self.raw).seek)(self.raw, 0, ll::RW_SEEK_CUR)
+            ((*self.raw).seek)(self.raw, offset, whence)
         };
         if ret == -1 {
-            Err(io::IoError::last_error())
+            Err(io::Error::last_os_error())
         } else {
             Ok(ret as u64)
-        }
-    }
-
-    fn seek(&mut self, pos: i64, style: io::SeekStyle) -> IoResult<()> {
-        // whence code is different from SeekStyle
-        let whence = match style {
-            io::SeekSet => ll::RW_SEEK_SET,
-            io::SeekEnd => ll::RW_SEEK_END,
-            io::SeekCur => ll::RW_SEEK_CUR
-        };
-        let ret = unsafe {
-            ((*self.raw).seek)(self.raw, pos, whence)
-        };
-        if ret == -1 {
-            Err(io::IoError::last_error())
-        } else {
-            Ok(())
         }
     }
 }

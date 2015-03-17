@@ -1,6 +1,9 @@
+#![feature(no_std, core)]
+#![no_std]
 #![allow(non_camel_case_types)]
 
 extern crate libc;
+extern crate core;
 
 pub mod scancode;
 pub mod keycode;

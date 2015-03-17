@@ -4,6 +4,7 @@ use std::num::FromPrimitive;
 use libc::{c_int, c_void, uint8_t};
 use std::ops::{Deref, DerefMut};
 use std::marker::PhantomFn;
+use std::path::Path;
 
 use get_error;
 use rwops::RWops;

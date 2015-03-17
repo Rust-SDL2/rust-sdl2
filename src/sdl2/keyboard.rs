@@ -41,7 +41,8 @@ pub fn get_keyboard_state() -> HashMap<ScanCode, bool> {
     let mut state: HashMap<ScanCode, bool> = HashMap::new();
     let count = 0;
 
-    let raw = unsafe { Vec::from_raw_buf(ll::SDL_GetKeyboardState(&count),
+    let state_ptr = unsafe { ll::SDL_GetKeyboardState(&count) };
+    let raw = unsafe { ::std::slice::from_raw_parts(state_ptr,
                                           count as usize) };
 
     let mut current = 0;

@@ -1,6 +1,6 @@
-#![feature(old_path)]
-
 extern crate sdl2;
+
+use std::path::Path;
 
 #[test]
 fn audio_spec_wav() {
