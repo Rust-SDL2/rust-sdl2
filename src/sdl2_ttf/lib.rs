@@ -3,6 +3,7 @@ A binding for SDL2_ttf.
  */
 
 #![feature(custom_attribute)]
+#![feature(libc)]
 
 #![crate_type = "lib"]
 #![desc = "SDL2_ttf bindings and wrappers"]
