@@ -13,6 +13,7 @@ extern crate bitflags;
 use libc::{c_int, c_char};
 use std::ptr;
 use std::ffi::CString;
+use std::path::Path;
 use sdl2::surface::Surface;
 use sdl2::render::Texture;
 use sdl2::render::Renderer;
@@ -72,7 +73,7 @@ impl LoadSurface for Surface {
     fn from_file(filename: &Path) -> SdlResult<Surface> {
         //! Loads an SDL Surface from a file
         unsafe {
-            let raw = ffi::IMG_Load(CString::from_slice(filename.as_vec()).as_ptr());
+            let raw = ffi::IMG_Load(CString::new(filename.to_str().unwrap()).unwrap().as_ptr());
             if raw == ptr::null() {
                 Err(get_error())
             } else {
@@ -98,7 +99,7 @@ impl SaveSurface for Surface {
     fn save(&self, filename: &Path) -> SdlResult<()> {
         //! Saves an SDL Surface to a file
         unsafe {
-            let status = ffi::IMG_SavePNG(self.raw(), CString::from_slice(filename.as_vec()).as_ptr());
+            let status = ffi::IMG_SavePNG(self.raw(), CString::new(filename.to_str().unwrap()).unwrap().as_ptr());
             if status != 0 {
                 Err(get_error())
             } else {
@@ -130,7 +131,7 @@ impl LoadTexture for Renderer {
     fn load_texture(&self, filename: &Path) -> SdlResult<Texture> {
         //! Loads an SDL Texture from a file
         unsafe {
-            let raw = ffi::IMG_LoadTexture(self.raw(), CString::from_slice(filename.as_vec()).as_ptr());
+            let raw = ffi::IMG_LoadTexture(self.raw(), CString::new(filename.to_str().unwrap()).unwrap().as_ptr());
             if raw == ptr::null() {
                 Err(get_error())
             } else {
