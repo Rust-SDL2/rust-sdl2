@@ -13,9 +13,8 @@ fn main() {
     let args: Vec<_> = env::args().collect();
 
     if args.len() < 2 {
-        println!("Usage: ./demo image.[png|jpg]")
+        println!("Usage: cargo run /path/to/image.(png|jpg)")
     } else {
-        let path: &Path = Path::new(&args[1]);
-        video::main(path);
+        video::main(Path::new(&args[1]));
     }
 }
