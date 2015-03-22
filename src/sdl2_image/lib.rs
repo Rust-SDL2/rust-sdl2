@@ -3,9 +3,12 @@
 #![crate_name="sdl2_image"]
 #![crate_type = "lib"]
 
-
 extern crate sdl2;
 extern crate libc;
+extern crate "sdl2-sys" as sys;
+
+#[macro_use]
+extern crate bitflags;
 
 use libc::{c_int, c_char};
 use std::ptr;
@@ -159,7 +162,7 @@ pub fn get_linked_version() -> Version {
 }
 
 #[inline]
-fn to_surface_result(raw: *const sdl2::surface::ll::SDL_Surface) -> SdlResult<Surface> {
+fn to_surface_result(raw: *const sys::surface::SDL_Surface) -> SdlResult<Surface> {
     if raw == ptr::null() {
         Err(get_error())
     } else {
