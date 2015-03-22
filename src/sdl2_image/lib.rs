@@ -135,7 +135,7 @@ impl LoadTexture for Renderer {
             if raw == ptr::null() {
                 Err(get_error())
             } else {
-                Ok(Texture{ raw: raw, owned: true })
+                Ok(Texture::from_ll(raw))
             }
         }
     }
