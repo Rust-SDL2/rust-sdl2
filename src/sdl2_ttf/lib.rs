@@ -66,7 +66,7 @@ bitflags! {
     }
 }
 
-#[derive(Show, PartialEq, FromPrimitive)]
+#[derive(Debug, PartialEq, FromPrimitive)]
 pub enum Hinting {
     HintingNormal = ffi::TTF_HINTING_NORMAL as isize,
     HintingLight  = ffi::TTF_HINTING_LIGHT  as isize,
@@ -75,7 +75,7 @@ pub enum Hinting {
 }
 
 /// Glyph Metrics
-#[derive(PartialEq, Clone, Show)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct GlyphMetrics {
     pub minx: isize,
     pub maxx: isize,
