@@ -2,6 +2,7 @@ use sdl2;
 use sdl2_ttf;
 use sdl2::event::Event;
 use sdl2::keycode::KeyCode;
+use std::path::Path;
 
 static SCREEN_WIDTH : i32 = 800;
 static SCREEN_HEIGHT : i32 = 600;

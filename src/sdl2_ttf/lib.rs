@@ -20,6 +20,7 @@ extern crate bitflags;
 use libc::{c_int, c_long};
 use std::ffi::{c_str_to_bytes, CString};
 use std::num::FromPrimitive;
+use std::path::Path;
 use sdl2::surface::Surface;
 use sdl2::get_error;
 use sdl2::pixels;
@@ -146,7 +147,7 @@ impl Font {
     pub fn from_file(filename: &Path, ptsize: isize) -> SdlResult<Font> {
         //! Load file for use as a font, at ptsize size.
         unsafe {
-            let cstring = CString::from_slice(filename.as_str().unwrap().as_bytes());
+            let cstring = CString::from_slice(filename.to_str().unwrap().as_bytes());
             let raw = ffi::TTF_OpenFont(cstring.as_ptr(), ptsize as c_int);
             if raw.is_null() {
                 Err(get_error())
@@ -159,7 +160,7 @@ impl Font {
     pub fn from_file_index(filename: &Path, ptsize: isize, index: isize) -> SdlResult<Font> {
         //! Load file, face index, for use as a font, at ptsize size.
         unsafe {
-            let cstring = CString::from_slice(filename.as_str().unwrap().as_bytes());
+            let cstring = CString::from_slice(filename.to_str().unwrap().as_bytes());
             let raw = ffi::TTF_OpenFontIndex(cstring.as_ptr(), ptsize as c_int, index as c_long);
             if raw.is_null() {
                 Err(get_error())

@@ -3,16 +3,21 @@
 extern crate sdl2;
 extern crate sdl2_ttf;
 
-use std::os;
+use std::env;
+use std::path::Path;
 
 mod video;
 
 fn main() {
-    let args = os::args();
+
+    let args: Vec<_> = env::args().collect();
+
     println!("linked sdl2_ttf: {}", sdl2_ttf::get_linked_version());
+
     if args.len() < 2 {
         println!("Usage: ./demo font.[ttf|ttc|fon]")
     } else {
-        video::main(&Path::new(os::args()[1].to_string()));
+        let path: &Path = Path::new(&args[1]);
+        video::main(path);
     }
 }
