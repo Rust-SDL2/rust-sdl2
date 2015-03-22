@@ -2,13 +2,9 @@
 A binding for SDL2_ttf.
  */
 
-#![feature(custom_attribute)]
 #![feature(libc)]
 
 #![crate_type = "lib"]
-#![desc = "SDL2_ttf bindings and wrappers"]
-#![comment = "SDL2_ttf bindings and wrappers"]
-#![license = "MIT"]
 
 extern crate libc;
 extern crate sdl2;
