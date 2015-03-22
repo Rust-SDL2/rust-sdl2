@@ -2,6 +2,9 @@
 A binding for SDL2_mixer.
  */
 
+#![feature(libc)]
+#![feature(core)]
+
 #![crate_name = "sdl2_mixer"]
 #![crate_type = "lib"]
 
@@ -12,13 +15,12 @@ extern crate sdl2;
 
 use std::default;
 use std::ptr;
-use std::mem;
-use std::raw;
 use std::fmt;
-use std::ffi::{ c_str_to_bytes, CString };
+use std::ffi::{CString, CStr};
 use std::str::from_utf8;
 use std::borrow::ToOwned;
 use std::num::FromPrimitive;
+use std::path::Path;
 use libc::{c_int, uint16_t, c_double};
 use sdl2::get_error;
 use sdl2::rwops::RWops;
@@ -168,7 +170,7 @@ pub fn get_chunk_decoders_number() -> isize {
 pub fn get_chunk_decoder(index: isize) -> String {
      unsafe {
         let name = ffi::Mix_GetChunkDecoder(index as c_int);
-        from_utf8(c_str_to_bytes(&name)).unwrap().to_owned()
+        from_utf8(CStr::from_ptr(name).to_bytes()).unwrap().to_owned()
     }
 }
 
@@ -240,7 +242,7 @@ impl LoaderRWops for RWops {
 
 /// Fader effect type enumerations
 #[repr(C)]
-#[derive(Copy, Clone, PartialEq, Hash, Show, FromPrimitive)]
+#[derive(Debug, Copy, Clone, PartialEq, Hash, FromPrimitive)]
 pub enum Fading {
     NoFading  = ffi::MIX_NO_FADING as isize,
     FadingOut = ffi::MIX_FADING_OUT as isize,
@@ -248,13 +250,13 @@ pub enum Fading {
 }
 
 /// Sound effect channel.
-#[derive(Copy, PartialEq, Show)]
+#[derive(Debug, Copy, PartialEq)]
 pub struct Channel(isize);
 
 /// Set the number of channels being mixed.
-pub fn allocate_channels(numchans: int) -> int {
+pub fn allocate_channels(numchans: isize) -> isize {
     unsafe {
-        ffi::Mix_AllocateChannels(numchans as c_int) as int
+        ffi::Mix_AllocateChannels(numchans as c_int) as isize
     }
 }
 
@@ -265,7 +267,7 @@ extern "C" fn c_channel_finished_callback(ch: c_int) {
         match channel_finished_callback {
             None => (),
             Some(cb) => {
-                cb(Channel(ch as int))
+                cb(Channel(ch as isize))
             }
         }
     }
@@ -392,7 +394,7 @@ impl Channel {
     pub fn get_fading(self) -> Fading {
         let Channel(ch) = self;
         let ret = unsafe { ffi::Mix_FadingChannel(ch as c_int) as isize };
-        FromPrimitive::from_int(ret).unwrap()
+        FromPrimitive::from_isize(ret).unwrap()
     }
 
     /// Get the most recent sample chunk pointer played on channel.
@@ -565,24 +567,24 @@ pub fn get_music_decoders_number() -> isize {
 pub fn get_music_decoder(index: isize) -> String {
     unsafe {
         let name = ffi::Mix_GetMusicDecoder(index as c_int);
-        from_utf8(c_str_to_bytes(&name)).unwrap().to_owned()
+        from_utf8(CStr::from_ptr(name).to_bytes()).unwrap().to_owned()
     }
 }
 
 /// Music type enumerations
 #[repr(C)]
-#[derive(Copy, Clone, PartialEq, Hash, Show, FromPrimitive)]
+#[derive(Copy, Clone, PartialEq, Hash, Debug, FromPrimitive)]
 pub enum MusicType {
-    MusicNone    = ffi::MUS_NONE as int,
-    MusicCmd     = ffi::MUS_CMD as int,
-    MusicWav     = ffi::MUS_WAV as int,
-    MusicMod     = ffi::MUS_MOD as int,
-    MusicMid     = ffi::MUS_MID as int,
-    MusicOgg     = ffi::MUS_OGG as int,
-    MusicMp3     = ffi::MUS_MP3 as int,
-    MusicMp3Mad  = ffi::MUS_MP3_MAD as int,
-    MusicFlac    = ffi::MUS_FLAC as int,
-    MusicModPlug = ffi::MUS_MODPLUG as int
+    MusicNone    = ffi::MUS_NONE as isize,
+    MusicCmd     = ffi::MUS_CMD as isize,
+    MusicWav     = ffi::MUS_WAV as isize,
+    MusicMod     = ffi::MUS_MOD as isize,
+    MusicMid     = ffi::MUS_MID as isize,
+    MusicOgg     = ffi::MUS_OGG as isize,
+    MusicMp3     = ffi::MUS_MP3 as isize,
+    MusicMp3Mad  = ffi::MUS_MP3_MAD as isize,
+    MusicFlac    = ffi::MUS_FLAC as isize,
+    MusicModPlug = ffi::MUS_MODPLUG as isize
 }
 
 // hooks
@@ -612,7 +614,7 @@ impl Drop for Music {
     }
 }
 
-impl fmt::Show for Music {
+impl fmt::Debug for Music {
     /// Shows the original regular expression.
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "<Music>")
@@ -623,7 +625,7 @@ impl Music {
     /// Load music file to use.
     pub fn from_file(path: &Path) -> SdlResult<Music> {
         let raw = unsafe {
-            ffi::Mix_LoadMUS(CString::from_slice(path.filename().unwrap()).as_ptr())
+            ffi::Mix_LoadMUS(CString::new(path.to_str().unwrap()).unwrap().as_ptr())
         };
         if raw.is_null() {
             Err(get_error())
@@ -635,7 +637,7 @@ impl Music {
     /// The file format encoding of the music.
     pub fn get_type(&self) -> MusicType {
         let ret = unsafe { ffi::Mix_GetMusicType(self.raw) as isize };
-        FromPrimitive::from_int(ret).unwrap()
+        FromPrimitive::from_isize(ret).unwrap()
     }
 
     /// Play the loaded music loop times through from start to finish.
@@ -715,7 +717,7 @@ impl Music {
     /// Setup a command line music player to use to play music.
     pub fn set_command(command: &str) -> SdlResult<()> {
         let ret = unsafe {
-            ffi::Mix_SetMusicCMD(CString::from_slice(command.as_bytes()).as_ptr())
+            ffi::Mix_SetMusicCMD(CString::new(command).unwrap().as_ptr())
         };
         if ret == -1 {
             Err(get_error())
@@ -772,7 +774,7 @@ impl Music {
     /// If music is fading, or not.
     pub fn get_fading() -> Fading {
         let ret = unsafe { ffi::Mix_FadingMusic() as isize };
-        FromPrimitive::from_int(ret).unwrap()
+        FromPrimitive::from_isize(ret).unwrap()
     }
 }
 
