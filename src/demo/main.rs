@@ -52,30 +52,34 @@ fn demo(filename: &Path) {
 
     println!("query spec => {:?}", sdl2_mixer::query_spec());
 
-    let music = sdl2_mixer::Music::from_file(filename).unwrap();
+    // We want music to be freed before we quit sdl2_mixer (otherwise an error
+    // happens), so we do all of the following within its own block.
+    {
+        let music = sdl2_mixer::Music::from_file(filename).unwrap();
 
-    fn hook_finished() {
-        println!("play ends! from rust cb");
+        fn hook_finished() {
+            println!("play ends! from rust cb");
+        }
+
+        sdl2_mixer::Music::hook_finished(hook_finished);
+
+        println!("music => {:?}", music);
+        println!("music type => {:?}", music.get_type());
+        println!("music volume => {:?}", sdl2_mixer::Music::get_volume());
+        println!("play => {:?}", music.play(1));
+
+        sdl2::timer::delay(10000);
+
+        println!("fading out ... {:?}", sdl2_mixer::Music::fade_out(4000));
+
+        sdl2::timer::delay(5000);
+
+        println!("fading in from pos ... {:?}", music.fade_in_from_pos(1, 10000, 100.0));
+
+        sdl2::timer::delay(5000);
+        sdl2_mixer::Music::halt();
+        sdl2::timer::delay(1000);
     }
-
-    sdl2_mixer::Music::hook_finished(hook_finished);
-
-    println!("music => {:?}", music);
-    println!("music type => {:?}", music.get_type());
-    println!("music volume => {:?}", sdl2_mixer::Music::get_volume());
-    println!("play => {:?}", music.play(1));
-
-    sdl2::timer::delay(10000);
-
-    println!("fading out ... {:?}", sdl2_mixer::Music::fade_out(4000));
-
-    sdl2::timer::delay(5000);
-
-    println!("fading in from pos ... {:?}", music.fade_in_from_pos(1, 10000, 100.0));
-
-    sdl2::timer::delay(5000);
-    sdl2_mixer::Music::halt();
-    sdl2::timer::delay(1000);
 
     // here will print hook_finished
 
