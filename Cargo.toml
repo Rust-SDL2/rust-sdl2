@@ -1,17 +1,13 @@
 [package]
-name    = "sdl2_image"
-version = "0.0.1-alpha.1"
+name = "sdl2_image"
+version = "0.0.2"
 authors = ["xsleonard"]
 description = "SDL2_image bindings and wrappers"
 license = "MIT"
 
 [lib]
-name       = "sdl2_image"
-path       = "src/sdl2_image/lib.rs"
-
-[[bin]]
-name = "demo"
-path = "src/demo/main.rs"
+name = "sdl2_image"
+path = "src/sdl2_image/lib.rs"
 
 [dependencies]
 bitflags = "0.1"
@@ -21,3 +17,7 @@ git = "https://github.com/AngryLawyer/rust-sdl2/"
 
 [dependencies.sdl2-sys]
 git = "https://github.com/AngryLawyer/rust-sdl2/"
+
+[[bin]]
+name = "demo"
+path = "src/demo/main.rs"
