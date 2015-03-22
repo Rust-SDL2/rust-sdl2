@@ -115,7 +115,7 @@ pub fn quit() {
 }
 
 /// The opaque holder of a loaded font.
-#[allow(raw_pointer_deriving)]
+#[allow(raw_pointer_derive)]
 #[derive(PartialEq)]
 pub struct Font {
     raw: *const ffi::TTF_Font,
