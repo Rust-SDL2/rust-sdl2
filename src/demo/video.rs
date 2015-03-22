@@ -1,5 +1,8 @@
 use sdl2;
 use sdl2_ttf;
+use sdl2::event::Event;
+use sdl2::keycode::KeyCode;
+use std::path::Path;
 
 static SCREEN_WIDTH : i32 = 800;
 static SCREEN_HEIGHT : i32 = 600;
@@ -17,7 +20,7 @@ macro_rules! rect(
 );
 
 pub fn main(filename: &Path) {
-    sdl2::init(sdl2::INIT_VIDEO);
+    let sdl_context = sdl2::init(sdl2::INIT_VIDEO).unwrap();
     sdl2_ttf::init();
 
     let window = trying!(sdl2::video::Window::new(
@@ -44,19 +47,17 @@ pub fn main(filename: &Path) {
 
     drawer.present();
 
-    'main : loop {
-        'event : loop {
-            match sdl2::event::poll_event() {
-                sdl2::event::Event::Quit{..} => break 'main,
-                sdl2::event::Event::KeyDown { keycode: key, .. } => {
-                    if key == sdl2::keycode::KeyCode::Escape {
-                        break 'main
-                    }
-                }
+    let mut event_pump = sdl_context.event_pump();
+
+    'mainloop: loop {
+        for event in event_pump.poll_iter() {
+            match event {
+                Event::Quit{..} => break 'mainloop,
+                Event::KeyDown {keycode: KeyCode::Escape, ..} => break 'mainloop,
                 _ => {}
             }
         }
     }
+
     sdl2_ttf::quit();
-    sdl2::quit();
 }
