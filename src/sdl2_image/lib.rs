@@ -1,4 +1,5 @@
 #![feature(macro_rules)]
+#![feature(libc)]
 
 #![crate_name="sdl2_image"]
 #![crate_type = "lib"]
