@@ -1,38 +1,44 @@
 #![crate_type = "bin"]
-#![crate_name="demo"]
 
 extern crate sdl2;
 extern crate sdl2_mixer;
 
-use std::os;
-use std::borrow::ToOwned;
+use std::env;
+use std::path::Path;
+use sdl2::{INIT_AUDIO, INIT_TIMER};
+use sdl2_mixer::{INIT_MP3, INIT_FLAC, INIT_MOD, INIT_FLUIDSYNTH, INIT_MODPLUG,
+                 INIT_OGG, DEFAULT_FREQUENCY};
 
 fn main() {
-    let args = os::args();
+
+    let args: Vec<_> = env::args().collect();
+
     if args.len() < 2 {
         println!("Usage: ./demo audio.[mp3|wav|ogg]")
     } else {
-        match dump_info(&Path::new(args[1].to_owned())) {
-            _ => ()
-        }
+        demo(Path::new(&args[1]));
     }
 }
 
-fn dump_info(filename: &Path) -> Result<(), String> {
-    println!("linked version: {:?}", sdl2_mixer::get_linked_version());
-    sdl2::init(sdl2::INIT_AUDIO | sdl2::INIT_TIMER);
-    println!("inited => {}", sdl2_mixer::init(sdl2_mixer::INIT_MP3 | sdl2_mixer::INIT_FLAC |
-                                              sdl2_mixer::INIT_MOD | sdl2_mixer::INIT_FLUIDSYNTH |
-                                              sdl2_mixer::INIT_MODPLUG | sdl2_mixer::INIT_OGG).bits());
+fn demo(filename: &Path) {
+
+    println!("linked version: {}", sdl2_mixer::get_linked_version());
+
+    let _ = sdl2::init(INIT_AUDIO | INIT_TIMER);
+
+    println!("mixer initialized: {}", sdl2_mixer::init(
+        INIT_MP3 | INIT_FLAC | INIT_MOD | INIT_FLUIDSYNTH |
+        INIT_MODPLUG | INIT_OGG).bits());
+
     // TODO: 0x8010 is SDL_audio flag
-    try!(sdl2_mixer::open_audio(sdl2_mixer::DEFAULT_FREQUENCY, 0x8010u16, 2, 1024));
+    let _ = sdl2_mixer::open_audio(DEFAULT_FREQUENCY, 0x8010u16, 2, 1024);
     sdl2_mixer::allocate_channels(0);
 
     {
         let n = sdl2_mixer::get_chunk_decoders_number();
         println!("available chunk(sample) decoders: {}", n);
         for i in (0..n) {
-            println!("| decoder {} => {:}", i, sdl2_mixer::get_chunk_decoder(i));
+            println!("  decoder {} => {}", i, sdl2_mixer::get_chunk_decoder(i));
         }
     }
 
@@ -40,7 +46,7 @@ fn dump_info(filename: &Path) -> Result<(), String> {
         let n = sdl2_mixer::get_music_decoders_number();
         println!("available music decoders: {}", n);
         for i in (0..n) {
-            println!("| decoder {} => {:}", i, sdl2_mixer::get_music_decoder(i));
+            println!("  decoder {} => {}", i, sdl2_mixer::get_music_decoder(i));
         }
     }
 
@@ -56,9 +62,7 @@ fn dump_info(filename: &Path) -> Result<(), String> {
 
     println!("music => {:?}", music);
     println!("music type => {:?}", music.get_type());
-
     println!("music volume => {:?}", sdl2_mixer::Music::get_volume());
-
     println!("play => {:?}", music.play(1));
 
     sdl2::timer::delay(10000);
@@ -70,14 +74,12 @@ fn dump_info(filename: &Path) -> Result<(), String> {
     println!("fading in from pos ... {:?}", music.fade_in_from_pos(1, 10000, 100.0));
 
     sdl2::timer::delay(5000);
-
     sdl2_mixer::Music::halt();
-
     sdl2::timer::delay(1000);
+
     // here will print hook_finished
 
+    println!("qutting mixer");
     sdl2_mixer::quit();
-    sdl2::quit();
-
-    Ok(())
+    println!("quitting sdl");
 }
