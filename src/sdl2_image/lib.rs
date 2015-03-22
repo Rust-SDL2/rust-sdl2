@@ -218,7 +218,7 @@ impl ImageRWops for RWops {
     }
     fn load_typed(&self, _type: &str) -> SdlResult<Surface> {
         let raw = unsafe {
-            ffi::IMG_LoadTyped_RW(self.raw(), 0, CString::from_slice(_type.as_bytes()).as_ptr())
+            ffi::IMG_LoadTyped_RW(self.raw(), 0, CString::new(_type.as_bytes()).unwrap().as_ptr())
         };
         to_surface_result(raw)
     }
