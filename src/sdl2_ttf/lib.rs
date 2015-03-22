@@ -14,7 +14,7 @@ extern crate "sdl2-sys" as sdl2_sys;
 extern crate bitflags;
 
 use libc::{c_int, c_long};
-use std::ffi::{c_str_to_bytes, CString};
+use std::ffi::{CString, CStr};
 use std::num::FromPrimitive;
 use std::path::Path;
 use sdl2::surface::Surface;
@@ -273,7 +273,7 @@ impl Font {
             if cname.is_null() {
                 None
             } else {
-                Some(String::from_utf8_lossy(c_str_to_bytes(&cname)).to_string())
+                Some(String::from_utf8_lossy(CStr::from_ptr(cname).to_bytes()).to_string())
             }
         }
     }
@@ -285,7 +285,7 @@ impl Font {
             if cname.is_null() {
                 None
             } else {
-                Some(String::from_utf8_lossy(c_str_to_bytes(&cname)).to_string())
+                Some(String::from_utf8_lossy(CStr::from_ptr(cname).to_bytes()).to_string())
             }
         }
     }
