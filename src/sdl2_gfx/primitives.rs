@@ -2,6 +2,7 @@
 
 use std::mem;
 use std::ptr;
+use std::ffi::CString;
 use std::num::ToPrimitive;
 use libc::{c_void, c_int, c_char};
 use sdl2::render::Renderer;
@@ -481,9 +482,8 @@ impl DrawRenderer for Renderer {
 
     fn string<C: ToColor>(&self, x: i16, y: i16, s: &str, color: C) -> SdlResult<()> {
         let ret = unsafe {
-            s.with_c_str(|buf| {
-                ll::stringColor(self.raw(), x, y, buf as *mut i8, color.as_u32())
-            })
+            let mut buf = CString::new(s).unwrap().as_bytes().as_ptr();
+            ll::stringColor(self.raw(), x, y, buf as *mut i8, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
