@@ -1,28 +1,25 @@
 [package]
-
 name = "sdl2_mixer"
 description = "SDL2_mixer bindings for Rust"
 repository = "https://github.com/andelf/rust-sdl2_mixer"
 version = "0.0.3"
 license = "MIT"
-authors = [ "ShuYu Wang <andelf@gmail.com>" ]
+authors = ["ShuYu Wang <andelf@gmail.com>"]
 keywords = ["SDL", "windowing", "graphics", "music", "sound"]
 
 [lib]
-
 name = "sdl2_mixer"
 path = "src/sdl2_mixer/lib.rs"
 
-[[bin]]
-
-name = "demo"
-path = "src/demo/main.rs"
+[dependencies]
+bitflags = "0.1"
 
 [dependencies.sdl2]
-
 git = "https://github.com/AngryLawyer/rust-sdl2"
-#version = "~0.0.3"
 
-[dependencies]
+[dependencies.sdl2-sys]
+git = "https://github.com/AngryLawyer/rust-sdl2"
 
-bitflags = "*"
+[[bin]]
+name = "demo"
+path = "src/demo/main.rs"
