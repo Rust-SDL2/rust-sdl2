@@ -4,9 +4,6 @@ A binding for SDL2_gfx.
 
 #![crate_name="sdl2_gfx"]
 #![crate_type = "lib"]
-#![desc = "SDL2_gfx bindings and wrappers"]
-#![comment = "SDL2_gfx bindings and wrappers"]
-#![license = "MIT"]
 
 #![feature(globs, macro_rules)]
 
