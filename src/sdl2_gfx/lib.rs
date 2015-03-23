@@ -4,14 +4,14 @@ A binding for SDL2_gfx.
 
 #![crate_name="sdl2_gfx"]
 #![crate_type = "lib"]
-#![desc = "SDL2_gfx bindings and wrappers"]
-#![comment = "SDL2_gfx bindings and wrappers"]
-#![license = "MIT"]
 
-#![feature(globs, macro_rules)]
+#![feature(libc)]
+#![feature(unique)]
+#![feature(core)]
 
 extern crate libc;
 extern crate sdl2;
+extern crate "sdl2-sys" as sys;
 
 // Setup linking for all targets.
 #[link(name="SDL2_gfx")]
