@@ -13,12 +13,8 @@ path = "src/sdl2_image/lib.rs"
 
 [dependencies]
 bitflags = "0.1"
-
-[dependencies.sdl2]
-git = "https://github.com/AngryLawyer/rust-sdl2/"
-
-[dependencies.sdl2-sys]
-git = "https://github.com/AngryLawyer/rust-sdl2/"
+sdl2 = "0.0.31"
+sdl2-sys = "0.0.31"
 
 [[bin]]
 name = "demo"
