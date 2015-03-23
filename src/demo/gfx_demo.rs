@@ -1,17 +1,11 @@
-#![feature(macro_rules)]
-
-extern crate rand;
 extern crate sdl2;
 extern crate sdl2_gfx;
 
-use rand::Rand;
-use sdl2::event;
 use sdl2::event::Event;
 use sdl2::pixels;
 use sdl2::keycode::KeyCode;
 
 use sdl2_gfx::primitives::DrawRenderer;
-use sdl2_gfx::framerate::FPSManager;
 
 static SCREEN_WIDTH: i32 = 800;
 static SCREEN_HEIGHT: i32 = 600;
@@ -45,18 +39,12 @@ fn main() {
     drawer.clear();
     drawer.present();
 
-    let mut rng = rand::XorShiftRng::new_unseeded();
-    let (mut lastx, mut lasty) = (0, 0);
-
-    let mut fpsm = FPSManager::new();
-
-    fpsm.set_framerate(100); // Default 30 is not good.
+    let mut lastx = 0;
+    let mut lasty = 0;
 
     let mut events = context.event_pump();
 
     'main: loop {
-
-        fpsm.delay(); // This will avoid program to run 100% CPU.
 
         for event in events.poll_iter() {
 
@@ -64,24 +52,21 @@ fn main() {
 
                 Event::Quit {..} => break 'main,
 
-                Event::KeyDown {keycode: key, ..} => {
-                    if key == KeyCode::Escape {
+                Event::KeyDown {keycode, ..} => {
+                    if keycode == KeyCode::Escape {
                         break 'main
-                    } else if key == KeyCode::Space {
+                    } else if keycode == KeyCode::Space {
                         for i in 0..400 {
-                            renderer.pixel(i as i16, i as i16, 0xFF000FFu32);
+                            let _ = renderer.pixel(i as i16, i as i16, 0xFF000FFu32);
                         }
                         drawer.present();
 
                     }
                 }
 
-                Event::MouseButtonDown {x: x, y: y, ..} => {
-                    let color = pixels::Color::RGB(
-                        Rand::rand(&mut rng),
-                        Rand::rand(&mut rng),
-                        Rand::rand(&mut rng));
-                    renderer.line(lastx, lasty, x as i16, y as i16, color);
+                Event::MouseButtonDown {x, y, ..} => {
+                    let color = pixels::Color::RGB(x as u8, y as u8, 255);
+                    let _ = renderer.line(lastx, lasty, x as i16, y as i16, color);
                     lastx = x as i16;
                     lasty = y as i16;
                     println!("mouse btn down at ({},{})", x, y);
