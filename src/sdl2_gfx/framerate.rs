@@ -44,27 +44,27 @@ impl FPSManager {
     }
 
     /// Set the framerate in Hz.
-    pub fn set_framerate(&mut self, rate: uint) -> SdlResult<()> {
+    pub fn set_framerate(&mut self, rate: u32) -> SdlResult<()> {
         let ret = unsafe { ll::SDL_setFramerate(self.raw, rate as uint32_t) };
         if ret == 0 { Ok(()) }
         else { Err("set_framerate error: beyond lower/upper limit.".to_string()) }
     }
 
     /// Return the current target framerate in Hz.
-    pub fn get_framerate(&self) -> int {
+    pub fn get_framerate(&self) -> i32 {
         // will not get an error
-        unsafe { ll::SDL_getFramerate(self.raw) as int }
+        unsafe { ll::SDL_getFramerate(self.raw) as i32 }
     }
 
     /// Return the current framecount.
-    pub fn get_frame_count(&self) -> int {
+    pub fn get_frame_count(&self) -> i32 {
         // will not get an error
-        unsafe { ll::SDL_getFramecount(self.raw) as int }
+        unsafe { ll::SDL_getFramecount(self.raw) as i32 }
     }
 
     /// Delay execution to maintain a constant framerate and calculate fps.
-    pub fn delay(&mut self) -> uint {
-        unsafe { ll::SDL_framerateDelay(self.raw) as uint }
+    pub fn delay(&mut self) -> u32 {
+        unsafe { ll::SDL_framerateDelay(self.raw) as u32 }
     }
 }
 

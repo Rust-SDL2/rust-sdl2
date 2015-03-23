@@ -227,7 +227,7 @@ impl ToColor for u32 {
 }
 
 // for 0xXXXXXXXX
-impl ToColor for int {
+impl ToColor for isize {
     #[inline]
     fn as_rgba(&self) -> (u8, u8, u8, u8) {
         unsafe { mem::transmute(self.to_u32().expect("Can't convert to Color Type")) }
@@ -267,7 +267,7 @@ pub trait DrawRenderer {
     fn aa_polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], color: C) -> SdlResult<()>;
     fn filled_polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], color: C) -> SdlResult<()>;
     fn textured_polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], texture: &Surface, texture_dx: i16, texture_dy: i16, color: C) -> SdlResult<()>;
-    fn bezier<C: ToColor>(&self, vx: &[i16], vy: &[i16], s: int, color: C) -> SdlResult<()>;
+    fn bezier<C: ToColor>(&self, vx: &[i16], vy: &[i16], s: isize, color: C) -> SdlResult<()>;
     fn character<C: ToColor>(&self, x: i16, y: i16, c: char, color: C) -> SdlResult<()>;
     fn string<C: ToColor>(&self, x: i16, y: i16, s: &str, color: C) -> SdlResult<()>;
 }
@@ -462,7 +462,7 @@ impl DrawRenderer for Renderer {
         unimplemented!()
     }
 
-    fn bezier<C: ToColor>(&self, vx: &[i16], vy: &[i16], s: int, color: C) -> SdlResult<()> {
+    fn bezier<C: ToColor>(&self, vx: &[i16], vy: &[i16], s: isize, color: C) -> SdlResult<()> {
         assert_eq!(vx.len(), vy.len());
         let n = vx.len() as c_int;
         let ret = unsafe {
@@ -482,7 +482,7 @@ impl DrawRenderer for Renderer {
 
     fn string<C: ToColor>(&self, x: i16, y: i16, s: &str, color: C) -> SdlResult<()> {
         let ret = unsafe {
-            let mut buf = CString::new(s).unwrap().as_bytes().as_ptr();
+            let buf = CString::new(s).unwrap().as_bytes().as_ptr();
             ll::stringColor(self.raw(), x, y, buf as *mut i8, color.as_u32())
         };
         if ret == 0 { Ok(()) }
@@ -491,17 +491,17 @@ impl DrawRenderer for Renderer {
 }
 
 /// Sets or resets the current global font data.
-pub fn set_font(fontdata: Option<&[u8]>, cw: uint, ch: uint) {
+pub fn set_font(fontdata: Option<&[u8]>, cw: u32, ch: u32) {
     let actual_fontdata = match fontdata {
         None  => ptr::null(),
         Some(v) => v.as_ptr()
     };
     unsafe {
-        ll::gfxPrimitivesSetFont(actual_fontdata as *const c_void, cw as u32, ch as u32)
+        ll::gfxPrimitivesSetFont(actual_fontdata as *const c_void, cw, ch)
     }
 }
 
 /// Sets current global font character rotation steps.
-pub fn set_font_rotation(rotation: uint) {
+pub fn set_font_rotation(rotation: u32) {
     unsafe { ll::gfxPrimitivesSetFontRotation(rotation as u32) }
 }

@@ -105,7 +105,7 @@ pub fn mmx_on() {
 }
 
 #[inline]
-fn cvec_with_size(sz: uint) -> CVec<u8> {
+fn cvec_with_size(sz: usize) -> CVec<u8> {
     unsafe {
         let p = libc::malloc(sz as size_t) as *mut u8;
         CVec::new_with_dtor(Unique::new(p), sz, move |p| {
@@ -423,7 +423,7 @@ pub fn clip_to_range(src1: CVec<u8>, tmin: u8, tmax: u8) -> SdlResult<CVec<u8>> 
 }
 
 /// Filter using NormalizeLinear: D = saturation255((Nmax - Nmin)/(Cmax - Cmin)*(S - Cmin) + Nmin).
-pub fn normalize_linear(src1: CVec<u8>, cmin: int, cmax: int, nmin: int, nmax: int) -> SdlResult<CVec<u8>> {
+pub fn normalize_linear(src1: CVec<u8>, cmin: isize, cmax: isize, nmin: isize, nmax: isize) -> SdlResult<CVec<u8>> {
     let size = src1.len();
     let dest = cvec_with_size(size);
     let ret = unsafe { ll::SDL_imageFilterNormalizeLinear(mem::transmute(src1.get(0)),
