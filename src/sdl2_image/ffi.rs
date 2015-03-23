@@ -1,11 +1,12 @@
 extern crate sdl2;
+extern crate "sdl2-sys" as sys;
 
 use libc::{c_int, c_char};
-use sdl2::surface::ll::SDL_Surface;
-use sdl2::rwops::ll::SDL_RWops;
-use sdl2::render::ll::SDL_Texture;
-use sdl2::render::ll::SDL_Renderer;
-use sdl2::version::ll::SDL_version;
+use sys::surface::SDL_Surface;
+use sys::rwops::SDL_RWops;
+use sys::render::SDL_Texture;
+use sys::render::SDL_Renderer;
+use sys::version::SDL_version;
 
 pub type IMG_InitFlags = c_int;
 pub const IMG_INIT_JPG: IMG_InitFlags = 0x00000001;

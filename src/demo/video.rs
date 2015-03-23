@@ -1,57 +1,47 @@
-use sdl2;
-use sdl2_image;
-use sdl2_image::LoadSurface;
-// use sdl2_image::LoadTexture;
+use std::path::Path;
+use sdl2::{self, INIT_VIDEO};
+use sdl2::video::{Window, WindowPos, OPENGL};
+use sdl2::render::{Renderer, RenderDriverIndex, ACCELERATED};
+use sdl2_image::{self, LoadTexture, INIT_PNG, INIT_JPG};
+use sdl2::event::Event;
+use sdl2::keycode::KeyCode;
 
 pub fn main(png: &Path) {
-    sdl2::init(sdl2::INIT_VIDEO);
-    sdl2_image::init(sdl2_image::INIT_PNG | sdl2_image::INIT_JPG);
 
-    let window = match sdl2::video::Window::new(
-            "rust-sdl2 demo: Video", sdl2::video::WindowPos::PosCentered,
-            sdl2::video::WindowPos::PosCentered, 800, 600, sdl2::video::OPENGL) {
-        Ok(window) => window,
-        Err(err) => panic!(format!("failed to create window: {}", err))
-    };
+    let context = sdl2::init(INIT_VIDEO).unwrap();
+    sdl2_image::init(INIT_PNG | INIT_JPG);
 
-    let renderer = match sdl2::render::Renderer::from_window(
-            window, sdl2::render::RenderDriverIndex::Auto, sdl2::render::ACCELERATED) {
-        Ok(renderer) => renderer,
-        Err(err) => panic!(format!("failed to create renderer: {}", err))
-    };
+    let window = Window::new(
+          "rust-sdl2 demo: Video",
+          WindowPos::PosCentered,
+          WindowPos::PosCentered,
+          800,
+          600,
+          OPENGL).unwrap();
 
-    // Load a surface, and convert it to a texture bound to the renderer
-    let surface = match LoadSurface::from_file(png) {
-        Ok(surface) => surface,
-        Err(err) => panic!(format!("Failed to load png: {}", err))
-    };
-    let texture = match renderer.create_texture_from_surface(&surface) {
-        Ok(texture) => texture,
-        Err(err) => panic!(format!("Failed to create surface: {}", err))
-    };
+    let renderer = Renderer::from_window(
+          window,
+          RenderDriverIndex::Auto,
+          ACCELERATED).unwrap();
 
-    // // Load a texture directly via the renderer
-    // let texture = match renderer.load_texture(png) {
-    //     Ok(texture) => texture,
-    //     Err(err) => panic!(format!("Could not set render target: {}", err))
-    // };
+    let mut texture = renderer.load_texture(png).unwrap();
 
-    let _ = renderer.copy(&texture, None, None);
-    renderer.present();
+    // Draws and shows the loaded texture.
+    let mut drawer = renderer.drawer();
+    drawer.copy(&mut texture, None, None);
+    drawer.present();
 
-    'main : loop {
-        'event : loop {
-            match sdl2::event::poll_event() {
-                sdl2::event::Event::Quit(_) => break 'main,
-                sdl2::event::Event::KeyDown(_, _, key, _, _, _) => {
-                    if key == sdl2::keycode::KeyCode::Escape {
-                        break 'main
-                    }
-                }
+    let mut event_pump = context.event_pump();
+    'mainloop: loop {
+        for event in event_pump.poll_iter() {
+            match event {
+                Event::Quit{..} |
+                Event::KeyDown {keycode: KeyCode::Escape, ..} =>
+                    break 'mainloop,
                 _ => {}
             }
         }
     }
+
     sdl2_image::quit();
-    sdl2::quit();
 }

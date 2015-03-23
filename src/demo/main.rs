@@ -3,16 +3,18 @@
 extern crate sdl2;
 extern crate sdl2_image;
 
-use std::os;
+use std::env;
+use std::path::Path;
 
 mod video;
 
-#[main]
 fn main() {
-    let args = os::args();
+
+    let args: Vec<_> = env::args().collect();
+
     if args.len() < 2 {
-        println!("Usage: ./demo image.[png|jpg]")
+        println!("Usage: cargo run /path/to/image.(png|jpg)")
     } else {
-        video::main(&Path::new(args[1].to_string()));
+        video::main(Path::new(&args[1]));
     }
 }

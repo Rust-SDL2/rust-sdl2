@@ -1,15 +1,19 @@
-#![feature(macro_rules)]
+#![feature(libc)]
 
 #![crate_name="sdl2_image"]
 #![crate_type = "lib"]
 
-
 extern crate sdl2;
 extern crate libc;
+extern crate "sdl2-sys" as sys;
+
+#[macro_use]
+extern crate bitflags;
 
 use libc::{c_int, c_char};
 use std::ptr;
 use std::ffi::CString;
+use std::path::Path;
 use sdl2::surface::Surface;
 use sdl2::render::Texture;
 use sdl2::render::Renderer;
@@ -69,7 +73,7 @@ impl LoadSurface for Surface {
     fn from_file(filename: &Path) -> SdlResult<Surface> {
         //! Loads an SDL Surface from a file
         unsafe {
-            let raw = ffi::IMG_Load(CString::from_slice(filename.as_vec()).as_ptr());
+            let raw = ffi::IMG_Load(CString::new(filename.to_str().unwrap()).unwrap().as_ptr());
             if raw == ptr::null() {
                 Err(get_error())
             } else {
@@ -95,7 +99,7 @@ impl SaveSurface for Surface {
     fn save(&self, filename: &Path) -> SdlResult<()> {
         //! Saves an SDL Surface to a file
         unsafe {
-            let status = ffi::IMG_SavePNG(self.raw(), CString::from_slice(filename.as_vec()).as_ptr());
+            let status = ffi::IMG_SavePNG(self.raw(), CString::new(filename.to_str().unwrap()).unwrap().as_ptr());
             if status != 0 {
                 Err(get_error())
             } else {
@@ -127,11 +131,11 @@ impl LoadTexture for Renderer {
     fn load_texture(&self, filename: &Path) -> SdlResult<Texture> {
         //! Loads an SDL Texture from a file
         unsafe {
-            let raw = ffi::IMG_LoadTexture(self.raw(), CString::from_slice(filename.as_vec()).as_ptr());
+            let raw = ffi::IMG_LoadTexture(self.raw(), CString::new(filename.to_str().unwrap()).unwrap().as_ptr());
             if raw == ptr::null() {
                 Err(get_error())
             } else {
-                Ok(Texture{ raw: raw, owned: true })
+                Ok(Texture::from_ll(raw))
             }
         }
     }
@@ -159,7 +163,7 @@ pub fn get_linked_version() -> Version {
 }
 
 #[inline]
-fn to_surface_result(raw: *const sdl2::surface::ll::SDL_Surface) -> SdlResult<Surface> {
+fn to_surface_result(raw: *const sys::surface::SDL_Surface) -> SdlResult<Surface> {
     if raw == ptr::null() {
         Err(get_error())
     } else {
@@ -214,7 +218,7 @@ impl ImageRWops for RWops {
     }
     fn load_typed(&self, _type: &str) -> SdlResult<Surface> {
         let raw = unsafe {
-            ffi::IMG_LoadTyped_RW(self.raw(), 0, CString::from_slice(_type.as_bytes()).as_ptr())
+            ffi::IMG_LoadTyped_RW(self.raw(), 0, CString::new(_type.as_bytes()).unwrap().as_ptr())
         };
         to_surface_result(raw)
     }
