@@ -6,6 +6,8 @@ A binding for SDL2_gfx.
 #![crate_type = "lib"]
 
 #![feature(libc)]
+#![feature(unique)]
+#![feature(core)]
 
 extern crate libc;
 extern crate sdl2;
