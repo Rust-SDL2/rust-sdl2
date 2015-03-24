@@ -30,7 +30,7 @@ Or, to depend on the newest rust-sdl2_ttf, reference the repository:
 
 ```toml
 [dependencies.sdl2_ttf]
-git = "https://github.com/andelf/rust-sdl2-ttf"
+git = "https://github.com/andelf/rust-sdl2_ttf"
 ```
 
 You can also just clone and build the library yourself:
