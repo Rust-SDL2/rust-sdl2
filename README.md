@@ -30,7 +30,7 @@ Or, to depend on the newest rust-sdl2_mixer, reference the repository:
 
 ```toml
 [dependencies.sdl2_mixer]
-git = "https://github.com/andelf/rust-sdl2-mixer"
+git = "https://github.com/andelf/rust-sdl2_mixer"
 ```
 
 You can also just clone and build the library yourself:
