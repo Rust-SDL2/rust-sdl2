@@ -48,7 +48,6 @@ use get_error;
 use SdlResult;
 use std::mem;
 use std::ptr;
-use std::raw;
 use libc::{c_int, uint32_t, c_double, c_void};
 use rect::Point;
 use rect::Rect;
@@ -1060,18 +1059,18 @@ impl<'renderer> Texture<'renderer> {
         // Call to SDL to populate pixel data
         let loaded = unsafe {
             let q = self.query();
-            let pixels : *const c_void = ptr::null();
-            let pitch = 0;
+            let mut pixels = ptr::null_mut();
+            let mut pitch = 0;
 
             let (rect_raw_ptr, height) = match rect {
                 Some(ref rect) => (rect as *const _, rect.h as usize),
                 None => (ptr::null(), q.height as usize)
             };
 
-            let ret = ll::SDL_LockTexture(self.raw, rect_raw_ptr, &pixels, &pitch);
+            let ret = ll::SDL_LockTexture(self.raw, rect_raw_ptr, &mut pixels, &mut pitch);
             if ret == 0 {
                 let size = q.format.byte_size_from_pitch_and_height(pitch as usize, height);
-                Ok( (raw::Slice { data: pixels as *const u8, len: size }, pitch) )
+                Ok( (::std::slice::from_raw_parts_mut(pixels as *mut u8, size ), pitch) )
             } else {
                 Err(get_error())
             }
@@ -1081,7 +1080,7 @@ impl<'renderer> Texture<'renderer> {
             Ok((interior, pitch)) => {
                 let result;
                 unsafe {
-                    result = func(mem::transmute(interior), pitch as usize);
+                    result = func(interior, pitch as usize);
                     ll::SDL_UnlockTexture(self.raw);
                 }
                 Ok(result)

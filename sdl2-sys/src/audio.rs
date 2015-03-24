@@ -25,7 +25,7 @@ pub const AUDIO_S32SYS : SDL_AudioFormat =     AUDIO_S32LSB;
 pub const AUDIO_F32SYS : SDL_AudioFormat =     AUDIO_F32LSB;
 
 pub type SDL_AudioCallback =
-    Option<extern "C" fn (arg1: *const c_void, arg2: *const uint8_t, arg3: c_int)>;
+    Option<extern "C" fn (arg1: *mut c_void, arg2: *mut uint8_t, arg3: c_int)>;
 #[allow(missing_copy_implementations)]
 #[repr(C)]
 pub struct SDL_AudioSpec {

@@ -125,13 +125,11 @@ impl AudioSpecWAV {
     }
 
     pub fn get_buffer(&self) -> &[u8] {
-        use std::raw::Slice;
-        use std::mem::transmute;
+        use std::slice::from_raw_parts;
         unsafe {
-            transmute(Slice {
-                data: self.audio_buf,
-                len: self.audio_len as usize
-            })
+            let ptr = self.audio_buf as *const u8;
+            let len = self.audio_len as usize;
+            from_raw_parts(ptr, len)
         }
     }
 }
@@ -194,15 +192,15 @@ impl AudioFormatNum<f32> for f32 {
 }
 
 extern "C" fn audio_callback_marshall<CB: AudioCallback>
-(userdata: *const c_void, stream: *const uint8_t, len: c_int) {
-    use std::raw::Slice;
+(userdata: *mut c_void, stream: *mut uint8_t, len: c_int) {
+    use std::slice::from_raw_parts_mut;
     use std::mem::{size_of, transmute};
     unsafe {
         let mut cb_userdata: &mut AudioCallbackUserdata<CB> = transmute(userdata);
-        let buf: &mut [CB::Channel] = transmute(Slice {
-            data: stream,
-            len: len as usize / size_of::<CB::Channel>()
-        });
+        let buf: &mut [CB::Channel] = from_raw_parts_mut(
+            stream as *mut CB::Channel,
+            len as usize / size_of::<CB::Channel>()
+        );
 
         cb_userdata.callback.callback(buf);
     }
@@ -230,8 +228,8 @@ impl<CB: AudioCallback> AudioSpecDesired<CB> {
                 size: 0,
                 callback: Some(audio_callback_marshall::<CB>
                     as extern "C" fn
-                        (arg1: *const c_void,
-                         arg2: *const uint8_t,
+                        (arg1: *mut c_void,
+                         arg2: *mut uint8_t,
                          arg3: c_int)),
                 userdata: transmute(userdata)
             }
