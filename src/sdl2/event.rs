@@ -416,7 +416,7 @@ impl ::std::fmt::Debug for Event {
 // TODO: Remove this when from_utf8 is updated in Rust
 impl Event {
     fn to_ll(self) -> Option<ll::SDL_Event> {
-        let ret = unsafe { mem::uninitialized() };
+        let mut ret = unsafe { mem::uninitialized() };
         match self {
             // just ignore timestamp
             Event::User { window_id, _type, code, .. } => {
@@ -429,7 +429,7 @@ impl Event {
                     data2: ptr::null(),
                 };
                 unsafe {
-                    ptr::copy(mem::transmute::<_,*mut ll::SDL_UserEvent>(&ret), &event, 1);
+                    ptr::copy(&mut ret as *mut ll::SDL_Event as *mut ll::SDL_UserEvent, &event, 1);
                 }
                 Some(ret)
             },
@@ -525,11 +525,10 @@ impl Event {
                 let ref event = *raw.edit();
 
                 let text = String::from_utf8_lossy(
-                        event.text.iter()
+                        &event.text.iter()
                             .take_while(|&b| (*b) != 0i8)
                             .map(|&b| b as u8)
                             .collect::<Vec<u8>>()
-                            .as_slice()
                     ).to_owned().into_owned();
                 Event::TextEditing {
                     timestamp: event.timestamp,
@@ -543,11 +542,10 @@ impl Event {
                 let ref event = *raw.text();
 
                 let text = String::from_utf8_lossy(
-                        event.text.iter()
+                        &event.text.iter()
                             .take_while(|&b| (*b) != 0i8)
                             .map(|&b| b as u8)
                             .collect::<Vec<u8>>()
-                            .as_slice()
                     ).to_owned().into_owned();
                 Event::TextInput {
                     timestamp: event.timestamp,
