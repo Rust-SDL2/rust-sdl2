@@ -492,10 +492,10 @@ mod test {
         use std::iter::repeat;
 
         // 0,1,2,3, ...
-        let buffer: Vec<u8> = range(0, 255).collect();
+        let buffer: Vec<u8> = (0..255).collect();
 
         // 0,0,1,1,2,2,3,3, ...
-        let new_buffer_expected: Vec<u8> = range(0, 255).flat_map(|v| repeat(v).take(2)).collect();
+        let new_buffer_expected: Vec<u8> = (0..255).flat_map(|v| repeat(v).take(2)).collect();
 
         let cvt = AudioCVT::new(AUDIOU8, 1, 44100, AUDIOU8, 2, 44100).unwrap();
         assert!(cvt.is_conversion_needed());
