@@ -525,11 +525,10 @@ impl Event {
                 let ref event = *raw.edit();
 
                 let text = String::from_utf8_lossy(
-                        event.text.iter()
+                        &event.text.iter()
                             .take_while(|&b| (*b) != 0i8)
                             .map(|&b| b as u8)
                             .collect::<Vec<u8>>()
-                            .as_slice()
                     ).to_owned().into_owned();
                 Event::TextEditing {
                     timestamp: event.timestamp,
@@ -543,11 +542,10 @@ impl Event {
                 let ref event = *raw.text();
 
                 let text = String::from_utf8_lossy(
-                        event.text.iter()
+                        &event.text.iter()
                             .take_while(|&b| (*b) != 0i8)
                             .map(|&b| b as u8)
                             .collect::<Vec<u8>>()
-                            .as_slice()
                     ).to_owned().into_owned();
                 Event::TextInput {
                     timestamp: event.timestamp,

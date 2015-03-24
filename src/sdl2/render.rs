@@ -720,8 +720,7 @@ impl<'renderer> RenderDrawer<'renderer> {
 
             // Pass the interior of `pixels: Vec<u8>` to SDL
             let ret = {
-                let pixels_ref: raw::Slice<u8> = mem::transmute(pixels.as_slice());
-                ll::SDL_RenderReadPixels(self.raw, actual_rect, format as uint32_t, pixels_ref.data as *mut c_void, pitch as c_int)
+                ll::SDL_RenderReadPixels(self.raw, actual_rect, format as uint32_t, pixels.as_mut_ptr() as *mut c_void, pitch as c_int)
             };
 
             if ret == 0 {
