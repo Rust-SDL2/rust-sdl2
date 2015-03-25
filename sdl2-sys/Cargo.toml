@@ -10,7 +10,7 @@ links = "SDL2"
 build = "build.rs"
 
 [lib]
-name = "sdl2-sys"
+name = "sdl2_sys"
 path = "src/lib.rs"
 
 [dependencies]
