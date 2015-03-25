@@ -453,11 +453,11 @@ extern "C" {
               SDL_bool;
     pub fn SDL_FlushEvent(_type: uint32_t);
     pub fn SDL_FlushEvents(minType: uint32_t, maxType: uint32_t);
-    pub fn SDL_PollEvent(event: *const SDL_Event) -> c_int;
-    pub fn SDL_WaitEvent(event: *const SDL_Event) -> c_int;
-    pub fn SDL_WaitEventTimeout(event: *const SDL_Event, timeout: c_int) ->
+    pub fn SDL_PollEvent(event: *mut SDL_Event) -> c_int;
+    pub fn SDL_WaitEvent(event: *mut SDL_Event) -> c_int;
+    pub fn SDL_WaitEventTimeout(event: *mut SDL_Event, timeout: c_int) ->
               c_int;
-    pub fn SDL_PushEvent(event: *const SDL_Event) -> c_int;
+    pub fn SDL_PushEvent(event: *mut SDL_Event) -> c_int;
     pub fn SDL_SetEventFilter(filter: SDL_EventFilter,
                                     userdata: *const c_void);
     /*pub fn SDL_GetEventFilter(filter: *SDL_EventFilter,

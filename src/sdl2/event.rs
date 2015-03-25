@@ -856,8 +856,8 @@ impl<'sdl> EventPump<'sdl> {
     ///
     /// If no events are pending, `None` is returned.
     pub fn poll_event(&mut self) -> Option<Event> {
-        let raw = unsafe { mem::uninitialized() };
-        let has_pending = unsafe { ll::SDL_PollEvent(&raw) == 1 as c_int };
+        let mut raw = unsafe { mem::uninitialized() };
+        let has_pending = unsafe { ll::SDL_PollEvent(&mut raw) == 1 as c_int };
 
         if has_pending { Some(Event::from_ll(&raw)) }
         else { None }
@@ -893,8 +893,8 @@ impl<'sdl> EventPump<'sdl> {
     /// Waits indefinitely for the next available event.
     pub fn wait_event(&mut self) -> Event {
         unsafe {
-            let raw = mem::uninitialized();
-            let success = ll::SDL_WaitEvent(&raw) == 1;
+            let mut raw = mem::uninitialized();
+            let success = ll::SDL_WaitEvent(&mut raw) == 1;
 
             if success { Event::from_ll(&raw) }
             else { panic!(get_error()) }
@@ -904,8 +904,8 @@ impl<'sdl> EventPump<'sdl> {
     /// Waits until the specified timeout (in milliseconds) for the next available event.
     pub fn wait_event_timeout(&mut self, timeout: u32) -> Option<Event> {
         unsafe {
-            let raw = mem::uninitialized();
-            let success = ll::SDL_WaitEventTimeout(&raw, timeout as c_int) == 1;
+            let mut raw = mem::uninitialized();
+            let success = ll::SDL_WaitEventTimeout(&mut raw, timeout as c_int) == 1;
 
             if success { Some(Event::from_ll(&raw)) }
             else { None }
@@ -1040,8 +1040,8 @@ where B: FromIterator<Event>
 /// Pushes an event to the event queue.
 pub fn push_event(event: Event) -> SdlResult<()> {
     match event.to_ll() {
-        Some(raw_event) => {
-            let ok = unsafe { ll::SDL_PushEvent(&raw_event) == 1 };
+        Some(mut raw_event) => {
+            let ok = unsafe { ll::SDL_PushEvent(&mut raw_event) == 1 };
             if ok { Ok(()) }
             else { Err(get_error()) }
         },
