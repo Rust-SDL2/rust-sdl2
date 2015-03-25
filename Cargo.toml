@@ -3,7 +3,7 @@
 name    = "sdl2"
 description = "SDL2 bindings for Rust"
 repository = "https://github.com/AngryLawyer/rust-sdl2"
-version = "0.0.33"
+version = "0.0.32"
 license = "MIT"
 authors = [ "Tony Aldridge <tony@angry-lawyer.com>" ]
 keywords = ["SDL", "windowing", "graphics"]
@@ -18,12 +18,12 @@ bitflags = "0.1"
 libc = "*"
 rand = "*"
 
-[dependencies.sdl2_sys]
+[dependencies.sdl2-sys]
 
 path = "sdl2-sys"
-version = "0.0.33"
+version = "0.0.32"
 
 [features]
 
 default = []
-use-pkgconfig = [ "sdl2_sys/use-pkgconfig" ]
+use-pkgconfig = [ "sdl2-sys/use-pkgconfig" ]
