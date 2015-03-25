@@ -21,6 +21,13 @@ If you're using Cargo to manage your project, enter the following into your
 Cargo.toml file:
 
 ```toml
+[dependencies]
+sdl2_image = "0.0.2"
+```
+
+Or, to reference this repository directly:
+
+```toml
 [dependencies.sdl2_image]
 git = "https://github.com/xsleonard/rust-sdl2_image"
 ```
