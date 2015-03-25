@@ -6,7 +6,7 @@
 extern crate libc;
 #[macro_use]
 extern crate bitflags;
-extern crate sdl2_sys as sys;
+extern crate "sdl2-sys" as sys;
 
 pub use sdl::*;
 

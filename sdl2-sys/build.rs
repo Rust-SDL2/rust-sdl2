@@ -1,5 +1,5 @@
 #[cfg(feature="pkg-config")]
-extern crate pkg_config;
+extern crate "pkg-config" as pkg_config;
 
 fn main() {
     if !build_pkgconfig() {
