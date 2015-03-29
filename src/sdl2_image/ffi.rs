@@ -1,5 +1,5 @@
 extern crate sdl2;
-extern crate "sdl2-sys" as sys;
+extern crate sdl2_sys as sys;
 
 use libc::{c_int, c_char};
 use sys::surface::SDL_Surface;

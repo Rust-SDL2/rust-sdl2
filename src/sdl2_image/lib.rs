@@ -5,7 +5,7 @@
 
 extern crate sdl2;
 extern crate libc;
-extern crate "sdl2-sys" as sys;
+extern crate sdl2_sys as sys;
 
 #[macro_use]
 extern crate bitflags;
