@@ -23,7 +23,7 @@ Place the following into your project's Cargo.toml file:
 
 ```toml
 [dependencies]
-sdl2_mixer = "0.0.31" # Doesn't work yet, needs to be published.
+sdl2_mixer = "0.0.33" # Doesn't work yet, needs to be published.
 ```
 
 Or, to depend on the newest rust-sdl2_mixer, reference the repository:

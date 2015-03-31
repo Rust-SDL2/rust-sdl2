@@ -1,4 +1,4 @@
-extern crate "sdl2-sys" as sys;
+extern crate sdl2_sys as sys;
 
 use libc::*;
 use self::sys::rwops::SDL_RWops;
