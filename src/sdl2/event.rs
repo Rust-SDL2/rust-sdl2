@@ -429,7 +429,7 @@ impl Event {
                     data2: ptr::null(),
                 };
                 unsafe {
-                    ptr::copy(&mut ret as *mut ll::SDL_Event as *mut ll::SDL_UserEvent, &event, 1);
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_UserEvent, 1);
                 }
                 Some(ret)
             },
