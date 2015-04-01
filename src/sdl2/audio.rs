@@ -475,7 +475,6 @@ impl AudioCVT {
     /// Gets the buffer capacity that can contain both the original and
     /// converted data.
     pub fn get_capacity(&self, src_len: usize) -> usize {
-        use std::num::Int;
         src_len.checked_mul(self.raw.len_mult as usize).expect("Integer overflow")
     }
 }

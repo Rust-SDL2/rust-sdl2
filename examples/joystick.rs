@@ -1,9 +1,6 @@
-#![feature(core)]
-
 extern crate sdl2;
 
 use sdl2::joystick::{Joystick, num_joysticks};
-use std::num::SignedInt;
 
 fn main() {
     let sdl_context = sdl2::init(sdl2::INIT_JOYSTICK).unwrap();

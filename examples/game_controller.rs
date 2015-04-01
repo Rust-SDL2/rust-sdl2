@@ -1,10 +1,7 @@
-#![feature(core)]
-
 extern crate sdl2;
 
 use sdl2::{joystick, controller};
 use sdl2::controller::GameController;
-use std::num::SignedInt;
 
 fn main() {
     let sdl_context = sdl2::init(sdl2::INIT_GAME_CONTROLLER).unwrap();
