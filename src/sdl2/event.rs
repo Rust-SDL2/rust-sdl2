@@ -1013,7 +1013,7 @@ where B: FromIterator<Event>
         let mut events = Vec::with_capacity(max_amount as usize);
 
         let result = {
-            let events_ptr = events.as_mut_slice().as_mut_ptr();
+            let events_ptr = events[..].as_mut_ptr();
 
             ll::SDL_PeepEvents(
                 events_ptr,
