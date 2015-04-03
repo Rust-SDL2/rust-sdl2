@@ -105,7 +105,6 @@ pub struct Subsystem<'sdl> {
     _marker: PhantomData<&'sdl Sdl>
 }
 
-#[unsafe_destructor]
 impl<'sdl> Drop for Subsystem<'sdl> {
     fn drop(&mut self) {
         unsafe { ll::SDL_QuitSubSystem(self.flags.bits()); }

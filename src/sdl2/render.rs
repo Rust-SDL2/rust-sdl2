@@ -862,7 +862,6 @@ pub struct Texture<'renderer> {
     _marker: PhantomData<&'renderer ()>
 }
 
-#[unsafe_destructor]
 impl<'renderer> Drop for Texture<'renderer> {
     fn drop(&mut self) {
         if self.owned {
