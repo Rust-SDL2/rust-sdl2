@@ -14,7 +14,7 @@ pub type SDL_bool = c_int;
 pub type SDL_EventState = uint8_t;
 pub const SDL_DISABLE: SDL_EventState = 0;
 pub const SDL_ENABLE: SDL_EventState = 1;
-pub const SDL_QUERY: SDL_EventState = -1;
+pub const SDL_QUERY: SDL_EventState = 0xFF;
 
 pub type SDL_SysWMmsg = c_void;
 
