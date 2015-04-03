@@ -407,7 +407,7 @@ impl<'a, CB> Drop for AudioDeviceLockGuard<'a, CB> {
     }
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct AudioCVT {
     raw: ll::SDL_AudioCVT
 }

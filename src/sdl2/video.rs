@@ -125,7 +125,7 @@ pub enum FullscreenType {
     FTDesktop = 0x00001001,
 }
 
-#[derive(PartialEq, Copy)]
+#[derive(PartialEq, Copy, Clone)]
 pub enum WindowPos {
     PosUndefined,
     PosCentered,
