@@ -2,6 +2,7 @@
 #![crate_type = "lib"]
 
 #![feature(optin_builtin_traits, core)]
+#![cfg_attr(test, feature(std_misc))]
 
 extern crate libc;
 #[macro_use]
