@@ -51,7 +51,7 @@ use std::ptr;
 use libc::{c_int, uint32_t, c_double, c_void};
 use rect::Point;
 use rect::Rect;
-use std::cell::{RefCell, RefMut, BorrowState};
+use std::cell::{RefCell, RefMut};
 use std::ffi::CStr;
 use std::num::FromPrimitive;
 use std::vec::Vec;
@@ -266,10 +266,7 @@ impl Renderer {
     /// }
     /// ```
     pub fn drawer(&self) -> RenderDrawer {
-        match self.drawer_borrow.borrow_state() {
-            BorrowState::Unused => RenderDrawer::new(self.raw, self.drawer_borrow.borrow_mut()),
-            _ => panic!("Renderer drawer already borrowed")
-        }
+        RenderDrawer::new(self.raw, self.drawer_borrow.borrow_mut())
     }
 
     /// Unwraps the window or surface the rendering context was created from.

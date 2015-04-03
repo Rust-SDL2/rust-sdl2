@@ -1,7 +1,7 @@
 #![crate_name = "sdl2"]
 #![crate_type = "lib"]
 
-#![feature(optin_builtin_traits, std_misc, core)]
+#![feature(optin_builtin_traits, core)]
 
 extern crate libc;
 #[macro_use]
