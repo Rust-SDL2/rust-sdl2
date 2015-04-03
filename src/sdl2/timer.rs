@@ -54,7 +54,6 @@ impl<'a> Timer<'a> {
     }
 }
 
-#[unsafe_destructor]
 impl<'a> Drop for Timer<'a> {
     fn drop(&mut self) {
         let ret = unsafe { ll::SDL_RemoveTimer(self.raw) };

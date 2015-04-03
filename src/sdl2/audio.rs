@@ -400,14 +400,13 @@ impl<'a, CB: 'a> DerefMut for AudioDeviceLockGuard<'a, CB> {
     fn deref_mut(&mut self) -> &mut CB { &mut self.device.userdata.callback }
 }
 
-#[unsafe_destructor]
 impl<'a, CB> Drop for AudioDeviceLockGuard<'a, CB> {
     fn drop(&mut self) {
         unsafe { ll::SDL_UnlockAudioDevice(self.device.device_id.id()) }
     }
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct AudioCVT {
     raw: ll::SDL_AudioCVT
 }

@@ -3,7 +3,7 @@ use std::num::ToPrimitive;
 
 use sys::keycode as ll;
 
-#[derive(PartialEq, Eq, FromPrimitive, Debug, Copy)]
+#[derive(PartialEq, Eq, FromPrimitive, Debug, Copy, Clone)]
 pub enum KeyCode {
     Unknown            = ll::SDLK_UNKNOWN as isize,
     Backspace          = ll::SDLK_BACKSPACE as isize,

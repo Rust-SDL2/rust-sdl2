@@ -156,7 +156,7 @@ pub fn get_event_state() -> bool {
 }
 
 /// Possible return values for `add_mapping`
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum MappingStatus {
     Added   = 1,
     Updated = 0,
