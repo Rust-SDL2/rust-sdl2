@@ -1,3 +1,4 @@
+#[cfg(feature = "no_std")]
 use core::prelude::*;
 use libc::{c_int, c_uint, c_void, uint8_t, uint32_t};
 use libc::{uint16_t, c_double, c_char};
