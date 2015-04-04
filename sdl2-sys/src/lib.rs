@@ -1,8 +1,9 @@
-#![feature(no_std, core)]
-#![no_std]
+#![cfg_attr(feature = "no_std", feature(no_std, core))]
+#![cfg_attr(feature = "no_std", no_std)]
 #![allow(non_camel_case_types)]
 
 extern crate libc;
+#[cfg(feature = "no_std")]
 extern crate core;
 
 pub mod scancode;

@@ -24,3 +24,4 @@ optional = true
 
 default = []
 use-pkgconfig = ["pkg-config"]
+no_std = []

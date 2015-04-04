@@ -2,8 +2,12 @@
 Rectangle Functions
  */
 
+#[cfg(feature = "no_std")]
 use core::prelude::*;
+#[cfg(feature = "no_std")]
 use core::intrinsics::transmute;
+#[cfg(not(feature = "no_std"))]
+use std::mem::transmute;
 use libc::c_int;
 
 /// A structure that defines a two dimensional point.
