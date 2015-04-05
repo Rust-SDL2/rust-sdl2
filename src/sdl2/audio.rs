@@ -201,22 +201,31 @@ extern "C" fn audio_callback_marshall<CB: AudioCallback>
 }
 
 pub struct AudioSpecDesired {
-    pub freq: i32,
-    pub channels: u8,
-    pub samples: u16
+    /// DSP frequency (samples per second). Set to None for the device's fallback frequency.
+    pub freq: Option<i32>,
+    /// Number of separate audio channels. Set to None for the device's fallback number of channels.
+    pub channels: Option<u8>,
+    /// Audio buffer size in samples (power of 2). Set to None for the device's fallback sample size.
+    pub samples: Option<u16>,
 }
 
 impl AudioSpecDesired {
-    fn convert_to_ll<CB: AudioCallback>(freq: i32, channels: u8, samples: u16, userdata: *mut CB) -> ll::SDL_AudioSpec {
+    fn convert_to_ll<CB: AudioCallback>(freq: Option<i32>, channels: Option<u8>, samples: Option<u16>, userdata: *mut CB) -> ll::SDL_AudioSpec {
         use std::mem::transmute;
+
+        if let Some(freq) = freq { assert!(freq > 0); }
+        if let Some(channels) = channels { assert!(channels > 0); }
+        if let Some(samples) = samples { assert!(samples > 0); }
+
+        // A value of 0 means "fallback" or "default".
 
         unsafe {
             ll::SDL_AudioSpec {
-                freq: freq,
+                freq: freq.unwrap_or(0),
                 format: <CB::Channel as AudioFormatNum>::get_audio_format(),
-                channels: channels,
+                channels: channels.unwrap_or(0),
                 silence: 0,
-                samples: samples,
+                samples: samples.unwrap_or(0),
                 padding: 0,
                 size: 0,
                 callback: Some(audio_callback_marshall::<CB>

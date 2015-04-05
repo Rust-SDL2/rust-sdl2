@@ -24,9 +24,9 @@ fn main() {
     let _sdl_context = sdl2::init(sdl2::INIT_AUDIO).unwrap();
 
     let desired_spec = AudioSpecDesired {
-        freq: 44100,
-        channels: 1,
-        samples: 0
+        freq: Some(44100),
+        channels: Some(1),  // mono
+        samples: None,      // default sample size
     };
 
     // None: use default device
