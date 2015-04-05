@@ -140,16 +140,11 @@ impl Drop for AudioSpecWAV {
 }
 
 pub trait AudioCallback: Send
-where Self::Channel: AudioFormatNum
+where Self::Channel: AudioFormatNum + 'static
 {
     type Channel;
 
     fn callback(&mut self, &mut [Self::Channel]);
-}
-
-/// The userdata as seen by the SDL callback.
-struct AudioCallbackUserdata<CB> {
-    callback: CB
 }
 
 /// A phantom type for retreiving the SDL_AudioFormat of a given generic type.
@@ -195,25 +190,24 @@ extern "C" fn audio_callback_marshall<CB: AudioCallback>
     use std::slice::from_raw_parts_mut;
     use std::mem::{size_of, transmute};
     unsafe {
-        let mut cb_userdata: &mut AudioCallbackUserdata<CB> = transmute(userdata);
+        let mut cb_userdata: &mut CB = transmute(userdata);
         let buf: &mut [CB::Channel] = from_raw_parts_mut(
             stream as *mut CB::Channel,
             len as usize / size_of::<CB::Channel>()
         );
 
-        cb_userdata.callback.callback(buf);
+        cb_userdata.callback(buf);
     }
 }
 
-pub struct AudioSpecDesired<CB: AudioCallback> {
+pub struct AudioSpecDesired {
     pub freq: i32,
     pub channels: u8,
-    pub samples: u16,
-    pub callback: CB,
+    pub samples: u16
 }
 
-impl<CB: AudioCallback> AudioSpecDesired<CB> {
-    fn convert_to_ll(freq: i32, channels: u8, samples: u16, userdata: &mut AudioCallbackUserdata<CB>) -> ll::SDL_AudioSpec {
+impl AudioSpecDesired {
+    fn convert_to_ll<CB: AudioCallback>(freq: i32, channels: u8, samples: u16, userdata: *mut CB) -> ll::SDL_AudioSpec {
         use std::mem::transmute;
 
         unsafe {
@@ -231,56 +225,6 @@ impl<CB: AudioCallback> AudioSpecDesired<CB> {
                          arg2: *mut uint8_t,
                          arg3: c_int)),
                 userdata: transmute(userdata)
-            }
-        }
-    }
-
-    fn callback_to_userdata(callback: CB) -> Box<AudioCallbackUserdata<CB>> {
-        Box::new(AudioCallbackUserdata {
-            callback: callback
-        })
-    }
-
-    /// Opens a new audio device given the desired parameters and callback.
-    /// Uses `SDL_OpenAudioDevice`.
-    pub fn open_audio_device(self, device: Option<&str>, iscapture: bool) -> SdlResult<AudioDevice<CB>> {
-        use std::mem::uninitialized;
-        use std::ptr::null;
-        use libc::c_char;
-
-        let mut userdata = AudioSpecDesired::callback_to_userdata(self.callback);
-        let desired = AudioSpecDesired::convert_to_ll(self.freq, self.channels, self.samples, &mut *userdata);
-
-        let mut obtained = unsafe { uninitialized::<ll::SDL_AudioSpec>() };
-        unsafe {
-            let device_cstr: Option<CString> = match device {
-                None => None,
-                Some(d) => Some(CString::new(d.as_bytes()).unwrap()),
-            };
-            let device_cstr_ptr: *const c_char = match device_cstr {
-                None => null(),
-                Some(ref s) => s.as_ptr()
-            };
-            let iscapture_flag = match iscapture { false => 0, true => 1 };
-            let device_id = ll::SDL_OpenAudioDevice(device_cstr_ptr, iscapture_flag, &desired, &mut obtained, 0);
-            match device_id {
-                0 => {
-                    Err(get_error())
-                },
-                id => {
-                    let device_id = match iscapture {
-                        true => AudioDeviceID::RecordingDevice(id),
-                        false => AudioDeviceID::PlaybackDevice(id)
-                    };
-
-                    let spec = AudioSpec::convert_from_ll(obtained);
-
-                    Ok(AudioDevice {
-                        device_id: device_id,
-                        spec: spec,
-                        userdata: userdata
-                    })
-                }
             }
         }
     }
@@ -312,15 +256,13 @@ impl AudioSpec {
 }
 
 enum AudioDeviceID {
-    PlaybackDevice(ll::SDL_AudioDeviceID),
-    RecordingDevice(ll::SDL_AudioDeviceID)
+    PlaybackDevice(ll::SDL_AudioDeviceID)
 }
 
 impl AudioDeviceID {
     fn id(&self) -> ll::SDL_AudioDeviceID {
         match self {
-            &AudioDeviceID::PlaybackDevice(id)  => id,
-            &AudioDeviceID::RecordingDevice(id) => id
+            &AudioDeviceID::PlaybackDevice(id)  => id
         }
     }
 }
@@ -333,24 +275,70 @@ impl Drop for AudioDeviceID {
 }
 
 /// Wraps SDL_AudioDeviceID and owns the callback data used by the audio device.
-pub struct AudioDevice<CB> {
+pub struct AudioDevice<CB: AudioCallback> {
     device_id: AudioDeviceID,
-    /// Every audio device corresponds to an SDL_AudioSpec.
-    spec: AudioSpec,
     /// Store the callback to keep it alive for the entire duration of `AudioDevice`.
-    userdata: Box<AudioCallbackUserdata<CB>>
+    userdata: Box<CB>
 }
 
-impl<CB> AudioDevice<CB> {
+impl<CB: AudioCallback> AudioDevice<CB> {
+    /// Opens a new audio device given the desired parameters and callback.
+    /// Uses `SDL_OpenAudioDevice`.
+    pub fn open_playback<F>(device: Option<&str>, spec: AudioSpecDesired, get_callback: F) -> SdlResult<AudioDevice<CB>>
+    where F: FnOnce(AudioSpec) -> CB
+    {
+        use std::mem;
+        use std::ptr::null;
+        use libc::c_char;
+
+        // SDL_OpenAudioDevice needs a userdata pointer, but we can't initialize the
+        // callback without the obtained AudioSpec.
+        // Create an uninitialized box that will be initialized after SDL_OpenAudioDevice.
+        let userdata: *mut CB = unsafe {
+            let b: Box<CB> = Box::new(mem::uninitialized());
+            mem::transmute(b)
+        };
+        let desired = AudioSpecDesired::convert_to_ll(spec.freq, spec.channels, spec.samples, userdata);
+
+        let mut obtained = unsafe { mem::uninitialized::<ll::SDL_AudioSpec>() };
+        unsafe {
+            let device_cstr: Option<CString> = match device {
+                None => None,
+                Some(d) => Some(CString::new(d.as_bytes()).unwrap())
+            };
+            let device_cstr_ptr: *const c_char = match device_cstr {
+                None => null(),
+                Some(ref s) => s.as_ptr()
+            };
+            let iscapture_flag = 0;
+            let device_id = ll::SDL_OpenAudioDevice(device_cstr_ptr, iscapture_flag, &desired, &mut obtained, 0);
+            match device_id {
+                0 => {
+                    Err(get_error())
+                },
+                id => {
+                    let device_id = AudioDeviceID::PlaybackDevice(id);
+                    let spec = AudioSpec::convert_from_ll(obtained);
+                    let mut userdata: Box<CB> = mem::transmute(userdata);
+
+                    let garbage = mem::replace(&mut userdata as &mut CB, get_callback(spec));
+                    mem::forget(garbage);
+
+                    Ok(AudioDevice {
+                        device_id: device_id,
+                        userdata: userdata
+                    })
+                }
+            }
+        }
+    }
+
     pub fn get_status(&self) -> AudioStatus {
         unsafe {
             let status = ll::SDL_GetAudioDeviceStatus(self.device_id.id());
             FromPrimitive::from_i32(status as i32).unwrap()
         }
     }
-
-    /// Get the obtained AudioSpec of the audio device.
-    pub fn get_spec(&self) -> &AudioSpec { &self.spec }
 
     /// Pauses playback of the audio device.
     pub fn pause(&self) {
@@ -380,27 +368,27 @@ impl<CB> AudioDevice<CB> {
     /// but the callback data will be dropped.
     pub fn close_and_get_callback(self) -> CB {
         drop(self.device_id);
-        self.userdata.callback
+        *self.userdata
     }
 }
 
 /// Similar to `std::sync::MutexGuard`, but for use with `AudioDevice::lock()`.
-pub struct AudioDeviceLockGuard<'a, CB: 'a> {
+pub struct AudioDeviceLockGuard<'a, CB> where CB: AudioCallback, CB: 'a {
     device: &'a mut AudioDevice<CB>
 }
 
-impl<'a, CB: 'a> !Send for AudioDeviceLockGuard<'a, CB> {}
+impl<'a, CB> !Send for AudioDeviceLockGuard<'a, CB> {}
 
-impl<'a, CB: 'a> Deref for AudioDeviceLockGuard<'a, CB> {
+impl<'a, CB: AudioCallback> Deref for AudioDeviceLockGuard<'a, CB> {
     type Target = CB;
-    fn deref(&self) -> &CB { &self.device.userdata.callback }
+    fn deref(&self) -> &CB { &self.device.userdata }
 }
 
-impl<'a, CB: 'a> DerefMut for AudioDeviceLockGuard<'a, CB> {
-    fn deref_mut(&mut self) -> &mut CB { &mut self.device.userdata.callback }
+impl<'a, CB: AudioCallback> DerefMut for AudioDeviceLockGuard<'a, CB> {
+    fn deref_mut(&mut self) -> &mut CB { &mut self.device.userdata }
 }
 
-impl<'a, CB> Drop for AudioDeviceLockGuard<'a, CB> {
+impl<'a, CB: AudioCallback> Drop for AudioDeviceLockGuard<'a, CB> {
     fn drop(&mut self) {
         unsafe { ll::SDL_UnlockAudioDevice(self.device.device_id.id()) }
     }
