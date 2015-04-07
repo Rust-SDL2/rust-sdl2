@@ -14,6 +14,7 @@ name = "sdl2_sys"
 path = "src/lib.rs"
 
 [dependencies]
+num = "0.1.22"
 libc = "*"
 
 [build-dependencies.pkg-config]

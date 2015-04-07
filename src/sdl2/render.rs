@@ -53,7 +53,7 @@ use rect::Point;
 use rect::Rect;
 use std::cell::{RefCell, RefMut};
 use std::ffi::CStr;
-use std::num::FromPrimitive;
+use num::FromPrimitive;
 use std::vec::Vec;
 use std::marker::PhantomData;
 
@@ -65,11 +65,26 @@ pub enum RenderDriverIndex {
     Index(i32)
 }
 
-#[derive(Copy, Clone, PartialEq, FromPrimitive)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum TextureAccess {
     Static = ll::SDL_TEXTUREACCESS_STATIC as isize,
     Streaming = ll::SDL_TEXTUREACCESS_STREAMING as isize,
     Target = ll::SDL_TEXTUREACCESS_TARGET as isize
+}
+
+impl FromPrimitive for TextureAccess {
+    fn from_i64(n: i64) -> Option<TextureAccess> {
+        use self::TextureAccess::*;
+
+        Some( match n as ll::SDL_TextureAccess {
+            ll::SDL_TEXTUREACCESS_STATIC    => Static,
+            ll::SDL_TEXTUREACCESS_STREAMING => Streaming,
+            ll::SDL_TEXTUREACCESS_TARGET    => Target,
+            _                               => return None,
+        })
+    }
+
+    fn from_u64(n: u64) -> Option<TextureAccess> { FromPrimitive::from_i64(n as i64) }
 }
 
 bitflags! {
@@ -92,12 +107,28 @@ pub struct RendererInfo {
     pub max_texture_height: i32
 }
 
-#[derive(Copy, Clone, PartialEq, FromPrimitive)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum BlendMode {
     None = ll::SDL_BLENDMODE_NONE as isize,
     Blend = ll::SDL_BLENDMODE_BLEND as isize,
     Add = ll::SDL_BLENDMODE_ADD as isize,
     Mod = ll::SDL_BLENDMODE_MOD as isize
+}
+
+impl FromPrimitive for BlendMode {
+    fn from_i64(n: i64) -> Option<BlendMode> {
+        use self::BlendMode::*;
+
+        Some( match n as ll::SDL_BlendMode {
+            ll::SDL_BLENDMODE_NONE  => None,
+            ll::SDL_BLENDMODE_BLEND => Blend,
+            ll::SDL_BLENDMODE_ADD   => Add,
+            ll::SDL_BLENDMODE_MOD   => Mod,
+            _                       => return Option::None,
+        })
+    }
+
+    fn from_u64(n: u64) -> Option<BlendMode> { FromPrimitive::from_i64(n as i64) }
 }
 
 impl RendererInfo {

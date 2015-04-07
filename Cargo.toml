@@ -14,6 +14,7 @@ name       = "sdl2"
 path       = "src/sdl2/lib.rs"
 
 [dependencies]
+num = "0.1.22"
 bitflags = "0.1"
 libc = "*"
 rand = "*"

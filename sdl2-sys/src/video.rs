@@ -4,6 +4,7 @@ use surface::SDL_Surface;
 #[cfg(feature = "no_std")]
 use core::prelude::*;
 use libc::{c_void, c_int, c_float, c_char, uint16_t, uint32_t};
+use num::FromPrimitive;
 
 pub type SDL_Rect = Rect;
 pub type SDL_bool = c_int;
@@ -66,7 +67,7 @@ pub enum SDL_WindowEventID {
 
 pub type SDL_GLContext = *const c_void;
 
-#[derive(Copy, Clone, FromPrimitive)]
+#[derive(Copy, Clone)]
 #[repr(C)]
 pub enum SDL_GLattr {
     SDL_GL_RED_SIZE = 0,
@@ -93,6 +94,42 @@ pub enum SDL_GLattr {
     SDL_GL_CONTEXT_PROFILE_MASK = 21,
     SDL_GL_SHARE_WITH_CURRENT_CONTEXT = 22,
     SDL_GL_FRAMEBUFFER_SRGB_CAPABLE = 23
+}
+
+impl FromPrimitive for SDL_GLattr {
+    fn from_i64(n: i64) -> Option<SDL_GLattr> {
+        use self::SDL_GLattr::*;
+
+        Some( match n {
+            0  => SDL_GL_RED_SIZE,
+            1  => SDL_GL_GREEN_SIZE,
+            2  => SDL_GL_BLUE_SIZE,
+            3  => SDL_GL_ALPHA_SIZE,
+            4  => SDL_GL_BUFFER_SIZE,
+            5  => SDL_GL_DOUBLEBUFFER,
+            6  => SDL_GL_DEPTH_SIZE,
+            7  => SDL_GL_STENCIL_SIZE,
+            8  => SDL_GL_ACCUM_RED_SIZE,
+            9  => SDL_GL_ACCUM_GREEN_SIZE,
+            10 => SDL_GL_ACCUM_BLUE_SIZE,
+            11 => SDL_GL_ACCUM_ALPHA_SIZE,
+            12 => SDL_GL_STEREO,
+            13 => SDL_GL_MULTISAMPLEBUFFERS,
+            14 => SDL_GL_MULTISAMPLESAMPLES,
+            15 => SDL_GL_ACCELERATED_VISUAL,
+            16 => SDL_GL_RETAINED_BACKING,
+            17 => SDL_GL_CONTEXT_MAJOR_VERSION,
+            18 => SDL_GL_CONTEXT_MINOR_VERSION,
+            19 => SDL_GL_CONTEXT_EGL,
+            20 => SDL_GL_CONTEXT_FLAGS,
+            21 => SDL_GL_CONTEXT_PROFILE_MASK,
+            22 => SDL_GL_SHARE_WITH_CURRENT_CONTEXT,
+            23 => SDL_GL_FRAMEBUFFER_SRGB_CAPABLE,
+            _  => return None,
+        })
+    }
+
+    fn from_u64(n: u64) -> Option<SDL_GLattr> { FromPrimitive::from_i64(n as i64) }
 }
 
 #[derive(Copy, Clone)]

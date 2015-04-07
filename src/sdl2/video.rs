@@ -7,7 +7,7 @@ use rect::Rect;
 use surface::Surface;
 use pixels;
 use SdlResult;
-use std::num::FromPrimitive;
+use num::FromPrimitive;
 
 use get_error;
 

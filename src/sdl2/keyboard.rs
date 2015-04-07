@@ -1,6 +1,6 @@
+use num::FromPrimitive;
 use std::collections::HashMap;
 use std::ffi::{CStr, CString, NulError};
-use std::num::FromPrimitive;
 use std::ptr;
 
 use keycode::KeyCode;

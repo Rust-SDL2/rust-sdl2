@@ -49,10 +49,11 @@
 //! sdl2::timer::delay(2000);
 //! ```
 use std::ffi::{CStr, CString};
-use std::num::FromPrimitive;
+use num::FromPrimitive;
 use libc::{c_int, c_void, uint8_t};
 use std::ops::{Deref, DerefMut};
 use std::path::Path;
+use std::marker::PhantomData;
 
 use get_error;
 use rwops::RWops;
@@ -82,11 +83,26 @@ pub const AUDIOS32SYS : AudioFormat = ll::AUDIO_S32SYS;
 pub const AUDIOF32SYS : AudioFormat = ll::AUDIO_F32SYS;
 
 #[repr(C)]
-#[derive(Copy, Clone, PartialEq, Hash, Debug, FromPrimitive)]
+#[derive(Copy, Clone, PartialEq, Hash, Debug)]
 pub enum AudioStatus {
     Stopped = ll::SDL_AUDIO_STOPPED as isize,
     Playing = ll::SDL_AUDIO_PLAYING as isize,
     Paused  = ll::SDL_AUDIO_PAUSED  as isize,
+}
+
+impl FromPrimitive for AudioStatus {
+    fn from_i64(n: i64) -> Option<AudioStatus> {
+        use self::AudioStatus::*;
+
+        Some( match n as ll::SDL_AudioStatus {
+            ll::SDL_AUDIO_STOPPED => Stopped,
+            ll::SDL_AUDIO_PLAYING => Playing,
+            ll::SDL_AUDIO_PAUSED  => Paused,
+            _                     => return None,
+        })
+    }
+
+    fn from_u64(n: u64) -> Option<AudioStatus> { FromPrimitive::from_i64(n as i64) }
 }
 
 pub fn get_num_audio_drivers() -> i32 {
@@ -416,7 +432,8 @@ impl<CB: AudioCallback> AudioDevice<CB> {
     pub fn lock<'a>(&'a mut self) -> AudioDeviceLockGuard<'a, CB> {
         unsafe { ll::SDL_LockAudioDevice(self.device_id.id()) };
         AudioDeviceLockGuard {
-            device: self
+            device:  self,
+            _nosend: PhantomData
         }
     }
 
@@ -432,10 +449,9 @@ impl<CB: AudioCallback> AudioDevice<CB> {
 
 /// Similar to `std::sync::MutexGuard`, but for use with `AudioDevice::lock()`.
 pub struct AudioDeviceLockGuard<'a, CB> where CB: AudioCallback, CB: 'a {
-    device: &'a mut AudioDevice<CB>
+    device: &'a mut AudioDevice<CB>,
+    _nosend: PhantomData<*mut ()>
 }
-
-impl<'a, CB> !Send for AudioDeviceLockGuard<'a, CB> {}
 
 impl<'a, CB: AudioCallback> Deref for AudioDeviceLockGuard<'a, CB> {
     type Target = CB;
@@ -481,7 +497,7 @@ impl AudioCVT {
         //!
         //! The `src` vector is adjusted to the capacity necessary to perform
         //! the conversion in place; then it is passed to the SDL library.
-        use std::num;
+        use num::traits as num;
         unsafe {
             if self.raw.needed != 0 {
                 let mut raw = self.raw;
