@@ -1,7 +1,7 @@
 extern crate sdl2;
 extern crate rand;
 
-use sdl2::audio::{AudioCallback, AudioSpecDesired};
+use sdl2::audio::{AudioCallback, AudioDevice, AudioSpecDesired};
 
 struct MyCallback {
     volume: f32
@@ -24,21 +24,18 @@ fn main() {
     let _sdl_context = sdl2::init(sdl2::INIT_AUDIO).unwrap();
 
     let desired_spec = AudioSpecDesired {
-        freq: 44100,
-        channels: 1,
-        samples: 0,
-        callback: MyCallback { volume: 0.5 },
+        freq: Some(44100),
+        channels: Some(1),  // mono
+        samples: None,      // default sample size
     };
 
     // None: use default device
-    // false: Playback
-    let mut device = match desired_spec.open_audio_device(None, false) {
-        Ok(device) => device,
-        Err(s) => panic!("{:?}", s)
-    };
+    let mut device = AudioDevice::open_playback(None, desired_spec, |spec| {
+        // Show obtained AudioSpec
+        println!("{:?}", spec);
 
-    // Show obtained AudioSpec
-    println!("{:?}", device.get_spec());
+        MyCallback { volume: 0.5 }
+    }).unwrap();
 
     // Start playback
     device.resume();
