@@ -50,8 +50,7 @@ static IS_SDL_CONTEXT_ALIVE: AtomicBool = ATOMIC_BOOL_INIT;
 /// This guarantees that the only way to call event-pumping functions is on
 /// the main thread.
 pub struct Sdl {
-    _nosend: PhantomData<*mut ()>,
-    _nosync: PhantomData<&'static mut ()>,
+    _nosyncsend: PhantomData<*mut ()>
 }
 
 impl Sdl {
@@ -136,8 +135,7 @@ pub fn init(flags: InitFlag) -> SdlResult<Sdl> {
         } else {
             if ll::SDL_Init(flags.bits()) == 0 {
                 Ok(Sdl {
-                    _nosend: PhantomData,
-                    _nosync: PhantomData
+                    _nosyncsend: PhantomData
                 })
             } else {
                 IS_SDL_CONTEXT_ALIVE.swap(false, Ordering::Relaxed);
