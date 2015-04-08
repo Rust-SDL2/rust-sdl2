@@ -70,7 +70,7 @@ download through Crates.io:
 
 ```toml
     [dependencies]
-    sdl2 = "0.0.35"
+    sdl2 = "0.1.0"
 ```
 
 Alternatively, pull it from GitHub
