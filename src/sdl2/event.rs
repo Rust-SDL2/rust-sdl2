@@ -418,8 +418,7 @@ pub enum Event {
     User {
         timestamp: u32,
         window_id: u32,
-        // sdl-sys uses _type instead of type_, so we follow that convention (for now?)
-        _type: u32,
+        type_: u32,
         code: i32
     },
 
@@ -481,9 +480,9 @@ impl Event {
         let mut ret = unsafe { mem::uninitialized() };
         match self {
             // just ignore timestamp
-            Event::User { window_id, _type, code, .. } => {
+            Event::User { window_id, type_, code, .. } => {
                 let event = ll::SDL_UserEvent {
-                    _type: _type as uint32_t,
+                    type_: type_ as uint32_t,
                     timestamp: 0,
                     windowID: window_id,
                     code: code as i32,
@@ -503,7 +502,7 @@ impl Event {
     }
 
     fn from_ll(raw: &ll::SDL_Event) -> Event {
-        let raw_type = raw._type();
+        let raw_type = raw.type_();
         let raw_type = if raw_type.is_null() {
             panic!("Event payload is null")
         } else {
@@ -886,7 +885,7 @@ impl Event {
 
                     Event::Unknown {
                         timestamp: event.timestamp,
-                        type_: event._type
+                        type_: event.type_
                     }
                 } else {
                     let ref event = *raw.user();
@@ -894,7 +893,7 @@ impl Event {
                     Event::User {
                         timestamp: event.timestamp,
                         window_id: event.windowID,
-                        _type: raw_type,
+                        type_: raw_type,
                         code: event.code
                     }
                 }
