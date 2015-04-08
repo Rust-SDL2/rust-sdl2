@@ -71,13 +71,9 @@ extern "C" fn c_timer_callback(_interval: u32, param: *const c_void) -> uint32_t
 }
 
 
-#[cfg(test)] use std::sync::{StaticMutex, MUTEX_INIT};
-#[cfg(test)] static TIMER_INIT_LOCK: StaticMutex = MUTEX_INIT;
-
-#[test]
+#[cfg(test)]
 fn test_timer_runs_multiple_times() {
     use std::sync::{Arc, Mutex};
-    let _running = TIMER_INIT_LOCK.lock().unwrap();
     ::sdl::init(::sdl::INIT_TIMER).unwrap();
 
     let local_num = Arc::new(Mutex::new(0));
@@ -99,10 +95,9 @@ fn test_timer_runs_multiple_times() {
     assert_eq!(*num, 9);                 // it should have incremented at least 10 times...
 }
 
-#[test]
+#[cfg(test)]
 fn test_timer_runs_at_least_once() {
     use std::sync::{Arc, Mutex};
-    let _running = TIMER_INIT_LOCK.lock().unwrap();
     ::sdl::init(::sdl::INIT_TIMER).unwrap();
 
     let local_flag = Arc::new(Mutex::new(false));
@@ -118,10 +113,9 @@ fn test_timer_runs_at_least_once() {
     assert_eq!(*flag, true);
 }
 
-#[test]
+#[cfg(test)]
 fn test_timer_can_be_recreated() {
     use std::sync::{Arc, Mutex};
-    let _running = TIMER_INIT_LOCK.lock().unwrap();
     ::sdl::init(::sdl::INIT_TIMER).unwrap();
 
     let local_num = Arc::new(Mutex::new(0));
@@ -145,4 +139,11 @@ fn test_timer_can_be_recreated() {
     // check that timer was incremented twice
     let num = local_num.lock().unwrap();
     assert_eq!(*num, 2);
+}
+
+#[test]
+fn test_timer() {
+    test_timer_runs_multiple_times();
+    test_timer_runs_at_least_once();
+    test_timer_can_be_recreated();
 }

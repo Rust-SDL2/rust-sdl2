@@ -1,8 +1,6 @@
 #![crate_name = "sdl2"]
 #![crate_type = "lib"]
 
-#![cfg_attr(test, feature(std_misc))]
-
 extern crate num;
 extern crate libc;
 #[macro_use]
