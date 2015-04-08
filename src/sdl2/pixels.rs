@@ -1,5 +1,7 @@
 extern crate rand;
 
+use num::FromPrimitive;
+
 use sys::pixels as ll;
 
 #[derive(PartialEq)] #[allow(raw_pointer_derive, missing_copy_implementations)]
@@ -62,7 +64,7 @@ pub struct PixelFormat {
 impl_raw_accessors!((PixelFormat, *const ll::SDL_PixelFormat));
 impl_raw_constructor!((PixelFormat, PixelFormat (raw: *const ll::SDL_PixelFormat)));
 
-#[derive(Copy, Clone, PartialEq, Debug, FromPrimitive)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub enum PixelFormatEnum {
     Unknown = ll::SDL_PIXELFORMAT_UNKNOWN as isize,
     Index1LSB = ll::SDL_PIXELFORMAT_INDEX1LSB as isize,
@@ -190,4 +192,52 @@ impl PixelFormatEnum {
                 => panic!("not supported format: {:?}", *self),
         }
     }
+}
+
+impl FromPrimitive for PixelFormatEnum {
+    fn from_i64(n: i64) -> Option<PixelFormatEnum> {
+        use self::PixelFormatEnum::*;
+
+        Some( match n as ll::SDL_PixelFormatEnum {
+            ll::SDL_PIXELFORMAT_UNKNOWN     => Unknown,
+            ll::SDL_PIXELFORMAT_INDEX1LSB   => Index1LSB,
+            ll::SDL_PIXELFORMAT_INDEX1MSB   => Index1MSB,
+            ll::SDL_PIXELFORMAT_INDEX4LSB   => Index4LSB,
+            ll::SDL_PIXELFORMAT_INDEX4MSB   => Index4MSB,
+            ll::SDL_PIXELFORMAT_INDEX8      => Index8,
+            ll::SDL_PIXELFORMAT_RGB332      => RGB332,
+            ll::SDL_PIXELFORMAT_RGB444      => RGB444,
+            ll::SDL_PIXELFORMAT_RGB555      => RGB555,
+            ll::SDL_PIXELFORMAT_BGR555      => BGR555,
+            ll::SDL_PIXELFORMAT_ARGB4444    => ARGB4444,
+            ll::SDL_PIXELFORMAT_RGBA4444    => RGBA4444,
+            ll::SDL_PIXELFORMAT_ABGR4444    => ABGR4444,
+            ll::SDL_PIXELFORMAT_BGRA4444    => BGRA4444,
+            ll::SDL_PIXELFORMAT_ARGB1555    => ARGB1555,
+            ll::SDL_PIXELFORMAT_RGBA5551    => RGBA5551,
+            ll::SDL_PIXELFORMAT_ABGR1555    => ABGR1555,
+            ll::SDL_PIXELFORMAT_BGRA5551    => BGRA5551,
+            ll::SDL_PIXELFORMAT_RGB565      => RGB565,
+            ll::SDL_PIXELFORMAT_BGR565      => BGR565,
+            ll::SDL_PIXELFORMAT_RGB24       => RGB24,
+            ll::SDL_PIXELFORMAT_BGR24       => BGR24,
+            ll::SDL_PIXELFORMAT_RGB888      => RGB888,
+            ll::SDL_PIXELFORMAT_RGBX8888    => RGBX8888,
+            ll::SDL_PIXELFORMAT_BGR888      => BGR888,
+            ll::SDL_PIXELFORMAT_BGRX8888    => BGRX8888,
+            ll::SDL_PIXELFORMAT_ARGB8888    => ARGB8888,
+            ll::SDL_PIXELFORMAT_RGBA8888    => RGBA8888,
+            ll::SDL_PIXELFORMAT_ABGR8888    => ABGR8888,
+            ll::SDL_PIXELFORMAT_BGRA8888    => BGRA8888,
+            ll::SDL_PIXELFORMAT_ARGB2101010 => ARGB2101010,
+            ll::SDL_PIXELFORMAT_YV12        => YV12,
+            ll::SDL_PIXELFORMAT_IYUV        => IYUV,
+            ll::SDL_PIXELFORMAT_YUY2        => YUY2,
+            ll::SDL_PIXELFORMAT_UYVY        => UYVY,
+            ll::SDL_PIXELFORMAT_YVYU        => YVYU,
+            _                               => return None,
+        })
+    }
+
+    fn from_u64(n: u64) -> Option<PixelFormatEnum> { FromPrimitive::from_i64(n as i64) }
 }

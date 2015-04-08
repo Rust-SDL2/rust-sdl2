@@ -5,11 +5,11 @@ Event Handling
 use std::ffi::CStr;
 use std::mem;
 use libc::{c_int, c_void, uint32_t};
-use std::num::FromPrimitive;
+use num::FromPrimitive;
 use std::ptr;
 use std::borrow::ToOwned;
 use std::iter::FromIterator;
-use std::marker::{NoCopy, PhantomData};
+use std::marker::PhantomData;
 
 use controller;
 use controller::{Axis, Button};
@@ -28,7 +28,7 @@ use SdlResult;
 use sys::event as ll;
 
 /// Types of events that can be delivered.
-#[derive(Copy, Clone, FromPrimitive)]
+#[derive(Copy, Clone)]
 #[repr(u32)]
 pub enum EventType {
     First = ll::SDL_FIRSTEVENT,
@@ -81,6 +81,68 @@ pub enum EventType {
 
     User = ll::SDL_USEREVENT,
     Last = ll::SDL_LASTEVENT,
+}
+
+impl FromPrimitive for EventType {
+    fn from_i64(n: i64) -> Option<EventType> {
+        use self::EventType::*;
+
+        Some( match n as ll::SDL_EventType {
+            ll::SDL_FIRSTEVENT => First,
+
+            ll::SDL_QUIT => Quit,
+            ll::SDL_APP_TERMINATING => AppTerminating,
+            ll::SDL_APP_LOWMEMORY => AppLowMemory,
+            ll::SDL_APP_WILLENTERBACKGROUND => AppWillEnterBackground,
+            ll::SDL_APP_DIDENTERBACKGROUND => AppDidEnterBackground,
+            ll::SDL_APP_WILLENTERFOREGROUND => AppWillEnterForeground,
+            ll::SDL_APP_DIDENTERFOREGROUND => AppDidEnterForeground,
+
+            ll::SDL_WINDOWEVENT => Window,
+
+            ll::SDL_KEYDOWN => KeyDown,
+            ll::SDL_KEYUP => KeyUp,
+            ll::SDL_TEXTEDITING => TextEditing,
+            ll::SDL_TEXTINPUT => TextInput,
+
+            ll::SDL_MOUSEMOTION => MouseMotion,
+            ll::SDL_MOUSEBUTTONDOWN => MouseButtonDown,
+            ll::SDL_MOUSEBUTTONUP => MouseButtonUp,
+            ll::SDL_MOUSEWHEEL => MouseWheel,
+
+            ll::SDL_JOYAXISMOTION => JoyAxisMotion,
+            ll::SDL_JOYBALLMOTION => JoyBallMotion,
+            ll::SDL_JOYHATMOTION => JoyHatMotion,
+            ll::SDL_JOYBUTTONDOWN => JoyButtonDown,
+            ll::SDL_JOYBUTTONUP => JoyButtonUp,
+            ll::SDL_JOYDEVICEADDED => JoyDeviceAdded,
+            ll::SDL_JOYDEVICEREMOVED => JoyDeviceRemoved,
+
+            ll::SDL_CONTROLLERAXISMOTION => ControllerAxisMotion,
+            ll::SDL_CONTROLLERBUTTONDOWN => ControllerButtonDown,
+            ll::SDL_CONTROLLERBUTTONUP => ControllerButtonUp,
+            ll::SDL_CONTROLLERDEVICEADDED => ControllerDeviceAdded,
+            ll::SDL_CONTROLLERDEVICEREMOVED => ControllerDeviceRemoved,
+            ll::SDL_CONTROLLERDEVICEREMAPPED => ControllerDeviceRemapped,
+
+            ll::SDL_FINGERDOWN => FingerDown,
+            ll::SDL_FINGERUP => FingerUp,
+            ll::SDL_FINGERMOTION => FingerMotion,
+            ll::SDL_DOLLARGESTURE => DollarGesture,
+            ll::SDL_DOLLARRECORD => DollarRecord,
+            ll::SDL_MULTIGESTURE => MultiGesture,
+
+            ll::SDL_CLIPBOARDUPDATE => ClipboardUpdate,
+            ll::SDL_DROPFILE => DropFile,
+
+            ll::SDL_USEREVENT => User,
+            ll::SDL_LASTEVENT => Last,
+
+            _ => return None,
+        })
+    }
+
+    fn from_u64(n: u64) -> Option<EventType> { FromPrimitive::from_i64(n as i64) }
 }
 
 #[derive(PartialEq, Copy, Clone, Debug)]
@@ -843,14 +905,12 @@ impl Event {
 
 /// A thread-safe type that encapsulates SDL event-pumping functions.
 pub struct EventPump<'sdl> {
-    _marker: NoCopy,
-    _sdl: PhantomData<&'sdl ()>
+    _sdl:    PhantomData<&'sdl ()>,
+
+    // Prevents the event pump from moving to other threads.
+    // SDL events can only be pumped on the main thread.
+    _nosend: PhantomData<*mut ()>
 }
-
-/// Prevents the event pump from moving to other threads.
-/// SDL events can only be pumped on the main thread.
-impl<'sdl> !Send for EventPump<'sdl> {}
-
 impl<'sdl> EventPump<'sdl> {
     /// Polls for currently pending events.
     ///
@@ -936,8 +996,8 @@ impl<'sdl> EventPump<'sdl> {
     #[doc(hidden)]
     pub unsafe fn _unchecked_new<'a>() -> EventPump<'a> {
         EventPump {
-            _marker: NoCopy,
-            _sdl: PhantomData
+            _sdl: PhantomData,
+            _nosend: PhantomData,
         }
     }
 }
