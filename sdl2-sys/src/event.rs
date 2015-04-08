@@ -65,14 +65,14 @@ pub const SDL_LASTEVENT: SDL_EventType = 65535;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_CommonEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
 }
 
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_WindowEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub windowID: uint32_t,
     pub event: uint8_t,
@@ -86,7 +86,7 @@ pub struct SDL_WindowEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_KeyboardEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub windowID: uint32_t,
     pub state: uint8_t,
@@ -99,7 +99,7 @@ pub struct SDL_KeyboardEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_TextEditingEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub windowID: uint32_t,
     pub text: [c_char; 32],
@@ -110,7 +110,7 @@ pub struct SDL_TextEditingEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_TextInputEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub windowID: uint32_t,
     pub text: [c_char; 32],
@@ -119,7 +119,7 @@ pub struct SDL_TextInputEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_MouseMotionEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub windowID: uint32_t,
     pub which: uint32_t,
@@ -133,7 +133,7 @@ pub struct SDL_MouseMotionEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_MouseButtonEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub windowID: uint32_t,
     pub which: uint32_t,
@@ -148,7 +148,7 @@ pub struct SDL_MouseButtonEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_MouseWheelEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub windowID: uint32_t,
     pub which: uint32_t,
@@ -159,7 +159,7 @@ pub struct SDL_MouseWheelEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_JoyAxisEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub which: int32_t,
     pub axis: uint8_t,
@@ -173,7 +173,7 @@ pub struct SDL_JoyAxisEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_JoyBallEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub which: int32_t,
     pub ball: uint8_t,
@@ -187,7 +187,7 @@ pub struct SDL_JoyBallEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_JoyHatEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub which: int32_t,
     pub hat: uint8_t,
@@ -199,7 +199,7 @@ pub struct SDL_JoyHatEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_JoyButtonEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub which: int32_t,
     pub button: uint8_t,
@@ -211,7 +211,7 @@ pub struct SDL_JoyButtonEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_JoyDeviceEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub which: int32_t,
 }
@@ -219,7 +219,7 @@ pub struct SDL_JoyDeviceEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_ControllerAxisEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub which: int32_t,
     pub axis: uint8_t,
@@ -233,7 +233,7 @@ pub struct SDL_ControllerAxisEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_ControllerButtonEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub which: int32_t,
     pub button: uint8_t,
@@ -245,7 +245,7 @@ pub struct SDL_ControllerButtonEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_ControllerDeviceEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub which: int32_t,
 }
@@ -253,7 +253,7 @@ pub struct SDL_ControllerDeviceEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_TouchFingerEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub touchId: SDL_TouchID,
     pub fingerId: SDL_FingerID,
@@ -267,7 +267,7 @@ pub struct SDL_TouchFingerEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_MultiGestureEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub touchId: SDL_TouchID,
     pub dTheta: c_float,
@@ -281,7 +281,7 @@ pub struct SDL_MultiGestureEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_DollarGestureEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub touchId: SDL_TouchID,
     pub gestureId: SDL_GestureID,
@@ -294,7 +294,7 @@ pub struct SDL_DollarGestureEvent {
 #[allow(missing_copy_implementations)]
 #[repr(C)]
 pub struct SDL_DropEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub file: *const c_char,
 }
@@ -302,21 +302,21 @@ pub struct SDL_DropEvent {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_QuitEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
 }
 
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_OSEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
 }
 
 #[allow(missing_copy_implementations)]
 #[repr(C)]
 pub struct SDL_UserEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub windowID: uint32_t,
     pub code: int32_t,
@@ -327,7 +327,7 @@ pub struct SDL_UserEvent {
 #[allow(missing_copy_implementations)]
 #[repr(C)]
 pub struct SDL_SysWMEvent {
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     pub timestamp: uint32_t,
     pub msg: *const SDL_SysWMmsg,
 }
@@ -339,7 +339,7 @@ pub struct SDL_Event {
 }
 
 impl SDL_Event {
-    pub fn _type(&self) -> *const uint32_t {
+    pub fn type_(&self) -> *const uint32_t {
         self.data.as_ptr() as *const _
     }
 
@@ -449,10 +449,10 @@ extern "C" {
     pub fn SDL_PeepEvents(events: *mut SDL_Event, numevents: c_int,
                                 action: SDL_eventaction,
                                 minType: uint32_t, maxType: uint32_t) -> c_int;
-    pub fn SDL_HasEvent(_type: uint32_t) -> SDL_bool;
+    pub fn SDL_HasEvent(type_: uint32_t) -> SDL_bool;
     pub fn SDL_HasEvents(minType: uint32_t, maxType: uint32_t) ->
               SDL_bool;
-    pub fn SDL_FlushEvent(_type: uint32_t);
+    pub fn SDL_FlushEvent(type_: uint32_t);
     pub fn SDL_FlushEvents(minType: uint32_t, maxType: uint32_t);
     pub fn SDL_PollEvent(event: *mut SDL_Event) -> c_int;
     pub fn SDL_WaitEvent(event: *mut SDL_Event) -> c_int;
@@ -466,6 +466,6 @@ extern "C" {
     pub fn SDL_AddEventWatch(filter: SDL_EventFilter, userdata: *const c_void);
     pub fn SDL_DelEventWatch(filter: SDL_EventFilter, userdata: *const c_void);
     pub fn SDL_FilterEvents(filter: SDL_EventFilter, userdata: *const c_void);
-    pub fn SDL_EventState(_type: uint32_t, state: SDL_EventState) -> SDL_EventState;
+    pub fn SDL_EventState(type_: uint32_t, state: SDL_EventState) -> SDL_EventState;
     pub fn SDL_RegisterEvents(numevents: c_int) -> uint32_t;
 }

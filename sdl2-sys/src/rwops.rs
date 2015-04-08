@@ -23,7 +23,7 @@ pub struct SDL_RWops {
     pub write: extern "C" fn(context: *const SDL_RWops, ptr: *const c_void,
                              size: size_t, maxnum: size_t) -> size_t,
     pub close: extern "C" fn(context: *const SDL_RWops) -> c_int,
-    pub _type: uint32_t,
+    pub type_: uint32_t,
     hidden: SDL_RWops_Anon
 }
 

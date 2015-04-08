@@ -25,14 +25,14 @@ pub type SDL_Haptic = c_void;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_HapticDirection {
-    pub _type: uint8_t,
+    pub type_: uint8_t,
     pub dir: [int32_t; 3],
 }
 
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_HapticConstant {
-    pub _type: uint16_t,
+    pub type_: uint16_t,
     pub direction: SDL_HapticDirection,
     pub length: uint32_t,
     pub delay: uint16_t,
@@ -48,7 +48,7 @@ pub struct SDL_HapticConstant {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_HapticPeriodic {
-    pub _type: uint16_t,
+    pub type_: uint16_t,
     pub direction: SDL_HapticDirection,
     pub length: uint32_t,
     pub delay: uint16_t,
@@ -67,7 +67,7 @@ pub struct SDL_HapticPeriodic {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_HapticCondition {
-    pub _type: uint16_t,
+    pub type_: uint16_t,
     pub direction: SDL_HapticDirection,
     pub length: uint32_t,
     pub delay: uint16_t,
@@ -84,7 +84,7 @@ pub struct SDL_HapticCondition {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_HapticRamp {
-    pub _type: uint16_t,
+    pub type_: uint16_t,
     pub length: uint32_t,
     pub delay: uint16_t,
     pub button: uint16_t,
@@ -100,7 +100,7 @@ pub struct SDL_HapticRamp {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_HapticLeftRight {
-    pub _type: uint16_t,
+    pub type_: uint16_t,
     pub length: uint32_t,
     pub large_magnitude: uint16_t,
     pub small_magnitude: uint16_t,
@@ -109,7 +109,7 @@ pub struct SDL_HapticLeftRight {
 #[allow(missing_copy_implementations)]
 #[repr(C)]
 pub struct SDL_HapticCustom {
-    pub _type: uint16_t,
+    pub type_: uint16_t,
     pub direction: SDL_HapticDirection,
     pub length: uint32_t,
     pub delay: uint16_t,
@@ -132,7 +132,7 @@ pub struct SDL_HapticEffect {
 }
 
 impl SDL_HapticEffect {
-    pub fn _type(&self) -> *const uint16_t {
+    pub fn type_(&self) -> *const uint16_t {
         self.data.as_ptr() as *const _
     }
 
