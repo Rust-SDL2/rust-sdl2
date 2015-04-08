@@ -14,7 +14,6 @@ install:
 script:
     - cargo build -v
     - cargo build -v --features "use-pkgconfig"
-    - cd sdl2-sys && cargo build --features no_std
     - cargo test -v
     - cargo doc -v
 after_success:
