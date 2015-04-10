@@ -38,8 +38,9 @@
 //! None of the draw methods in `RenderDrawer` are expected to fail.
 //! If they do, a panic is raised and the program is aborted.
 
+use event::EventPump;
 use video;
-use video::Window;
+use video::{Window, WindowProperties};
 use surface;
 use surface::Surface;
 use pixels;
@@ -246,6 +247,31 @@ impl Renderer {
     pub fn get_parent_as_surface(&self) -> Option<&Surface> {
         match self.get_parent() {
             &RendererParent::Surface(ref surface) => Some(surface),
+            _ => None
+        }
+    }
+
+    /// Accesses the Window properties, such as the position, size and title of a Window.
+    /// Returns None if the renderer is not associated with a Window.
+    ///
+    /// Safely calls `Window::properties()`.
+    pub fn window_properties<'b, F, R>(&'b self, _event: &'b EventPump, callback: F) -> Option<R>
+    where F: FnOnce(&mut WindowProperties<'b>) -> R
+    {
+        use std::mem;
+
+        // TODO: check if borrowed first.
+        // if it is, provide a clearer error message.
+        // needs to wait until `RefCell::borrow_state()` is stable.
+        let _borrow = self.drawer_borrow.borrow_mut();
+
+        let parent: &mut _ = unsafe { mem::transmute(&self.parent) };
+
+        match parent {
+            &mut Some(RendererParent::Window(ref mut window)) => {
+                let mut p = window.properties(_event);
+                Some(callback(&mut p))
+            },
             _ => None
         }
     }
