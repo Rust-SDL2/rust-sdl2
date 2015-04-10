@@ -1,3 +1,4 @@
+use std::marker::PhantomData;
 use std::mem;
 use std::path::Path;
 use rect::Rect;
@@ -21,14 +22,13 @@ bitflags! {
     }
 }
 
-#[derive(PartialEq)]
-#[allow(raw_pointer_derive, missing_copy_implementations)]
-pub struct Surface {
+pub struct Surface<'a> {
     raw: *const ll::SDL_Surface,
-    owned: bool
+    owned: bool,
+    _marker: PhantomData<&'a ()>
 }
 
-impl Drop for Surface {
+impl<'a> Drop for Surface<'a> {
     fn drop(&mut self) {
         if self.owned {
             unsafe {
@@ -38,13 +38,21 @@ impl Drop for Surface {
     }
 }
 
-impl_raw_accessors!((Surface, *const ll::SDL_Surface));
-impl_owned_accessors!((Surface, owned));
-impl_raw_constructor!((Surface, Surface (raw: *const ll::SDL_Surface, owned: bool)));
+impl<'a> Surface<'a> {
+    pub unsafe fn raw(&self) -> *const ll::SDL_Surface { self.raw }
 
-impl Surface {
+    pub unsafe fn owned(&self) -> bool { self.owned }
+
+    pub unsafe fn from_ll<'b>(raw: *const ll::SDL_Surface, owned: bool) -> Surface<'b> {
+        Surface {
+            raw: raw,
+            owned: owned,
+            _marker: PhantomData
+        }
+    }
+
     pub fn new(surface_flags: SurfaceFlag, width: i32, height: i32, bpp: i32,
-               rmask: u32, gmask: u32, bmask: u32, amask: u32) -> SdlResult<Surface> {
+               rmask: u32, gmask: u32, bmask: u32, amask: u32) -> SdlResult<Surface<'static>> {
         unsafe {
             let raw = ll::SDL_CreateRGBSurface(surface_flags.bits(), width as c_int, height as c_int, bpp as c_int,
                                                rmask, gmask, bmask, amask);
@@ -52,13 +60,17 @@ impl Surface {
             if raw == ptr::null() {
                 Err(get_error())
             } else {
-                Ok(Surface { raw: raw, owned: true })
+                Ok(Surface {
+                    raw: raw,
+                    owned: true,
+                    _marker: PhantomData
+                })
             }
         }
     }
 
-    pub fn from_data(data: &mut [u8], width: i32, height: i32, bpp: i32, pitch: i32,
-                     rmask: u32, gmask: u32, bmask: u32, amask: u32) -> SdlResult<Surface> {
+    pub fn from_data(data: &'a mut [u8], width: i32, height: i32, bpp: i32, pitch: i32,
+                     rmask: u32, gmask: u32, bmask: u32, amask: u32) -> SdlResult<Surface<'a>> {
 
         unsafe {
             let raw = ll::SDL_CreateRGBSurfaceFrom(
@@ -68,7 +80,11 @@ impl Surface {
             if raw == ptr::null() {
                 Err(get_error())
             } else {
-                Ok(Surface { raw: raw, owned: true })
+                Ok(Surface {
+                    raw: raw,
+                    owned: true,
+                    _marker: PhantomData
+                })
             }
         }
     }
@@ -126,13 +142,20 @@ impl Surface {
         unsafe { ll::SDL_UnlockSurface(self.raw); }
     }
 
-    pub fn from_bmp(path: &Path) -> SdlResult<Surface> {
+    pub fn from_bmp(path: &Path) -> SdlResult<Surface<'static>> {
         let raw = unsafe {
             ll::SDL_LoadBMP_RW(try!(rwops::RWops::from_file(path, "rb")).raw(), 0)
         };
 
-        if raw.is_null() { Err(get_error()) }
-        else { Ok(Surface{raw: raw, owned: true}) }
+        if raw.is_null() {
+            Err(get_error())
+        } else {
+            Ok(Surface {
+                raw: raw,
+                owned: true,
+                _marker: PhantomData
+            })
+        }
     }
 
     pub fn save_bmp(&self, path: &Path) -> SdlResult<()> {
@@ -307,7 +330,7 @@ impl Surface {
         rect
     }
 
-    pub fn convert(&self, format: &pixels::PixelFormat) -> SdlResult<Surface> {
+    pub fn convert(&self, format: &pixels::PixelFormat) -> SdlResult<Surface<'static>> {
         // SDL_ConvertSurface takes a flag as the last parameter, which should be 0 by the docs.
         let surface_ptr = unsafe { ll::SDL_ConvertSurface(self.raw, format.raw(), 0u32) };
 
@@ -318,7 +341,7 @@ impl Surface {
         }
     }
 
-    pub fn convert_format(&self, format: pixels::PixelFormatEnum) -> SdlResult<Surface> {
+    pub fn convert_format(&self, format: pixels::PixelFormatEnum) -> SdlResult<Surface<'static>> {
         let surface_ptr = unsafe { ll::SDL_ConvertSurfaceFormat(self.raw, format as uint32_t, 0u32) };
 
         if surface_ptr == ptr::null() {
