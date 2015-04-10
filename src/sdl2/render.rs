@@ -28,8 +28,10 @@
 //! None of the draw methods in `RenderDrawer` are expected to fail.
 //! If they do, a panic is raised and the program is aborted.
 
+use Sdl;
+use event::EventPump;
 use video;
-use video::Window;
+use video::{Window, WindowProperties};
 use surface;
 use surface::Surface;
 use pixels;
@@ -182,7 +184,7 @@ impl Renderer {
     }
 
     /// Creates a window and default renderer.
-    pub fn new_with_window(width: i32, height: i32, window_flags: video::WindowFlags) -> SdlResult<Renderer> {
+    pub fn new_with_window(_sdl: &Sdl, width: i32, height: i32, window_flags: video::WindowFlags) -> SdlResult<Renderer> {
         use sys::video::SDL_Window;
 
         let raw_window: *const SDL_Window = ptr::null();
@@ -239,6 +241,16 @@ impl Renderer {
     pub fn get_parent_as_surface(&self) -> Option<&Surface> {
         match self.get_parent() {
             &RendererParent::Surface(ref surface) => Some(surface),
+            _ => None
+        }
+    }
+
+    /// Accesses the Window properties, such as the position, size and title of a Window.
+    /// Returns None if the renderer is not associated with a Window.
+    pub fn window_properties<'b>(&'b mut self, event: &'b EventPump) -> Option<WindowProperties<'b>>
+    {
+        match self.parent.as_mut() {
+            Some(&mut RendererParent::Window(ref mut window)) => Some(window.properties(event)),
             _ => None
         }
     }
