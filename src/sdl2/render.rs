@@ -150,27 +150,27 @@ impl RendererInfo {
     }
 }
 
-pub enum RendererParent {
-    Surface(Surface),
+pub enum RendererParent<'a> {
+    Surface(Surface<'a>),
     Window(Window)
 }
 
 /// 2D rendering context
-pub struct Renderer {
+pub struct Renderer<'a> {
     raw: *const ll::SDL_Renderer,
-    parent: Option<RendererParent>,
+    parent: Option<RendererParent<'a>>,
     drawer_borrow: RefCell<()>
 }
 
-impl Drop for Renderer {
+impl<'a> Drop for Renderer<'a> {
     fn drop(&mut self) {
         unsafe { ll::SDL_DestroyRenderer(self.raw) };
     }
 }
 
-impl Renderer {
+impl<'a> Renderer<'a> {
     /// Creates a 2D rendering context for a window.
-    pub fn from_window(window: Window, index: RenderDriverIndex, renderer_flags: RendererFlags) -> SdlResult<Renderer> {
+    pub fn from_window(window: Window, index: RenderDriverIndex, renderer_flags: RendererFlags) -> SdlResult<Renderer<'static>> {
         let index = match index {
             RenderDriverIndex::Auto => -1,
             RenderDriverIndex::Index(x) => x
@@ -190,7 +190,7 @@ impl Renderer {
     }
 
     /// Creates a window and default renderer.
-    pub fn new_with_window(width: i32, height: i32, window_flags: video::WindowFlags) -> SdlResult<Renderer> {
+    pub fn new_with_window(width: i32, height: i32, window_flags: video::WindowFlags) -> SdlResult<Renderer<'static>> {
         use sys::video::SDL_Window;
 
         let raw_window: *const SDL_Window = ptr::null();
@@ -207,7 +207,7 @@ impl Renderer {
     }
 
     /// Creates a 2D software rendering context for a surface.
-    pub fn from_surface(surface: surface::Surface) -> SdlResult<Renderer> {
+    pub fn from_surface(surface: surface::Surface<'a>) -> SdlResult<Renderer<'a>> {
         let raw_renderer = unsafe { ll::SDL_CreateSoftwareRenderer(surface.raw()) };
         if raw_renderer != ptr::null() {
             unsafe {
@@ -277,7 +277,7 @@ impl Renderer {
     }
 
     #[inline]
-    pub fn unwrap_parent(mut self) -> RendererParent {
+    pub fn unwrap_parent(mut self) -> RendererParent<'a> {
         use std::mem;
         mem::replace(&mut self.parent, None).unwrap()
     }
@@ -291,7 +291,7 @@ impl Renderer {
     }
 
     #[inline]
-    pub fn unwrap_parent_as_surface(self) -> Option<Surface> {
+    pub fn unwrap_parent_as_surface(self) -> Option<Surface<'a>> {
         match self.unwrap_parent() {
             RendererParent::Surface(surface) => Some(surface),
             _ => None
@@ -341,7 +341,7 @@ impl Renderer {
 }
 
 /// Texture-creating methods for the renderer
-impl Renderer {
+impl<'a> Renderer<'a> {
     /// Creates a texture for a rendering context.
     ///
     /// `size` is the width and height of the texture.
