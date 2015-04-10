@@ -48,6 +48,15 @@ pub enum GLProfile {
   GLESProfile = 0x0004,
 }
 
+/// Flags for the GLContextFlags GL attribute
+bitflags! {
+    flags GLContexFlag: i32 {
+        const GL_CONTEXT_DEBUG              = 0x0001,
+        const GL_CONTEXT_FORWARD_COMPATIBLE = 0x0002,
+        const GL_CONTEXT_ROBUST_ACCESS      = 0x0004,
+        const GL_CONTEXT_RESET_ISOLATION    = 0x0008,
+    }
+}
 
 fn empty_sdl_display_mode() -> ll::SDL_DisplayMode {
     ll::SDL_DisplayMode {
