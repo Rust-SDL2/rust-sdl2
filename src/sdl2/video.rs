@@ -200,6 +200,15 @@ impl Window {
     /// Note: a reference to the SDL context is required to ensure that the
     /// Window is being created on the same thread as the SDL main thread
     /// (`Sdl` cannot be moved or referenced across other threads).
+    ///
+    /// # Example
+    /// ```no_run
+    /// use sdl2::video::{Window, WindowPos};
+    ///
+    /// let sdl_context = sdl2::init(sdl2::INIT_EVERYTHING).unwrap();
+    ///
+    /// let window = Window::new(&sdl_context, "My SDL window", WindowPos::PosCentered, WindowPos::PosCentered, 800, 600, sdl2::video::SHOWN).unwrap();
+    /// ```
     pub fn new(sdl: &Sdl, title: &str, x: WindowPos, y: WindowPos, width: i32, height: i32, window_flags: WindowFlags) -> SdlResult<Window> {
         Window::new_with_init(sdl, title, x, y, width, height, window_flags, |_| { Ok(()) })
     }
@@ -239,6 +248,32 @@ impl Window {
     /// This is why a reference to the application's `EventPump` is required
     /// (a shared `EventPump` reference is only obtainable if it's not being mutated).
     /// Event pumping could otherwise mutate a Window's properties without your consent!
+    ///
+    /// # Example
+    /// ```no_run
+    /// use sdl2::video::{Window, WindowPos};
+    ///
+    /// let mut sdl_context = sdl2::init(sdl2::INIT_EVERYTHING).unwrap();
+    /// let mut window = Window::new(&sdl_context, "My SDL window", WindowPos::PosCentered, WindowPos::PosCentered, 800, 600, sdl2::video::SHOWN).unwrap();
+    /// let mut event_pump = sdl_context.event_pump();
+    ///
+    /// loop {
+    ///     let mut pos = None;
+    ///
+    ///     for event in event_pump.poll_iter() {
+    ///         use sdl2::event::Event;
+    ///         match event {
+    ///             Event::MouseMotion { x, y, .. } => { pos = Some((x, y)); },
+    ///             _ => ()
+    ///         }
+    ///     }
+    ///
+    ///     if let Some((x, y)) = pos {
+    ///         // Set the window title
+    ///         window.properties(&event_pump).set_title(&format!("{}, {}", x, y));
+    ///     }
+    /// }
+    /// ```
     pub fn properties<'a>(&'a mut self, _event: &'a EventPump) -> WindowProperties<'a> {
         WindowProperties {
             raw: self.raw,
