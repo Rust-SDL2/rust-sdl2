@@ -9,7 +9,7 @@ use sdl2::keycode::KeyCode;
 pub fn main() {
     let sdl_context = sdl2::init(sdl2::INIT_VIDEO).unwrap();
 
-    let window = match Window::new("rust-sdl2 demo: Renderer + Texture", WindowPos::PosCentered, WindowPos::PosCentered, 800, 600, OPENGL) {
+    let window = match Window::new(&sdl_context, "rust-sdl2 demo: Renderer + Texture", WindowPos::PosCentered, WindowPos::PosCentered, 800, 600, OPENGL) {
         Ok(window) => window,
         Err(err) => panic!("failed to create window: {}", err)
     };

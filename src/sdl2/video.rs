@@ -1,11 +1,14 @@
 use libc::{c_int, c_float, uint32_t};
 use std::ffi::{CStr, CString, NulError};
+use std::marker::PhantomData;
 use std::ptr;
 use std::vec::Vec;
 
+use event::EventPump;
 use rect::Rect;
 use surface::Surface;
 use pixels;
+use Sdl;
 use SdlResult;
 use num::FromPrimitive;
 
@@ -165,8 +168,6 @@ impl Drop for GLContext {
     }
 }
 
-#[derive(PartialEq)]
-#[allow(raw_pointer_derive)]
 pub struct Window {
     raw: *const ll::SDL_Window,
     owned: bool
@@ -196,8 +197,35 @@ impl Drop for Window {
     }
 }
 
+/// Contains accessors to a `Window`'s properties.
+pub struct WindowProperties<'a> {
+    raw: *const ll::SDL_Window,
+    _marker: PhantomData<&'a ()>
+}
+
 impl Window {
-    pub fn new(title: &str, x: WindowPos, y: WindowPos, width: i32, height: i32, window_flags: WindowFlags) -> SdlResult<Window> {
+    /// Creates a new Window.
+    ///
+    /// Note: a reference to the SDL context is required to ensure that the
+    /// Window is being created on the same thread as the SDL main thread
+    /// (`Sdl` cannot be moved or referenced across other threads).
+    ///
+    /// # Example
+    /// ```no_run
+    /// use sdl2::video::{Window, WindowPos};
+    ///
+    /// let sdl_context = sdl2::init(sdl2::INIT_EVERYTHING).unwrap();
+    ///
+    /// let window = Window::new(&sdl_context, "My SDL window", WindowPos::PosCentered, WindowPos::PosCentered, 800, 600, sdl2::video::SHOWN).unwrap();
+    /// ```
+    pub fn new(sdl: &Sdl, title: &str, x: WindowPos, y: WindowPos, width: i32, height: i32, window_flags: WindowFlags) -> SdlResult<Window> {
+        Window::new_with_init(sdl, title, x, y, width, height, window_flags, |_| { Ok(()) })
+    }
+
+    /// Creates a new Window, and initializes the Window with other properties.
+    pub fn new_with_init<'a, F: 'a>(_sdl: &Sdl, title: &str, x: WindowPos, y: WindowPos, width: i32, height: i32, window_flags: WindowFlags, init: F) -> SdlResult<Window>
+    where F: FnOnce(WindowProperties<'a>) -> SdlResult<()>
+    {
         unsafe {
             let buff = CString::new(title).unwrap().as_ptr();
             let raw = ll::SDL_CreateWindow(
@@ -212,17 +240,103 @@ impl Window {
             if raw == ptr::null() {
                 Err(get_error())
             } else {
+                try!(init(WindowProperties {
+                    raw: raw,
+                    _marker: PhantomData
+                }));
+
                 Ok(Window{ raw: raw, owned: true })
             }
         }
     }
 
-    pub fn from_id(id: u32) -> SdlResult<Window> {
-        let raw = unsafe { ll::SDL_GetWindowFromID(id) };
+    /// Accesses the Window properties, such as the position, size and title of a Window.
+    ///
+    /// In order to access a Window's properties, it must be guaranteed that the
+    /// event loop is not running.
+    /// This is why a reference to the application's `EventPump` is required
+    /// (a shared `EventPump` reference is only obtainable if it's not being mutated).
+    /// Event pumping could otherwise mutate a Window's properties without your consent!
+    ///
+    /// # Example
+    /// ```no_run
+    /// use sdl2::video::{Window, WindowPos};
+    ///
+    /// let mut sdl_context = sdl2::init(sdl2::INIT_EVERYTHING).unwrap();
+    /// let mut window = Window::new(&sdl_context, "My SDL window", WindowPos::PosCentered, WindowPos::PosCentered, 800, 600, sdl2::video::SHOWN).unwrap();
+    /// let mut event_pump = sdl_context.event_pump();
+    ///
+    /// loop {
+    ///     let mut pos = None;
+    ///
+    ///     for event in event_pump.poll_iter() {
+    ///         use sdl2::event::Event;
+    ///         match event {
+    ///             Event::MouseMotion { x, y, .. } => { pos = Some((x, y)); },
+    ///             _ => ()
+    ///         }
+    ///     }
+    ///
+    ///     if let Some((x, y)) = pos {
+    ///         // Set the window title
+    ///         window.properties(&event_pump).set_title(&format!("{}, {}", x, y));
+    ///     }
+    /// }
+    /// ```
+    pub fn properties<'a>(&'a mut self, _event: &'a EventPump) -> WindowProperties<'a> {
+        WindowProperties {
+            raw: self.raw,
+            _marker: PhantomData
+        }
+    }
+
+    /// Get a Window from a stored ID.
+    ///
+    /// Warning: This function is unsafe!
+    /// It may introduce aliased Window values if a Window of the same ID is
+    /// already being used as a variable in the application.
+    pub unsafe fn from_id(id: u32) -> SdlResult<Window> {
+        let raw = ll::SDL_GetWindowFromID(id);
         if raw == ptr::null() {
             Err(get_error())
         } else {
             Ok(Window{ raw: raw, owned: false})
+        }
+    }
+
+    pub fn get_id(&self) -> u32 {
+        unsafe { ll::SDL_GetWindowID(self.raw) }
+    }
+
+    pub fn gl_create_context(&self) -> SdlResult<GLContext> {
+        let result = unsafe { ll::SDL_GL_CreateContext(self.raw) };
+        if result == ptr::null() {
+            Err(get_error())
+        } else {
+            Ok(GLContext{raw: result, owned: true})
+        }
+    }
+
+    pub fn gl_make_current(&self, context: &GLContext) -> SdlResult<()> {
+        unsafe {
+            if ll::SDL_GL_MakeCurrent(self.raw, context.raw) == 0 {
+                Ok(())
+            } else {
+                Err(get_error())
+            }
+        }
+    }
+
+    pub fn gl_swap_window(&self) {
+        unsafe { ll::SDL_GL_SwapWindow(self.raw) }
+    }
+}
+
+impl<'a> WindowProperties<'a> {
+    pub unsafe fn from_ll(raw: *const ll::SDL_Window) -> WindowProperties<'a> {
+        WindowProperties {
+            raw: raw,
+            _marker: PhantomData
         }
     }
 
@@ -235,15 +349,20 @@ impl Window {
         }
     }
 
-    pub fn set_display_mode(&self, display_mode: Option<DisplayMode>) -> bool {
-        return unsafe {
-            ll::SDL_SetWindowDisplayMode(
+    pub fn set_display_mode(&mut self, display_mode: Option<DisplayMode>) -> SdlResult<()> {
+        unsafe {
+            let result = ll::SDL_SetWindowDisplayMode(
                 self.raw,
                 match display_mode {
                     Some(ref mode) => &mode.to_ll() as *const _,
                     None => ptr::null()
                 }
-            ) == 0
+            );
+            if result < 0 {
+                Err(get_error())
+            } else {
+                Ok(())
+            }
         }
     }
 
@@ -268,10 +387,6 @@ impl Window {
         unsafe{ FromPrimitive::from_u64(ll::SDL_GetWindowPixelFormat(self.raw) as u64).unwrap() }
     }
 
-    pub fn get_id(&self) -> u32 {
-        unsafe { ll::SDL_GetWindowID(self.raw) }
-    }
-
     pub fn get_flags(&self) -> WindowFlags {
         unsafe {
             let raw = ll::SDL_GetWindowFlags(self.raw);
@@ -279,31 +394,32 @@ impl Window {
         }
     }
 
-    pub fn set_title(&self, title: &str) -> Result<(), NulError>{
-        let buff =
-        match CString::new(title.as_bytes()) {
-            Ok(s) => s.as_ptr(),
-            Err(e) => return Err(e),
-        };
+    pub fn set_title(&mut self, title: &str) -> Result<(), NulError> {
+        let buff = try!(CString::new(title)).as_ptr();
         unsafe { ll::SDL_SetWindowTitle(self.raw, buff); }
         Ok(())
     }
 
-    pub fn get_title(&self) -> String {
+    pub fn get_title(&self) -> &str {
+        use std::ffi::CStr;
+        use std::str;
+
         unsafe {
             let buf = ll::SDL_GetWindowTitle(self.raw);
-            String::from_utf8_lossy(CStr::from_ptr(buf).to_bytes()).to_string()
+
+            // The window title must be encoded in UTF-8.
+            str::from_utf8(CStr::from_ptr(buf).to_bytes()).unwrap()
         }
     }
 
-    pub fn set_icon(&self, icon: &Surface) {
+    pub fn set_icon(&mut self, icon: &Surface) {
         unsafe { ll::SDL_SetWindowIcon(self.raw, icon.raw()) }
     }
 
     //pub fn SDL_SetWindowData(window: *SDL_Window, name: *c_char, userdata: *c_void) -> *c_void; //TODO: Figure out what this does
     //pub fn SDL_GetWindowData(window: *SDL_Window, name: *c_char) -> *c_void;
 
-    pub fn set_position(&self, x: WindowPos, y: WindowPos) {
+    pub fn set_position(&mut self, x: WindowPos, y: WindowPos) {
         unsafe { ll::SDL_SetWindowPosition(self.raw, unwrap_windowpos(x), unwrap_windowpos(y)) }
     }
 
@@ -314,7 +430,7 @@ impl Window {
         (x as i32, y as i32)
     }
 
-    pub fn set_size(&self, w: i32, h: i32) {
+    pub fn set_size(&mut self, w: i32, h: i32) {
         unsafe { ll::SDL_SetWindowSize(self.raw, w as c_int, h as c_int) }
     }
 
@@ -332,7 +448,7 @@ impl Window {
         (w as i32, h as i32)
     }
 
-    pub fn set_minimum_size(&self, w: i32, h: i32) {
+    pub fn set_minimum_size(&mut self, w: i32, h: i32) {
         unsafe { ll::SDL_SetWindowMinimumSize(self.raw, w as c_int, h as c_int) }
     }
 
@@ -343,7 +459,7 @@ impl Window {
         (w as i32, h as i32)
     }
 
-    pub fn set_maximum_size(&self, w: i32, h: i32) {
+    pub fn set_maximum_size(&mut self, w: i32, h: i32) {
         unsafe { ll::SDL_SetWindowMaximumSize(self.raw, w as c_int, h as c_int) }
     }
 
@@ -354,39 +470,45 @@ impl Window {
         (w as i32, h as i32)
     }
 
-    pub fn set_bordered(&self, bordered: bool) {
+    pub fn set_bordered(&mut self, bordered: bool) {
         unsafe { ll::SDL_SetWindowBordered(self.raw, if bordered { 1 } else { 0 }) }
     }
 
-    pub fn show(&self) {
+    pub fn show(&mut self) {
         unsafe { ll::SDL_ShowWindow(self.raw) }
     }
 
-    pub fn hide(&self) {
+    pub fn hide(&mut self) {
         unsafe { ll::SDL_HideWindow(self.raw) }
     }
 
-    pub fn raise(&self) {
+    pub fn raise(&mut self) {
         unsafe { ll::SDL_RaiseWindow(self.raw) }
     }
 
-    pub fn maximize(&self) {
+    pub fn maximize(&mut self) {
         unsafe { ll::SDL_MaximizeWindow(self.raw) }
     }
 
-    pub fn minimize(&self) {
+    pub fn minimize(&mut self) {
         unsafe { ll::SDL_MinimizeWindow(self.raw) }
     }
 
-    pub fn restore(&self) {
+    pub fn restore(&mut self) {
         unsafe { ll::SDL_RestoreWindow(self.raw) }
     }
 
-    pub fn set_fullscreen(&self, fullscreen_type: FullscreenType) -> bool {
-        unsafe { ll::SDL_SetWindowFullscreen(self.raw, fullscreen_type as uint32_t) == 0 }
+    pub fn set_fullscreen(&mut self, fullscreen_type: FullscreenType) -> SdlResult<()> {
+        unsafe {
+            if ll::SDL_SetWindowFullscreen(self.raw, fullscreen_type as uint32_t) == 0 {
+                Ok(())
+            } else {
+                Err(get_error())
+            }
+        }
     }
 
-    pub fn get_surface(&self) -> SdlResult<Surface> {
+    pub fn get_surface(&mut self) -> SdlResult<Surface> {
         let raw = unsafe { ll::SDL_GetWindowSurface(self.raw) };
 
         if raw == ptr::null() {
@@ -396,15 +518,27 @@ impl Window {
         }
     }
 
-    pub fn update_surface(&self) -> bool {
-        unsafe { ll::SDL_UpdateWindowSurface(self.raw) == 0 }
+    pub fn update_surface(&self) -> SdlResult<()> {
+        unsafe {
+            if ll::SDL_UpdateWindowSurface(self.raw) == 0 {
+                Ok(())
+            } else {
+                Err(get_error())
+            }
+        }
     }
 
-    pub fn update_surface_rects(&self, rects: &[Rect]) -> bool {
-        unsafe { ll::SDL_UpdateWindowSurfaceRects(self.raw, rects.as_ptr(), rects.len() as c_int) == 0}
+    pub fn update_surface_rects(&self, rects: &[Rect]) -> SdlResult<()> {
+        unsafe {
+            if ll::SDL_UpdateWindowSurfaceRects(self.raw, rects.as_ptr(), rects.len() as c_int) == 0 {
+                Ok(())
+            } else {
+                Err(get_error())
+            }
+        }
     }
 
-    pub fn set_grab(&self, grabbed: bool) {
+    pub fn set_grab(&mut self, grabbed: bool) {
         unsafe { ll::SDL_SetWindowGrab(self.raw, if grabbed { 1 } else { 0 }) }
     }
 
@@ -412,15 +546,21 @@ impl Window {
         unsafe { ll::SDL_GetWindowGrab(self.raw) == 1 }
     }
 
-    pub fn set_brightness(&self, brightness: f64) -> bool {
-        unsafe { ll::SDL_SetWindowBrightness(self.raw, brightness as c_float) == 0 }
+    pub fn set_brightness(&mut self, brightness: f64) -> SdlResult<()> {
+        unsafe {
+            if ll::SDL_SetWindowBrightness(self.raw, brightness as c_float) == 0 {
+                Ok(())
+            } else {
+                Err(get_error())
+            }
+        }
     }
 
     pub fn get_brightness(&self) -> f64 {
         unsafe { ll::SDL_GetWindowBrightness(self.raw) as f64 }
     }
 
-    pub fn set_gamma_ramp(&self, red: Option<&[u16; 256]>, green: Option<&[u16; 256]>, blue: Option<&[u16; 256]>) -> bool {
+    pub fn set_gamma_ramp(&mut self, red: Option<&[u16; 256]>, green: Option<&[u16; 256]>, blue: Option<&[u16; 256]>) -> SdlResult<()> {
         unsafe {
             let unwrapped_red = match red {
                 Some(values) => values.as_ptr(),
@@ -434,7 +574,12 @@ impl Window {
                 Some(values) => values.as_ptr(),
                 None => ptr::null()
             };
-            ll::SDL_SetWindowGammaRamp(self.raw, unwrapped_red, unwrapped_green, unwrapped_blue) == 0
+
+            if ll::SDL_SetWindowGammaRamp(self.raw, unwrapped_red, unwrapped_green, unwrapped_blue) == 0 {
+                Ok(())
+            } else {
+                Err(get_error())
+            }
         }
     }
 
@@ -448,23 +593,6 @@ impl Window {
         } else {
             Err(get_error())
         }
-    }
-
-    pub fn gl_create_context(&self) -> SdlResult<GLContext> {
-        let result = unsafe { ll::SDL_GL_CreateContext(self.raw) };
-        if result == ptr::null() {
-            Err(get_error())
-        } else {
-            Ok(GLContext{raw: result, owned: true})
-        }
-    }
-
-    pub fn gl_make_current(&self, context: &GLContext) -> bool {
-        unsafe { ll::SDL_GL_MakeCurrent(self.raw, context.raw) == 0 }
-    }
-
-    pub fn gl_swap_window(&self) {
-        unsafe { ll::SDL_GL_SwapWindow(self.raw) }
     }
 }
 
@@ -648,8 +776,8 @@ pub fn gl_get_attribute(attr: GLAttr) -> SdlResult<i32> {
     }
 }
 
-pub fn gl_get_current_window() -> SdlResult<Window> {
-    let raw = unsafe { ll::SDL_GL_GetCurrentWindow() };
+pub unsafe fn gl_get_current_window() -> SdlResult<Window> {
+    let raw = ll::SDL_GL_GetCurrentWindow();
     if raw == ptr::null() {
         Err(get_error())
     } else {
@@ -657,8 +785,8 @@ pub fn gl_get_current_window() -> SdlResult<Window> {
     }
 }
 
-pub fn gl_get_current_context() -> SdlResult<GLContext> {
-    let raw = unsafe { ll::SDL_GL_GetCurrentContext() };
+pub unsafe fn gl_get_current_context() -> SdlResult<GLContext> {
+    let raw = ll::SDL_GL_GetCurrentContext();
     if raw == ptr::null() {
         Err(get_error())
     } else {
