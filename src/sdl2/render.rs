@@ -255,22 +255,34 @@ impl<'a> Renderer<'a> {
     /// Returns None if the renderer is not associated with a Window.
     ///
     /// Safely calls `Window::properties()`.
+    ///
+    /// # Panics
+    /// Panics if a call to `window_properties()` or `RenderDrawer` is in scope.
     pub fn window_properties<'b, F, R>(&'b self, _event: &'b EventPump, callback: F) -> Option<R>
     where F: FnOnce(&mut WindowProperties<'b>) -> R
     {
-        use std::mem;
-
         // TODO: check if borrowed first.
         // if it is, provide a clearer error message.
         // needs to wait until `RefCell::borrow_state()` is stable.
         let _borrow = self.drawer_borrow.borrow_mut();
 
-        let parent: &mut _ = unsafe { mem::transmute(&self.parent) };
+        match self.get_parent_as_window() {
+            Some(window) => {
+                // We're asserting that due to the RefCell borrow above, `WindowProperties` cannot be aliased.
+                // As long as `Renderer` does not contain any method that returns a `&mut Window` or `WindowProperties`,
+                // there should be no aliasing problems.
+                //
+                // `SDL_Window*` itself can be aliased with the `Renderer::get_parent_as_window()` method,
+                // but it's impossible to obtain a `WindowProperties` value from an immutable `&Window`.
+                // The methods in `Window` and `WindowProperties` are purposely non-intersecting,
+                // even though both types contain a `SDL_Window*`.
+                // (i.e. `Window::gl_swap_window() `does not depend on behavior from `WindowProperties`).
 
-        match parent {
-            &mut Some(RendererParent::Window(ref mut window)) => {
-                let mut p = window.properties(_event);
-                Some(callback(&mut p))
+                let mut props = unsafe {
+                    WindowProperties::from_ll(window.raw())
+                };
+
+                Some(callback(&mut props))
             },
             _ => None
         }

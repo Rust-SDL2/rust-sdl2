@@ -324,6 +324,13 @@ impl Window {
 }
 
 impl<'a> WindowProperties<'a> {
+    pub unsafe fn from_ll(raw: *const ll::SDL_Window) -> WindowProperties<'a> {
+        WindowProperties {
+            raw: raw,
+            _marker: PhantomData
+        }
+    }
+
     pub fn get_display_index(&self) -> SdlResult<i32> {
         let result = unsafe { ll::SDL_GetWindowDisplayIndex(self.raw) };
         if result < 0 {
