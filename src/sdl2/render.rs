@@ -148,7 +148,7 @@ pub enum RendererParent<'a> {
 
 /// 2D rendering context
 pub struct Renderer<'a> {
-    raw: *const ll::SDL_Renderer,
+    raw: *mut ll::SDL_Renderer,
     parent: Option<RendererParent<'a>>,
     is_alive: Rc<UnsafeCell<bool>>
 }
@@ -174,7 +174,7 @@ impl<'a> Renderer<'a> {
             ll::SDL_CreateRenderer(window.raw(), index as c_int, renderer_flags.bits())
         };
 
-        if raw == ptr::null() {
+        if raw == ptr::null_mut() {
             Err(get_error())
         } else {
             unsafe {
@@ -187,9 +187,9 @@ impl<'a> Renderer<'a> {
     pub fn new_with_window(_sdl: &Sdl, width: i32, height: i32, window_flags: video::WindowFlags) -> SdlResult<Renderer<'static>> {
         use sys::video::SDL_Window;
 
-        let raw_window: *const SDL_Window = ptr::null();
-        let raw_renderer: *const ll::SDL_Renderer = ptr::null();
-        let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, window_flags.bits(), &raw_window, &raw_renderer) == 0};
+        let mut raw_window: *mut SDL_Window = ptr::null_mut();
+        let mut raw_renderer: *mut ll::SDL_Renderer = ptr::null_mut();
+        let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, window_flags.bits(), &mut raw_window, &mut raw_renderer) == 0};
         if result {
             let window = unsafe { Window::from_ll(raw_window, true) };
             unsafe {
@@ -203,7 +203,7 @@ impl<'a> Renderer<'a> {
     /// Creates a 2D software rendering context for a surface.
     pub fn from_surface(surface: surface::Surface<'a>) -> SdlResult<Renderer<'a>> {
         let raw_renderer = unsafe { ll::SDL_CreateSoftwareRenderer(surface.raw()) };
-        if raw_renderer != ptr::null() {
+        if raw_renderer != ptr::null_mut() {
             unsafe {
                 Ok(Renderer::from_ll(raw_renderer, RendererParent::Surface(surface)))
             }
@@ -215,8 +215,8 @@ impl<'a> Renderer<'a> {
     /// Gets information about the rendering context.
     pub fn get_info(&self) -> RendererInfo {
         unsafe {
-            let renderer_info_raw: ll::SDL_RendererInfo = mem::uninitialized();
-            if ll::SDL_GetRendererInfo(self.raw, &renderer_info_raw) != 0 {
+            let mut renderer_info_raw = mem::uninitialized();
+            if ll::SDL_GetRendererInfo(self.raw, &mut renderer_info_raw) != 0 {
                 // Should only fail on an invalid renderer
                 panic!();
             } else {
@@ -296,9 +296,9 @@ impl<'a> Renderer<'a> {
     }
 
     /// Unwraps the window or surface the rendering context was created from.
-    pub unsafe fn raw(&self) -> *const ll::SDL_Renderer { self.raw }
+    pub unsafe fn raw(&self) -> *mut ll::SDL_Renderer { self.raw }
 
-    pub unsafe fn from_ll(raw: *const ll::SDL_Renderer, parent: RendererParent)
+    pub unsafe fn from_ll(raw: *mut ll::SDL_Renderer, parent: RendererParent)
     -> Renderer
     {
         Renderer {
@@ -329,7 +329,7 @@ impl<'a> Renderer<'a> {
         }
 
         let result = unsafe { ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int) };
-        if result == ptr::null() {
+        if result == ptr::null_mut() {
             Err(get_error())
         } else {
             unsafe { Ok(Texture::from_ll(self, result)) }
@@ -356,7 +356,7 @@ impl<'a> Renderer<'a> {
     /// The access hint for the created texture is `TextureAccess::Static`.
     pub fn create_texture_from_surface(&self, surface: &surface::Surface) -> SdlResult<Texture> {
         let result = unsafe { ll::SDL_CreateTextureFromSurface(self.raw, surface.raw()) };
-        if result == ptr::null() {
+        if result == ptr::null_mut() {
             Err(get_error())
         } else {
             unsafe { Ok(Texture::from_ll(self, result)) }
@@ -366,13 +366,13 @@ impl<'a> Renderer<'a> {
 
 /// Drawing functionality for the render context.
 pub struct RenderDrawer<'renderer> {
-    raw: *const ll::SDL_Renderer,
+    raw: *mut ll::SDL_Renderer,
     is_renderer_alive: &'renderer Rc<UnsafeCell<bool>>
 }
 
 /// Render target methods for the drawer
 impl<'renderer> RenderDrawer<'renderer> {
-    fn new<'l>(raw: *const ll::SDL_Renderer, is_renderer_alive: &'l Rc<UnsafeCell<bool>>) -> RenderDrawer<'l> {
+    fn new<'l>(raw: *mut ll::SDL_Renderer, is_renderer_alive: &'l Rc<UnsafeCell<bool>>) -> RenderDrawer<'l> {
         RenderDrawer {
             raw: raw,
             is_renderer_alive: is_renderer_alive
@@ -417,11 +417,8 @@ impl<'renderer> RenderDrawer<'renderer> {
 
     /// Gets the color used for drawing operations (Rect, Line and Clear).
     pub fn get_draw_color(&self) -> pixels::Color {
-        let r: u8 = 0;
-        let g: u8 = 0;
-        let b: u8 = 0;
-        let a: u8 = 0;
-        let ret = unsafe { ll::SDL_GetRenderDrawColor(self.raw, &r, &g, &b, &a) };
+        let (mut r, mut g, mut b, mut a) = (0, 0, 0, 0);
+        let ret = unsafe { ll::SDL_GetRenderDrawColor(self.raw, &mut r, &mut g, &mut b, &mut a) };
         // Should only fail on an invalid renderer
         if ret != 0 { panic!(get_error()) }
         else { pixels::Color::RGBA(r, g, b, a) }
@@ -436,8 +433,8 @@ impl<'renderer> RenderDrawer<'renderer> {
 
     /// Gets the blend mode used for drawing operations.
     pub fn get_blend_mode(&self) -> BlendMode {
-        let blend = 0;
-        let ret = unsafe { ll::SDL_GetRenderDrawBlendMode(self.raw, &blend) };
+        let mut blend = 0;
+        let ret = unsafe { ll::SDL_GetRenderDrawBlendMode(self.raw, &mut blend) };
         // Should only fail on an invalid renderer
         if ret != 0 { panic!(get_error()) }
         else { FromPrimitive::from_i64(blend as i64).unwrap() }
@@ -462,10 +459,10 @@ impl<'renderer> RenderDrawer<'renderer> {
 
     /// Gets the output size of a rendering context.
     pub fn get_output_size(&self) -> SdlResult<(i32, i32)> {
-        let width: c_int = 0;
-        let height: c_int = 0;
+        let mut width = 0;
+        let mut height = 0;
 
-        let result = unsafe { ll::SDL_GetRendererOutputSize(self.raw, &width, &height) == 0 };
+        let result = unsafe { ll::SDL_GetRendererOutputSize(self.raw, &mut width, &mut height) == 0 };
 
         if result {
             Ok((width as i32, height as i32))
@@ -482,11 +479,10 @@ impl<'renderer> RenderDrawer<'renderer> {
 
     /// Gets device independent resolution for rendering.
     pub fn get_logical_size(&self) -> (i32, i32) {
+        let mut width = 0;
+        let mut height = 0;
 
-        let width: c_int = 0;
-        let height: c_int = 0;
-
-        unsafe { ll::SDL_RenderGetLogicalSize(self.raw, &width, &height) };
+        unsafe { ll::SDL_RenderGetLogicalSize(self.raw, &mut width, &mut height) };
 
         (width as i32, height as i32)
     }
@@ -503,13 +499,8 @@ impl<'renderer> RenderDrawer<'renderer> {
 
     /// Gets the drawing area for the current target.
     pub fn get_viewport(&self) -> Rect {
-        let rect = Rect{
-            x: 0,
-            y: 0,
-            w: 0,
-            h: 0
-        };
-        unsafe { ll::SDL_RenderGetViewport(self.raw, &rect) };
+        let mut rect = unsafe { mem::uninitialized() };
+        unsafe { ll::SDL_RenderGetViewport(self.raw, &mut rect) };
         rect
     }
 
@@ -529,13 +520,8 @@ impl<'renderer> RenderDrawer<'renderer> {
 
     /// Gets the clip rectangle for the current target.
     pub fn get_clip_rect(&self) -> Rect {
-        let rect = Rect{
-            x: 0,
-            y: 0,
-            w: 0,
-            h: 0
-        };
-        unsafe { ll::SDL_RenderGetClipRect(self.raw, &rect) };
+        let mut rect = unsafe { mem::uninitialized() };
+        unsafe { ll::SDL_RenderGetClipRect(self.raw, &mut rect) };
         rect
     }
 
@@ -548,9 +534,9 @@ impl<'renderer> RenderDrawer<'renderer> {
 
     /// Gets the drawing scale for the current target.
     pub fn get_scale(&self) -> (f32, f32) {
-        let scale_x = 0.0;
-        let scale_y = 0.0;
-        unsafe { ll::SDL_RenderGetScale(self.raw, &scale_x, &scale_y) };
+        let mut scale_x = 0.0;
+        let mut scale_y = 0.0;
+        unsafe { ll::SDL_RenderGetScale(self.raw, &mut scale_x, &mut scale_y) };
         (scale_x, scale_y)
     }
 
@@ -782,7 +768,7 @@ impl<'renderer> RenderDrawer<'renderer> {
 /// }
 /// ```
 pub struct RenderTarget<'renderer> {
-    raw: *const ll::SDL_Renderer,
+    raw: *mut ll::SDL_Renderer,
     is_renderer_alive: &'renderer Rc<UnsafeCell<bool>>
 }
 
@@ -794,7 +780,7 @@ impl<'renderer> RenderTarget<'renderer> {
         unsafe {
             let old_texture_raw = ll::SDL_GetRenderTarget(self.raw);
 
-            if ll::SDL_SetRenderTarget(self.raw, ptr::null()) == 0 {
+            if ll::SDL_SetRenderTarget(self.raw, ptr::null_mut()) == 0 {
                 Ok(match old_texture_raw.is_null() {
                     true => None,
                     false => Some(Texture {
@@ -842,7 +828,7 @@ impl<'renderer> RenderTarget<'renderer> {
             ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int)
         };
 
-        if new_texture_raw == ptr::null() {
+        if new_texture_raw == ptr::null_mut() {
             Err(get_error())
         } else {
             unsafe {
@@ -880,7 +866,7 @@ pub struct TextureQuery {
 ///
 /// A Texture can be safely dropped before or after the Renderer is dropped.
 pub struct Texture {
-    raw: *const ll::SDL_Texture,
+    raw: *mut ll::SDL_Texture,
     is_renderer_alive: Rc<UnsafeCell<bool>>
 }
 
@@ -917,12 +903,12 @@ impl Texture {
     pub fn query(&self) -> TextureQuery {
         self.check_renderer();
 
-        let format: uint32_t = 0;
-        let access: c_int = 0;
-        let width: c_int = 0;
-        let height: c_int = 0;
+        let mut format = 0;
+        let mut access = 0;
+        let mut width = 0;
+        let mut height = 0;
 
-        let ret = unsafe { ll::SDL_QueryTexture(self.raw, &format, &access, &width, &height) };
+        let ret = unsafe { ll::SDL_QueryTexture(self.raw, &mut format, &mut access, &mut width, &mut height) };
         // Should only fail on an invalid texture
         if ret != 0 {
             panic!(get_error())
@@ -951,10 +937,8 @@ impl Texture {
     pub fn get_color_mod(&self) -> (u8, u8, u8) {
         self.check_renderer();
 
-        let r = 0;
-        let g = 0;
-        let b = 0;
-        let ret = unsafe { ll::SDL_GetTextureColorMod(self.raw, &r, &g, &b) };
+        let (mut r, mut g, mut b) = (0, 0, 0);
+        let ret = unsafe { ll::SDL_GetTextureColorMod(self.raw, &mut r, &mut g, &mut b) };
 
         // Should only fail on an invalid texture
         if ret != 0 { panic!(get_error()) }
@@ -976,8 +960,8 @@ impl Texture {
     pub fn get_alpha_mod(&self) -> u8 {
         self.check_renderer();
 
-        let alpha = 0;
-        let ret = unsafe { ll::SDL_GetTextureAlphaMod(self.raw, &alpha) };
+        let mut alpha = 0;
+        let ret = unsafe { ll::SDL_GetTextureAlphaMod(self.raw, &mut alpha) };
 
         // Should only fail on an invalid texture
         if ret != 0 { panic!(get_error()) }
@@ -999,8 +983,8 @@ impl Texture {
     pub fn get_blend_mode(&self) -> BlendMode {
         self.check_renderer();
 
-        let blend = 0;
-        let ret = unsafe { ll::SDL_GetTextureBlendMode(self.raw, &blend) };
+        let mut blend = 0;
+        let ret = unsafe { ll::SDL_GetTextureBlendMode(self.raw, &mut blend) };
 
         // Should only fail on an invalid texture
         if ret != 0 { panic!(get_error()) }
@@ -1153,10 +1137,10 @@ impl Texture {
     pub unsafe fn gl_bind_texture(&mut self) -> (f32, f32) {
         self.check_renderer();
 
-        let texw = 0.0;
-        let texh = 0.0;
+        let mut texw = 0.0;
+        let mut texh = 0.0;
 
-        if ll::SDL_GL_BindTexture(self.raw, &texw, &texh) == 0 {
+        if ll::SDL_GL_BindTexture(self.raw, &mut texw, &mut texh) == 0 {
             (texw, texh)
         } else {
             panic!("OpenGL texture binding not supported");
@@ -1177,10 +1161,10 @@ impl Texture {
         self.check_renderer();
 
         unsafe {
-            let texw = 0.0;
-            let texh = 0.0;
+            let mut texw = 0.0;
+            let mut texh = 0.0;
 
-            if ll::SDL_GL_BindTexture(self.raw, &texw, &texh) == 0 {
+            if ll::SDL_GL_BindTexture(self.raw, &mut texw, &mut texh) == 0 {
                 let return_value = f(texw, texh);
 
                 if ll::SDL_GL_UnbindTexture(self.raw) == 0 {
@@ -1195,14 +1179,14 @@ impl Texture {
         }
     }
 
-    pub unsafe fn from_ll(renderer: &Renderer, raw: *const ll::SDL_Texture) -> Texture {
+    pub unsafe fn from_ll(renderer: &Renderer, raw: *mut ll::SDL_Texture) -> Texture {
         Texture {
             raw: raw,
             is_renderer_alive: renderer.is_alive.clone()
         }
     }
 
-    pub unsafe fn raw(&self) -> *const ll::SDL_Texture { self.raw }
+    pub unsafe fn raw(&self) -> *mut ll::SDL_Texture { self.raw }
 }
 
 
@@ -1216,15 +1200,8 @@ pub fn get_num_render_drivers() -> SdlResult<i32> {
 }
 
 pub fn get_render_driver_info(index: i32) -> SdlResult<RendererInfo> {
-    let out = ll::SDL_RendererInfo {
-        name: ptr::null(),
-        flags: 0,
-        num_texture_formats: 0,
-        texture_formats: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        max_texture_width: 0,
-        max_texture_height: 0,
-    };
-    let result = unsafe { ll::SDL_GetRenderDriverInfo(index as c_int, &out) == 0 };
+    let mut out = unsafe { mem::uninitialized() };
+    let result = unsafe { ll::SDL_GetRenderDriverInfo(index as c_int, &mut out) == 0 };
     if result {
         unsafe { Ok(RendererInfo::from_ll(&out)) }
     } else {

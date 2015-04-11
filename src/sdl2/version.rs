@@ -20,11 +20,8 @@ pub struct Version {
 
 impl Version {
     /// Convert a raw *SDL_version to Version.
-    pub fn from_ll(sv: *const ll::SDL_version) -> Version {
-        unsafe {
-            let ref v = *sv;
-            Version{ major: v.major, minor: v.minor, patch: v.patch }
-        }
+    pub fn from_ll(v: ll::SDL_version) -> Version {
+        Version { major: v.major, minor: v.minor, patch: v.patch }
     }
 }
 
@@ -39,7 +36,7 @@ pub fn get_version() -> Version {
     unsafe {
         let mut cver = ll::SDL_version { major: 0, minor: 0, patch: 0};
         ll::SDL_GetVersion(&mut cver);
-        Version::from_ll(&cver)
+        Version::from_ll(cver)
     }
 }
 

@@ -6,10 +6,10 @@ use sys::pixels as ll;
 
 #[derive(PartialEq)] #[allow(raw_pointer_derive, missing_copy_implementations)]
 pub struct Palette {
-    raw: *const ll::SDL_Palette
+    raw: *mut ll::SDL_Palette
 }
 
-impl_raw_accessors!((Palette, *const ll::SDL_Palette));
+impl_raw_accessors!((Palette, *mut ll::SDL_Palette));
 
 #[derive(PartialEq, Clone, Copy)]
 pub enum Color {
@@ -30,13 +30,10 @@ impl Color {
     }
 
     pub fn from_u32(format: &PixelFormat, pixel: u32) -> Color {
-        let r: u8 = 0;
-        let g: u8 = 0;
-        let b: u8 = 0;
-        let a: u8 = 0;
+        let (mut r, mut g, mut b, mut a) = (0, 0, 0, 0);
 
         unsafe {
-            ll::SDL_GetRGBA(pixel, format.raw, &r, &g, &b, &a)
+            ll::SDL_GetRGBA(pixel, format.raw, &mut r, &mut g, &mut b, &mut a)
         };
         Color::RGBA(r, g, b, a)
     }
@@ -58,11 +55,11 @@ impl rand::Rand for Color {
 
 #[derive(PartialEq)] #[allow(raw_pointer_derive, missing_copy_implementations)]
 pub struct PixelFormat {
-    raw: *const ll::SDL_PixelFormat
+    raw: *mut ll::SDL_PixelFormat
 }
 
-impl_raw_accessors!((PixelFormat, *const ll::SDL_PixelFormat));
-impl_raw_constructor!((PixelFormat, PixelFormat (raw: *const ll::SDL_PixelFormat)));
+impl_raw_accessors!((PixelFormat, *mut ll::SDL_PixelFormat));
+impl_raw_constructor!((PixelFormat, PixelFormat (raw: *mut ll::SDL_PixelFormat)));
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum PixelFormatEnum {

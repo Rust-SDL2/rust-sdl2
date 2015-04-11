@@ -7,5 +7,5 @@ pub const SDL_MESSAGEBOX_WARNING : SDL_MessageBoxFlags = 0x00000020;
 pub const SDL_MESSAGEBOX_INFORMATION : SDL_MessageBoxFlags = 0x00000040;
 
 extern "C" {
-    pub fn SDL_ShowSimpleMessageBox(flags: uint32_t, title: *const c_char, message: *const c_char, window: *const SDL_Window) -> c_int;
+    pub fn SDL_ShowSimpleMessageBox(flags: uint32_t, title: *const c_char, message: *const c_char, window: *mut SDL_Window) -> c_int;
 }

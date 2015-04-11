@@ -9,11 +9,11 @@ use sys::rwops as ll;
 
 #[derive(PartialEq)] #[allow(raw_pointer_derive)]
 pub struct RWops {
-    raw: *const ll::SDL_RWops,
+    raw: *mut ll::SDL_RWops,
     close_on_drop: bool
 }
 
-impl_raw_accessors!((RWops, *const ll::SDL_RWops));
+impl_raw_accessors!((RWops, *mut ll::SDL_RWops));
 impl_owned_accessors!((RWops, close_on_drop));
 
 /// A structure that provides an abstract interface to stream I/O.
@@ -62,7 +62,7 @@ impl io::Read for RWops {
         // FIXME: it's better to use as_mut_ptr().
         // number of objects read, or 0 at error or end of file.
         let ret = unsafe {
-            ((*self.raw).read)(self.raw, buf.as_ptr() as *const c_void, 1, out_len)
+            ((*self.raw).read)(self.raw, buf.as_ptr() as *mut c_void, 1, out_len)
         };
         Ok(ret as usize)
     }

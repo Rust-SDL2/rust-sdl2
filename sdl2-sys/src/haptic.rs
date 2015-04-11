@@ -132,64 +132,64 @@ pub struct SDL_HapticEffect {
 }
 
 impl SDL_HapticEffect {
-    pub fn type_(&self) -> *const uint16_t {
-        self.data.as_ptr() as *const _
+    pub fn type_(&mut self) -> *mut uint16_t {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn constant(&self) -> *const SDL_HapticConstant {
-        self.data.as_ptr() as *const _
+    pub fn constant(&mut self) -> *mut SDL_HapticConstant {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn periodic(&self) -> *const SDL_HapticPeriodic {
-        self.data.as_ptr() as *const _
+    pub fn periodic(&mut self) -> *mut SDL_HapticPeriodic {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn condition(&self) -> *const SDL_HapticCondition {
-        self.data.as_ptr() as *const _
+    pub fn condition(&mut self) -> *mut SDL_HapticCondition {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn ramp(&self) -> *const SDL_HapticRamp {
-        self.data.as_ptr() as *const _
+    pub fn ramp(&mut self) -> *mut SDL_HapticRamp {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn left_right(&self) -> *const SDL_HapticLeftRight {
-        self.data.as_ptr() as *const _
+    pub fn left_right(&mut self) -> *mut SDL_HapticLeftRight {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn custom(&self) -> *const SDL_HapticCustom {
-        self.data.as_ptr() as *const _
+    pub fn custom(&mut self) -> *mut SDL_HapticCustom {
+        self.data.as_mut_ptr() as *mut _
     }
 }
 
 extern "C" {
     pub fn SDL_NumHaptics() -> c_int;
     pub fn SDL_HapticName(device_index: c_int) -> *const c_char;
-    pub fn SDL_HapticOpen(device_index: c_int) -> *const SDL_Haptic;
+    pub fn SDL_HapticOpen(device_index: c_int) -> *mut SDL_Haptic;
     pub fn SDL_HapticOpened(device_index: c_int) -> c_int;
-    pub fn SDL_HapticIndex(haptic: *const SDL_Haptic) -> c_int;
+    pub fn SDL_HapticIndex(haptic: *mut SDL_Haptic) -> c_int;
     pub fn SDL_MouseIsHaptic() -> c_int;
-    pub fn SDL_HapticOpenFromMouse() -> *const SDL_Haptic;
-    pub fn SDL_JoystickIsHaptic(joystick: *const SDL_Joystick) -> c_int;
-    pub fn SDL_HapticOpenFromJoystick(joystick: *const SDL_Joystick) -> *const SDL_Haptic;
-    pub fn SDL_HapticClose(haptic: *const SDL_Haptic);
-    pub fn SDL_HapticNumEffects(haptic: *const SDL_Haptic) -> c_int;
-    pub fn SDL_HapticNumEffectsPlaying(haptic: *const SDL_Haptic) -> c_int;
-    pub fn SDL_HapticQuery(haptic: *const SDL_Haptic) -> c_uint;
-    pub fn SDL_HapticNumAxes(haptic: *const SDL_Haptic) -> c_int;
-    pub fn SDL_HapticEffectSupported(haptic: *const SDL_Haptic, effect: *const SDL_HapticEffect) -> c_int;
-    pub fn SDL_HapticNewEffect(haptic: *const SDL_Haptic, effect: *const SDL_HapticEffect) -> c_int;
-    pub fn SDL_HapticUpdateEffect(haptic: *const SDL_Haptic, effect: *const SDL_HapticEffect) -> c_int;
-    pub fn SDL_HapticRunEffect(haptic: *const SDL_Haptic, effect: c_int, iterations: uint32_t) -> c_int;
-    pub fn SDL_HapticStopEffect(haptic: *const SDL_Haptic, effect: c_int) -> c_int;
-    pub fn SDL_HapticDestroyEffect(haptic: *const SDL_Haptic, effect: c_int);
-    pub fn SDL_HapticGetEffectStatus(haptic: *const SDL_Haptic, effect: c_int) -> c_int;
-    pub fn SDL_HapticSetGain(haptic: *const SDL_Haptic, gain: c_int) -> c_int;
-    pub fn SDL_HapticSetAutocenter(haptic: *const SDL_Haptic, autocenter: c_int) -> c_int;
-    pub fn SDL_HapticPause(haptic: *const SDL_Haptic) -> c_int;
-    pub fn SDL_HapticUnpause(haptic: *const SDL_Haptic) -> c_int;
-    pub fn SDL_HapticStopAll(haptic: *const SDL_Haptic) -> c_int;
-    pub fn SDL_HapticRumbleSupported(haptic: *const SDL_Haptic) -> c_int;
-    pub fn SDL_HapticRumbleInit(haptic: *const SDL_Haptic) -> c_int;
-    pub fn SDL_HapticRumblePlay(haptic: *const SDL_Haptic, strength: c_float, length: uint32_t) -> c_int;
-    pub fn SDL_HapticRumbleStop(haptic: *const SDL_Haptic) -> c_int;
+    pub fn SDL_HapticOpenFromMouse() -> *mut SDL_Haptic;
+    pub fn SDL_JoystickIsHaptic(joystick: *mut SDL_Joystick) -> c_int;
+    pub fn SDL_HapticOpenFromJoystick(joystick: *mut SDL_Joystick) -> *mut SDL_Haptic;
+    pub fn SDL_HapticClose(haptic: *mut SDL_Haptic);
+    pub fn SDL_HapticNumEffects(haptic: *mut SDL_Haptic) -> c_int;
+    pub fn SDL_HapticNumEffectsPlaying(haptic: *mut SDL_Haptic) -> c_int;
+    pub fn SDL_HapticQuery(haptic: *mut SDL_Haptic) -> c_uint;
+    pub fn SDL_HapticNumAxes(haptic: *mut SDL_Haptic) -> c_int;
+    pub fn SDL_HapticEffectSupported(haptic: *mut SDL_Haptic, effect: *mut SDL_HapticEffect) -> c_int;
+    pub fn SDL_HapticNewEffect(haptic: *mut SDL_Haptic, effect: *mut SDL_HapticEffect) -> c_int;
+    pub fn SDL_HapticUpdateEffect(haptic: *mut SDL_Haptic, effect: *mut SDL_HapticEffect) -> c_int;
+    pub fn SDL_HapticRunEffect(haptic: *mut SDL_Haptic, effect: c_int, iterations: uint32_t) -> c_int;
+    pub fn SDL_HapticStopEffect(haptic: *mut SDL_Haptic, effect: c_int) -> c_int;
+    pub fn SDL_HapticDestroyEffect(haptic: *mut SDL_Haptic, effect: c_int);
+    pub fn SDL_HapticGetEffectStatus(haptic: *mut SDL_Haptic, effect: c_int) -> c_int;
+    pub fn SDL_HapticSetGain(haptic: *mut SDL_Haptic, gain: c_int) -> c_int;
+    pub fn SDL_HapticSetAutocenter(haptic: *mut SDL_Haptic, autocenter: c_int) -> c_int;
+    pub fn SDL_HapticPause(haptic: *mut SDL_Haptic) -> c_int;
+    pub fn SDL_HapticUnpause(haptic: *mut SDL_Haptic) -> c_int;
+    pub fn SDL_HapticStopAll(haptic: *mut SDL_Haptic) -> c_int;
+    pub fn SDL_HapticRumbleSupported(haptic: *mut SDL_Haptic) -> c_int;
+    pub fn SDL_HapticRumbleInit(haptic: *mut SDL_Haptic) -> c_int;
+    pub fn SDL_HapticRumblePlay(haptic: *mut SDL_Haptic, strength: c_float, length: uint32_t) -> c_int;
+    pub fn SDL_HapticRumbleStop(haptic: *mut SDL_Haptic) -> c_int;
 }

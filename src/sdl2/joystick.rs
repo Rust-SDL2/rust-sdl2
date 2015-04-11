@@ -59,7 +59,7 @@ pub fn update() {
 
 /// Wrapper around the SDL_Joystick object
 pub struct Joystick {
-    raw: *const ll::SDL_Joystick,
+    raw: *mut ll::SDL_Joystick,
 }
 
 impl Joystick {

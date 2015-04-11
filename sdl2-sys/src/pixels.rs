@@ -14,7 +14,7 @@ pub struct SDL_Color {
 #[repr(C)]
 pub struct SDL_Palette {
     pub ncolors: c_int,
-    pub colors: *const SDL_Color,
+    pub colors: *mut SDL_Color,
     pub version: uint32_t,
     pub refcount: c_int
 }
@@ -23,7 +23,7 @@ pub struct SDL_Palette {
 #[repr(C)]
 pub struct SDL_PixelFormat {
     pub format: SDL_PixelFormatEnum,
-    pub palette: *const SDL_Palette,
+    pub palette: *mut SDL_Palette,
     pub BitsPerPixel: uint8_t,
     pub BytesPerPixel: uint8_t,
     pub padding: [uint8_t; 2],
@@ -40,7 +40,7 @@ pub struct SDL_PixelFormat {
     pub Bshift: uint8_t,
     pub Ashift: uint8_t,
     pub refcount: c_int,
-    pub next: *const SDL_PixelFormat
+    pub next: *mut SDL_PixelFormat
 }
 
 pub type SDL_PixelFormatEnum = uint32_t;
@@ -82,8 +82,8 @@ pub const SDL_PIXELFORMAT_UYVY: SDL_PixelFormatEnum = 0x59565955;
 pub const SDL_PIXELFORMAT_YVYU: SDL_PixelFormatEnum = 0x55595659;
 
 extern "C" {
-    pub fn SDL_GetRGB(pixel: uint32_t, format: *const SDL_PixelFormat, r: *const uint8_t, g: *const uint8_t, b: *const uint8_t);
-    pub fn SDL_GetRGBA(pixel: uint32_t, format: *const SDL_PixelFormat, r: *const uint8_t, g: *const uint8_t, b: *const uint8_t, a: *const uint8_t);
-    pub fn SDL_MapRGB(format: *const SDL_PixelFormat, r: uint8_t, g: uint8_t, b: uint8_t) -> uint32_t;
-    pub fn SDL_MapRGBA(format: *const SDL_PixelFormat, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) -> uint32_t;
+    pub fn SDL_GetRGB(pixel: uint32_t, format: *mut SDL_PixelFormat, r: *mut uint8_t, g: *mut uint8_t, b: *mut uint8_t);
+    pub fn SDL_GetRGBA(pixel: uint32_t, format: *mut SDL_PixelFormat, r: *mut uint8_t, g: *mut uint8_t, b: *mut uint8_t, a: *mut uint8_t);
+    pub fn SDL_MapRGB(format: *mut SDL_PixelFormat, r: uint8_t, g: uint8_t, b: uint8_t) -> uint32_t;
+    pub fn SDL_MapRGBA(format: *mut SDL_PixelFormat, r: uint8_t, g: uint8_t, b: uint8_t, a: uint8_t) -> uint32_t;
 }

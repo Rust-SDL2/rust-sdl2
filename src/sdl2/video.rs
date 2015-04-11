@@ -95,7 +95,7 @@ impl DisplayMode {
             w: self.w as c_int,
             h: self.h as c_int,
             refresh_rate: self.refresh_rate as c_int,
-            driverdata: ptr::null()
+            driverdata: ptr::null_mut()
         }
     }
 }
@@ -158,13 +158,13 @@ impl Drop for GLContext {
 }
 
 pub struct Window {
-    raw: *const ll::SDL_Window,
+    raw: *mut ll::SDL_Window,
     owned: bool
 }
 
 impl_raw_accessors!(
     (GLContext, ll::SDL_GLContext),
-    (Window, *const ll::SDL_Window)
+    (Window, *mut ll::SDL_Window)
 );
 
 impl_owned_accessors!(
@@ -173,7 +173,7 @@ impl_owned_accessors!(
 );
 
 impl_raw_constructor!(
-    (Window, Window (raw: *const ll::SDL_Window, owned: bool))
+    (Window, Window (raw: *mut ll::SDL_Window, owned: bool))
 );
 
 impl Drop for Window {
@@ -188,7 +188,7 @@ impl Drop for Window {
 
 /// Contains accessors to a `Window`'s properties.
 pub struct WindowProperties<'a> {
-    raw: *const ll::SDL_Window,
+    raw: *mut ll::SDL_Window,
     _marker: PhantomData<&'a ()>
 }
 
@@ -226,7 +226,7 @@ impl Window {
                     window_flags.bits()
             );
 
-            if raw == ptr::null() {
+            if raw == ptr::null_mut() {
                 Err(get_error())
             } else {
                 try!(init(WindowProperties {
@@ -286,7 +286,7 @@ impl Window {
     /// already being used as a variable in the application.
     pub unsafe fn from_id(id: u32) -> SdlResult<Window> {
         let raw = ll::SDL_GetWindowFromID(id);
-        if raw == ptr::null() {
+        if raw == ptr::null_mut() {
             Err(get_error())
         } else {
             Ok(Window{ raw: raw, owned: false})
@@ -299,7 +299,7 @@ impl Window {
 
     pub fn gl_create_context(&self) -> SdlResult<GLContext> {
         let result = unsafe { ll::SDL_GL_CreateContext(self.raw) };
-        if result == ptr::null() {
+        if result == ptr::null_mut() {
             Err(get_error())
         } else {
             Ok(GLContext{raw: result, owned: true})
@@ -336,7 +336,7 @@ impl<'a> WindowProperties<'a> {
             let result = ll::SDL_SetWindowDisplayMode(
                 self.raw,
                 match display_mode {
-                    Some(ref mode) => &mode.to_ll() as *const _,
+                    Some(ref mode) => &mode.to_ll(),
                     None => ptr::null()
                 }
             );
@@ -349,12 +349,12 @@ impl<'a> WindowProperties<'a> {
     }
 
     pub fn get_display_mode(&self) -> SdlResult<DisplayMode> {
-        let dm = unsafe { mem::uninitialized() };
+        let mut dm = unsafe { mem::uninitialized() };
 
         let result = unsafe {
             ll::SDL_GetWindowDisplayMode(
                 self.raw,
-                &dm
+                &mut dm
             ) == 0
         };
 
@@ -406,9 +406,9 @@ impl<'a> WindowProperties<'a> {
     }
 
     pub fn get_position(&self) -> (i32, i32) {
-        let x: c_int = 0;
-        let y: c_int = 0;
-        unsafe { ll::SDL_GetWindowPosition(self.raw, &x, &y) };
+        let mut x: c_int = 0;
+        let mut y: c_int = 0;
+        unsafe { ll::SDL_GetWindowPosition(self.raw, &mut x, &mut y) };
         (x as i32, y as i32)
     }
 
@@ -417,16 +417,16 @@ impl<'a> WindowProperties<'a> {
     }
 
     pub fn get_size(&self) -> (i32, i32) {
-        let w: c_int = 0;
-        let h: c_int = 0;
-        unsafe { ll::SDL_GetWindowSize(self.raw, &w, &h) };
+        let mut w: c_int = 0;
+        let mut h: c_int = 0;
+        unsafe { ll::SDL_GetWindowSize(self.raw, &mut w, &mut h) };
         (w as i32, h as i32)
     }
 
     pub fn get_drawable_size(&self) -> (i32, i32) {
-        let w: c_int = 0;
-        let h: c_int = 0;
-        unsafe { ll::SDL_GL_GetDrawableSize(self.raw, &w, &h) };
+        let mut w: c_int = 0;
+        let mut h: c_int = 0;
+        unsafe { ll::SDL_GL_GetDrawableSize(self.raw, &mut w, &mut h) };
         (w as i32, h as i32)
     }
 
@@ -435,9 +435,9 @@ impl<'a> WindowProperties<'a> {
     }
 
     pub fn get_minimum_size(&self) -> (i32, i32) {
-        let w: c_int = 0;
-        let h: c_int = 0;
-        unsafe { ll::SDL_GetWindowMinimumSize(self.raw, &w, &h) };
+        let mut w: c_int = 0;
+        let mut h: c_int = 0;
+        unsafe { ll::SDL_GetWindowMinimumSize(self.raw, &mut w, &mut h) };
         (w as i32, h as i32)
     }
 
@@ -446,9 +446,9 @@ impl<'a> WindowProperties<'a> {
     }
 
     pub fn get_maximum_size(&self) -> (i32, i32) {
-        let w: c_int = 0;
-        let h: c_int = 0;
-        unsafe { ll::SDL_GetWindowMaximumSize(self.raw, &w, &h) };
+        let mut w: c_int = 0;
+        let mut h: c_int = 0;
+        unsafe { ll::SDL_GetWindowMaximumSize(self.raw, &mut w, &mut h) };
         (w as i32, h as i32)
     }
 
@@ -493,7 +493,7 @@ impl<'a> WindowProperties<'a> {
     pub fn get_surface(&mut self) -> SdlResult<Surface> {
         let raw = unsafe { ll::SDL_GetWindowSurface(self.raw) };
 
-        if raw == ptr::null() {
+        if raw == ptr::null_mut() {
             Err(get_error())
         } else {
             unsafe { Ok(Surface::from_ll(raw, false)) } //Docs say that it releases with the window
@@ -566,10 +566,10 @@ impl<'a> WindowProperties<'a> {
     }
 
     pub fn get_gamma_ramp(&self) -> SdlResult<(Vec<u16>, Vec<u16>, Vec<u16>)> {
-        let red: Vec<u16> = Vec::with_capacity(256);
-        let green: Vec<u16> = Vec::with_capacity(256);
-        let blue: Vec<u16> = Vec::with_capacity(256);
-        let result = unsafe {ll::SDL_GetWindowGammaRamp(self.raw, red.as_ptr(), green.as_ptr(), blue.as_ptr()) == 0};
+        let mut red: Vec<u16> = Vec::with_capacity(256);
+        let mut green: Vec<u16> = Vec::with_capacity(256);
+        let mut blue: Vec<u16> = Vec::with_capacity(256);
+        let result = unsafe {ll::SDL_GetWindowGammaRamp(self.raw, red.as_mut_ptr(), green.as_mut_ptr(), blue.as_mut_ptr()) == 0};
         if result {
             Ok((red, green, blue))
         } else {
@@ -631,8 +631,8 @@ pub fn get_display_name(display_index: i32) -> String {
 }
 
 pub fn get_display_bounds(display_index: i32) -> SdlResult<Rect> {
-    let out: Rect = Rect::new(0, 0, 0, 0);
-    let result = unsafe { ll::SDL_GetDisplayBounds(display_index as c_int, &out) == 0 };
+    let mut out: Rect = Rect::new(0, 0, 0, 0);
+    let result = unsafe { ll::SDL_GetDisplayBounds(display_index as c_int, &mut out) == 0 };
 
     if result {
         Ok(out)
@@ -651,8 +651,8 @@ pub fn get_num_display_modes(display_index: i32) -> SdlResult<i32> {
 }
 
 pub fn get_display_mode(display_index: i32, mode_index: i32) -> SdlResult<DisplayMode> {
-    let dm = unsafe { mem::uninitialized() };
-    let result = unsafe { ll::SDL_GetDisplayMode(display_index as c_int, mode_index as c_int, &dm) == 0};
+    let mut dm = unsafe { mem::uninitialized() };
+    let result = unsafe { ll::SDL_GetDisplayMode(display_index as c_int, mode_index as c_int, &mut dm) == 0};
 
     if result {
         Ok(DisplayMode::from_ll(&dm))
@@ -662,8 +662,8 @@ pub fn get_display_mode(display_index: i32, mode_index: i32) -> SdlResult<Displa
 }
 
 pub fn get_desktop_display_mode(display_index: i32) -> SdlResult<DisplayMode> {
-    let dm = unsafe { mem::uninitialized() };
-    let result = unsafe { ll::SDL_GetDesktopDisplayMode(display_index as c_int, &dm) == 0};
+    let mut dm = unsafe { mem::uninitialized() };
+    let result = unsafe { ll::SDL_GetDesktopDisplayMode(display_index as c_int, &mut dm) == 0};
 
     if result {
         Ok(DisplayMode::from_ll(&dm))
@@ -673,8 +673,8 @@ pub fn get_desktop_display_mode(display_index: i32) -> SdlResult<DisplayMode> {
 }
 
 pub fn get_current_display_mode(display_index: i32) -> SdlResult<DisplayMode> {
-    let dm = unsafe { mem::uninitialized() };
-    let result = unsafe { ll::SDL_GetCurrentDisplayMode(display_index as c_int, &dm) == 0};
+    let mut dm = unsafe { mem::uninitialized() };
+    let result = unsafe { ll::SDL_GetCurrentDisplayMode(display_index as c_int, &mut dm) == 0};
 
     if result {
         Ok(DisplayMode::from_ll(&dm))
@@ -685,11 +685,11 @@ pub fn get_current_display_mode(display_index: i32) -> SdlResult<DisplayMode> {
 
 pub fn get_closest_display_mode(display_index: i32, mode: &DisplayMode) -> SdlResult<DisplayMode> {
     let input = mode.to_ll();
-    let dm = unsafe { mem::uninitialized() };
+    let mut dm = unsafe { mem::uninitialized() };
 
-    let result = unsafe { ll::SDL_GetClosestDisplayMode(display_index as c_int, &input, &dm) };
+    let result = unsafe { ll::SDL_GetClosestDisplayMode(display_index as c_int, &input, &mut dm) };
 
-    if result == ptr::null() {
+    if result == ptr::null_mut() {
         Err(get_error())
     } else {
         Ok(DisplayMode::from_ll(&dm))
@@ -748,9 +748,9 @@ pub fn gl_set_attribute(attr: GLAttr, value: i32) -> bool {
 }
 
 pub fn gl_get_attribute(attr: GLAttr) -> SdlResult<i32> {
-    let out: c_int = 0;
+    let mut out = 0;
 
-    let result = unsafe { ll::SDL_GL_GetAttribute(FromPrimitive::from_u64(attr as u64).unwrap(), &out) } == 0;
+    let result = unsafe { ll::SDL_GL_GetAttribute(FromPrimitive::from_u64(attr as u64).unwrap(), &mut out) } == 0;
     if result {
         Ok(out as i32)
     } else {
@@ -760,7 +760,7 @@ pub fn gl_get_attribute(attr: GLAttr) -> SdlResult<i32> {
 
 pub unsafe fn gl_get_current_window() -> SdlResult<Window> {
     let raw = ll::SDL_GL_GetCurrentWindow();
-    if raw == ptr::null() {
+    if raw == ptr::null_mut() {
         Err(get_error())
     } else {
         Ok(Window{ raw: raw, owned: false })
@@ -769,7 +769,7 @@ pub unsafe fn gl_get_current_window() -> SdlResult<Window> {
 
 pub unsafe fn gl_get_current_context() -> SdlResult<GLContext> {
     let raw = ll::SDL_GL_GetCurrentContext();
-    if raw == ptr::null() {
+    if raw == ptr::null_mut() {
         Err(get_error())
     } else {
         Ok(GLContext{ raw: raw, owned: false })

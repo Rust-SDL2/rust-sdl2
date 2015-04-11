@@ -36,14 +36,14 @@ pub struct SDL_GameControllerButtonBindDataHat {
 }
 
 impl SDL_GameControllerButtonBindData {
-    pub fn button(&self) -> *const c_int {
-        self.data.as_ptr() as *const _
+    pub fn button(&mut self) -> *mut c_int {
+        self.data.as_mut_ptr() as *mut _
     }
-    pub fn axis(&self) -> *const c_int {
-        self.data.as_ptr() as *const _
+    pub fn axis(&mut self) -> *mut c_int {
+        self.data.as_mut_ptr() as *mut _
     }
-    pub fn hat(&self) -> *const SDL_GameControllerButtonBindDataHat {
-        self.data.as_ptr() as *const _
+    pub fn hat(&mut self) -> *mut SDL_GameControllerButtonBindDataHat {
+        self.data.as_mut_ptr() as *mut _
     }
 }
 
@@ -80,21 +80,21 @@ extern "C" {
     pub fn SDL_GameControllerAddMapping(mappingString: *const c_char) -> c_int;
     pub fn SDL_GameControllerMappingForGUID(guid: SDL_JoystickGUID) ->
               *const c_char;
-    pub fn SDL_GameControllerMapping(gamecontroller: *const SDL_GameController)
+    pub fn SDL_GameControllerMapping(gamecontroller: *mut SDL_GameController)
               -> *const c_char;
     pub fn SDL_IsGameController(joystick_index: c_int) -> SDL_bool;
     pub fn SDL_GameControllerNameForIndex(joystick_index: c_int) ->
               *const c_char;
     pub fn SDL_GameControllerOpen(joystick_index: c_int) ->
-              *const SDL_GameController;
-    pub fn SDL_GameControllerName(gamecontroller: *const SDL_GameController) ->
+              *mut SDL_GameController;
+    pub fn SDL_GameControllerName(gamecontroller: *mut SDL_GameController) ->
               *const c_char;
     pub fn SDL_GameControllerGetAttached(gamecontroller:
-                                                   *const SDL_GameController) ->
+                                                   *mut SDL_GameController) ->
               SDL_bool;
     pub fn SDL_GameControllerGetJoystick(gamecontroller:
-                                                   *const SDL_GameController) ->
-              *const SDL_Joystick;
+                                                   *mut SDL_GameController) ->
+              *mut SDL_Joystick;
     pub fn SDL_GameControllerEventState(state: c_int) -> c_int;
     pub fn SDL_GameControllerUpdate();
     pub fn SDL_GameControllerGetAxisFromString(pchString: *const c_char) ->
@@ -103,10 +103,10 @@ extern "C" {
                                                         SDL_GameControllerAxis)
               -> *const c_char;
     pub fn SDL_GameControllerGetBindForAxis(gamecontroller:
-                                                      *const SDL_GameController,
+                                                      *mut SDL_GameController,
                                                   axis: SDL_GameControllerAxis)
               -> SDL_GameControllerButtonBind;
-    pub fn SDL_GameControllerGetAxis(gamecontroller: *const SDL_GameController,
+    pub fn SDL_GameControllerGetAxis(gamecontroller: *mut SDL_GameController,
                                            axis: SDL_GameControllerAxis) ->
               int16_t;
     pub fn SDL_GameControllerGetButtonFromString(pchString: *const c_char) ->
@@ -115,13 +115,13 @@ extern "C" {
                                                       SDL_GameControllerButton)
               -> *const c_char;
     pub fn SDL_GameControllerGetBindForButton(gamecontroller:
-                                                        *const SDL_GameController,
+                                                        *mut SDL_GameController,
                                                     button:
                                                       SDL_GameControllerButton)
               -> SDL_GameControllerButtonBind;
     pub fn SDL_GameControllerGetButton(gamecontroller:
-                                                 *const SDL_GameController,
+                                                 *mut SDL_GameController,
                                              button: SDL_GameControllerButton)
               -> uint8_t;
-    pub fn SDL_GameControllerClose(gamecontroller: *const SDL_GameController);
+    pub fn SDL_GameControllerClose(gamecontroller: *mut SDL_GameController);
 }
