@@ -38,6 +38,7 @@
 //! None of the draw methods in `RenderDrawer` are expected to fail.
 //! If they do, a panic is raised and the program is aborted.
 
+use Sdl;
 use event::EventPump;
 use video;
 use video::{Window, WindowProperties};
@@ -190,7 +191,7 @@ impl<'a> Renderer<'a> {
     }
 
     /// Creates a window and default renderer.
-    pub fn new_with_window(width: i32, height: i32, window_flags: video::WindowFlags) -> SdlResult<Renderer<'static>> {
+    pub fn new_with_window(_sdl: &Sdl, width: i32, height: i32, window_flags: video::WindowFlags) -> SdlResult<Renderer<'static>> {
         use sys::video::SDL_Window;
 
         let raw_window: *const SDL_Window = ptr::null();
