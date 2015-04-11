@@ -130,7 +130,6 @@ pub fn init(flags: InitFlag) -> SdlResult<Sdl> {
         let was_alive = IS_SDL_CONTEXT_ALIVE.swap(true, Ordering::Relaxed);
 
         if was_alive {
-            IS_SDL_CONTEXT_ALIVE.swap(false, Ordering::Relaxed);
             Err(format!("Cannot have more than one `Sdl` in use at the same time"))
         } else {
             if ll::SDL_Init(flags.bits()) == 0 {
