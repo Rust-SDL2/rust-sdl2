@@ -23,17 +23,7 @@
 //! This API is not designed to be used from multiple threads, see
 //! [this bug](http://bugzilla.libsdl.org/show_bug.cgi?id=1995) for details.
 //!
-//! # Rust differences
-//!
-//! The Rust version of the render API deviates slightly from the original,
-//! in order to be more idiomatic with Rust and to adhere to its notion of
-//! memory safety.
-//!
-//! All `Texture` types are restricted to live for only as long as
-//! the parent `Renderer`.
-//! Consequentially, this means that `Renderer` never mutates and that all
-//! drawing functionality is put behind interior mutability using
-//! `RenderDrawer<'renderer>`.
+//! ---
 //!
 //! None of the draw methods in `RenderDrawer` are expected to fail.
 //! If they do, a panic is raised and the program is aborted.
@@ -51,11 +41,11 @@ use std::ptr;
 use libc::{c_int, uint32_t, c_double, c_void};
 use rect::Point;
 use rect::Rect;
-use std::cell::{RefCell, RefMut};
+use std::cell::UnsafeCell;
 use std::ffi::CStr;
 use num::FromPrimitive;
 use std::vec::Vec;
-use std::marker::PhantomData;
+use std::rc::Rc;
 
 use sys::render as ll;
 
@@ -158,12 +148,15 @@ pub enum RendererParent {
 pub struct Renderer {
     raw: *const ll::SDL_Renderer,
     parent: Option<RendererParent>,
-    drawer_borrow: RefCell<()>
+    is_alive: Rc<UnsafeCell<bool>>
 }
 
 impl Drop for Renderer {
     fn drop(&mut self) {
-        unsafe { ll::SDL_DestroyRenderer(self.raw) };
+        unsafe {
+            *self.is_alive.get() = false;
+            ll::SDL_DestroyRenderer(self.raw);
+        };
     }
 }
 
@@ -274,30 +267,20 @@ impl Renderer {
 
     /// Provides drawing methods for the renderer.
     ///
-    /// # Remarks
-    /// This method is not `&mut self`.
-    /// It uses interior mutability via `RenderDrawer<'renderer>` to preserve the
-    /// Renderer's lifetime, and therefore the lifetimes of any Textures that
-    /// belong to the Renderer.
-    ///
-    /// Only one `RenderDrawer` per `Renderer` can be active at a time.
-    /// If this method is called and an existing `RenderDrawer` from this
-    /// instance is active, the program will panic.
-    ///
     /// # Examples
     /// ```no_run
     /// use sdl2::render::Renderer;
     /// use sdl2::rect::Rect;
     ///
-    /// fn test_draw(renderer: &Renderer) {
+    /// fn test_draw(renderer: &mut Renderer) {
     ///     let mut drawer = renderer.drawer();
     ///     drawer.clear();
     ///     drawer.draw_rect(Rect::new(50, 50, 150, 175));
     ///     drawer.present();
     /// }
     /// ```
-    pub fn drawer(&self) -> RenderDrawer {
-        RenderDrawer::new(self.raw, self.drawer_borrow.borrow_mut())
+    pub fn drawer(&mut self) -> RenderDrawer {
+        RenderDrawer::new(self.raw, &self.is_alive)
     }
 
     /// Unwraps the window or surface the rendering context was created from.
@@ -309,7 +292,7 @@ impl Renderer {
         Renderer {
             raw: raw,
             parent: Some(parent),
-            drawer_borrow: RefCell::new(())
+            is_alive: Rc::new(UnsafeCell::new(true))
         }
     }
 }
@@ -337,7 +320,7 @@ impl Renderer {
         if result == ptr::null() {
             Err(get_error())
         } else {
-            unsafe { Ok(Texture::from_ll(result)) }
+            unsafe { Ok(Texture::from_ll(self, result)) }
         }
     }
 
@@ -364,7 +347,7 @@ impl Renderer {
         if result == ptr::null() {
             Err(get_error())
         } else {
-            unsafe { Ok(Texture::from_ll(result)) }
+            unsafe { Ok(Texture::from_ll(self, result)) }
         }
     }
 }
@@ -372,15 +355,15 @@ impl Renderer {
 /// Drawing functionality for the render context.
 pub struct RenderDrawer<'renderer> {
     raw: *const ll::SDL_Renderer,
-    _borrow: RefMut<'renderer, ()>
+    is_renderer_alive: &'renderer Rc<UnsafeCell<bool>>
 }
 
 /// Render target methods for the drawer
 impl<'renderer> RenderDrawer<'renderer> {
-    fn new<'l>(raw: *const ll::SDL_Renderer, borrow: RefMut<'l, ()>) -> RenderDrawer<'l> {
+    fn new<'l>(raw: *const ll::SDL_Renderer, is_renderer_alive: &'l Rc<UnsafeCell<bool>>) -> RenderDrawer<'l> {
         RenderDrawer {
             raw: raw,
-            _borrow: borrow
+            is_renderer_alive: is_renderer_alive
         }
     }
 
@@ -392,11 +375,11 @@ impl<'renderer> RenderDrawer<'renderer> {
     /// Gets the render target handle.
     ///
     /// Returns `None` if the window does not support the use of render targets.
-    pub fn render_target<'a>(&'a mut self) -> Option<RenderTarget<'a>> {
+    pub fn render_target(&mut self) -> Option<RenderTarget> {
         if self.render_target_supported() {
             Some(RenderTarget {
                 raw: self.raw,
-                _marker_renderer: PhantomData,
+                is_renderer_alive: self.is_renderer_alive
             })
         } else {
             None
@@ -659,6 +642,8 @@ impl<'renderer> RenderDrawer<'renderer> {
     /// Panics if drawing fails for any reason (e.g. driver failure),
     /// or if the provided texture does not belong to the renderer.
     pub fn copy(&mut self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>) {
+        texture.check_renderer();
+
         let ret = unsafe {
             ll::SDL_RenderCopy(
                 self.raw,
@@ -694,6 +679,8 @@ impl<'renderer> RenderDrawer<'renderer> {
     /// if the provided texture does not belong to the renderer,
     /// or if the driver does not support RenderCopyEx.
     pub fn copy_ex(&mut self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>, angle: f64, center: Option<Point>, (flip_horizontal, flip_vertical): (bool, bool)) {
+        texture.check_renderer();
+
         let flip = match (flip_horizontal, flip_vertical) {
             (false, false) => ll::SDL_FLIP_NONE,
             (true, false) => ll::SDL_FLIP_HORIZONTAL,
@@ -768,7 +755,7 @@ impl<'renderer> RenderDrawer<'renderer> {
 /// use sdl2::render::{RenderDrawer, Texture};
 ///
 /// // Draw a red rectangle to a new texture
-/// fn draw_to_texture<'renderer>(drawer: &'renderer mut RenderDrawer<'renderer>) -> Texture<'renderer> {
+/// fn draw_to_texture(drawer: &mut RenderDrawer) -> Texture {
 ///     drawer.render_target()
 ///         .expect("This platform doesn't support render targets")
 ///         .create_and_set(PixelFormatEnum::RGBA8888, 512, 512);
@@ -784,21 +771,24 @@ impl<'renderer> RenderDrawer<'renderer> {
 /// ```
 pub struct RenderTarget<'renderer> {
     raw: *const ll::SDL_Renderer,
-    _marker_renderer: PhantomData<&'renderer ()>
+    is_renderer_alive: &'renderer Rc<UnsafeCell<bool>>
 }
 
 impl<'renderer> RenderTarget<'renderer> {
     /// Resets the render target to the default render target.
     ///
     /// The old render target is returned if the function is successful.
-    pub fn reset(&mut self) -> SdlResult<Option<Texture<'renderer>>> {
+    pub fn reset(&mut self) -> SdlResult<Option<Texture>> {
         unsafe {
             let old_texture_raw = ll::SDL_GetRenderTarget(self.raw);
 
             if ll::SDL_SetRenderTarget(self.raw, ptr::null()) == 0 {
                 Ok(match old_texture_raw.is_null() {
                     true => None,
-                    false => Some(Texture::from_ll(old_texture_raw))
+                    false => Some(Texture {
+                        raw: old_texture_raw,
+                        is_renderer_alive: self.is_renderer_alive.clone()
+                    })
                 })
             } else {
                 Err(get_error())
@@ -810,15 +800,20 @@ impl<'renderer> RenderTarget<'renderer> {
     /// The texture must be created with the texture access: `sdl2::render::TextureAccess::Target`.
     ///
     /// The old render target is returned if the function is successful.
-    pub fn set(&mut self, texture: Texture) -> SdlResult<Option<Texture<'renderer>>> {
+    pub fn set(&mut self, texture: Texture) -> SdlResult<Option<Texture>> {
+        texture.check_renderer();
+
         unsafe {
             let old_texture_raw = ll::SDL_GetRenderTarget(self.raw);
 
             if ll::SDL_SetRenderTarget(self.raw, texture.raw) == 0 {
-                mem::forget(texture);
+                texture.forget();
                 Ok(match old_texture_raw.is_null() {
                     true => None,
-                    false => Some(Texture::from_ll(old_texture_raw))
+                    false => Some(Texture {
+                        raw: old_texture_raw,
+                        is_renderer_alive: self.is_renderer_alive.clone()
+                    })
                 })
             } else {
                 Err(get_error())
@@ -829,7 +824,7 @@ impl<'renderer> RenderTarget<'renderer> {
     /// Creates a new texture and sets it as the render target.
     ///
     /// The old render target is returned if the function is successful.
-    pub fn create_and_set(&mut self, format: pixels::PixelFormatEnum, width: i32, height: i32) -> SdlResult<Option<Texture<'renderer>>> {
+    pub fn create_and_set(&mut self, format: pixels::PixelFormatEnum, width: i32, height: i32) -> SdlResult<Option<Texture>> {
         let new_texture_raw = unsafe {
             let access = ll::SDL_TEXTUREACCESS_TARGET;
             ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int)
@@ -844,28 +839,15 @@ impl<'renderer> RenderTarget<'renderer> {
                 if ll::SDL_SetRenderTarget(self.raw, new_texture_raw) == 0 {
                     Ok(match old_texture_raw.is_null() {
                         true => None,
-                        false => Some(Texture::from_ll(old_texture_raw))
+                        false => Some(Texture {
+                            raw: old_texture_raw,
+                            is_renderer_alive: self.is_renderer_alive.clone()
+                        })
                     })
                 } else {
                     Err(get_error())
                 }
             }
-        }
-    }
-
-    /// Gets the current render target.
-    /// Returns None if the default render target is set.
-    pub fn get(&mut self) -> Option<Texture> {
-        let texture_raw = unsafe {  ll::SDL_GetRenderTarget(self.raw) };
-
-        if texture_raw == ptr::null() {
-            None
-        } else {
-            Some(Texture {
-                raw: texture_raw,
-                owned: false,
-                _marker: PhantomData
-            })
         }
     }
 }
@@ -880,29 +862,49 @@ pub struct TextureQuery {
 
 /// A texture for a rendering context.
 ///
-/// Textures are owned by and cannot live longer than the parent `Renderer`.
-/// Each texture is bound to the `'renderer` contravariant lifetime.
-pub struct Texture<'renderer> {
+/// Every Texture is owned by a Renderer.
+/// If a Texture is accessed after the corresponding Renderer is dropped, then
+/// the program will panic (clarification: will not crash).
+///
+/// A Texture can be safely dropped before or after the Renderer is dropped.
+pub struct Texture {
     raw: *const ll::SDL_Texture,
-    owned: bool,
-    /// Textures cannot live longer than the Renderer it was born from: 'a
-    /// All SDL textures contain an internal reference to a Renderer
-    _marker: PhantomData<&'renderer ()>
+    is_renderer_alive: Rc<UnsafeCell<bool>>
 }
 
-impl<'renderer> Drop for Texture<'renderer> {
+impl Drop for Texture {
     fn drop(&mut self) {
-        if self.owned {
-            unsafe {
+        unsafe {
+            if *self.is_renderer_alive.get() {
                 ll::SDL_DestroyTexture(self.raw);
             }
         }
     }
 }
 
-impl<'renderer> Texture<'renderer> {
+impl Texture {
+    #[inline]
+    fn check_renderer(&self) {
+        let alive = unsafe { *self.is_renderer_alive.get() };
+        if !alive {
+            panic!("renderer has been destroyed; cannot use Texture");
+        }
+    }
+
+    /// Doesn't free the Texture, but decrements its `is_renderer_alive` box.
+    fn forget(self) {
+        unsafe {
+            let _is_renderer_alive: Rc<UnsafeCell<bool>> = mem::transmute_copy(&self.is_renderer_alive);
+            mem::forget(self);
+
+            // is_renderer_alive gets deref'd
+        }
+    }
+
     /// Queries the attributes of the texture.
     pub fn query(&self) -> TextureQuery {
+        self.check_renderer();
+
         let format: uint32_t = 0;
         let access: c_int = 0;
         let width: c_int = 0;
@@ -924,6 +926,8 @@ impl<'renderer> Texture<'renderer> {
 
     /// Sets an additional color value multiplied into render copy operations.
     pub fn set_color_mod(&mut self, red: u8, green: u8, blue: u8) {
+        self.check_renderer();
+
         let ret = unsafe { ll::SDL_SetTextureColorMod(self.raw, red, green, blue) };
 
         if ret != 0 {
@@ -933,6 +937,8 @@ impl<'renderer> Texture<'renderer> {
 
     /// Gets the additional color value multiplied into render copy operations.
     pub fn get_color_mod(&self) -> (u8, u8, u8) {
+        self.check_renderer();
+
         let r = 0;
         let g = 0;
         let b = 0;
@@ -945,6 +951,8 @@ impl<'renderer> Texture<'renderer> {
 
     /// Sets an additional alpha value multiplied into render copy operations.
     pub fn set_alpha_mod(&mut self, alpha: u8) {
+        self.check_renderer();
+
         let ret = unsafe { ll::SDL_SetTextureAlphaMod(self.raw, alpha) };
 
         if ret != 0 {
@@ -954,6 +962,8 @@ impl<'renderer> Texture<'renderer> {
 
     /// Gets the additional alpha value multiplied into render copy operations.
     pub fn get_alpha_mod(&self) -> u8 {
+        self.check_renderer();
+
         let alpha = 0;
         let ret = unsafe { ll::SDL_GetTextureAlphaMod(self.raw, &alpha) };
 
@@ -964,6 +974,8 @@ impl<'renderer> Texture<'renderer> {
 
     /// Sets the blend mode for a texture, used by `RenderDrawer::copy()`.
     pub fn set_blend_mode(&mut self, blend: BlendMode) {
+        self.check_renderer();
+
         let ret = unsafe { ll::SDL_SetTextureBlendMode(self.raw, FromPrimitive::from_i64(blend as i64).unwrap()) };
 
         if ret != 0 {
@@ -973,6 +985,8 @@ impl<'renderer> Texture<'renderer> {
 
     /// Gets the blend mode used for texture copy operations.
     pub fn get_blend_mode(&self) -> BlendMode {
+        self.check_renderer();
+
         let blend = 0;
         let ret = unsafe { ll::SDL_GetTextureBlendMode(self.raw, &blend) };
 
@@ -988,6 +1002,8 @@ impl<'renderer> Texture<'renderer> {
     ///
     /// * If `rect` is `None`, the entire texture is updated.
     pub fn update(&mut self, rect: Option<Rect>, pixel_data: &[u8], pitch: i32) -> SdlResult<()> {
+        self.check_renderer();
+
         let ret = unsafe {
             let rect_raw_ptr = match rect {
                 Some(ref rect) => rect as *const _,
@@ -1023,6 +1039,8 @@ impl<'renderer> Texture<'renderer> {
 
     /// Updates a rectangle within a planar YV12 or IYUV texture with new pixel data.
     pub fn update_yuv(&mut self, rect: Option<Rect>, y_plane: &[u8], y_pitch: i32, u_plane: &[u8], u_pitch: i32, v_plane: &[u8], v_pitch: i32) -> SdlResult<()> {
+        self.check_renderer();
+
         let rect_raw_ptr = match rect {
             Some(ref rect) => rect as *const _,
             None => ptr::null()
@@ -1083,6 +1101,8 @@ impl<'renderer> Texture<'renderer> {
     pub fn with_lock<F, R>(&mut self, rect: Option<Rect>, func: F) -> SdlResult<R>
     where F: FnOnce(&mut [u8], usize) -> R
     {
+        self.check_renderer();
+
         // Call to SDL to populate pixel data
         let loaded = unsafe {
             let q = self.query();
@@ -1119,6 +1139,8 @@ impl<'renderer> Texture<'renderer> {
     /// Binds an OpenGL/ES/ES2 texture to the current
     /// context for use with when rendering OpenGL primitives directly.
     pub unsafe fn gl_bind_texture(&mut self) -> (f32, f32) {
+        self.check_renderer();
+
         let texw = 0.0;
         let texh = 0.0;
 
@@ -1131,6 +1153,8 @@ impl<'renderer> Texture<'renderer> {
 
     /// Unbinds an OpenGL/ES/ES2 texture from the current context.
     pub unsafe fn gl_unbind_texture(&mut self) {
+        self.check_renderer();
+
         if ll::SDL_GL_UnbindTexture(self.raw) != 0 {
             panic!("OpenGL texture unbinding not supported");
         }
@@ -1138,6 +1162,8 @@ impl<'renderer> Texture<'renderer> {
 
     /// Binds and unbinds an OpenGL/ES/ES2 texture from the current context.
     pub fn gl_with_bind<R, F: FnOnce(f32, f32) -> R>(&mut self, f: F) -> R {
+        self.check_renderer();
+
         unsafe {
             let texw = 0.0;
             let texh = 0.0;
@@ -1157,20 +1183,10 @@ impl<'renderer> Texture<'renderer> {
         }
     }
 
-    pub unsafe fn from_ll<'l>(raw: *const ll::SDL_Texture) -> Texture<'l> {
+    pub unsafe fn from_ll(renderer: &Renderer, raw: *const ll::SDL_Texture) -> Texture {
         Texture {
             raw: raw,
-            owned: true,
-            _marker: PhantomData
-        }
-    }
-
-    #[unstable="Will likely be removed with ownership reform"]
-    pub unsafe fn from_ll_unowned<'l>(raw: *const ll::SDL_Texture) -> Texture<'l> {
-        Texture {
-            raw: raw,
-            owned: false,
-            _marker: PhantomData
+            is_renderer_alive: renderer.is_alive.clone()
         }
     }
 

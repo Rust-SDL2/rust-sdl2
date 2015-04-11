@@ -14,7 +14,7 @@ pub fn main() {
         Err(err) => panic!("failed to create window: {}", err)
     };
 
-    let renderer = match Renderer::from_window(window, RenderDriverIndex::Auto, ACCELERATED) {
+    let mut renderer = match Renderer::from_window(window, RenderDriverIndex::Auto, ACCELERATED) {
         Ok(renderer) => renderer,
         Err(err) => panic!("failed to create renderer: {}", err)
     };
