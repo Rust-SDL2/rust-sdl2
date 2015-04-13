@@ -69,8 +69,8 @@ pub trait SaveSurface {
     fn save_rw(&self, dst: &mut RWops) -> SdlResult<()>;
 }
 
-impl LoadSurface for Surface {
-    fn from_file(filename: &Path) -> SdlResult<Surface> {
+impl<'a> LoadSurface for Surface<'a> {
+    fn from_file(filename: &Path) -> SdlResult<Surface<'a>> {
         //! Loads an SDL Surface from a file
         unsafe {
             let raw = ffi::IMG_Load(CString::new(filename.to_str().unwrap()).unwrap().as_ptr());
@@ -82,7 +82,7 @@ impl LoadSurface for Surface {
         }
     }
 
-    fn from_xpm_array(xpm: *const *const i8) -> SdlResult<Surface> {
+    fn from_xpm_array(xpm: *const *const i8) -> SdlResult<Surface<'a>> {
         //! Loads an SDL Surface from XPM data
         unsafe {
             let raw = ffi::IMG_ReadXPMFromArray(xpm as *const *const c_char);
@@ -95,7 +95,7 @@ impl LoadSurface for Surface {
     }
 }
 
-impl SaveSurface for Surface {
+impl<'a> SaveSurface for Surface<'a> {
     fn save(&self, filename: &Path) -> SdlResult<()> {
         //! Saves an SDL Surface to a file
         unsafe {
@@ -127,7 +127,7 @@ pub trait LoadTexture {
     fn load_texture(&self, filename: &Path) -> SdlResult<Texture>;
 }
 
-impl LoadTexture for Renderer {
+impl<'a> LoadTexture for Renderer<'a> {
     fn load_texture(&self, filename: &Path) -> SdlResult<Texture> {
         //! Loads an SDL Texture from a file
         unsafe {
@@ -135,7 +135,7 @@ impl LoadTexture for Renderer {
             if raw == ptr::null() {
                 Err(get_error())
             } else {
-                Ok(Texture::from_ll(raw))
+                Ok(Texture::from_ll(self, raw))
             }
         }
     }
@@ -163,7 +163,7 @@ pub fn get_linked_version() -> Version {
 }
 
 #[inline]
-fn to_surface_result(raw: *const sys::surface::SDL_Surface) -> SdlResult<Surface> {
+fn to_surface_result<'a>(raw: *const sys::surface::SDL_Surface) -> SdlResult<Surface<'a>> {
     if raw == ptr::null() {
         Err(get_error())
     } else {

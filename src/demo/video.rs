@@ -12,6 +12,7 @@ pub fn main(png: &Path) {
     sdl2_image::init(INIT_PNG | INIT_JPG);
 
     let window = Window::new(
+          &context,
           "rust-sdl2 demo: Video",
           WindowPos::PosCentered,
           WindowPos::PosCentered,
@@ -19,7 +20,7 @@ pub fn main(png: &Path) {
           600,
           OPENGL).unwrap();
 
-    let renderer = Renderer::from_window(
+    let mut renderer = Renderer::from_window(
           window,
           RenderDriverIndex::Auto,
           ACCELERATED).unwrap();
