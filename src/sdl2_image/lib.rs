@@ -135,7 +135,7 @@ impl<'a> LoadTexture for Renderer<'a> {
             if raw == ptr::null() {
                 Err(get_error())
             } else {
-                Ok(Texture::from_ll(raw))
+                Ok(Texture::from_ll(self, raw))
             }
         }
     }
