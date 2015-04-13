@@ -20,7 +20,7 @@ pub fn main(png: &Path) {
           600,
           OPENGL).unwrap();
 
-    let renderer = Renderer::from_window(
+    let mut renderer = Renderer::from_window(
           window,
           RenderDriverIndex::Auto,
           ACCELERATED).unwrap();
