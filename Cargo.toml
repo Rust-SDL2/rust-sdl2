@@ -3,7 +3,7 @@
 name    = "sdl2"
 description = "SDL2 bindings for Rust"
 repository = "https://github.com/AngryLawyer/rust-sdl2"
-version = "0.1.0"
+version = "0.2.0"
 license = "MIT"
 authors = [ "Tony Aldridge <tony@angry-lawyer.com>" ]
 keywords = ["SDL", "windowing", "graphics"]
@@ -22,7 +22,7 @@ rand = "0.3.7"
 [dependencies.sdl2-sys]
 
 path = "sdl2-sys"
-version = "0.1.0"
+version = "0.2.0"
 
 [features]
 
