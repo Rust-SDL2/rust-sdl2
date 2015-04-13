@@ -12,6 +12,7 @@ pub fn main(png: &Path) {
     sdl2_image::init(INIT_PNG | INIT_JPG);
 
     let window = Window::new(
+          &context,
           "rust-sdl2 demo: Video",
           WindowPos::PosCentered,
           WindowPos::PosCentered,
