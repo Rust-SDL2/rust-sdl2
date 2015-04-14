@@ -38,10 +38,10 @@ pub struct SDL_AudioSpec {
     pub padding: uint16_t,
     pub size: uint32_t,
     pub callback: SDL_AudioCallback,
-    pub userdata: *const c_void,
+    pub userdata: *mut c_void,
 }
 pub type SDL_AudioFilter =
-    Option<extern "C" fn (arg1: *const SDL_AudioCVT, arg2: SDL_AudioFormat)>;
+    Option<extern "C" fn (arg1: *mut SDL_AudioCVT, arg2: SDL_AudioFormat)>;
 #[allow(dead_code, missing_copy_implementations, raw_pointer_derive)]
 #[derive(Copy, Clone)]
 #[repr(C)]
@@ -70,7 +70,7 @@ extern "C" {
     pub fn SDL_AudioQuit();
     pub fn SDL_GetCurrentAudioDriver() -> *const c_char;
     pub fn SDL_OpenAudio(desired: *const SDL_AudioSpec,
-                         obtained: *const SDL_AudioSpec) -> c_int;
+                         obtained: *mut SDL_AudioSpec) -> c_int;
     pub fn SDL_GetNumAudioDevices(iscapture: c_int) -> c_int;
     pub fn SDL_GetAudioDeviceName(index: c_int, iscapture: c_int) -> *const c_char;
     pub fn SDL_OpenAudioDevice(device: *const c_char, iscapture: c_int,
@@ -82,7 +82,7 @@ extern "C" {
         SDL_AudioStatus;
     pub fn SDL_PauseAudio(pause_on: c_int);
     pub fn SDL_PauseAudioDevice(dev: SDL_AudioDeviceID, pause_on: c_int);
-    pub fn SDL_LoadWAV_RW(src: *const SDL_RWops, freesrc: c_int,
+    pub fn SDL_LoadWAV_RW(src: *mut SDL_RWops, freesrc: c_int,
                           spec: *mut SDL_AudioSpec,
                           audio_buf: *mut *mut uint8_t, audio_len: *mut uint32_t) -> *mut SDL_AudioSpec;
     pub fn SDL_FreeWAV(audio_buf: *mut uint8_t);
@@ -91,9 +91,9 @@ extern "C" {
                              src_rate: c_int, dst_format: SDL_AudioFormat,
                              dst_channels: uint8_t, dst_rate: c_int) -> c_int;
     pub fn SDL_ConvertAudio(cvt: *mut SDL_AudioCVT) -> c_int;
-    pub fn SDL_MixAudio(dst: *const uint8_t, src: *const uint8_t, len: uint32_t,
+    pub fn SDL_MixAudio(dst: *mut uint8_t, src: *const uint8_t, len: uint32_t,
                         volume: c_int);
-    pub fn SDL_MixAudioFormat(dst: *const uint8_t, src: *const uint8_t,
+    pub fn SDL_MixAudioFormat(dst: *mut uint8_t, src: *const uint8_t,
                               format: SDL_AudioFormat, len: uint32_t,
                               volume: c_int);
     pub fn SDL_LockAudio();

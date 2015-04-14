@@ -320,8 +320,8 @@ pub struct SDL_UserEvent {
     pub timestamp: uint32_t,
     pub windowID: uint32_t,
     pub code: int32_t,
-    pub data1: *const c_void,
-    pub data2: *const c_void,
+    pub data1: *mut c_void,
+    pub data2: *mut c_void,
 }
 
 #[allow(missing_copy_implementations)]
@@ -329,7 +329,7 @@ pub struct SDL_UserEvent {
 pub struct SDL_SysWMEvent {
     pub type_: uint32_t,
     pub timestamp: uint32_t,
-    pub msg: *const SDL_SysWMmsg,
+    pub msg: *mut SDL_SysWMmsg,
 }
 
 #[allow(missing_copy_implementations)]
@@ -339,100 +339,100 @@ pub struct SDL_Event {
 }
 
 impl SDL_Event {
-    pub fn type_(&self) -> *const uint32_t {
-        self.data.as_ptr() as *const _
+    pub fn type_(&mut self) -> *mut uint32_t {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn common(&self) -> *const SDL_CommonEvent {
-        self.data.as_ptr() as *const _
+    pub fn common(&mut self) -> *mut SDL_CommonEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn window(&self) -> *const SDL_WindowEvent {
-        self.data.as_ptr() as *const _
+    pub fn window(&mut self) -> *mut SDL_WindowEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn key(&self) -> *const SDL_KeyboardEvent {
-        self.data.as_ptr() as *const _
+    pub fn key(&mut self) -> *mut SDL_KeyboardEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn edit(&self) -> *const SDL_TextEditingEvent {
-        self.data.as_ptr() as *const _
+    pub fn edit(&mut self) -> *mut SDL_TextEditingEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn text(&self) -> *const SDL_TextInputEvent {
-        self.data.as_ptr() as *const _
+    pub fn text(&mut self) -> *mut SDL_TextInputEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn motion(&self) -> *const SDL_MouseMotionEvent {
-        self.data.as_ptr() as *const _
+    pub fn motion(&mut self) -> *mut SDL_MouseMotionEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn button(&self) -> *const SDL_MouseButtonEvent {
-        self.data.as_ptr() as *const _
+    pub fn button(&mut self) -> *mut SDL_MouseButtonEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn wheel(&self) -> *const SDL_MouseWheelEvent {
-        self.data.as_ptr() as *const _
+    pub fn wheel(&mut self) -> *mut SDL_MouseWheelEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn jaxis(&self) -> *const SDL_JoyAxisEvent {
-        self.data.as_ptr() as *const _
+    pub fn jaxis(&mut self) -> *mut SDL_JoyAxisEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn jball(&self) -> *const SDL_JoyBallEvent {
-        self.data.as_ptr() as *const _
+    pub fn jball(&mut self) -> *mut SDL_JoyBallEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn jhat(&self) -> *const SDL_JoyHatEvent {
-        self.data.as_ptr() as *const _
+    pub fn jhat(&mut self) -> *mut SDL_JoyHatEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn jbutton(&self) -> *const SDL_JoyButtonEvent {
-        self.data.as_ptr() as *const _
+    pub fn jbutton(&mut self) -> *mut SDL_JoyButtonEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn jdevice(&self) -> *const SDL_JoyDeviceEvent {
-        self.data.as_ptr() as *const _
+    pub fn jdevice(&mut self) -> *mut SDL_JoyDeviceEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn caxis(&self) -> *const SDL_ControllerAxisEvent {
-        self.data.as_ptr() as *const _
+    pub fn caxis(&mut self) -> *mut SDL_ControllerAxisEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn cbutton(&self) -> *const SDL_ControllerButtonEvent {
-        self.data.as_ptr() as *const _
+    pub fn cbutton(&mut self) -> *mut SDL_ControllerButtonEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn cdevice(&self) -> *const SDL_ControllerDeviceEvent {
-        self.data.as_ptr() as *const _
+    pub fn cdevice(&mut self) -> *mut SDL_ControllerDeviceEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn quit(&self) -> *const SDL_QuitEvent {
-        self.data.as_ptr() as *const _
+    pub fn quit(&mut self) -> *mut SDL_QuitEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn user(&self) -> *const SDL_UserEvent {
-        self.data.as_ptr() as *const _
+    pub fn user(&mut self) -> *mut SDL_UserEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn syswm(&self) -> *const SDL_SysWMEvent {
-        self.data.as_ptr() as *const _
+    pub fn syswm(&mut self) -> *mut SDL_SysWMEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn tfinger(&self) -> *const SDL_TouchFingerEvent {
-        self.data.as_ptr() as *const _
+    pub fn tfinger(&mut self) -> *mut SDL_TouchFingerEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn mgesture(&self) -> *const SDL_MultiGestureEvent {
-        self.data.as_ptr() as *const _
+    pub fn mgesture(&mut self) -> *mut SDL_MultiGestureEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn dgesture(&self) -> *const SDL_DollarGestureEvent {
-        self.data.as_ptr() as *const _
+    pub fn dgesture(&mut self) -> *mut SDL_DollarGestureEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 
-    pub fn drop(&self) -> *const SDL_DropEvent {
-        self.data.as_ptr() as *const _
+    pub fn drop(&mut self) -> *mut SDL_DropEvent {
+        self.data.as_mut_ptr() as *mut _
     }
 }
 
@@ -441,10 +441,10 @@ pub const SDL_ADDEVENT: SDL_eventaction = 0;
 pub const SDL_PEEKEVENT: SDL_eventaction = 1;
 pub const SDL_GETEVENT: SDL_eventaction = 2;
 pub type SDL_EventFilter =
-    extern "C" fn(userdata: *const c_void, event: *const SDL_Event) -> c_int;
+    extern "C" fn(userdata: *mut c_void, event: *mut SDL_Event) -> c_int;
 
 extern "C" {
-    pub fn SDL_free(mem: *const c_void);
+    pub fn SDL_free(mem: *mut c_void);
     pub fn SDL_PumpEvents();
     pub fn SDL_PeepEvents(events: *mut SDL_Event, numevents: c_int,
                                 action: SDL_eventaction,
@@ -460,12 +460,12 @@ extern "C" {
               c_int;
     pub fn SDL_PushEvent(event: *mut SDL_Event) -> c_int;
     pub fn SDL_SetEventFilter(filter: SDL_EventFilter,
-                                    userdata: *const c_void);
+                                    userdata: *mut c_void);
     /*pub fn SDL_GetEventFilter(filter: *SDL_EventFilter,
                                     userdata: **c_void) -> SDL_bool;*/
-    pub fn SDL_AddEventWatch(filter: SDL_EventFilter, userdata: *const c_void);
-    pub fn SDL_DelEventWatch(filter: SDL_EventFilter, userdata: *const c_void);
-    pub fn SDL_FilterEvents(filter: SDL_EventFilter, userdata: *const c_void);
+    pub fn SDL_AddEventWatch(filter: SDL_EventFilter, userdata: *mut c_void);
+    pub fn SDL_DelEventWatch(filter: SDL_EventFilter, userdata: *mut c_void);
+    pub fn SDL_FilterEvents(filter: SDL_EventFilter, userdata: *mut c_void);
     pub fn SDL_EventState(type_: uint32_t, state: SDL_EventState) -> SDL_EventState;
     pub fn SDL_RegisterEvents(numevents: c_int) -> uint32_t;
 }

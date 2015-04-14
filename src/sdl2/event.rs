@@ -486,8 +486,8 @@ impl Event {
                     timestamp: 0,
                     windowID: window_id,
                     code: code as i32,
-                    data1: ptr::null(),
-                    data2: ptr::null(),
+                    data1: ptr::null_mut(),
+                    data2: ptr::null_mut(),
                 };
                 unsafe {
                     ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_UserEvent, 1);
@@ -501,7 +501,7 @@ impl Event {
         }
     }
 
-    fn from_ll(raw: &ll::SDL_Event) -> Event {
+    fn from_ll(mut raw: ll::SDL_Event) -> Event {
         let raw_type = raw.type_();
         let raw_type = if raw_type.is_null() {
             panic!("Event payload is null")
@@ -864,7 +864,7 @@ impl Event {
 
                 let buf = CStr::from_ptr(event.file).to_bytes();
                 let text = String::from_utf8_lossy(buf).to_string();
-                ll::SDL_free(event.file as *const c_void);
+                ll::SDL_free(event.file as *mut c_void);
 
                 Event::DropFile {
                     timestamp: event.timestamp,
@@ -918,7 +918,7 @@ impl<'sdl> EventPump<'sdl> {
         let mut raw = unsafe { mem::uninitialized() };
         let has_pending = unsafe { ll::SDL_PollEvent(&mut raw) == 1 as c_int };
 
-        if has_pending { Some(Event::from_ll(&raw)) }
+        if has_pending { Some(Event::from_ll(raw)) }
         else { None }
     }
 
@@ -955,7 +955,7 @@ impl<'sdl> EventPump<'sdl> {
             let mut raw = mem::uninitialized();
             let success = ll::SDL_WaitEvent(&mut raw) == 1;
 
-            if success { Event::from_ll(&raw) }
+            if success { Event::from_ll(raw) }
             else { panic!(get_error()) }
         }
     }
@@ -966,7 +966,7 @@ impl<'sdl> EventPump<'sdl> {
             let mut raw = mem::uninitialized();
             let success = ll::SDL_WaitEventTimeout(&mut raw, timeout as c_int) == 1;
 
-            if success { Some(Event::from_ll(&raw)) }
+            if success { Some(Event::from_ll(raw)) }
             else { None }
         }
     }
@@ -1089,7 +1089,7 @@ where B: FromIterator<Event>
         } else {
             events.set_len(max_amount as usize);
 
-            events.iter().map(|event_raw| {
+            events.into_iter().map(|event_raw| {
                 Event::from_ll(event_raw)
             }).collect()
         }

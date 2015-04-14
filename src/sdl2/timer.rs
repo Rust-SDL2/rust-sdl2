@@ -63,9 +63,9 @@ impl<'a> Drop for Timer<'a> {
     }
 }
 
-extern "C" fn c_timer_callback(_interval: u32, param: *const c_void) -> uint32_t {
+extern "C" fn c_timer_callback(_interval: u32, param: *mut c_void) -> uint32_t {
     unsafe {
-        let f: *const  Box<Fn() -> u32> = mem::transmute(param);
+        let f: *mut Box<Fn() -> u32> = mem::transmute(param);
         (*f)() as uint32_t
     }
 }

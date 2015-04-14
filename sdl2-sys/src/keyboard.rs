@@ -18,8 +18,8 @@ pub struct SDL_Keysym {
 }
 
 extern "C" {
-    pub fn SDL_GetKeyboardFocus() -> *const SDL_Window;
-    pub fn SDL_GetKeyboardState(numkeys: *const c_int) -> *const uint8_t;
+    pub fn SDL_GetKeyboardFocus() -> *mut SDL_Window;
+    pub fn SDL_GetKeyboardState(numkeys: *mut c_int) -> *const uint8_t;
     pub fn SDL_GetModState() -> SDL_Keymod;
     pub fn SDL_SetModState(modstate: SDL_Keymod);
     pub fn SDL_GetKeyFromScancode(scancode: SDL_Scancode) -> SDL_Keycode;
@@ -33,5 +33,5 @@ extern "C" {
     pub fn SDL_StopTextInput();
     pub fn SDL_SetTextInputRect(rect: *const SDL_Rect);
     pub fn SDL_HasScreenKeyboardSupport() -> SDL_bool;
-    pub fn SDL_IsScreenKeyboardShown(window: *const SDL_Window) -> SDL_bool;
+    pub fn SDL_IsScreenKeyboardShown(window: *mut SDL_Window) -> SDL_bool;
 }

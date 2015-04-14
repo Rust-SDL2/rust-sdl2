@@ -38,21 +38,21 @@ pub const SDL_BUTTON_X2MASK: u32 = 0x10;
 
 
 extern "C" {
-    pub fn SDL_GetMouseFocus() -> *const SDL_Window;
-    pub fn SDL_GetMouseState(x: *const c_int, y: *const c_int) -> uint32_t;
-    pub fn SDL_GetRelativeMouseState(x: *const c_int, y: *const c_int) -> uint32_t;
-    pub fn SDL_WarpMouseInWindow(window: *const SDL_Window, x: c_int, y: c_int);
+    pub fn SDL_GetMouseFocus() -> *mut SDL_Window;
+    pub fn SDL_GetMouseState(x: *mut c_int, y: *mut c_int) -> uint32_t;
+    pub fn SDL_GetRelativeMouseState(x: *mut c_int, y: *mut c_int) -> uint32_t;
+    pub fn SDL_WarpMouseInWindow(window: *mut SDL_Window, x: c_int, y: c_int);
     pub fn SDL_SetRelativeMouseMode(enabled: SDL_bool) -> c_int;
     pub fn SDL_GetRelativeMouseMode() -> SDL_bool;
     pub fn SDL_CreateCursor(data: *const uint8_t, mask: *const uint8_t, w: c_int,
                                   h: c_int, hot_x: c_int, hot_y: c_int) ->
-              *const SDL_Cursor;
-    pub fn SDL_CreateColorCursor(surface: *const SDL_Surface, hot_x: c_int,
-                                       hot_y: c_int) -> *const SDL_Cursor;
-    pub fn SDL_CreateSystemCursor(id: SDL_SystemCursor) -> *const SDL_Cursor;
-    pub fn SDL_SetCursor(cursor: *const SDL_Cursor);
-    pub fn SDL_GetCursor() -> *const SDL_Cursor;
-    pub fn SDL_GetDefaultCursor() -> *const SDL_Cursor;
-    pub fn SDL_FreeCursor(cursor: *const SDL_Cursor);
+              *mut SDL_Cursor;
+    pub fn SDL_CreateColorCursor(surface: *mut SDL_Surface, hot_x: c_int,
+                                       hot_y: c_int) -> *mut SDL_Cursor;
+    pub fn SDL_CreateSystemCursor(id: SDL_SystemCursor) -> *mut SDL_Cursor;
+    pub fn SDL_SetCursor(cursor: *mut SDL_Cursor);
+    pub fn SDL_GetCursor() -> *mut SDL_Cursor;
+    pub fn SDL_GetDefaultCursor() -> *mut SDL_Cursor;
+    pub fn SDL_FreeCursor(cursor: *mut SDL_Cursor);
     pub fn SDL_ShowCursor(toggle: SDL_MouseState) -> SDL_MouseState;
 }

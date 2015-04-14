@@ -183,7 +183,7 @@ pub fn mapping_for_guid(guid: joystick::Guid) -> SdlResult<String> {
 
 /// Wrapper around the SDL_GameController object
 pub struct GameController {
-    raw: *const ll::SDL_GameController,
+    raw: *mut ll::SDL_GameController,
 }
 
 impl GameController {

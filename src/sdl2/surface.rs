@@ -23,7 +23,7 @@ bitflags! {
 }
 
 pub struct Surface<'a> {
-    raw: *const ll::SDL_Surface,
+    raw: *mut ll::SDL_Surface,
     owned: bool,
     _marker: PhantomData<&'a ()>
 }
@@ -39,11 +39,11 @@ impl<'a> Drop for Surface<'a> {
 }
 
 impl<'a> Surface<'a> {
-    pub unsafe fn raw(&self) -> *const ll::SDL_Surface { self.raw }
+    pub unsafe fn raw(&self) -> *mut ll::SDL_Surface { self.raw }
 
     pub unsafe fn owned(&self) -> bool { self.owned }
 
-    pub unsafe fn from_ll<'b>(raw: *const ll::SDL_Surface, owned: bool) -> Surface<'b> {
+    pub unsafe fn from_ll<'b>(raw: *mut ll::SDL_Surface, owned: bool) -> Surface<'b> {
         Surface {
             raw: raw,
             owned: owned,
@@ -57,7 +57,7 @@ impl<'a> Surface<'a> {
             let raw = ll::SDL_CreateRGBSurface(surface_flags.bits(), width as c_int, height as c_int, bpp as c_int,
                                                rmask, gmask, bmask, amask);
 
-            if raw == ptr::null() {
+            if raw == ptr::null_mut() {
                 Err(get_error())
             } else {
                 Ok(Surface {
@@ -74,10 +74,10 @@ impl<'a> Surface<'a> {
 
         unsafe {
             let raw = ll::SDL_CreateRGBSurfaceFrom(
-                data.as_ptr() as *const _, width as c_int, height as c_int,
+                data.as_mut_ptr() as *mut _, width as c_int, height as c_int,
                 bpp as c_int, pitch as c_int, rmask, gmask, bmask, amask);
 
-            if raw == ptr::null() {
+            if raw == ptr::null_mut() {
                 Err(get_error())
             } else {
                 Ok(Surface {
@@ -199,9 +199,9 @@ impl<'a> Surface<'a> {
     }
 
     pub fn get_color_key(&self) -> SdlResult<pixels::Color> {
-        let key: u32 = 0;
+        let mut key = 0;
         let result = unsafe {
-            ll::SDL_GetColorKey(self.raw, &key)
+            ll::SDL_GetColorKey(self.raw, &mut key)
         };
 
         if result == 0 {
@@ -223,12 +223,12 @@ impl<'a> Surface<'a> {
     }
 
     pub fn get_color_mod(&self) -> SdlResult<pixels::Color> {
-        let r: u8 = 0;
-        let g: u8 = 0;
-        let b: u8 = 0;
+        let mut r = 0;
+        let mut g = 0;
+        let mut b = 0;
 
         let result = unsafe {
-            ll::SDL_GetSurfaceColorMod(self.raw, &r, &g, &b) == 0
+            ll::SDL_GetSurfaceColorMod(self.raw, &mut r, &mut g, &mut b) == 0
         };
 
         if result {
@@ -282,9 +282,9 @@ impl<'a> Surface<'a> {
     }
 
     pub fn get_alpha_mod(&self) -> SdlResult<u8> {
-        let alpha = 0u8;
+        let mut alpha = 0;
         let result = unsafe {
-            ll::SDL_GetSurfaceAlphaMod(self.raw, &alpha)
+            ll::SDL_GetSurfaceAlphaMod(self.raw, &mut alpha)
         };
 
         match result {
@@ -305,9 +305,9 @@ impl<'a> Surface<'a> {
     }
 
     pub fn get_blend_mode(&self) -> SdlResult<BlendMode> {
-        let mode: ll::SDL_BlendMode = 0;
+        let mut mode: ll::SDL_BlendMode = 0;
         let result = unsafe {
-            ll::SDL_GetSurfaceBlendMode(self.raw, &mode)
+            ll::SDL_GetSurfaceBlendMode(self.raw, &mut mode)
         };
 
         match result {
@@ -323,9 +323,9 @@ impl<'a> Surface<'a> {
     }
 
     pub fn get_clip_rect(&self) -> Rect {
-        let rect = Rect::new(0, 0, 0, 0);
+        let mut rect = Rect::new(0, 0, 0, 0);
         unsafe {
-            ll::SDL_GetClipRect(self.raw, &rect)
+            ll::SDL_GetClipRect(self.raw, &mut rect)
         };
         rect
     }
@@ -334,7 +334,7 @@ impl<'a> Surface<'a> {
         // SDL_ConvertSurface takes a flag as the last parameter, which should be 0 by the docs.
         let surface_ptr = unsafe { ll::SDL_ConvertSurface(self.raw, format.raw(), 0u32) };
 
-        if surface_ptr == ptr::null() {
+        if surface_ptr== ptr::null_mut() {
             Err(get_error())
         } else {
             unsafe { Ok(Surface::from_ll(surface_ptr, true)) }
@@ -344,7 +344,7 @@ impl<'a> Surface<'a> {
     pub fn convert_format(&self, format: pixels::PixelFormatEnum) -> SdlResult<Surface<'static>> {
         let surface_ptr = unsafe { ll::SDL_ConvertSurfaceFormat(self.raw, format as uint32_t, 0u32) };
 
-        if surface_ptr == ptr::null() {
+        if surface_ptr== ptr::null_mut() {
             Err(get_error())
         } else {
             unsafe { Ok(Surface::from_ll(surface_ptr, true)) }

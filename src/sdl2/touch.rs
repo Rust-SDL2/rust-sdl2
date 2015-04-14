@@ -20,7 +20,7 @@ pub fn get_num_touch_fingers(touch: TouchDevice) -> i32 {
 pub fn get_touch_finger(touch: TouchDevice, index: i32) -> Option<Finger> {
     let raw = unsafe { ll::SDL_GetTouchFinger(touch, index) };
 
-    if raw == ptr::null() {
+    if raw == ptr::null_mut() {
         None
     } else {
         unsafe { Some(*raw) }

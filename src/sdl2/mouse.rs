@@ -26,7 +26,7 @@ pub enum SystemCursor {
 
 #[derive(PartialEq)] #[allow(raw_pointer_derive)]
 pub struct Cursor {
-    raw: *const ll::SDL_Cursor,
+    raw: *mut ll::SDL_Cursor,
     owned: bool
 }
 
@@ -48,7 +48,7 @@ impl Cursor {
                                            width as i32, height as i32,
                                            hot_x as i32, hot_y as i32);
 
-            if raw == ptr::null() {
+            if raw == ptr::null_mut() {
                 Err(get_error())
             } else {
                 Ok(Cursor{ raw: raw, owned: true })
@@ -61,7 +61,7 @@ impl Cursor {
         unsafe {
             let raw = ll::SDL_CreateColorCursor(surface.raw(), hot_x, hot_y);
 
-            if raw == ptr::null() {
+            if raw == ptr::null_mut() {
                 Err(get_error())
             } else {
                 Ok(Cursor{ raw: raw, owned: true })
@@ -73,7 +73,7 @@ impl Cursor {
         unsafe {
             let raw = ll::SDL_CreateSystemCursor(cursor as u32);
 
-            if raw == ptr::null() {
+            if raw == ptr::null_mut() {
                 Err(get_error())
             } else {
                 Ok(Cursor{ raw: raw, owned: true })
@@ -119,7 +119,7 @@ pub fn wrap_mouse(bitflags: u8) -> Mouse {
 
 pub fn get_mouse_focus() -> Option<video::Window> {
     let raw = unsafe { ll::SDL_GetMouseFocus() };
-    if raw == ptr::null() {
+    if raw == ptr::null_mut() {
         None
     } else {
         unsafe { Some(video::Window::from_ll(raw, false)) }
@@ -127,19 +127,19 @@ pub fn get_mouse_focus() -> Option<video::Window> {
 }
 
 pub fn get_mouse_state() -> (MouseState, i32, i32) {
-    let x = 0;
-    let y = 0;
+    let mut x = 0;
+    let mut y = 0;
     unsafe {
-        let raw = ll::SDL_GetMouseState(&x, &y);
+        let raw = ll::SDL_GetMouseState(&mut x, &mut y);
         return (MouseState::from_bits_truncate(raw), x as i32, y as i32);
     }
 }
 
 pub fn get_relative_mouse_state() -> (MouseState, i32, i32) {
-    let x = 0;
-    let y = 0;
+    let mut x = 0;
+    let mut y = 0;
     unsafe {
-        let raw = ll::SDL_GetRelativeMouseState(&x, &y);
+        let raw = ll::SDL_GetRelativeMouseState(&mut x, &mut y);
         return (MouseState::from_bits_truncate(raw), x as i32, y as i32);
     }
 }
@@ -159,7 +159,7 @@ pub fn get_relative_mouse_mode() -> bool {
 pub fn get_cursor() -> Option<Cursor> {
     let raw = unsafe { ll::SDL_GetCursor() };
 
-    if raw == ptr::null() {
+    if raw == ptr::null_mut() {
         None
     } else {
         Some(Cursor { raw: raw, owned: false })
@@ -169,7 +169,7 @@ pub fn get_cursor() -> Option<Cursor> {
 pub fn get_default_cursor() -> Option<Cursor> {
     let raw = unsafe { ll::SDL_GetDefaultCursor() };
 
-    if raw == ptr::null() {
+    if raw == ptr::null_mut() {
         None
     } else {
         Some(Cursor { raw: raw, owned: false })

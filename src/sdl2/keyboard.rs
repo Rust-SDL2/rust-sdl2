@@ -30,7 +30,7 @@ bitflags! {
 
 pub fn get_keyboard_focus() -> Option<Window> {
     let raw = unsafe { ll::SDL_GetKeyboardFocus() };
-    if raw == ptr::null() {
+    if raw == ptr::null_mut() {
         None
     } else {
         unsafe { Some(Window::from_ll(raw, false)) }
@@ -39,9 +39,9 @@ pub fn get_keyboard_focus() -> Option<Window> {
 
 pub fn get_keyboard_state() -> HashMap<ScanCode, bool> {
     let mut state: HashMap<ScanCode, bool> = HashMap::new();
-    let count = 0;
+    let mut count = 0;
 
-    let state_ptr = unsafe { ll::SDL_GetKeyboardState(&count) };
+    let state_ptr = unsafe { ll::SDL_GetKeyboardState(&mut count) };
     let raw = unsafe { ::std::slice::from_raw_parts(state_ptr,
                                           count as usize) };
 
