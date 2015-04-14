@@ -31,7 +31,7 @@
 use Sdl;
 use event::EventPump;
 use video;
-use video::{Window, WindowProperties};
+use video::{Window, WindowProperties, WindowPropertiesGetters};
 use surface;
 use surface::Surface;
 use pixels;
@@ -251,6 +251,16 @@ impl<'a> Renderer<'a> {
     {
         match self.parent.as_mut() {
             Some(&mut RendererParent::Window(ref mut window)) => Some(window.properties(event)),
+            _ => None
+        }
+    }
+
+    /// Accesses the Window getters, such as the position, size and title of a Window.
+    /// Returns None if the renderer is not associated with a Window.
+    pub fn window_properties_getters<'b>(&'b self, event: &'b EventPump) -> Option<WindowPropertiesGetters<'b>>
+    {
+        match self.parent.as_ref() {
+            Some(&RendererParent::Window(ref window)) => Some(window.properties_getters(event)),
             _ => None
         }
     }
