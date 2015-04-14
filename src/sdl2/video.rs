@@ -2,6 +2,7 @@ use libc::{c_int, c_float, uint32_t};
 use std::ffi::{CStr, CString, NulError};
 use std::marker::PhantomData;
 use std::mem;
+use std::ops::Deref;
 use std::ptr;
 use std::vec::Vec;
 
@@ -192,6 +193,21 @@ pub struct WindowProperties<'a> {
     _marker: PhantomData<&'a ()>
 }
 
+/// Contains getters to a `Window`'s properties.
+///
+/// This type acts as an immutable guard to `WindowProperties` using `Deref`.
+pub struct WindowPropertiesGetters<'a> {
+    window_properties: WindowProperties<'a>
+}
+
+impl<'a> Deref for WindowPropertiesGetters<'a> {
+    type Target = WindowProperties<'a>;
+
+    fn deref(&self) -> &WindowProperties<'a> {
+        &self.window_properties
+    }
+}
+
 impl Window {
     /// Creates a new Window.
     ///
@@ -276,6 +292,15 @@ impl Window {
         WindowProperties {
             raw: self.raw,
             _marker: PhantomData
+        }
+    }
+
+    pub fn properties_getters<'a>(&'a self, _event: &'a EventPump) -> WindowPropertiesGetters<'a> {
+        WindowPropertiesGetters {
+            window_properties: WindowProperties {
+                raw: self.raw,
+                _marker: PhantomData
+            }
         }
     }
 
