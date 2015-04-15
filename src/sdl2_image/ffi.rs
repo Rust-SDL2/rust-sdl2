@@ -34,16 +34,16 @@ pub fn IMG_Quit();
 // surface afterwards by calling:
 //  SDL_SetColorKey(image, SDL_RLEACCEL, image->format->colorkey);
 pub fn IMG_LoadTyped_RW(src: *const SDL_RWops, freesrc: c_int,
-                        fmt: *const c_char) -> *const SDL_Surface;
+                        fmt: *const c_char) -> *mut SDL_Surface;
 
 // Convenience functions
-pub fn IMG_Load(file: *const c_char) -> *const SDL_Surface;
-pub fn IMG_Load_RW(src: *const SDL_RWops, freesrc: c_int) -> *const SDL_Surface;
+pub fn IMG_Load(file: *const c_char) -> *mut SDL_Surface;
+pub fn IMG_Load_RW(src: *const SDL_RWops, freesrc: c_int) -> *mut SDL_Surface;
 
 // Load an image directly into a render texture.
 // Requires SDL2
 pub fn IMG_LoadTexture(renderer: *const SDL_Renderer,
-                       file: *const c_char) -> *const SDL_Texture;
+                       file: *const c_char) -> *mut SDL_Texture;
 pub fn IMG_LoadTexture_RW(renderer: *const SDL_Renderer, src: *const SDL_RWops,
                           freesrc: c_int) -> *const SDL_Texture;
 pub fn IMG_LoadTextureTyped_RW(renderer: *const SDL_Renderer, src: *const SDL_RWops,
@@ -66,26 +66,26 @@ pub fn IMG_isXV(src: *const SDL_RWops) -> c_int;
 pub fn IMG_isWEBP(src: *const SDL_RWops) -> c_int;
 
 // Individual loading functions
-pub fn IMG_LoadICO_RW(src: *const SDL_RWops) -> *const SDL_Surface;
-pub fn IMG_LoadCUR_RW(src: *const SDL_RWops) -> *const SDL_Surface;
-pub fn IMG_LoadBMP_RW(src: *const SDL_RWops) -> *const SDL_Surface;
-pub fn IMG_LoadGIF_RW(src: *const SDL_RWops) -> *const SDL_Surface;
-pub fn IMG_LoadJPG_RW(src: *const SDL_RWops) -> *const SDL_Surface;
-pub fn IMG_LoadLBM_RW(src: *const SDL_RWops) -> *const SDL_Surface;
-pub fn IMG_LoadPCX_RW(src: *const SDL_RWops) -> *const SDL_Surface;
-pub fn IMG_LoadPNG_RW(src: *const SDL_RWops) -> *const SDL_Surface;
-pub fn IMG_LoadPNM_RW(src: *const SDL_RWops) -> *const SDL_Surface;
-pub fn IMG_LoadTGA_RW(src: *const SDL_RWops) -> *const SDL_Surface;
-pub fn IMG_LoadTIF_RW(src: *const SDL_RWops) -> *const SDL_Surface;
-pub fn IMG_LoadXCF_RW(src: *const SDL_RWops) -> *const SDL_Surface;
-pub fn IMG_LoadXPM_RW(src: *const SDL_RWops) -> *const SDL_Surface;
-pub fn IMG_LoadXV_RW(src: *const SDL_RWops) -> *const SDL_Surface;
-pub fn IMG_LoadWEBP_RW(src: *const SDL_RWops) -> *const SDL_Surface;
-pub fn IMG_ReadXPMFromArray(xpm: *const *const c_char) -> *const SDL_Surface;
+pub fn IMG_LoadICO_RW(src: *const SDL_RWops) -> *mut SDL_Surface;
+pub fn IMG_LoadCUR_RW(src: *const SDL_RWops) -> *mut SDL_Surface;
+pub fn IMG_LoadBMP_RW(src: *const SDL_RWops) -> *mut SDL_Surface;
+pub fn IMG_LoadGIF_RW(src: *const SDL_RWops) -> *mut SDL_Surface;
+pub fn IMG_LoadJPG_RW(src: *const SDL_RWops) -> *mut SDL_Surface;
+pub fn IMG_LoadLBM_RW(src: *const SDL_RWops) -> *mut SDL_Surface;
+pub fn IMG_LoadPCX_RW(src: *const SDL_RWops) -> *mut SDL_Surface;
+pub fn IMG_LoadPNG_RW(src: *const SDL_RWops) -> *mut SDL_Surface;
+pub fn IMG_LoadPNM_RW(src: *const SDL_RWops) -> *mut SDL_Surface;
+pub fn IMG_LoadTGA_RW(src: *const SDL_RWops) -> *mut SDL_Surface;
+pub fn IMG_LoadTIF_RW(src: *const SDL_RWops) -> *mut SDL_Surface;
+pub fn IMG_LoadXCF_RW(src: *const SDL_RWops) -> *mut SDL_Surface;
+pub fn IMG_LoadXPM_RW(src: *const SDL_RWops) -> *mut SDL_Surface;
+pub fn IMG_LoadXV_RW(src: *const SDL_RWops) -> *mut SDL_Surface;
+pub fn IMG_LoadWEBP_RW(src: *const SDL_RWops) -> *mut SDL_Surface;
+pub fn IMG_ReadXPMFromArray(xpm: *const *const c_char) -> *mut SDL_Surface;
 
 // Individual saving functions
-pub fn IMG_SavePNG(surface: *const SDL_Surface, file: *const c_char) -> c_int;
-pub fn IMG_SavePNG_RW(surface: *const SDL_Surface, dst: *const SDL_RWops,
+pub fn IMG_SavePNG(surface: *mut SDL_Surface, file: *const c_char) -> c_int;
+pub fn IMG_SavePNG_RW(surface: *mut SDL_Surface, dst: *const SDL_RWops,
                       freedst: c_int) -> c_int;
 
 }   // extern "C"

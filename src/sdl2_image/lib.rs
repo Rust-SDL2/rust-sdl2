@@ -72,7 +72,7 @@ impl<'a> LoadSurface for Surface<'a> {
         //! Loads an SDL Surface from a file
         unsafe {
             let raw = ffi::IMG_Load(CString::new(filename.to_str().unwrap()).unwrap().as_ptr());
-            if raw == ptr::null() {
+            if raw == ptr::null_mut() {
                 Err(get_error())
             } else {
                 Ok(Surface::from_ll(raw, true))
@@ -84,7 +84,7 @@ impl<'a> LoadSurface for Surface<'a> {
         //! Loads an SDL Surface from XPM data
         unsafe {
             let raw = ffi::IMG_ReadXPMFromArray(xpm as *const *const c_char);
-            if raw == ptr::null() {
+            if raw == ptr::null_mut() {
                 Err(get_error())
             } else {
                 Ok(Surface::from_ll(raw, true))
@@ -130,7 +130,7 @@ impl<'a> LoadTexture for Renderer<'a> {
         //! Loads an SDL Texture from a file
         unsafe {
             let raw = ffi::IMG_LoadTexture(self.raw(), CString::new(filename.to_str().unwrap()).unwrap().as_ptr());
-            if raw == ptr::null() {
+            if raw == ptr::null_mut() {
                 Err(get_error())
             } else {
                 Ok(Texture::from_ll(self, raw))
@@ -156,13 +156,13 @@ pub fn quit() {
 pub fn get_linked_version() -> Version {
     //! Returns the version of the dynamically linked SDL_image library
     unsafe {
-        Version::from_ll(ffi::IMG_Linked_Version())
+        Version::from_ll(*ffi::IMG_Linked_Version())
     }
 }
 
 #[inline]
-fn to_surface_result<'a>(raw: *const sys::surface::SDL_Surface) -> SdlResult<Surface<'a>> {
-    if raw == ptr::null() {
+fn to_surface_result<'a>(raw: *mut sys::surface::SDL_Surface) -> SdlResult<Surface<'a>> {
+    if raw == ptr::null_mut() {
         Err(get_error())
     } else {
         unsafe { Ok(Surface::from_ll(raw, true)) }
