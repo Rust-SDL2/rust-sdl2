@@ -250,7 +250,7 @@ pub enum Fading {
 }
 
 /// Sound effect channel.
-#[derive(Debug, Copy, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Channel(isize);
 
 /// Set the number of channels being mixed.
@@ -480,7 +480,7 @@ pub fn reserve_channels(num: isize) -> isize {
 }
 
 /// Sound effect channel grouping.
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct Group(isize);
 
 impl default::Default for Group {
