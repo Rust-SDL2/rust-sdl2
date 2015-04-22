@@ -491,7 +491,6 @@ impl AudioCVT {
         }
     }
 
-    #[unstable="Certain conversions may cause buffer overflows. See AngryLawyer/rust-sdl2 issue #270."]
     pub fn convert(&self, mut src: Vec<u8>) -> Vec<u8> {
         //! Convert audio data to a desired audio format.
         //!

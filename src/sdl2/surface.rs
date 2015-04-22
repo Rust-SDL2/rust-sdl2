@@ -390,7 +390,6 @@ impl<'a> Surface<'a> {
         }
     }
 
-    #[deprecated]
     pub fn upper_blit_scaled(&self, src_rect: Option<Rect>,
                              dst: &mut Surface, dst_rect: Option<Rect>) -> SdlResult<()> {
 
