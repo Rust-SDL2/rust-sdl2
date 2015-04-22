@@ -3,7 +3,7 @@
 name = "sdl2-sys"
 description = "Raw SDL2 bindings for Rust, used internally rust-sdl2"
 repository = "https://github.com/AngryLawyer/rust-sdl2"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Tony Aldridge <tony@angry-lawyer.com>"]
 license = "MIT"
 links = "SDL2"
@@ -14,7 +14,7 @@ name = "sdl2_sys"
 path = "src/lib.rs"
 
 [dependencies]
-num = "0.1.22"
+num = "0.1.23"
 libc = "0.1.6"
 
 [build-dependencies.pkg-config]
