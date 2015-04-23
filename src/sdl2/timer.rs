@@ -20,6 +20,7 @@ pub fn delay(ms: u32) {
 
 pub type TimerCallback<'a> = Box<FnMut() -> u32+'a+Sync>;
 
+/// Unstable because of move to unboxed closures and `box` syntax
 pub struct Timer<'a> {
     callback: Option<Box<TimerCallback<'a>>>,
     _delay: u32,

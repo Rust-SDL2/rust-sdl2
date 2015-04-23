@@ -496,6 +496,8 @@ impl AudioCVT {
         //!
         //! The `src` vector is adjusted to the capacity necessary to perform
         //! the conversion in place; then it is passed to the SDL library.
+        //!
+        //! Certain conversions may cause buffer overflows. See AngryLawyer/rust-sdl2 issue #270.
         use num::traits as num;
         unsafe {
             if self.raw.needed != 0 {

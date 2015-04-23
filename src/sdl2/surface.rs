@@ -392,6 +392,7 @@ impl<'a> Surface<'a> {
 
     pub fn upper_blit_scaled(&self, src_rect: Option<Rect>,
                              dst: &mut Surface, dst_rect: Option<Rect>) -> SdlResult<()> {
+        //! This function is deprecated
 
         match unsafe {
             let src_rect_ptr = mem::transmute(src_rect.as_ref());
