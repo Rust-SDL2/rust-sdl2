@@ -7,9 +7,18 @@ env:
     - secure: JLix99cbDVr9+s9QOux8FmnyEHGmpNHavKoO7lo1dG4Em8XyeByIXeBNggYX3d/vpdQ+FrqNO+3HrRJpZvXl1OO3uPGFtIQLH6bXLTaggC3z/67maEQSQQS8rcSHImkg1CDKoPWKvZfnB6IqWRYLTBJWILwBLoocure7/+/8III=
     - LD_LIBRARY_PATH: /usr/local/lib
 install:
-  - sudo add-apt-repository ppa:team-xbmc/ppa -y
-  - sudo apt-get update -q
-  - sudo apt-get install libsdl2-dev libsdl2-mixer-dev
+  - cd ..
+  - time wget -q http://www.libsdl.org/release/SDL2-2.0.3.tar.gz
+  - time wget -q http://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.0.tar.gz
+  - time tar xf SDL2-*.tar.gz
+  - time tar xf SDL2_mixer-*.tar.gz
+  - cd SDL2-*
+  - ./configure && make && sudo make install
+  - cd -
+  - cd SDL2_mixer-*
+  - ./configure && make && sudo make install
+  - cd -
+  - cd rust-sdl2_mixer
 script:
   - cargo build -v
   - cargo test -v
