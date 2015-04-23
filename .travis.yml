@@ -1,6 +1,6 @@
 language: rust
-os:
-    - linux
+rust:
+  - 1.0.0-betaos:
 env:
   global:
     - secure: JLix99cbDVr9+s9QOux8FmnyEHGmpNHavKoO7lo1dG4Em8XyeByIXeBNggYX3d/vpdQ+FrqNO+3HrRJpZvXl1OO3uPGFtIQLH6bXLTaggC3z/67maEQSQQS8rcSHImkg1CDKoPWKvZfnB6IqWRYLTBJWILwBLoocure7/+/8III=
