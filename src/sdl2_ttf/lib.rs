@@ -2,11 +2,6 @@
 A binding for SDL2_ttf.
  */
 
-#![feature(libc)]
-#![feature(core)]
-
-#![crate_type = "lib"]
-
 extern crate libc;
 extern crate sdl2;
 extern crate sdl2_sys as sdl2_sys;
@@ -16,7 +11,6 @@ extern crate bitflags;
 
 use libc::{c_int, c_long};
 use std::ffi::{CString, CStr};
-use std::num::FromPrimitive;
 use std::path::Path;
 use sdl2::surface::Surface;
 use sdl2::get_error;
@@ -67,7 +61,7 @@ bitflags! {
     }
 }
 
-#[derive(Debug, PartialEq, FromPrimitive)]
+#[derive(Debug, PartialEq)]
 pub enum Hinting {
     HintingNormal = ffi::TTF_HINTING_NORMAL as isize,
     HintingLight  = ffi::TTF_HINTING_LIGHT  as isize,
@@ -88,7 +82,7 @@ pub struct GlyphMetrics {
 /// Returns the version of the dynamically linked SDL_ttf library
 pub fn get_linked_version() -> Version {
     unsafe {
-        Version::from_ll(ffi::TTF_Linked_Version())
+        Version::from_ll(*ffi::TTF_Linked_Version())
     }
 }
 
@@ -199,7 +193,13 @@ impl Font {
     pub fn get_hinting(&self) -> Hinting {
         //! Get freetype hinter setting.
         unsafe {
-            FromPrimitive::from_i32(ffi::TTF_GetFontHinting(self.raw)).unwrap()
+            match ffi::TTF_GetFontHinting(self.raw) as c_int {
+                ffi::TTF_HINTING_NORMAL => Hinting::HintingNormal,
+                ffi::TTF_HINTING_LIGHT  => Hinting::HintingLight,
+                ffi::TTF_HINTING_MONO   => Hinting::HintingMono,
+                ffi::TTF_HINTING_NONE   => Hinting::HintingNone,
+                _                       => Hinting::HintingNone
+            }
         }
     }
 
