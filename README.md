@@ -23,7 +23,7 @@ Place the following into your project's Cargo.toml file:
 
 ```toml
 [dependencies]
-sdl2_ttf = "0.0.31" # Doesn't work yet, needs to be published.
+sdl2_ttf = "0.2.2"
 ```
 
 Or, to depend on the newest rust-sdl2_ttf, reference the repository:
