@@ -53,11 +53,11 @@ fn color_to_c_color(color: Color) -> SDL_Color {
 /// Font Style
 bitflags! {
     flags FontStyle : c_int {
-    const StyleNormal = ffi::TTF_STYLE_NORMAL,
-    const StyleBold   = ffi::TTF_STYLE_BOLD,
-    const StyleItalic = ffi::TTF_STYLE_ITALIC,
-    const StyleUnderline = ffi::TTF_STYLE_UNDERLINE,
-    const StyleStrikeThrough = ffi::TTF_STYLE_STRIKETHROUGH,
+    const STYLE_NORMAL = ffi::TTF_STYLE_NORMAL,
+    const STYLE_BOLD   = ffi::TTF_STYLE_BOLD,
+    const STYLE_ITALIC = ffi::TTF_STYLE_ITALIC,
+    const STYLE_UNDERLINE = ffi::TTF_STYLE_UNDERLINE,
+    const STYLE_STRIKETHROUGH = ffi::TTF_STYLE_STRIKETHROUGH,
     }
 }
 
