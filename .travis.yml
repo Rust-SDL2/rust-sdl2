@@ -1,7 +1,8 @@
 language: rust
 
 rust:
-    - 1.0.0-beta
+    - beta
+    - nightly
 
 env:
     global:
@@ -18,5 +19,5 @@ script:
     - cargo doc -v
 after_success:
     - cp -R target/doc doc
-    - curl http://www.rust-ci.org/artifacts/put?t=$RUSTCI_TOKEN | sh
+    - '[ "$TRAVIS_RUST_VERSION" != "beta" ] || curl http://www.rust-ci.org/artifacts/put?t=$RUSTCI_TOKEN | sh'
     - rm -r doc
