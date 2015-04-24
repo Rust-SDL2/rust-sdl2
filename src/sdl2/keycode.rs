@@ -4,7 +4,7 @@ use num::{ToPrimitive, FromPrimitive};
 
 use sys::keycode as ll;
 
-#[derive(PartialEq, Eq, FromPrimitive, Debug, Copy, Clone)]
+#[derive(PartialEq, Eq, Debug, Copy, Clone)]
 pub enum KeyCode {
     Unknown            = ll::SDLK_UNKNOWN as isize,
     Backspace          = ll::SDLK_BACKSPACE as isize,
