@@ -3,7 +3,7 @@ use num::{ToPrimitive, FromPrimitive};
 
 use sys::scancode as ll;
 
-#[derive(PartialEq, Eq, FromPrimitive, Debug, Copy, Clone)]
+#[derive(PartialEq, Eq, Debug, Copy, Clone)]
 pub enum ScanCode {
     Unknown            = ll::SDL_SCANCODE_UNKNOWN as isize,
     A                  = ll::SDL_SCANCODE_A as isize,

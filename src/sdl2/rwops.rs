@@ -1,4 +1,4 @@
-use std::ffi::{CString, AsOsStr};
+use std::ffi::CString;
 use std::io;
 use std::path::Path;
 use libc::{c_void, c_int, size_t};
