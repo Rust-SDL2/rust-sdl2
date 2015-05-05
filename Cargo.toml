@@ -1,6 +1,6 @@
 [package]
 name = "sdl2_gfx"
-version = "0.0.33"
+version = "0.0.34"
 authors = ["ShuYu Wang <andelf@gmail.com>"]
 description = "SDL2_gfx bindings for Rust"
 homepage = "https://github.com/andelf/rust-sdl2_gfx"
@@ -15,14 +15,13 @@ path = "src/sdl2_gfx/lib.rs"
 
 [dependencies]
 c_vec = "^1.0.0"
-sdl2 = "0.0.33"
-sdl2-sys = "0.0.33"
+num = "*"
 
-# [dependencies.sdl2]
-# git = "https://github.com/AngryLawyer/rust-sdl2/"
+[dependencies.sdl2]
+git = "https://github.com/AngryLawyer/rust-sdl2/"
 
-# [dependencies.sdl2-sys]
-# git = "https://github.com/AngryLawyer/rust-sdl2/"
+[dependencies.sdl2-sys]
+git = "https://github.com/AngryLawyer/rust-sdl2/"
 
 [[bin]]
 name = "demo"

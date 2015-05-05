@@ -10,6 +10,7 @@ A binding for SDL2_gfx.
 #![feature(core)]
 
 extern crate libc;
+extern crate num;
 extern crate sdl2;
 extern crate sdl2_sys as sys;
 
