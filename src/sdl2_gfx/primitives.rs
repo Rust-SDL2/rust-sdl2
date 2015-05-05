@@ -3,7 +3,7 @@
 use std::mem;
 use std::ptr;
 use std::ffi::CString;
-use std::num::ToPrimitive;
+use num::traits::ToPrimitive;
 use libc::{c_void, c_int, c_char};
 use sdl2::render::Renderer;
 use sdl2::surface::Surface;
@@ -272,7 +272,7 @@ pub trait DrawRenderer {
     fn string<C: ToColor>(&self, x: i16, y: i16, s: &str, color: C) -> SdlResult<()>;
 }
 
-impl DrawRenderer for Renderer {
+impl<'a> DrawRenderer for Renderer<'a> {
     fn pixel<C: ToColor>(&self, x: i16, y: i16, color: C) -> SdlResult<()> {
         let ret = unsafe {
             ll::pixelColor(self.raw(), x, y, color.as_u32())

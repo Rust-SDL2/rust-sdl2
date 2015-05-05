@@ -22,6 +22,7 @@ fn main() {
     let context = sdl2::init(sdl2::INIT_VIDEO).unwrap();
 
     let window = sdl2::video::Window::new(
+        &context,
         "rust-sdl2_gfx: draw line & FPSManager",
         sdl2::video::WindowPos::PosCentered,
         sdl2::video::WindowPos::PosCentered,
@@ -29,15 +30,17 @@ fn main() {
         SCREEN_HEIGHT,
         sdl2::video::OPENGL).unwrap();
 
-    let renderer = sdl2::render::Renderer::from_window(
+    let mut renderer = sdl2::render::Renderer::from_window(
         window,
         sdl2::render::RenderDriverIndex::Auto,
         sdl2::render::ACCELERATED).unwrap();
 
-    let mut drawer = renderer.drawer();
-    drawer.set_draw_color(pixels::Color::RGB(0, 0, 0));
-    drawer.clear();
-    drawer.present();
+    {
+        let mut drawer = renderer.drawer();
+        drawer.set_draw_color(pixels::Color::RGB(0, 0, 0));
+        drawer.clear();
+        drawer.present();
+    }
 
     let mut lastx = 0;
     let mut lasty = 0;
@@ -45,7 +48,6 @@ fn main() {
     let mut events = context.event_pump();
 
     'main: loop {
-
         for event in events.poll_iter() {
 
             match event {
@@ -57,9 +59,9 @@ fn main() {
                         break 'main
                     } else if keycode == KeyCode::Space {
                         for i in 0..400 {
-                            let _ = renderer.pixel(i as i16, i as i16, 0xFF000FFu32);
+                            renderer.pixel(i as i16, i as i16, 0xFF000FFu32);
                         }
-                        drawer.present();
+                        renderer.drawer().present();
 
                     }
                 }
@@ -70,7 +72,7 @@ fn main() {
                     lastx = x as i16;
                     lasty = y as i16;
                     println!("mouse btn down at ({},{})", x, y);
-                    drawer.present();
+                    renderer.drawer().present();
                 }
 
                 _ => {}

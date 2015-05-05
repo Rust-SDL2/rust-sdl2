@@ -12,27 +12,27 @@ mod ll {
     use libc::*;
     use sys::surface::SDL_Surface;
     extern "C" {
-        pub fn rotozoomSurface(src: *const SDL_Surface, angle: c_double,
-                               zoom: c_double, smooth: c_int) -> *const SDL_Surface;
-        pub fn rotozoomSurfaceXY(src: *const SDL_Surface, angle: c_double,
+        pub fn rotozoomSurface(src: *mut SDL_Surface, angle: c_double,
+                               zoom: c_double, smooth: c_int) -> *mut SDL_Surface;
+        pub fn rotozoomSurfaceXY(src: *mut SDL_Surface, angle: c_double,
                                  zoomx: c_double, zoomy: c_double, smooth: c_int)
-                                 -> *const SDL_Surface;
+                                 -> *mut SDL_Surface;
         pub fn rotozoomSurfaceSize(width: c_int, height: c_int, angle: c_double,
                                    zoom: c_double, dstwidth: *mut c_int,
                                    dstheight: *mut c_int);
         pub fn rotozoomSurfaceSizeXY(width: c_int, height: c_int, angle: c_double,
                                      zoomx: c_double, zoomy: c_double,
                                      dstwidth: *mut c_int, dstheight: *mut c_int);
-        pub fn zoomSurface(src: *const SDL_Surface, zoomx: c_double,
-                           zoomy: c_double, smooth: c_int) -> *const SDL_Surface;
+        pub fn zoomSurface(src: *mut SDL_Surface, zoomx: c_double,
+                           zoomy: c_double, smooth: c_int) -> *mut SDL_Surface;
         pub fn zoomSurfaceSize(width: c_int, height: c_int, zoomx: c_double,
                                zoomy: c_double, dstwidth: *mut c_int,
                                dstheight: *mut c_int);
-        pub fn shrinkSurface(src: *const SDL_Surface, factorx: c_int,
-                             factory: c_int) -> *const SDL_Surface;
-        pub fn rotateSurface90Degrees(src: *const SDL_Surface,
+        pub fn shrinkSurface(src: *mut SDL_Surface, factorx: c_int,
+                             factory: c_int) -> *mut SDL_Surface;
+        pub fn rotateSurface90Degrees(src: *mut SDL_Surface,
                                       numClockwiseTurns: c_int) ->
-            *const SDL_Surface;
+            *mut SDL_Surface;
     }
 }
 
@@ -50,7 +50,7 @@ pub trait RotozoomSurface {
     fn rotate_90deg(&self, turns: isize) -> SdlResult<Surface>;
 }
 
-impl RotozoomSurface for Surface {
+impl<'a> RotozoomSurface for Surface<'a> {
     fn rotozoom(&self, angle: f64, zoom: f64, smooth: bool) -> SdlResult<Surface> {
         let raw = unsafe {
             ll::rotozoomSurface(self.raw(), angle, zoom, smooth as c_int)
