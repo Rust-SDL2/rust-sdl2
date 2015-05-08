@@ -1,4 +1,4 @@
-use libc::{c_int, c_float, uint32_t};
+use libc::{c_void, c_int, c_float, uint32_t};
 use std::ffi::{CStr, CString, NulError};
 use std::marker::PhantomData;
 use std::mem;
@@ -748,12 +748,12 @@ pub fn gl_unload_library() {
     unsafe { ll::SDL_GL_UnloadLibrary(); }
 }
 
-pub fn gl_get_proc_address(procname: &str) -> Option<extern "system" fn()> {
+pub fn gl_get_proc_address(procname: &str) -> *const c_void {
     unsafe {
         let procname =
         match CString::new(procname) {
             Ok(s) => s.as_ptr(),
-            Err(_) => return None,
+            Err(_) => return 0 as *const c_void,
         };
         ll::SDL_GL_GetProcAddress(procname)
     }
