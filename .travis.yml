@@ -3,6 +3,7 @@ language: rust
 rust:
     - beta
     - nightly
+    - stable
 
 env:
     global:
