@@ -59,7 +59,7 @@ fn main() {
                         break 'main
                     } else if keycode == KeyCode::Space {
                         for i in 0..400 {
-                            renderer.pixel(i as i16, i as i16, 0xFF000FFu32);
+                            renderer.pixel(i as i16, i as i16, 0xFF000FFu32).unwrap();
                         }
                         renderer.drawer().present();
 
