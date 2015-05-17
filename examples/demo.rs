@@ -4,7 +4,7 @@ use sdl2::pixels::Color;
 use sdl2::keycode::KeyCode;
 
 pub fn main() {
-    let sdl_context = sdl2::init(sdl2::INIT_VIDEO).unwrap();
+    let sdl_context = sdl2::init().video().unwrap();
 
     let window = sdl_context.window("rust-sdl2 demo: Video", 800, 600)
         .position_centered()

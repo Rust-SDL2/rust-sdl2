@@ -316,7 +316,7 @@ impl Window {
     ///
     /// # Example
     /// ```no_run
-    /// let mut sdl_context = sdl2::init(sdl2::INIT_EVERYTHING).unwrap();
+    /// let mut sdl_context = sdl2::init().everything().unwrap();
     /// let mut window = sdl_context.window("My SDL window", 800, 600).build().unwrap();
     /// let mut event_pump = sdl_context.event_pump();
     ///

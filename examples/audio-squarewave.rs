@@ -24,7 +24,7 @@ impl AudioCallback for SquareWave {
 }
 
 fn main() {
-    let _sdl_context = sdl2::init(sdl2::INIT_AUDIO).unwrap();
+    let _sdl_context = sdl2::init().audio().unwrap();
 
     let desired_spec = AudioSpecDesired {
         freq: Some(44100),
