@@ -8,6 +8,7 @@ use std::vec::Vec;
 
 use event::EventPump;
 use rect::Rect;
+use render::RendererBuilder;
 use surface::Surface;
 use pixels;
 use Sdl;
@@ -300,6 +301,11 @@ impl<'a> Deref for WindowPropertiesGetters<'a> {
 }
 
 impl Window {
+    /// Initializes a new `RendererBuilder`; a convenience method that calls `RendererBuilder::new()`.
+    pub fn renderer(self) -> RendererBuilder {
+        RendererBuilder::new(self)
+    }
+
     /// Accesses the Window properties, such as the position, size and title of a Window.
     ///
     /// In order to access a Window's properties, it must be guaranteed that the

@@ -1,6 +1,5 @@
 extern crate sdl2;
 
-use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer};
 use sdl2::pixels::Color;
 use sdl2::keycode::KeyCode;
 
@@ -13,10 +12,7 @@ pub fn main() {
         .build()
         .unwrap();
 
-    let mut renderer = match Renderer::from_window(window, RenderDriverIndex::Auto, ACCELERATED) {
-        Ok(renderer) => renderer,
-        Err(err) => panic!("failed to create renderer: {}", err)
-    };
+    let mut renderer = window.renderer().build().unwrap();
 
     let mut drawer = renderer.drawer();
     drawer.set_draw_color(Color::RGB(255, 0, 0));

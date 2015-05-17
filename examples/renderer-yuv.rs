@@ -1,6 +1,5 @@
 extern crate sdl2;
 
-use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer};
 use sdl2::pixels::PixelFormatEnum;
 use sdl2::rect::Rect;
 use sdl2::keycode::KeyCode;
@@ -14,10 +13,7 @@ pub fn main() {
         .build()
         .unwrap();
 
-    let mut renderer = match Renderer::from_window(window, RenderDriverIndex::Auto, ACCELERATED) {
-        Ok(renderer) => renderer,
-        Err(err) => panic!("failed to create renderer: {}", err)
-    };
+    let mut renderer = window.renderer().build().unwrap();
 
     let mut texture = renderer.create_texture_streaming(PixelFormatEnum::IYUV, (256, 256)).unwrap();
     // Create a U-V gradient
