@@ -96,13 +96,44 @@ pub enum Mouse {
     Unknown(u8)
 }
 
-bitflags! {
-    flags MouseState: u32 {
-        const LEFTMOUSESTATE = ll::SDL_BUTTON_LMASK,
-        const MIDDLEMOUSESTATE = ll::SDL_BUTTON_MMASK,
-        const RIGHTMOUSESTATE = ll::SDL_BUTTON_RMASK,
-        const X1MOUSESTATE = ll::SDL_BUTTON_X1MASK,
-        const X2MOUSESTATE = ll::SDL_BUTTON_X2MASK,
+pub struct MouseState {
+    flags: u32
+}
+
+impl MouseState {
+    /// Tests if a mouse button was pressed.
+    pub fn button(&self, button: Mouse) -> bool {
+        match button {
+            Mouse::Left => self.left(),
+            Mouse::Middle => self.middle(),
+            Mouse::Right => self.right(),
+            Mouse::X1 => self.x1(),
+            Mouse::X2 => self.x2(),
+            Mouse::Unknown(x) => {
+                assert!(x <= 32);
+                let mask = 1 << ((x as u32) - 1);
+                (self.flags & mask) != 0
+            }
+        }
+    }
+
+    /// Tests if the left mouse button was pressed.
+    pub fn left(&self) -> bool { (self.flags & ll::SDL_BUTTON_LMASK) != 0 }
+
+    /// Tests if the middle mouse button was pressed.
+    pub fn middle(&self) -> bool { (self.flags & ll::SDL_BUTTON_MMASK) != 0 }
+
+    /// Tests if the right mouse button was pressed.
+    pub fn right(&self) -> bool { (self.flags & ll::SDL_BUTTON_RMASK) != 0 }
+
+    /// Tests if the X1 mouse button was pressed.
+    pub fn x1(&self) -> bool { (self.flags & ll::SDL_BUTTON_X1MASK) != 0 }
+
+    /// Tests if the X2 mouse button was pressed.
+    pub fn x2(&self) -> bool { (self.flags & ll::SDL_BUTTON_X2MASK) != 0 }
+
+    pub fn from_flags(flags: u32) -> MouseState {
+        MouseState { flags: flags }
     }
 }
 
@@ -131,7 +162,7 @@ pub fn get_mouse_state() -> (MouseState, i32, i32) {
     let mut y = 0;
     unsafe {
         let raw = ll::SDL_GetMouseState(&mut x, &mut y);
-        return (MouseState::from_bits_truncate(raw), x as i32, y as i32);
+        return (MouseState::from_flags(raw), x as i32, y as i32);
     }
 }
 
@@ -140,7 +171,7 @@ pub fn get_relative_mouse_state() -> (MouseState, i32, i32) {
     let mut y = 0;
     unsafe {
         let raw = ll::SDL_GetRelativeMouseState(&mut x, &mut y);
-        return (MouseState::from_bits_truncate(raw), x as i32, y as i32);
+        return (MouseState::from_flags(raw), x as i32, y as i32);
     }
 }
 
