@@ -13,15 +13,6 @@ use rwops;
 
 use sys::surface as ll;
 
-bitflags! {
-    flags SurfaceFlag: u32 {
-        const SWSURFACE = ll::SDL_SWSURFACE as u32,
-        const PREALLOC = ll::SDL_PREALLOC as u32,
-        const RLEACCEL = ll::SDL_RLEACCEL as u32,
-        const DONTFREE = ll::SDL_DONTFREE as u32
-    }
-}
-
 pub struct Surface<'a> {
     raw: *mut ll::SDL_Surface,
     owned: bool,
@@ -51,57 +42,95 @@ impl<'a> Surface<'a> {
         }
     }
 
-    pub fn new(surface_flags: SurfaceFlag, width: i32, height: i32, bpp: i32,
-               rmask: u32, gmask: u32, bmask: u32, amask: u32) -> SdlResult<Surface<'static>> {
-        unsafe {
-            let raw = ll::SDL_CreateRGBSurface(surface_flags.bits(), width as c_int, height as c_int, bpp as c_int,
-                                               rmask, gmask, bmask, amask);
+    /// Creates a new surface using a pixel format.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use sdl2::pixels::PixelFormatEnum;
+    /// use sdl2::surface::Surface;
+    ///
+    /// let surface = Surface::new(512, 512, PixelFormatEnum::RGB24).unwrap();
+    /// ```
+    pub fn new(width: u32, height: u32, format: pixels::PixelFormatEnum) -> SdlResult<Surface<'static>> {
+        let masks = try!(format.into_masks());
+        Surface::from_pixelmasks(width, height, masks)
+    }
 
-            if raw == ptr::null_mut() {
-                Err(get_error())
+    /// Creates a new surface using pixel masks.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use sdl2::pixels::PixelFormatEnum;
+    /// use sdl2::surface::Surface;
+    ///
+    /// let masks = PixelFormatEnum::RGB24.into_masks().unwrap();
+    /// let surface = Surface::from_pixelmasks(512, 512, masks).unwrap();
+    /// ```
+    pub fn from_pixelmasks(width: u32, height: u32, masks: pixels::PixelMasks) -> SdlResult<Surface<'static>> {
+        unsafe {
+            if width >= (1<<31) || height >= (1<<31) {
+                Err(format!("Image is too large."))
             } else {
-                Ok(Surface {
-                    raw: raw,
-                    owned: true,
-                    _marker: PhantomData
-                })
+                let raw = ll::SDL_CreateRGBSurface(0, width as c_int, height as c_int,
+                    masks.bpp as c_int, masks.rmask, masks.gmask, masks.bmask, masks.amask);
+
+                if raw.is_null() {
+                    Err(get_error())
+                } else {
+                    Ok(Surface {
+                        raw: raw,
+                        owned: true,
+                        _marker: PhantomData
+                    })
+                }
             }
         }
     }
 
-    pub fn from_data(data: &'a mut [u8], width: i32, height: i32, bpp: i32, pitch: i32,
-                     rmask: u32, gmask: u32, bmask: u32, amask: u32) -> SdlResult<Surface<'a>> {
+    /// Creates a new surface from an existing buffer, using a pixel format.
+    pub fn from_data(data: &'a mut [u8], width: u32, height: u32, pitch: u32, format: pixels::PixelFormatEnum) -> SdlResult<Surface<'a>> {
+        let masks = try!(format.into_masks());
+        Surface::from_data_pixelmasks(data, width, height, pitch, masks)
+    }
 
+    /// Creates a new surface from an existing buffer, using pixel masks.
+    pub fn from_data_pixelmasks(data: &'a mut [u8], width: u32, height: u32, pitch: u32, masks: pixels::PixelMasks) -> SdlResult<Surface<'a>> {
         unsafe {
-            let raw = ll::SDL_CreateRGBSurfaceFrom(
-                data.as_mut_ptr() as *mut _, width as c_int, height as c_int,
-                bpp as c_int, pitch as c_int, rmask, gmask, bmask, amask);
-
-            if raw == ptr::null_mut() {
-                Err(get_error())
+            if width >= (1<<31) || height >= (1<<31) {
+                Err(format!("Image is too large."))
+            } else if pitch >= (1<<31) {
+                Err(format!("Pitch is too large."))
             } else {
-                Ok(Surface {
-                    raw: raw,
-                    owned: true,
-                    _marker: PhantomData
-                })
+                let raw = ll::SDL_CreateRGBSurfaceFrom(
+                    data.as_mut_ptr() as *mut _, width as c_int, height as c_int,
+                    masks.bpp as c_int, pitch as c_int, masks.rmask, masks.gmask, masks.bmask, masks.amask);
+
+                if raw.is_null() {
+                    Err(get_error())
+                } else {
+                    Ok(Surface {
+                        raw: raw,
+                        owned: true,
+                        _marker: PhantomData
+                    })
+                }
             }
         }
     }
 
-    pub fn get_width(&self) -> i32 {
-        unsafe { (*self.raw).w as i32 }
+    pub fn get_width(&self) -> u32 {
+        unsafe { (*self.raw).w as u32 }
     }
 
-    pub fn get_height(&self) -> i32 {
-        unsafe { (*self.raw).h as i32 }
+    pub fn get_height(&self) -> u32 {
+        unsafe { (*self.raw).h as u32 }
     }
 
-    pub fn get_pitch(&self) -> i32 {
-        unsafe { (*self.raw).pitch as i32 }
+    pub fn get_pitch(&self) -> u32 {
+        unsafe { (*self.raw).pitch as u32 }
     }
 
-    pub fn get_size(&self) -> (i32, i32) {
+    pub fn get_size(&self) -> (u32, u32) {
         (self.get_width(), self.get_height())
     }
 
