@@ -61,26 +61,76 @@ use SdlResult;
 
 use sys::audio as ll;
 
-pub type AudioFormat = ll::SDL_AudioFormat;
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+pub enum AudioFormat {
+    /// Unsigned 8-bit samples
+    U8 = ll::AUDIO_U8 as isize,
+    /// Signed 8-bit samples
+    S8 = ll::AUDIO_S8 as isize,
+    /// Unsigned 16-bit samples, little-endian
+    U16LSB = ll::AUDIO_U16LSB as isize,
+    /// Unsigned 16-bit samples, big-endian
+    U16MSB = ll::AUDIO_U16MSB as isize,
+    /// Signed 16-bit samples, little-endian
+    S16LSB = ll::AUDIO_S16LSB as isize,
+    /// Signed 16-bit samples, big-endian
+    S16MSB = ll::AUDIO_S16MSB as isize,
+    /// Signed 32-bit samples, little-endian
+    S32LSB = ll::AUDIO_S32LSB as isize,
+    /// Signed 32-bit samples, big-endian
+    S32MSB = ll::AUDIO_S32MSB as isize,
+    /// 32-bit floating point samples, little-endian
+    F32LSB = ll::AUDIO_F32LSB as isize,
+    /// 32-bit floating point samples, big-endian
+    F32MSB = ll::AUDIO_F32MSB as isize
+}
 
-pub const AUDIOU8     : AudioFormat = ll::AUDIO_U8;
-pub const AUDIOS8     : AudioFormat = ll::AUDIO_S8;
-pub const AUDIOU16LSB : AudioFormat = ll::AUDIO_U16LSB;
-pub const AUDIOS16LSB : AudioFormat = ll::AUDIO_S16LSB;
-pub const AUDIOU16MSB : AudioFormat = ll::AUDIO_U16MSB;
-pub const AUDIOS16MSB : AudioFormat = ll::AUDIO_S16MSB;
-pub const AUDIOU16    : AudioFormat = ll::AUDIO_U16;
-pub const AUDIOS16    : AudioFormat = ll::AUDIO_S16;
-pub const AUDIOS32LSB : AudioFormat = ll::AUDIO_S32LSB;
-pub const AUDIOS32MSB : AudioFormat = ll::AUDIO_S32MSB;
-pub const AUDIOS32    : AudioFormat = ll::AUDIO_S32;
-pub const AUDIOF32LSB : AudioFormat = ll::AUDIO_F32LSB;
-pub const AUDIOF32MSB : AudioFormat = ll::AUDIO_F32MSB;
-pub const AUDIOF32    : AudioFormat = ll::AUDIO_F32;
-pub const AUDIOU16SYS : AudioFormat = ll::AUDIO_U16SYS;
-pub const AUDIOS16SYS : AudioFormat = ll::AUDIO_S16SYS;
-pub const AUDIOS32SYS : AudioFormat = ll::AUDIO_S32SYS;
-pub const AUDIOF32SYS : AudioFormat = ll::AUDIO_F32SYS;
+impl AudioFormat {
+    fn from_ll(raw: ll::SDL_AudioFormat) -> Option<AudioFormat> {
+        use self::AudioFormat::*;
+        match raw {
+            ll::AUDIO_U8 => Some(U8),
+            ll::AUDIO_S8 => Some(S8),
+            ll::AUDIO_U16LSB => Some(U16LSB),
+            ll::AUDIO_U16MSB => Some(U16MSB),
+            ll::AUDIO_S16LSB => Some(S16LSB),
+            ll::AUDIO_S16MSB => Some(S16MSB),
+            ll::AUDIO_S32LSB => Some(S32LSB),
+            ll::AUDIO_S32MSB => Some(S32MSB),
+            ll::AUDIO_F32LSB => Some(F32LSB),
+            ll::AUDIO_F32MSB => Some(F32MSB),
+            _ => None
+        }
+    }
+
+    fn to_ll(self) -> ll::SDL_AudioFormat {
+        self as ll::SDL_AudioFormat
+    }
+}
+
+#[cfg(target_endian = "little")]
+impl AudioFormat {
+    /// Unsigned 16-bit samples, native endian
+    #[inline] pub fn u16_sys() -> AudioFormat { AudioFormat::U16LSB }
+    /// Signed 16-bit samples, native endian
+    #[inline] pub fn s16_sys() -> AudioFormat { AudioFormat::S16LSB }
+    /// Signed 32-bit samples, native endian
+    #[inline] pub fn s32_sys() -> AudioFormat { AudioFormat::S32LSB }
+    /// 32-bit floating point samples, native endian
+    #[inline] pub fn f32_sys() -> AudioFormat { AudioFormat::F32LSB }
+}
+
+#[cfg(target_endian = "big")]
+impl AudioFormat {
+    /// Unsigned 16-bit samples, native endian
+    #[inline] pub fn u16_sys() -> AudioFormat { AudioFormat::U16MSB }
+    /// Signed 16-bit samples, native endian
+    #[inline] pub fn s16_sys() -> AudioFormat { AudioFormat::S16MSB }
+    /// Signed 32-bit samples, native endian
+    #[inline] pub fn s32_sys() -> AudioFormat { AudioFormat::S32MSB }
+    /// 32-bit floating point samples, native endian
+    #[inline] pub fn f32_sys() -> AudioFormat { AudioFormat::F32MSB }
+}
 
 #[repr(C)]
 #[derive(Copy, Clone, PartialEq, Hash, Debug)]
@@ -179,7 +229,7 @@ impl AudioSpecWAV {
             } else {
                 Ok(AudioSpecWAV {
                     freq: desired.freq,
-                    format: desired.format,
+                    format: AudioFormat::from_ll(desired.format).unwrap(),
                     channels: desired.channels,
                     audio_buf: audio_buf,
                     audio_len: audio_len
@@ -215,38 +265,38 @@ where Self::Channel: AudioFormatNum + 'static
 /// A phantom type for retreiving the SDL_AudioFormat of a given generic type.
 /// All format types are returned as native-endian.
 pub trait AudioFormatNum {
-    fn get_audio_format() -> ll::SDL_AudioFormat;
+    fn get_audio_format() -> AudioFormat;
     fn zero() -> Self;
 }
 
 /// AUDIO_S8
 impl AudioFormatNum for i8 {
-    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S8 }
+    fn get_audio_format() -> AudioFormat { AudioFormat::S8 }
     fn zero() -> i8 { 0 }
 }
 /// AUDIO_U8
 impl AudioFormatNum for u8 {
-    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_U8 }
+    fn get_audio_format() -> AudioFormat { AudioFormat::U8 }
     fn zero() -> u8 { 0 }
 }
 /// AUDIO_S16
 impl AudioFormatNum for i16 {
-    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S16SYS }
+    fn get_audio_format() -> AudioFormat { AudioFormat::s16_sys() }
     fn zero() -> i16 { 0 }
 }
 /// AUDIO_U16
 impl AudioFormatNum for u16 {
-    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_U16SYS }
+    fn get_audio_format() -> AudioFormat { AudioFormat::u16_sys() }
     fn zero() -> u16 { 0 }
 }
 /// AUDIO_S32
 impl AudioFormatNum for i32 {
-    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_S32SYS }
+    fn get_audio_format() -> AudioFormat { AudioFormat::s32_sys() }
     fn zero() -> i32 { 0 }
 }
 /// AUDIO_F32
 impl AudioFormatNum for f32 {
-    fn get_audio_format() -> ll::SDL_AudioFormat { ll::AUDIO_F32SYS }
+    fn get_audio_format() -> AudioFormat { AudioFormat::f32_sys() }
     fn zero() -> f32 { 0.0 }
 }
 
@@ -287,7 +337,7 @@ impl AudioSpecDesired {
         unsafe {
             ll::SDL_AudioSpec {
                 freq: freq.unwrap_or(0),
-                format: <CB::Channel as AudioFormatNum>::get_audio_format(),
+                format: <CB::Channel as AudioFormatNum>::get_audio_format().to_ll(),
                 channels: channels.unwrap_or(0),
                 silence: 0,
                 samples: samples.unwrap_or(0),
@@ -308,7 +358,6 @@ impl AudioSpecDesired {
 #[derive(Debug)]
 pub struct AudioSpec {
     pub freq: i32,
-    // TODO: Showing format should be prettier
     pub format: AudioFormat,
     pub channels: u8,
     pub silence: u8,
@@ -320,7 +369,7 @@ impl AudioSpec {
     fn convert_from_ll(spec: ll::SDL_AudioSpec) -> AudioSpec {
         AudioSpec {
             freq: spec.freq,
-            format: spec.format,
+            format: AudioFormat::from_ll(spec.format).unwrap(),
             channels: spec.channels,
             silence: spec.silence,
             samples: spec.samples,
@@ -474,15 +523,15 @@ pub struct AudioCVT {
 }
 
 impl AudioCVT {
-    pub fn new(src_format: ll::SDL_AudioFormat, src_channels: u8, src_rate: i32,
-               dst_format: ll::SDL_AudioFormat, dst_channels: u8, dst_rate: i32) -> SdlResult<AudioCVT>
+    pub fn new(src_format: AudioFormat, src_channels: u8, src_rate: i32,
+               dst_format: AudioFormat, dst_channels: u8, dst_rate: i32) -> SdlResult<AudioCVT>
     {
         use std::mem;
         unsafe {
             let mut raw: ll::SDL_AudioCVT = mem::uninitialized();
             let ret = ll::SDL_BuildAudioCVT(&mut raw,
-                                            src_format, src_channels, src_rate as c_int,
-                                            dst_format, dst_channels, dst_rate as c_int);
+                                            src_format.to_ll(), src_channels, src_rate as c_int,
+                                            dst_format.to_ll(), dst_channels, dst_rate as c_int);
             if ret == 1 || ret == 0 {
                 Ok(AudioCVT { raw: raw })
             } else {
@@ -543,7 +592,7 @@ impl AudioCVT {
 
 #[cfg(test)]
 mod test {
-    use super::{AudioCVT, AUDIOU8};
+    use super::{AudioCVT, AudioFormat};
 
     #[test]
     fn test_audio_cvt() {
@@ -555,7 +604,7 @@ mod test {
         // 0,0,1,1,2,2,3,3, ...
         let new_buffer_expected: Vec<u8> = (0..255).flat_map(|v| repeat(v).take(2)).collect();
 
-        let cvt = AudioCVT::new(AUDIOU8, 1, 44100, AUDIOU8, 2, 44100).unwrap();
+        let cvt = AudioCVT::new(AudioFormat::U8, 1, 44100, AudioFormat::U8, 2, 44100).unwrap();
         assert!(cvt.is_conversion_needed());
         assert_eq!(cvt.get_capacity(255), 255*2);
 
