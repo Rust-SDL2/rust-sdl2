@@ -3,6 +3,7 @@ use std::marker::PhantomData;
 
 use sys::sdl as ll;
 use event::EventPump;
+use video::WindowBuilder;
 
 bitflags! {
     flags InitFlag: u32 {
@@ -79,6 +80,11 @@ impl Sdl {
     /// Obtains the SDL event pump.
     pub fn event_pump(&self) -> EventPump {
         unsafe { EventPump::_unchecked_new() }
+    }
+
+    /// Initializes a new `WindowBuilder`; a convenience method that calls `WindowBuilder::new()`.
+    pub fn window(&self, title: &str, width: u32, height: u32) -> WindowBuilder {
+        WindowBuilder::new(self, title, width, height)
     }
 }
 

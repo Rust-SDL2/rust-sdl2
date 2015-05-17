@@ -28,9 +28,7 @@
 //! None of the draw methods in `RenderDrawer` are expected to fail.
 //! If they do, a panic is raised and the program is aborted.
 
-use Sdl;
 use event::EventPump;
-use video;
 use video::{Window, WindowProperties, WindowPropertiesGetters};
 use surface;
 use surface::Surface;
@@ -180,23 +178,6 @@ impl<'a> Renderer<'a> {
             unsafe {
                 Ok(Renderer::from_ll(raw, RendererParent::Window(window)))
             }
-        }
-    }
-
-    /// Creates a window and default renderer.
-    pub fn new_with_window(_sdl: &Sdl, width: i32, height: i32, window_flags: video::WindowFlags) -> SdlResult<Renderer<'static>> {
-        use sys::video::SDL_Window;
-
-        let mut raw_window: *mut SDL_Window = ptr::null_mut();
-        let mut raw_renderer: *mut ll::SDL_Renderer = ptr::null_mut();
-        let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, window_flags.bits(), &mut raw_window, &mut raw_renderer) == 0};
-        if result {
-            let window = unsafe { Window::from_ll(raw_window, true) };
-            unsafe {
-                Ok(Renderer::from_ll(raw_renderer, RendererParent::Window(window)))
-            }
-        } else {
-            Err(get_error())
         }
     }
 
