@@ -199,7 +199,7 @@ extern "C" {
     pub fn SDL_DisableScreenSaver();
     pub fn SDL_GL_GetDrawableSize(window: *mut SDL_Window, w: *mut c_int, h: *mut c_int);
     pub fn SDL_GL_LoadLibrary(path: *const c_char) -> c_int;
-    pub fn SDL_GL_GetProcAddress(procname: *const c_char) -> Option<extern "system" fn()>;
+    pub fn SDL_GL_GetProcAddress(procname: *const c_char) -> *const c_void;
     pub fn SDL_GL_UnloadLibrary();
     pub fn SDL_GL_ExtensionSupported(extension: *const c_char) -> SDL_bool;
     pub fn SDL_GL_SetAttribute(attr: SDL_GLattr, value: c_int) -> c_int;

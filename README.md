@@ -110,9 +110,7 @@ Then you need to add this to add this initialization code to establish the
 bindings:
 
 ```rust
-    gl::load_with(|s| unsafe {
-        std::mem::transmute(sdl2::video::gl_get_proc_address(s))
-    });
+    gl::load_with(sdl2::video::gl_get_proc_address);
 ```
 
 Note that these bindings are very raw, and many of the calls will require
