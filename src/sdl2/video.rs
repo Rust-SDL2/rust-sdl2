@@ -8,6 +8,7 @@ use std::vec::Vec;
 
 use event::EventPump;
 use rect::Rect;
+use render::RendererBuilder;
 use surface::Surface;
 use pixels;
 use Sdl;
@@ -101,25 +102,6 @@ impl DisplayMode {
     }
 }
 
-bitflags! {
-    flags WindowFlags: u32 {
-        const FULLSCREEN = ll::SDL_WindowFlags::SDL_WINDOW_FULLSCREEN as u32,
-        const OPENGL = ll::SDL_WindowFlags::SDL_WINDOW_OPENGL as u32,
-        const SHOWN = ll::SDL_WindowFlags::SDL_WINDOW_SHOWN as u32,
-        const HIDDEN = ll::SDL_WindowFlags::SDL_WINDOW_HIDDEN as u32,
-        const BORDERLESS = ll::SDL_WindowFlags::SDL_WINDOW_BORDERLESS as u32,
-        const RESIZABLE = ll::SDL_WindowFlags::SDL_WINDOW_RESIZABLE as u32,
-        const MINIMIZED = ll::SDL_WindowFlags::SDL_WINDOW_MINIMIZED as u32,
-        const MAXIMIZED = ll::SDL_WindowFlags::SDL_WINDOW_MAXIMIZED as u32,
-        const INPUT_GRABBED = ll::SDL_WindowFlags::SDL_WINDOW_INPUT_GRABBED as u32,
-        const INPUT_FOCUS = ll::SDL_WindowFlags::SDL_WINDOW_INPUT_FOCUS as u32,
-        const MOUSE_FOCUS = ll::SDL_WindowFlags::SDL_WINDOW_MOUSE_FOCUS as u32,
-        const FULLSCREEN_DESKTOP = ll::SDL_WindowFlags::SDL_WINDOW_FULLSCREEN_DESKTOP as u32,
-        const FOREIGN = ll::SDL_WindowFlags::SDL_WINDOW_FOREIGN as u32,
-        const ALLOW_HIGHDPI = ll::SDL_WindowFlags::SDL_WINDOW_ALLOW_HIGHDPI as u32
-    }
-}
-
 #[derive(Copy, Clone, PartialEq)]
 pub enum FullscreenType {
     FTOff = 0,
@@ -187,6 +169,116 @@ impl Drop for Window {
     }
 }
 
+/// The type that allows you to build windows.
+pub struct WindowBuilder {
+    title: CString,
+    width: u32,
+    height: u32,
+    x: WindowPos,
+    y: WindowPos,
+    window_flags: u32,
+    /// The window builder cannot be built on a non-main thread, so prevent cross-threaded moves and references.
+    /// `!Send` and `!Sync`
+    _nosendsync: PhantomData<*mut ()>
+}
+
+impl WindowBuilder {
+    /// Initializes a new `WindowBuilder`.
+    pub fn new(_sdl: &Sdl, title: &str, width: u32, height: u32) -> WindowBuilder {
+        WindowBuilder {
+            title: CString::new(title).unwrap(),
+            width: width,
+            height: height,
+            x: WindowPos::PosUndefined,
+            y: WindowPos::PosUndefined,
+            window_flags: 0,
+            _nosendsync: PhantomData
+        }
+    }
+
+    /// Builds the window.
+    pub fn build(&self) -> SdlResult<Window> {
+        unsafe {
+            if self.width >= (1<<31) || self.height >= (1<<31) {
+                // SDL2 only supports int (signed 32-bit) arguments.
+                Err(format!("Window is too large."))
+            } else {
+                let raw_width = self.width as c_int;
+                let raw_height = self.height as c_int;
+
+                let raw = ll::SDL_CreateWindow(
+                        self.title.as_ptr(),
+                        unwrap_windowpos(self.x),
+                        unwrap_windowpos(self.y),
+                        raw_width,
+                        raw_height,
+                        self.window_flags
+                );
+
+                if raw == ptr::null_mut() {
+                    Err(get_error())
+                } else {
+                    Ok(Window { raw: raw, owned: true })
+                }
+            }
+        }
+    }
+
+    /// Gets the underlying window flags.
+    pub fn get_window_flags(&self) -> u32 { self.window_flags }
+
+    /// Sets the underlying window flags.
+    /// This will effectively undo any previous build operations, excluding window size and position.
+    pub fn set_window_flags(&mut self, flags: u32) -> &mut WindowBuilder {
+        self.window_flags = flags;
+        self
+    }
+
+    /// Sets the window position.
+    pub fn position(&mut self, x: i32, y: i32) -> &mut WindowBuilder {
+        self.x = WindowPos::Positioned(x);
+        self.y = WindowPos::Positioned(y);
+        self
+    }
+
+    /// Centers the window.
+    pub fn position_centered(&mut self) -> &mut WindowBuilder {
+        self.x = WindowPos::PosCentered;
+        self.y = WindowPos::PosCentered;
+        self
+    }
+
+    /// Sets the window to fullscreen.
+    pub fn fullscreen(&mut self) -> &mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_FULLSCREEN as u32; self }
+
+    /// Sets the window to fullscreen at the current desktop resolution.
+    pub fn fullscreen_desktop(&mut self) -> &mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_FULLSCREEN_DESKTOP as u32; self }
+
+    /// Sets the window to be usable with an OpenGL context
+    pub fn opengl(&mut self) -> & mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_OPENGL as u32; self }
+
+    /// Hides the window.
+    pub fn hidden(&mut self) -> &mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_HIDDEN as u32; self }
+
+    /// Removes the window decoration.
+    pub fn borderless(&mut self) -> &mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_BORDERLESS as u32; self }
+
+    /// Sets the window to be resizable.
+    pub fn resizable(&mut self) -> &mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_RESIZABLE as u32; self }
+
+    /// Minimizes the window.
+    pub fn minimized(&mut self) -> &mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_MINIMIZED as u32; self }
+
+    /// Maximizes the window.
+    pub fn maximized(&mut self) -> &mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_MAXIMIZED as u32; self }
+
+    /// Sets the window to have grabbed input focus.
+    pub fn input_grabbed(&mut self) -> &mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_INPUT_GRABBED as u32; self }
+
+    /// Creates the window in high-DPI mode if supported (>= SDL 2.0.1)
+    pub fn allow_highdpi(&mut self) -> &mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_ALLOW_HIGHDPI as u32; self }
+}
+
 /// Contains accessors to a `Window`'s properties.
 pub struct WindowProperties<'a> {
     raw: *mut ll::SDL_Window,
@@ -209,50 +301,9 @@ impl<'a> Deref for WindowPropertiesGetters<'a> {
 }
 
 impl Window {
-    /// Creates a new Window.
-    ///
-    /// Note: a reference to the SDL context is required to ensure that the
-    /// Window is being created on the same thread as the SDL main thread
-    /// (`Sdl` cannot be moved or referenced across other threads).
-    ///
-    /// # Example
-    /// ```no_run
-    /// use sdl2::video::{Window, WindowPos};
-    ///
-    /// let sdl_context = sdl2::init(sdl2::INIT_EVERYTHING).unwrap();
-    ///
-    /// let window = Window::new(&sdl_context, "My SDL window", WindowPos::PosCentered, WindowPos::PosCentered, 800, 600, sdl2::video::SHOWN).unwrap();
-    /// ```
-    pub fn new(sdl: &Sdl, title: &str, x: WindowPos, y: WindowPos, width: i32, height: i32, window_flags: WindowFlags) -> SdlResult<Window> {
-        Window::new_with_init(sdl, title, x, y, width, height, window_flags, |_| { Ok(()) })
-    }
-
-    /// Creates a new Window, and initializes the Window with other properties.
-    pub fn new_with_init<'a, F: 'a>(_sdl: &Sdl, title: &str, x: WindowPos, y: WindowPos, width: i32, height: i32, window_flags: WindowFlags, init: F) -> SdlResult<Window>
-    where F: FnOnce(WindowProperties<'a>) -> SdlResult<()>
-    {
-        unsafe {
-            let buff = CString::new(title).unwrap().as_ptr();
-            let raw = ll::SDL_CreateWindow(
-                    buff,
-                    unwrap_windowpos(x),
-                    unwrap_windowpos(y),
-                    width as c_int,
-                    height as c_int,
-                    window_flags.bits()
-            );
-
-            if raw == ptr::null_mut() {
-                Err(get_error())
-            } else {
-                try!(init(WindowProperties {
-                    raw: raw,
-                    _marker: PhantomData
-                }));
-
-                Ok(Window{ raw: raw, owned: true })
-            }
-        }
+    /// Initializes a new `RendererBuilder`; a convenience method that calls `RendererBuilder::new()`.
+    pub fn renderer(self) -> RendererBuilder {
+        RendererBuilder::new(self)
     }
 
     /// Accesses the Window properties, such as the position, size and title of a Window.
@@ -265,10 +316,8 @@ impl Window {
     ///
     /// # Example
     /// ```no_run
-    /// use sdl2::video::{Window, WindowPos};
-    ///
-    /// let mut sdl_context = sdl2::init(sdl2::INIT_EVERYTHING).unwrap();
-    /// let mut window = Window::new(&sdl_context, "My SDL window", WindowPos::PosCentered, WindowPos::PosCentered, 800, 600, sdl2::video::SHOWN).unwrap();
+    /// let mut sdl_context = sdl2::init().everything().unwrap();
+    /// let mut window = sdl_context.window("My SDL window", 800, 600).build().unwrap();
     /// let mut event_pump = sdl_context.event_pump();
     ///
     /// loop {
@@ -394,10 +443,9 @@ impl<'a> WindowProperties<'a> {
         unsafe{ FromPrimitive::from_u64(ll::SDL_GetWindowPixelFormat(self.raw) as u64).unwrap() }
     }
 
-    pub fn get_flags(&self) -> WindowFlags {
+    pub fn get_window_flags(&self) -> u32 {
         unsafe {
-            let raw = ll::SDL_GetWindowFlags(self.raw);
-            WindowFlags::from_bits(raw).unwrap()
+            ll::SDL_GetWindowFlags(self.raw)
         }
     }
 

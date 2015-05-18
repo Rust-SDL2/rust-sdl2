@@ -74,7 +74,7 @@ extern "C" fn c_timer_callback(_interval: u32, param: *mut c_void) -> uint32_t {
 #[cfg(test)]
 fn test_timer_runs_multiple_times() {
     use std::sync::{Arc, Mutex};
-    ::sdl::init(::sdl::INIT_TIMER).unwrap();
+    ::sdl::init().timer().unwrap();
 
     let local_num = Arc::new(Mutex::new(0));
     let timer_num = local_num.clone();
@@ -98,7 +98,7 @@ fn test_timer_runs_multiple_times() {
 #[cfg(test)]
 fn test_timer_runs_at_least_once() {
     use std::sync::{Arc, Mutex};
-    ::sdl::init(::sdl::INIT_TIMER).unwrap();
+    ::sdl::init().timer().unwrap();
 
     let local_flag = Arc::new(Mutex::new(false));
     let timer_flag = local_flag.clone();
@@ -116,7 +116,7 @@ fn test_timer_runs_at_least_once() {
 #[cfg(test)]
 fn test_timer_can_be_recreated() {
     use std::sync::{Arc, Mutex};
-    ::sdl::init(::sdl::INIT_TIMER).unwrap();
+    ::sdl::init().timer().unwrap();
 
     let local_num = Arc::new(Mutex::new(0));
     let timer_num = local_num.clone();

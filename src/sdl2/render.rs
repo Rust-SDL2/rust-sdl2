@@ -28,9 +28,7 @@
 //! None of the draw methods in `RenderDrawer` are expected to fail.
 //! If they do, a panic is raised and the program is aborted.
 
-use Sdl;
 use event::EventPump;
-use video;
 use video::{Window, WindowProperties, WindowPropertiesGetters};
 use surface;
 use surface::Surface;
@@ -50,12 +48,6 @@ use std::vec::Vec;
 use std::rc::Rc;
 
 use sys::render as ll;
-
-#[derive(Copy, Clone)]
-pub enum RenderDriverIndex {
-    Auto,
-    Index(i32)
-}
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum TextureAccess {
@@ -79,21 +71,12 @@ impl FromPrimitive for TextureAccess {
     fn from_u64(n: u64) -> Option<TextureAccess> { FromPrimitive::from_i64(n as i64) }
 }
 
-bitflags! {
-    flags RendererFlags: u32 {
-        const SOFTWARE = ll::SDL_RENDERER_SOFTWARE as u32,
-        const ACCELERATED = ll::SDL_RENDERER_ACCELERATED as u32,
-        const PRESENTVSYNC = ll::SDL_RENDERER_PRESENTVSYNC as u32,
-        const TARGETTEXTURE = ll::SDL_RENDERER_TARGETTEXTURE as u32
-    }
-}
-
 /// A structure that contains information on the capabilities of a render driver
 /// or the current render context.
 #[derive(PartialEq)]
 pub struct RendererInfo {
     pub name: String,
-    pub flags: RendererFlags,
+    pub flags: u32,
     pub texture_formats: Vec<pixels::PixelFormatEnum>,
     pub max_texture_width: i32,
     pub max_texture_height: i32
@@ -125,15 +108,13 @@ impl FromPrimitive for BlendMode {
 
 impl RendererInfo {
     pub unsafe fn from_ll(info: &ll::SDL_RendererInfo) -> RendererInfo {
-        let actual_flags = RendererFlags::from_bits(info.flags).unwrap();
-
         let texture_formats: Vec<pixels::PixelFormatEnum> = info.texture_formats[0..(info.num_texture_formats as usize)].iter().map(|&format| {
             FromPrimitive::from_i64(format as i64).unwrap()
         }).collect();
 
         RendererInfo {
             name: String::from_utf8_lossy(CStr::from_ptr(info.name).to_bytes()).to_string(),
-            flags: actual_flags,
+            flags: info.flags,
             texture_formats: texture_formats,
             max_texture_width: info.max_texture_width as i32,
             max_texture_height: info.max_texture_height as i32
@@ -162,44 +143,74 @@ impl<'a> Drop for Renderer<'a> {
     }
 }
 
-impl<'a> Renderer<'a> {
-    /// Creates a 2D rendering context for a window.
-    pub fn from_window(window: Window, index: RenderDriverIndex, renderer_flags: RendererFlags) -> SdlResult<Renderer<'static>> {
-        let index = match index {
-            RenderDriverIndex::Auto => -1,
-            RenderDriverIndex::Index(x) => x
-        };
+/// The type that allows you to build Window-based renderers.
+///
+/// By default, the renderer builder will prioritize for a hardware-accelerated renderer.
+pub struct RendererBuilder {
+    window: Window,
+    index: i32,
+    renderer_flags: u32
+}
 
+impl RendererBuilder {
+    /// Initializes a new `RendererBuilder`.
+    pub fn new(window: Window) -> RendererBuilder {
+        RendererBuilder {
+            window: window,
+            // -1 means to initialize the first rendering driver supporting the renderer flags
+            index: -1,
+            // no flags gives priority to available SDL_RENDERER_ACCELERATED renderers
+            renderer_flags: 0
+        }
+    }
+
+    /// Builds the renderer.
+    pub fn build(self) -> SdlResult<Renderer<'static>> {
         let raw = unsafe {
-            ll::SDL_CreateRenderer(window.raw(), index as c_int, renderer_flags.bits())
+            ll::SDL_CreateRenderer(self.window.raw(), self.index, self.renderer_flags)
         };
 
-        if raw == ptr::null_mut() {
+        if raw.is_null() {
             Err(get_error())
         } else {
             unsafe {
-                Ok(Renderer::from_ll(raw, RendererParent::Window(window)))
+                Ok(Renderer::from_ll(raw, RendererParent::Window(self.window)))
             }
         }
     }
 
-    /// Creates a window and default renderer.
-    pub fn new_with_window(_sdl: &Sdl, width: i32, height: i32, window_flags: video::WindowFlags) -> SdlResult<Renderer<'static>> {
-        use sys::video::SDL_Window;
-
-        let mut raw_window: *mut SDL_Window = ptr::null_mut();
-        let mut raw_renderer: *mut ll::SDL_Renderer = ptr::null_mut();
-        let result = unsafe { ll::SDL_CreateWindowAndRenderer(width as c_int, height as c_int, window_flags.bits(), &mut raw_window, &mut raw_renderer) == 0};
-        if result {
-            let window = unsafe { Window::from_ll(raw_window, true) };
-            unsafe {
-                Ok(Renderer::from_ll(raw_renderer, RendererParent::Window(window)))
-            }
-        } else {
-            Err(get_error())
-        }
+    /// Sets the index of the rendering driver to initialize.
+    pub fn index(mut self, index: i32) -> RendererBuilder {
+        self.index = index;
+        self
     }
 
+    /// Set the renderer to a software fallback.
+    pub fn software(mut self) -> RendererBuilder {
+        self.renderer_flags |= ll::SDL_RENDERER_SOFTWARE as u32;
+        self
+    }
+
+    /// Set the renderer to use hardware acceleration.
+    pub fn accelerated(mut self) -> RendererBuilder {
+        self.renderer_flags |= ll::SDL_RENDERER_ACCELERATED as u32;
+        self
+    }
+
+    /// Synchronize renderer present with the refresh rate.
+    pub fn present_vsync(mut self) -> RendererBuilder {
+        self.renderer_flags |= ll::SDL_RENDERER_PRESENTVSYNC as u32;
+        self
+    }
+
+    /// Set the renderer to support rendering to a texture.
+    pub fn target_texture(mut self) -> RendererBuilder {
+        self.renderer_flags |= ll::SDL_RENDERER_TARGETTEXTURE as u32;
+        self
+    }
+}
+
+impl<'a> Renderer<'a> {
     /// Creates a 2D software rendering context for a surface.
     pub fn from_surface(surface: surface::Surface<'a>) -> SdlResult<Renderer<'a>> {
         let raw_renderer = unsafe { ll::SDL_CreateSoftwareRenderer(surface.raw()) };

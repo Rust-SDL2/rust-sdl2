@@ -3,7 +3,7 @@ extern crate sdl2;
 use sdl2::joystick::{Joystick, num_joysticks};
 
 fn main() {
-    let sdl_context = sdl2::init(sdl2::INIT_JOYSTICK).unwrap();
+    let sdl_context = sdl2::init().joystick().unwrap();
 
     let available =
         match num_joysticks() {

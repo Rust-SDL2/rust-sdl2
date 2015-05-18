@@ -4,7 +4,7 @@ use sdl2::{joystick, controller};
 use sdl2::controller::GameController;
 
 fn main() {
-    let sdl_context = sdl2::init(sdl2::INIT_GAME_CONTROLLER).unwrap();
+    let sdl_context = sdl2::init().game_controller().unwrap();
 
     let available =
         match joystick::num_joysticks() {
