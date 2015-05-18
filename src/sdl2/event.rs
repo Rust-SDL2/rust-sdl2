@@ -622,7 +622,7 @@ impl Event {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
                     which: event.which,
-                    mousestate: mouse::MouseState::from_bits_truncate(event.state),
+                    mousestate: mouse::MouseState::from_flags(event.state),
                     x: event.x,
                     y: event.y,
                     xrel: event.xrel,
