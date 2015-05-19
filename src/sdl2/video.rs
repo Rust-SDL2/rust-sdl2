@@ -19,48 +19,304 @@ use get_error;
 
 use sys::video as ll;
 
-#[derive(Copy, Clone, PartialEq)]
-pub enum GLAttr {
-    GLRedSize = 0,
-    GLGreenSize = 1,
-    GLBlueSize = 2,
-    GLAlphaSize = 3,
-    GLBufferSize = 4,
-    GLDoubleBuffer = 5,
-    GLDepthSize = 6,
-    GLStencilSize = 7,
-    GLAccumRedSize = 8,
-    GLAccumGreenSize = 9,
-    GLAccumBlueSize = 10,
-    GLAccumAlphaSize = 11,
-    GLStereo = 12,
-    GLMultiSampleBuffers = 13,
-    GLMultiSampleSamples = 14,
-    GLAcceleratedVisual = 15,
-    GLRetailedBacking = 16,
-    GLContextMajorVersion = 17,
-    GLContextMinorVersion = 18,
-    GLContextEGL = 19,
-    GLContextFlags = 20,
-    GLContextProfileMask = 21,
-    GLShareWithCurrentContext = 22,
-    GLFramebufferSRGBCapable = 23,
-}
-
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum GLProfile {
-  GLCoreProfile = 0x0001,
-  GLCompatibilityProfile = 0x0002,
-  GLESProfile = 0x0004,
+    /// OpenGL core profile - deprecated functions are disabled
+    Core,
+    /// OpenGL compatibility profile - deprecated functions are allowed
+    Compatibility,
+    /// OpenGL ES profile - only a subset of the base OpenGL functionality is available
+    GLES,
 }
 
-/// Flags for the GLContextFlags GL attribute
-bitflags! {
-    flags GLContexFlag: i32 {
-        const GL_CONTEXT_DEBUG              = 0x0001,
-        const GL_CONTEXT_FORWARD_COMPATIBLE = 0x0002,
-        const GL_CONTEXT_ROBUST_ACCESS      = 0x0004,
-        const GL_CONTEXT_RESET_ISOLATION    = 0x0008,
+trait GLAttrTypeUtil {
+    fn to_gl_value(self) -> i32;
+    fn from_gl_value(value: i32) -> Self;
+}
+
+impl GLAttrTypeUtil for u8 {
+    fn to_gl_value(self) -> i32 { self as i32 }
+    fn from_gl_value(value: i32) -> u8 { value as u8 }
+}
+
+impl GLAttrTypeUtil for bool {
+    fn to_gl_value(self) -> i32 { if self { 1 } else { 0 } }
+    fn from_gl_value(value: i32) -> bool { value != 0 }
+}
+
+impl GLAttrTypeUtil for GLProfile {
+    fn to_gl_value(self) -> i32 {
+        use self::GLProfile::*;
+
+        match self {
+            Core => 1,
+            Compatibility => 2,
+            GLES => 4,
+        }
+    }
+    fn from_gl_value(value: i32) -> GLProfile {
+        use self::GLProfile::*;
+
+        match value {
+            1 => Core,
+            2 => Compatibility,
+            4 => GLES,
+            _ => panic!("unknown SDL_GLProfile value: {}", value)
+        }
+    }
+}
+
+macro_rules! attrs {
+    (
+        $(($attr_name:ident, $set_property:ident, $get_property:ident, $t:ty, $doc:expr)),*
+    ) => (
+
+        $(
+        #[doc = "**Sets** the attribute: "]
+        #[doc = $doc]
+        #[inline]
+        pub fn $set_property(value: $t) {
+            gl_set_attribute!($attr_name, value.to_gl_value());
+        }
+
+        #[doc = "**Gets** the attribute: "]
+        #[doc = $doc]
+        #[inline]
+        pub fn $get_property() -> $t {
+            let value = gl_get_attribute!($attr_name);
+            GLAttrTypeUtil::from_gl_value(value)
+        }
+        )*
+    );
+}
+
+/// OpenGL context getters and setters
+///
+/// # Example
+/// ```no_run
+/// use sdl2::video::{GLProfile, gl_attr};
+///
+/// let sdl_context = sdl2::init().video().unwrap();
+///
+/// // Don't use deprecated OpenGL functions
+/// gl_attr::set_context_profile(GLProfile::Core);
+///
+/// // Set the context into debug mode
+/// gl_attr::set_context_flags().debug().set();
+///
+/// // Set the OpenGL context version (OpenGL 3.2)
+/// gl_attr::set_context_version(3, 2);
+///
+/// // Enable anti-aliasing
+/// gl_attr::set_multisample_buffers(1);
+/// gl_attr::set_multisample_samples(4);
+///
+/// let window = sdl_context.window("rust-sdl2 demo: Video", 800, 600).opengl().build().unwrap();
+///
+/// // Yes, we're still using the Core profile
+/// assert_eq!(gl_attr::context_profile(), GLProfile::Core);
+/// // ... and we're still using OpenGL 3.2
+/// assert_eq!(gl_attr::context_version(), (3, 2));
+/// ```
+pub mod gl_attr {
+    use get_error;
+    use sys::video as ll;
+    use super::{GLProfile, GLAttrTypeUtil};
+
+    macro_rules! gl_set_attribute {
+        ($attr:ident, $value:expr) => ({
+            let result = unsafe {
+                ll::SDL_GL_SetAttribute(ll::SDL_GLattr::$attr, $value)
+            };
+
+            if result != 0 {
+                // Panic and print the attribute that failed.
+                panic!("couldn't set attribute {}: {}", stringify!($attr), get_error());
+            }
+        })
+    }
+
+    macro_rules! gl_get_attribute {
+        ($attr:ident) => ({
+            let mut value = 0;
+            let result = unsafe {
+                ll::SDL_GL_GetAttribute(ll::SDL_GLattr::$attr, &mut value)
+            };
+            if result != 0 {
+                // Panic and print the attribute that failed.
+                panic!("couldn't get attribute {}: {}", stringify!($attr), get_error());
+            }
+            value
+        })
+    }
+
+    // Note: Wish I could avoid the redundancy of set_property and property (without namespacing into new modules),
+    // but Rust's `concat_idents!` macro isn't stable.
+    attrs! {
+        (SDL_GL_RED_SIZE, set_red_size, red_size, u8,
+            "the minimum number of bits for the red channel of the color buffer; defaults to 3"),
+
+        (SDL_GL_GREEN_SIZE, set_green_size, green_size, u8,
+            "the minimum number of bits for the green channel of the color buffer; defaults to 3"),
+
+        (SDL_GL_BLUE_SIZE, set_blue_size, blue_size, u8,
+            "the minimum number of bits for the blue channel of the color buffer; defaults to 2"),
+
+        (SDL_GL_ALPHA_SIZE, set_alpha_size, alpha_size, u8,
+            "the minimum number of bits for the alpha channel of the color buffer; defaults to 0"),
+
+        (SDL_GL_BUFFER_SIZE, set_buffer_size, buffer_size, u8,
+            "the minimum number of bits for frame buffer size; defaults to 0"),
+
+        (SDL_GL_DOUBLEBUFFER, set_double_buffer, double_buffer, bool,
+            "whether the output is single or double buffered; defaults to double buffering on"),
+
+        (SDL_GL_DEPTH_SIZE, set_depth_size, depth_size, u8,
+            "the minimum number of bits in the depth buffer; defaults to 16"),
+
+        (SDL_GL_STENCIL_SIZE, set_stencil_size, stencil_size, u8,
+            "the minimum number of bits in the stencil buffer; defaults to 0"),
+
+        (SDL_GL_ACCUM_RED_SIZE, set_accum_red_size, accum_red_size, u8,
+            "the minimum number of bits for the red channel of the accumulation buffer; defaults to 0"),
+
+        (SDL_GL_ACCUM_GREEN_SIZE, set_accum_green_size, accum_green_size, u8,
+            "the minimum number of bits for the green channel of the accumulation buffer; defaults to 0"),
+
+        (SDL_GL_ACCUM_BLUE_SIZE, set_accum_blue_size, accum_blue_size, u8,
+            "the minimum number of bits for the blue channel of the accumulation buffer; defaults to 0"),
+
+        (SDL_GL_ACCUM_ALPHA_SIZE, set_accum_alpha_size, accum_alpha_size, u8,
+            "the minimum number of bits for the alpha channel of the accumulation buffer; defaults to 0"),
+
+        (SDL_GL_STEREO, set_stereo, stereo, bool,
+            "whether the output is stereo 3D; defaults to off"),
+
+        (SDL_GL_MULTISAMPLEBUFFERS, set_multisample_buffers, multisample_buffers, u8,
+            "the number of buffers used for multisample anti-aliasing; defaults to 0"),
+
+        (SDL_GL_MULTISAMPLESAMPLES, set_multisample_samples, multisample_samples, u8,
+            "the number of samples used around the current pixel used for multisample anti-aliasing; defaults to 0"),
+
+        (SDL_GL_ACCELERATED_VISUAL, set_accelerated_visual, accelerated_visual, bool,
+            "whether to require hardware acceleration; false to force software rendering; defaults to allow either"),
+
+        (SDL_GL_CONTEXT_MAJOR_VERSION, set_context_major_version, context_major_version, u8,
+            "OpenGL context major version"),
+
+        (SDL_GL_CONTEXT_MINOR_VERSION, set_context_minor_version, context_minor_version, u8,
+            "OpenGL context minor version"),
+
+        (SDL_GL_CONTEXT_PROFILE_MASK, set_context_profile, context_profile, GLProfile,
+            "type of GL context (Core, Compatibility, ES)"),
+
+        (SDL_GL_SHARE_WITH_CURRENT_CONTEXT, set_share_with_current_context, share_with_current_context, bool,
+            "OpenGL context sharing; defaults to false"),
+
+        (SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, set_framebuffer_srgb_compatible, framebuffer_srgb_compatible, bool,
+            "requests sRGB capable visual; defaults to false (>= SDL 2.0.1)")
+    }
+
+    /// **Sets** the OpenGL context major and minor versions.
+    #[inline]
+    pub fn set_context_version(major: u8, minor: u8) {
+        set_context_major_version(major);
+        set_context_minor_version(minor);
+    }
+
+    /// **Gets** the OpenGL context major and minor versions as a tuple.
+    #[inline]
+    pub fn context_version() -> (u8, u8) {
+        (context_major_version(), context_minor_version())
+    }
+
+    /// The type that allows you to build a OpenGL context configuration.
+    pub struct ContextFlagsBuilder {
+        flags: i32
+    }
+
+    impl ContextFlagsBuilder {
+        /// Finishes the builder and applies the GL context flags to the GL context.
+        #[inline]
+        pub fn set(&self) {
+            gl_set_attribute!(SDL_GL_CONTEXT_FLAGS, self.flags);
+        }
+
+        /// Sets the context into "debug" mode.
+        #[inline]
+        pub fn debug(&mut self) -> &mut ContextFlagsBuilder {
+            self.flags |= 0x0001;
+            self
+        }
+
+        /// Sets the context into "forward compatible" mode.
+        #[inline]
+        pub fn forward_compatible(&mut self) -> &mut ContextFlagsBuilder {
+            self.flags |= 0x0002;
+            self
+        }
+
+        #[inline]
+        pub fn robust_access(&mut self) -> &mut ContextFlagsBuilder {
+            self.flags |= 0x0004;
+            self
+        }
+
+        #[inline]
+        pub fn reset_isolation(&mut self) -> &mut ContextFlagsBuilder {
+            self.flags |= 0x0008;
+            self
+        }
+    }
+
+    pub struct ContextFlags {
+        flags: i32
+    }
+
+    impl ContextFlags {
+        #[inline]
+        pub fn has_debug(&self) -> bool { self.flags & 0x0001 != 0 }
+
+        #[inline]
+        pub fn has_forward_compatible(&self) -> bool { self.flags & 0x0002 != 0 }
+
+        #[inline]
+        pub fn has_robust_access(&self) -> bool { self.flags & 0x0004 != 0 }
+
+        #[inline]
+        pub fn has_reset_isolation(&self) -> bool { self.flags & 0x0008 != 0 }
+    }
+
+    /// **Sets** any combination of OpenGL context configuration flags.
+    ///
+    /// Note that calling this will reset any existing context flags.
+    ///
+    /// # Example
+    /// ```no_run
+    /// // Sets the GL context into debug mode.
+    /// sdl2::video::gl_attr::set_context_flags().debug().set();
+    /// ```
+    pub fn set_context_flags() -> ContextFlagsBuilder {
+        ContextFlagsBuilder {
+            flags: 0
+        }
+    }
+
+    /// **Gets** the applied OpenGL context configuration flags.
+    ///
+    /// # Example
+    /// ```no_run
+    /// // Is the GL context in debug mode?
+    /// if sdl2::video::gl_attr::context_flags().has_debug() {
+    ///     println!("Debug mode");
+    /// }
+    /// ```
+    pub fn context_flags() -> ContextFlags {
+        let flags = gl_get_attribute!(SDL_GL_CONTEXT_FLAGS);
+
+        ContextFlags {
+            flags: flags
+        }
     }
 }
 
@@ -814,21 +1070,6 @@ pub fn gl_extension_supported(extension: &str) -> Result<bool, NulError> {
         Err(e) => return Err(e),
     };
     Ok(unsafe { ll::SDL_GL_ExtensionSupported(buff) == 1 })
-}
-
-pub fn gl_set_attribute(attr: GLAttr, value: i32) -> bool {
-    unsafe { ll::SDL_GL_SetAttribute(FromPrimitive::from_u64(attr as u64).unwrap(), value as c_int) == 0 }
-}
-
-pub fn gl_get_attribute(attr: GLAttr) -> SdlResult<i32> {
-    let mut out = 0;
-
-    let result = unsafe { ll::SDL_GL_GetAttribute(FromPrimitive::from_u64(attr as u64).unwrap(), &mut out) } == 0;
-    if result {
-        Ok(out as i32)
-    } else {
-        Err(get_error())
-    }
 }
 
 pub unsafe fn gl_get_current_window() -> SdlResult<Window> {
