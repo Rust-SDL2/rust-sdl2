@@ -4,6 +4,9 @@ use num::FromPrimitive;
 
 use sys::pixels as ll;
 
+use SdlResult;
+use get_error;
+
 #[derive(PartialEq)] #[allow(raw_pointer_derive, missing_copy_implementations)]
 pub struct Palette {
     raw: *mut ll::SDL_Palette
@@ -51,6 +54,19 @@ impl rand::Rand for Color {
         if rng.gen() { Color::RGBA(rng.gen(), rng.gen(), rng.gen(), rng.gen()) }
         else { Color::RGB(rng.gen(), rng.gen(), rng.gen()) }
     }
+}
+
+pub struct PixelMasks {
+    /// Bits per pixel; usually 15, 16, or 32
+    pub bpp: u8,
+    /// The red mask
+    pub rmask: u32,
+    /// The green mask
+    pub gmask: u32,
+    /// The blue mask
+    pub bmask: u32,
+    /// The alpha mask
+    pub amask: u32
 }
 
 #[derive(PartialEq)] #[allow(raw_pointer_derive, missing_copy_implementations)]
@@ -102,6 +118,37 @@ pub enum PixelFormatEnum {
 }
 
 impl PixelFormatEnum {
+    pub fn from_masks(masks: PixelMasks) -> PixelFormatEnum {
+        unsafe {
+            let format = ll::SDL_MasksToPixelFormatEnum(masks.bpp as i32, masks.rmask, masks.gmask, masks.bmask, masks.amask);
+            PixelFormatEnum::from_u64(format as u64).unwrap()
+        }
+    }
+
+    pub fn into_masks(self) -> SdlResult<PixelMasks> {
+        let format: u32 = self as u32;
+        let mut bpp = 0;
+        let mut rmask = 0;
+        let mut gmask = 0;
+        let mut bmask = 0;
+        let mut amask = 0;
+        let result = unsafe {
+            ll::SDL_PixelFormatEnumToMasks(format, &mut bpp, &mut rmask, &mut gmask, &mut bmask, &mut amask)
+        };
+        if result == 0 {
+            // SDL_FALSE
+            Err(get_error())
+        } else {
+            Ok(PixelMasks {
+                bpp: bpp as u8,
+                rmask: rmask,
+                gmask: gmask,
+                bmask: bmask,
+                amask: amask
+            })
+        }
+    }
+
     /// Calculates the total byte size of an image buffer, given its pitch
     /// and height.
     pub fn byte_size_from_pitch_and_height(&self, pitch: usize, height: usize) -> usize {
