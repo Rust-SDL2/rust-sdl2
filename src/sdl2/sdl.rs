@@ -5,7 +5,7 @@ use sys::sdl as ll;
 use event::EventPump;
 use video::WindowBuilder;
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum Error {
     NoMemError = ll::SDL_ENOMEM as isize,
     ReadError = ll::SDL_EFREAD as isize,

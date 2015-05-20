@@ -8,7 +8,7 @@ use std::fmt;
 use sys::version as ll;
 
 /// A structure that contains information about the version of SDL in use.
-#[derive(PartialEq, Copy, Clone)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub struct Version {
     /// major version
     pub major: u8,

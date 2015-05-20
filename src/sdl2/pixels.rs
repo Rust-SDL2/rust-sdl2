@@ -7,14 +7,13 @@ use sys::pixels as ll;
 use SdlResult;
 use get_error;
 
-#[derive(PartialEq)] #[allow(raw_pointer_derive, missing_copy_implementations)]
 pub struct Palette {
     raw: *mut ll::SDL_Palette
 }
 
 impl_raw_accessors!((Palette, *mut ll::SDL_Palette));
 
-#[derive(PartialEq, Clone, Copy)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum Color {
     RGB(u8, u8, u8),
     RGBA(u8, u8, u8, u8)
@@ -69,7 +68,6 @@ pub struct PixelMasks {
     pub amask: u32
 }
 
-#[derive(PartialEq)] #[allow(raw_pointer_derive, missing_copy_implementations)]
 pub struct PixelFormat {
     raw: *mut ll::SDL_PixelFormat
 }
@@ -77,7 +75,7 @@ pub struct PixelFormat {
 impl_raw_accessors!((PixelFormat, *mut ll::SDL_PixelFormat));
 impl_raw_constructor!((PixelFormat, PixelFormat (raw: *mut ll::SDL_PixelFormat)));
 
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum PixelFormatEnum {
     Unknown = ll::SDL_PIXELFORMAT_UNKNOWN as isize,
     Index1LSB = ll::SDL_PIXELFORMAT_INDEX1LSB as isize,

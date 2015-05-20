@@ -61,7 +61,7 @@ use SdlResult;
 
 use sys::audio as ll;
 
-#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug, Hash)]
 pub enum AudioFormat {
     /// Unsigned 8-bit samples
     U8 = ll::AUDIO_U8 as isize,
@@ -133,7 +133,7 @@ impl AudioFormat {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone, PartialEq, Hash, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum AudioStatus {
     Stopped = ll::SDL_AUDIO_STOPPED as isize,
     Playing = ll::SDL_AUDIO_PLAYING as isize,
@@ -355,7 +355,7 @@ impl AudioSpecDesired {
 }
 
 #[allow(missing_copy_implementations)]
-#[derive(Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub struct AudioSpec {
     pub freq: i32,
     pub format: AudioFormat,

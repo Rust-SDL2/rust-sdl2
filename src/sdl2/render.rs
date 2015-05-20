@@ -49,7 +49,7 @@ use std::rc::Rc;
 
 use sys::render as ll;
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum TextureAccess {
     Static = ll::SDL_TEXTUREACCESS_STATIC as isize,
     Streaming = ll::SDL_TEXTUREACCESS_STREAMING as isize,
@@ -73,7 +73,7 @@ impl FromPrimitive for TextureAccess {
 
 /// A structure that contains information on the capabilities of a render driver
 /// or the current render context.
-#[derive(PartialEq)]
+#[derive(Clone, Eq, PartialEq, Hash, Debug)]
 pub struct RendererInfo {
     pub name: String,
     pub flags: u32,
@@ -82,7 +82,7 @@ pub struct RendererInfo {
     pub max_texture_height: i32
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum BlendMode {
     None = ll::SDL_BLENDMODE_NONE as isize,
     Blend = ll::SDL_BLENDMODE_BLEND as isize,
@@ -871,7 +871,7 @@ impl<'renderer> RenderTarget<'renderer> {
     }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub struct TextureQuery {
     pub format: pixels::PixelFormatEnum,
     pub access: TextureAccess,

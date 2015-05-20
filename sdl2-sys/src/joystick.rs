@@ -5,7 +5,7 @@ pub type SDL_bool = c_int;
 pub type SDL_Joystick = c_void;
 
 #[allow(dead_code)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash)]
 #[repr(C)]
 pub struct SDL_JoystickGUID {
     pub data: [uint8_t; 16],

@@ -28,7 +28,7 @@ use SdlResult;
 use sys::event as ll;
 
 /// Types of events that can be delivered.
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(u32)]
 pub enum EventType {
     First = ll::SDL_FIRSTEVENT,
@@ -145,7 +145,7 @@ impl FromPrimitive for EventType {
     fn from_u64(n: u64) -> Option<EventType> { FromPrimitive::from_i64(n as i64) }
 }
 
-#[derive(PartialEq, Copy, Clone, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 /// An enum of window events.
 pub enum WindowEventId {
     None,
@@ -187,6 +187,7 @@ impl WindowEventId {
     }
 }
 
+#[derive(Clone, PartialEq)]
 /// Different event types.
 pub enum Event {
     Quit { timestamp: u32 },
