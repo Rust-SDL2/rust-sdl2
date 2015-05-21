@@ -6,7 +6,6 @@ use std::ops::Deref;
 use std::ptr;
 use std::vec::Vec;
 
-use event::EventPump;
 use rect::Rect;
 use render::RendererBuilder;
 use surface::Surface;
@@ -566,20 +565,19 @@ impl Window {
     ///
     /// In order to access a Window's properties, it must be guaranteed that the
     /// event loop is not running.
-    /// This is why a reference to the application's `EventPump` is required
-    /// (a shared `EventPump` reference is only obtainable if it's not being mutated).
-    /// Event pumping could otherwise mutate a Window's properties without your consent!
+    /// This is why a reference to the application's SDL context is required
+    /// (a shared `Sdl` reference is only obtainable if the event loop is not running).
+    /// The event loop could otherwise mutate a Window's properties without your consent!
     ///
     /// # Example
     /// ```no_run
     /// let mut sdl_context = sdl2::init().everything().unwrap();
     /// let mut window = sdl_context.window("My SDL window", 800, 600).build().unwrap();
-    /// let mut event_pump = sdl_context.event_pump();
     ///
     /// loop {
     ///     let mut pos = None;
     ///
-    ///     for event in event_pump.poll_iter() {
+    ///     for event in sdl_context.event_pump().poll_iter() {
     ///         use sdl2::event::Event;
     ///         match event {
     ///             Event::MouseMotion { x, y, .. } => { pos = Some((x, y)); },
@@ -589,18 +587,18 @@ impl Window {
     ///
     ///     if let Some((x, y)) = pos {
     ///         // Set the window title
-    ///         window.properties(&event_pump).set_title(&format!("{}, {}", x, y));
+    ///         window.properties(&sdl_context).set_title(&format!("{}, {}", x, y));
     ///     }
     /// }
     /// ```
-    pub fn properties<'a>(&'a mut self, _event: &'a EventPump) -> WindowProperties<'a> {
+    pub fn properties<'a>(&'a mut self, _sdl: &'a Sdl) -> WindowProperties<'a> {
         WindowProperties {
             raw: self.raw,
             _marker: PhantomData
         }
     }
 
-    pub fn properties_getters<'a>(&'a self, _event: &'a EventPump) -> WindowPropertiesGetters<'a> {
+    pub fn properties_getters<'a>(&'a self, _sdl: &'a Sdl) -> WindowPropertiesGetters<'a> {
         WindowPropertiesGetters {
             window_properties: WindowProperties {
                 raw: self.raw,

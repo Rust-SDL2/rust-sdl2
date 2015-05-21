@@ -28,7 +28,7 @@
 //! None of the draw methods in `RenderDrawer` are expected to fail.
 //! If they do, a panic is raised and the program is aborted.
 
-use event::EventPump;
+use Sdl;
 use video::{Window, WindowProperties, WindowPropertiesGetters};
 use surface;
 use surface::Surface;
@@ -258,20 +258,20 @@ impl<'a> Renderer<'a> {
 
     /// Accesses the Window properties, such as the position, size and title of a Window.
     /// Returns None if the renderer is not associated with a Window.
-    pub fn window_properties<'b>(&'b mut self, event: &'b EventPump) -> Option<WindowProperties<'b>>
+    pub fn window_properties<'b>(&'b mut self, sdl: &'b Sdl) -> Option<WindowProperties<'b>>
     {
         match self.parent.as_mut() {
-            Some(&mut RendererParent::Window(ref mut window)) => Some(window.properties(event)),
+            Some(&mut RendererParent::Window(ref mut window)) => Some(window.properties(sdl)),
             _ => None
         }
     }
 
     /// Accesses the Window getters, such as the position, size and title of a Window.
     /// Returns None if the renderer is not associated with a Window.
-    pub fn window_properties_getters<'b>(&'b self, event: &'b EventPump) -> Option<WindowPropertiesGetters<'b>>
+    pub fn window_properties_getters<'b>(&'b self, sdl: &'b Sdl) -> Option<WindowPropertiesGetters<'b>>
     {
         match self.parent.as_ref() {
-            Some(&RendererParent::Window(ref window)) => Some(window.properties_getters(event)),
+            Some(&RendererParent::Window(ref window)) => Some(window.properties_getters(sdl)),
             _ => None
         }
     }
