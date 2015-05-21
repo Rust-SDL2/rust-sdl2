@@ -4,7 +4,7 @@ use sdl2::pixels::Color;
 use sdl2::keycode::KeyCode;
 
 pub fn main() {
-    let sdl_context = sdl2::init().video().unwrap();
+    let mut sdl_context = sdl2::init().video().unwrap();
 
     let window = sdl_context.window("rust-sdl2 demo: Video", 800, 600)
         .position_centered()
@@ -20,10 +20,9 @@ pub fn main() {
     drawer.present();
 
     let mut running = true;
-    let mut event_pump = sdl_context.event_pump();
 
     while running {
-        for event in event_pump.poll_iter() {
+        for event in sdl_context.event_pump().poll_iter() {
             use sdl2::event::Event;
 
             match event {

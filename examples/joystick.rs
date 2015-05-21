@@ -3,7 +3,7 @@ extern crate sdl2;
 use sdl2::joystick::{Joystick, num_joysticks};
 
 fn main() {
-    let sdl_context = sdl2::init().joystick().unwrap();
+    let mut sdl_context = sdl2::init().joystick().unwrap();
 
     let available =
         match num_joysticks() {
@@ -32,9 +32,7 @@ fn main() {
         panic!("Couldn't open any joystick");
     };
 
-    let mut event_pump = sdl_context.event_pump();
-
-    for event in event_pump.wait_iter() {
+    for event in sdl_context.event_pump().wait_iter() {
         use sdl2::event::Event;
 
         match event {
