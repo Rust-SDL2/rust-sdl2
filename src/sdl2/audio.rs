@@ -58,6 +58,7 @@ use std::marker::PhantomData;
 use get_error;
 use rwops::RWops;
 use SdlResult;
+use util::CStringExt;
 
 use sys::audio as ll;
 
@@ -178,8 +179,8 @@ pub fn get_audio_device_name(index: i32, iscapture: i32) -> String {
 }
 
 pub fn audio_init(name: &str) -> SdlResult<()> {
-    let buf = CString::new(name.as_bytes()).unwrap().as_ptr();
-    let ret = unsafe { ll::SDL_AudioInit(buf) };
+    let name = try!(CString::new(name).unwrap_or_sdlresult());
+    let ret = unsafe { ll::SDL_AudioInit(name.as_ptr()) };
 
     if ret == 0 {
         Ok(())
@@ -412,7 +413,6 @@ impl<CB: AudioCallback> AudioDevice<CB> {
     {
         use std::mem;
         use std::ptr::null;
-        use libc::c_char;
 
         // SDL_OpenAudioDevice needs a userdata pointer, but we can't initialize the
         // callback without the obtained AudioSpec.
@@ -425,16 +425,14 @@ impl<CB: AudioCallback> AudioDevice<CB> {
 
         let mut obtained = unsafe { mem::uninitialized::<ll::SDL_AudioSpec>() };
         unsafe {
-            let device_cstr: Option<CString> = match device {
-                None => None,
-                Some(d) => Some(CString::new(d.as_bytes()).unwrap())
+            let device = match device {
+                Some(device) => Some(try!(CString::new(device).unwrap_or_sdlresult())),
+                None => None
             };
-            let device_cstr_ptr: *const c_char = match device_cstr {
-                None => null(),
-                Some(ref s) => s.as_ptr()
-            };
+            let device_ptr = device.map_or(null(), |s| s.as_ptr());
+
             let iscapture_flag = 0;
-            let device_id = ll::SDL_OpenAudioDevice(device_cstr_ptr, iscapture_flag, &desired, &mut obtained, 0);
+            let device_id = ll::SDL_OpenAudioDevice(device_ptr, iscapture_flag, &desired, &mut obtained, 0);
             match device_id {
                 0 => {
                     Err(get_error())

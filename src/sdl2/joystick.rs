@@ -263,13 +263,9 @@ pub struct Guid {
 impl Guid {
     /// Create a GUID from a string representation.
     pub fn from_string(guid: &str) -> Result<Guid, NulError> {
-        let guid_c =
-        match CString::new(guid) {
-            Ok(s) => s.as_ptr(),
-            Err(e) => return Err(e),
-        };
+        let guid = try!(CString::new(guid));
 
-        let raw = unsafe { ll::SDL_JoystickGetGUIDFromString(guid_c) };
+        let raw = unsafe { ll::SDL_JoystickGetGUIDFromString(guid.as_ptr()) };
 
         Ok(Guid { raw: raw })
     }

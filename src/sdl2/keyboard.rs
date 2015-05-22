@@ -1,6 +1,6 @@
 use num::FromPrimitive;
 use std::collections::HashMap;
-use std::ffi::{CStr, CString, NulError};
+use std::ffi::{CStr, CString};
 use std::ptr;
 
 use keycode::KeyCode;
@@ -85,15 +85,13 @@ pub fn get_scancode_name(scancode: ScanCode) -> String {
     }
 }
 
-pub fn get_scancode_from_name(name: &str) -> Result<ScanCode, NulError> {
+pub fn get_scancode_from_name(name: &str) -> ScanCode {
     unsafe {
-        let name =
         match CString::new(name) {
-            Ok(s) => s.as_ptr(),
-            Err(e) => return Err(e),
-        };
-        Ok(FromPrimitive::from_isize(ll::SDL_GetScancodeFromName(name) as isize)
-            .unwrap_or(ScanCode::Unknown))
+            Ok(name) => FromPrimitive::from_isize(ll::SDL_GetScancodeFromName(name.as_ptr()) as isize).unwrap_or(ScanCode::Unknown),
+            // string contains a nul byte - it won't match anything.
+            Err(_) => ScanCode::Unknown
+        }
     }
 }
 
@@ -104,15 +102,13 @@ pub fn get_key_name(key: KeyCode) -> String {
     }
 }
 
-pub fn get_key_from_name(name: &str) -> Result<KeyCode, NulError> {
+pub fn get_key_from_name(name: &str) -> KeyCode {
     unsafe {
-        let name =
         match CString::new(name) {
-            Ok(s) => s.as_ptr(),
-            Err(e) => return Err(e),
-        };
-        Ok(FromPrimitive::from_isize(ll::SDL_GetKeyFromName(name) as isize)
-            .unwrap_or(KeyCode::Unknown))
+            Ok(name) => FromPrimitive::from_isize(ll::SDL_GetKeyFromName(name.as_ptr()) as isize).unwrap_or(KeyCode::Unknown),
+            // string contains a nul byte - it won't match anything.
+            Err(_) => KeyCode::Unknown
+        }
     }
 }
 
