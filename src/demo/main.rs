@@ -5,7 +5,7 @@ extern crate sdl2_mixer;
 
 use std::env;
 use std::path::Path;
-use sdl2::{INIT_AUDIO, INIT_TIMER};
+use sdl2::*;
 use sdl2_mixer::{INIT_MP3, INIT_FLAC, INIT_MOD, INIT_FLUIDSYNTH, INIT_MODPLUG,
                  INIT_OGG, DEFAULT_FREQUENCY};
 
@@ -24,7 +24,7 @@ fn demo(filename: &Path) {
 
     println!("linked version: {}", sdl2_mixer::get_linked_version());
 
-    let _ = sdl2::init(INIT_AUDIO | INIT_TIMER);
+    let _ = sdl2::init().audio().timer();
 
     println!("mixer initialized: {}", sdl2_mixer::init(
         INIT_MP3 | INIT_FLAC | INIT_MOD | INIT_FLUIDSYNTH |
