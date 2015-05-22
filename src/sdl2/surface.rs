@@ -9,7 +9,7 @@ use libc::{c_int, uint32_t};
 use num::FromPrimitive;
 use pixels;
 use render::BlendMode;
-use rwops;
+use rwops::RWops;
 
 use sys::surface as ll;
 
@@ -171,9 +171,9 @@ impl<'a> Surface<'a> {
         unsafe { ll::SDL_UnlockSurface(self.raw); }
     }
 
-    pub fn from_bmp(path: &Path) -> SdlResult<Surface<'static>> {
+    pub fn load_bmp_rw(rwops: &mut RWops) -> SdlResult<Surface<'static>> {
         let raw = unsafe {
-            ll::SDL_LoadBMP_RW(try!(rwops::RWops::from_file(path, "rb")).raw(), 0)
+            ll::SDL_LoadBMP_RW(rwops.raw(), 0)
         };
 
         if raw.is_null() {
@@ -187,12 +187,22 @@ impl<'a> Surface<'a> {
         }
     }
 
-    pub fn save_bmp(&self, path: &Path) -> SdlResult<()> {
-    let ret = unsafe {
-            ll::SDL_SaveBMP_RW(self.raw, try!(rwops::RWops::from_file(path, "rb")).raw(), 0)
-    };
+    pub fn save_bmp_rw(&self, rwops: &mut RWops) -> SdlResult<()> {
+        let ret = unsafe {
+            ll::SDL_SaveBMP_RW(self.raw, rwops.raw(), 0)
+        };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
+    }
+
+    pub fn load_bmp<P: AsRef<Path>>(path: P) -> SdlResult<Surface<'static>> {
+        let mut file = try!(RWops::from_file(path, "rb"));
+        Surface::load_bmp_rw(&mut file)
+    }
+
+    pub fn save_bmp<P: AsRef<Path>>(&self, path: P) -> SdlResult<()> {
+        let mut file = try!(RWops::from_file(path, "wb"));
+        self.save_bmp_rw(&mut file)
     }
 
     pub fn set_palette(&self, palette: &pixels::Palette) -> bool {
