@@ -728,7 +728,7 @@ impl Event {
 
             EventType::ControllerAxisMotion => {
                 let ref event = *raw.caxis();
-                let axis = controller::wrap_controller_axis(event.axis);
+                let axis = controller::Axis::from_ll(event.axis as ::sys::controller::SDL_GameControllerAxis).unwrap();
 
                 Event::ControllerAxisMotion {
                     timestamp: event.timestamp,
@@ -739,7 +739,7 @@ impl Event {
             }
             EventType::ControllerButtonDown => {
                 let ref event = *raw.cbutton();
-                let button = controller::wrap_controller_button(event.button);
+                let button = controller::Button::from_ll(event.button as ::sys::controller::SDL_GameControllerButton).unwrap();
 
                 Event::ControllerButtonDown {
                     timestamp: event.timestamp,
@@ -749,7 +749,7 @@ impl Event {
             }
             EventType::ControllerButtonUp => {
                 let ref event = *raw.cbutton();
-                let button = controller::wrap_controller_button(event.button);
+                let button = controller::Button::from_ll(event.button as ::sys::controller::SDL_GameControllerButton).unwrap();
 
                 Event::ControllerButtonUp {
                     timestamp: event.timestamp,
