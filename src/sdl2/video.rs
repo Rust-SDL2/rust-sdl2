@@ -380,19 +380,23 @@ fn unwrap_windowpos (pos: WindowPos) -> ll::SDL_WindowPos {
     }
 }
 
-#[derive(PartialEq)]
 pub struct GLContext {
-    raw: ll::SDL_GLContext,
-    owned: bool
+    raw: ll::SDL_GLContext
 }
 
 impl Drop for GLContext {
     fn drop(&mut self) {
-        if self.owned {
-            unsafe {
-                ll::SDL_GL_DeleteContext(self.raw)
-            }
+        unsafe {
+            ll::SDL_GL_DeleteContext(self.raw)
         }
+    }
+}
+
+impl GLContext {
+    /// Returns true if the OpenGL context is the current one in the thread.
+    pub fn is_current(&self) -> bool {
+        let current_raw = unsafe { ll::SDL_GL_GetCurrentContext() };
+        self.raw == current_raw
     }
 }
 
@@ -407,7 +411,6 @@ impl_raw_accessors!(
 );
 
 impl_owned_accessors!(
-    (GLContext, owned),
     (Window, owned)
 );
 
@@ -632,7 +635,24 @@ impl Window {
         if result == ptr::null_mut() {
             Err(get_error())
         } else {
-            Ok(GLContext{raw: result, owned: true})
+            Ok(GLContext{ raw: result })
+        }
+    }
+
+    /// Set the window's OpenGL context to the current context on the thread.
+    pub fn gl_set_context_to_current(&self) -> SdlResult<()> {
+        unsafe {
+            let context_raw = ll::SDL_GL_GetCurrentContext();
+
+            if context_raw.is_null() {
+                Err(get_error())
+            } else {
+                if ll::SDL_GL_MakeCurrent(self.raw, context_raw) == 0 {
+                    Ok(())
+                } else {
+                    Err(get_error())
+                }
+            }
         }
     }
 
@@ -1078,15 +1098,6 @@ pub unsafe fn gl_get_current_window() -> SdlResult<Window> {
         Err(get_error())
     } else {
         Ok(Window{ raw: raw, owned: false })
-    }
-}
-
-pub unsafe fn gl_get_current_context() -> SdlResult<GLContext> {
-    let raw = ll::SDL_GL_GetCurrentContext();
-    if raw == ptr::null_mut() {
-        Err(get_error())
-    } else {
-        Ok(GLContext{ raw: raw, owned: false })
     }
 }
 
