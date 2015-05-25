@@ -911,6 +911,27 @@ pub struct EventPump<'sdl> {
     _nosend: PhantomData<*mut ()>
 }
 impl<'sdl> EventPump<'sdl> {
+    /// Query if an event type is enabled.
+    pub fn is_event_enabled(&self, event_type: EventType) -> bool {
+        let result = unsafe { ll::SDL_EventState(event_type as u32, ll::SDL_QUERY) };
+
+        result != ll::SDL_DISABLE
+    }
+
+    /// Enable an event type. Returns if the event type was enabled before the call.
+    pub fn enable_event(&mut self, event_type: EventType) -> bool {
+        let result = unsafe { ll::SDL_EventState(event_type as u32, ll::SDL_ENABLE) };
+
+        result != ll::SDL_DISABLE
+    }
+
+    /// Disable an event type. Returns if the event type was enabled before the call.
+    pub fn disable_event(&mut self, event_type: EventType) -> bool {
+        let result = unsafe { ll::SDL_EventState(event_type as u32, ll::SDL_DISABLE) };
+
+        result != ll::SDL_DISABLE
+    }
+
     /// Polls for currently pending events.
     ///
     /// If no events are pending, `None` is returned.
