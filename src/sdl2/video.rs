@@ -598,7 +598,8 @@ impl Window {
         }
     }
 
-    pub fn properties_getters<'a>(&'a self, _sdl: &'a Sdl) -> WindowPropertiesGetters<'a> {
+    /// Accesses the read-only Window properties.
+    pub fn properties_getters(&self) -> WindowPropertiesGetters {
         WindowPropertiesGetters {
             window_properties: WindowProperties {
                 raw: self.raw,

@@ -268,10 +268,10 @@ impl<'a> Renderer<'a> {
 
     /// Accesses the Window getters, such as the position, size and title of a Window.
     /// Returns None if the renderer is not associated with a Window.
-    pub fn window_properties_getters<'b>(&'b self, sdl: &'b Sdl) -> Option<WindowPropertiesGetters<'b>>
+    pub fn window_properties_getters(&self) -> Option<WindowPropertiesGetters>
     {
         match self.parent.as_ref() {
-            Some(&RendererParent::Window(ref window)) => Some(window.properties_getters(sdl)),
+            Some(&RendererParent::Window(ref window)) => Some(window.properties_getters()),
             _ => None
         }
     }
