@@ -1101,6 +1101,17 @@ pub unsafe fn gl_get_current_window() -> SdlResult<Window> {
     }
 }
 
+/// Releases the thread's current OpenGL context, i.e. sets the current OpenGL context to nothing.
+pub fn gl_release_current_context() -> SdlResult<()> {
+    let result = unsafe { ll::SDL_GL_MakeCurrent(ptr::null_mut(), ptr::null()) };
+
+    if result == 0 {
+        Ok(())
+    } else {
+        Err(get_error())
+    }
+}
+
 pub fn gl_set_swap_interval(interval: i32) -> bool {
     unsafe { ll::SDL_GL_SetSwapInterval(interval as c_int) == 0 }
 }
