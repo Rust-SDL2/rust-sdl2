@@ -1,10 +1,8 @@
-use std::hash::{Hash, Hasher};
-
 use num::{ToPrimitive, FromPrimitive};
 
 use sys::keycode as ll;
 
-#[derive(PartialEq, Eq, Debug, Copy, Clone)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum KeyCode {
     Unknown            = ll::SDLK_UNKNOWN as isize,
     Backspace          = ll::SDLK_BACKSPACE as isize,
@@ -242,13 +240,6 @@ pub enum KeyCode {
     KbdIllumUp         = ll::SDLK_KBDILLUMUP as isize,
     Eject              = ll::SDLK_EJECT as isize,
     Sleep              = ll::SDLK_SLEEP as isize,
-}
-
-impl Hash for KeyCode {
-    #[inline]
-    fn hash<H>(&self, state: &mut H) where H: Hasher {
-        (*self as i32).hash(state);
-    }
 }
 
 impl ToPrimitive for KeyCode {

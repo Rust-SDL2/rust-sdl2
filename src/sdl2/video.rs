@@ -19,7 +19,7 @@ use get_error;
 
 use sys::video as ll;
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum GLProfile {
     /// OpenGL core profile - deprecated functions are disabled
     Core,
@@ -320,7 +320,7 @@ pub mod gl_attr {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub struct DisplayMode {
     pub format: u32,
     pub w: i32,
@@ -358,14 +358,14 @@ impl DisplayMode {
     }
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum FullscreenType {
     FTOff = 0,
     FTTrue = 0x00000001,
     FTDesktop = 0x00001001,
 }
 
-#[derive(PartialEq, Copy, Clone)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum WindowPos {
     PosUndefined,
     PosCentered,

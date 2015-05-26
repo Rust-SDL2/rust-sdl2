@@ -8,7 +8,7 @@ use joystick;
 use sys::controller as ll;
 use sys::event::{SDL_QUERY, SDL_ENABLE};
 
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(i32)]
 pub enum Axis {
     Invalid      = ll::SDL_CONTROLLER_AXIS_INVALID,
@@ -58,7 +58,7 @@ pub fn wrap_controller_axis(bitflags: u8) -> Axis {
     }
 }
 
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(i32)]
 pub enum Button {
     Invalid       = ll::SDL_CONTROLLER_BUTTON_INVALID,
@@ -156,7 +156,7 @@ pub fn get_event_state() -> bool {
 }
 
 /// Possible return values for `add_mapping`
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum MappingStatus {
     Added   = 1,
     Updated = 0,
