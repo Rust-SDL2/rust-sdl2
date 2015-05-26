@@ -49,8 +49,8 @@ impl Sdl {
     }
 
     /// Obtains the SDL event pump.
-    pub fn event_pump(&self) -> EventPump {
-        unsafe { EventPump::_unchecked_new() }
+    pub fn event_pump(&mut self) -> EventPump {
+        EventPump::new(self)
     }
 
     /// Initializes a new `WindowBuilder`; a convenience method that calls `WindowBuilder::new()`.
@@ -192,10 +192,9 @@ impl InitBuilder {
 ///
 /// # Example
 /// ```no_run
-/// let sdl_context = sdl2::init().everything().unwrap();
+/// let mut sdl_context = sdl2::init().everything().unwrap();
 ///
-/// let mut event_pump = sdl_context.event_pump();
-/// for event in event_pump.poll_iter() {
+/// for event in sdl_context.event_pump().poll_iter() {
 ///     // ...
 /// }
 ///

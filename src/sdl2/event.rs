@@ -24,6 +24,7 @@ use mouse::{Mouse, MouseState};
 use scancode::ScanCode;
 use get_error;
 use SdlResult;
+use Sdl;
 
 use sys::event as ll;
 
@@ -903,6 +904,30 @@ impl Event {
     }
 }
 
+unsafe fn poll_event() -> Option<Event> {
+    let mut raw = mem::uninitialized();
+    let has_pending = ll::SDL_PollEvent(&mut raw) == 1;
+
+    if has_pending { Some(Event::from_ll(raw)) }
+    else { None }
+}
+
+unsafe fn wait_event() -> Event {
+    let mut raw = mem::uninitialized();
+    let success = ll::SDL_WaitEvent(&mut raw) == 1;
+
+    if success { Event::from_ll(raw) }
+    else { panic!(get_error()) }
+}
+
+unsafe fn wait_event_timeout(timeout: u32) -> Option<Event> {
+    let mut raw = mem::uninitialized();
+    let success = ll::SDL_WaitEventTimeout(&mut raw, timeout as c_int) == 1;
+
+    if success { Some(Event::from_ll(raw)) }
+    else { None }
+}
+
 /// A thread-safe type that encapsulates SDL event-pumping functions.
 pub struct EventPump<'sdl> {
     _sdl:    PhantomData<&'sdl ()>,
@@ -916,11 +941,7 @@ impl<'sdl> EventPump<'sdl> {
     ///
     /// If no events are pending, `None` is returned.
     pub fn poll_event(&mut self) -> Option<Event> {
-        let mut raw = unsafe { mem::uninitialized() };
-        let has_pending = unsafe { ll::SDL_PollEvent(&mut raw) == 1 as c_int };
-
-        if has_pending { Some(Event::from_ll(raw)) }
-        else { None }
+        unsafe { poll_event() }
     }
 
     /// Returns a polling iterator that calls `poll_event()`.
@@ -930,8 +951,7 @@ impl<'sdl> EventPump<'sdl> {
     /// ```no_run
     /// let mut sdl_context = sdl2::init().everything().unwrap();
     ///
-    /// let mut event_pump = sdl_context.event_pump();
-    /// for event in event_pump.poll_iter() {
+    /// for event in sdl_context.event_pump().poll_iter() {
     ///     use sdl2::event::Event;
     ///     match event {
     ///         Event::KeyDown {..} => { /*...*/ },
@@ -941,7 +961,7 @@ impl<'sdl> EventPump<'sdl> {
     /// ```
     pub fn poll_iter(&mut self) -> EventPollIterator {
         EventPollIterator {
-            event_pump: unsafe { EventPump::_unchecked_new() }
+            _marker: PhantomData
         }
     }
 
@@ -952,24 +972,12 @@ impl<'sdl> EventPump<'sdl> {
 
     /// Waits indefinitely for the next available event.
     pub fn wait_event(&mut self) -> Event {
-        unsafe {
-            let mut raw = mem::uninitialized();
-            let success = ll::SDL_WaitEvent(&mut raw) == 1;
-
-            if success { Event::from_ll(raw) }
-            else { panic!(get_error()) }
-        }
+        unsafe { wait_event() }
     }
 
     /// Waits until the specified timeout (in milliseconds) for the next available event.
     pub fn wait_event_timeout(&mut self, timeout: u32) -> Option<Event> {
-        unsafe {
-            let mut raw = mem::uninitialized();
-            let success = ll::SDL_WaitEventTimeout(&mut raw, timeout as c_int) == 1;
-
-            if success { Some(Event::from_ll(raw)) }
-            else { None }
-        }
+        unsafe { wait_event_timeout(timeout) }
     }
 
     /// Returns a waiting iterator that calls `wait_event()`.
@@ -977,7 +985,7 @@ impl<'sdl> EventPump<'sdl> {
     /// Note: The iterator will never terminate.
     pub fn wait_iter(&mut self) -> EventWaitIterator {
         EventWaitIterator {
-            event_pump: unsafe { EventPump::_unchecked_new() }
+            _marker: PhantomData
         }
     }
 
@@ -987,14 +995,14 @@ impl<'sdl> EventPump<'sdl> {
     /// exceeds the specified timeout.
     pub fn wait_timeout_iter(&mut self, timeout: u32) -> EventWaitTimeoutIterator {
         EventWaitTimeoutIterator {
-            event_pump: unsafe { EventPump::_unchecked_new() },
+            _marker: PhantomData,
             timeout: timeout
         }
     }
 
-    /// Internal use only; used by `sdl2::Sdl::event_pump()`
-    #[doc(hidden)]
-    pub unsafe fn _unchecked_new<'a>() -> EventPump<'a> {
+    /// Obtains the SDL event pump.
+    pub fn new(_sdl: &'sdl mut Sdl) -> EventPump<'sdl> {
+        // Called on the main SDL thread.
         EventPump {
             _sdl: PhantomData,
             _nosend: PhantomData,
@@ -1005,38 +1013,36 @@ impl<'sdl> EventPump<'sdl> {
 /// An iterator that calls `EventPump::poll_event()`.
 #[must_use = "iterators are lazy and do nothing unless consumed"]
 pub struct EventPollIterator<'a> {
-    event_pump: EventPump<'a>
+    _marker: PhantomData<&'a ()>
 }
 
 impl<'a> Iterator for EventPollIterator<'a> {
     type Item = Event;
 
-    fn next(&mut self) -> Option<Event> {
-        self.event_pump.poll_event()
-    }
+    fn next(&mut self) -> Option<Event> { unsafe { poll_event() } }
 }
 
 /// An iterator that calls `EventPump::wait_event()`.
 #[must_use = "iterators are lazy and do nothing unless consumed"]
 pub struct EventWaitIterator<'a> {
-    event_pump: EventPump<'a>
+    _marker: PhantomData<&'a ()>
 }
 
 impl<'a> Iterator for EventWaitIterator<'a> {
     type Item = Event;
-    fn next(&mut self) -> Option<Event> { Some(self.event_pump.wait_event()) }
+    fn next(&mut self) -> Option<Event> { unsafe { Some(wait_event()) } }
 }
 
 /// An iterator that calls `EventPump::wait_event_timeout()`.
 #[must_use = "iterators are lazy and do nothing unless consumed"]
 pub struct EventWaitTimeoutIterator<'a> {
-    event_pump: EventPump<'a>,
+    _marker: PhantomData<&'a ()>,
     timeout: u32
 }
 
 impl<'a> Iterator for EventWaitTimeoutIterator<'a> {
     type Item = Event;
-    fn next(&mut self) -> Option<Event> { self.event_pump.wait_event_timeout(self.timeout) }
+    fn next(&mut self) -> Option<Event> { unsafe { wait_event_timeout(self.timeout) } }
 }
 
 /// Removes all events in the event queue that match the specified event type.

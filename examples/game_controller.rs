@@ -4,7 +4,7 @@ use sdl2::{joystick, controller};
 use sdl2::controller::GameController;
 
 fn main() {
-    let sdl_context = sdl2::init().game_controller().unwrap();
+    let mut sdl_context = sdl2::init().game_controller().unwrap();
 
     let available =
         match joystick::num_joysticks() {
@@ -46,9 +46,7 @@ fn main() {
 
     println!("Controller mapping: {}", controller.mapping());
 
-    let mut event_pump = sdl_context.event_pump();
-
-    for event in event_pump.wait_iter() {
+    for event in sdl_context.event_pump().wait_iter() {
         use sdl2::event::Event;
 
         match event {
