@@ -1,62 +1,107 @@
 use std::ffi::CString;
 use std::io;
 use std::path::Path;
+use std::marker::PhantomData;
 use libc::{c_void, c_int, size_t};
 use get_error;
 use SdlResult;
 
 use sys::rwops as ll;
 
-#[derive(PartialEq)] #[allow(raw_pointer_derive)]
-pub struct RWops {
+/// A structure that provides an abstract interface to stream I/O.
+pub struct RWops<'a> {
     raw: *mut ll::SDL_RWops,
-    close_on_drop: bool
+    _marker: PhantomData<&'a ()>
 }
 
-impl_raw_accessors!((RWops, *mut ll::SDL_RWops));
-impl_owned_accessors!((RWops, close_on_drop));
+impl<'a> RWops<'a> {
+    pub unsafe fn raw(&self) -> *mut ll::SDL_RWops { self.raw }
 
-/// A structure that provides an abstract interface to stream I/O.
-impl RWops {
-    pub fn from_file(path: &Path, mode: &str) -> SdlResult<RWops> {
-        let raw = unsafe {
-            let path_c = CString::new(
-                path.as_os_str().to_str().unwrap()).unwrap().as_ptr();
-            let mode_c = CString::new(mode).unwrap().as_ptr();
-            ll::SDL_RWFromFile(path_c, mode_c)
-        };
-        if raw.is_null() { Err(get_error()) }
-        else { Ok(RWops{raw: raw, close_on_drop: true}) }
+    pub unsafe fn from_ll<'b>(raw: *mut ll::SDL_RWops) -> RWops<'b> {
+        RWops {
+            raw: raw,
+            _marker: PhantomData
+        }
     }
 
-    pub fn from_bytes(buf: &[u8]) -> SdlResult<RWops> {
+    /// Creates an SDL file stream.
+    pub fn from_file<P: AsRef<Path>>(path: P, mode: &str) -> SdlResult<RWops<'static>> {
+        let raw = unsafe {
+            let path_c = CString::new(path.as_ref().to_str().unwrap()).unwrap();
+            let mode_c = CString::new(mode).unwrap();
+            ll::SDL_RWFromFile(path_c.as_ptr(), mode_c.as_ptr())
+        };
+
+        if raw.is_null() {
+            Err(get_error())
+        } else {
+            Ok(RWops {
+                raw: raw,
+                _marker: PhantomData
+            })
+        }
+    }
+
+    /// Prepares a read-only memory buffer for use with `RWops`.
+    ///
+    /// This method can only fail if the buffer size is zero.
+    pub fn from_bytes(buf: &'a [u8]) -> SdlResult<RWops<'a>> {
         let raw = unsafe {
             ll::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int)
         };
-        if raw.is_null() { Err(get_error()) }
-        else { Ok(RWops{raw: raw, close_on_drop: false}) }
+
+        if raw.is_null() {
+            Err(get_error())
+        } else {
+            Ok(RWops {
+                raw: raw,
+                _marker: PhantomData
+            })
+        }
     }
 
-    pub fn len(&self) -> usize {
-        unsafe {
-            ((*self.raw).size)(self.raw) as usize
+    /// Prepares a read-write memory buffer for use with `RWops`.
+    ///
+    /// This method can only fail if the buffer size is zero.
+    pub fn from_bytes_mut(buf: &'a mut [u8]) -> SdlResult<RWops<'a>> {
+        let raw = unsafe {
+            ll::SDL_RWFromMem(buf.as_ptr() as *mut c_void, buf.len() as c_int)
+        };
+
+        if raw.is_null() {
+            Err(get_error())
+        } else {
+            Ok(RWops {
+                raw: raw,
+                _marker: PhantomData
+            })
+        }
+    }
+
+    /// Gets the stream's total size in bytes.
+    ///
+    /// Returns `None` if the stream size can't be determined
+    /// (either because it doesn't make sense for the stream type, or there was an error).
+    pub fn len(&self) -> Option<usize> {
+        let result = unsafe { ((*self.raw).size)(self.raw) };
+
+        match result {
+            -1 => None,
+            v => Some(v as usize)
         }
     }
 }
 
-impl Drop for RWops {
+impl<'a> Drop for RWops<'a> {
     fn drop(&mut self) {
-        // TODO: handle close error
-        if self.close_on_drop {
-            let ret = unsafe { ((*self.raw).close)(self.raw) };
-            if ret != 0 {
-                println!("error {} when closing RWopt", get_error());
-            }
+        let ret = unsafe { ((*self.raw).close)(self.raw) };
+        if ret != 0 {
+            panic!(get_error());
         }
     }
 }
 
-impl io::Read for RWops {
+impl<'a> io::Read for RWops<'a> {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         let out_len = buf.len() as size_t;
         // FIXME: it's better to use as_mut_ptr().
@@ -68,7 +113,7 @@ impl io::Read for RWops {
     }
 }
 
-impl io::Write for RWops {
+impl<'a> io::Write for RWops<'a> {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         let in_len = buf.len() as size_t;
         let ret = unsafe {
@@ -82,7 +127,7 @@ impl io::Write for RWops {
     }
 }
 
-impl io::Seek for RWops {
+impl<'a> io::Seek for RWops<'a> {
     fn seek(&mut self, pos: io::SeekFrom) -> io::Result<u64> {
         // whence code is different from SeekStyle
         let (whence, offset) = match pos {

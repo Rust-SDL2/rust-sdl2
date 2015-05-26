@@ -208,14 +208,14 @@ pub struct AudioSpecWAV {
 }
 
 impl AudioSpecWAV {
-    /// Loads a WAVE from the file path. Uses `SDL_LoadWAV_RW`.
-    pub fn load_wav(path: &Path) -> SdlResult<AudioSpecWAV> {
-        let ops = try!(RWops::from_file(path, "rb"));
-        AudioSpecWAV::load_wav_rw(&ops)
+    /// Loads a WAVE from the file path.
+    pub fn load_wav<P: AsRef<Path>>(path: P) -> SdlResult<AudioSpecWAV> {
+        let mut file = try!(RWops::from_file(path, "rb"));
+        AudioSpecWAV::load_wav_rw(&mut file)
     }
 
-    /// Loads a WAVE from the data source. Uses `SDL_LoadWAV_RW`.
-    pub fn load_wav_rw(src: &RWops) -> SdlResult<AudioSpecWAV> {
+    /// Loads a WAVE from the data source.
+    pub fn load_wav_rw(src: &mut RWops) -> SdlResult<AudioSpecWAV> {
         use std::mem::uninitialized;
         use std::ptr::null_mut;
 
