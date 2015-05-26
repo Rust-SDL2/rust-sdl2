@@ -39,7 +39,7 @@ pub fn main() {
             let position = props.get_position();
             let size = props.get_size();
             let title = format!("Window - pos({}x{}), size({}x{}): {}", position.0, position.1, size.0, size.1, tick);
-            props.set_title(&title).unwrap();
+            props.set_title(&title);
 
             tick += 1;
         }

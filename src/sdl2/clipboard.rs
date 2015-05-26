@@ -6,8 +6,8 @@ use sys::clipboard as ll;
 
 pub fn set_clipboard_text(text: &String) -> SdlResult<()> {
     unsafe {
-        let buff = CString::new(text.clone()).unwrap();
-        let result = ll::SDL_SetClipboardText(buff.as_ptr());
+        let text = CString::new(text.clone()).unwrap();
+        let result = ll::SDL_SetClipboardText(text.as_ptr());
 
         if result == 0 {
             Err(get_error())
@@ -33,4 +33,3 @@ pub fn get_clipboard_text() -> SdlResult<String> {
 pub fn has_clipboard_text() -> bool {
     unsafe { ll::SDL_HasClipboardText() == 1 }
 }
-

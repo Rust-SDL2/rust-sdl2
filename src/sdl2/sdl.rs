@@ -4,6 +4,7 @@ use std::marker::PhantomData;
 use sys::sdl as ll;
 use event::EventPump;
 use video::WindowBuilder;
+use util::CStringExt;
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum Error {
@@ -210,8 +211,8 @@ pub fn get_error() -> String {
 }
 
 pub fn set_error(err: &str) {
-    let buf = CString::new(err).unwrap().as_ptr();
-    unsafe { ll::SDL_SetError(buf); }
+    let err = CString::new(err).remove_nul();
+    unsafe { ll::SDL_SetError(err.as_ptr()); }
 }
 
 pub fn set_error_from_code(err: Error) {

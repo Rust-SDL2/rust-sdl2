@@ -4,6 +4,7 @@ use std::ptr;
 use video::Window;
 use get_error;
 use SdlResult;
+use util::CStringExt;
 
 use sys::messagebox as ll;
 
@@ -17,11 +18,11 @@ bitflags! {
 
 pub fn show_simple_message_box(flags: MessageBoxFlag, title: &str, message: &str, window: Option<&Window>) -> SdlResult<()> {
     let result = unsafe {
-        let title_cstr = CString::new(title).unwrap().as_ptr();
-        let message_cstr = CString::new(message).unwrap().as_ptr();
+        let title = CString::new(title).remove_nul();
+        let message = CString::new(message).remove_nul();
         ll::SDL_ShowSimpleMessageBox(flags.bits(),
-                                     title_cstr,
-                                     message_cstr,
+                                     title.as_ptr(),
+                                     message.as_ptr(),
                                      window.map_or(ptr::null_mut(), |win| win.raw()))
     } == 0;
 
