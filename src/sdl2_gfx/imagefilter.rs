@@ -1,6 +1,7 @@
 //! MMX image filters
 
 use std::mem;
+use std::ptr::Unique;
 use libc;
 use libc::{size_t, c_void, c_uint, c_int};
 use sdl2::SdlResult;
@@ -105,7 +106,7 @@ pub fn mmx_on() {
 fn cvec_with_size(sz: usize) -> CVec<u8> {
     unsafe {
         let p = libc::malloc(sz as size_t) as *mut u8;
-        CVec::new_with_dtor(p, sz, move |p| {
+        CVec::new_with_dtor(Unique::new(p), sz, move |p| {
             libc::free(p as *mut c_void)
         })
     }

@@ -7,8 +7,8 @@ use sdl2::keycode::KeyCode;
 
 use sdl2_gfx::primitives::DrawRenderer;
 
-static SCREEN_WIDTH: i32 = 800;
-static SCREEN_HEIGHT: i32 = 600;
+static SCREEN_WIDTH: u32 = 800;
+static SCREEN_HEIGHT: u32 = 600;
 
 // hadle the annoying Rect i32
 macro_rules! rect(
@@ -19,21 +19,15 @@ macro_rules! rect(
 
 fn main() {
 
-    let context = sdl2::init(sdl2::INIT_VIDEO).unwrap();
+    let mut context = sdl2::init().video().unwrap();
 
-    let window = sdl2::video::Window::new(
-        &context,
-        "rust-sdl2_gfx: draw line & FPSManager",
-        sdl2::video::WindowPos::PosCentered,
-        sdl2::video::WindowPos::PosCentered,
-        SCREEN_WIDTH,
-        SCREEN_HEIGHT,
-        sdl2::video::OPENGL).unwrap();
+    let window = context.window("rust-sdl2_gfx: draw line & FPSManager", SCREEN_WIDTH, SCREEN_HEIGHT)
+        .position_centered()
+        .opengl()
+        .build()
+        .unwrap();
 
-    let mut renderer = sdl2::render::Renderer::from_window(
-        window,
-        sdl2::render::RenderDriverIndex::Auto,
-        sdl2::render::ACCELERATED).unwrap();
+    let mut renderer = window.renderer().build().unwrap();
 
     {
         let mut drawer = renderer.drawer();
@@ -58,6 +52,7 @@ fn main() {
                     if keycode == KeyCode::Escape {
                         break 'main
                     } else if keycode == KeyCode::Space {
+                        println!("space down");
                         for i in 0..400 {
                             renderer.pixel(i as i16, i as i16, 0xFF000FFu32).unwrap();
                         }
