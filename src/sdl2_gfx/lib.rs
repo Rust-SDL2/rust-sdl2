@@ -2,8 +2,6 @@
 A binding for SDL2_gfx.
  */
 
-#![feature(unique)]
-
 extern crate libc;
 extern crate num;
 extern crate sdl2;
