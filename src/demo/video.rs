@@ -4,9 +4,6 @@ use sdl2::event::Event;
 use sdl2::keycode::KeyCode;
 use std::path::Path;
 
-static SCREEN_WIDTH : i32 = 800;
-static SCREEN_HEIGHT : i32 = 600;
-
 // fail when error
 macro_rules! trying(
     ($e:expr) => (match $e { Ok(e) => e, Err(e) => panic!("failed: {}", e) })
@@ -20,15 +17,16 @@ macro_rules! rect(
 );
 
 pub fn main(filename: &Path) {
-    let sdl_context = sdl2::init(sdl2::INIT_VIDEO).unwrap();
+    let mut sdl_context = sdl2::init().video().unwrap();
     sdl2_ttf::init();
 
-    let window = trying!(sdl2::video::Window::new(&sdl_context,
-            "rust-sdl2 demo: Video", sdl2::video::WindowPos::PosCentered,
-            sdl2::video::WindowPos::PosCentered, SCREEN_WIDTH, SCREEN_HEIGHT, sdl2::video::OPENGL));
+    let window = sdl_context.window("rust-sdl2 demo: Video", 800, 600)
+        .position_centered()
+        .opengl()
+        .build()
+        .unwrap();
 
-    let mut renderer = trying!(sdl2::render::Renderer::from_window(
-            window, sdl2::render::RenderDriverIndex::Auto, sdl2::render::ACCELERATED));
+    let mut renderer = window.renderer().accelerated().build().unwrap();
 
     // Load a font
     let font = trying!(sdl2_ttf::Font::from_file(filename, 128));
@@ -43,7 +41,7 @@ pub fn main(filename: &Path) {
 
     let (w, h) = { let q = texture.query(); (q.width, q.height) };
 
-    drawer.copy(&mut texture, None, Some(rect!((SCREEN_WIDTH - w)/ 2, (SCREEN_HEIGHT - h)/ 2, w, h)));
+    drawer.copy(&mut texture, None, Some(rect!((800 - w)/ 2, (600 - h)/ 2, w, h)));
 
     drawer.present();
 
