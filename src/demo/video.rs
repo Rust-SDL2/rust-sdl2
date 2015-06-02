@@ -1,5 +1,5 @@
 use std::path::Path;
-use sdl2::{self};
+use sdl2;
 use sdl2_image::{self, LoadTexture, INIT_PNG, INIT_JPG};
 use sdl2::event::Event;
 use sdl2::keycode::KeyCode;
