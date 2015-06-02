@@ -207,7 +207,7 @@ pub trait ImageRWops {
     fn is_webp(&self) -> bool;
 }
 
-impl ImageRWops for RWops {
+impl<'a> ImageRWops for RWops<'a> {
     fn load(&self) -> SdlResult<Surface> {
         let raw = unsafe {
             ffi::IMG_Load_RW(self.raw(), 0)
