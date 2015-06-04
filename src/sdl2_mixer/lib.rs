@@ -219,7 +219,7 @@ pub trait LoaderRWops {
     fn load_wav(&self) -> SdlResult<Chunk>;
 }
 
-impl LoaderRWops for RWops {
+impl<'a> LoaderRWops for RWops<'a> {
     /// Load src for use as a sample.
     fn load_wav(&self) -> SdlResult<Chunk> {
         let raw = unsafe {
