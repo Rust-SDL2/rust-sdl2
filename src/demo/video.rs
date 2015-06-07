@@ -1,8 +1,13 @@
-use sdl2;
+extern crate sdl2;
+
+use sdl2::*;
 use sdl2_ttf;
 use sdl2::event::Event;
 use sdl2::keycode::KeyCode;
 use std::path::Path;
+
+static SCREEN_WIDTH : i32 = 800;
+static SCREEN_HEIGHT : i32 = 600;
 
 // fail when error
 macro_rules! trying(
@@ -26,7 +31,7 @@ pub fn main(filename: &Path) {
         .build()
         .unwrap();
 
-    let mut renderer = window.renderer().accelerated().build().unwrap();
+    let mut renderer = window.renderer().build().unwrap();
 
     // Load a font
     let font = trying!(sdl2_ttf::Font::from_file(filename, 128));
@@ -41,14 +46,12 @@ pub fn main(filename: &Path) {
 
     let (w, h) = { let q = texture.query(); (q.width, q.height) };
 
-    drawer.copy(&mut texture, None, Some(rect!((800 - w)/ 2, (600 - h)/ 2, w, h)));
+    drawer.copy(&mut texture, None, Some(rect!((SCREEN_WIDTH - w)/ 2, (SCREEN_HEIGHT - h)/ 2, w, h)));
 
     drawer.present();
 
-    let mut event_pump = sdl_context.event_pump();
-
     'mainloop: loop {
-        for event in event_pump.poll_iter() {
+        for event in sdl_context.event_pump().poll_iter() {
             match event {
                 Event::Quit{..} => break 'mainloop,
                 Event::KeyDown {keycode: KeyCode::Escape, ..} => break 'mainloop,
