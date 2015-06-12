@@ -25,7 +25,7 @@
 //!
 //! ---
 //!
-//! None of the draw methods in `RenderDrawer` are expected to fail.
+//! None of the draw methods in `Renderer` are expected to fail.
 //! If they do, a panic is raised and the program is aborted.
 
 use Sdl;
@@ -212,6 +212,9 @@ impl RendererBuilder {
 
 impl<'a> Renderer<'a> {
     /// Creates a 2D software rendering context for a surface.
+    ///
+    /// This method should only fail if SDL2 is not built with rendering support, or there's
+    /// an out-of-memory error.
     pub fn from_surface(surface: surface::Surface<'a>) -> SdlResult<Renderer<'a>> {
         let raw_renderer = unsafe { ll::SDL_CreateSoftwareRenderer(surface.raw()) };
         if raw_renderer != ptr::null_mut() {
@@ -298,24 +301,6 @@ impl<'a> Renderer<'a> {
         }
     }
 
-    /// Provides drawing methods for the renderer.
-    ///
-    /// # Examples
-    /// ```no_run
-    /// use sdl2::render::Renderer;
-    /// use sdl2::rect::Rect;
-    ///
-    /// fn test_draw(renderer: &mut Renderer) {
-    ///     let mut drawer = renderer.drawer();
-    ///     drawer.clear();
-    ///     drawer.draw_rect(Rect::new(50, 50, 150, 175));
-    ///     drawer.present();
-    /// }
-    /// ```
-    pub fn drawer(&mut self) -> RenderDrawer {
-        RenderDrawer::new(self.raw, &self.is_alive)
-    }
-
     /// Unwraps the window or surface the rendering context was created from.
     pub unsafe fn raw(&self) -> *mut ll::SDL_Renderer { self.raw }
 
@@ -385,21 +370,8 @@ impl<'a> Renderer<'a> {
     }
 }
 
-/// Drawing functionality for the render context.
-pub struct RenderDrawer<'renderer> {
-    raw: *mut ll::SDL_Renderer,
-    is_renderer_alive: &'renderer Rc<UnsafeCell<bool>>
-}
-
-/// Render target methods for the drawer
-impl<'renderer> RenderDrawer<'renderer> {
-    fn new<'l>(raw: *mut ll::SDL_Renderer, is_renderer_alive: &'l Rc<UnsafeCell<bool>>) -> RenderDrawer<'l> {
-        RenderDrawer {
-            raw: raw,
-            is_renderer_alive: is_renderer_alive
-        }
-    }
-
+/// Render target methods
+impl<'a> Renderer<'a> {
     /// Determine whether a window supports the use of render targets.
     pub fn render_target_supported(&self) -> bool {
         unsafe { ll::SDL_RenderTargetSupported(self.raw) == 1 }
@@ -412,7 +384,7 @@ impl<'renderer> RenderDrawer<'renderer> {
         if self.render_target_supported() {
             Some(RenderTarget {
                 raw: self.raw,
-                is_renderer_alive: self.is_renderer_alive
+                is_renderer_alive: &self.is_alive
             })
         } else {
             None
@@ -421,7 +393,7 @@ impl<'renderer> RenderDrawer<'renderer> {
 }
 
 /// Drawing methods
-impl<'renderer> RenderDrawer<'renderer> {
+impl<'a> Renderer<'a> {
     /// Sets the color used for drawing operations (Rect, Line and Clear).
     pub fn set_draw_color(&mut self, color: pixels::Color) {
         let ret = match color {
@@ -771,20 +743,20 @@ impl<'renderer> RenderDrawer<'renderer> {
 /// ```no_run
 /// use sdl2::pixels::{Color, PixelFormatEnum};
 /// use sdl2::rect::Rect;
-/// use sdl2::render::{RenderDrawer, Texture};
+/// use sdl2::render::{Renderer, Texture};
 ///
 /// // Draw a red rectangle to a new texture
-/// fn draw_to_texture(drawer: &mut RenderDrawer) -> Texture {
-///     drawer.render_target()
+/// fn draw_to_texture(r: &mut Renderer) -> Texture {
+///     r.render_target()
 ///         .expect("This platform doesn't support render targets")
 ///         .create_and_set(PixelFormatEnum::RGBA8888, 512, 512);
 ///
 ///     // Start drawing
-///     drawer.clear();
-///     drawer.set_draw_color(Color::RGB(255, 0, 0));
-///     drawer.fill_rect(Rect::new(100, 100, 256, 256));
+///     r.clear();
+///     r.set_draw_color(Color::RGB(255, 0, 0));
+///     r.fill_rect(Rect::new(100, 100, 256, 256));
 ///
-///     let texture: Option<Texture> = drawer.render_target().unwrap().reset().unwrap();
+///     let texture: Option<Texture> = r.render_target().unwrap().reset().unwrap();
 ///     texture.unwrap()
 /// }
 /// ```
@@ -989,7 +961,7 @@ impl Texture {
         else { alpha }
     }
 
-    /// Sets the blend mode for a texture, used by `RenderDrawer::copy()`.
+    /// Sets the blend mode for a texture, used by `Renderer::copy()`.
     pub fn set_blend_mode(&mut self, blend: BlendMode) {
         self.check_renderer();
 
