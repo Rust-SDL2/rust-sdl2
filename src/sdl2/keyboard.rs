@@ -1,8 +1,8 @@
-use num::FromPrimitive;
-use std::collections::HashMap;
+use num::{ToPrimitive, FromPrimitive};
 use std::ffi::{CStr, CString};
 use std::ptr;
 
+use Sdl;
 use keycode::KeyCode;
 use rect::Rect;
 use scancode::ScanCode;
@@ -37,31 +37,116 @@ pub fn get_keyboard_focus() -> Option<Window> {
     }
 }
 
-pub fn get_keyboard_state() -> HashMap<ScanCode, bool> {
-    let mut state: HashMap<ScanCode, bool> = HashMap::new();
-    let mut count = 0;
+pub struct KeyboardState<'sdl> {
+    keyboard_state: &'sdl [u8]
+}
 
-    let state_ptr = unsafe { ll::SDL_GetKeyboardState(&mut count) };
-    let raw = unsafe { ::std::slice::from_raw_parts(state_ptr,
-                                          count as usize) };
+impl<'sdl> KeyboardState<'sdl> {
+    pub fn new(_sdl: &Sdl) -> KeyboardState {
+        let keyboard_state = unsafe {
+            let mut count = 0;
+            let state_ptr = ll::SDL_GetKeyboardState(&mut count);
 
-    let mut current = 0;
-    while current < raw.len() {
-        state.insert(FromPrimitive::from_isize(current as isize)
-                        .unwrap_or(ScanCode::Unknown),
-                     raw[current] == 1);
-        current += 1;
+            ::std::slice::from_raw_parts(state_ptr, count as usize)
+        };
+
+        KeyboardState {
+            keyboard_state: keyboard_state
+        }
     }
 
-    return state;
+    /// Returns true if the scancode is pressed.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use sdl2::scancode::ScanCode;
+    ///
+    /// fn is_a_pressed(sdl_context: &mut sdl2::Sdl) -> bool {
+    ///     sdl_context.keyboard_state().is_scancode_pressed(ScanCode::A)
+    /// }
+    /// ```
+    pub fn is_scancode_pressed(&self, scancode: ScanCode) -> bool {
+        self.keyboard_state[ToPrimitive::to_isize(&scancode).unwrap() as usize] != 0
+    }
+
+    /// Returns an iterator all scancodes with a boolean indicating if the scancode is pressed.
+    pub fn scancodes(&self) -> ScancodeIterator {
+        ScancodeIterator {
+            index: 0,
+            keyboard_state: self.keyboard_state
+        }
+    }
+
+    /// Returns an iterator of pressed scancodes.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use sdl2::keycode::KeyCode;
+    /// use sdl2::scancode::ScanCode;
+    /// use std::collections::HashSet;
+    ///
+    /// fn pressed_scancode_set(sdl_context: &sdl2::Sdl) -> HashSet<ScanCode> {
+    ///     sdl_context.keyboard_state().pressed_scancodes().collect()
+    /// }
+    ///
+    /// fn pressed_keycode_set(sdl_context: &sdl2::Sdl) -> HashSet<KeyCode> {
+    ///     sdl_context.keyboard_state().pressed_scancodes()
+    ///         .filter_map(KeyCode::from_scancode)
+    ///         .collect()
+    /// }
+    ///
+    /// fn newly_pressed(old: &HashSet<ScanCode>, new: &HashSet<ScanCode>) -> HashSet<ScanCode> {
+    ///     new - old
+    ///     // sugar for: new.difference(old).collect()
+    /// }
+    /// ```
+    pub fn pressed_scancodes(&self) -> PressedScancodeIterator {
+        PressedScancodeIterator {
+            iter: self.scancodes()
+        }
+    }
 }
 
-pub fn get_mod_state() -> Mod {
-    unsafe { Mod::from_bits(ll::SDL_GetModState()).unwrap() }
+pub struct ScancodeIterator<'a> {
+    index: usize,
+    keyboard_state: &'a [u8]
 }
 
-pub fn set_mod_state(flags: Mod) {
-    unsafe { ll::SDL_SetModState(flags.bits()); }
+impl<'a> Iterator for ScancodeIterator<'a> {
+    type Item = (ScanCode, bool);
+
+    fn next(&mut self) -> Option<(ScanCode, bool)> {
+        if self.index < self.keyboard_state.len() {
+            let index = self.index;
+            self.index += 1;
+
+            if let Some(scancode) = FromPrimitive::from_usize(index) {
+                let pressed = self.keyboard_state[index] != 0;
+
+                Some((scancode, pressed))
+            } else {
+                self.next()
+            }
+        } else {
+            None
+        }
+    }
+}
+
+pub struct PressedScancodeIterator<'a> {
+    iter: ScancodeIterator<'a>
+}
+
+impl<'a> Iterator for PressedScancodeIterator<'a> {
+    type Item = ScanCode;
+
+    fn next(&mut self) -> Option<ScanCode> {
+        while let Some((scancode, pressed)) = self.iter.next() {
+            if pressed { return Some(scancode) }
+        }
+
+        None
+    }
 }
 
 pub fn get_key_from_scancode(scancode: ScanCode) -> KeyCode {
@@ -110,6 +195,14 @@ pub fn get_key_from_name(name: &str) -> KeyCode {
             Err(_) => KeyCode::Unknown
         }
     }
+}
+
+pub fn mod_state() -> Mod {
+    unsafe { Mod::from_bits(ll::SDL_GetModState()).unwrap() }
+}
+
+pub fn set_mod_state(flags: Mod) {
+    unsafe { ll::SDL_SetModState(flags.bits()); }
 }
 
 pub fn start_text_input() {
