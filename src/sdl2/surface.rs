@@ -5,7 +5,7 @@ use rect::Rect;
 use get_error;
 use SdlResult;
 use std::ptr;
-use libc::{c_int, uint32_t};
+use libc::c_int;
 use num::FromPrimitive;
 use pixels;
 use render::BlendMode;
@@ -149,10 +149,6 @@ impl<'a> Surface<'a> {
         }
     }
 
-    pub fn lock(&self) -> bool {
-        unsafe { ll::SDL_LockSurface(self.raw) == 0 }
-    }
-
     /// Locks a surface so that the pixels can be directly accessed safely.
     pub fn with_lock<R, F: FnOnce(&[u8]) -> R>(&self, f: F) -> R {
         unsafe {
@@ -219,10 +215,6 @@ impl<'a> Surface<'a> {
         }
     }
 
-    pub fn unlock(&self) {
-        unsafe { ll::SDL_UnlockSurface(self.raw); }
-    }
-
     pub fn load_bmp_rw(rwops: &mut RWops) -> SdlResult<Surface<'static>> {
         let raw = unsafe {
             ll::SDL_LoadBMP_RW(rwops.raw(), 0)
@@ -257,23 +249,32 @@ impl<'a> Surface<'a> {
         self.save_bmp_rw(&mut file)
     }
 
-    pub fn set_palette(&self, palette: &pixels::Palette) -> bool {
-        unsafe {
-            ll::SDL_SetSurfacePalette(self.raw, palette.raw()) == 0
+    pub fn set_palette(&self, palette: &pixels::Palette) -> SdlResult<()> {
+        let result = unsafe { ll::SDL_SetSurfacePalette(self.raw, palette.raw()) };
+
+        match result {
+            0 => Ok(()),
+            _ => Err(get_error())
         }
     }
 
     #[allow(non_snake_case)]
-    pub fn enable_RLE(&self) -> bool {
-        unsafe {
-            ll::SDL_SetSurfaceRLE(self.raw, 1) == 0
+    pub fn enable_RLE(&mut self) {
+        let result = unsafe { ll::SDL_SetSurfaceRLE(self.raw, 1) };
+
+        if result != 0 {
+            // Should only panic on a null Surface
+            panic!(get_error());
         }
     }
 
     #[allow(non_snake_case)]
-    pub fn disable_RLE(&self) -> bool {
-        unsafe {
-            ll::SDL_SetSurfaceRLE(self.raw, 0) == 0
+    pub fn disable_RLE(&mut self) {
+        let result = unsafe { ll::SDL_SetSurfaceRLE(self.raw, 0) };
+
+        if result != 0 {
+            // Should only panic on a null Surface
+            panic!(get_error());
         }
     }
 
@@ -289,6 +290,7 @@ impl<'a> Surface<'a> {
         }
     }
 
+    /// The function will fail if the surface doesn't have color key enabled.
     pub fn get_color_key(&self) -> SdlResult<pixels::Color> {
         let mut key = 0;
         let result = unsafe {
@@ -302,18 +304,21 @@ impl<'a> Surface<'a> {
         }
     }
 
-    pub fn set_color_mod(&self, color: pixels::Color) -> bool {
+    pub fn set_color_mod(&self, color: pixels::Color) {
         let (r, g, b) = match color {
             pixels::Color::RGB(r, g, b) => (r, g, b),
             pixels::Color::RGBA(r, g, b, _) => (r, g, b)
         };
 
-        unsafe {
-            ll::SDL_SetSurfaceColorMod(self.raw, r, g, b) == 0
+        let result = unsafe { ll::SDL_SetSurfaceColorMod(self.raw, r, g, b) };
+
+        if result != 0 {
+            // Should only fail on a null Surface
+            panic!(get_error());
         }
     }
 
-    pub fn get_color_mod(&self) -> SdlResult<pixels::Color> {
+    pub fn get_color_mod(&self) -> pixels::Color {
         let mut r = 0;
         let mut g = 0;
         let mut b = 0;
@@ -323,9 +328,10 @@ impl<'a> Surface<'a> {
         };
 
         if result {
-            Ok(pixels::Color::RGB(r,g,b))
+            pixels::Color::RGB(r, g, b)
         } else {
-            Err(get_error())
+            // Should only fail on a null Surface
+            panic!(get_error())
         }
     }
 
@@ -361,29 +367,31 @@ impl<'a> Surface<'a> {
         Ok(())
     }
 
-    pub fn set_alpha_mod(&mut self, alpha: u8) -> SdlResult<()> {
+    pub fn set_alpha_mod(&mut self, alpha: u8) {
         let result = unsafe {
             ll::SDL_SetSurfaceAlphaMod(self.raw, alpha)
         };
 
-        match result {
-            0 => Ok(()),
-            _ => Err(get_error())
+        if result != 0 {
+            // Should only fail on a null Surface
+            panic!(get_error());
         }
     }
 
-    pub fn get_alpha_mod(&self) -> SdlResult<u8> {
+    pub fn get_alpha_mod(&self) -> u8 {
         let mut alpha = 0;
         let result = unsafe {
             ll::SDL_GetSurfaceAlphaMod(self.raw, &mut alpha)
         };
 
         match result {
-            0 => Ok(alpha),
-            _ => Err(get_error())
+            0 => alpha,
+            // Should only fail on a null Surface
+            _ => panic!(get_error())
         }
     }
 
+    /// The function will fail if the blend mode is not supported by SDL.
     pub fn set_blend_mode(&mut self, mode: BlendMode) -> SdlResult<()> {
         let result = unsafe {
             ll::SDL_SetSurfaceBlendMode(self.raw, mode as c_int)
@@ -395,15 +403,16 @@ impl<'a> Surface<'a> {
         }
     }
 
-    pub fn get_blend_mode(&self) -> SdlResult<BlendMode> {
+    pub fn get_blend_mode(&self) -> BlendMode {
         let mut mode: ll::SDL_BlendMode = 0;
         let result = unsafe {
             ll::SDL_GetSurfaceBlendMode(self.raw, &mut mode)
         };
 
         match result {
-            0 => Ok(FromPrimitive::from_i32(mode as i32).unwrap()),
-            _ => Err(get_error())
+            0 => FromPrimitive::from_i32(mode as i32).unwrap(),
+            // Should only fail on a null Surface
+            _ => panic!(get_error())
         }
     }
 
@@ -421,6 +430,7 @@ impl<'a> Surface<'a> {
         rect
     }
 
+    /// Copies the surface into a new one that is optimized for blitting to a surface of a specified pixel format.
     pub fn convert(&self, format: &pixels::PixelFormat) -> SdlResult<Surface<'static>> {
         // SDL_ConvertSurface takes a flag as the last parameter, which should be 0 by the docs.
         let surface_ptr = unsafe { ll::SDL_ConvertSurface(self.raw, format.raw(), 0u32) };
@@ -432,15 +442,8 @@ impl<'a> Surface<'a> {
         }
     }
 
-    pub fn convert_format(&self, format: pixels::PixelFormatEnum) -> SdlResult<Surface<'static>> {
-        let surface_ptr = unsafe { ll::SDL_ConvertSurfaceFormat(self.raw, format as uint32_t, 0u32) };
-
-        if surface_ptr== ptr::null_mut() {
-            Err(get_error())
-        } else {
-            unsafe { Ok(Surface::from_ll(surface_ptr, true)) }
-        }
-    }
+    // Note: There's no need to implement SDL_ConvertSurfaceFormat, as it does the same thing as
+    // SDL_ConvertSurface but with a slightly different function signature.
 
     pub fn lower_blit(&self, src_rect: Option<Rect>,
                       dst: &mut Surface, dst_rect: Option<Rect>) -> SdlResult<()> {
