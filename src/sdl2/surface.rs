@@ -154,7 +154,21 @@ impl<'a> Surface<'a> {
     }
 
     /// Locks a surface so that the pixels can be directly accessed safely.
-    pub fn with_lock<R, F: FnOnce(&mut [u8]) -> R>(&mut self, f: F) -> R {
+    pub fn with_lock<R, F: FnOnce(&[u8]) -> R>(&self, f: F) -> R {
+        unsafe {
+            if ll::SDL_LockSurface(self.raw) != 0 { panic!("could not lock surface"); }
+
+            let raw_pixels = (*self.raw).pixels as *const _;
+            let len = (*self.raw).pitch as usize * ((*self.raw).h as usize);
+            let pixels = ::std::slice::from_raw_parts(raw_pixels, len);
+            let rv = f(pixels);
+            ll::SDL_UnlockSurface(self.raw);
+            rv
+        }
+    }
+
+    /// Locks a surface so that the pixels can be directly accessed safely.
+    pub fn with_lock_mut<R, F: FnOnce(&mut [u8]) -> R>(&mut self, f: F) -> R {
         unsafe {
             if ll::SDL_LockSurface(self.raw) != 0 { panic!("could not lock surface"); }
 
@@ -164,6 +178,44 @@ impl<'a> Surface<'a> {
             let rv = f(pixels);
             ll::SDL_UnlockSurface(self.raw);
             rv
+        }
+    }
+
+    /// Returns the Surface's pixel buffer if the Surface doesn't require locking
+    /// (e.g. it's a software surface).
+    pub fn without_lock(&self) -> Option<&[u8]> {
+        if self.must_lock() {
+            None
+        } else {
+            unsafe {
+                let raw_pixels = (*self.raw).pixels as *const _;
+                let len = (*self.raw).pitch as usize * ((*self.raw).h as usize);
+
+                Some(::std::slice::from_raw_parts(raw_pixels, len))
+            }
+        }
+    }
+
+    /// Returns the Surface's pixel buffer if the Surface doesn't require locking
+    /// (e.g. it's a software surface).
+    pub fn without_lock_mut(&mut self) -> Option<&mut [u8]> {
+        if self.must_lock() {
+            None
+        } else {
+            unsafe {
+                let raw_pixels = (*self.raw).pixels as *mut _;
+                let len = (*self.raw).pitch as usize * ((*self.raw).h as usize);
+
+                Some(::std::slice::from_raw_parts_mut(raw_pixels, len))
+            }
+        }
+    }
+
+    /// Returns true if the Surface needs to be locked before accessing the Surface pixels.
+    pub fn must_lock(&self) -> bool {
+        // Implements the SDL_MUSTLOCK macro.
+        unsafe {
+            ((*self.raw).flags & ll::SDL_RLEACCEL) != 0
         }
     }
 
