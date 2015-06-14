@@ -3,10 +3,14 @@ use std::ptr;
 
 use Sdl;
 use rect::Rect;
-use scancode::ScanCode;
 use video::Window;
 
 use sys::keyboard as ll;
+
+mod keycode;
+mod scancode;
+pub use self::keycode::Keycode;
+pub use self::scancode::Scancode;
 
 bitflags! {
     flags Mod: u32 {
@@ -57,13 +61,13 @@ impl<'sdl> KeyboardState<'sdl> {
     ///
     /// # Example
     /// ```no_run
-    /// use sdl2::scancode::ScanCode;
+    /// use sdl2::keyboard::Scancode;
     ///
     /// fn is_a_pressed(sdl_context: &mut sdl2::Sdl) -> bool {
-    ///     sdl_context.keyboard_state().is_scancode_pressed(ScanCode::A)
+    ///     sdl_context.keyboard_state().is_scancode_pressed(Scancode::A)
     /// }
     /// ```
-    pub fn is_scancode_pressed(&self, scancode: ScanCode) -> bool {
+    pub fn is_scancode_pressed(&self, scancode: Scancode) -> bool {
         self.keyboard_state[ToPrimitive::to_isize(&scancode).unwrap() as usize] != 0
     }
 
@@ -79,21 +83,21 @@ impl<'sdl> KeyboardState<'sdl> {
     ///
     /// # Example
     /// ```no_run
-    /// use sdl2::keycode::KeyCode;
-    /// use sdl2::scancode::ScanCode;
+    /// use sdl2::keyboard::Keycode;
+    /// use sdl2::keyboard::Scancode;
     /// use std::collections::HashSet;
     ///
-    /// fn pressed_scancode_set(sdl_context: &sdl2::Sdl) -> HashSet<ScanCode> {
+    /// fn pressed_scancode_set(sdl_context: &sdl2::Sdl) -> HashSet<Scancode> {
     ///     sdl_context.keyboard_state().pressed_scancodes().collect()
     /// }
     ///
-    /// fn pressed_keycode_set(sdl_context: &sdl2::Sdl) -> HashSet<KeyCode> {
+    /// fn pressed_keycode_set(sdl_context: &sdl2::Sdl) -> HashSet<Keycode> {
     ///     sdl_context.keyboard_state().pressed_scancodes()
-    ///         .filter_map(KeyCode::from_scancode)
+    ///         .filter_map(Keycode::from_scancode)
     ///         .collect()
     /// }
     ///
-    /// fn newly_pressed(old: &HashSet<ScanCode>, new: &HashSet<ScanCode>) -> HashSet<ScanCode> {
+    /// fn newly_pressed(old: &HashSet<Scancode>, new: &HashSet<Scancode>) -> HashSet<Scancode> {
     ///     new - old
     ///     // sugar for: new.difference(old).collect()
     /// }
@@ -111,9 +115,9 @@ pub struct ScancodeIterator<'a> {
 }
 
 impl<'a> Iterator for ScancodeIterator<'a> {
-    type Item = (ScanCode, bool);
+    type Item = (Scancode, bool);
 
-    fn next(&mut self) -> Option<(ScanCode, bool)> {
+    fn next(&mut self) -> Option<(Scancode, bool)> {
         if self.index < self.keyboard_state.len() {
             let index = self.index;
             self.index += 1;
@@ -136,9 +140,9 @@ pub struct PressedScancodeIterator<'a> {
 }
 
 impl<'a> Iterator for PressedScancodeIterator<'a> {
-    type Item = ScanCode;
+    type Item = Scancode;
 
-    fn next(&mut self) -> Option<ScanCode> {
+    fn next(&mut self) -> Option<Scancode> {
         while let Some((scancode, pressed)) = self.iter.next() {
             if pressed { return Some(scancode) }
         }

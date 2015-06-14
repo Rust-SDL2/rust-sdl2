@@ -18,10 +18,10 @@ pub fn main() {
     while running {
         for event in sdl_context.event_pump().poll_iter() {
             use sdl2::event::Event;
-            use sdl2::keycode::KeyCode;
+            use sdl2::keyboard::Keycode;
 
             match event {
-                Event::Quit {..} | Event::KeyDown { keycode: Some(KeyCode::Escape), .. } => {
+                Event::Quit {..} | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
                     running = false
                 },
                 _ => {}

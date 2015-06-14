@@ -9,9 +9,6 @@ extern crate sdl2_sys as sys;
 
 pub use sdl::*;
 
-pub mod keycode;
-pub mod scancode;
-
 pub mod clipboard;
 pub mod cpuinfo;
 #[macro_use] pub mod macros;

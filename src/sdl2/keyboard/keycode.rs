@@ -4,7 +4,7 @@ use std::ffi::{CString, CStr};
 use sys::keycode as ll;
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
-pub enum KeyCode {
+pub enum Keycode {
     Backspace          = ll::SDLK_BACKSPACE as isize,
     Tab                = ll::SDLK_TAB as isize,
     Return             = ll::SDLK_RETURN as isize,
@@ -242,7 +242,7 @@ pub enum KeyCode {
     Sleep              = ll::SDLK_SLEEP as isize,
 }
 
-impl ToPrimitive for KeyCode {
+impl ToPrimitive for Keycode {
     #[inline]
     fn to_i64(&self) -> Option<i64> {
         Some(*self as i64)
@@ -259,9 +259,9 @@ impl ToPrimitive for KeyCode {
     }
 }
 
-impl FromPrimitive for KeyCode {
-    fn from_i64(n: i64) -> Option<KeyCode> {
-        use self::KeyCode::*;
+impl FromPrimitive for Keycode {
+    fn from_i64(n: i64) -> Option<Keycode> {
+        use self::Keycode::*;
 
         Some( match n as ll::SDL_Keycode {
             ll::SDLK_UNKNOWN             => return None,
@@ -504,24 +504,24 @@ impl FromPrimitive for KeyCode {
         })
     }
 
-    fn from_u64(n: u64) -> Option<KeyCode> {
+    fn from_u64(n: u64) -> Option<Keycode> {
         FromPrimitive::from_i64(n as i64)
     }
 }
 
 use std::fmt;
 
-impl fmt::Display for KeyCode {
+impl fmt::Display for Keycode {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         write!(f, "{}", self.name())
     }
 }
 
-use scancode::ScanCode;
+use keyboard::Scancode;
 
-impl KeyCode {
+impl Keycode {
     /// Gets the virtual key from a scancode. Returns None if there is no corresponding virtual key.
-    pub fn from_scancode(scancode: ScanCode) -> Option<KeyCode> {
+    pub fn from_scancode(scancode: Scancode) -> Option<Keycode> {
         unsafe {
             match ::sys::keyboard::SDL_GetKeyFromScancode(scancode as u32) {
                 ll::SDLK_UNKNOWN => None,
@@ -530,7 +530,7 @@ impl KeyCode {
         }
     }
 
-    pub fn from_name(name: &str) -> Option<KeyCode> {
+    pub fn from_name(name: &str) -> Option<Keycode> {
         unsafe {
             match CString::new(name) {
                 Ok(name) => match ::sys::keyboard::SDL_GetKeyFromName(name.as_ptr()) {

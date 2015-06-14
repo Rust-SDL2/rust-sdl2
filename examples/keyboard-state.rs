@@ -1,6 +1,6 @@
 extern crate sdl2;
 
-use sdl2::keycode::KeyCode;
+use sdl2::keyboard::Keycode;
 use std::collections::HashSet;
 
 pub fn main() {
@@ -26,7 +26,7 @@ pub fn main() {
         }
 
         // Create a set of pressed Keys.
-        let keys = sdl_context.keyboard_state().pressed_scancodes().filter_map(KeyCode::from_scancode).collect();
+        let keys = sdl_context.keyboard_state().pressed_scancodes().filter_map(Keycode::from_scancode).collect();
 
         // Get the difference between the new and old sets.
         let new_keys = &keys - &prev_keys;

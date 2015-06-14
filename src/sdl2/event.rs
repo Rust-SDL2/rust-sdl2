@@ -18,10 +18,10 @@ use joystick::HatState;
 use keyboard;
 use keyboard::Mod;
 use sys::keycode::SDL_Keymod;
-use keycode::KeyCode;
+use keyboard::Keycode;
 use mouse;
 use mouse::{Mouse, MouseState};
-use scancode::ScanCode;
+use keyboard::Scancode;
 use get_error;
 use SdlResult;
 use Sdl;
@@ -211,16 +211,16 @@ pub enum Event {
     KeyDown {
         timestamp: u32 ,
         window_id: u32,
-        keycode: Option<KeyCode>,
-        scancode: Option<ScanCode>,
+        keycode: Option<Keycode>,
+        scancode: Option<Scancode>,
         keymod: Mod,
         repeat: bool
     },
     KeyUp {
         timestamp: u32 ,
         window_id: u32,
-        keycode: Option<KeyCode>,
-        scancode: Option<ScanCode>,
+        keycode: Option<Keycode>,
+        scancode: Option<Scancode>,
         keymod: Mod,
         repeat: bool
     },

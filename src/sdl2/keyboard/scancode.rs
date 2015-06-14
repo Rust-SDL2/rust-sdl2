@@ -4,7 +4,7 @@ use std::ffi::{CString, CStr};
 use sys::scancode as ll;
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
-pub enum ScanCode {
+pub enum Scancode {
     A                  = ll::SDL_SCANCODE_A as isize,
     B                  = ll::SDL_SCANCODE_B as isize,
     C                  = ll::SDL_SCANCODE_C as isize,
@@ -248,7 +248,7 @@ pub enum ScanCode {
     Num                = ll::SDL_NUM_SCANCODES as isize,
 }
 
-impl ToPrimitive for ScanCode {
+impl ToPrimitive for Scancode {
     #[inline]
     fn to_i64(&self) -> Option<i64> {
         Some(*self as i64)
@@ -265,9 +265,9 @@ impl ToPrimitive for ScanCode {
     }
 }
 
-impl FromPrimitive for ScanCode {
-    fn from_i64(n: i64) -> Option<ScanCode> {
-        use self::ScanCode::*;
+impl FromPrimitive for Scancode {
+    fn from_i64(n: i64) -> Option<Scancode> {
+        use self::Scancode::*;
 
         Some( match n as ll::SDL_Scancode {
             ll::SDL_SCANCODE_UNKNOWN            => return None,
@@ -516,22 +516,22 @@ impl FromPrimitive for ScanCode {
         })
     }
 
-    fn from_u64(n: u64) -> Option<ScanCode> { FromPrimitive::from_i64(n as i64) }
+    fn from_u64(n: u64) -> Option<Scancode> { FromPrimitive::from_i64(n as i64) }
 }
 
 use std::fmt;
 
-impl fmt::Display for ScanCode {
+impl fmt::Display for Scancode {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         write!(f, "{}", self.name())
     }
 }
 
-use keycode::KeyCode;
+use keyboard::Keycode;
 
-impl ScanCode {
+impl Scancode {
     /// Gets the scancode from a virtual key. Returns None if there is no corresponding scancode.
-    pub fn from_keycode(keycode: KeyCode) -> Option<ScanCode> {
+    pub fn from_keycode(keycode: Keycode) -> Option<Scancode> {
         unsafe {
             match ::sys::keyboard::SDL_GetScancodeFromKey(keycode as i32) {
                 ll::SDL_SCANCODE_UNKNOWN => None,
@@ -540,7 +540,7 @@ impl ScanCode {
         }
     }
 
-    pub fn from_name(name: &str) -> Option<ScanCode> {
+    pub fn from_name(name: &str) -> Option<Scancode> {
         unsafe {
             match CString::new(name) {
                 Ok(name) => match ::sys::keyboard::SDL_GetScancodeFromName(name.as_ptr()) {
