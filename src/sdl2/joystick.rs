@@ -114,27 +114,28 @@ impl Joystick {
     }
 
     /// Retreive the number of axes for this joystick
-    pub fn get_num_axes(&self) -> i32 {
+    pub fn get_num_axes(&self) -> u32 {
         let result = unsafe { ll::SDL_JoystickNumAxes(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
             panic!(get_error())
         } else {
-            result
+            result as u32
         }
     }
 
     /// Gets the position of the given `axis`.
     ///
     /// The function will fail if the joystick doesn't have the provided axis.
-    pub fn get_axis(&self, axis: i32) -> SdlResult<i16> {
+    pub fn get_axis(&self, axis: u32) -> SdlResult<i16> {
         // This interface is a bit messed up: 0 is a valid position
         // but can also mean that an error occured. As far as I can
         // tell the only way to know if an error happened is to see if
         // get_error() returns a non-empty string.
         clear_error();
 
+        let axis = try!(u32_to_int!(axis));
         let pos = unsafe { ll::SDL_JoystickGetAxis(self.raw, axis) };
 
         if pos != 0 {
@@ -151,25 +152,26 @@ impl Joystick {
     }
 
     /// Retreive the number of buttons for this joystick
-    pub fn get_num_buttons(&self) -> i32 {
+    pub fn get_num_buttons(&self) -> u32 {
         let result = unsafe { ll::SDL_JoystickNumButtons(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
             panic!(get_error())
         } else {
-            result
+            result as u32
         }
     }
 
     /// Return `Ok(true)` if `button` is pressed.
     ///
     /// The function will fail if the joystick doesn't have the provided button.
-    pub fn get_button(&self, button: i32) -> SdlResult<bool> {
+    pub fn get_button(&self, button: u32) -> SdlResult<bool> {
         // Same deal as get_axis, 0 can mean both unpressed or
         // error...
         clear_error();
 
+        let button = try!(u32_to_int!(button));
         let pressed = unsafe { ll::SDL_JoystickGetButton(self.raw, button) };
 
         match pressed {
@@ -190,27 +192,25 @@ impl Joystick {
     }
 
     /// Retreive the number of balls for this joystick
-    pub fn get_num_balls(&self) -> i32 {
+    pub fn get_num_balls(&self) -> u32 {
         let result = unsafe { ll::SDL_JoystickNumBalls(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
             panic!(get_error())
         } else {
-            result
+            result as u32
         }
     }
 
     /// Return a pair `(dx, dy)` containing the difference in axis
     /// position since the last poll
-    pub fn get_ball(&self, ball: i32) -> SdlResult<(i32, i32)> {
+    pub fn get_ball(&self, ball: u32) -> SdlResult<(i32, i32)> {
         let mut dx = 0;
         let mut dy = 0;
 
-        let result =
-            unsafe {
-                ll::SDL_JoystickGetBall(self.raw, ball, &mut dx, &mut dy)
-            };
+        let ball = try!(u32_to_int!(ball));
+        let result = unsafe { ll::SDL_JoystickGetBall(self.raw, ball, &mut dx, &mut dy) };
 
         if result == 0 {
             Ok((dx, dy))
@@ -220,24 +220,25 @@ impl Joystick {
     }
 
     /// Retreive the number of balls for this joystick
-    pub fn get_num_hats(&self) -> i32 {
+    pub fn get_num_hats(&self) -> u32 {
         let result = unsafe { ll::SDL_JoystickNumHats(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
             panic!(get_error())
         } else {
-            result
+            result as u32
         }
     }
 
     /// Return the position of `hat` for this joystick
-    pub fn get_hat(&self, hat: i32) -> SdlResult<HatState> {
+    pub fn get_hat(&self, hat: u32) -> SdlResult<HatState> {
         // Guess what? This function as well uses 0 to report an error
         // but 0 is also a valid value (HatState::Centered). So we
         // have to use the same hack as `get_axis`...
         clear_error();
 
+        let hat = try!(u32_to_int!(hat));
         let result = unsafe { ll::SDL_JoystickGetHat(self.raw, hat) };
 
         let state = HatState::from_raw(result as u8);
