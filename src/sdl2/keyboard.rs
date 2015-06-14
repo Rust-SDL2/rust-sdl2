@@ -1,9 +1,7 @@
 use num::{ToPrimitive, FromPrimitive};
-use std::ffi::{CStr, CString};
 use std::ptr;
 
 use Sdl;
-use keycode::KeyCode;
 use rect::Rect;
 use scancode::ScanCode;
 use video::Window;
@@ -146,54 +144,6 @@ impl<'a> Iterator for PressedScancodeIterator<'a> {
         }
 
         None
-    }
-}
-
-pub fn get_key_from_scancode(scancode: ScanCode) -> KeyCode {
-    unsafe {
-        FromPrimitive::from_isize(ll::SDL_GetKeyFromScancode(scancode as u32) as isize)
-            .unwrap_or(KeyCode::Unknown)
-    }
-}
-
-pub fn get_scancode_from_key(key: KeyCode) -> ScanCode {
-    unsafe {
-        FromPrimitive::from_isize(ll::SDL_GetScancodeFromKey(key as i32) as isize)
-            .unwrap_or(ScanCode::Unknown)
-    }
-}
-
-pub fn get_scancode_name(scancode: ScanCode) -> String {
-    unsafe {
-        let scancode_name = ll::SDL_GetScancodeName(scancode as u32);
-        String::from_utf8_lossy(CStr::from_ptr(scancode_name).to_bytes()).into_owned()
-    }
-}
-
-pub fn get_scancode_from_name(name: &str) -> ScanCode {
-    unsafe {
-        match CString::new(name) {
-            Ok(name) => FromPrimitive::from_isize(ll::SDL_GetScancodeFromName(name.as_ptr()) as isize).unwrap_or(ScanCode::Unknown),
-            // string contains a nul byte - it won't match anything.
-            Err(_) => ScanCode::Unknown
-        }
-    }
-}
-
-pub fn get_key_name(key: KeyCode) -> String {
-    unsafe {
-        let key_name = ll::SDL_GetKeyName(key as i32);
-        String::from_utf8_lossy(CStr::from_ptr(key_name).to_bytes()).to_string()
-    }
-}
-
-pub fn get_key_from_name(name: &str) -> KeyCode {
-    unsafe {
-        match CString::new(name) {
-            Ok(name) => FromPrimitive::from_isize(ll::SDL_GetKeyFromName(name.as_ptr()) as isize).unwrap_or(KeyCode::Unknown),
-            // string contains a nul byte - it won't match anything.
-            Err(_) => KeyCode::Unknown
-        }
     }
 }
 

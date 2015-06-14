@@ -1,4 +1,5 @@
 use num::{ToPrimitive, FromPrimitive};
+use std::ffi::{CString, CStr};
 
 use sys::keycode as ll;
 
@@ -506,5 +507,49 @@ impl FromPrimitive for KeyCode {
 
     fn from_u64(n: u64) -> Option<KeyCode> {
         FromPrimitive::from_i64(n as i64)
+    }
+}
+
+use std::fmt;
+
+impl fmt::Display for KeyCode {
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        write!(f, "{}", self.name())
+    }
+}
+
+use scancode::ScanCode;
+
+impl KeyCode {
+    /// Gets the virtual key from a scancode. Returns None if there is no corresponding virtual key.
+    pub fn from_scancode(scancode: ScanCode) -> Option<KeyCode> {
+        unsafe {
+            match ::sys::keyboard::SDL_GetKeyFromScancode(scancode as u32) {
+                ll::SDLK_UNKNOWN => None,
+                keycode_id => FromPrimitive::from_isize(keycode_id as isize)
+            }
+        }
+    }
+
+    pub fn from_name(name: &str) -> Option<KeyCode> {
+        unsafe {
+            match CString::new(name) {
+                Ok(name) => match ::sys::keyboard::SDL_GetKeyFromName(name.as_ptr()) {
+                    ll::SDLK_UNKNOWN => None,
+                    keycode_id => Some(FromPrimitive::from_isize(keycode_id as isize).unwrap())
+                },
+                // string contains a nul byte - it won't match anything.
+                Err(_) => None
+            }
+        }
+    }
+
+    pub fn name(self) -> String {
+        // The name string pointer's contents _might_ change, depending on the last call to SDL_GetKeyName.
+        // Knowing this, we must always return a new string.
+        unsafe {
+            let buf = ::sys::keyboard::SDL_GetKeyName(self as i32);
+            String::from_utf8_lossy(CStr::from_ptr(buf).to_bytes()).to_string()
+        }
     }
 }

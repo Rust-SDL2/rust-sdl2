@@ -1,4 +1,5 @@
 use num::{ToPrimitive, FromPrimitive};
+use std::ffi::{CString, CStr};
 
 use sys::scancode as ll;
 
@@ -517,4 +518,48 @@ impl FromPrimitive for ScanCode {
     }
 
     fn from_u64(n: u64) -> Option<ScanCode> { FromPrimitive::from_i64(n as i64) }
+}
+
+use std::fmt;
+
+impl fmt::Display for ScanCode {
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        write!(f, "{}", self.name())
+    }
+}
+
+use keycode::KeyCode;
+
+impl ScanCode {
+    /// Gets the scancode from a virtual key. Returns None if there is no corresponding scancode.
+    pub fn from_keycode(keycode: KeyCode) -> Option<ScanCode> {
+        unsafe {
+            match ::sys::keyboard::SDL_GetScancodeFromKey(keycode as i32) {
+                ll::SDL_SCANCODE_UNKNOWN => None,
+                scancode_id => FromPrimitive::from_isize(scancode_id as isize)
+            }
+        }
+    }
+
+    pub fn from_name(name: &str) -> Option<ScanCode> {
+        unsafe {
+            match CString::new(name) {
+                Ok(name) => match ::sys::keyboard::SDL_GetScancodeFromName(name.as_ptr()) {
+                    ll::SDL_SCANCODE_UNKNOWN => None,
+                    scancode_id => Some(FromPrimitive::from_isize(scancode_id as isize).unwrap())
+                },
+                // string contains a nul byte - it won't match anything.
+                Err(_) => None
+            }
+        }
+    }
+
+    pub fn name(self) -> &'static str {
+        // The name string pointer lives in static, read-only memory.
+        // Knowing this, we can always return a string slice.
+        unsafe {
+            let buf = ::sys::keyboard::SDL_GetScancodeName(self as u32);
+            ::std::str::from_utf8(CStr::from_ptr(buf).to_bytes()).unwrap()
+        }
+    }
 }
