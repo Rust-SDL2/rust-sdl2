@@ -2,7 +2,7 @@ use libc::c_char;
 use std::ffi::{CString, CStr};
 
 use SdlResult;
-use {get_error, clear_error};
+use get_error;
 use joystick;
 use util::CStringExt;
 
@@ -222,56 +222,27 @@ impl GameController {
     }
 
     /// Get the position of the given `axis`
-    pub fn get_axis(&self, axis: Axis) -> SdlResult<i16> {
+    pub fn get_axis(&self, axis: Axis) -> i16 {
         // This interface is a bit messed up: 0 is a valid position
-        // but can also mean that an error occured. As far as I can
-        // tell the only way to know if an error happened is to see if
-        // get_error() returns a non-empty string.
-        clear_error();
+        // but can also mean that an error occured.
+        // Fortunately, an error can only occur if the controller pointer is NULL.
+        // There should be no apparent reason for this to change in the future.
 
         let axis = axis as ll::SDL_GameControllerAxis;
 
-        let pos = unsafe { ll::SDL_GameControllerGetAxis(self.raw, axis) };
-
-        if pos != 0 {
-            Ok(pos)
-        } else {
-            let err = get_error();
-
-            if err.is_empty() {
-                Ok(pos)
-            } else {
-                Err(err)
-            }
-        }
+        unsafe { ll::SDL_GameControllerGetAxis(self.raw, axis) }
     }
 
-    /// Return `Ok(true)` if `button` is pressed.
-    pub fn get_button(&self, button: Button) -> SdlResult<bool> {
-        // Same deal as get_axis, 0 can mean both unpressed or
-        // error...
-        clear_error();
+    /// Returns `true` if `button` is pressed.
+    pub fn get_button(&self, button: Button) -> bool {
+        // This interface is a bit messed up: 0 is a valid position
+        // but can also mean that an error occured.
+        // Fortunately, an error can only occur if the controller pointer is NULL.
+        // There should be no apparent reason for this to change in the future.
 
         let button = button as ll::SDL_GameControllerButton;
 
-        let pressed =
-            unsafe { ll::SDL_GameControllerGetButton(self.raw, button) };
-
-        match pressed {
-            1 => Ok(true),
-            0 => {
-                let err = get_error();
-
-                if err.is_empty() {
-                    // Button is not pressed
-                    Ok(false)
-                } else {
-                    Err(err)
-                }
-            }
-            // Should be unreachable
-            _ => Err(get_error()),
-        }
+        unsafe { ll::SDL_GameControllerGetButton(self.raw, button) != 0 }
     }
 }
 

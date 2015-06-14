@@ -88,41 +88,46 @@ impl Joystick {
         unsafe { ll::SDL_JoystickGetAttached(self.raw) != 0 }
     }
 
-    pub fn get_instance_id(&self) -> SdlResult<i32> {
+    pub fn get_instance_id(&self) -> i32 {
         let result = unsafe { ll::SDL_JoystickInstanceID(self.raw) };
 
         if result < 0 {
-            Err(get_error())
+            // Should only fail if the joystick is NULL.
+            panic!(get_error())
         } else {
-            Ok(result)
+            result
         }
     }
 
     /// Retreive the joystick's GUID
-    pub fn get_guid(&self) -> SdlResult<Guid> {
+    pub fn get_guid(&self) -> Guid {
         let raw = unsafe { ll::SDL_JoystickGetGUID(self.raw) };
 
         let guid = Guid { raw: raw };
 
         if guid.is_zero() {
-            Err(get_error())
+            // Should only fail if the joystick is NULL.
+            panic!(get_error())
         } else {
-            Ok(guid)
+            guid
         }
     }
 
     /// Retreive the number of axes for this joystick
-    pub fn get_num_axis(&self) -> SdlResult<i32> {
+    pub fn get_num_axes(&self) -> i32 {
         let result = unsafe { ll::SDL_JoystickNumAxes(self.raw) };
 
         if result < 0 {
-            Err(get_error())
+            // Should only fail if the joystick is NULL.
+            panic!(get_error())
         } else {
-            Ok(result)
+            result
         }
     }
 
-    /// Get the position of the given `axis`
+    /// Gets the position of the given `axis`.
+    ///
+    /// The function will fail if the joystick doesn't have the provided axis.
     pub fn get_axis(&self, axis: i32) -> SdlResult<i16> {
         // This interface is a bit messed up: 0 is a valid position
         // but can also mean that an error occured. As far as I can
@@ -146,24 +151,26 @@ impl Joystick {
     }
 
     /// Retreive the number of buttons for this joystick
-    pub fn get_num_buttons(&self) -> SdlResult<i32> {
+    pub fn get_num_buttons(&self) -> i32 {
         let result = unsafe { ll::SDL_JoystickNumButtons(self.raw) };
 
         if result < 0 {
-            Err(get_error())
+            // Should only fail if the joystick is NULL.
+            panic!(get_error())
         } else {
-            Ok(result)
+            result
         }
     }
 
     /// Return `Ok(true)` if `button` is pressed.
+    ///
+    /// The function will fail if the joystick doesn't have the provided button.
     pub fn get_button(&self, button: i32) -> SdlResult<bool> {
         // Same deal as get_axis, 0 can mean both unpressed or
         // error...
         clear_error();
 
-        let pressed =
-            unsafe { ll::SDL_JoystickGetButton(self.raw, button) };
+        let pressed = unsafe { ll::SDL_JoystickGetButton(self.raw, button) };
 
         match pressed {
             1 => Ok(true),
@@ -183,13 +190,14 @@ impl Joystick {
     }
 
     /// Retreive the number of balls for this joystick
-    pub fn get_num_balls(&self) -> SdlResult<i32> {
+    pub fn get_num_balls(&self) -> i32 {
         let result = unsafe { ll::SDL_JoystickNumBalls(self.raw) };
 
         if result < 0 {
-            Err(get_error())
+            // Should only fail if the joystick is NULL.
+            panic!(get_error())
         } else {
-            Ok(result)
+            result
         }
     }
 
@@ -212,13 +220,14 @@ impl Joystick {
     }
 
     /// Retreive the number of balls for this joystick
-    pub fn get_num_hats(&self) -> SdlResult<i32> {
+    pub fn get_num_hats(&self) -> i32 {
         let result = unsafe { ll::SDL_JoystickNumHats(self.raw) };
 
         if result < 0 {
-            Err(get_error())
+            // Should only fail if the joystick is NULL.
+            panic!(get_error())
         } else {
-            Ok(result)
+            result
         }
     }
 
