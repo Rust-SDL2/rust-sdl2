@@ -5,7 +5,6 @@ use sys::scancode as ll;
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum ScanCode {
-    Unknown            = ll::SDL_SCANCODE_UNKNOWN as isize,
     A                  = ll::SDL_SCANCODE_A as isize,
     B                  = ll::SDL_SCANCODE_B as isize,
     C                  = ll::SDL_SCANCODE_C as isize,
@@ -271,7 +270,7 @@ impl FromPrimitive for ScanCode {
         use self::ScanCode::*;
 
         Some( match n as ll::SDL_Scancode {
-            ll::SDL_SCANCODE_UNKNOWN            => Unknown,
+            ll::SDL_SCANCODE_UNKNOWN            => return None,
             ll::SDL_SCANCODE_A                  => A,
             ll::SDL_SCANCODE_B                  => B,
             ll::SDL_SCANCODE_C                  => C,

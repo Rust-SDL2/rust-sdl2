@@ -211,16 +211,16 @@ pub enum Event {
     KeyDown {
         timestamp: u32 ,
         window_id: u32,
-        keycode: KeyCode,
-        scancode: ScanCode,
+        keycode: Option<KeyCode>,
+        scancode: Option<ScanCode>,
         keymod: Mod,
         repeat: bool
     },
     KeyUp {
         timestamp: u32 ,
         window_id: u32,
-        keycode: KeyCode,
-        scancode: ScanCode,
+        keycode: Option<KeyCode>,
+        scancode: Option<ScanCode>,
         keymod: Mod,
         repeat: bool
     },
@@ -562,10 +562,8 @@ impl Event {
                 Event::KeyDown {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
-                    keycode: FromPrimitive::from_i32(event.keysym.sym)
-                                 .unwrap_or(KeyCode::Unknown),
-                    scancode: FromPrimitive::from_u32(event.keysym.scancode)
-                                 .unwrap_or(ScanCode::Unknown),
+                    keycode: FromPrimitive::from_i32(event.keysym.sym),
+                    scancode: FromPrimitive::from_u32(event.keysym.scancode),
                     keymod: keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap(),
                     repeat: event.repeat != 0
                 }
@@ -576,10 +574,8 @@ impl Event {
                 Event::KeyUp {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
-                    keycode: FromPrimitive::from_i32(event.keysym.sym)
-                               .unwrap_or(KeyCode::Unknown),
-                    scancode: FromPrimitive::from_u32(event.keysym.scancode)
-                               .unwrap_or(ScanCode::Unknown),
+                    keycode: FromPrimitive::from_i32(event.keysym.sym),
+                    scancode: FromPrimitive::from_u32(event.keysym.scancode),
                     keymod: keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap(),
                     repeat: event.repeat != 0
                 }

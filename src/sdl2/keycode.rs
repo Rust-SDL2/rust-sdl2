@@ -5,7 +5,6 @@ use sys::keycode as ll;
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum KeyCode {
-    Unknown            = ll::SDLK_UNKNOWN as isize,
     Backspace          = ll::SDLK_BACKSPACE as isize,
     Tab                = ll::SDLK_TAB as isize,
     Return             = ll::SDLK_RETURN as isize,
@@ -265,7 +264,7 @@ impl FromPrimitive for KeyCode {
         use self::KeyCode::*;
 
         Some( match n as ll::SDL_Keycode {
-            ll::SDLK_UNKNOWN             => Unknown,
+            ll::SDLK_UNKNOWN             => return None,
             ll::SDLK_BACKSPACE           => Backspace,
             ll::SDLK_TAB                 => Tab,
             ll::SDLK_RETURN              => Return,

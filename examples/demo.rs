@@ -26,7 +26,7 @@ pub fn main() {
             use sdl2::event::Event;
 
             match event {
-                Event::Quit {..} | Event::KeyDown { keycode: KeyCode::Escape, .. } => {
+                Event::Quit {..} | Event::KeyDown { keycode: Some(KeyCode::Escape), .. } => {
                     running = false
                 },
                 _ => {}
