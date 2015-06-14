@@ -78,8 +78,8 @@ pub struct RendererInfo {
     pub name: String,
     pub flags: u32,
     pub texture_formats: Vec<pixels::PixelFormatEnum>,
-    pub max_texture_width: i32,
-    pub max_texture_height: i32
+    pub max_texture_width: u32,
+    pub max_texture_height: u32
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
@@ -116,8 +116,8 @@ impl RendererInfo {
             name: String::from_utf8_lossy(CStr::from_ptr(info.name).to_bytes()).to_string(),
             flags: info.flags,
             texture_formats: texture_formats,
-            max_texture_width: info.max_texture_width as i32,
-            max_texture_height: info.max_texture_height as i32
+            max_texture_width: info.max_texture_width as u32,
+            max_texture_height: info.max_texture_height as u32
         }
     }
 }
@@ -148,7 +148,7 @@ impl<'a> Drop for Renderer<'a> {
 /// By default, the renderer builder will prioritize for a hardware-accelerated renderer.
 pub struct RendererBuilder {
     window: Window,
-    index: i32,
+    index: Option<u32>,
     renderer_flags: u32
 }
 
@@ -158,7 +158,7 @@ impl RendererBuilder {
         RendererBuilder {
             window: window,
             // -1 means to initialize the first rendering driver supporting the renderer flags
-            index: -1,
+            index: None,
             // no flags gives priority to available SDL_RENDERER_ACCELERATED renderers
             renderer_flags: 0
         }
@@ -166,8 +166,12 @@ impl RendererBuilder {
 
     /// Builds the renderer.
     pub fn build(self) -> SdlResult<Renderer<'static>> {
+        let index = match self.index {
+            None => -1,
+            Some(index) => try!(u32_to_int!(index))
+        };
         let raw = unsafe {
-            ll::SDL_CreateRenderer(self.window.raw(), self.index, self.renderer_flags)
+            ll::SDL_CreateRenderer(self.window.raw(), index, self.renderer_flags)
         };
 
         if raw.is_null() {
@@ -180,8 +184,8 @@ impl RendererBuilder {
     }
 
     /// Sets the index of the rendering driver to initialize.
-    pub fn index(mut self, index: i32) -> RendererBuilder {
-        self.index = index;
+    pub fn index(mut self, index: u32) -> RendererBuilder {
+        self.index = Some(index);
         self
     }
 
@@ -320,8 +324,9 @@ impl<'a> Renderer<'a> {
     /// Creates a texture for a rendering context.
     ///
     /// `size` is the width and height of the texture.
-    pub fn create_texture(&self, format: pixels::PixelFormatEnum, access: TextureAccess, size: (i32, i32)) -> SdlResult<Texture> {
-        let (width, height) = size;
+    pub fn create_texture(&self, format: pixels::PixelFormatEnum, access: TextureAccess, (width, height): (u32, u32)) -> SdlResult<Texture> {
+        let width = try!(u32_to_int!(width));
+        let height = try!(u32_to_int!(height));
 
         // If the pixel format is YUV 4:2:0 and planar, the width and height must
         // be multiples-of-two. See issue #334 for details.
@@ -334,7 +339,7 @@ impl<'a> Renderer<'a> {
             _ => ()
         }
 
-        let result = unsafe { ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int) };
+        let result = unsafe { ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width, height) };
         if result == ptr::null_mut() {
             Err(get_error())
         } else {
@@ -343,17 +348,17 @@ impl<'a> Renderer<'a> {
     }
 
     /// Shorthand for `create_texture(format, TextureAccess::Static, size)`
-    pub fn create_texture_static(&self, format: pixels::PixelFormatEnum, size: (i32, i32)) -> SdlResult<Texture> {
+    pub fn create_texture_static(&self, format: pixels::PixelFormatEnum, size: (u32, u32)) -> SdlResult<Texture> {
         self.create_texture(format, TextureAccess::Static, size)
     }
 
     /// Shorthand for `create_texture(format, TextureAccess::Streaming, size)`
-    pub fn create_texture_streaming(&self, format: pixels::PixelFormatEnum, size: (i32, i32)) -> SdlResult<Texture> {
+    pub fn create_texture_streaming(&self, format: pixels::PixelFormatEnum, size: (u32, u32)) -> SdlResult<Texture> {
         self.create_texture(format, TextureAccess::Streaming, size)
     }
 
     /// Shorthand for `create_texture(format, TextureAccess::Target, size)`
-    pub fn create_texture_target(&self, format: pixels::PixelFormatEnum, size: (i32, i32)) -> SdlResult<Texture> {
+    pub fn create_texture_target(&self, format: pixels::PixelFormatEnum, size: (u32, u32)) -> SdlResult<Texture> {
         self.create_texture(format, TextureAccess::Target, size)
     }
 
@@ -451,33 +456,38 @@ impl<'a> Renderer<'a> {
     }
 
     /// Gets the output size of a rendering context.
-    pub fn get_output_size(&self) -> SdlResult<(i32, i32)> {
+    pub fn get_output_size(&self) -> SdlResult<(u32, u32)> {
         let mut width = 0;
         let mut height = 0;
 
         let result = unsafe { ll::SDL_GetRendererOutputSize(self.raw, &mut width, &mut height) == 0 };
 
         if result {
-            Ok((width as i32, height as i32))
+            Ok((width as u32, height as u32))
         } else {
             Err(get_error())
         }
     }
 
     /// Sets a device independent resolution for rendering.
-    pub fn set_logical_size(&mut self, width: i32, height: i32) {
-        let ret = unsafe { ll::SDL_RenderSetLogicalSize(self.raw, width as c_int, height as c_int) };
-        if ret != 0 { panic!("Could not set logical size: {}", get_error()) }
+    pub fn set_logical_size(&mut self, width: u32, height: u32) -> SdlResult<()> {
+        let width = try!(u32_to_int!(width));
+        let height = try!(u32_to_int!(height));
+        let result = unsafe { ll::SDL_RenderSetLogicalSize(self.raw, width, height) };
+        match result {
+            0 => Ok(()),
+            _ => Err(get_error())
+        }
     }
 
     /// Gets device independent resolution for rendering.
-    pub fn get_logical_size(&self) -> (i32, i32) {
+    pub fn get_logical_size(&self) -> (u32, u32) {
         let mut width = 0;
         let mut height = 0;
 
         unsafe { ll::SDL_RenderGetLogicalSize(self.raw, &mut width, &mut height) };
 
-        (width as i32, height as i32)
+        (width as u32, height as u32)
     }
 
     /// Sets the drawing area for rendering on the current target.
@@ -749,7 +759,7 @@ impl<'a> Renderer<'a> {
 /// fn draw_to_texture(r: &mut Renderer) -> Texture {
 ///     r.render_target()
 ///         .expect("This platform doesn't support render targets")
-///         .create_and_set(PixelFormatEnum::RGBA8888, 512, 512);
+///         .create_and_set(PixelFormatEnum::RGBA8888, (512, 512));
 ///
 ///     // Start drawing
 ///     r.clear();
@@ -815,10 +825,13 @@ impl<'renderer> RenderTarget<'renderer> {
     /// Creates a new texture and sets it as the render target.
     ///
     /// The old render target is returned if the function is successful.
-    pub fn create_and_set(&mut self, format: pixels::PixelFormatEnum, width: i32, height: i32) -> SdlResult<Option<Texture>> {
+    pub fn create_and_set(&mut self, format: pixels::PixelFormatEnum, (width, height): (u32, u32)) -> SdlResult<Option<Texture>> {
+        let width = try!(u32_to_int!(width));
+        let height = try!(u32_to_int!(height));
+
         let new_texture_raw = unsafe {
             let access = ll::SDL_TEXTUREACCESS_TARGET;
-            ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width as c_int, height as c_int)
+            ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width, height)
         };
 
         if new_texture_raw == ptr::null_mut() {
@@ -847,8 +860,8 @@ impl<'renderer> RenderTarget<'renderer> {
 pub struct TextureQuery {
     pub format: pixels::PixelFormatEnum,
     pub access: TextureAccess,
-    pub width: i32,
-    pub height: i32
+    pub width: u32,
+    pub height: u32
 }
 
 /// A texture for a rendering context.
@@ -909,8 +922,8 @@ impl Texture {
             TextureQuery {
                format: FromPrimitive::from_i64(format as i64).unwrap(),
                access: FromPrimitive::from_i64(access as i64).unwrap(),
-               width: width as i32,
-               height: height as i32
+               width: width as u32,
+               height: height as u32
             }
         }
     }
@@ -990,7 +1003,7 @@ impl Texture {
     /// between lines
     ///
     /// * If `rect` is `None`, the entire texture is updated.
-    pub fn update(&mut self, rect: Option<Rect>, pixel_data: &[u8], pitch: i32) -> SdlResult<()> {
+    pub fn update(&mut self, rect: Option<Rect>, pixel_data: &[u8], pitch: usize) -> SdlResult<()> {
         self.check_renderer();
 
         let ret = unsafe {
@@ -1019,7 +1032,9 @@ impl Texture {
                 }
             }
 
-            ll::SDL_UpdateTexture(self.raw, rect_raw_ptr, pixel_data.as_ptr() as *const _, pitch as c_int)
+            let pitch = try!(usize_to_int!(pitch));
+
+            ll::SDL_UpdateTexture(self.raw, rect_raw_ptr, pixel_data.as_ptr() as *const _, pitch)
         };
 
         if ret == 0 { Ok(()) }
@@ -1027,7 +1042,7 @@ impl Texture {
     }
 
     /// Updates a rectangle within a planar YV12 or IYUV texture with new pixel data.
-    pub fn update_yuv(&mut self, rect: Option<Rect>, y_plane: &[u8], y_pitch: i32, u_plane: &[u8], u_pitch: i32, v_plane: &[u8], v_pitch: i32) -> SdlResult<()> {
+    pub fn update_yuv(&mut self, rect: Option<Rect>, y_plane: &[u8], y_pitch: usize, u_plane: &[u8], u_pitch: usize, v_plane: &[u8], v_pitch: usize) -> SdlResult<()> {
         self.check_renderer();
 
         let rect_raw_ptr = match rect {
@@ -1047,18 +1062,22 @@ impl Texture {
         // We need the height in order to check the array slice lengths.
         // Checking the lengths can prevent buffer overruns in SDL_UpdateYUVTexture.
         let height = match rect {
-            Some(r) => r.h,
+            Some(rect) => try!(int_to_u32!(rect.h)),
             None => self.query().height
-        };
+        } as usize;
 
         let wrong_length =
-            (y_plane.len() != (y_pitch * height) as usize) ||
-            (u_plane.len() != (u_pitch * height/2) as usize) ||
-            (v_plane.len() != (v_pitch * height/2) as usize);
+            (y_plane.len() != (y_pitch * height)) ||
+            (u_plane.len() != (u_pitch * height/2)) ||
+            (v_plane.len() != (v_pitch * height/2));
 
         if wrong_length {
             return Err(format!("One or more of the plane lengths is not correct (should be pitch * height)."));
         }
+
+        let y_pitch = try!(usize_to_int!(y_pitch));
+        let u_pitch = try!(usize_to_int!(u_pitch));
+        let v_pitch = try!(usize_to_int!(v_pitch));
 
         unsafe {
             let result = ll::SDL_UpdateYUVTexture(
@@ -1183,18 +1202,19 @@ impl Texture {
 }
 
 
-pub fn get_num_render_drivers() -> SdlResult<i32> {
+pub fn get_num_render_drivers() -> SdlResult<u32> {
     let result = unsafe { ll::SDL_GetNumRenderDrivers() };
     if result > 0 {
-        Ok(result as i32)
+        Ok(result as u32)
     } else {
         Err(get_error())
     }
 }
 
-pub fn get_render_driver_info(index: i32) -> SdlResult<RendererInfo> {
+pub fn get_render_driver_info(index: u32) -> SdlResult<RendererInfo> {
     let mut out = unsafe { mem::uninitialized() };
-    let result = unsafe { ll::SDL_GetRenderDriverInfo(index as c_int, &mut out) == 0 };
+    let index = try!(u32_to_int!(index));
+    let result = unsafe { ll::SDL_GetRenderDriverInfo(index, &mut out) == 0 };
     if result {
         unsafe { Ok(RendererInfo::from_ll(&out)) }
     } else {
