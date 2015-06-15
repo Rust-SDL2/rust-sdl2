@@ -135,12 +135,7 @@ impl<'a> Surface<'a> {
     }
 
     pub fn get_rect(&self) -> Rect {
-        Rect {
-            x: 0,
-            y: 0,
-            w: self.get_width() as i32,
-            h: self.get_height() as i32
-        }
+        Rect::new_unwrap(0, 0, self.get_width(), self.get_height())
     }
 
     pub fn get_pixel_format(&self) -> pixels::PixelFormat {
@@ -416,18 +411,27 @@ impl<'a> Surface<'a> {
         }
     }
 
+    /// Sets the clip rectangle for the surface.
+    ///
+    /// If the rectangle is `None`, clipping will be disabled.
     pub fn set_clip_rect(&mut self, rect: Option<Rect>) -> bool {
         unsafe {
-            ll::SDL_SetClipRect(self.raw, mem::transmute(rect.as_ref())) == 1
+            ll::SDL_SetClipRect(self.raw, match rect {
+                Some(rect) => rect.raw(),
+                None => ptr::null()
+            }) == 1
         }
     }
 
-    pub fn get_clip_rect(&self) -> Rect {
-        let mut rect = Rect::new(0, 0, 0, 0);
+    /// Gets the clip rectangle for the surface.
+    ///
+    /// Returns `None` if clipping is disabled.
+    pub fn get_clip_rect(&self) -> Option<Rect> {
+        let mut rect = unsafe { mem::uninitialized() };
         unsafe {
             ll::SDL_GetClipRect(self.raw, &mut rect)
         };
-        rect
+        Rect::from_ll(rect).unwrap()
     }
 
     /// Copies the surface into a new one that is optimized for blitting to a surface of a specified pixel format.

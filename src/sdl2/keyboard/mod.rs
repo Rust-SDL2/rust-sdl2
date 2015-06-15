@@ -172,7 +172,7 @@ pub fn stop_text_input() {
 }
 
 pub fn set_text_input_rect(rect: &Rect) {
-    unsafe { ll::SDL_SetTextInputRect(rect); }
+    unsafe { ll::SDL_SetTextInputRect(rect.raw()); }
 }
 
 pub fn has_screen_keyboard_support() -> bool {

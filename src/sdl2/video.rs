@@ -860,7 +860,7 @@ impl<'a> WindowProperties<'a> {
 
     pub fn update_surface_rects(&self, rects: &[Rect]) -> SdlResult<()> {
         unsafe {
-            if ll::SDL_UpdateWindowSurfaceRects(self.raw, rects.as_ptr(), rects.len() as c_int) == 0 {
+            if ll::SDL_UpdateWindowSurfaceRects(self.raw, Rect::raw_slice(rects), rects.len() as c_int) == 0 {
                 Ok(())
             } else {
                 Err(get_error())
@@ -980,11 +980,12 @@ pub fn get_display_name(display_index: i32) -> String {
 }
 
 pub fn get_display_bounds(display_index: i32) -> SdlResult<Rect> {
-    let mut out: Rect = Rect::new(0, 0, 0, 0);
+    let mut out = unsafe { mem::uninitialized() };
     let result = unsafe { ll::SDL_GetDisplayBounds(display_index as c_int, &mut out) == 0 };
 
     if result {
-        Ok(out)
+        // Unwrap twice because there is always a non-empty rect.
+        Ok(Rect::from_ll(out).unwrap().unwrap())
     } else {
         Err(get_error())
     }

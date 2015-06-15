@@ -1,13 +1,10 @@
 use libc::{c_int, c_uint, c_char, c_void, c_float, c_double};
 use libc::{uint8_t, uint32_t};
-use rect::Point;
-use rect::Rect;
+use rect::{SDL_Point, SDL_Rect};
 
 use surface::SDL_Surface;
 use video::SDL_Window;
 
-pub type SDL_Point = Point;
-pub type SDL_Rect = Rect;
 pub type SDL_bool = c_int;
 
 //SDL_render.h
