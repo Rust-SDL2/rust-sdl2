@@ -45,10 +45,9 @@ pub fn main() {
         }
     }).unwrap();
 
-    let mut drawer = renderer.drawer();
-    drawer.clear();
-    drawer.copy(&texture, None, Some(Rect::new(100, 100, 256, 256)));
-    drawer.present();
+    renderer.clear();
+    renderer.copy(&texture, None, Some(Rect::new(100, 100, 256, 256)));
+    renderer.present();
 
     let mut running = true;
 

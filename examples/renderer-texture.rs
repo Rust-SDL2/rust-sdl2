@@ -28,11 +28,10 @@ pub fn main() {
         }
     }).unwrap();
 
-    let mut drawer = renderer.drawer();
-    drawer.clear();
-    drawer.copy(&texture, None, Some(Rect::new(100, 100, 256, 256)));
-    drawer.copy_ex(&texture, None, Some(Rect::new(450, 100, 256, 256)), 30.0, None, (false, false));
-    drawer.present();
+    renderer.clear();
+    renderer.copy(&texture, None, Some(Rect::new(100, 100, 256, 256)));
+    renderer.copy_ex(&texture, None, Some(Rect::new(450, 100, 256, 256)), 30.0, None, (false, false));
+    renderer.present();
 
     let mut running = true;
 

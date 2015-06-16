@@ -14,10 +14,9 @@ pub fn main() {
 
     let mut renderer = window.renderer().build().unwrap();
 
-    let mut drawer = renderer.drawer();
-    drawer.set_draw_color(Color::RGB(255, 0, 0));
-    drawer.clear();
-    drawer.present();
+    renderer.set_draw_color(Color::RGB(255, 0, 0));
+    renderer.clear();
+    renderer.present();
 
     let mut running = true;
 
