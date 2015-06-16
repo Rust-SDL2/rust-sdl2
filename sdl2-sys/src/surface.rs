@@ -8,7 +8,7 @@ pub use render::SDL_BlendMode;
 pub type SDL_bool = c_int;
 pub type SDL_Rect = Rect;
 
-pub type SDL_SurfaceFlag = c_int;
+pub type SDL_SurfaceFlag = uint32_t;
 
 pub const SDL_SWSURFACE: SDL_SurfaceFlag = 0;
 pub const SDL_PREALLOC: SDL_SurfaceFlag = 0x00000001;
