@@ -1,8 +1,8 @@
-use libc::{c_int, c_char};
+use libc::c_char;
 use std::ffi::{CString, CStr};
 
 use SdlResult;
-use {get_error, clear_error};
+use get_error;
 use joystick;
 use util::CStringExt;
 
@@ -12,7 +12,6 @@ use sys::event::{SDL_QUERY, SDL_ENABLE};
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(i32)]
 pub enum Axis {
-    Invalid      = ll::SDL_CONTROLLER_AXIS_INVALID,
     LeftX        = ll::SDL_CONTROLLER_AXIS_LEFTX,
     LeftY        = ll::SDL_CONTROLLER_AXIS_LEFTY,
     RightX       = ll::SDL_CONTROLLER_AXIS_RIGHTX,
@@ -24,14 +23,14 @@ pub enum Axis {
 impl Axis {
     /// Return the Axis from a string description in the same format
     /// used by the game controller mapping strings.
-    pub fn from_string(axis: &str) -> Axis {
+    pub fn from_string(axis: &str) -> Option<Axis> {
         let id = match CString::new(axis) {
             Ok(axis) => unsafe { ll::SDL_GameControllerGetAxisFromString(axis.as_ptr()) },
             // string contains a nul byte - it won't match anything.
             Err(_) => ll::SDL_CONTROLLER_AXIS_INVALID
         };
 
-        wrap_controller_axis(id as u8)
+        Axis::from_ll(id)
     }
 
     /// Return a string for a given axis in the same format using by
@@ -43,24 +42,24 @@ impl Axis {
 
         c_str_to_string(string)
     }
-}
 
-pub fn wrap_controller_axis(bitflags: u8) -> Axis {
-    match bitflags as c_int {
-        ll::SDL_CONTROLLER_AXIS_LEFTX        => Axis::LeftX,
-        ll::SDL_CONTROLLER_AXIS_LEFTY        => Axis::LeftY,
-        ll::SDL_CONTROLLER_AXIS_RIGHTX       => Axis::RightX,
-        ll::SDL_CONTROLLER_AXIS_RIGHTY       => Axis::RightY,
-        ll::SDL_CONTROLLER_AXIS_TRIGGERLEFT  => Axis::TriggerLeft,
-        ll::SDL_CONTROLLER_AXIS_TRIGGERRIGHT => Axis::TriggerRight,
-        _ => panic!("unhandled controller axis")
+    pub fn from_ll(bitflags: ll::SDL_GameControllerAxis) -> Option<Axis> {
+        Some(match bitflags {
+            ll::SDL_CONTROLLER_AXIS_INVALID      => return None,
+            ll::SDL_CONTROLLER_AXIS_LEFTX        => Axis::LeftX,
+            ll::SDL_CONTROLLER_AXIS_LEFTY        => Axis::LeftY,
+            ll::SDL_CONTROLLER_AXIS_RIGHTX       => Axis::RightX,
+            ll::SDL_CONTROLLER_AXIS_RIGHTY       => Axis::RightY,
+            ll::SDL_CONTROLLER_AXIS_TRIGGERLEFT  => Axis::TriggerLeft,
+            ll::SDL_CONTROLLER_AXIS_TRIGGERRIGHT => Axis::TriggerRight,
+            _ => panic!("unhandled controller axis")
+        })
     }
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(i32)]
 pub enum Button {
-    Invalid       = ll::SDL_CONTROLLER_BUTTON_INVALID,
     A             = ll::SDL_CONTROLLER_BUTTON_A,
     B             = ll::SDL_CONTROLLER_BUTTON_B,
     X             = ll::SDL_CONTROLLER_BUTTON_X,
@@ -81,14 +80,14 @@ pub enum Button {
 impl Button {
     /// Return the Button from a string description in the same format
     /// used by the game controller mapping strings.
-    pub fn from_string(button: &str) -> Button {
+    pub fn from_string(button: &str) -> Option<Button> {
         let id = match CString::new(button) {
             Ok(button) => unsafe { ll::SDL_GameControllerGetButtonFromString(button.as_ptr()) },
             // string contains a nul byte - it won't match anything.
             Err(_) => ll::SDL_CONTROLLER_BUTTON_INVALID
         };
 
-        wrap_controller_button(id as u8)
+        Button::from_ll(id)
     }
 
     /// Return a string for a given button in the same format using by
@@ -100,26 +99,27 @@ impl Button {
 
         c_str_to_string(string)
     }
-}
 
-pub fn wrap_controller_button(bitflags: u8) -> Button {
-    match bitflags as c_int {
-        ll::SDL_CONTROLLER_BUTTON_A             => Button::A,
-        ll::SDL_CONTROLLER_BUTTON_B             => Button::B,
-        ll::SDL_CONTROLLER_BUTTON_X             => Button::X,
-        ll::SDL_CONTROLLER_BUTTON_Y             => Button::Y,
-        ll::SDL_CONTROLLER_BUTTON_BACK          => Button::Back,
-        ll::SDL_CONTROLLER_BUTTON_GUIDE         => Button::Guide,
-        ll::SDL_CONTROLLER_BUTTON_START         => Button::Start,
-        ll::SDL_CONTROLLER_BUTTON_LEFTSTICK     => Button::LeftStick,
-        ll::SDL_CONTROLLER_BUTTON_RIGHTSTICK    => Button::RightStick,
-        ll::SDL_CONTROLLER_BUTTON_LEFTSHOULDER  => Button::LeftShoulder,
-        ll::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER => Button::RightShoulder,
-        ll::SDL_CONTROLLER_BUTTON_DPAD_UP       => Button::DPadUp,
-        ll::SDL_CONTROLLER_BUTTON_DPAD_DOWN     => Button::DPadDown,
-        ll::SDL_CONTROLLER_BUTTON_DPAD_LEFT     => Button::DPadLeft,
-        ll::SDL_CONTROLLER_BUTTON_DPAD_RIGHT    => Button::DPadRight,
-        _ => panic!("unhandled controller button")
+    pub fn from_ll(bitflags: ll::SDL_GameControllerButton) -> Option<Button> {
+        Some(match bitflags {
+            ll::SDL_CONTROLLER_BUTTON_INVALID       => return None,
+            ll::SDL_CONTROLLER_BUTTON_A             => Button::A,
+            ll::SDL_CONTROLLER_BUTTON_B             => Button::B,
+            ll::SDL_CONTROLLER_BUTTON_X             => Button::X,
+            ll::SDL_CONTROLLER_BUTTON_Y             => Button::Y,
+            ll::SDL_CONTROLLER_BUTTON_BACK          => Button::Back,
+            ll::SDL_CONTROLLER_BUTTON_GUIDE         => Button::Guide,
+            ll::SDL_CONTROLLER_BUTTON_START         => Button::Start,
+            ll::SDL_CONTROLLER_BUTTON_LEFTSTICK     => Button::LeftStick,
+            ll::SDL_CONTROLLER_BUTTON_RIGHTSTICK    => Button::RightStick,
+            ll::SDL_CONTROLLER_BUTTON_LEFTSHOULDER  => Button::LeftShoulder,
+            ll::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER => Button::RightShoulder,
+            ll::SDL_CONTROLLER_BUTTON_DPAD_UP       => Button::DPadUp,
+            ll::SDL_CONTROLLER_BUTTON_DPAD_DOWN     => Button::DPadDown,
+            ll::SDL_CONTROLLER_BUTTON_DPAD_LEFT     => Button::DPadLeft,
+            ll::SDL_CONTROLLER_BUTTON_DPAD_RIGHT    => Button::DPadRight,
+            _ => panic!("unhandled controller button")
+        })
     }
 }
 
@@ -222,56 +222,27 @@ impl GameController {
     }
 
     /// Get the position of the given `axis`
-    pub fn get_axis(&self, axis: Axis) -> SdlResult<i16> {
+    pub fn get_axis(&self, axis: Axis) -> i16 {
         // This interface is a bit messed up: 0 is a valid position
-        // but can also mean that an error occured. As far as I can
-        // tell the only way to know if an error happened is to see if
-        // get_error() returns a non-empty string.
-        clear_error();
+        // but can also mean that an error occured.
+        // Fortunately, an error can only occur if the controller pointer is NULL.
+        // There should be no apparent reason for this to change in the future.
 
         let axis = axis as ll::SDL_GameControllerAxis;
 
-        let pos = unsafe { ll::SDL_GameControllerGetAxis(self.raw, axis) };
-
-        if pos != 0 {
-            Ok(pos)
-        } else {
-            let err = get_error();
-
-            if err.is_empty() {
-                Ok(pos)
-            } else {
-                Err(err)
-            }
-        }
+        unsafe { ll::SDL_GameControllerGetAxis(self.raw, axis) }
     }
 
-    /// Return `Ok(true)` if `button` is pressed.
-    pub fn get_button(&self, button: Button) -> SdlResult<bool> {
-        // Same deal as get_axis, 0 can mean both unpressed or
-        // error...
-        clear_error();
+    /// Returns `true` if `button` is pressed.
+    pub fn get_button(&self, button: Button) -> bool {
+        // This interface is a bit messed up: 0 is a valid position
+        // but can also mean that an error occured.
+        // Fortunately, an error can only occur if the controller pointer is NULL.
+        // There should be no apparent reason for this to change in the future.
 
         let button = button as ll::SDL_GameControllerButton;
 
-        let pressed =
-            unsafe { ll::SDL_GameControllerGetButton(self.raw, button) };
-
-        match pressed {
-            1 => Ok(true),
-            0 => {
-                let err = get_error();
-
-                if err.is_empty() {
-                    // Button is not pressed
-                    Ok(false)
-                } else {
-                    Err(err)
-                }
-            }
-            // Should be unreachable
-            _ => Err(get_error()),
-        }
+        unsafe { ll::SDL_GameControllerGetButton(self.raw, button) != 0 }
     }
 }
 
