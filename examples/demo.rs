@@ -1,7 +1,7 @@
 extern crate sdl2;
 
 use sdl2::pixels::Color;
-use sdl2::keycode::KeyCode;
+use sdl2::keyboard::Keycode;
 
 pub fn main() {
     let mut sdl_context = sdl2::init().video().unwrap();
@@ -25,7 +25,7 @@ pub fn main() {
             use sdl2::event::Event;
 
             match event {
-                Event::Quit {..} | Event::KeyDown { keycode: KeyCode::Escape, .. } => {
+                Event::Quit {..} | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
                     running = false
                 },
                 _ => {}

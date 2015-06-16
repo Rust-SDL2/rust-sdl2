@@ -1,10 +1,10 @@
 use num::{ToPrimitive, FromPrimitive};
+use std::ffi::{CString, CStr};
 
 use sys::scancode as ll;
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
-pub enum ScanCode {
-    Unknown            = ll::SDL_SCANCODE_UNKNOWN as isize,
+pub enum Scancode {
     A                  = ll::SDL_SCANCODE_A as isize,
     B                  = ll::SDL_SCANCODE_B as isize,
     C                  = ll::SDL_SCANCODE_C as isize,
@@ -248,7 +248,7 @@ pub enum ScanCode {
     Num                = ll::SDL_NUM_SCANCODES as isize,
 }
 
-impl ToPrimitive for ScanCode {
+impl ToPrimitive for Scancode {
     #[inline]
     fn to_i64(&self) -> Option<i64> {
         Some(*self as i64)
@@ -265,12 +265,12 @@ impl ToPrimitive for ScanCode {
     }
 }
 
-impl FromPrimitive for ScanCode {
-    fn from_i64(n: i64) -> Option<ScanCode> {
-        use self::ScanCode::*;
+impl FromPrimitive for Scancode {
+    fn from_i64(n: i64) -> Option<Scancode> {
+        use self::Scancode::*;
 
         Some( match n as ll::SDL_Scancode {
-            ll::SDL_SCANCODE_UNKNOWN            => Unknown,
+            ll::SDL_SCANCODE_UNKNOWN            => return None,
             ll::SDL_SCANCODE_A                  => A,
             ll::SDL_SCANCODE_B                  => B,
             ll::SDL_SCANCODE_C                  => C,
@@ -516,5 +516,49 @@ impl FromPrimitive for ScanCode {
         })
     }
 
-    fn from_u64(n: u64) -> Option<ScanCode> { FromPrimitive::from_i64(n as i64) }
+    fn from_u64(n: u64) -> Option<Scancode> { FromPrimitive::from_i64(n as i64) }
+}
+
+use std::fmt;
+
+impl fmt::Display for Scancode {
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        write!(f, "{}", self.name())
+    }
+}
+
+use keyboard::Keycode;
+
+impl Scancode {
+    /// Gets the scancode from a virtual key. Returns None if there is no corresponding scancode.
+    pub fn from_keycode(keycode: Keycode) -> Option<Scancode> {
+        unsafe {
+            match ::sys::keyboard::SDL_GetScancodeFromKey(keycode as i32) {
+                ll::SDL_SCANCODE_UNKNOWN => None,
+                scancode_id => FromPrimitive::from_isize(scancode_id as isize)
+            }
+        }
+    }
+
+    pub fn from_name(name: &str) -> Option<Scancode> {
+        unsafe {
+            match CString::new(name) {
+                Ok(name) => match ::sys::keyboard::SDL_GetScancodeFromName(name.as_ptr()) {
+                    ll::SDL_SCANCODE_UNKNOWN => None,
+                    scancode_id => Some(FromPrimitive::from_isize(scancode_id as isize).unwrap())
+                },
+                // string contains a nul byte - it won't match anything.
+                Err(_) => None
+            }
+        }
+    }
+
+    pub fn name(self) -> &'static str {
+        // The name string pointer lives in static, read-only memory.
+        // Knowing this, we can always return a string slice.
+        unsafe {
+            let buf = ::sys::keyboard::SDL_GetScancodeName(self as u32);
+            ::std::str::from_utf8(CStr::from_ptr(buf).to_bytes()).unwrap()
+        }
+    }
 }

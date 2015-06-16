@@ -3,6 +3,7 @@ use std::marker::PhantomData;
 
 use sys::sdl as ll;
 use event::EventPump;
+use keyboard::KeyboardState;
 use video::WindowBuilder;
 use util::CStringExt;
 
@@ -52,6 +53,10 @@ impl Sdl {
     /// Obtains the SDL event pump.
     pub fn event_pump(&mut self) -> EventPump {
         EventPump::new(self)
+    }
+
+    pub fn keyboard_state(&self) -> KeyboardState {
+        KeyboardState::new(self)
     }
 
     /// Initializes a new `WindowBuilder`; a convenience method that calls `WindowBuilder::new()`.
