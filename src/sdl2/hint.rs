@@ -8,7 +8,7 @@ pub enum Hint {
     Override
 }
 
-pub fn set_hint(name: &str, value: &str) -> bool{
+pub fn set(name: &str, value: &str) -> bool{
     let name = CString::new(name).unwrap();
     let value = CString::new(value).unwrap();
     unsafe {
@@ -16,7 +16,7 @@ pub fn set_hint(name: &str, value: &str) -> bool{
     }
 }
 
-pub fn get_hint(name: &str) -> Option<String> {
+pub fn get(name: &str) -> Option<String> {
     use std::str;
 
     let name = CString::new(name).unwrap();
@@ -32,7 +32,7 @@ pub fn get_hint(name: &str) -> Option<String> {
     }
 }
 
-pub fn set_hint_with_priority(name: &str, value: &str, priority: Hint) -> bool {
+pub fn set_with_priority(name: &str, value: &str, priority: Hint) -> bool {
     let name = CString::new(name).unwrap();
     let value = CString::new(value).unwrap();
 
