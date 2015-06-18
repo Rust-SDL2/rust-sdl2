@@ -139,14 +139,6 @@ pub enum SDL_GLprofile {
     SDL_GL_CONTEXT_PROFILE_ES = 0x0004
 }
 
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub enum SDL_HintPriority {
-    SDL_HINT_DEFAULT = 0,
-    SDL_HINT_NORMAL = 1,
-    SDL_HINT_OVERRIDE = 2
-}
-
 //SDL_video.h
 extern "C" {
     pub fn SDL_GetNumVideoDrivers() -> c_int;
@@ -205,9 +197,6 @@ extern "C" {
     pub fn SDL_IsScreenSaverEnabled() -> SDL_bool;
     pub fn SDL_EnableScreenSaver();
     pub fn SDL_DisableScreenSaver();
-    pub fn SDL_SetHint(name: *const c_char, value: *const c_char) -> SDL_bool;
-    pub fn SDL_GetHint(name: *const c_char) -> *const c_char;
-    pub fn SDL_SetHintWithPriority(name: *const c_char, value: *const c_char, priority: SDL_HintPriority) -> SDL_bool;
     pub fn SDL_GL_GetDrawableSize(window: *mut SDL_Window, w: *mut c_int, h: *mut c_int);
     pub fn SDL_GL_LoadLibrary(path: *const c_char) -> c_int;
     pub fn SDL_GL_GetProcAddress(procname: *const c_char) -> *const c_void;

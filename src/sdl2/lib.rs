@@ -32,5 +32,6 @@ mod sdl;
 pub mod audio;
 pub mod version;
 pub mod messagebox;
+pub mod hint;
 
 mod util;

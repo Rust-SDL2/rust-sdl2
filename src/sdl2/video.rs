@@ -1116,39 +1116,3 @@ pub fn gl_set_swap_interval(interval: i32) -> bool {
 pub fn gl_get_swap_interval() -> i32 {
     unsafe { ll::SDL_GL_GetSwapInterval() as i32 }
 }
-
-pub fn set_hint(name: &str, value: &str) -> bool{
-    let name = CString::new(name).unwrap().as_ptr();
-    let value = CString::new(value).unwrap().as_ptr();
-    unsafe {
-        ll::SDL_SetHint(name, value) == 1
-    }
-}
-
-pub fn get_hint(name: &str) -> &str {
-    use std::str;
-
-    let name = CString::new(name).unwrap().as_ptr();
-
-    unsafe {
-        let res = ll::SDL_GetHint(name);
-
-        str::from_utf8(CStr::from_ptr(res).to_bytes()).unwrap()
-    }
-}
-
-pub fn set_hint_with_priority(name: &str, value: &str, priority: i64) -> bool {
-    let name = CString::new(name).unwrap().as_ptr();
-    let value = CString::new(value).unwrap().as_ptr();
-    let priority_val: ll::SDL_HintPriority;
-
-    match priority {
-        1 => priority_val = ll::SDL_HintPriority::SDL_HINT_NORMAL,
-        2 => priority_val = ll::SDL_HintPriority::SDL_HINT_OVERRIDE,
-        _ => priority_val = ll::SDL_HintPriority::SDL_HINT_DEFAULT
-    }
-
-    unsafe {
-        ll::SDL_SetHintWithPriority(name, value, priority_val) == 1
-    }
-}

@@ -32,3 +32,4 @@ pub mod mouse;
 pub mod sdl;
 pub mod timer;
 pub mod version;
+pub mod hint;
