@@ -46,7 +46,7 @@ pub fn main() {
     }).unwrap();
 
     renderer.clear();
-    renderer.copy(&texture, None, Some(Rect::new(100, 100, 256, 256)));
+    renderer.copy(&texture, None, Some(Rect::new_unwrap(100, 100, 256, 256)));
     renderer.present();
 
     let mut running = true;

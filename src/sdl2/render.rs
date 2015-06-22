@@ -493,7 +493,7 @@ impl<'a> Renderer<'a> {
     /// Sets the drawing area for rendering on the current target.
     pub fn set_viewport(&mut self, rect: Option<Rect>) {
         let ptr = match rect {
-            Some(ref rect) => rect as *const _,
+            Some(ref rect) => rect.raw(),
             None => ptr::null()
         };
         let ret = unsafe { ll::SDL_RenderSetViewport(self.raw, ptr) };
@@ -504,16 +504,18 @@ impl<'a> Renderer<'a> {
     pub fn get_viewport(&self) -> Rect {
         let mut rect = unsafe { mem::uninitialized() };
         unsafe { ll::SDL_RenderGetViewport(self.raw, &mut rect) };
-        rect
+        Rect::from_ll(rect).unwrap().unwrap()
     }
 
     /// Sets the clip rectangle for rendering on the specified target.
+    ///
+    /// If the rectangle is `None`, clipping will be disabled.
     pub fn set_clip_rect(&mut self, rect: Option<Rect>) {
         let ret = unsafe {
             ll::SDL_RenderSetClipRect(
                 self.raw,
                 match rect {
-                    Some(ref rect) => rect as *const _,
+                    Some(ref rect) => rect.raw(),
                     None => ptr::null()
                 }
             )
@@ -522,10 +524,12 @@ impl<'a> Renderer<'a> {
     }
 
     /// Gets the clip rectangle for the current target.
-    pub fn get_clip_rect(&self) -> Rect {
+    ///
+    /// Returns `None` if clipping is disabled.
+    pub fn get_clip_rect(&self) -> Option<Rect> {
         let mut rect = unsafe { mem::uninitialized() };
         unsafe { ll::SDL_RenderGetClipRect(self.raw, &mut rect) };
-        rect
+        Rect::from_ll(rect).unwrap()
     }
 
     /// Sets the drawing scale for rendering on the current target.
@@ -548,7 +552,7 @@ impl<'a> Renderer<'a> {
     /// Panics if drawing fails for any reason (e.g. driver failure)
     pub fn draw_point(&mut self, point: Point) {
         unsafe {
-            if ll::SDL_RenderDrawPoint(self.raw, point.x, point.y) != 0 {
+            if ll::SDL_RenderDrawPoint(self.raw, point.x(), point.y()) != 0 {
                 panic!("Error drawing point: {}", get_error())
             }
         }
@@ -559,7 +563,7 @@ impl<'a> Renderer<'a> {
     /// Panics if drawing fails for any reason (e.g. driver failure)
     pub fn draw_points(&mut self, points: &[Point]) {
         unsafe {
-            if ll::SDL_RenderDrawPoints(self.raw, points.as_ptr(), points.len() as c_int) != 0 {
+            if ll::SDL_RenderDrawPoints(self.raw, Point::raw_slice(points), points.len() as c_int) != 0 {
                 panic!("Error drawing points: {}", get_error())
             }
         }
@@ -570,7 +574,7 @@ impl<'a> Renderer<'a> {
     /// Panics if drawing fails for any reason (e.g. driver failure)
     pub fn draw_line(&mut self, start: Point, end: Point) {
         unsafe {
-            if ll::SDL_RenderDrawLine(self.raw, start.x, start.y, end.x, end.y) != 0 {
+            if ll::SDL_RenderDrawLine(self.raw, start.x(), start.y(), end.x(), end.y()) != 0 {
                 panic!("Error drawing line: {}", get_error())
             }
         }
@@ -581,7 +585,7 @@ impl<'a> Renderer<'a> {
     /// Panics if drawing fails for any reason (e.g. driver failure)
     pub fn draw_lines(&mut self, points: &[Point]) {
         unsafe {
-            if ll::SDL_RenderDrawLines(self.raw, points.as_ptr(), points.len() as c_int) != 0 {
+            if ll::SDL_RenderDrawLines(self.raw, Point::raw_slice(points), points.len() as c_int) != 0 {
                 panic!("Error drawing lines: {}", get_error())
             }
         }
@@ -592,7 +596,7 @@ impl<'a> Renderer<'a> {
     /// Panics if drawing fails for any reason (e.g. driver failure)
     pub fn draw_rect(&mut self, rect: Rect) {
         unsafe {
-            if ll::SDL_RenderDrawRect(self.raw, &rect) != 0 {
+            if ll::SDL_RenderDrawRect(self.raw, rect.raw()) != 0 {
                 panic!("Error drawing rect: {}", get_error())
             }
         }
@@ -603,7 +607,7 @@ impl<'a> Renderer<'a> {
     /// Panics if drawing fails for any reason (e.g. driver failure)
     pub fn draw_rects(&mut self, rects: &[Rect]) {
         unsafe {
-            if ll::SDL_RenderDrawRects(self.raw, rects.as_ptr(), rects.len() as c_int) != 0 {
+            if ll::SDL_RenderDrawRects(self.raw, Rect::raw_slice(rects), rects.len() as c_int) != 0 {
                 panic!("Error drawing rects: {}", get_error())
             }
         }
@@ -615,7 +619,7 @@ impl<'a> Renderer<'a> {
     /// Panics if drawing fails for any reason (e.g. driver failure)
     pub fn fill_rect(&mut self, rect: Rect) {
         unsafe {
-            if ll::SDL_RenderFillRect(self.raw, &rect) != 0 {
+            if ll::SDL_RenderFillRect(self.raw, rect.raw()) != 0 {
                 panic!("Error filling rect: {}", get_error())
             }
         }
@@ -627,7 +631,7 @@ impl<'a> Renderer<'a> {
     /// Panics if drawing fails for any reason (e.g. driver failure)
     pub fn fill_rects(&mut self, rects: &[Rect]) {
         unsafe {
-            if ll::SDL_RenderFillRects(self.raw, rects.as_ptr(), rects.len() as c_int) != 0 {
+            if ll::SDL_RenderFillRects(self.raw, Rect::raw_slice(rects), rects.len() as c_int) != 0 {
                 panic!("Error filling rects: {}", get_error())
             }
         }
@@ -650,11 +654,11 @@ impl<'a> Renderer<'a> {
                 self.raw,
                 texture.raw,
                 match src {
-                    Some(ref rect) => rect as *const _,
+                    Some(ref rect) => rect.raw(),
                     None => ptr::null()
                 },
                 match dst {
-                    Some(ref rect) => rect as *const _,
+                    Some(ref rect) => rect.raw(),
                     None => ptr::null()
                 }
             )
@@ -694,16 +698,16 @@ impl<'a> Renderer<'a> {
                 self.raw,
                 texture.raw,
                 match src {
-                    Some(ref rect) => rect as *const _,
+                    Some(ref rect) => rect.raw(),
                     None => ptr::null()
                 },
                 match dst {
-                    Some(ref rect) => rect as *const _,
+                    Some(ref rect) => rect.raw(),
                     None => ptr::null()
                 },
                 angle as c_double,
                 match center {
-                    Some(ref point) => point as *const _,
+                    Some(ref point) => point.raw(),
                     None => ptr::null()
                 },
                 flip
@@ -721,7 +725,7 @@ impl<'a> Renderer<'a> {
     pub fn read_pixels(&self, rect: Option<Rect>, format: pixels::PixelFormatEnum) -> SdlResult<Vec<u8>> {
         unsafe {
             let (actual_rect, w, h) = match rect {
-                Some(ref rect) => (rect as *const _, rect.w as usize, rect.h as usize),
+                Some(ref rect) => (rect.raw(), rect.width() as usize, rect.height() as usize),
                 None => {
                     let (w, h) = try!(self.get_output_size());
                     (ptr::null(), w as usize, h as usize)
@@ -764,7 +768,7 @@ impl<'a> Renderer<'a> {
 ///     // Start drawing
 ///     r.clear();
 ///     r.set_draw_color(Color::RGB(255, 0, 0));
-///     r.fill_rect(Rect::new(100, 100, 256, 256));
+///     r.fill_rect(Rect::new_unwrap(100, 100, 256, 256));
 ///
 ///     let texture: Option<Texture> = r.render_target().unwrap().reset().unwrap();
 ///     texture.unwrap()
@@ -1008,7 +1012,7 @@ impl Texture {
 
         let ret = unsafe {
             let rect_raw_ptr = match rect {
-                Some(ref rect) => rect as *const _,
+                Some(ref rect) => rect.raw(),
                 None => ptr::null()
             };
 
@@ -1016,7 +1020,7 @@ impl Texture {
             // This needs to be done in case the texture's pixel format is planar YUV.
             // See issue #334 for details.
             let rect_is_odd = match rect {
-                Some(r) => (r.x % 2 != 0) || (r.y % 2 != 0) || (r.w % 2 != 0) || (r.h % 2 != 0),
+                Some(r) => (r.x() % 2 != 0) || (r.y() % 2 != 0) || (r.width() % 2 != 0) || (r.height() % 2 != 0),
                 None => false
             };
             let pitch_is_odd = pitch % 2 != 0;
@@ -1046,12 +1050,12 @@ impl Texture {
         self.check_renderer();
 
         let rect_raw_ptr = match rect {
-            Some(ref rect) => rect as *const _,
+            Some(ref rect) => rect.raw(),
             None => ptr::null()
         };
 
         let rect_is_odd = match rect {
-            Some(r) => (r.x % 2 != 0) || (r.y % 2 != 0) || (r.w % 2 != 0) || (r.h % 2 != 0),
+            Some(r) => (r.x() % 2 != 0) || (r.y() % 2 != 0) || (r.width() % 2 != 0) || (r.height() % 2 != 0),
             None => false
         };
 
@@ -1062,7 +1066,7 @@ impl Texture {
         // We need the height in order to check the array slice lengths.
         // Checking the lengths can prevent buffer overruns in SDL_UpdateYUVTexture.
         let height = match rect {
-            Some(rect) => try!(int_to_u32!(rect.h)),
+            Some(r) => r.height(),
             None => self.query().height
         } as usize;
 
@@ -1118,7 +1122,7 @@ impl Texture {
             let mut pitch = 0;
 
             let (rect_raw_ptr, height) = match rect {
-                Some(ref rect) => (rect as *const _, rect.h as usize),
+                Some(ref rect) => (rect.raw(), rect.height() as usize),
                 None => (ptr::null(), q.height as usize)
             };
 

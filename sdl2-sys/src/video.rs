@@ -1,4 +1,4 @@
-use rect::Rect;
+use rect::SDL_Rect;
 use surface::SDL_Surface;
 
 #[cfg(feature = "no_std")]
@@ -6,7 +6,6 @@ use core::prelude::*;
 use libc::{c_void, c_int, c_float, c_char, uint16_t, uint32_t};
 use num::FromPrimitive;
 
-pub type SDL_Rect = Rect;
 pub type SDL_bool = c_int;
 
 //SDL_video.h
