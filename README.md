@@ -39,12 +39,26 @@ Ubuntu example:
 > sudo apt-get install libsdl2-dev
 
 ### Mac OS X
-If you're running OSX, it's a good idea to install these via
-[homebrew][homebrew]
+#### If you are using homebrew
+On OSX, it's a good idea to install these via
+[homebrew][homebrew].
 
 > brew install sdl2
 
-If you're having issues, [see here][pdev-issue].
+Then add the following to your `~/.bash_profile` if not already present.
+
+> export LIBRARY_PATH="$LIBRARY_PATH:/usr/local/lib"
+
+##### Otherwise if you are using macports
+You can also get sdl2 via `macports`.
+
+> sudo port install libsdl2
+
+Then add the following to your `~/.bash_profile` if not already present.
+
+> export LIBRARY_PATH="$LIBRARY_PATH:/opt/local/lib/"
+
+If you're having issues with either homebrew or macports, [see here][pdev-issue].
 
 ### Windows (MinGW)
 On Windows, make certain you are using the MinGW version of SDL; the native
