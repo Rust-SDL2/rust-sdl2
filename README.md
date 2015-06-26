@@ -13,7 +13,7 @@ Rust-SDL2 uses the MIT license.
 If you want a library compatible with earlier versions of SDL, please see
 [here][early-sdl]
 
-# DOCUMENTATION
+# Documentation
 
 * [http://www.rust-ci.org/AngryLawyer/rust-sdl2/doc/sdl2/](http://www.rust-ci.org/AngryLawyer/rust-sdl2/doc/sdl2/)
 
