@@ -3,7 +3,7 @@ extern crate sdl2;
 use sdl2::*;
 use sdl2_ttf;
 use sdl2::event::Event;
-use sdl2::keycode::KeyCode;
+use sdl2::keyboard::Keycode;
 use std::path::Path;
 
 static SCREEN_WIDTH : i32 = 800;
@@ -17,7 +17,7 @@ macro_rules! trying(
 // hadle the annoying Rect i32
 macro_rules! rect(
     ($x:expr, $y:expr, $w:expr, $h:expr) => (
-        sdl2::rect::Rect::new($x as i32, $y as i32, $w as i32, $h as i32)
+        sdl2::rect::Rect::new($x as i32, $y as i32, $w as u32, $h as u32)
     )
 );
 
@@ -40,21 +40,20 @@ pub fn main(filename: &Path) {
     let surface = trying!(font.render_str_blended("Hello Rust!", sdl2::pixels::Color::RGBA(255, 0, 0, 255)));
     let mut texture = trying!(renderer.create_texture_from_surface(&surface));
 
-    let mut drawer = renderer.drawer();
-    drawer.set_draw_color(sdl2::pixels::Color::RGBA(195, 217, 255, 255));
-    drawer.clear();
+    renderer.set_draw_color(sdl2::pixels::Color::RGBA(195, 217, 255, 255));
+    renderer.clear();
 
     let (w, h) = { let q = texture.query(); (q.width, q.height) };
 
-    drawer.copy(&mut texture, None, Some(rect!((SCREEN_WIDTH - w)/ 2, (SCREEN_HEIGHT - h)/ 2, w, h)));
+    renderer.copy(&mut texture, None, Some(rect!((SCREEN_WIDTH as u32 - w)/ 2, (SCREEN_HEIGHT as u32 - h)/ 2, w, h)).unwrap().unwrap());
 
-    drawer.present();
+    renderer.present();
 
     'mainloop: loop {
         for event in sdl_context.event_pump().poll_iter() {
             match event {
                 Event::Quit{..} => break 'mainloop,
-                Event::KeyDown {keycode: KeyCode::Escape, ..} => break 'mainloop,
+                Event::KeyDown {keycode: Some(Keycode::Escape), ..} => break 'mainloop,
                 _ => {}
             }
         }
