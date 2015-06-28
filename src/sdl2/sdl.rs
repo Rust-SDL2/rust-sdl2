@@ -227,7 +227,3 @@ pub fn set_error_from_code(err: Error) {
 pub fn clear_error() {
     unsafe { ll::SDL_ClearError(); }
 }
-
-pub fn get_ticks() -> u32 {
-    unsafe { ll::SDL_GetTicks() as u32 }
-}
