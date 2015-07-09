@@ -43,6 +43,11 @@ http://www.libsdl.org/
 Ubuntu example:
 > sudo apt-get install libsdl2-dev
 
+Fedora example:
+> sudo dnf install SDL2-devel
+
+You might also need a C compiler (`gcc`).
+
 ### Mac OS X
 #### If you are using homebrew
 On OSX, it's a good idea to install these via
