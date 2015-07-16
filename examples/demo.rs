@@ -3,12 +3,12 @@ extern crate sdl2_gfx;
 
 use sdl2::event::Event;
 use sdl2::pixels;
-use sdl2::keycode::KeyCode;
+use sdl2::keyboard::Keycode;
 
 use sdl2_gfx::primitives::DrawRenderer;
 
-static SCREEN_WIDTH: u32 = 800;
-static SCREEN_HEIGHT: u32 = 600;
+const SCREEN_WIDTH: u32 = 800;
+const SCREEN_HEIGHT: u32 = 600;
 
 // hadle the annoying Rect i32
 macro_rules! rect(
@@ -29,12 +29,9 @@ fn main() {
 
     let mut renderer = window.renderer().build().unwrap();
 
-    {
-        let mut drawer = renderer.drawer();
-        drawer.set_draw_color(pixels::Color::RGB(0, 0, 0));
-        drawer.clear();
-        drawer.present();
-    }
+    renderer.set_draw_color(pixels::Color::RGB(0, 0, 0));
+    renderer.clear();
+    renderer.present();
 
     let mut lastx = 0;
     let mut lasty = 0;
@@ -48,15 +45,15 @@ fn main() {
 
                 Event::Quit {..} => break 'main,
 
-                Event::KeyDown {keycode, ..} => {
-                    if keycode == KeyCode::Escape {
+                Event::KeyDown {keycode: Some(keycode), ..} => {
+                    if keycode == Keycode::Escape {
                         break 'main
-                    } else if keycode == KeyCode::Space {
+                    } else if keycode == Keycode::Space {
                         println!("space down");
                         for i in 0..400 {
                             renderer.pixel(i as i16, i as i16, 0xFF000FFu32).unwrap();
                         }
-                        renderer.drawer().present();
+                        renderer.present();
 
                     }
                 }
@@ -67,7 +64,7 @@ fn main() {
                     lastx = x as i16;
                     lasty = y as i16;
                     println!("mouse btn down at ({},{})", x, y);
-                    renderer.drawer().present();
+                    renderer.present();
                 }
 
                 _ => {}
