@@ -2,24 +2,16 @@ language: rust
 os:
     - linux
     - osx
+addons:
+  apt:
+    packages:
+      - libsdl2-dev
+      - libsdl2-gfx-dev
 env:
   global:
     - secure: pJW/r7h3r45pelA24GP34NjDFURoBriteNg6gXOQY2SVIWbwrXl/lwtgT7o04OUXO049ZsXxmmYyrvGkkIcEPCKh8ishE+nl1FOhrSmMjfNm3DAGtAgX3PP6EZco1QIYk86GbeOiN8oV7rm78Snz7g5VnVuSDXkCJqEFueitvaA=
     - LD_LIBRARY_PATH: /usr/local/lib
-install:
-  - cd ..
-  - time wget -q http://www.libsdl.org/release/SDL2-2.0.3.tar.gz
-  - time wget -q http://hivelocity.dl.sourceforge.net/project/sdl2gfx/SDL2_gfx-1.0.0.tar.gz
-  - time tar xf SDL2-*.tar.gz
-  - time tar xf SDL2_gfx-*.tar.gz
-  - cd SDL2-*
-  - ./configure && make && sudo make install
-  - cd -
-  - cd SDL2_gfx-*
-  - ./configure && make && sudo make install
-  - cd -
 script:
-  - cd rust-sdl2_gfx
   - cargo build -v
   - cargo test -v
   - cargo doc -v
