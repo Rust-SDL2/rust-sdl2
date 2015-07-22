@@ -1,24 +1,33 @@
 language: rust
+sudo: required
 
 rust:
-    - beta
-    - nightly
-    - stable
+- beta
+- nightly
+- stable
+
+# Install SDL2
+install:
+- sudo add-apt-repository ppa:team-xbmc/ppa -y
+- sudo apt-get update -q
+- sudo apt-get install libsdl2-dev
+
+# Load travis-cargo
+before_script:
+  - |
+      pip install 'travis-cargo<0.2' --user &&
+      export PATH=$HOME/.local/bin:$PATH
+script:
+  - |
+      travis-cargo build &&
+      travis-cargo test &&
+      travis-cargo --only stable doc
+# Upload documentation to gh-pages
+after_success:
+  - travis-cargo --only stable doc-upload
 
 env:
-    global:
-        - secure: jS3X2wCwnJgAUnCP7MmeSFR/o7kX9MZxcLQcfWwFIFHe83qGys4Xa+csLz7y/5e7n64UYJtn8ZwIgLfCZawalOPQN3SaFrtv1AAnU47YOQhvk++9A8mmg6R/lMuObSqqQteIvL0lkaGmOWBtB81QPg3vsYWgFhdjqGE1seWUsxE=
-        - LD_LIBRARY_PATH: /usr/local/lib
-install:
-    - sudo add-apt-repository ppa:team-xbmc/ppa -y
-    - sudo apt-get update -q
-    - sudo apt-get install libsdl2-dev
-script:
-    - cargo build -v
-    - cargo build -v --features "use-pkgconfig"
-    - cargo test -v
-    - cargo doc -v
-after_success:
-    - cp -R target/doc doc
-    - '[ "$TRAVIS_RUST_VERSION" != "beta" ] || curl http://www.rust-ci.org/artifacts/put?t=$RUSTCI_TOKEN | sh'
-    - rm -r doc
+  global:
+  - TRAVIS_CARGO_NIGHTLY_FEATURE=""
+  - LD_LIBRARY_PATH: /usr/local/lib
+  - secure: "jS3X2wCwnJgAUnCP7MmeSFR/o7kX9MZxcLQcfWwFIFHe83qGys4Xa+csLz7y/5e7n64UYJtn8ZwIgLfCZawalOPQN3SaFrtv1AAnU47YOQhvk++9A8mmg6R/lMuObSqqQteIvL0lkaGmOWBtB81QPg3vsYWgFhdjqGE1seWUsxE="
