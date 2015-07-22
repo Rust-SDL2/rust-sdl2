@@ -1,5 +1,6 @@
 use sys::rect as ll;
 use std::mem;
+use std::ptr;
 use std::ops::{BitAnd, BitOr};
 
 use SdlResult;
@@ -83,6 +84,22 @@ impl Into<(i32, i32, u32, u32)> for Rect {
 impl Rect {
     #[inline]
     pub fn raw(&self) -> *const ll::SDL_Rect { &self.raw }
+
+    #[inline]
+    pub fn raw_from_option(v: Option<&Rect>) -> *const ll::SDL_Rect {
+        match v {
+            Some(ref r) => r.raw(),
+            None => ptr::null()
+        }
+    }
+
+    #[inline]
+    pub fn raw_mut_from_option(v: Option<&mut Rect>) -> *mut ll::SDL_Rect {
+        match v {
+            Some(ref r) => r.raw() as *mut _,
+            None => ptr::null_mut()
+        }
+    }
 
     #[inline]
     pub fn raw_slice(slice: &[Rect]) -> *const ll::SDL_Rect {
