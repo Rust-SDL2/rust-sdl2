@@ -1,5 +1,6 @@
 use std::marker::PhantomData;
 use std::mem;
+use std::ops::{Deref, DerefMut};
 use std::path::Path;
 use rect::Rect;
 use get_error;
@@ -15,29 +16,59 @@ use sys::surface as ll;
 
 pub struct Surface<'a> {
     raw: *mut ll::SDL_Surface,
-    owned: bool,
     _marker: PhantomData<&'a ()>
 }
 
 impl<'a> Drop for Surface<'a> {
+    #[inline]
     fn drop(&mut self) {
-        if self.owned {
-            unsafe {
-                ll::SDL_FreeSurface(self.raw);
-            }
-        }
+        unsafe { ll::SDL_FreeSurface(self.raw); }
     }
 }
 
+/// An unsized Surface reference.
+///
+/// This type is used whenever Surfaces need to be borrowed from the SDL library, without concern
+/// for freeing the Surface.
+pub struct SurfaceRef {
+    raw: ll::SDL_Surface
+}
+
+impl<'a> Deref for Surface<'a> {
+    type Target = SurfaceRef;
+
+    #[inline]
+    fn deref(&self) -> &SurfaceRef {
+        unsafe { mem::transmute(self.raw) }
+    }
+}
+
+impl<'a> DerefMut for Surface<'a> {
+    #[inline]
+    fn deref_mut(&mut self) -> &mut SurfaceRef {
+        unsafe { mem::transmute(self.raw) }
+    }
+}
+
+impl<'a> AsRef<SurfaceRef> for Surface<'a> {
+    #[inline]
+    fn as_ref(&self) -> &SurfaceRef {
+        unsafe { mem::transmute(self.raw) }
+    }
+}
+
+impl<'a> AsMut<SurfaceRef> for Surface<'a> {
+    #[inline]
+    fn as_mut(&mut self) -> &mut SurfaceRef {
+        unsafe { mem::transmute(self.raw) }
+    }
+}
+
+
 impl<'a> Surface<'a> {
-    pub unsafe fn raw(&self) -> *mut ll::SDL_Surface { self.raw }
-
-    pub unsafe fn owned(&self) -> bool { self.owned }
-
-    pub unsafe fn from_ll<'b>(raw: *mut ll::SDL_Surface, owned: bool) -> Surface<'b> {
+    pub unsafe fn from_ll<'b>(raw: *mut ll::SDL_Surface) -> Surface<'b> {
         Surface {
             raw: raw,
-            owned: owned,
             _marker: PhantomData
         }
     }
@@ -74,12 +105,13 @@ impl<'a> Surface<'a> {
                 let raw = ll::SDL_CreateRGBSurface(0, width as c_int, height as c_int,
                     masks.bpp as c_int, masks.rmask, masks.gmask, masks.bmask, masks.amask);
 
-                if raw.is_null() {
+                // As of writing, is_null() doesn't work on pointers with unsized types.
+
+                if (raw as *mut ()).is_null() {
                     Err(get_error())
                 } else {
                     Ok(Surface {
                         raw: raw,
-                        owned: true,
                         _marker: PhantomData
                     })
                 }
@@ -105,12 +137,11 @@ impl<'a> Surface<'a> {
                     data.as_mut_ptr() as *mut _, width as c_int, height as c_int,
                     masks.bpp as c_int, pitch as c_int, masks.rmask, masks.gmask, masks.bmask, masks.amask);
 
-                if raw.is_null() {
+                if (raw as *mut ()).is_null() {
                     Err(get_error())
                 } else {
                     Ok(Surface {
                         raw: raw,
-                        owned: true,
                         _marker: PhantomData
                     })
                 }
@@ -118,16 +149,53 @@ impl<'a> Surface<'a> {
         }
     }
 
+    pub fn load_bmp_rw(rwops: &mut RWops) -> SdlResult<Surface<'static>> {
+        let raw = unsafe {
+            ll::SDL_LoadBMP_RW(rwops.raw(), 0)
+        };
+
+        if (raw as *mut ()).is_null() {
+            Err(get_error())
+        } else {
+            Ok(Surface {
+                raw: raw,
+                _marker: PhantomData
+            })
+        }
+    }
+
+    pub fn load_bmp<P: AsRef<Path>>(path: P) -> SdlResult<Surface<'static>> {
+        let mut file = try!(RWops::from_file(path, "rb"));
+        Surface::load_bmp_rw(&mut file)
+    }
+}
+
+impl SurfaceRef {
+    #[inline]
+    pub unsafe fn from_ll<'a>(raw: *mut ll::SDL_Surface) -> &'a SurfaceRef {
+        mem::transmute(raw)
+    }
+
+    #[inline]
+    pub unsafe fn from_ll_mut<'a>(raw: *mut ll::SDL_Surface) -> &'a mut SurfaceRef {
+        mem::transmute(raw)
+    }
+
+    #[inline]
+    pub fn raw(&self) -> *mut ll::SDL_Surface {
+        unsafe { mem::transmute(self) }
+    }
+
     pub fn get_width(&self) -> u32 {
-        unsafe { (*self.raw).w as u32 }
+        self.raw.w as u32
     }
 
     pub fn get_height(&self) -> u32 {
-        unsafe { (*self.raw).h as u32 }
+        self.raw.h as u32
     }
 
     pub fn get_pitch(&self) -> u32 {
-        unsafe { (*self.raw).pitch as u32 }
+        self.raw.pitch as u32
     }
 
     pub fn get_size(&self) -> (u32, u32) {
@@ -140,20 +208,20 @@ impl<'a> Surface<'a> {
 
     pub fn get_pixel_format(&self) -> pixels::PixelFormat {
         unsafe {
-            pixels::PixelFormat::from_ll((*self.raw).format)
+            pixels::PixelFormat::from_ll(self.raw.format)
         }
     }
 
     /// Locks a surface so that the pixels can be directly accessed safely.
     pub fn with_lock<R, F: FnOnce(&[u8]) -> R>(&self, f: F) -> R {
         unsafe {
-            if ll::SDL_LockSurface(self.raw) != 0 { panic!("could not lock surface"); }
+            if ll::SDL_LockSurface(self.raw()) != 0 { panic!("could not lock surface"); }
 
-            let raw_pixels = (*self.raw).pixels as *const _;
-            let len = (*self.raw).pitch as usize * ((*self.raw).h as usize);
+            let raw_pixels = self.raw.pixels as *const _;
+            let len = self.raw.pitch as usize * (self.raw.h as usize);
             let pixels = ::std::slice::from_raw_parts(raw_pixels, len);
             let rv = f(pixels);
-            ll::SDL_UnlockSurface(self.raw);
+            ll::SDL_UnlockSurface(self.raw());
             rv
         }
     }
@@ -161,13 +229,13 @@ impl<'a> Surface<'a> {
     /// Locks a surface so that the pixels can be directly accessed safely.
     pub fn with_lock_mut<R, F: FnOnce(&mut [u8]) -> R>(&mut self, f: F) -> R {
         unsafe {
-            if ll::SDL_LockSurface(self.raw) != 0 { panic!("could not lock surface"); }
+            if ll::SDL_LockSurface(self.raw()) != 0 { panic!("could not lock surface"); }
 
-            let raw_pixels = (*self.raw).pixels as *mut _;
-            let len = (*self.raw).pitch as usize * ((*self.raw).h as usize);
+            let raw_pixels = self.raw.pixels as *mut _;
+            let len = self.raw.pitch as usize * (self.raw.h as usize);
             let pixels = ::std::slice::from_raw_parts_mut(raw_pixels, len);
             let rv = f(pixels);
-            ll::SDL_UnlockSurface(self.raw);
+            ll::SDL_UnlockSurface(self.raw());
             rv
         }
     }
@@ -179,8 +247,8 @@ impl<'a> Surface<'a> {
             None
         } else {
             unsafe {
-                let raw_pixels = (*self.raw).pixels as *const _;
-                let len = (*self.raw).pitch as usize * ((*self.raw).h as usize);
+                let raw_pixels = self.raw.pixels as *const _;
+                let len = self.raw.pitch as usize * (self.raw.h as usize);
 
                 Some(::std::slice::from_raw_parts(raw_pixels, len))
             }
@@ -194,8 +262,8 @@ impl<'a> Surface<'a> {
             None
         } else {
             unsafe {
-                let raw_pixels = (*self.raw).pixels as *mut _;
-                let len = (*self.raw).pitch as usize * ((*self.raw).h as usize);
+                let raw_pixels = self.raw.pixels as *mut _;
+                let len = self.raw.pitch as usize * (self.raw.h as usize);
 
                 Some(::std::slice::from_raw_parts_mut(raw_pixels, len))
             }
@@ -205,38 +273,15 @@ impl<'a> Surface<'a> {
     /// Returns true if the Surface needs to be locked before accessing the Surface pixels.
     pub fn must_lock(&self) -> bool {
         // Implements the SDL_MUSTLOCK macro.
-        unsafe {
-            ((*self.raw).flags & ll::SDL_RLEACCEL) != 0
-        }
-    }
-
-    pub fn load_bmp_rw(rwops: &mut RWops) -> SdlResult<Surface<'static>> {
-        let raw = unsafe {
-            ll::SDL_LoadBMP_RW(rwops.raw(), 0)
-        };
-
-        if raw.is_null() {
-            Err(get_error())
-        } else {
-            Ok(Surface {
-                raw: raw,
-                owned: true,
-                _marker: PhantomData
-            })
-        }
+        (self.raw.flags & ll::SDL_RLEACCEL) != 0
     }
 
     pub fn save_bmp_rw(&self, rwops: &mut RWops) -> SdlResult<()> {
         let ret = unsafe {
-            ll::SDL_SaveBMP_RW(self.raw, rwops.raw(), 0)
+            ll::SDL_SaveBMP_RW(self.raw(), rwops.raw(), 0)
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
-    }
-
-    pub fn load_bmp<P: AsRef<Path>>(path: P) -> SdlResult<Surface<'static>> {
-        let mut file = try!(RWops::from_file(path, "rb"));
-        Surface::load_bmp_rw(&mut file)
     }
 
     pub fn save_bmp<P: AsRef<Path>>(&self, path: P) -> SdlResult<()> {
@@ -244,8 +289,8 @@ impl<'a> Surface<'a> {
         self.save_bmp_rw(&mut file)
     }
 
-    pub fn set_palette(&self, palette: &pixels::Palette) -> SdlResult<()> {
-        let result = unsafe { ll::SDL_SetSurfacePalette(self.raw, palette.raw()) };
+    pub fn set_palette(&mut self, palette: &pixels::Palette) -> SdlResult<()> {
+        let result = unsafe { ll::SDL_SetSurfacePalette(self.raw(), palette.raw()) };
 
         match result {
             0 => Ok(()),
@@ -255,7 +300,7 @@ impl<'a> Surface<'a> {
 
     #[allow(non_snake_case)]
     pub fn enable_RLE(&mut self) {
-        let result = unsafe { ll::SDL_SetSurfaceRLE(self.raw, 1) };
+        let result = unsafe { ll::SDL_SetSurfaceRLE(self.raw(), 1) };
 
         if result != 0 {
             // Should only panic on a null Surface
@@ -265,7 +310,7 @@ impl<'a> Surface<'a> {
 
     #[allow(non_snake_case)]
     pub fn disable_RLE(&mut self) {
-        let result = unsafe { ll::SDL_SetSurfaceRLE(self.raw, 0) };
+        let result = unsafe { ll::SDL_SetSurfaceRLE(self.raw(), 0) };
 
         if result != 0 {
             // Should only panic on a null Surface
@@ -273,10 +318,10 @@ impl<'a> Surface<'a> {
         }
     }
 
-    pub fn set_color_key(&self, enable: bool, color: pixels::Color) -> SdlResult<()> {
+    pub fn set_color_key(&mut self, enable: bool, color: pixels::Color) -> SdlResult<()> {
         let key = color.to_u32(&self.get_pixel_format());
         let result = unsafe {
-            ll::SDL_SetColorKey(self.raw, if enable { 1 } else { 0 }, key)
+            ll::SDL_SetColorKey(self.raw(), if enable { 1 } else { 0 }, key)
         };
         if result == 0 {
             Ok(())
@@ -288,8 +333,11 @@ impl<'a> Surface<'a> {
     /// The function will fail if the surface doesn't have color key enabled.
     pub fn get_color_key(&self) -> SdlResult<pixels::Color> {
         let mut key = 0;
+
+        // SDL_GetColorKey does not mutate, but requires a non-const pointer anyway.
+
         let result = unsafe {
-            ll::SDL_GetColorKey(self.raw, &mut key)
+            ll::SDL_GetColorKey(self.raw(), &mut key)
         };
 
         if result == 0 {
@@ -299,13 +347,13 @@ impl<'a> Surface<'a> {
         }
     }
 
-    pub fn set_color_mod(&self, color: pixels::Color) {
+    pub fn set_color_mod(&mut self, color: pixels::Color) {
         let (r, g, b) = match color {
             pixels::Color::RGB(r, g, b) => (r, g, b),
             pixels::Color::RGBA(r, g, b, _) => (r, g, b)
         };
 
-        let result = unsafe { ll::SDL_SetSurfaceColorMod(self.raw, r, g, b) };
+        let result = unsafe { ll::SDL_SetSurfaceColorMod(self.raw(), r, g, b) };
 
         if result != 0 {
             // Should only fail on a null Surface
@@ -318,8 +366,10 @@ impl<'a> Surface<'a> {
         let mut g = 0;
         let mut b = 0;
 
+        // SDL_GetSurfaceColorMod does not mutate, but requires a non-const pointer anyway.
+
         let result = unsafe {
-            ll::SDL_GetSurfaceColorMod(self.raw, &mut r, &mut g, &mut b) == 0
+            ll::SDL_GetSurfaceColorMod(self.raw(), &mut r, &mut g, &mut b) == 0
         };
 
         if result {
@@ -330,11 +380,11 @@ impl<'a> Surface<'a> {
         }
     }
 
-    pub fn blit( &self, src: &Surface, dstrect: Option<Rect>, srcrect: Option<Rect> ) -> bool {
+    pub fn blit(&mut self, src: &Surface, dstrect: Option<Rect>, srcrect: Option<Rect> ) -> bool {
         unsafe {
             let dstrect_ptr = mem::transmute( dstrect.as_ref() );
             let srcrect_ptr = mem::transmute( srcrect.as_ref() );
-            ll::SDL_UpperBlit( src.raw, srcrect_ptr, self.raw, dstrect_ptr ) == 0
+            ll::SDL_UpperBlit(src.raw, srcrect_ptr, self.raw(), dstrect_ptr ) == 0
         }
     }
 
@@ -342,7 +392,7 @@ impl<'a> Surface<'a> {
         unsafe {
             let rect_ptr = mem::transmute( rect.as_ref() );
             let format = self.get_pixel_format();
-            let result = ll::SDL_FillRect( self.raw, rect_ptr, color.to_u32(&format) );
+            let result = ll::SDL_FillRect(self.raw(), rect_ptr, color.to_u32(&format) );
             match result {
                 0 => Ok(()),
                 _ => Err(get_error())
@@ -364,7 +414,7 @@ impl<'a> Surface<'a> {
 
     pub fn set_alpha_mod(&mut self, alpha: u8) {
         let result = unsafe {
-            ll::SDL_SetSurfaceAlphaMod(self.raw, alpha)
+            ll::SDL_SetSurfaceAlphaMod(self.raw(), alpha)
         };
 
         if result != 0 {
@@ -376,7 +426,7 @@ impl<'a> Surface<'a> {
     pub fn get_alpha_mod(&self) -> u8 {
         let mut alpha = 0;
         let result = unsafe {
-            ll::SDL_GetSurfaceAlphaMod(self.raw, &mut alpha)
+            ll::SDL_GetSurfaceAlphaMod(self.raw(), &mut alpha)
         };
 
         match result {
@@ -389,7 +439,7 @@ impl<'a> Surface<'a> {
     /// The function will fail if the blend mode is not supported by SDL.
     pub fn set_blend_mode(&mut self, mode: BlendMode) -> SdlResult<()> {
         let result = unsafe {
-            ll::SDL_SetSurfaceBlendMode(self.raw, mode as c_int)
+            ll::SDL_SetSurfaceBlendMode(self.raw(), mode as c_int)
         };
 
         match result {
@@ -401,7 +451,7 @@ impl<'a> Surface<'a> {
     pub fn get_blend_mode(&self) -> BlendMode {
         let mut mode: ll::SDL_BlendMode = 0;
         let result = unsafe {
-            ll::SDL_GetSurfaceBlendMode(self.raw, &mut mode)
+            ll::SDL_GetSurfaceBlendMode(self.raw(), &mut mode)
         };
 
         match result {
@@ -416,7 +466,7 @@ impl<'a> Surface<'a> {
     /// If the rectangle is `None`, clipping will be disabled.
     pub fn set_clip_rect(&mut self, rect: Option<Rect>) -> bool {
         unsafe {
-            ll::SDL_SetClipRect(self.raw, match rect {
+            ll::SDL_SetClipRect(self.raw(), match rect {
                 Some(rect) => rect.raw(),
                 None => ptr::null()
             }) == 1
@@ -429,7 +479,7 @@ impl<'a> Surface<'a> {
     pub fn get_clip_rect(&self) -> Option<Rect> {
         let mut rect = unsafe { mem::uninitialized() };
         unsafe {
-            ll::SDL_GetClipRect(self.raw, &mut rect)
+            ll::SDL_GetClipRect(self.raw(), &mut rect)
         };
         Rect::from_ll(rect).unwrap()
     }
@@ -437,12 +487,12 @@ impl<'a> Surface<'a> {
     /// Copies the surface into a new one that is optimized for blitting to a surface of a specified pixel format.
     pub fn convert(&self, format: &pixels::PixelFormat) -> SdlResult<Surface<'static>> {
         // SDL_ConvertSurface takes a flag as the last parameter, which should be 0 by the docs.
-        let surface_ptr = unsafe { ll::SDL_ConvertSurface(self.raw, format.raw(), 0u32) };
+        let surface_ptr = unsafe { ll::SDL_ConvertSurface(self.raw(), format.raw(), 0u32) };
 
-        if surface_ptr== ptr::null_mut() {
+        if (surface_ptr as *mut ()).is_null() {
             Err(get_error())
         } else {
-            unsafe { Ok(Surface::from_ll(surface_ptr, true)) }
+            unsafe { Ok(Surface::from_ll(surface_ptr)) }
         }
     }
 
@@ -455,7 +505,7 @@ impl<'a> Surface<'a> {
         match unsafe {
             let src_rect_ptr = mem::transmute(src_rect.as_ref());
             let dst_rect_ptr = mem::transmute(dst_rect.as_ref());
-            ll::SDL_LowerBlit(self.raw, src_rect_ptr, dst.raw, dst_rect_ptr)
+            ll::SDL_LowerBlit(self.raw(), src_rect_ptr, dst.raw, dst_rect_ptr)
         } {
             0 => Ok(()),
             _ => Err(get_error())
@@ -468,7 +518,7 @@ impl<'a> Surface<'a> {
         match unsafe {
             let src_rect_ptr = mem::transmute(src_rect.as_ref());
             let dst_rect_ptr = mem::transmute(dst_rect.as_ref());
-            ll::SDL_SoftStretch(self.raw, src_rect_ptr, dst.raw, dst_rect_ptr)
+            ll::SDL_SoftStretch(self.raw(), src_rect_ptr, dst.raw, dst_rect_ptr)
         } {
             0 => Ok(()),
             _ => Err(get_error())
@@ -481,7 +531,7 @@ impl<'a> Surface<'a> {
         match unsafe {
             let src_rect_ptr = mem::transmute(src_rect.as_ref());
             let dst_rect_ptr = mem::transmute(dst_rect.as_ref());
-            ll::SDL_UpperBlitScaled(self.raw, src_rect_ptr, dst.raw, dst_rect_ptr)
+            ll::SDL_UpperBlitScaled(self.raw(), src_rect_ptr, dst.raw, dst_rect_ptr)
         } {
             0 => Ok(()),
             _ => Err(get_error())
@@ -495,7 +545,7 @@ impl<'a> Surface<'a> {
         match unsafe {
             let src_rect_ptr = mem::transmute(src_rect.as_ref());
             let dst_rect_ptr = mem::transmute(dst_rect.as_ref());
-            ll::SDL_UpperBlitScaled(self.raw, src_rect_ptr, dst.raw, dst_rect_ptr)
+            ll::SDL_UpperBlitScaled(self.raw(), src_rect_ptr, dst.raw, dst_rect_ptr)
         } {
             0 => Ok(()),
             _ => Err(get_error())
@@ -508,7 +558,7 @@ impl<'a> Surface<'a> {
         match unsafe {
             let src_rect_ptr = mem::transmute(src_rect.as_ref());
             let dst_rect_ptr = mem::transmute(dst_rect.as_ref());
-            ll::SDL_LowerBlitScaled(self.raw, src_rect_ptr, dst.raw, dst_rect_ptr)
+            ll::SDL_LowerBlitScaled(self.raw(), src_rect_ptr, dst.raw, dst_rect_ptr)
         } {
             0 => Ok(()),
             _ => Err(get_error())

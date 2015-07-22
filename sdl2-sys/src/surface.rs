@@ -33,7 +33,10 @@ pub struct SDL_Surface {
     pub lock_data: *mut c_void,
     pub clip_rect: SDL_Rect,
     pub map: *mut SDL_BlitMap,
-    pub refcount: c_int
+    pub refcount: c_int,
+
+    // Make the type a DST. The size of the struct could change in later SDL2 releases.
+    pub _unsized: [()]
 }
 
 extern "C" {

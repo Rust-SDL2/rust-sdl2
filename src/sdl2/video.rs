@@ -8,7 +8,7 @@ use std::vec::Vec;
 
 use rect::Rect;
 use render::RendererBuilder;
-use surface::Surface;
+use surface::{Surface, SurfaceRef};
 use pixels;
 use Sdl;
 use SdlResult;
@@ -838,13 +838,23 @@ impl<'a> WindowProperties<'a> {
         }
     }
 
-    pub fn get_surface(&mut self) -> SdlResult<Surface> {
+    pub fn get_surface(&self) -> SdlResult<&SurfaceRef> {
         let raw = unsafe { ll::SDL_GetWindowSurface(self.raw) };
 
-        if raw == ptr::null_mut() {
+        if (raw as *mut ()).is_null() {
             Err(get_error())
         } else {
-            unsafe { Ok(Surface::from_ll(raw, false)) } //Docs say that it releases with the window
+            unsafe { Ok(SurfaceRef::from_ll(raw)) }
+        }
+    }
+
+    pub fn get_surface_mut(&mut self) -> SdlResult<&mut SurfaceRef> {
+        let raw = unsafe { ll::SDL_GetWindowSurface(self.raw) };
+
+        if (raw as *mut ()).is_null() {
+            Err(get_error())
+        } else {
+            unsafe { Ok(SurfaceRef::from_ll_mut(raw)) }
         }
     }
 
