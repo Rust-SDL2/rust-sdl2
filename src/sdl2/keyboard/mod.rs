@@ -30,12 +30,13 @@ bitflags! {
     }
 }
 
-pub fn get_keyboard_focus() -> Option<Window> {
+pub fn get_focused_window_id() -> Option<u32> {
     let raw = unsafe { ll::SDL_GetKeyboardFocus() };
     if raw == ptr::null_mut() {
         None
     } else {
-        unsafe { Some(Window::from_ll(raw, false)) }
+        let id = unsafe { ::sys::video::SDL_GetWindowID(raw) };
+        Some(id)
     }
 }
 

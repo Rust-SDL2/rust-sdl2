@@ -401,8 +401,7 @@ impl GLContext {
 }
 
 pub struct Window {
-    raw: *mut ll::SDL_Window,
-    owned: bool
+    raw: *mut ll::SDL_Window
 }
 
 impl_raw_accessors!(
@@ -410,21 +409,14 @@ impl_raw_accessors!(
     (Window, *mut ll::SDL_Window)
 );
 
-impl_owned_accessors!(
-    (Window, owned)
-);
-
 impl_raw_constructor!(
-    (Window, Window (raw: *mut ll::SDL_Window, owned: bool))
+    (Window, Window (raw: *mut ll::SDL_Window))
 );
 
 impl Drop for Window {
+    #[inline]
     fn drop(&mut self) {
-        if self.owned {
-            unsafe {
-                ll::SDL_DestroyWindow(self.raw);
-            }
-        }
+        unsafe { ll::SDL_DestroyWindow(self.raw) };
     }
 }
 
@@ -477,7 +469,7 @@ impl WindowBuilder {
                 if raw == ptr::null_mut() {
                     Err(get_error())
                 } else {
-                    Ok(Window { raw: raw, owned: true })
+                    Ok(Window { raw: raw })
                 }
             }
         }
@@ -609,20 +601,6 @@ impl Window {
                 raw: self.raw,
                 _marker: PhantomData
             }
-        }
-    }
-
-    /// Get a Window from a stored ID.
-    ///
-    /// Warning: This function is unsafe!
-    /// It may introduce aliased Window values if a Window of the same ID is
-    /// already being used as a variable in the application.
-    pub unsafe fn from_id(id: u32) -> SdlResult<Window> {
-        let raw = ll::SDL_GetWindowFromID(id);
-        if raw == ptr::null_mut() {
-            Err(get_error())
-        } else {
-            Ok(Window{ raw: raw, owned: false})
         }
     }
 
@@ -1100,12 +1078,13 @@ pub fn gl_extension_supported(extension: &str) -> bool {
     }
 }
 
-pub unsafe fn gl_get_current_window() -> SdlResult<Window> {
-    let raw = ll::SDL_GL_GetCurrentWindow();
+pub fn gl_get_current_window_id() -> SdlResult<u32> {
+    let raw = unsafe { ll::SDL_GL_GetCurrentWindow() };
     if raw == ptr::null_mut() {
         Err(get_error())
     } else {
-        Ok(Window{ raw: raw, owned: false })
+        let id = unsafe { ll::SDL_GetWindowID(raw) };
+        Ok(id)
     }
 }
 
