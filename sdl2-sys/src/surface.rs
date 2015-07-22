@@ -33,7 +33,10 @@ pub struct SDL_Surface {
     pub lock_data: *mut c_void,
     pub clip_rect: SDL_Rect,
     pub map: *mut SDL_BlitMap,
-    pub refcount: c_int
+    pub refcount: c_int,
+
+    // Make the type a DST. The size of the struct could change in later SDL2 releases.
+    pub _unsized: [()]
 }
 
 extern "C" {
@@ -61,9 +64,9 @@ extern "C" {
     pub fn SDL_ConvertPixels(width: c_int, height: c_int, src_format: uint32_t, src: *const c_void, src_pitch: c_int, dst_format: uint32_t, dst: *mut c_void, dst_pitch: c_int) -> c_int;
     pub fn SDL_FillRect(dst: *mut SDL_Surface, rect: *const SDL_Rect, color: uint32_t) -> c_int;
     pub fn SDL_FillRects(dst: *mut SDL_Surface, rects: *const SDL_Rect, count: c_int, color: uint32_t) -> c_int;
-    pub fn SDL_UpperBlit(src: *mut SDL_Surface, srcrect: *mut SDL_Rect, dst: *mut SDL_Surface, dstrect: *mut SDL_Rect) -> c_int;
+    pub fn SDL_UpperBlit(src: *mut SDL_Surface, srcrect: *const SDL_Rect, dst: *mut SDL_Surface, dstrect: *mut SDL_Rect) -> c_int;
     pub fn SDL_LowerBlit(src: *mut SDL_Surface, srcrect: *mut SDL_Rect, dst: *mut SDL_Surface, dstrect: *mut SDL_Rect) -> c_int;
     pub fn SDL_SoftStretch(src: *mut SDL_Surface, srcrect: *mut SDL_Rect, dst: *mut SDL_Surface, dstrect: *mut SDL_Rect) -> c_int;
-    pub fn SDL_UpperBlitScaled(src: *mut SDL_Surface, srcrect: *mut SDL_Rect, dst: *mut SDL_Surface, dstrect: *mut SDL_Rect) -> c_int;
+    pub fn SDL_UpperBlitScaled(src: *mut SDL_Surface, srcrect: *const SDL_Rect, dst: *mut SDL_Surface, dstrect: *mut SDL_Rect) -> c_int;
     pub fn SDL_LowerBlitScaled(src: *mut SDL_Surface, srcrect: *mut SDL_Rect, dst: *mut SDL_Surface, dstrect: *mut SDL_Rect) -> c_int;
 }

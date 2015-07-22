@@ -8,7 +8,7 @@ use std::vec::Vec;
 
 use rect::Rect;
 use render::RendererBuilder;
-use surface::Surface;
+use surface::SurfaceRef;
 use pixels;
 use Sdl;
 use SdlResult;
@@ -401,8 +401,7 @@ impl GLContext {
 }
 
 pub struct Window {
-    raw: *mut ll::SDL_Window,
-    owned: bool
+    raw: *mut ll::SDL_Window
 }
 
 impl_raw_accessors!(
@@ -410,21 +409,14 @@ impl_raw_accessors!(
     (Window, *mut ll::SDL_Window)
 );
 
-impl_owned_accessors!(
-    (Window, owned)
-);
-
 impl_raw_constructor!(
-    (Window, Window (raw: *mut ll::SDL_Window, owned: bool))
+    (Window, Window (raw: *mut ll::SDL_Window))
 );
 
 impl Drop for Window {
+    #[inline]
     fn drop(&mut self) {
-        if self.owned {
-            unsafe {
-                ll::SDL_DestroyWindow(self.raw);
-            }
-        }
+        unsafe { ll::SDL_DestroyWindow(self.raw) };
     }
 }
 
@@ -477,7 +469,7 @@ impl WindowBuilder {
                 if raw == ptr::null_mut() {
                     Err(get_error())
                 } else {
-                    Ok(Window { raw: raw, owned: true })
+                    Ok(Window { raw: raw })
                 }
             }
         }
@@ -612,20 +604,6 @@ impl Window {
         }
     }
 
-    /// Get a Window from a stored ID.
-    ///
-    /// Warning: This function is unsafe!
-    /// It may introduce aliased Window values if a Window of the same ID is
-    /// already being used as a variable in the application.
-    pub unsafe fn from_id(id: u32) -> SdlResult<Window> {
-        let raw = ll::SDL_GetWindowFromID(id);
-        if raw == ptr::null_mut() {
-            Err(get_error())
-        } else {
-            Ok(Window{ raw: raw, owned: false})
-        }
-    }
-
     pub fn get_id(&self) -> u32 {
         unsafe { ll::SDL_GetWindowID(self.raw) }
     }
@@ -742,8 +720,8 @@ impl<'a> WindowProperties<'a> {
         }
     }
 
-    pub fn set_icon(&mut self, icon: &Surface) {
-        unsafe { ll::SDL_SetWindowIcon(self.raw, icon.raw()) }
+    pub fn set_icon<S: AsRef<SurfaceRef>>(&mut self, icon: S) {
+        unsafe { ll::SDL_SetWindowIcon(self.raw, icon.as_ref().raw()) }
     }
 
     //pub fn SDL_SetWindowData(window: *SDL_Window, name: *c_char, userdata: *c_void) -> *c_void; //TODO: Figure out what this does
@@ -838,13 +816,23 @@ impl<'a> WindowProperties<'a> {
         }
     }
 
-    pub fn get_surface(&mut self) -> SdlResult<Surface> {
+    pub fn get_surface(&self) -> SdlResult<&SurfaceRef> {
         let raw = unsafe { ll::SDL_GetWindowSurface(self.raw) };
 
-        if raw == ptr::null_mut() {
+        if (raw as *mut ()).is_null() {
             Err(get_error())
         } else {
-            unsafe { Ok(Surface::from_ll(raw, false)) } //Docs say that it releases with the window
+            unsafe { Ok(SurfaceRef::from_ll(raw)) }
+        }
+    }
+
+    pub fn get_surface_mut(&mut self) -> SdlResult<&mut SurfaceRef> {
+        let raw = unsafe { ll::SDL_GetWindowSurface(self.raw) };
+
+        if (raw as *mut ()).is_null() {
+            Err(get_error())
+        } else {
+            unsafe { Ok(SurfaceRef::from_ll_mut(raw)) }
         }
     }
 
@@ -1090,12 +1078,13 @@ pub fn gl_extension_supported(extension: &str) -> bool {
     }
 }
 
-pub unsafe fn gl_get_current_window() -> SdlResult<Window> {
-    let raw = ll::SDL_GL_GetCurrentWindow();
+pub fn gl_get_current_window_id() -> SdlResult<u32> {
+    let raw = unsafe { ll::SDL_GL_GetCurrentWindow() };
     if raw == ptr::null_mut() {
         Err(get_error())
     } else {
-        Ok(Window{ raw: raw, owned: false })
+        let id = unsafe { ll::SDL_GetWindowID(raw) };
+        Ok(id)
     }
 }
 

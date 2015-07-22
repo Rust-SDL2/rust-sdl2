@@ -31,7 +31,7 @@
 use Sdl;
 use video::{Window, WindowProperties, WindowPropertiesGetters};
 use surface;
-use surface::Surface;
+use surface::{Surface, SurfaceRef};
 use pixels;
 use pixels::PixelFormatEnum;
 use get_error;
@@ -256,7 +256,7 @@ impl<'a> Renderer<'a> {
     }
 
     #[inline]
-    pub fn get_parent_as_surface(&self) -> Option<&Surface> {
+    pub fn get_parent_as_surface(&self) -> Option<&SurfaceRef> {
         match self.get_parent() {
             &RendererParent::Surface(ref surface) => Some(surface),
             _ => None
@@ -365,8 +365,8 @@ impl<'a> Renderer<'a> {
     /// Creates a texture from an existing surface.
     /// # Remarks
     /// The access hint for the created texture is `TextureAccess::Static`.
-    pub fn create_texture_from_surface(&self, surface: &surface::Surface) -> SdlResult<Texture> {
-        let result = unsafe { ll::SDL_CreateTextureFromSurface(self.raw, surface.raw()) };
+    pub fn create_texture_from_surface<S: AsRef<SurfaceRef>>(&self, surface: S) -> SdlResult<Texture> {
+        let result = unsafe { ll::SDL_CreateTextureFromSurface(self.raw, surface.as_ref().raw()) };
         if result == ptr::null_mut() {
             Err(get_error())
         } else {
