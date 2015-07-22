@@ -95,7 +95,7 @@ download through Crates.io:
 
 ```toml
     [dependencies]
-    sdl2 = "0.5"
+    sdl2 = "0.6"
 ```
 
 Alternatively, pull it from GitHub
