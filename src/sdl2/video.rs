@@ -8,7 +8,7 @@ use std::vec::Vec;
 
 use rect::Rect;
 use render::RendererBuilder;
-use surface::{Surface, SurfaceRef};
+use surface::SurfaceRef;
 use pixels;
 use Sdl;
 use SdlResult;
@@ -720,8 +720,8 @@ impl<'a> WindowProperties<'a> {
         }
     }
 
-    pub fn set_icon(&mut self, icon: &Surface) {
-        unsafe { ll::SDL_SetWindowIcon(self.raw, icon.raw()) }
+    pub fn set_icon<S: AsRef<SurfaceRef>>(&mut self, icon: S) {
+        unsafe { ll::SDL_SetWindowIcon(self.raw, icon.as_ref().raw()) }
     }
 
     //pub fn SDL_SetWindowData(window: *SDL_Window, name: *c_char, userdata: *c_void) -> *c_void; //TODO: Figure out what this does

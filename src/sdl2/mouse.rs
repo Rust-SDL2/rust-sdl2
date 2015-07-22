@@ -2,7 +2,7 @@ use std::ptr;
 
 use get_error;
 use SdlResult;
-use surface;
+use surface::SurfaceRef;
 use video;
 
 use sys::mouse as ll;
@@ -52,9 +52,9 @@ impl Cursor {
     }
 
     // TODO: figure out how to pass Surface in here correctly
-    pub fn from_surface(surface: &surface::Surface, hot_x: i32, hot_y: i32) -> SdlResult<Cursor> {
+    pub fn from_surface<S: AsRef<SurfaceRef>>(surface: S, hot_x: i32, hot_y: i32) -> SdlResult<Cursor> {
         unsafe {
-            let raw = ll::SDL_CreateColorCursor(surface.raw(), hot_x, hot_y);
+            let raw = ll::SDL_CreateColorCursor(surface.as_ref().raw(), hot_x, hot_y);
 
             if raw == ptr::null_mut() {
                 Err(get_error())
