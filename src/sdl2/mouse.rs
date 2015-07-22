@@ -25,17 +25,13 @@ pub enum SystemCursor {
 }
 
 pub struct Cursor {
-    raw: *mut ll::SDL_Cursor,
-    owned: bool
+    raw: *mut ll::SDL_Cursor
 }
 
 impl Drop for Cursor {
+    #[inline]
     fn drop(&mut self) {
-        if self.owned {
-            unsafe {
-                ll::SDL_FreeCursor(self.raw);
-            }
-        }
+        unsafe { ll::SDL_FreeCursor(self.raw) };
     }
 }
 
@@ -50,7 +46,7 @@ impl Cursor {
             if raw == ptr::null_mut() {
                 Err(get_error())
             } else {
-                Ok(Cursor{ raw: raw, owned: true })
+                Ok(Cursor{ raw: raw })
             }
         }
     }
@@ -63,7 +59,7 @@ impl Cursor {
             if raw == ptr::null_mut() {
                 Err(get_error())
             } else {
-                Ok(Cursor{ raw: raw, owned: true })
+                Ok(Cursor{ raw: raw })
             }
         }
     }
@@ -75,7 +71,7 @@ impl Cursor {
             if raw == ptr::null_mut() {
                 Err(get_error())
             } else {
-                Ok(Cursor{ raw: raw, owned: true })
+                Ok(Cursor{ raw: raw })
             }
         }
     }
@@ -186,26 +182,6 @@ pub fn set_relative_mouse_mode(on: bool) {
 
 pub fn get_relative_mouse_mode() -> bool {
     unsafe { ll::SDL_GetRelativeMouseMode() == 1 }
-}
-
-pub fn get_cursor() -> Option<Cursor> {
-    let raw = unsafe { ll::SDL_GetCursor() };
-
-    if raw == ptr::null_mut() {
-        None
-    } else {
-        Some(Cursor { raw: raw, owned: false })
-    }
-}
-
-pub fn get_default_cursor() -> Option<Cursor> {
-    let raw = unsafe { ll::SDL_GetDefaultCursor() };
-
-    if raw == ptr::null_mut() {
-        None
-    } else {
-        Some(Cursor { raw: raw, owned: false })
-    }
 }
 
 pub fn is_cursor_showing() -> bool {
