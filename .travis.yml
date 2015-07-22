@@ -1,33 +1,26 @@
 language: rust
 sudo: required
-
 rust:
 - beta
 - nightly
 - stable
-
-# Install SDL2
 install:
 - sudo add-apt-repository ppa:team-xbmc/ppa -y
 - sudo apt-get update -q
 - sudo apt-get install libsdl2-dev
-
-# Load travis-cargo
 before_script:
-  - |
-      pip install 'travis-cargo<0.2' --user &&
-      export PATH=$HOME/.local/bin:$PATH
+- |
+  pip install 'travis-cargo<0.2' --user &&
+  export PATH=$HOME/.local/bin:$PATH
 script:
-  - |
-      travis-cargo build &&
-      travis-cargo test &&
-      travis-cargo --only stable doc
-# Upload documentation to gh-pages
+- |
+  travis-cargo build &&
+  travis-cargo test &&
+  travis-cargo --only stable doc
 after_success:
-  - travis-cargo --only stable doc-upload
-
+- travis-cargo --only stable doc-upload
 env:
   global:
   - TRAVIS_CARGO_NIGHTLY_FEATURE=""
-  - LD_LIBRARY_PATH: /usr/local/lib
-  - secure: "jS3X2wCwnJgAUnCP7MmeSFR/o7kX9MZxcLQcfWwFIFHe83qGys4Xa+csLz7y/5e7n64UYJtn8ZwIgLfCZawalOPQN3SaFrtv1AAnU47YOQhvk++9A8mmg6R/lMuObSqqQteIvL0lkaGmOWBtB81QPg3vsYWgFhdjqGE1seWUsxE="
+  - LD_LIBRARY_PATH: "/usr/local/lib"
+  - secure: MJhmVnQ2IM7+sVmc3vU4ndKOcQgLLeHUPW3qaQBQHKQmvoswCwQK60N17uSgWn1Ln8teqvSRHq4KclIjdMHI+VuQXJHQKHDgjcYbHxwmc3AM1Whnp0XB44ksKUmD109BGWSfZQxzF+6dA+YNOQ+mti+bpydMu8n2FMVjA/SXwQ8=
