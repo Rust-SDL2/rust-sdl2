@@ -55,50 +55,50 @@ impl<'a> RotozoomSurface for Surface<'a> {
         let raw = unsafe {
             ll::rotozoomSurface(self.raw(), angle, zoom, smooth as c_int)
         };
-        if raw.is_null() {
+        if (raw as *mut ()).is_null() {
             Err("rotozoomSurface: error.".to_string())
         } else {
-            unsafe { Ok(Surface::from_ll(raw, true)) }
+            unsafe { Ok(Surface::from_ll(raw)) }
         }
     }
     fn rotozoom_xy(&self, angle: f64, zoomx: f64, zoomy: f64, smooth: bool) -> SdlResult<Surface> {
         let raw = unsafe {
             ll::rotozoomSurfaceXY(self.raw(), angle, zoomx, zoomy, smooth as c_int)
         };
-        if raw.is_null() {
+        if (raw as *mut ()).is_null() {
             Err("rotozoomSurfaceXY: error.".to_string())
         } else {
-            unsafe { Ok(Surface::from_ll(raw, true)) }
+            unsafe { Ok(Surface::from_ll(raw)) }
         }
     }
     fn zoom(&self, zoomx: f64, zoomy: f64, smooth: bool) -> SdlResult<Surface> {
         let raw = unsafe {
             ll::zoomSurface(self.raw(), zoomx, zoomy, smooth as c_int)
         };
-        if raw.is_null() {
+        if (raw as *mut ()).is_null() {
             Err("zoomSurface: error.".to_string())
         } else {
-            unsafe { Ok(Surface::from_ll(raw, true)) }
+            unsafe { Ok(Surface::from_ll(raw)) }
         }
     }
     fn shrink(&self, factorx: isize, factory: isize) -> SdlResult<Surface> {
         let raw = unsafe {
             ll::shrinkSurface(self.raw(), factorx as c_int, factory as c_int)
         };
-        if raw.is_null() {
+        if (raw as *mut ()).is_null() {
             Err("shrinkSurface: error.".to_string())
         } else {
-            unsafe { Ok(Surface::from_ll(raw, true)) }
+            unsafe { Ok(Surface::from_ll(raw)) }
         }
     }
     fn rotate_90deg(&self, turns: isize) -> SdlResult<Surface> {
         let raw = unsafe {
             ll::rotateSurface90Degrees(self.raw(), turns as c_int)
         };
-        if raw.is_null() {
+        if (raw as *mut ()).is_null() {
             Err("rotateSurface90Degrees: error.".to_string())
         } else {
-            unsafe { Ok(Surface::from_ll(raw, true)) }
+            unsafe { Ok(Surface::from_ll(raw)) }
         }
     }
 }
