@@ -23,10 +23,10 @@ Place the following into your project's Cargo.toml file:
 
 ```toml
 [dependencies]
-sdl2_ttf = "0.2.2"
+sdl2_ttf = "0.6.0"
 ```
 
-Or, to depend on the newest rust-sdl2_ttf, reference the repository:
+Or, to use the newest rust-sdl2_ttf, reference the repository:
 
 ```toml
 [dependencies.sdl2_ttf]
@@ -56,12 +56,5 @@ rustc src/sdl2_ttf/lib.rs
 A simple demo that prints out a string given a font is included:
 
 ```bash
-cargo run path/to/font.(ttf|ttc|fon)
-```
-
-Or:
-
-```bash
-rustc -L. src/demo/main.rs -o demo
-./demo path/to/font.(ttf|ttc|fon)
+cargo run --example demo /path/to/font.(ttf|ttc|fon)
 ```
