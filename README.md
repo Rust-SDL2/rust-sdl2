@@ -23,7 +23,7 @@ Place the following into your project's Cargo.toml file:
 
 ```toml
 [dependencies]
-sdl2_mixer = "0.2.1"
+sdl2_mixer = "0.6.0"
 ```
 
 Or, to depend on the newest rust-sdl2_mixer, reference the repository:
@@ -56,12 +56,5 @@ rustc src/sdl2_mixer/lib.rs
 A simple demo that plays out a portion of a given music file is included:
 
 ```bash
-cargo run path/to/music.(mp3|flac|ogg|wav)
-```
-
-Or:
-
-```bash
-rustc -L. src/demo/main.rs -o demo
-./demo path/to/music.(mp3|flac|ogg|wav)
+cargo run --example demo path/to/music.(mp3|flac|ogg|wav)
 ```
