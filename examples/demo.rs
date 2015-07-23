@@ -1,10 +1,12 @@
 extern crate sdl2;
+extern crate sdl2_ttf;
+
+use std::env;
+use std::path::Path;
 
 use sdl2::*;
-use sdl2_ttf;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use std::path::Path;
 
 static SCREEN_WIDTH : i32 = 800;
 static SCREEN_HEIGHT : i32 = 600;
@@ -21,7 +23,7 @@ macro_rules! rect(
     )
 );
 
-pub fn main(filename: &Path) {
+fn run(filename: &Path) {
     let mut sdl_context = sdl2::init().video().unwrap();
     sdl2_ttf::init();
 
@@ -60,4 +62,17 @@ pub fn main(filename: &Path) {
     }
 
     sdl2_ttf::quit();
+}
+
+fn main() {
+    let args: Vec<_> = env::args().collect();
+
+    println!("linked sdl2_ttf: {}", sdl2_ttf::get_linked_version());
+
+    if args.len() < 2 {
+        println!("Usage: ./demo font.[ttf|ttc|fon]")
+    } else {
+        let path: &Path = Path::new(&args[1]);
+        run(path);
+    }
 }

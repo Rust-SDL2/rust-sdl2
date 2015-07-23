@@ -23,7 +23,3 @@ libc = "0.1"
 
 # [dependencies.sdl2-sys]
 # git = "https://github.com/AngryLawyer/rust-sdl2/"
-
-[[bin]]
-name = "demo"
-path = "src/demo/main.rs"
