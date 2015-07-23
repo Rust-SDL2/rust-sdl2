@@ -9,7 +9,6 @@ extern crate sdl2_sys as sys;
 extern crate bitflags;
 
 use libc::{c_int, c_char};
-use std::ptr;
 use std::ffi::CString;
 use std::path::Path;
 use sdl2::surface::Surface;
@@ -72,10 +71,10 @@ impl<'a> LoadSurface for Surface<'a> {
         //! Loads an SDL Surface from a file
         unsafe {
             let raw = ffi::IMG_Load(CString::new(filename.to_str().unwrap()).unwrap().as_ptr());
-            if raw == ptr::null_mut() {
+            if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface::from_ll(raw, true))
+                Ok(Surface::from_ll(raw))
             }
         }
     }
@@ -84,10 +83,10 @@ impl<'a> LoadSurface for Surface<'a> {
         //! Loads an SDL Surface from XPM data
         unsafe {
             let raw = ffi::IMG_ReadXPMFromArray(xpm as *const *const c_char);
-            if raw == ptr::null_mut() {
+            if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface::from_ll(raw, true))
+                Ok(Surface::from_ll(raw))
             }
         }
     }
@@ -130,7 +129,7 @@ impl<'a> LoadTexture for Renderer<'a> {
         //! Loads an SDL Texture from a file
         unsafe {
             let raw = ffi::IMG_LoadTexture(self.raw(), CString::new(filename.to_str().unwrap()).unwrap().as_ptr());
-            if raw == ptr::null_mut() {
+            if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
                 Ok(Texture::from_ll(self, raw))
@@ -162,10 +161,10 @@ pub fn get_linked_version() -> Version {
 
 #[inline]
 fn to_surface_result<'a>(raw: *mut sys::surface::SDL_Surface) -> SdlResult<Surface<'a>> {
-    if raw == ptr::null_mut() {
+    if (raw as *mut ()).is_null() {
         Err(get_error())
     } else {
-        unsafe { Ok(Surface::from_ll(raw, true)) }
+        unsafe { Ok(Surface::from_ll(raw)) }
     }
 }
 
