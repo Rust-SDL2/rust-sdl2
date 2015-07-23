@@ -358,10 +358,10 @@ impl Font {
         unsafe {
             let ctext = CString::new(text).unwrap().as_ptr();
             let raw = ffi::TTF_RenderText_Solid(self.raw, ctext, color_to_c_color(fg));
-            if raw.is_null() {
+            if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface::from_ll(raw, true))
+                Ok(Surface::from_ll(raw))
             }
         }
     }
@@ -371,10 +371,10 @@ impl Font {
         unsafe {
             let ctext = CString::new(text.as_bytes()).unwrap();
             let raw = ffi::TTF_RenderUTF8_Solid(self.raw, ctext.as_ptr(), color_to_c_color(fg));
-            if raw.is_null() {
+            if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface::from_ll(raw, true))
+                Ok(Surface::from_ll(raw))
             }
         }
     }
@@ -383,10 +383,10 @@ impl Font {
         //! Draw a UNICODE glyph in solid mode.
         unsafe {
             let raw = ffi::TTF_RenderGlyph_Solid(self.raw, ch as u16, color_to_c_color(fg));
-            if raw.is_null() {
+            if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface::from_ll(raw, true))
+                Ok(Surface::from_ll(raw))
             }
         }
     }
@@ -396,10 +396,10 @@ impl Font {
         unsafe {
             let ctext = CString::new(text).unwrap().as_ptr();
             let raw = ffi::TTF_RenderText_Shaded(self.raw, ctext, color_to_c_color(fg), color_to_c_color(bg));
-            if raw.is_null() {
+            if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface::from_ll(raw, true))
+                Ok(Surface::from_ll(raw))
             }
         }
     }
@@ -409,10 +409,10 @@ impl Font {
         unsafe {
             let ctext = CString::new(text.as_bytes()).unwrap();
             let raw = ffi::TTF_RenderUTF8_Shaded(self.raw, ctext.as_ptr(), color_to_c_color(fg), color_to_c_color(bg));
-            if raw.is_null() {
+            if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface::from_ll(raw, true))
+                Ok(Surface::from_ll(raw))
             }
         }
     }
@@ -421,10 +421,10 @@ impl Font {
         //! Draw a UNICODE glyph in shaded mode.
         unsafe {
             let raw = ffi::TTF_RenderGlyph_Shaded(self.raw, ch as u16, color_to_c_color(fg), color_to_c_color(bg));
-            if raw.is_null() {
+            if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface::from_ll(raw, true))
+                Ok(Surface::from_ll(raw))
             }
         }
     }
@@ -434,10 +434,10 @@ impl Font {
         unsafe {
             let ctext = CString::new(text).unwrap().as_ptr();
             let raw = ffi::TTF_RenderText_Blended(self.raw, ctext, color_to_c_color(fg));
-            if raw.is_null() {
+            if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface::from_ll(raw, true))
+                Ok(Surface::from_ll(raw))
             }
         }
     }
@@ -447,10 +447,10 @@ impl Font {
         unsafe {
             let ctext = CString::new(text.as_bytes()).unwrap();
             let raw = ffi::TTF_RenderUTF8_Blended(self.raw, ctext.as_ptr(), color_to_c_color(fg));
-            if raw.is_null() {
+            if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface::from_ll(raw, true))
+                Ok(Surface::from_ll(raw))
             }
         }
     }
@@ -459,10 +459,10 @@ impl Font {
         //! Draw a UNICODE glyph in blended mode.
         unsafe {
             let raw = ffi::TTF_RenderGlyph_Blended(self.raw, ch as u16, color_to_c_color(fg));
-            if raw.is_null() {
+            if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
-                Ok(Surface::from_ll(raw, true))
+                Ok(Surface::from_ll(raw))
             }
         }
     }
@@ -482,7 +482,7 @@ impl<'a> LoaderRWops for RWops<'a> {
         let raw = unsafe {
             ffi::TTF_OpenFontRW(self.raw(), 0, ptsize as c_int)
         };
-        if raw.is_null() {
+        if (raw as *mut ()).is_null() {
             Err(get_error())
         } else {
             Ok(Font::from_ll(raw, true))
@@ -492,7 +492,7 @@ impl<'a> LoaderRWops for RWops<'a> {
         let raw = unsafe {
             ffi::TTF_OpenFontIndexRW(self.raw(), 0, ptsize as c_int, index as c_long)
         };
-        if raw.is_null() {
+        if (raw as *mut ()).is_null() {
             Err(get_error())
         } else {
             Ok(Font::from_ll(raw, true))
