@@ -47,7 +47,7 @@
 //! device.resume();
 //!
 //! // Play for 2 seconds
-//! sdl2::timer::delay(2000);
+//! std::thread::sleep_ms(2000);
 //! ```
 use std::ffi::{CStr, CString};
 use num::FromPrimitive;
@@ -71,6 +71,38 @@ impl AudioSubsystem {
     where CB: AudioCallback, F: FnOnce(AudioSpec) -> CB
     {
         AudioDevice::open_playback(self, device, spec, get_callback)
+    }
+
+    pub fn get_current_audio_driver(&self) -> &'static str {
+        use std::str;
+
+        unsafe {
+            let buf = ll::SDL_GetCurrentAudioDriver();
+            assert!(!buf.is_null());
+
+            str::from_utf8(CStr::from_ptr(buf).to_bytes()).unwrap()
+        }
+    }
+
+    pub fn get_num_audio_playback_devices(&self) -> Option<u32> {
+        let result = unsafe { ll::SDL_GetNumAudioDevices(0) };
+        if result < 0 {
+            // SDL cannot retreive a list of audio devices. This is not necessarily an error (see the SDL2 docs).
+            None
+        } else {
+            Some(result as u32)
+        }
+    }
+
+    pub fn get_audio_playback_device_name(&self, index: u32) -> SdlResult<String> {
+        unsafe {
+            let dev_name = ll::SDL_GetAudioDeviceName(index as c_int, 0);
+            if dev_name.is_null() {
+                Err(get_error())
+            } else {
+                Ok(String::from_utf8_lossy(CStr::from_ptr(dev_name).to_bytes()).to_string())
+            }
+        }
     }
 }
 
@@ -166,50 +198,6 @@ impl FromPrimitive for AudioStatus {
     }
 
     fn from_u64(n: u64) -> Option<AudioStatus> { FromPrimitive::from_i64(n as i64) }
-}
-
-pub fn get_num_audio_drivers() -> i32 {
-    unsafe { ll::SDL_GetNumAudioDrivers() as i32 }
-}
-
-pub fn get_audio_driver(index: i32) -> String {
-    unsafe {
-        let driver = ll::SDL_GetAudioDriver(index as c_int);
-        String::from_utf8_lossy(CStr::from_ptr(driver).to_bytes()).to_string()
-    }
-}
-
-pub fn get_num_audio_devices(iscapture: i32) -> i32 {
-    unsafe { ll::SDL_GetNumAudioDevices(iscapture as c_int) as i32 }
-}
-
-pub fn get_audio_device_name(index: i32, iscapture: i32) -> String {
-    unsafe {
-        let dev_name = ll::SDL_GetAudioDeviceName(index as c_int, iscapture as c_int);
-        String::from_utf8_lossy(CStr::from_ptr(dev_name).to_bytes()).to_string()
-    }
-}
-
-pub fn audio_init(name: &str) -> SdlResult<()> {
-    let name = try!(CString::new(name).unwrap_or_sdlresult());
-    let ret = unsafe { ll::SDL_AudioInit(name.as_ptr()) };
-
-    if ret == 0 {
-        Ok(())
-    } else {
-        Err(get_error())
-    }
-}
-
-pub fn audio_quit() {
-    unsafe { ll::SDL_AudioQuit() }
-}
-
-pub fn get_current_audio_driver() -> String {
-    unsafe {
-        let driver = ll::SDL_GetCurrentAudioDriver();
-        String::from_utf8_lossy(CStr::from_ptr(driver).to_bytes()).to_string()
-    }
 }
 
 pub struct AudioSpecWAV {

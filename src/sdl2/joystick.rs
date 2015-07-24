@@ -36,43 +36,48 @@ impl JoystickSubsystem {
             })
         }
     }
-}
+    
+    /// Return the name of the joystick at index `id`
+    pub fn name_for_index(&self, id: u32) -> SdlResult<String> {
+        let id = try!(u32_to_int!(id));
+        let name = unsafe { ll::SDL_JoystickNameForIndex(id) };
 
-/// Get the GUID for the joystick number `id`
-pub fn get_device_guid(id: i32) -> SdlResult<Guid> {
-    let raw = unsafe { ll::SDL_JoystickGetDeviceGUID(id) };
-
-    let guid = Guid { raw: raw };
-
-    if guid.is_zero() {
-        Err(get_error())
-    } else {
-        Ok(guid)
+        c_str_to_string_or_err(name)
     }
-}
 
-/// If state is `true` joystick events are processed, otherwise
-/// they're ignored.
-pub fn set_event_state(state: bool) {
-    unsafe { ll::SDL_JoystickEventState(state as i32) };
-}
+    /// Get the GUID for the joystick number `id`
+    pub fn get_device_guid(&self, id: u32) -> SdlResult<Guid> {
+        let id = try!(u32_to_int!(id));
 
-/// Return `true` if joystick events are processed.
-pub fn get_event_state() -> bool {
-    unsafe { ll::SDL_JoystickEventState(SDL_QUERY as i32)
-             == SDL_ENABLE as i32 }
-}
+        let raw = unsafe { ll::SDL_JoystickGetDeviceGUID(id) };
 
-/// Return the name of the joystick at index `id`
-pub fn name_for_index(id: i32) -> SdlResult<String> {
-    let name = unsafe { ll::SDL_JoystickNameForIndex(id) };
+        let guid = Guid { raw: raw };
 
-    c_str_to_string_or_err(name)
-}
+        if guid.is_zero() {
+            Err(get_error())
+        } else {
+            Ok(guid)
+        }
+    }
 
-/// Force joystick update when not using the event loop
-pub fn update() {
-    unsafe { ll::SDL_JoystickUpdate() };
+    /// If state is `true` joystick events are processed, otherwise
+    /// they're ignored.
+    pub fn set_event_state(&self, state: bool) {
+        unsafe { ll::SDL_JoystickEventState(state as i32) };
+    }
+
+    /// Return `true` if joystick events are processed.
+    pub fn get_event_state(&self) -> bool {
+        unsafe { ll::SDL_JoystickEventState(SDL_QUERY as i32)
+                 == SDL_ENABLE as i32 }
+    }
+
+    /// Force joystick update when not using the event loop
+    #[inline]
+    pub fn update(&self) {
+        unsafe { ll::SDL_JoystickUpdate() };
+    }
+
 }
 
 /// Wrapper around the SDL_Joystick object

@@ -26,22 +26,30 @@ impl TimerSubsystem {
             }
         }
     }
-}
 
-pub fn get_ticks() -> u32 {
-    unsafe { ll::SDL_GetTicks() }
-}
+    /// Gets the number of milliseconds elapsed since the timer subsystem was initialized.
+    ///
+    /// It's recommended that you use another library for timekeeping, such as `time`.
+    pub fn get_ticks(&mut self) -> u32 {
+        // Google says this is probably not thread-safe (TODO: prove/disprove this).
+        unsafe { ll::SDL_GetTicks() }
+    }
 
-pub fn get_performance_counter() -> u64 {
-    unsafe { ll::SDL_GetPerformanceCounter() }
-}
+    /// Sleeps the current thread for the specified amount of milliseconds.
+    ///
+    /// It's recommended that you use `std::thread::sleep_ms()` instead.
+    pub fn delay(&mut self, ms: u32) {
+        // Google says this is probably not thread-safe (TODO: prove/disprove this).
+        unsafe { ll::SDL_Delay(ms) }
+    }
 
-pub fn get_performance_frequency() -> u64 {
-    unsafe { ll::SDL_GetPerformanceFrequency() }
-}
+    pub fn get_performance_counter(&self) -> u64 {
+        unsafe { ll::SDL_GetPerformanceCounter() }
+    }
 
-pub fn delay(ms: u32) {
-    unsafe { ll::SDL_Delay(ms) }
+    pub fn get_performance_frequency(&self) -> u64 {
+        unsafe { ll::SDL_GetPerformanceFrequency() }
+    }
 }
 
 pub type TimerCallback<'a> = Box<FnMut() -> u32+'a+Sync>;
@@ -98,7 +106,7 @@ fn test_timer_runs_multiple_times() {
         } else { 0 }
     }));
 
-    delay(250);                         // tick the timer at least 10 times w/ 200ms of "buffer"
+    ::std::thread::sleep_ms(250);              // tick the timer at least 10 times w/ 200ms of "buffer"
     let num = local_num.lock().unwrap(); // read the number back
     assert_eq!(*num, 9);                 // it should have incremented at least 10 times...
 }
@@ -117,7 +125,7 @@ fn test_timer_runs_at_least_once() {
         *flag = true; 0
     }));
 
-    delay(50);
+    ::std::thread::sleep_ms(50);
     let flag = local_flag.lock().unwrap();
     assert_eq!(*flag, true);
 }
@@ -139,12 +147,12 @@ fn test_timer_can_be_recreated() {
     }));
 
     // reclaim closure after timer runs
-    delay(50);
+    ::std::thread::sleep_ms(50);
     let closure = timer_1.into_inner();
 
     // create a second timer and increment again
     let _timer_2 = timer_subsystem.add_timer(20, closure);
-    delay(50);
+    ::std::thread::sleep_ms(50);
 
     // check that timer was incremented twice
     let num = local_num.lock().unwrap();

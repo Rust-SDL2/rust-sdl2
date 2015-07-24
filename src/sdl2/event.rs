@@ -28,6 +28,83 @@ use Sdl;
 
 use sys::event as ll;
 
+impl ::EventSubsystem {
+    /// Removes all events in the event queue that match the specified event type.
+    pub fn flush_event(&self, event_type: EventType) {
+        unsafe { ll::SDL_FlushEvent(event_type as uint32_t) };
+    }
+
+    /// Removes all events in the event queue that match the specified type range.
+    pub fn flush_events(&self, min_type: u32, max_type: u32) {
+        unsafe { ll::SDL_FlushEvents(min_type, max_type) };
+    }
+
+    /// Reads the events at the front of the event queue, until the maximum amount
+    /// of events is read.
+    ///
+    /// The events will _not_ be removed from the queue.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use sdl2::event::Event;
+    ///
+    /// let sdl_context = sdl2::init().unwrap();
+    /// let event_subsystem = sdl_context.event().unwrap();
+    ///
+    /// // Read up to 1024 events
+    /// let events: Vec<Event> = event_subsystem.peek_events(1024);
+    ///
+    /// // Print each one
+    /// for event in events {
+    ///     println!("{:?}", event);
+    /// }
+    /// ```
+    pub fn peek_events<B>(&self, max_amount: u32) -> B
+    where B: FromIterator<Event>
+    {
+        unsafe {
+            let mut events = Vec::with_capacity(max_amount as usize);
+
+            let result = {
+                let events_ptr = events.as_mut_ptr();
+
+                ll::SDL_PeepEvents(
+                    events_ptr,
+                    max_amount as c_int,
+                    ll::SDL_PEEKEVENT,
+                    ll::SDL_FIRSTEVENT,
+                    ll::SDL_LASTEVENT
+                )
+            };
+
+            if result < 0 {
+                // The only error possible is "Couldn't lock event queue"
+                panic!(get_error());
+            } else {
+                events.set_len(max_amount as usize);
+
+                events.into_iter().map(|event_raw| {
+                    Event::from_ll(event_raw)
+                }).collect()
+            }
+        }
+    }
+
+    /// Pushes an event to the event queue.
+    pub fn push_event(&self, event: Event) -> SdlResult<()> {
+        match event.to_ll() {
+            Some(mut raw_event) => {
+                let ok = unsafe { ll::SDL_PushEvent(&mut raw_event) == 1 };
+                if ok { Ok(()) }
+                else { Err(get_error()) }
+            },
+            None => {
+                Err(format!("Cannot push unsupported event type to the queue"))
+            }
+        }
+    }
+}
+
 /// Types of events that can be delivered.
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(u32)]
@@ -1099,76 +1176,4 @@ pub struct EventWaitTimeoutIterator<'a> {
 impl<'a> Iterator for EventWaitTimeoutIterator<'a> {
     type Item = Event;
     fn next(&mut self) -> Option<Event> { unsafe { wait_event_timeout(self.timeout) } }
-}
-
-/// Removes all events in the event queue that match the specified event type.
-pub fn flush_event(event_type: EventType) {
-    unsafe { ll::SDL_FlushEvent(event_type as uint32_t) };
-}
-
-/// Removes all events in the event queue that match the specified type range.
-pub fn flush_events(min_type: u32, max_type: u32) {
-    unsafe { ll::SDL_FlushEvents(min_type, max_type) };
-}
-
-/// Reads the events at the front of the event queue, until the maximum amount
-/// of events is read.
-///
-/// The events will _not_ be removed from the queue.
-///
-/// # Example
-/// ```no_run
-/// use sdl2::event::{Event, peek_events};
-///
-/// // Read up to 1024 events
-/// let events: Vec<Event> = peek_events(1024);
-///
-/// // Print each one
-/// for event in events {
-///     println!("{:?}", event);
-/// }
-/// ```
-pub fn peek_events<B>(max_amount: u32) -> B
-where B: FromIterator<Event>
-{
-    unsafe {
-        let mut events = Vec::with_capacity(max_amount as usize);
-
-        let result = {
-            let events_ptr = events.as_mut_ptr();
-
-            ll::SDL_PeepEvents(
-                events_ptr,
-                max_amount as c_int,
-                ll::SDL_PEEKEVENT,
-                ll::SDL_FIRSTEVENT,
-                ll::SDL_LASTEVENT
-            )
-        };
-
-        if result < 0 {
-            // The only error possible is "Couldn't lock event queue"
-            panic!(get_error());
-        } else {
-            events.set_len(max_amount as usize);
-
-            events.into_iter().map(|event_raw| {
-                Event::from_ll(event_raw)
-            }).collect()
-        }
-    }
-}
-
-/// Pushes an event to the event queue.
-pub fn push_event(event: Event) -> SdlResult<()> {
-    match event.to_ll() {
-        Some(mut raw_event) => {
-            let ok = unsafe { ll::SDL_PushEvent(&mut raw_event) == 1 };
-            if ok { Ok(()) }
-            else { Err(get_error()) }
-        },
-        None => {
-            Err(format!("Cannot push unsupported event type to the queue"))
-        }
-    }
 }

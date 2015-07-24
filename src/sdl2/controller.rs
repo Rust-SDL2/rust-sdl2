@@ -49,6 +49,51 @@ impl GameControllerSubsystem {
             })
         }
     }
+
+    /// Return the name of the controller at index `id`
+    pub fn name_for_index(&self, id: u32) -> SdlResult<String> {
+        let id = try!(u32_to_int!(id));
+        let name = unsafe { ll::SDL_GameControllerNameForIndex(id) };
+
+        c_str_to_string_or_err(name)
+    }
+
+    /// If state is `true` controller events are processed, otherwise
+    /// they're ignored.
+    pub fn set_event_state(&self, state: bool) {
+        unsafe { ll::SDL_GameControllerEventState(state as i32) };
+    }
+
+    /// Return `true` if controller events are processed.
+    pub fn get_event_state(&self) -> bool {
+        unsafe { ll::SDL_GameControllerEventState(SDL_QUERY as i32)
+                 == SDL_ENABLE as i32 }
+    }
+
+    /// Add a new mapping from a mapping string
+    pub fn add_mapping(&self, mapping: &str) -> SdlResult<MappingStatus> {
+        let mapping = try!(CString::new(mapping).unwrap_or_sdlresult());
+
+        let result = unsafe { ll::SDL_GameControllerAddMapping(mapping.as_ptr()) };
+
+        match result {
+            1 => Ok(MappingStatus::Added),
+            0 => Ok(MappingStatus::Updated),
+            _ => Err(get_error()),
+        }
+    }
+
+    pub fn mapping_for_guid(&self, guid: joystick::Guid) -> SdlResult<String> {
+        let c_str = unsafe { ll::SDL_GameControllerMappingForGUID(guid.raw()) };
+
+        c_str_to_string_or_err(c_str)
+    }
+
+    #[inline]
+    /// Force controller update when not using the event loop
+    pub fn update(&self) {
+        unsafe { ll::SDL_GameControllerUpdate() };
+    }
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
@@ -165,54 +210,11 @@ impl Button {
     }
 }
 
-/// Return the name of the controller at index `id`
-pub fn name_for_index(id: i32) -> SdlResult<String> {
-    let name = unsafe { ll::SDL_GameControllerNameForIndex(id) };
-
-    c_str_to_string_or_err(name)
-}
-
-/// Force controller update when not using the event loop
-pub fn update() {
-    unsafe { ll::SDL_GameControllerUpdate() };
-}
-
-/// If state is `true` controller events are processed, otherwise
-/// they're ignored.
-pub fn set_event_state(state: bool) {
-    unsafe { ll::SDL_GameControllerEventState(state as i32) };
-}
-
-/// Return `true` if controller events are processed.
-pub fn get_event_state() -> bool {
-    unsafe { ll::SDL_GameControllerEventState(SDL_QUERY as i32)
-             == SDL_ENABLE as i32 }
-}
-
 /// Possible return values for `add_mapping`
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum MappingStatus {
     Added   = 1,
     Updated = 0,
-}
-
-/// Add a new mapping from a mapping string
-pub fn add_mapping(mapping: &str) -> SdlResult<MappingStatus> {
-    let mapping = try!(CString::new(mapping).unwrap_or_sdlresult());
-
-    let result = unsafe { ll::SDL_GameControllerAddMapping(mapping.as_ptr()) };
-
-    match result {
-        1 => Ok(MappingStatus::Added),
-        0 => Ok(MappingStatus::Updated),
-        _ => Err(get_error()),
-    }
-}
-
-pub fn mapping_for_guid(guid: joystick::Guid) -> SdlResult<String> {
-    let c_str = unsafe { ll::SDL_GameControllerMappingForGUID(guid.raw()) };
-
-    c_str_to_string_or_err(c_str)
 }
 
 /// Wrapper around the SDL_GameController object

@@ -416,6 +416,202 @@ impl VideoSubsystem {
     pub fn window(&self, title: &str, width: u32, height: u32) -> WindowBuilder {
         WindowBuilder::new(self, title, width, height)
     }
+
+    pub fn get_current_video_driver(&self) -> &'static str {
+        use std::str;
+
+        unsafe {
+            let buf = ll::SDL_GetCurrentVideoDriver();
+            assert!(!buf.is_null());
+
+            str::from_utf8(CStr::from_ptr(buf).to_bytes()).unwrap()
+        }
+    }
+
+    pub fn get_num_video_displays(&self) -> SdlResult<i32> {
+        let result = unsafe { ll::SDL_GetNumVideoDisplays() };
+        if result < 0 {
+            Err(get_error())
+        } else {
+            Ok(result as i32)
+        }
+    }
+
+    pub fn get_display_name(&self, display_index: i32) -> String {
+        unsafe {
+            let display = ll::SDL_GetDisplayName(display_index as c_int);
+            String::from_utf8_lossy(CStr::from_ptr(display).to_bytes()).to_string()
+        }
+    }
+
+    pub fn get_display_bounds(&self, display_index: i32) -> SdlResult<Rect> {
+        let mut out = unsafe { mem::uninitialized() };
+        let result = unsafe { ll::SDL_GetDisplayBounds(display_index as c_int, &mut out) == 0 };
+
+        if result {
+            // Unwrap twice because there is always a non-empty rect.
+            Ok(Rect::from_ll(out).unwrap().unwrap())
+        } else {
+            Err(get_error())
+        }
+    }
+
+    pub fn get_num_display_modes(&self, display_index: i32) -> SdlResult<i32> {
+        let result = unsafe { ll::SDL_GetNumDisplayModes(display_index as c_int) };
+        if result < 0 {
+            Err(get_error())
+        } else {
+            Ok(result as i32)
+        }
+    }
+
+    pub fn get_display_mode(&self, display_index: i32, mode_index: i32) -> SdlResult<DisplayMode> {
+        let mut dm = unsafe { mem::uninitialized() };
+        let result = unsafe { ll::SDL_GetDisplayMode(display_index as c_int, mode_index as c_int, &mut dm) == 0};
+
+        if result {
+            Ok(DisplayMode::from_ll(&dm))
+        } else {
+            Err(get_error())
+        }
+    }
+
+    pub fn get_desktop_display_mode(&self, display_index: i32) -> SdlResult<DisplayMode> {
+        let mut dm = unsafe { mem::uninitialized() };
+        let result = unsafe { ll::SDL_GetDesktopDisplayMode(display_index as c_int, &mut dm) == 0};
+
+        if result {
+            Ok(DisplayMode::from_ll(&dm))
+        } else {
+            Err(get_error())
+        }
+    }
+
+    pub fn get_current_display_mode(&self, display_index: i32) -> SdlResult<DisplayMode> {
+        let mut dm = unsafe { mem::uninitialized() };
+        let result = unsafe { ll::SDL_GetCurrentDisplayMode(display_index as c_int, &mut dm) == 0};
+
+        if result {
+            Ok(DisplayMode::from_ll(&dm))
+        } else {
+            Err(get_error())
+        }
+    }
+
+    pub fn get_closest_display_mode(&self, display_index: i32, mode: &DisplayMode) -> SdlResult<DisplayMode> {
+        let input = mode.to_ll();
+        let mut dm = unsafe { mem::uninitialized() };
+
+        let result = unsafe { ll::SDL_GetClosestDisplayMode(display_index as c_int, &input, &mut dm) };
+
+        if result == ptr::null_mut() {
+            Err(get_error())
+        } else {
+            Ok(DisplayMode::from_ll(&dm))
+        }
+    }
+
+    pub fn is_screen_saver_enabled(&self) -> bool {
+        unsafe { ll::SDL_IsScreenSaverEnabled() == 1 }
+    }
+
+    pub fn enable_screen_saver(&self) {
+        unsafe { ll::SDL_EnableScreenSaver() }
+    }
+
+    pub fn disable_screen_saver(&self) {
+        unsafe { ll::SDL_DisableScreenSaver() }
+    }
+
+    /// Loads the default OpenGL library.
+    ///
+    /// This should be done after initializing the video driver, but before creating any OpenGL windows.
+    /// If no OpenGL library is loaded, the default library will be loaded upon creation of the first OpenGL window.
+    ///
+    /// If a different library is already loaded, this function will return an error.
+    pub fn gl_load_library_default(&self) -> SdlResult<()> {
+        unsafe {
+            if ll::SDL_GL_LoadLibrary(ptr::null()) == 0 {
+                Ok(())
+            } else {
+                Err(get_error())
+            }
+        }
+    }
+
+    /// Loads the OpenGL library using a platform-dependent OpenGL library name (usually a file path).
+    ///
+    /// This should be done after initializing the video driver, but before creating any OpenGL windows.
+    /// If no OpenGL library is loaded, the default library will be loaded upon creation of the first OpenGL window.
+    ///
+    /// If a different library is already loaded, this function will return an error.
+    pub fn gl_load_library<P: AsRef<::std::path::Path>>(&self, path: P) -> SdlResult<()> {
+        unsafe {
+            // TODO: use OsStr::to_cstring() once it's stable
+            let path = CString::new(path.as_ref().to_str().unwrap()).unwrap();
+            if ll::SDL_GL_LoadLibrary(path.as_ptr()) == 0 {
+                Ok(())
+            } else {
+                Err(get_error())
+            }
+        }
+    }
+
+    /// Unloads the current OpenGL library.
+    ///
+    /// To completely unload the library, this should be called for every successful load of the
+    /// OpenGL library.
+    pub fn gl_unload_library(&self) {
+        unsafe { ll::SDL_GL_UnloadLibrary(); }
+    }
+
+    /// Gets the pointer to the named OpenGL function.
+    ///
+    /// This is useful for OpenGL wrappers such as [`gl-rs`](https://github.com/bjz/gl-rs).
+    pub fn gl_get_proc_address(&self, procname: &str) -> *const c_void {
+        match CString::new(procname) {
+            Ok(procname) => unsafe { ll::SDL_GL_GetProcAddress(procname.as_ptr()) },
+            // string contains a nul byte - it won't match anything.
+            Err(_) => ptr::null()
+        }
+    }
+
+    pub fn gl_extension_supported(&self, extension: &str) -> bool {
+        match CString::new(extension) {
+            Ok(extension) => unsafe { ll::SDL_GL_ExtensionSupported(extension.as_ptr()) != 0 },
+            // string contains a nul byte - it won't match anything.
+            Err(_) => false
+        }
+    }
+
+    pub fn gl_get_current_window_id(&self) -> SdlResult<u32> {
+        let raw = unsafe { ll::SDL_GL_GetCurrentWindow() };
+        if raw == ptr::null_mut() {
+            Err(get_error())
+        } else {
+            let id = unsafe { ll::SDL_GetWindowID(raw) };
+            Ok(id)
+        }
+    }
+
+    /// Releases the thread's current OpenGL context, i.e. sets the current OpenGL context to nothing.
+    pub fn gl_release_current_context(&self) -> SdlResult<()> {
+        let result = unsafe { ll::SDL_GL_MakeCurrent(ptr::null_mut(), ptr::null()) };
+
+        if result == 0 {
+            Ok(())
+        } else {
+            Err(get_error())
+        }
+    }
+
+    pub fn gl_set_swap_interval(&self, interval: i32) -> bool {
+        unsafe { ll::SDL_GL_SetSwapInterval(interval as c_int) == 0 }
+    }
+
+    pub fn gl_get_swap_interval(&self) -> i32 {
+        unsafe { ll::SDL_GL_GetSwapInterval() as i32 }
+    }
 }
 
 impl Drop for Window {
@@ -936,197 +1132,4 @@ impl<'a> WindowProperties<'a> {
             Err(get_error())
         }
     }
-}
-
-pub fn get_num_video_drivers() -> SdlResult<i32> {
-    let result = unsafe { ll::SDL_GetNumVideoDrivers() };
-    if result < 0 {
-        Err(get_error())
-    } else {
-        Ok(result as i32)
-    }
-}
-
-pub fn get_video_driver(id: i32) -> String {
-    unsafe {
-        let buf = ll::SDL_GetVideoDriver(id as c_int);
-        String::from_utf8_lossy(CStr::from_ptr(buf).to_bytes()).to_string()
-    }
-}
-
-pub fn video_init(name: &str) -> SdlResult<()> {
-    let name = try!(CString::new(name).unwrap_or_sdlresult());
-    let result = unsafe { ll::SDL_VideoInit(name.as_ptr()) };
-    if result == 0 {
-        Ok(())
-    } else {
-        Err(get_error())
-    }
-}
-
-pub fn video_quit() {
-    unsafe { ll::SDL_VideoQuit() }
-}
-
-pub fn get_current_video_driver() -> String {
-    unsafe {
-        let video = ll::SDL_GetCurrentVideoDriver();
-        String::from_utf8_lossy(CStr::from_ptr(video).to_bytes()).to_string()
-    }
-}
-
-pub fn get_num_video_displays() -> SdlResult<i32> {
-    let result = unsafe { ll::SDL_GetNumVideoDisplays() };
-    if result < 0 {
-        Err(get_error())
-    } else {
-        Ok(result as i32)
-    }
-}
-
-pub fn get_display_name(display_index: i32) -> String {
-    unsafe {
-        let display = ll::SDL_GetDisplayName(display_index as c_int);
-        String::from_utf8_lossy(CStr::from_ptr(display).to_bytes()).to_string()
-    }
-}
-
-pub fn get_display_bounds(display_index: i32) -> SdlResult<Rect> {
-    let mut out = unsafe { mem::uninitialized() };
-    let result = unsafe { ll::SDL_GetDisplayBounds(display_index as c_int, &mut out) == 0 };
-
-    if result {
-        // Unwrap twice because there is always a non-empty rect.
-        Ok(Rect::from_ll(out).unwrap().unwrap())
-    } else {
-        Err(get_error())
-    }
-}
-
-pub fn get_num_display_modes(display_index: i32) -> SdlResult<i32> {
-    let result = unsafe { ll::SDL_GetNumDisplayModes(display_index as c_int) };
-    if result < 0 {
-        Err(get_error())
-    } else {
-        Ok(result as i32)
-    }
-}
-
-pub fn get_display_mode(display_index: i32, mode_index: i32) -> SdlResult<DisplayMode> {
-    let mut dm = unsafe { mem::uninitialized() };
-    let result = unsafe { ll::SDL_GetDisplayMode(display_index as c_int, mode_index as c_int, &mut dm) == 0};
-
-    if result {
-        Ok(DisplayMode::from_ll(&dm))
-    } else {
-        Err(get_error())
-    }
-}
-
-pub fn get_desktop_display_mode(display_index: i32) -> SdlResult<DisplayMode> {
-    let mut dm = unsafe { mem::uninitialized() };
-    let result = unsafe { ll::SDL_GetDesktopDisplayMode(display_index as c_int, &mut dm) == 0};
-
-    if result {
-        Ok(DisplayMode::from_ll(&dm))
-    } else {
-        Err(get_error())
-    }
-}
-
-pub fn get_current_display_mode(display_index: i32) -> SdlResult<DisplayMode> {
-    let mut dm = unsafe { mem::uninitialized() };
-    let result = unsafe { ll::SDL_GetCurrentDisplayMode(display_index as c_int, &mut dm) == 0};
-
-    if result {
-        Ok(DisplayMode::from_ll(&dm))
-    } else {
-        Err(get_error())
-    }
-}
-
-pub fn get_closest_display_mode(display_index: i32, mode: &DisplayMode) -> SdlResult<DisplayMode> {
-    let input = mode.to_ll();
-    let mut dm = unsafe { mem::uninitialized() };
-
-    let result = unsafe { ll::SDL_GetClosestDisplayMode(display_index as c_int, &input, &mut dm) };
-
-    if result == ptr::null_mut() {
-        Err(get_error())
-    } else {
-        Ok(DisplayMode::from_ll(&dm))
-    }
-}
-
-pub fn is_screen_saver_enabled() -> bool {
-    unsafe { ll::SDL_IsScreenSaverEnabled() == 1 }
-}
-
-pub fn enable_screen_saver() {
-    unsafe { ll::SDL_EnableScreenSaver() }
-}
-
-pub fn disable_screen_saver() {
-    unsafe { ll::SDL_DisableScreenSaver() }
-}
-
-pub fn gl_load_library<P: AsRef<::std::path::Path>>(path: P) -> SdlResult<()> {
-    unsafe {
-        // TODO: use OsStr::to_cstring() once it's stable
-        let path = CString::new(path.as_ref().to_str().unwrap()).unwrap();
-        if ll::SDL_GL_LoadLibrary(path.as_ptr()) == 0 {
-            Ok(())
-        } else {
-            Err(get_error())
-        }
-    }
-}
-
-pub fn gl_unload_library() {
-    unsafe { ll::SDL_GL_UnloadLibrary(); }
-}
-
-pub fn gl_get_proc_address(procname: &str) -> *const c_void {
-    match CString::new(procname) {
-        Ok(procname) => unsafe { ll::SDL_GL_GetProcAddress(procname.as_ptr()) },
-        // string contains a nul byte - it won't match anything.
-        Err(_) => ptr::null()
-    }
-}
-
-pub fn gl_extension_supported(extension: &str) -> bool {
-    match CString::new(extension) {
-        Ok(extension) => unsafe { ll::SDL_GL_ExtensionSupported(extension.as_ptr()) != 0 },
-        // string contains a nul byte - it won't match anything.
-        Err(_) => false
-    }
-}
-
-pub fn gl_get_current_window_id() -> SdlResult<u32> {
-    let raw = unsafe { ll::SDL_GL_GetCurrentWindow() };
-    if raw == ptr::null_mut() {
-        Err(get_error())
-    } else {
-        let id = unsafe { ll::SDL_GetWindowID(raw) };
-        Ok(id)
-    }
-}
-
-/// Releases the thread's current OpenGL context, i.e. sets the current OpenGL context to nothing.
-pub fn gl_release_current_context() -> SdlResult<()> {
-    let result = unsafe { ll::SDL_GL_MakeCurrent(ptr::null_mut(), ptr::null()) };
-
-    if result == 0 {
-        Ok(())
-    } else {
-        Err(get_error())
-    }
-}
-
-pub fn gl_set_swap_interval(interval: i32) -> bool {
-    unsafe { ll::SDL_GL_SetSwapInterval(interval as c_int) == 0 }
-}
-
-pub fn gl_get_swap_interval() -> i32 {
-    unsafe { ll::SDL_GL_GetSwapInterval() as i32 }
 }

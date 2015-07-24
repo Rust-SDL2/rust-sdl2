@@ -135,7 +135,10 @@ Then you need to add this to add this initialization code to establish the
 bindings:
 
 ```rust
-    gl::load_with(sdl2::video::gl_get_proc_address);
+let sdl_context = sdl2::init().unwrap();
+let video_subsystem = sdl_context.video().unwrap();
+
+gl::load_with(|name| video_subsystem.gl_get_proc_address(name));
 ```
 
 Note that these bindings are very raw, and many of the calls will require
