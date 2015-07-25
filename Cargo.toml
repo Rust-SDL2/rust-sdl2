@@ -1,6 +1,6 @@
 [package]
 name = "sdl2_image"
-version = "0.2.3"
+version = "0.2.4"
 authors = ["xsleonard"]
 description = "SDL2_image bindings and wrappers"
 license = "MIT"
