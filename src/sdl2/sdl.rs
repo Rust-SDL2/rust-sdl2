@@ -1,10 +1,8 @@
 use std::ffi::{CStr, CString};
-use std::marker::PhantomData;
+use std::rc::Rc;
 
 use sys::sdl as ll;
 use event::EventPump;
-use keyboard::KeyboardState;
-use video::WindowBuilder;
 use util::CStringExt;
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
@@ -39,33 +37,78 @@ static IS_SDL_CONTEXT_ALIVE: AtomicBool = ATOMIC_BOOL_INIT;
 /// This guarantees that the only way to call event-pumping functions is on
 /// the main thread.
 pub struct Sdl {
-    _nosyncsend: PhantomData<*mut ()>
+    sdldrop: Rc<SdlDrop>
 }
 
 impl Sdl {
-    /// Returns the mask of the specified subsystems which have previously been initialized.
-    pub fn was_init(&self, flags: u32) -> u32 {
+    #[inline]
+    pub fn new() -> SdlResult<Sdl> {
         unsafe {
-            ll::SDL_WasInit(flags)
+            use std::sync::atomic::Ordering;
+
+            // Atomically switch the `IS_SDL_CONTEXT_ALIVE` global to true
+            let was_alive = IS_SDL_CONTEXT_ALIVE.swap(true, Ordering::Relaxed);
+
+            if was_alive {
+                Err(format!("Cannot have more than one `Sdl` in use at the same time"))
+            } else {
+                // Initialize SDL without any explicit subsystems (flags = 0).
+                if ll::SDL_Init(0) == 0 {
+                    Ok(Sdl {
+                        sdldrop: Rc::new(SdlDrop)
+                    })
+                } else {
+                    IS_SDL_CONTEXT_ALIVE.swap(false, Ordering::Relaxed);
+                    Err(get_error())
+                }
+            }
         }
     }
 
+    /// Initializes the audio subsystem.
+    #[inline]
+    pub fn audio(&self) -> SdlResult<AudioSubsystem> { AudioSubsystem::new(self) }
+
+    /// Initializes the event subsystem.
+    #[inline]
+    pub fn event(&self) -> SdlResult<EventSubsystem> { EventSubsystem::new(self) }
+
+    /// Initializes the joystick subsystem.
+    #[inline]
+    pub fn joystick(&self) -> SdlResult<JoystickSubsystem> { JoystickSubsystem::new(self) }
+
+    /// Initializes the haptic subsystem.
+    #[inline]
+    pub fn haptic(&self) -> SdlResult<HapticSubsystem> { HapticSubsystem::new(self) }
+
+    /// Initializes the game controller subsystem.
+    #[inline]
+    pub fn game_controller(&self) -> SdlResult<GameControllerSubsystem> { GameControllerSubsystem::new(self) }
+
+    /// Initializes the timer subsystem.
+    #[inline]
+    pub fn timer(&self) -> SdlResult<TimerSubsystem> { TimerSubsystem::new(self) }
+
+    /// Initializes the video subsystem.
+    #[inline]
+    pub fn video(&self) -> SdlResult<VideoSubsystem> { VideoSubsystem::new(self) }
+
     /// Obtains the SDL event pump.
-    pub fn event_pump(&mut self) -> EventPump {
+    ///
+    /// At most one `EventPump` is allowed to be alive during the program's execution.
+    /// If this function is called while an `EventPump` instance is alive, the function will return
+    /// an error.
+    #[inline]
+    pub fn event_pump(&self) -> SdlResult<EventPump> {
         EventPump::new(self)
-    }
-
-    pub fn keyboard_state(&self) -> KeyboardState {
-        KeyboardState::new(self)
-    }
-
-    /// Initializes a new `WindowBuilder`; a convenience method that calls `WindowBuilder::new()`.
-    pub fn window(&self, title: &str, width: u32, height: u32) -> WindowBuilder {
-        WindowBuilder::new(self, title, width, height)
     }
 }
 
-impl Drop for Sdl {
+/// When SDL is no longer in use (the refcount in an `Rc<SdlDrop>` reaches 0), the library is quit.
+struct SdlDrop;
+
+impl Drop for SdlDrop {
+    #[inline]
     fn drop(&mut self) {
         use std::sync::atomic::Ordering;
 
@@ -76,137 +119,94 @@ impl Drop for Sdl {
     }
 }
 
-/// A RAII value representing initalized SDL subsystems. See `sdl2::Sdl::init_subsystem()`.
-///
-/// Subsystem initialization is ref-counted. Once `Subsystem::drop()` is called,
-/// the specified subsystems' ref-counts are decremented via `SDL_QuitSubSystem`.
-pub struct Subsystem<'sdl> {
-    flags: u32,
-    _marker: PhantomData<&'sdl Sdl>
-}
+// No subsystem can implement `Send` because the destructor, `SDL_QuitSubSystem`,
+// utilizes non-atomic reference counting and should thus be called on a single thread.
+// Some subsystems have functions designed to be thread-safe, such as adding a timer or accessing
+// the event queue. These subsystems implement `Sync`.
 
-impl<'sdl> Drop for Subsystem<'sdl> {
-    fn drop(&mut self) {
-        unsafe { ll::SDL_QuitSubSystem(self.flags); }
-    }
-}
+macro_rules! subsystem {
+    ($name:ident, $flag:expr) => (
+        impl $name {
+            #[inline]
+            fn new(sdl: &Sdl) -> SdlResult<$name> {
+                let result = unsafe { ll::SDL_InitSubSystem($flag) };
 
-/// The type that allows you to build the SDL2 context.
-pub struct InitBuilder {
-    flags: u32
-}
-
-impl InitBuilder {
-    /// Initializes a new `InitBuilder`.
-    pub fn new() -> InitBuilder {
-        InitBuilder { flags: 0 }
-    }
-
-    /// Builds the SDL2 context.
-    pub fn build(&self) -> SdlResult<Sdl> {
-        unsafe {
-            use std::sync::atomic::Ordering;
-
-            // Atomically switch the `IS_SDL_CONTEXT_ALIVE` global to true
-            let was_alive = IS_SDL_CONTEXT_ALIVE.swap(true, Ordering::Relaxed);
-
-            if was_alive {
-                Err(format!("Cannot have more than one `Sdl` in use at the same time"))
-            } else {
-                if ll::SDL_Init(self.flags) == 0 {
-                    Ok(Sdl {
-                        _nosyncsend: PhantomData
+                if result == 0 {
+                    Ok($name {
+                        _subsystem_drop: Rc::new(SubsystemDrop {
+                            _sdldrop: sdl.sdldrop.clone(),
+                            flag: $flag
+                        })
                     })
                 } else {
-                    IS_SDL_CONTEXT_ALIVE.swap(false, Ordering::Relaxed);
                     Err(get_error())
                 }
             }
         }
-    }
-
-    /// Builds the SDL2 context. Convenience method for `.build().unwrap()`.
-    ///
-    /// Panics if there was an error initializing SDL2.
-    pub fn unwrap(&self) -> Sdl { self.build().unwrap() }
-
-    /// Builds an SDL2 subsystem. Requires SDL2 to have already been initialized.
-    pub fn build_subsystem(&self, _sdl: &Sdl) -> SdlResult<Subsystem> {
-        unsafe {
-            if ll::SDL_InitSubSystem(self.flags) == 0 {
-                Ok(Subsystem {
-                    flags: self.flags,
-                    _marker: PhantomData
-                })
-            } else {
-                Err(get_error())
-            }
+    );
+    ($name:ident, $flag:expr, nosync) => (
+        #[derive(Clone)]
+        pub struct $name {
+            /// Subsystems cannot be moved or (usually) used on non-main threads.
+            /// Luckily, Rc restricts use to the main thread.
+            _subsystem_drop: Rc<SubsystemDrop>
         }
-    }
 
-    /// Initializes every subsystem.
-    pub fn everything(&mut self) -> &mut InitBuilder {
-        self.flags |= ll::SDL_INIT_EVERYTHING as u32;
-        self
-    }
+        subsystem!($name, $flag);
+    );
+    ($name:ident, $flag:expr, sync) => (
+        pub struct $name {
+            /// Subsystems cannot be moved or (usually) used on non-main threads.
+            /// Luckily, Rc restricts use to the main thread.
+            _subsystem_drop: Rc<SubsystemDrop>
+        }
+        unsafe impl Sync for $name {}
 
-    /// Initializes the timer subsystem.
-    pub fn timer(&mut self) -> &mut InitBuilder {
-        self.flags |= ll::SDL_INIT_TIMER as u32;
-        self
-    }
+        subsystem!($name, $flag);
+    )
+}
 
-    /// Initializes the audio subsystem.
-    pub fn audio(&mut self) -> &mut InitBuilder {
-        self.flags |= ll::SDL_INIT_AUDIO as u32;
-        self
-    }
+/// When a subsystem is no longer in use (the refcount in an `Rc<SubsystemDrop>` reaches 0),
+/// the subsystem is quit.
+#[derive(Clone)]
+struct SubsystemDrop {
+    _sdldrop: Rc<SdlDrop>,
+    flag: ll::SDL_InitFlag
+}
 
-    /// Initializes the video subsystem.
-    pub fn video(&mut self) -> &mut InitBuilder {
-        self.flags |= ll::SDL_INIT_VIDEO as u32;
-        self
-    }
-
-    /// Initializes the joystick subsystem.
-    pub fn joystick(&mut self) -> &mut InitBuilder {
-        self.flags |= ll::SDL_INIT_JOYSTICK as u32;
-        self
-    }
-
-    /// Initializes the haptic (force feedback) subsystem.
-    pub fn haptic(&mut self) -> &mut InitBuilder {
-        self.flags |= ll::SDL_INIT_HAPTIC as u32;
-        self
-    }
-
-    /// Initializes the controller subsystem.
-    pub fn game_controller(&mut self) -> &mut InitBuilder {
-        self.flags |= ll::SDL_INIT_GAMECONTROLLER as u32;
-        self
-    }
-
-    /// Initializes the events subsystem.
-    pub fn events(&mut self) -> &mut InitBuilder {
-        self.flags |= ll::SDL_INIT_EVENTS as u32;
-        self
+impl Drop for SubsystemDrop {
+    #[inline]
+    fn drop(&mut self) {
+        unsafe { ll::SDL_QuitSubSystem(self.flag); }
     }
 }
+
+subsystem!(AudioSubsystem, ll::SDL_INIT_AUDIO, nosync);
+subsystem!(GameControllerSubsystem, ll::SDL_INIT_GAMECONTROLLER, nosync);
+subsystem!(HapticSubsystem, ll::SDL_INIT_HAPTIC, nosync);
+subsystem!(JoystickSubsystem, ll::SDL_INIT_JOYSTICK, nosync);
+subsystem!(VideoSubsystem, ll::SDL_INIT_VIDEO, nosync);
+// Timers can be added on other threads.
+subsystem!(TimerSubsystem, ll::SDL_INIT_VIDEO, sync);
+// The event queue can be read from other threads.
+subsystem!(EventSubsystem, ll::SDL_INIT_EVENTS, sync);
 
 /// Initializes the SDL library.
 /// This must be called before using any other SDL function.
 ///
 /// # Example
 /// ```no_run
-/// let mut sdl_context = sdl2::init().everything().unwrap();
+/// let sdl_context = sdl2::init().unwrap();
+/// let mut event_pump = sdl_context.event_pump().unwrap();
 ///
-/// for event in sdl_context.event_pump().poll_iter() {
+/// for event in event_pump.poll_iter() {
 ///     // ...
 /// }
 ///
 /// // SDL_Quit() is called here as `sdl_context` is dropped.
 /// ```
-pub fn init() -> InitBuilder { InitBuilder::new() }
+#[inline]
+pub fn init() -> SdlResult<Sdl> { Sdl::new() }
 
 pub fn get_error() -> String {
     unsafe {
