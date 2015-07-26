@@ -1,5 +1,6 @@
 use sys::joystick as ll;
 
+use JoystickSubsystem;
 use SdlResult;
 use get_error;
 use clear_error;
@@ -8,15 +9,32 @@ use std::ffi::{CString, CStr, NulError};
 use std::fmt::{Display, Formatter, Error};
 use libc::c_char;
 
-/// Retreive the total number of attached joysticks *and* controllers
-/// identified by SDL.
-pub fn num_joysticks() -> SdlResult<i32> {
-    let result = unsafe { ll::SDL_NumJoysticks() };
+impl JoystickSubsystem {
+    /// Retreive the total number of attached joysticks *and* controllers identified by SDL.
+    pub fn num_joysticks(&self) -> SdlResult<u32> {
+        let result = unsafe { ll::SDL_NumJoysticks() };
 
-    if result >= 0 {
-        Ok(result)
-    } else {
-        Err(get_error())
+        if result >= 0 {
+            Ok(result as u32)
+        } else {
+            Err(get_error())
+        }
+    }
+
+    /// Attempt to open the joystick at number `id` and return it.
+    pub fn open(&self, id: u32) -> SdlResult<Joystick> {
+        let id = try!(u32_to_int!(id));
+
+        let joystick = unsafe { ll::SDL_JoystickOpen(id) };
+
+        if joystick.is_null() {
+            Err(get_error())
+        } else {
+            Ok(Joystick {
+                subsystem: self.clone(),
+                raw: joystick
+            })
+        }
     }
 }
 
@@ -59,20 +77,13 @@ pub fn update() {
 
 /// Wrapper around the SDL_Joystick object
 pub struct Joystick {
-    raw: *mut ll::SDL_Joystick,
+    subsystem: JoystickSubsystem,
+    raw: *mut ll::SDL_Joystick
 }
 
 impl Joystick {
-    /// Attempt to open the joystick at number `id` and return it.
-    pub fn open(id: i32) -> SdlResult<Joystick> {
-        let joystick = unsafe { ll::SDL_JoystickOpen(id) };
-
-        if joystick.is_null() {
-            Err(get_error())
-        } else {
-            Ok(Joystick { raw: joystick })
-        }
-    }
+    #[inline]
+    pub fn subsystem(&self) -> &JoystickSubsystem { &self.subsystem }
 
     /// Return the name of the joystick or an empty string if no name
     /// is found.

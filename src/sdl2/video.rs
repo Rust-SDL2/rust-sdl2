@@ -10,7 +10,8 @@ use rect::Rect;
 use render::RendererBuilder;
 use surface::SurfaceRef;
 use pixels;
-use Sdl;
+use VideoSubsystem;
+use event::EventPump;
 use SdlResult;
 use num::FromPrimitive;
 use util::CStringExt;
@@ -96,7 +97,8 @@ macro_rules! attrs {
 /// ```no_run
 /// use sdl2::video::{GLProfile, gl_attr};
 ///
-/// let sdl_context = sdl2::init().video().unwrap();
+/// let sdl_context = sdl2::init().unwrap();
+/// let video_subsystem = sdl_context.video().unwrap();
 ///
 /// // Don't use deprecated OpenGL functions
 /// gl_attr::set_context_profile(GLProfile::Core);
@@ -111,7 +113,7 @@ macro_rules! attrs {
 /// gl_attr::set_multisample_buffers(1);
 /// gl_attr::set_multisample_samples(4);
 ///
-/// let window = sdl_context.window("rust-sdl2 demo: Video", 800, 600).opengl().build().unwrap();
+/// let window = video_subsystem.window("rust-sdl2 demo: Video", 800, 600).opengl().build().unwrap();
 ///
 /// // Yes, we're still using the Core profile
 /// assert_eq!(gl_attr::context_profile(), GLProfile::Core);
@@ -401,17 +403,20 @@ impl GLContext {
 }
 
 pub struct Window {
-    raw: *mut ll::SDL_Window
+    subsystem: VideoSubsystem,
+    raw: *mut ll::SDL_Window,
 }
 
 impl_raw_accessors!(
-    (GLContext, ll::SDL_GLContext),
-    (Window, *mut ll::SDL_Window)
+    (GLContext, ll::SDL_GLContext)
 );
 
-impl_raw_constructor!(
-    (Window, Window (raw: *mut ll::SDL_Window))
-);
+impl VideoSubsystem {
+    /// Initializes a new `WindowBuilder`; a convenience method that calls `WindowBuilder::new()`.
+    pub fn window(&self, title: &str, width: u32, height: u32) -> WindowBuilder {
+        WindowBuilder::new(self, title, width, height)
+    }
+}
 
 impl Drop for Window {
     #[inline]
@@ -429,13 +434,13 @@ pub struct WindowBuilder {
     y: WindowPos,
     window_flags: u32,
     /// The window builder cannot be built on a non-main thread, so prevent cross-threaded moves and references.
-    /// `!Send` and `!Sync`
-    _nosendsync: PhantomData<*mut ()>
+    /// `!Send` and `!Sync`,
+    subsystem: VideoSubsystem
 }
 
 impl WindowBuilder {
     /// Initializes a new `WindowBuilder`.
-    pub fn new(_sdl: &Sdl, title: &str, width: u32, height: u32) -> WindowBuilder {
+    pub fn new(v: &VideoSubsystem, title: &str, width: u32, height: u32) -> WindowBuilder {
         WindowBuilder {
             title: CString::new(title).remove_nul(),
             width: width,
@@ -443,7 +448,7 @@ impl WindowBuilder {
             x: WindowPos::PosUndefined,
             y: WindowPos::PosUndefined,
             window_flags: 0,
-            _nosendsync: PhantomData
+            subsystem: v.clone()
         }
     }
 
@@ -469,7 +474,10 @@ impl WindowBuilder {
                 if raw == ptr::null_mut() {
                     Err(get_error())
                 } else {
-                    Ok(Window { raw: raw })
+                    Ok(Window {
+                        subsystem: self.subsystem.clone(),
+                        raw: raw
+                    })
                 }
             }
         }
@@ -552,6 +560,20 @@ impl<'a> Deref for WindowPropertiesGetters<'a> {
 }
 
 impl Window {
+    #[inline]
+    pub fn raw(&self) -> *mut ll::SDL_Window { self.raw }
+
+    #[inline]
+    pub unsafe fn from_ll(subsystem: VideoSubsystem, raw: *mut ll::SDL_Window) -> Window {
+        Window {
+            subsystem: subsystem,
+            raw: raw
+        }
+    }
+
+    #[inline]
+    pub fn subsystem(&self) -> &VideoSubsystem { &self.subsystem }
+
     /// Initializes a new `RendererBuilder`; a convenience method that calls `RendererBuilder::new()`.
     pub fn renderer(self) -> RendererBuilder {
         RendererBuilder::new(self)
@@ -567,13 +589,15 @@ impl Window {
     ///
     /// # Example
     /// ```no_run
-    /// let mut sdl_context = sdl2::init().everything().unwrap();
-    /// let mut window = sdl_context.window("My SDL window", 800, 600).build().unwrap();
+    /// let sdl_context = sdl2::init().unwrap();
+    /// let video_subsystem = sdl_context.video().unwrap();
+    /// let mut window = video_subsystem.window("My SDL window", 800, 600).build().unwrap();
+    /// let mut event_pump = sdl_context.event_pump().unwrap();
     ///
     /// loop {
     ///     let mut pos = None;
     ///
-    ///     for event in sdl_context.event_pump().poll_iter() {
+    ///     for event in event_pump.poll_iter() {
     ///         use sdl2::event::Event;
     ///         match event {
     ///             Event::MouseMotion { x, y, .. } => { pos = Some((x, y)); },
@@ -583,11 +607,11 @@ impl Window {
     ///
     ///     if let Some((x, y)) = pos {
     ///         // Set the window title
-    ///         window.properties(&sdl_context).set_title(&format!("{}, {}", x, y));
+    ///         window.properties(&event_pump).set_title(&format!("{}, {}", x, y));
     ///     }
     /// }
     /// ```
-    pub fn properties<'a>(&'a mut self, _sdl: &'a Sdl) -> WindowProperties<'a> {
+    pub fn properties<'b>(&'b mut self, _e: &'b EventPump) -> WindowProperties<'b> {
         WindowProperties {
             raw: self.raw,
             _marker: PhantomData

@@ -2,7 +2,7 @@
 //!
 //! # Example
 //! ```no_run
-//! use sdl2::audio::{AudioCallback, AudioDevice, AudioSpecDesired};
+//! use sdl2::audio::{AudioCallback, AudioSpecDesired};
 //!
 //! struct SquareWave {
 //!     phase_inc: f32,
@@ -25,7 +25,8 @@
 //!     }
 //! }
 //!
-//! let _sdl_context = sdl2::init().audio().unwrap();
+//! let sdl_context = sdl2::init().unwrap();
+//! let audio_subsystem = sdl_context.audio().unwrap();
 //!
 //! let desired_spec = AudioSpecDesired {
 //!     freq: Some(44100),
@@ -33,7 +34,7 @@
 //!     samples: None       // default sample size
 //! };
 //!
-//! let device = AudioDevice::open_playback(None, desired_spec, |spec| {
+//! let device = audio_subsystem.open_playback(None, desired_spec, |spec| {
 //!     // initialize the audio callback
 //!     SquareWave {
 //!         phase_inc: 440.0 / spec.freq as f32,
@@ -55,12 +56,23 @@ use std::ops::{Deref, DerefMut};
 use std::path::Path;
 use std::marker::PhantomData;
 
+use AudioSubsystem;
 use get_error;
 use rwops::RWops;
 use SdlResult;
 use util::CStringExt;
 
 use sys::audio as ll;
+
+impl AudioSubsystem {
+    /// Opens a new audio device given the desired parameters and callback.
+    #[inline]
+    pub fn open_playback<CB, F>(&self, device: Option<&str>, spec: AudioSpecDesired, get_callback: F) -> SdlResult<AudioDevice<CB>>
+    where CB: AudioCallback, F: FnOnce(AudioSpec) -> CB
+    {
+        AudioDevice::open_playback(self, device, spec, get_callback)
+    }
+}
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Hash)]
 pub enum AudioFormat {
@@ -400,6 +412,7 @@ impl Drop for AudioDeviceID {
 
 /// Wraps SDL_AudioDeviceID and owns the callback data used by the audio device.
 pub struct AudioDevice<CB: AudioCallback> {
+    subsystem: AudioSubsystem,
     device_id: AudioDeviceID,
     /// Store the callback to keep it alive for the entire duration of `AudioDevice`.
     userdata: Box<CB>
@@ -407,8 +420,7 @@ pub struct AudioDevice<CB: AudioCallback> {
 
 impl<CB: AudioCallback> AudioDevice<CB> {
     /// Opens a new audio device given the desired parameters and callback.
-    /// Uses `SDL_OpenAudioDevice`.
-    pub fn open_playback<F>(device: Option<&str>, spec: AudioSpecDesired, get_callback: F) -> SdlResult<AudioDevice<CB>>
+    pub fn open_playback<F>(a: &AudioSubsystem, device: Option<&str>, spec: AudioSpecDesired, get_callback: F) -> SdlResult<AudioDevice<CB>>
     where F: FnOnce(AudioSpec) -> CB
     {
         use std::mem;
@@ -446,6 +458,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
                     mem::forget(garbage);
 
                     Ok(AudioDevice {
+                        subsystem: a.clone(),
                         device_id: device_id,
                         userdata: userdata
                     })
@@ -453,6 +466,9 @@ impl<CB: AudioCallback> AudioDevice<CB> {
             }
         }
     }
+
+    #[inline]
+    pub fn subsystem(&self) -> &AudioSubsystem { &self.subsystem }
 
     pub fn get_status(&self) -> AudioStatus {
         unsafe {
