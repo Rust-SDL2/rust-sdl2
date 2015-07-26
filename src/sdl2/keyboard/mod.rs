@@ -1,7 +1,7 @@
 use num::{ToPrimitive, FromPrimitive};
 use std::ptr;
 
-use Sdl;
+use event::EventPump;
 use rect::Rect;
 use video::Window;
 
@@ -40,12 +40,12 @@ pub fn get_focused_window_id() -> Option<u32> {
     }
 }
 
-pub struct KeyboardState<'sdl> {
-    keyboard_state: &'sdl [u8]
+pub struct KeyboardState<'a> {
+    keyboard_state: &'a [u8]
 }
 
-impl<'sdl> KeyboardState<'sdl> {
-    pub fn new(_sdl: &Sdl) -> KeyboardState {
+impl<'a> KeyboardState<'a> {
+    pub fn new(_e: &'a EventPump) -> KeyboardState<'a> {
         let keyboard_state = unsafe {
             let mut count = 0;
             let state_ptr = ll::SDL_GetKeyboardState(&mut count);
@@ -64,8 +64,8 @@ impl<'sdl> KeyboardState<'sdl> {
     /// ```no_run
     /// use sdl2::keyboard::Scancode;
     ///
-    /// fn is_a_pressed(sdl_context: &mut sdl2::Sdl) -> bool {
-    ///     sdl_context.keyboard_state().is_scancode_pressed(Scancode::A)
+    /// fn is_a_pressed(e: &sdl2::event::EventPump) -> bool {
+    ///     e.keyboard_state().is_scancode_pressed(Scancode::A)
     /// }
     /// ```
     pub fn is_scancode_pressed(&self, scancode: Scancode) -> bool {
@@ -88,12 +88,12 @@ impl<'sdl> KeyboardState<'sdl> {
     /// use sdl2::keyboard::Scancode;
     /// use std::collections::HashSet;
     ///
-    /// fn pressed_scancode_set(sdl_context: &sdl2::Sdl) -> HashSet<Scancode> {
-    ///     sdl_context.keyboard_state().pressed_scancodes().collect()
+    /// fn pressed_scancode_set(e: &sdl2::event::EventPump) -> HashSet<Scancode> {
+    ///     e.keyboard_state().pressed_scancodes().collect()
     /// }
     ///
-    /// fn pressed_keycode_set(sdl_context: &sdl2::Sdl) -> HashSet<Keycode> {
-    ///     sdl_context.keyboard_state().pressed_scancodes()
+    /// fn pressed_keycode_set(e: &sdl2::event::EventPump) -> HashSet<Keycode> {
+    ///     e.keyboard_state().pressed_scancodes()
     ///         .filter_map(Keycode::from_scancode)
     ///         .collect()
     /// }
