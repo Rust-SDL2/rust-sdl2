@@ -1,3 +1,4 @@
+use std::marker::PhantomData;
 use std::ptr;
 
 use get_error;
@@ -91,6 +92,20 @@ pub enum Mouse {
     Unknown(u8)
 }
 
+impl Mouse {
+    #[inline]
+    pub fn from_ll(button: u8) -> Mouse {
+        match button {
+            1 => Mouse::Left,
+            2 => Mouse::Middle,
+            3 => Mouse::Right,
+            4 => Mouse::X1,
+            5 => Mouse::X2,
+            _ => Mouse::Unknown(button)
+        }
+    }
+}
+
 #[derive(Copy, Clone, Eq, PartialEq, Hash)]
 pub struct MouseState {
     flags: u32
@@ -133,61 +148,77 @@ impl MouseState {
     }
 }
 
-pub fn wrap_mouse(bitflags: u8) -> Mouse {
-    match bitflags {
-        1 => Mouse::Left,
-        2 => Mouse::Middle,
-        3 => Mouse::Right,
-        4 => Mouse::X1,
-        5 => Mouse::X2,
-        _ => Mouse::Unknown(bitflags)
+impl ::VideoSubsystem {
+    #[inline]
+    pub fn mouse(&self) -> MouseUtil {
+        MouseUtil {
+            _marker: PhantomData
+        }
     }
 }
 
-pub fn get_focused_window_id() -> Option<u32> {
-    let raw = unsafe { ll::SDL_GetMouseFocus() };
-    if raw == ptr::null_mut() {
-        None
-    } else {
-        let id = unsafe { ::sys::video::SDL_GetWindowID(raw) };
-        Some(id)
+/// Mouse utility functions. Access with `VideoSubsystem::mouse()`.
+///
+/// These functions require the video subsystem to be initialized and are not thread-safe.
+///
+/// ```no_run
+/// let sdl_context = sdl2::init().unwrap();
+/// let video_subsystem = sdl_context.video().unwrap();
+///
+/// // Hide the cursor
+/// video_subsystem.mouse().show_cursor(false);
+/// ```
+pub struct MouseUtil<'video> {
+    _marker: PhantomData<&'video ()>
+}
+
+impl<'video> MouseUtil<'video> {
+    /// Gets the id of the window which currently has mouse focus.
+    pub fn get_focused_window_id(&self) -> Option<u32> {
+        let raw = unsafe { ll::SDL_GetMouseFocus() };
+        if raw == ptr::null_mut() {
+            None
+        } else {
+            let id = unsafe { ::sys::video::SDL_GetWindowID(raw) };
+            Some(id)
+        }
     }
-}
 
-pub fn get_mouse_state() -> (MouseState, i32, i32) {
-    let mut x = 0;
-    let mut y = 0;
-    unsafe {
-        let raw = ll::SDL_GetMouseState(&mut x, &mut y);
-        return (MouseState::from_flags(raw), x as i32, y as i32);
+    pub fn get_mouse_state(&self) -> (MouseState, i32, i32) {
+        let mut x = 0;
+        let mut y = 0;
+        unsafe {
+            let raw = ll::SDL_GetMouseState(&mut x, &mut y);
+            return (MouseState::from_flags(raw), x as i32, y as i32);
+        }
     }
-}
 
-pub fn get_relative_mouse_state() -> (MouseState, i32, i32) {
-    let mut x = 0;
-    let mut y = 0;
-    unsafe {
-        let raw = ll::SDL_GetRelativeMouseState(&mut x, &mut y);
-        return (MouseState::from_flags(raw), x as i32, y as i32);
+    pub fn get_relative_mouse_state(&self) -> (MouseState, i32, i32) {
+        let mut x = 0;
+        let mut y = 0;
+        unsafe {
+            let raw = ll::SDL_GetRelativeMouseState(&mut x, &mut y);
+            return (MouseState::from_flags(raw), x as i32, y as i32);
+        }
     }
-}
 
-pub fn warp_mouse_in_window(window: &video::Window, x: i32, y: i32) {
-    unsafe { ll::SDL_WarpMouseInWindow(window.raw(), x, y); }
-}
+    pub fn warp_mouse_in_window(&self, window: &video::Window, x: i32, y: i32) {
+        unsafe { ll::SDL_WarpMouseInWindow(window.raw(), x, y); }
+    }
 
-pub fn set_relative_mouse_mode(on: bool) {
-    unsafe { ll::SDL_SetRelativeMouseMode(on as i32); }
-}
+    pub fn set_relative_mouse_mode(&self, on: bool) {
+        unsafe { ll::SDL_SetRelativeMouseMode(on as i32); }
+    }
 
-pub fn get_relative_mouse_mode() -> bool {
-    unsafe { ll::SDL_GetRelativeMouseMode() == 1 }
-}
+    pub fn get_relative_mouse_mode(&self) -> bool {
+        unsafe { ll::SDL_GetRelativeMouseMode() == 1 }
+    }
 
-pub fn is_cursor_showing() -> bool {
-    unsafe { ll::SDL_ShowCursor(ll::SDL_QUERY) == 1 }
-}
+    pub fn is_cursor_showing(&self) -> bool {
+        unsafe { ll::SDL_ShowCursor(ll::SDL_QUERY) == 1 }
+    }
 
-pub fn show_cursor(show: bool) {
-    unsafe { ll::SDL_ShowCursor(show as i32); }
+    pub fn show_cursor(&self, show: bool) {
+        unsafe { ll::SDL_ShowCursor(show as i32); }
+    }
 }

@@ -711,7 +711,7 @@ impl Event {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
                     which: event.which,
-                    mouse_btn: mouse::wrap_mouse(event.button),
+                    mouse_btn: mouse::Mouse::from_ll(event.button),
                     x: event.x,
                     y: event.y
                 }
@@ -723,7 +723,7 @@ impl Event {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
                     which: event.which,
-                    mouse_btn: mouse::wrap_mouse(event.button),
+                    mouse_btn: mouse::Mouse::from_ll(event.button),
                     x: event.x,
                     y: event.y
                 }
