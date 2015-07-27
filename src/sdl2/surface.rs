@@ -31,7 +31,17 @@ impl<'a> Drop for Surface<'a> {
 /// This type is used whenever Surfaces need to be borrowed from the SDL library, without concern
 /// for freeing the Surface.
 pub struct SurfaceRef {
-    raw: ll::SDL_Surface
+    // It's nothing! (it gets transmuted to SDL_Surface later).
+    // The empty private field is need to a) make `std::mem::swap()` copy nothing instead of
+    // clobbering two surfaces (SDL_Surface's size could change in the future),
+    // and b) prevent user initialization of this type.
+    _raw: ()
+}
+
+#[test]
+fn test_surface_ref_size() {
+    // `SurfaceRef` must be 0 bytes.
+    assert_eq!(::std::mem::size_of::<SurfaceRef>(), 0);
 }
 
 impl<'a> Deref for Surface<'a> {
@@ -105,9 +115,7 @@ impl<'a> Surface<'a> {
                 let raw = ll::SDL_CreateRGBSurface(0, width as c_int, height as c_int,
                     masks.bpp as c_int, masks.rmask, masks.gmask, masks.bmask, masks.amask);
 
-                // As of writing, is_null() doesn't work on pointers with unsized types.
-
-                if (raw as *mut ()).is_null() {
+                if raw.is_null() {
                     Err(get_error())
                 } else {
                     Ok(Surface {
@@ -137,7 +145,7 @@ impl<'a> Surface<'a> {
                     data.as_mut_ptr() as *mut _, width as c_int, height as c_int,
                     masks.bpp as c_int, pitch as c_int, masks.rmask, masks.gmask, masks.bmask, masks.amask);
 
-                if (raw as *mut ()).is_null() {
+                if raw.is_null() {
                     Err(get_error())
                 } else {
                     Ok(Surface {
@@ -154,7 +162,7 @@ impl<'a> Surface<'a> {
             ll::SDL_LoadBMP_RW(rwops.raw(), 0)
         };
 
-        if (raw as *mut ()).is_null() {
+        if raw.is_null() {
             Err(get_error())
         } else {
             Ok(Surface {
@@ -186,16 +194,21 @@ impl SurfaceRef {
         unsafe { mem::transmute(self) }
     }
 
+    #[inline]
+    fn raw_ref(&self) -> &ll::SDL_Surface {
+        unsafe { mem::transmute(self) }
+    }
+
     pub fn get_width(&self) -> u32 {
-        self.raw.w as u32
+        self.raw_ref().w as u32
     }
 
     pub fn get_height(&self) -> u32 {
-        self.raw.h as u32
+        self.raw_ref().h as u32
     }
 
     pub fn get_pitch(&self) -> u32 {
-        self.raw.pitch as u32
+        self.raw_ref().pitch as u32
     }
 
     pub fn get_size(&self) -> (u32, u32) {
@@ -208,7 +221,7 @@ impl SurfaceRef {
 
     pub fn get_pixel_format(&self) -> pixels::PixelFormat {
         unsafe {
-            pixels::PixelFormat::from_ll(self.raw.format)
+            pixels::PixelFormat::from_ll(self.raw_ref().format)
         }
     }
 
@@ -217,8 +230,8 @@ impl SurfaceRef {
         unsafe {
             if ll::SDL_LockSurface(self.raw()) != 0 { panic!("could not lock surface"); }
 
-            let raw_pixels = self.raw.pixels as *const _;
-            let len = self.raw.pitch as usize * (self.raw.h as usize);
+            let raw_pixels = self.raw_ref().pixels as *const _;
+            let len = self.raw_ref().pitch as usize * (self.raw_ref().h as usize);
             let pixels = ::std::slice::from_raw_parts(raw_pixels, len);
             let rv = f(pixels);
             ll::SDL_UnlockSurface(self.raw());
@@ -231,8 +244,8 @@ impl SurfaceRef {
         unsafe {
             if ll::SDL_LockSurface(self.raw()) != 0 { panic!("could not lock surface"); }
 
-            let raw_pixels = self.raw.pixels as *mut _;
-            let len = self.raw.pitch as usize * (self.raw.h as usize);
+            let raw_pixels = self.raw_ref().pixels as *mut _;
+            let len = self.raw_ref().pitch as usize * (self.raw_ref().h as usize);
             let pixels = ::std::slice::from_raw_parts_mut(raw_pixels, len);
             let rv = f(pixels);
             ll::SDL_UnlockSurface(self.raw());
@@ -247,8 +260,8 @@ impl SurfaceRef {
             None
         } else {
             unsafe {
-                let raw_pixels = self.raw.pixels as *const _;
-                let len = self.raw.pitch as usize * (self.raw.h as usize);
+                let raw_pixels = self.raw_ref().pixels as *const _;
+                let len = self.raw_ref().pitch as usize * (self.raw_ref().h as usize);
 
                 Some(::std::slice::from_raw_parts(raw_pixels, len))
             }
@@ -262,8 +275,8 @@ impl SurfaceRef {
             None
         } else {
             unsafe {
-                let raw_pixels = self.raw.pixels as *mut _;
-                let len = self.raw.pitch as usize * (self.raw.h as usize);
+                let raw_pixels = self.raw_ref().pixels as *mut _;
+                let len = self.raw_ref().pitch as usize * (self.raw_ref().h as usize);
 
                 Some(::std::slice::from_raw_parts_mut(raw_pixels, len))
             }
@@ -273,7 +286,7 @@ impl SurfaceRef {
     /// Returns true if the Surface needs to be locked before accessing the Surface pixels.
     pub fn must_lock(&self) -> bool {
         // Implements the SDL_MUSTLOCK macro.
-        (self.raw.flags & ll::SDL_RLEACCEL) != 0
+        (self.raw_ref().flags & ll::SDL_RLEACCEL) != 0
     }
 
     pub fn save_bmp_rw(&self, rwops: &mut RWops) -> SdlResult<()> {
@@ -481,7 +494,7 @@ impl SurfaceRef {
         // SDL_ConvertSurface takes a flag as the last parameter, which should be 0 by the docs.
         let surface_ptr = unsafe { ll::SDL_ConvertSurface(self.raw(), format.raw(), 0u32) };
 
-        if (surface_ptr as *mut ()).is_null() {
+        if surface_ptr.is_null() {
             Err(get_error())
         } else {
             unsafe { Ok(Surface::from_ll(surface_ptr)) }
