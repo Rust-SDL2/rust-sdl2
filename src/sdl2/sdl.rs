@@ -187,7 +187,7 @@ subsystem!(HapticSubsystem, ll::SDL_INIT_HAPTIC, nosync);
 subsystem!(JoystickSubsystem, ll::SDL_INIT_JOYSTICK, nosync);
 subsystem!(VideoSubsystem, ll::SDL_INIT_VIDEO, nosync);
 // Timers can be added on other threads.
-subsystem!(TimerSubsystem, ll::SDL_INIT_VIDEO, sync);
+subsystem!(TimerSubsystem, ll::SDL_INIT_TIMER, sync);
 // The event queue can be read from other threads.
 subsystem!(EventSubsystem, ll::SDL_INIT_EVENTS, sync);
 
