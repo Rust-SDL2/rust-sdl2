@@ -819,7 +819,7 @@ impl<'a> WindowProperties<'a> {
     pub fn get_surface(&self) -> SdlResult<&SurfaceRef> {
         let raw = unsafe { ll::SDL_GetWindowSurface(self.raw) };
 
-        if (raw as *mut ()).is_null() {
+        if raw.is_null() {
             Err(get_error())
         } else {
             unsafe { Ok(SurfaceRef::from_ll(raw)) }
@@ -829,7 +829,7 @@ impl<'a> WindowProperties<'a> {
     pub fn get_surface_mut(&mut self) -> SdlResult<&mut SurfaceRef> {
         let raw = unsafe { ll::SDL_GetWindowSurface(self.raw) };
 
-        if (raw as *mut ()).is_null() {
+        if raw.is_null() {
             Err(get_error())
         } else {
             unsafe { Ok(SurfaceRef::from_ll_mut(raw)) }
