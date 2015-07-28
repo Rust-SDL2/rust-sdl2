@@ -4,32 +4,56 @@ use get_error;
 
 use sys::clipboard as ll;
 
-pub fn set_clipboard_text(text: &String) -> SdlResult<()> {
-    unsafe {
-        let text = CString::new(text.clone()).unwrap();
-        let result = ll::SDL_SetClipboardText(text.as_ptr());
+/// Clipboard utility functions. Access with `VideoSubsystem::clipboard()`.
+///
+/// These functions require the video subsystem to be initialized.
+///
+/// ```no_run
+/// let sdl_context = sdl2::init().unwrap();
+/// let video_subsystem = sdl_context.video().unwrap();
+///
+/// video_subsystem.clipboard().set_clipboard_text("Hello World!").unwrap();
+/// ```
+pub struct ClipboardUtil {
+    _subsystem: ::VideoSubsystem
+}
 
-        if result == 0 {
-            Err(get_error())
-        } else {
-            Ok(())
+impl ::VideoSubsystem {
+    #[inline]
+    pub fn clipboard(&self) -> ClipboardUtil {
+        ClipboardUtil {
+            _subsystem: self.clone()
         }
     }
 }
 
-pub fn get_clipboard_text() -> SdlResult<String> {
-    let result = unsafe {
-        let buf = ll::SDL_GetClipboardText();
-        String::from_utf8_lossy(CStr::from_ptr(buf).to_bytes()).into_owned()
-    };
+impl ClipboardUtil {
+    pub fn set_clipboard_text(&self, text: &str) -> SdlResult<()> {
+        unsafe {
+            let text = CString::new(text).unwrap();
+            let result = ll::SDL_SetClipboardText(text.as_ptr());
 
-    if result.len() == 0 {
-        Err(get_error())
-    } else {
-        Ok(result)
+            if result == 0 {
+                Err(get_error())
+            } else {
+                Ok(())
+            }
+        }
     }
-}
 
-pub fn has_clipboard_text() -> bool {
-    unsafe { ll::SDL_HasClipboardText() == 1 }
+    pub fn get_clipboard_text(&self) -> SdlResult<String> {
+        unsafe {
+            let buf = ll::SDL_GetClipboardText();
+
+            if buf.is_null() {
+                Err(get_error())
+            } else {
+                Ok(String::from_utf8_lossy(CStr::from_ptr(buf).to_bytes()).into_owned())
+            }
+        }
+    }
+
+    pub fn has_clipboard_text(&self) -> bool {
+        unsafe { ll::SDL_HasClipboardText() == 1 }
+    }
 }
