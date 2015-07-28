@@ -1,6 +1,5 @@
 use num::{ToPrimitive, FromPrimitive};
 use std::ptr;
-use std::marker::PhantomData;
 
 use EventPump;
 use rect::Rect;
@@ -143,31 +142,36 @@ impl<'a> Iterator for PressedScancodeIterator<'a> {
     }
 }
 
-impl ::VideoSubsystem {
+impl ::Sdl {
     #[inline]
     pub fn keyboard(&self) -> KeyboardUtil {
         KeyboardUtil {
-            _marker: PhantomData
+            _sdldrop: self.sdldrop()
         }
     }
 }
 
-/// Keyboard utility functions. Access with `VideoSubsystem::keyboard()`.
-///
-/// These functions require the video subsystem to be initialized and are not thread-safe.
+impl ::VideoSubsystem {
+    #[inline]
+    pub fn text_input(&self) -> TextInputUtil {
+        TextInputUtil {
+            _subsystem: self.clone()
+        }
+    }
+}
+
+/// Keyboard utility functions. Access with `Sdl::keyboard()`.
 ///
 /// ```no_run
 /// let sdl_context = sdl2::init().unwrap();
-/// let video_subsystem = sdl_context.video().unwrap();
 ///
-/// // Start accepting text input events...
-/// video_subsystem.keyboard().start_text_input();
+/// let focused = sdl_context.keyboard().get_focused_window_id().is_some();
 /// ```
-pub struct KeyboardUtil<'video> {
-    _marker: PhantomData<&'video ()>
+pub struct KeyboardUtil {
+    _sdldrop: ::std::rc::Rc<::SdlDrop>
 }
 
-impl<'video> KeyboardUtil<'video> {
+impl KeyboardUtil {
     /// Gets the id of the window which currently has keyboard focus.
     pub fn get_focused_window_id(&self) -> Option<u32> {
         let raw = unsafe { ll::SDL_GetKeyboardFocus() };
@@ -186,20 +190,37 @@ impl<'video> KeyboardUtil<'video> {
     pub fn set_mod_state(&self, flags: Mod) {
         unsafe { ll::SDL_SetModState(flags.bits()); }
     }
+}
 
-    pub fn start_text_input(&self) {
+/// Text input utility functions. Access with `VideoSubsystem::text_input()`.
+///
+/// These functions require the video subsystem to be initialized and are not thread-safe.
+///
+/// ```no_run
+/// let sdl_context = sdl2::init().unwrap();
+/// let video_subsystem = sdl_context.video().unwrap();
+///
+/// // Start accepting text input events...
+/// video_subsystem.text_input().start();
+/// ```
+pub struct TextInputUtil {
+    _subsystem: ::VideoSubsystem
+}
+
+impl TextInputUtil {
+    pub fn start(&self) {
         unsafe { ll::SDL_StartTextInput(); }
     }
 
-    pub fn is_text_input_active(&self, ) -> bool {
+    pub fn is_active(&self, ) -> bool {
         unsafe { ll::SDL_IsTextInputActive() == 1 }
     }
 
-    pub fn stop_text_input(&self) {
+    pub fn stop(&self) {
         unsafe { ll::SDL_StopTextInput(); }
     }
 
-    pub fn set_text_input_rect(&self, rect: &Rect) {
+    pub fn set_rect(&self, rect: &Rect) {
         unsafe { ll::SDL_SetTextInputRect(rect.raw()); }
     }
 

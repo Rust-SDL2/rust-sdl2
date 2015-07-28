@@ -101,10 +101,17 @@ impl Sdl {
     pub fn event_pump(&self) -> SdlResult<EventPump> {
         EventPump::new(self)
     }
+
+    #[inline]
+    #[doc(hidden)]
+    pub fn sdldrop(&self) -> Rc<SdlDrop> {
+        self.sdldrop.clone()
+    }
 }
 
 /// When SDL is no longer in use (the refcount in an `Rc<SdlDrop>` reaches 0), the library is quit.
-struct SdlDrop;
+#[doc(hidden)]
+pub struct SdlDrop;
 
 impl Drop for SdlDrop {
     #[inline]

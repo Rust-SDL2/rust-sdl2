@@ -1,4 +1,3 @@
-use std::marker::PhantomData;
 use std::ptr;
 
 use get_error;
@@ -148,31 +147,28 @@ impl MouseState {
     }
 }
 
-impl ::VideoSubsystem {
+impl ::Sdl {
     #[inline]
     pub fn mouse(&self) -> MouseUtil {
         MouseUtil {
-            _marker: PhantomData
+            _sdldrop: self.sdldrop()
         }
     }
 }
 
-/// Mouse utility functions. Access with `VideoSubsystem::mouse()`.
-///
-/// These functions require the video subsystem to be initialized and are not thread-safe.
+/// Mouse utility functions. Access with `Sdl::mouse()`.
 ///
 /// ```no_run
 /// let sdl_context = sdl2::init().unwrap();
-/// let video_subsystem = sdl_context.video().unwrap();
 ///
 /// // Hide the cursor
-/// video_subsystem.mouse().show_cursor(false);
+/// sdl_context.mouse().show_cursor(false);
 /// ```
-pub struct MouseUtil<'video> {
-    _marker: PhantomData<&'video ()>
+pub struct MouseUtil {
+    _sdldrop: ::std::rc::Rc<::SdlDrop>
 }
 
-impl<'video> MouseUtil<'video> {
+impl MouseUtil {
     /// Gets the id of the window which currently has mouse focus.
     pub fn get_focused_window_id(&self) -> Option<u32> {
         let raw = unsafe { ll::SDL_GetMouseFocus() };
