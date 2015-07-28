@@ -958,44 +958,53 @@ impl<'a> WindowProperties<'a> {
         (x as i32, y as i32)
     }
 
-    pub fn set_size(&mut self, w: i32, h: i32) {
-        unsafe { ll::SDL_SetWindowSize(self.raw, w as c_int, h as c_int) }
+    pub fn set_size(&mut self, w: u32, h: u32) {
+        match (u32_to_int!(w), u32_to_int!(h)) {
+            (Ok(w), Ok(h)) => unsafe { ll::SDL_SetWindowSize(self.raw, w, h) },
+            _ => ()     // silently fail (`SDL_SetWindowSize` returns void)
+        }
     }
 
-    pub fn get_size(&self) -> (i32, i32) {
+    pub fn get_size(&self) -> (u32, u32) {
         let mut w: c_int = 0;
         let mut h: c_int = 0;
         unsafe { ll::SDL_GetWindowSize(self.raw, &mut w, &mut h) };
-        (w as i32, h as i32)
+        (w as u32, h as u32)
     }
 
-    pub fn get_drawable_size(&self) -> (i32, i32) {
+    pub fn get_drawable_size(&self) -> (u32, u32) {
         let mut w: c_int = 0;
         let mut h: c_int = 0;
         unsafe { ll::SDL_GL_GetDrawableSize(self.raw, &mut w, &mut h) };
-        (w as i32, h as i32)
+        (w as u32, h as u32)
     }
 
-    pub fn set_minimum_size(&mut self, w: i32, h: i32) {
-        unsafe { ll::SDL_SetWindowMinimumSize(self.raw, w as c_int, h as c_int) }
+    pub fn set_minimum_size(&mut self, w: u32, h: u32) {
+        match (u32_to_int!(w), u32_to_int!(h)) {
+            (Ok(w), Ok(h)) => unsafe { ll::SDL_SetWindowMinimumSize(self.raw, w, h) },
+            _ => ()     // silently fail (`SDL_SetWindowMinimumSize` returns void)
+        }
     }
 
-    pub fn get_minimum_size(&self) -> (i32, i32) {
+    pub fn get_minimum_size(&self) -> (u32, u32) {
         let mut w: c_int = 0;
         let mut h: c_int = 0;
         unsafe { ll::SDL_GetWindowMinimumSize(self.raw, &mut w, &mut h) };
-        (w as i32, h as i32)
+        (w as u32, h as u32)
     }
 
-    pub fn set_maximum_size(&mut self, w: i32, h: i32) {
-        unsafe { ll::SDL_SetWindowMaximumSize(self.raw, w as c_int, h as c_int) }
+    pub fn set_maximum_size(&mut self, w: u32, h: u32) {
+        match (u32_to_int!(w), u32_to_int!(h)) {
+            (Ok(w), Ok(h)) => unsafe { ll::SDL_SetWindowMaximumSize(self.raw, w, h) },
+            _ => ()     // silently fail (`SDL_SetWindowMaximumSize` returns void)
+        }
     }
 
-    pub fn get_maximum_size(&self) -> (i32, i32) {
+    pub fn get_maximum_size(&self) -> (u32, u32) {
         let mut w: c_int = 0;
         let mut h: c_int = 0;
         unsafe { ll::SDL_GetWindowMaximumSize(self.raw, &mut w, &mut h) };
-        (w as i32, h as i32)
+        (w as u32, h as u32)
     }
 
     pub fn set_bordered(&mut self, bordered: bool) {
@@ -1039,7 +1048,7 @@ impl<'a> WindowProperties<'a> {
     pub fn get_surface(&self) -> SdlResult<&SurfaceRef> {
         let raw = unsafe { ll::SDL_GetWindowSurface(self.raw) };
 
-        if (raw as *mut ()).is_null() {
+        if raw.is_null() {
             Err(get_error())
         } else {
             unsafe { Ok(SurfaceRef::from_ll(raw)) }
@@ -1049,7 +1058,7 @@ impl<'a> WindowProperties<'a> {
     pub fn get_surface_mut(&mut self) -> SdlResult<&mut SurfaceRef> {
         let raw = unsafe { ll::SDL_GetWindowSurface(self.raw) };
 
-        if (raw as *mut ()).is_null() {
+        if raw.is_null() {
             Err(get_error())
         } else {
             unsafe { Ok(SurfaceRef::from_ll_mut(raw)) }
