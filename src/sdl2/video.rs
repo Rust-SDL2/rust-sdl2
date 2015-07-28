@@ -11,7 +11,7 @@ use render::RendererBuilder;
 use surface::SurfaceRef;
 use pixels;
 use VideoSubsystem;
-use event::EventPump;
+use EventPump;
 use SdlResult;
 use num::FromPrimitive;
 use util::CStringExt;

@@ -28,7 +28,7 @@
 //! None of the draw methods in `Renderer` are expected to fail.
 //! If they do, a panic is raised and the program is aborted.
 
-use event::EventPump;
+use EventPump;
 use video::{Window, WindowProperties, WindowPropertiesGetters};
 use surface;
 use surface::{Surface, SurfaceRef};

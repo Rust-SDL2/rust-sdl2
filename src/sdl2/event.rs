@@ -24,7 +24,6 @@ use mouse::{Mouse, MouseState};
 use keyboard::Scancode;
 use get_error;
 use SdlResult;
-use Sdl;
 
 use sys::event as ll;
 
@@ -1001,44 +1000,7 @@ unsafe fn wait_event_timeout(timeout: u32) -> Option<Event> {
     else { None }
 }
 
-static mut IS_EVENT_PUMP_ALIVE: bool = false;
-
-/// A thread-safe type that encapsulates SDL event-pumping functions.
-pub struct EventPump<'sdl> {
-    _sdl:    PhantomData<&'sdl ()>,
-
-    // Prevents the event pump from moving to other threads.
-    // SDL events can only be pumped on the main thread.
-    _nosend: PhantomData<*mut ()>
-}
-
-impl<'sdl> EventPump<'sdl> {
-    /// Obtains the SDL event pump.
-    #[inline]
-    pub fn new(_sdl: &'sdl Sdl) -> SdlResult<EventPump<'sdl>> {
-        // Called on the main SDL thread.
-
-        unsafe {
-            if IS_EVENT_PUMP_ALIVE {
-                Err(format!("an `EventPump` instance is already alive - there can only be one `EventPump` in use at a time."))
-            } else {
-                // Initialize the events subsystem, just in case none of the other subsystems have done it yet.
-                let result = ::sys::sdl::SDL_InitSubSystem(::sys::sdl::SDL_INIT_EVENTS);
-
-                if result == 0 {
-                    IS_EVENT_PUMP_ALIVE = true;
-
-                    Ok(EventPump {
-                        _sdl: PhantomData,
-                        _nosend: PhantomData,
-                    })
-                } else {
-                    Err(get_error())
-                }
-            }
-        }
-    }
-
+impl ::EventPump {
     /// Query if an event type is enabled.
     pub fn is_event_enabled(&self, event_type: EventType) -> bool {
         let result = unsafe { ll::SDL_EventState(event_type as u32, ll::SDL_QUERY) };
@@ -1127,19 +1089,6 @@ impl<'sdl> EventPump<'sdl> {
     #[inline]
     pub fn keyboard_state(&self) -> ::keyboard::KeyboardState {
         ::keyboard::KeyboardState::new(self)
-    }
-}
-
-impl<'sdl> Drop for EventPump<'sdl> {
-    #[inline]
-    fn drop(&mut self) {
-        // Called on the main SDL thread.
-
-        unsafe {
-            assert!(IS_EVENT_PUMP_ALIVE);
-            ::sys::sdl::SDL_QuitSubSystem(::sys::sdl::SDL_INIT_EVENTS);
-            IS_EVENT_PUMP_ALIVE = false;
-        }
     }
 }
 

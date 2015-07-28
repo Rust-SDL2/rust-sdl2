@@ -2,7 +2,6 @@ use std::ffi::{CStr, CString};
 use std::rc::Rc;
 
 use sys::sdl as ll;
-use event::EventPump;
 use util::CStringExt;
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
@@ -190,6 +189,53 @@ subsystem!(VideoSubsystem, ll::SDL_INIT_VIDEO, nosync);
 subsystem!(TimerSubsystem, ll::SDL_INIT_TIMER, sync);
 // The event queue can be read from other threads.
 subsystem!(EventSubsystem, ll::SDL_INIT_EVENTS, sync);
+
+static mut IS_EVENT_PUMP_ALIVE: bool = false;
+
+/// A thread-safe type that encapsulates SDL event-pumping functions.
+pub struct EventPump {
+    _sdldrop: Rc<SdlDrop>
+}
+
+impl EventPump {
+    /// Obtains the SDL event pump.
+    #[inline]
+    fn new(sdl: &Sdl) -> SdlResult<EventPump> {
+        // Called on the main SDL thread.
+
+        unsafe {
+            if IS_EVENT_PUMP_ALIVE {
+                Err(format!("an `EventPump` instance is already alive - there can only be one `EventPump` in use at a time."))
+            } else {
+                // Initialize the events subsystem, just in case none of the other subsystems have done it yet.
+                let result = ll::SDL_InitSubSystem(ll::SDL_INIT_EVENTS);
+
+                if result == 0 {
+                    IS_EVENT_PUMP_ALIVE = true;
+
+                    Ok(EventPump {
+                        _sdldrop: sdl.sdldrop.clone()
+                    })
+                } else {
+                    Err(get_error())
+                }
+            }
+        }
+    }
+}
+
+impl Drop for EventPump {
+    #[inline]
+    fn drop(&mut self) {
+        // Called on the main SDL thread.
+
+        unsafe {
+            assert!(IS_EVENT_PUMP_ALIVE);
+            ll::SDL_QuitSubSystem(ll::SDL_INIT_EVENTS);
+            IS_EVENT_PUMP_ALIVE = false;
+        }
+    }
+}
 
 /// Initializes the SDL library.
 /// This must be called before using any other SDL function.

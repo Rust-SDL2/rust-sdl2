@@ -2,7 +2,7 @@ use num::{ToPrimitive, FromPrimitive};
 use std::ptr;
 use std::marker::PhantomData;
 
-use event::EventPump;
+use EventPump;
 use rect::Rect;
 use video::Window;
 
@@ -55,7 +55,7 @@ impl<'a> KeyboardState<'a> {
     /// ```no_run
     /// use sdl2::keyboard::Scancode;
     ///
-    /// fn is_a_pressed(e: &sdl2::event::EventPump) -> bool {
+    /// fn is_a_pressed(e: &sdl2::EventPump) -> bool {
     ///     e.keyboard_state().is_scancode_pressed(Scancode::A)
     /// }
     /// ```
@@ -79,11 +79,11 @@ impl<'a> KeyboardState<'a> {
     /// use sdl2::keyboard::Scancode;
     /// use std::collections::HashSet;
     ///
-    /// fn pressed_scancode_set(e: &sdl2::event::EventPump) -> HashSet<Scancode> {
+    /// fn pressed_scancode_set(e: &sdl2::EventPump) -> HashSet<Scancode> {
     ///     e.keyboard_state().pressed_scancodes().collect()
     /// }
     ///
-    /// fn pressed_keycode_set(e: &sdl2::event::EventPump) -> HashSet<Keycode> {
+    /// fn pressed_keycode_set(e: &sdl2::EventPump) -> HashSet<Keycode> {
     ///     e.keyboard_state().pressed_scancodes()
     ///         .filter_map(Keycode::from_scancode)
     ///         .collect()
