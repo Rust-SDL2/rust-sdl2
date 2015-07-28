@@ -33,16 +33,12 @@ pub fn main() {
 
         {
             // Update the window title.
-            // &event_pump is needed to safely access the Window and to ensure that the event loop
-            // isn't running (which could mutate the Window).
+            let mut window = renderer.window_mut().unwrap();
 
-            // Note: if you don't use renderer: window.properties(&event_pump);
-            let mut props = renderer.window_properties(&event_pump).unwrap();
-
-            let position = props.get_position();
-            let size = props.get_size();
+            let position = window.get_position();
+            let size = window.get_size();
             let title = format!("Window - pos({}x{}), size({}x{}): {}", position.0, position.1, size.0, size.1, tick);
-            props.set_title(&title);
+            window.set_title(&title);
 
             tick += 1;
         }
