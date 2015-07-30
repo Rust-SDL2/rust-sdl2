@@ -23,9 +23,6 @@ static IS_SDL_CONTEXT_ALIVE: AtomicBool = ATOMIC_BOOL_INIT;
 /// The SDL context type. Initialize with `sdl2::init()`.
 ///
 /// From a thread-safety perspective, `Sdl` represents the main thread.
-/// Only one instance of `Sdl` is allowed per process, and cannot be moved or
-/// used across non-main threads.
-///
 /// As such, `Sdl` is a useful type for ensuring that SDL types that can only
 /// be used on the main thread are initialized that way.
 ///
@@ -35,13 +32,14 @@ static IS_SDL_CONTEXT_ALIVE: AtomicBool = ATOMIC_BOOL_INIT;
 /// `EventPump` type, which can only be obtained through `Sdl`.
 /// This guarantees that the only way to call event-pumping functions is on
 /// the main thread.
+#[derive(Clone)]
 pub struct Sdl {
     sdldrop: Rc<SdlDrop>
 }
 
 impl Sdl {
     #[inline]
-    pub fn new() -> SdlResult<Sdl> {
+    fn new() -> SdlResult<Sdl> {
         unsafe {
             use std::sync::atomic::Ordering;
 
@@ -49,7 +47,7 @@ impl Sdl {
             let was_alive = IS_SDL_CONTEXT_ALIVE.swap(true, Ordering::Relaxed);
 
             if was_alive {
-                Err(format!("Cannot have more than one `Sdl` in use at the same time"))
+                Err(format!("Cannot initialize `Sdl` more than once at a time."))
             } else {
                 // Initialize SDL without any explicit subsystems (flags = 0).
                 if ll::SDL_Init(0) == 0 {
@@ -167,6 +165,15 @@ macro_rules! subsystem {
             _subsystem_drop: Rc<SubsystemDrop>
         }
         unsafe impl Sync for $name {}
+
+        impl $name {
+            #[inline]
+            pub fn clone(&mut self) -> $name {
+                $name {
+                    _subsystem_drop: self._subsystem_drop.clone()
+                }
+            }
+        }
 
         subsystem!($name, $flag);
     )
