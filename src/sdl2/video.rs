@@ -76,14 +76,14 @@ macro_rules! attrs {
         #[doc = "**Sets** the attribute: "]
         #[doc = $doc]
         #[inline]
-        pub fn $set_property(value: $t) {
+        pub fn $set_property(&self, value: $t) {
             gl_set_attribute!($attr_name, value.to_gl_value());
         }
 
         #[doc = "**Gets** the attribute: "]
         #[doc = $doc]
         #[inline]
-        pub fn $get_property() -> $t {
+        pub fn $get_property(&self) -> $t {
             let value = gl_get_attribute!($attr_name);
             GLAttrTypeUtil::from_gl_value(value)
         }
@@ -95,35 +95,51 @@ macro_rules! attrs {
 ///
 /// # Example
 /// ```no_run
-/// use sdl2::video::{GLProfile, gl_attr};
+/// use sdl2::video::GLProfile;
 ///
 /// let sdl_context = sdl2::init().unwrap();
 /// let video_subsystem = sdl_context.video().unwrap();
+/// let gl_attr = video_subsystem.gl_attr();
 ///
 /// // Don't use deprecated OpenGL functions
-/// gl_attr::set_context_profile(GLProfile::Core);
+/// gl_attr.set_context_profile(GLProfile::Core);
 ///
 /// // Set the context into debug mode
-/// gl_attr::set_context_flags().debug().set();
+/// gl_attr.set_context_flags().debug().set();
 ///
 /// // Set the OpenGL context version (OpenGL 3.2)
-/// gl_attr::set_context_version(3, 2);
+/// gl_attr.set_context_version(3, 2);
 ///
 /// // Enable anti-aliasing
-/// gl_attr::set_multisample_buffers(1);
-/// gl_attr::set_multisample_samples(4);
+/// gl_attr.set_multisample_buffers(1);
+/// gl_attr.set_multisample_samples(4);
 ///
 /// let window = video_subsystem.window("rust-sdl2 demo: Video", 800, 600).opengl().build().unwrap();
 ///
 /// // Yes, we're still using the Core profile
-/// assert_eq!(gl_attr::context_profile(), GLProfile::Core);
+/// assert_eq!(gl_attr.context_profile(), GLProfile::Core);
 /// // ... and we're still using OpenGL 3.2
-/// assert_eq!(gl_attr::context_version(), (3, 2));
+/// assert_eq!(gl_attr.context_version(), (3, 2));
 /// ```
 pub mod gl_attr {
     use get_error;
     use sys::video as ll;
+    use std::marker::PhantomData;
     use super::{GLProfile, GLAttrTypeUtil};
+
+    /// OpenGL context getters and setters. Obtain with `VideoSubsystem::gl_attr()`.
+    pub struct GLAttr<'a> {
+        _marker: PhantomData<&'a ::VideoSubsystem>
+    }
+
+    impl ::VideoSubsystem {
+        /// Obtains access to the OpenGL window attributes.
+        pub fn gl_attr(&self) -> GLAttr {
+            GLAttr {
+                _marker: PhantomData
+            }
+        }
+    }
 
     macro_rules! gl_set_attribute {
         ($attr:ident, $value:expr) => ({
@@ -151,6 +167,8 @@ pub mod gl_attr {
             value
         })
     }
+
+    impl<'a> GLAttr<'a> {
 
     // Note: Wish I could avoid the redundancy of set_property and property (without namespacing into new modules),
     // but Rust's `concat_idents!` macro isn't stable.
@@ -221,23 +239,26 @@ pub mod gl_attr {
 
     /// **Sets** the OpenGL context major and minor versions.
     #[inline]
-    pub fn set_context_version(major: u8, minor: u8) {
-        set_context_major_version(major);
-        set_context_minor_version(minor);
+    pub fn set_context_version(&self, major: u8, minor: u8) {
+        self.set_context_major_version(major);
+        self.set_context_minor_version(minor);
     }
 
     /// **Gets** the OpenGL context major and minor versions as a tuple.
     #[inline]
-    pub fn context_version() -> (u8, u8) {
-        (context_major_version(), context_minor_version())
+    pub fn context_version(&self) -> (u8, u8) {
+        (self.context_major_version(), self.context_minor_version())
+    }
+
     }
 
     /// The type that allows you to build a OpenGL context configuration.
-    pub struct ContextFlagsBuilder {
-        flags: i32
+    pub struct ContextFlagsBuilder<'a> {
+        flags: i32,
+        _marker: PhantomData<&'a ::VideoSubsystem>
     }
 
-    impl ContextFlagsBuilder {
+    impl<'a> ContextFlagsBuilder<'a> {
         /// Finishes the builder and applies the GL context flags to the GL context.
         #[inline]
         pub fn set(&self) {
@@ -246,26 +267,26 @@ pub mod gl_attr {
 
         /// Sets the context into "debug" mode.
         #[inline]
-        pub fn debug(&mut self) -> &mut ContextFlagsBuilder {
+        pub fn debug(&mut self) -> &mut ContextFlagsBuilder<'a> {
             self.flags |= 0x0001;
             self
         }
 
         /// Sets the context into "forward compatible" mode.
         #[inline]
-        pub fn forward_compatible(&mut self) -> &mut ContextFlagsBuilder {
+        pub fn forward_compatible(&mut self) -> &mut ContextFlagsBuilder<'a> {
             self.flags |= 0x0002;
             self
         }
 
         #[inline]
-        pub fn robust_access(&mut self) -> &mut ContextFlagsBuilder {
+        pub fn robust_access(&mut self) -> &mut ContextFlagsBuilder<'a> {
             self.flags |= 0x0004;
             self
         }
 
         #[inline]
-        pub fn reset_isolation(&mut self) -> &mut ContextFlagsBuilder {
+        pub fn reset_isolation(&mut self) -> &mut ContextFlagsBuilder<'a> {
             self.flags |= 0x0008;
             self
         }
@@ -289,18 +310,25 @@ pub mod gl_attr {
         pub fn has_reset_isolation(&self) -> bool { self.flags & 0x0008 != 0 }
     }
 
+    impl<'a> GLAttr<'a> {
+
     /// **Sets** any combination of OpenGL context configuration flags.
     ///
     /// Note that calling this will reset any existing context flags.
     ///
     /// # Example
     /// ```no_run
+    /// let sdl_context = sdl2::init().unwrap();
+    /// let video_subsystem = sdl_context.video().unwrap();
+    /// let gl_attr = video_subsystem.gl_attr();
+    ///
     /// // Sets the GL context into debug mode.
-    /// sdl2::video::gl_attr::set_context_flags().debug().set();
+    /// gl_attr.set_context_flags().debug().set();
     /// ```
-    pub fn set_context_flags() -> ContextFlagsBuilder {
+    pub fn set_context_flags(&self) -> ContextFlagsBuilder {
         ContextFlagsBuilder {
-            flags: 0
+            flags: 0,
+            _marker: PhantomData
         }
     }
 
@@ -308,17 +336,23 @@ pub mod gl_attr {
     ///
     /// # Example
     /// ```no_run
+    /// let sdl_context = sdl2::init().unwrap();
+    /// let video_subsystem = sdl_context.video().unwrap();
+    /// let gl_attr = video_subsystem.gl_attr();
+    ///
     /// // Is the GL context in debug mode?
-    /// if sdl2::video::gl_attr::context_flags().has_debug() {
+    /// if gl_attr.context_flags().has_debug() {
     ///     println!("Debug mode");
     /// }
     /// ```
-    pub fn context_flags() -> ContextFlags {
+    pub fn context_flags(&self) -> ContextFlags {
         let flags = gl_get_attribute!(SDL_GL_CONTEXT_FLAGS);
 
         ContextFlags {
             flags: flags
         }
+    }
+
     }
 }
 
