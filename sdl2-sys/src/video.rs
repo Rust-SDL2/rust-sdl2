@@ -11,7 +11,7 @@ pub type SDL_bool = c_int;
 //SDL_video.h
 #[allow(missing_copy_implementations)]
 #[repr(C)]
-pub struct SDL_Window;
+pub struct SDL_Window(c_void);
 
 #[allow(missing_copy_implementations)]
 #[repr(C)]

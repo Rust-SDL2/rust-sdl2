@@ -43,10 +43,10 @@ pub const SDL_FLIP_VERTICAL : SDL_RendererFlip = 0x00000002;
 
 #[allow(missing_copy_implementations)]
 #[repr(C)]
-pub struct SDL_Renderer;
+pub struct SDL_Renderer(c_void);
 #[allow(missing_copy_implementations)]
 #[repr(C)]
-pub struct SDL_Texture;
+pub struct SDL_Texture(c_void);
 
 //SDL_blendmode.h
 pub type SDL_BlendMode = c_int;
