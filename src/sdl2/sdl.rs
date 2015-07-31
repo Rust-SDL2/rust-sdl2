@@ -156,6 +156,14 @@ macro_rules! subsystem {
             _subsystem_drop: Rc<SubsystemDrop>
         }
 
+        impl $name {
+            /// Obtain an SDL context.
+            #[inline]
+            pub fn sdl(&self) -> Sdl {
+                Sdl { sdldrop: self._subsystem_drop._sdldrop.clone() }
+            }
+        }
+
         subsystem!($name, $flag);
     );
     ($name:ident, $flag:expr, sync) => (
@@ -172,6 +180,12 @@ macro_rules! subsystem {
                 $name {
                     _subsystem_drop: self._subsystem_drop.clone()
                 }
+            }
+            
+            /// Obtain an SDL context.
+            #[inline]
+            pub fn sdl(&mut self) -> Sdl {
+                Sdl { sdldrop: self._subsystem_drop._sdldrop.clone() }
             }
         }
 
