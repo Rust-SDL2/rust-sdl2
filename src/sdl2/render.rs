@@ -28,8 +28,7 @@
 //! None of the draw methods in `Renderer` are expected to fail.
 //! If they do, a panic is raised and the program is aborted.
 
-use EventPump;
-use video::{Window, WindowProperties, WindowPropertiesGetters};
+use video::{Window, WindowRef};
 use surface;
 use surface::{Surface, SurfaceRef};
 use pixels;
@@ -248,54 +247,56 @@ impl<'a> Renderer<'a> {
         }
     }
 
-    /// Gets the window or surface the rendering context was created from.
     #[inline]
-    pub fn get_parent(&self) -> &RendererParent { self.parent.as_ref().unwrap() }
+    fn get_parent(&self) -> &RendererParent { self.parent.as_ref().unwrap() }
 
     #[inline]
-    pub fn get_parent_as_window(&self) -> Option<&Window> {
+    fn get_parent_mut(&mut self) -> &mut RendererParent<'a> { self.parent.as_mut().unwrap() }
+
+    /// Gets the associated window reference of the Renderer, if there is one.
+    #[inline]
+    pub fn window(&self) -> Option<&WindowRef> {
         match self.get_parent() {
             &RendererParent::Window(ref window) => Some(window),
             _ => None
         }
     }
 
+    /// Gets the associated window reference of the Renderer, if there is one.
     #[inline]
-    pub fn get_parent_as_surface(&self) -> Option<&SurfaceRef> {
+    pub fn window_mut(&mut self) -> Option<&mut WindowRef> {
+        match self.get_parent_mut() {
+            &mut RendererParent::Window(ref mut window) => Some(window),
+            _ => None
+        }
+    }
+
+    /// Gets the associated surface reference of the Renderer, if there is one.
+    #[inline]
+    pub fn surface(&self) -> Option<&SurfaceRef> {
         match self.get_parent() {
             &RendererParent::Surface(ref surface) => Some(surface),
             _ => None
         }
     }
 
-    /// Accesses the Window properties, such as the position, size and title of a Window.
-    /// Returns None if the renderer is not associated with a Window.
-    pub fn window_properties<'b>(&'b mut self, e: &'b EventPump) -> Option<WindowProperties<'b>>
-    {
-        match self.parent.as_mut() {
-            Some(&mut RendererParent::Window(ref mut window)) => Some(window.properties(e)),
-            _ => None
-        }
-    }
-
-    /// Accesses the Window getters, such as the position, size and title of a Window.
-    /// Returns None if the renderer is not associated with a Window.
-    pub fn window_properties_getters(&self) -> Option<WindowPropertiesGetters>
-    {
-        match self.parent.as_ref() {
-            Some(&RendererParent::Window(ref window)) => Some(window.properties_getters()),
+    /// Gets the associated surface reference of the Renderer, if there is one.
+    #[inline]
+    pub fn surface_mut(&mut self) -> Option<&mut SurfaceRef> {
+        match self.get_parent_mut() {
+            &mut RendererParent::Surface(ref mut surface) => Some(surface),
             _ => None
         }
     }
 
     #[inline]
-    pub fn unwrap_parent(mut self) -> RendererParent<'a> {
+    fn unwrap_parent(mut self) -> RendererParent<'a> {
         use std::mem;
         mem::replace(&mut self.parent, None).unwrap()
     }
 
     #[inline]
-    pub fn unwrap_parent_as_window(self) -> Option<Window> {
+    pub fn into_window(self) -> Option<Window> {
         match self.unwrap_parent() {
             RendererParent::Window(window) => Some(window),
             _ => None
@@ -303,7 +304,7 @@ impl<'a> Renderer<'a> {
     }
 
     #[inline]
-    pub fn unwrap_parent_as_surface(self) -> Option<Surface<'a>> {
+    pub fn into_surface(self) -> Option<Surface<'a>> {
         match self.unwrap_parent() {
             RendererParent::Surface(surface) => Some(surface),
             _ => None
