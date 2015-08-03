@@ -17,7 +17,7 @@ pub const SDL_DONTFREE: SDL_SurfaceFlag = 0x00000004;
 //SDL_surface.h
 #[allow(missing_copy_implementations)]
 #[repr(C)]
-pub struct SDL_BlitMap;
+pub struct SDL_BlitMap(c_void);
 
 #[allow(missing_copy_implementations)]
 #[repr(C)]
