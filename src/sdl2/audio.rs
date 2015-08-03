@@ -2,7 +2,7 @@
 //!
 //! # Example
 //! ```no_run
-//! use sdl2::audio::{AudioCallback, AudioDevice, AudioSpecDesired};
+//! use sdl2::audio::{AudioCallback, AudioSpecDesired};
 //!
 //! struct SquareWave {
 //!     phase_inc: f32,
@@ -25,7 +25,8 @@
 //!     }
 //! }
 //!
-//! let _sdl_context = sdl2::init().audio().unwrap();
+//! let sdl_context = sdl2::init().unwrap();
+//! let audio_subsystem = sdl_context.audio().unwrap();
 //!
 //! let desired_spec = AudioSpecDesired {
 //!     freq: Some(44100),
@@ -33,7 +34,7 @@
 //!     samples: None       // default sample size
 //! };
 //!
-//! let device = AudioDevice::open_playback(None, desired_spec, |spec| {
+//! let device = audio_subsystem.open_playback(None, desired_spec, |spec| {
 //!     // initialize the audio callback
 //!     SquareWave {
 //!         phase_inc: 440.0 / spec.freq as f32,
@@ -46,7 +47,7 @@
 //! device.resume();
 //!
 //! // Play for 2 seconds
-//! sdl2::timer::delay(2000);
+//! std::thread::sleep_ms(2000);
 //! ```
 use std::ffi::{CStr, CString};
 use num::FromPrimitive;
@@ -55,12 +56,55 @@ use std::ops::{Deref, DerefMut};
 use std::path::Path;
 use std::marker::PhantomData;
 
+use AudioSubsystem;
 use get_error;
 use rwops::RWops;
 use SdlResult;
 use util::CStringExt;
 
 use sys::audio as ll;
+
+impl AudioSubsystem {
+    /// Opens a new audio device given the desired parameters and callback.
+    #[inline]
+    pub fn open_playback<CB, F>(&self, device: Option<&str>, spec: AudioSpecDesired, get_callback: F) -> SdlResult<AudioDevice<CB>>
+    where CB: AudioCallback, F: FnOnce(AudioSpec) -> CB
+    {
+        AudioDevice::open_playback(self, device, spec, get_callback)
+    }
+
+    pub fn get_current_audio_driver(&self) -> &'static str {
+        use std::str;
+
+        unsafe {
+            let buf = ll::SDL_GetCurrentAudioDriver();
+            assert!(!buf.is_null());
+
+            str::from_utf8(CStr::from_ptr(buf).to_bytes()).unwrap()
+        }
+    }
+
+    pub fn get_num_audio_playback_devices(&self) -> Option<u32> {
+        let result = unsafe { ll::SDL_GetNumAudioDevices(0) };
+        if result < 0 {
+            // SDL cannot retreive a list of audio devices. This is not necessarily an error (see the SDL2 docs).
+            None
+        } else {
+            Some(result as u32)
+        }
+    }
+
+    pub fn get_audio_playback_device_name(&self, index: u32) -> SdlResult<String> {
+        unsafe {
+            let dev_name = ll::SDL_GetAudioDeviceName(index as c_int, 0);
+            if dev_name.is_null() {
+                Err(get_error())
+            } else {
+                Ok(String::from_utf8_lossy(CStr::from_ptr(dev_name).to_bytes()).to_string())
+            }
+        }
+    }
+}
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Hash)]
 pub enum AudioFormat {
@@ -156,47 +200,51 @@ impl FromPrimitive for AudioStatus {
     fn from_u64(n: u64) -> Option<AudioStatus> { FromPrimitive::from_i64(n as i64) }
 }
 
-pub fn get_num_audio_drivers() -> i32 {
-    unsafe { ll::SDL_GetNumAudioDrivers() as i32 }
+#[derive(Copy, Clone)]
+pub struct DriverIterator {
+    length: i32,
+    index: i32
 }
 
-pub fn get_audio_driver(index: i32) -> String {
-    unsafe {
-        let driver = ll::SDL_GetAudioDriver(index as c_int);
-        String::from_utf8_lossy(CStr::from_ptr(driver).to_bytes()).to_string()
+impl Iterator for DriverIterator {
+    type Item = &'static str;
+
+    #[inline]
+    fn next(&mut self) -> Option<&'static str> {
+        if self.index >= self.length {
+            None
+        } else {
+            use std::str;
+
+            unsafe {
+                let buf = ll::SDL_GetAudioDriver(self.index);
+                assert!(!buf.is_null());
+                self.index += 1;
+
+                Some(str::from_utf8(CStr::from_ptr(buf).to_bytes()).unwrap())
+            }
+        }
+    }
+
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let l = self.length as usize;
+        (l, Some(l))
     }
 }
 
-pub fn get_num_audio_devices(iscapture: i32) -> i32 {
-    unsafe { ll::SDL_GetNumAudioDevices(iscapture as c_int) as i32 }
-}
+impl ExactSizeIterator for DriverIterator { }
 
-pub fn get_audio_device_name(index: i32, iscapture: i32) -> String {
-    unsafe {
-        let dev_name = ll::SDL_GetAudioDeviceName(index as c_int, iscapture as c_int);
-        String::from_utf8_lossy(CStr::from_ptr(dev_name).to_bytes()).to_string()
-    }
-}
+/// Gets an iterator of all audio drivers compiled into the SDL2 library.
+#[inline]
+pub fn drivers() -> DriverIterator {
+    // This function is thread-safe and doesn't require the audio subsystem to be initialized.
+    // The list of drivers are read-only and statically compiled into SDL2, varying by platform.
 
-pub fn audio_init(name: &str) -> SdlResult<()> {
-    let name = try!(CString::new(name).unwrap_or_sdlresult());
-    let ret = unsafe { ll::SDL_AudioInit(name.as_ptr()) };
-
-    if ret == 0 {
-        Ok(())
-    } else {
-        Err(get_error())
-    }
-}
-
-pub fn audio_quit() {
-    unsafe { ll::SDL_AudioQuit() }
-}
-
-pub fn get_current_audio_driver() -> String {
-    unsafe {
-        let driver = ll::SDL_GetCurrentAudioDriver();
-        String::from_utf8_lossy(CStr::from_ptr(driver).to_bytes()).to_string()
+    // SDL_GetNumAudioDrivers can never return a negative value.
+    DriverIterator {
+        length: unsafe { ll::SDL_GetNumAudioDrivers() },
+        index: 0
     }
 }
 
@@ -400,6 +448,7 @@ impl Drop for AudioDeviceID {
 
 /// Wraps SDL_AudioDeviceID and owns the callback data used by the audio device.
 pub struct AudioDevice<CB: AudioCallback> {
+    subsystem: AudioSubsystem,
     device_id: AudioDeviceID,
     /// Store the callback to keep it alive for the entire duration of `AudioDevice`.
     userdata: Box<CB>
@@ -407,8 +456,7 @@ pub struct AudioDevice<CB: AudioCallback> {
 
 impl<CB: AudioCallback> AudioDevice<CB> {
     /// Opens a new audio device given the desired parameters and callback.
-    /// Uses `SDL_OpenAudioDevice`.
-    pub fn open_playback<F>(device: Option<&str>, spec: AudioSpecDesired, get_callback: F) -> SdlResult<AudioDevice<CB>>
+    pub fn open_playback<F>(a: &AudioSubsystem, device: Option<&str>, spec: AudioSpecDesired, get_callback: F) -> SdlResult<AudioDevice<CB>>
     where F: FnOnce(AudioSpec) -> CB
     {
         use std::mem;
@@ -446,6 +494,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
                     mem::forget(garbage);
 
                     Ok(AudioDevice {
+                        subsystem: a.clone(),
                         device_id: device_id,
                         userdata: userdata
                     })
@@ -453,6 +502,9 @@ impl<CB: AudioCallback> AudioDevice<CB> {
             }
         }
     }
+
+    #[inline]
+    pub fn subsystem(&self) -> &AudioSubsystem { &self.subsystem }
 
     pub fn get_status(&self) -> AudioStatus {
         unsafe {

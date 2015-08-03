@@ -4,19 +4,21 @@ use sdl2::keyboard::Keycode;
 use std::collections::HashSet;
 
 pub fn main() {
-    let mut sdl_context = sdl2::init().video().unwrap();
+    let sdl_context = sdl2::init().unwrap();
+    let video_subsystem = sdl_context.video().unwrap();
 
-    let _window = sdl_context.window("Keyboard", 800, 600)
+    let _window = video_subsystem.window("Keyboard", 800, 600)
         .position_centered()
         .build()
         .unwrap();
 
     let mut running = true;
+    let mut events = sdl_context.event_pump().unwrap();
 
     let mut prev_keys = HashSet::new();
 
     while running {
-        for event in sdl_context.event_pump().poll_iter() {
+        for event in events.poll_iter() {
             use sdl2::event::Event;
 
             match event {
@@ -26,7 +28,7 @@ pub fn main() {
         }
 
         // Create a set of pressed Keys.
-        let keys = sdl_context.keyboard_state().pressed_scancodes().filter_map(Keycode::from_scancode).collect();
+        let keys = events.keyboard_state().pressed_scancodes().filter_map(Keycode::from_scancode).collect();
 
         // Get the difference between the new and old sets.
         let new_keys = &keys - &prev_keys;
@@ -38,6 +40,6 @@ pub fn main() {
 
         prev_keys = keys;
 
-        sdl2::timer::delay(100);
+        std::thread::sleep_ms(100);
     }
 }

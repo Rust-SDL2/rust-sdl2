@@ -1,7 +1,7 @@
 extern crate sdl2;
 extern crate rand;
 
-use sdl2::audio::{AudioCallback, AudioDevice, AudioSpecDesired};
+use sdl2::audio::{AudioCallback, AudioSpecDesired};
 
 struct MyCallback {
     volume: f32
@@ -21,7 +21,8 @@ impl AudioCallback for MyCallback {
 }
 
 fn main() {
-    let _sdl_context = sdl2::init().audio().unwrap();
+    let sdl_context = sdl2::init().unwrap();
+    let audio_subsystem = sdl_context.audio().unwrap();
 
     let desired_spec = AudioSpecDesired {
         freq: Some(44100),
@@ -30,7 +31,7 @@ fn main() {
     };
 
     // None: use default device
-    let mut device = AudioDevice::open_playback(None, desired_spec, |spec| {
+    let mut device = audio_subsystem.open_playback(None, desired_spec, |spec| {
         // Show obtained AudioSpec
         println!("{:?}", spec);
 
@@ -41,7 +42,7 @@ fn main() {
     device.resume();
 
     // Play for 1 second
-    sdl2::timer::delay(1000);
+    std::thread::sleep_ms(1000);
 
     {
         // Acquire a lock. This lets us read and modify callback data.
@@ -51,7 +52,7 @@ fn main() {
     }
 
     // Play for another second
-    sdl2::timer::delay(1000);
+    std::thread::sleep_ms(1000);
 
     // Device is automatically closed when dropped
 }

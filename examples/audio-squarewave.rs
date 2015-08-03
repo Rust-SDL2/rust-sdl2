@@ -1,6 +1,6 @@
 extern crate sdl2;
 
-use sdl2::audio::{AudioCallback, AudioDevice, AudioSpecDesired};
+use sdl2::audio::{AudioCallback, AudioSpecDesired};
 
 struct SquareWave {
     phase_inc: f32,
@@ -24,7 +24,8 @@ impl AudioCallback for SquareWave {
 }
 
 fn main() {
-    let _sdl_context = sdl2::init().audio().unwrap();
+    let sdl_context = sdl2::init().unwrap();
+    let audio_subsystem = sdl_context.audio().unwrap();
 
     let desired_spec = AudioSpecDesired {
         freq: Some(44100),
@@ -32,7 +33,7 @@ fn main() {
         samples: None       // default sample size
     };
 
-    let device = AudioDevice::open_playback(None, desired_spec, |spec| {
+    let device = audio_subsystem.open_playback(None, desired_spec, |spec| {
         // Show obtained AudioSpec
         println!("{:?}", spec);
 
@@ -48,7 +49,7 @@ fn main() {
     device.resume();
 
     // Play for 2 seconds
-    sdl2::timer::delay(2000);
+    std::thread::sleep_ms(2000);
 
     // Device is automatically closed when dropped
 }

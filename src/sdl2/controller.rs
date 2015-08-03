@@ -1,6 +1,7 @@
 use libc::c_char;
 use std::ffi::{CString, CStr};
 
+use GameControllerSubsystem;
 use SdlResult;
 use get_error;
 use joystick;
@@ -8,6 +9,92 @@ use util::CStringExt;
 
 use sys::controller as ll;
 use sys::event::{SDL_QUERY, SDL_ENABLE};
+
+impl GameControllerSubsystem {
+    /// Retreive the total number of attached joysticks *and* controllers identified by SDL.
+    pub fn num_joysticks(&self) -> SdlResult<u32> {
+        let result = unsafe { ::sys::joystick::SDL_NumJoysticks() };
+
+        if result >= 0 {
+            Ok(result as u32)
+        } else {
+            Err(get_error())
+        }
+    }
+
+    /// Return true if the joystick at index `id` is a game controller.
+    #[inline]
+    pub fn is_game_controller(&self, id: u32) -> bool {
+        match u32_to_int!(id) {
+            Ok(id) => unsafe { ll::SDL_IsGameController(id) != 0 },
+            Err(..) => false
+        }
+    }
+
+    /// Attempt to open the controller number `id` and return
+    /// it. Controller IDs are the same as joystick IDs and the
+    /// maximum number can be retreived using the `SDL_NumJoysticks`
+    /// function.
+    pub fn open(&self, id: u32) -> SdlResult<GameController> {
+        let id = try!(u32_to_int!(id));
+
+        let controller = unsafe { ll::SDL_GameControllerOpen(id) };
+
+        if controller.is_null() {
+            Err(get_error())
+        } else {
+            Ok(GameController {
+                subsystem: self.clone(),
+                raw: controller
+            })
+        }
+    }
+
+    /// Return the name of the controller at index `id`
+    pub fn name_for_index(&self, id: u32) -> SdlResult<String> {
+        let id = try!(u32_to_int!(id));
+        let name = unsafe { ll::SDL_GameControllerNameForIndex(id) };
+
+        c_str_to_string_or_err(name)
+    }
+
+    /// If state is `true` controller events are processed, otherwise
+    /// they're ignored.
+    pub fn set_event_state(&self, state: bool) {
+        unsafe { ll::SDL_GameControllerEventState(state as i32) };
+    }
+
+    /// Return `true` if controller events are processed.
+    pub fn get_event_state(&self) -> bool {
+        unsafe { ll::SDL_GameControllerEventState(SDL_QUERY as i32)
+                 == SDL_ENABLE as i32 }
+    }
+
+    /// Add a new mapping from a mapping string
+    pub fn add_mapping(&self, mapping: &str) -> SdlResult<MappingStatus> {
+        let mapping = try!(CString::new(mapping).unwrap_or_sdlresult());
+
+        let result = unsafe { ll::SDL_GameControllerAddMapping(mapping.as_ptr()) };
+
+        match result {
+            1 => Ok(MappingStatus::Added),
+            0 => Ok(MappingStatus::Updated),
+            _ => Err(get_error()),
+        }
+    }
+
+    pub fn mapping_for_guid(&self, guid: joystick::Guid) -> SdlResult<String> {
+        let c_str = unsafe { ll::SDL_GameControllerMappingForGUID(guid.raw()) };
+
+        c_str_to_string_or_err(c_str)
+    }
+
+    #[inline]
+    /// Force controller update when not using the event loop
+    pub fn update(&self) {
+        unsafe { ll::SDL_GameControllerUpdate() };
+    }
+}
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(i32)]
@@ -123,35 +210,6 @@ impl Button {
     }
 }
 
-/// Return true if the joystick at index `id` is a game controller.
-pub fn is_game_controller(id: i32) -> bool {
-    unsafe { ll::SDL_IsGameController(id) != 0 }
-}
-
-/// Return the name of the controller at index `id`
-pub fn name_for_index(id: i32) -> SdlResult<String> {
-    let name = unsafe { ll::SDL_GameControllerNameForIndex(id) };
-
-    c_str_to_string_or_err(name)
-}
-
-/// Force controller update when not using the event loop
-pub fn update() {
-    unsafe { ll::SDL_GameControllerUpdate() };
-}
-
-/// If state is `true` controller events are processed, otherwise
-/// they're ignored.
-pub fn set_event_state(state: bool) {
-    unsafe { ll::SDL_GameControllerEventState(state as i32) };
-}
-
-/// Return `true` if controller events are processed.
-pub fn get_event_state() -> bool {
-    unsafe { ll::SDL_GameControllerEventState(SDL_QUERY as i32)
-             == SDL_ENABLE as i32 }
-}
-
 /// Possible return values for `add_mapping`
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum MappingStatus {
@@ -159,45 +217,15 @@ pub enum MappingStatus {
     Updated = 0,
 }
 
-/// Add a new mapping from a mapping string
-pub fn add_mapping(mapping: &str) -> SdlResult<MappingStatus> {
-    let mapping = try!(CString::new(mapping).unwrap_or_sdlresult());
-
-    let result = unsafe { ll::SDL_GameControllerAddMapping(mapping.as_ptr()) };
-
-    match result {
-        1 => Ok(MappingStatus::Added),
-        0 => Ok(MappingStatus::Updated),
-        _ => Err(get_error()),
-    }
-}
-
-pub fn mapping_for_guid(guid: joystick::Guid) -> SdlResult<String> {
-    let c_str = unsafe { ll::SDL_GameControllerMappingForGUID(guid.raw()) };
-
-    c_str_to_string_or_err(c_str)
-}
-
 /// Wrapper around the SDL_GameController object
 pub struct GameController {
-    raw: *mut ll::SDL_GameController,
+    subsystem: GameControllerSubsystem,
+    raw: *mut ll::SDL_GameController
 }
 
 impl GameController {
-
-    /// Attempt to open the controller number `id` and return
-    /// it. Controller IDs are the same as joystick IDs and the
-    /// maximum number can be retreived using the `SDL_NumJoysticks`
-    /// function.
-    pub fn open(id: i32) -> SdlResult<GameController> {
-        let controller = unsafe { ll::SDL_GameControllerOpen(id) };
-
-        if controller.is_null() {
-            Err(get_error())
-        } else {
-            Ok(GameController { raw: controller })
-        }
-    }
+    #[inline]
+    pub fn subsystem(&self) -> &GameControllerSubsystem { &self.subsystem }
 
     /// Return the name of the controller or an empty string if no
     /// name is found.

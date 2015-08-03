@@ -1,38 +1,18 @@
 use libc::{uint32_t, c_void};
+use std::marker::PhantomData;
 use std::mem;
 use sys::timer as ll;
 
-pub fn get_ticks() -> u32 {
-    unsafe { ll::SDL_GetTicks() }
-}
+use TimerSubsystem;
 
-pub fn get_performance_counter() -> u64 {
-    unsafe { ll::SDL_GetPerformanceCounter() }
-}
-
-pub fn get_performance_frequency() -> u64 {
-    unsafe { ll::SDL_GetPerformanceFrequency() }
-}
-
-pub fn delay(ms: u32) {
-    unsafe { ll::SDL_Delay(ms) }
-}
-
-pub type TimerCallback<'a> = Box<FnMut() -> u32+'a+Sync>;
-
-/// Unstable because of move to unboxed closures and `box` syntax
-pub struct Timer<'a> {
-    callback: Option<Box<TimerCallback<'a>>>,
-    _delay: u32,
-    raw: ll::SDL_TimerID,
-}
-
-impl<'a> Timer<'a> {
+impl TimerSubsystem {
     /// Constructs a new timer using the boxed closure `callback`.
+    ///
     /// The timer is started immediately, it will be cancelled either:
-    ///   * when the timer is dropped
-    ///   * or when the callback returns a non-positive continuation interval
-    pub fn new(delay: u32, callback: TimerCallback<'a>) -> Timer<'a> {
+    ///
+    /// * when the timer is dropped
+    /// * or when the callback returns a non-positive continuation interval
+    pub fn add_timer<'b, 'c>(&'b self, delay: u32, callback: TimerCallback<'c>) -> Timer<'b, 'c> {
         unsafe {
             let callback = Box::new(callback);
             let timer_id = ll::SDL_AddTimer(delay,
@@ -41,12 +21,46 @@ impl<'a> Timer<'a> {
 
             Timer {
                 callback: Some(callback),
-                _delay: delay,
                 raw: timer_id,
+                _marker: PhantomData
             }
         }
     }
 
+    /// Gets the number of milliseconds elapsed since the timer subsystem was initialized.
+    ///
+    /// It's recommended that you use another library for timekeeping, such as `time`.
+    pub fn get_ticks(&mut self) -> u32 {
+        // Google says this is probably not thread-safe (TODO: prove/disprove this).
+        unsafe { ll::SDL_GetTicks() }
+    }
+
+    /// Sleeps the current thread for the specified amount of milliseconds.
+    ///
+    /// It's recommended that you use `std::thread::sleep_ms()` instead.
+    pub fn delay(&mut self, ms: u32) {
+        // Google says this is probably not thread-safe (TODO: prove/disprove this).
+        unsafe { ll::SDL_Delay(ms) }
+    }
+
+    pub fn get_performance_counter(&self) -> u64 {
+        unsafe { ll::SDL_GetPerformanceCounter() }
+    }
+
+    pub fn get_performance_frequency(&self) -> u64 {
+        unsafe { ll::SDL_GetPerformanceFrequency() }
+    }
+}
+
+pub type TimerCallback<'a> = Box<FnMut() -> u32+'a+Sync>;
+
+pub struct Timer<'b, 'a> {
+    callback: Option<Box<TimerCallback<'a>>>,
+    raw: ll::SDL_TimerID,
+    _marker: PhantomData<&'b ()>
+}
+
+impl<'b, 'a> Timer<'b, 'a> {
     /// Returns the closure as a trait-object and cancels the timer
     /// by consuming it...
     pub fn into_inner(mut self) -> TimerCallback<'a> {
@@ -54,12 +68,13 @@ impl<'a> Timer<'a> {
     }
 }
 
-impl<'a> Drop for Timer<'a> {
+impl<'b, 'a> Drop for Timer<'b, 'a> {
+    #[inline]
     fn drop(&mut self) {
-        let ret = unsafe { ll::SDL_RemoveTimer(self.raw) };
-        if ret != 1 {
-            println!("error dropping timer {}, maybe already removed.", self.raw);
-        }
+        // SDL_RemoveTimer returns SDL_FALSE if the timer wasn't found (impossible),
+        // or the timer has been cancelled via the callback (possible).
+        // The timer being cancelled isn't an issue, so we ignore the result.
+        unsafe { ll::SDL_RemoveTimer(self.raw) };
     }
 }
 
@@ -74,12 +89,13 @@ extern "C" fn c_timer_callback(_interval: u32, param: *mut c_void) -> uint32_t {
 #[cfg(test)]
 fn test_timer_runs_multiple_times() {
     use std::sync::{Arc, Mutex};
-    ::sdl::init().timer().unwrap();
+    let sdl_context = ::sdl::init().unwrap();
+    let timer_subsystem = sdl_context.timer().unwrap();
 
     let local_num = Arc::new(Mutex::new(0));
     let timer_num = local_num.clone();
 
-    let _timer = Timer::new(20, Box::new(|| {
+    let _timer = timer_subsystem.add_timer(20, Box::new(|| {
         // increment up to 10 times (0 -> 9)
         // tick again in 100ms after each increment
         //
@@ -90,7 +106,7 @@ fn test_timer_runs_multiple_times() {
         } else { 0 }
     }));
 
-    delay(250);                         // tick the timer at least 10 times w/ 200ms of "buffer"
+    ::std::thread::sleep_ms(250);              // tick the timer at least 10 times w/ 200ms of "buffer"
     let num = local_num.lock().unwrap(); // read the number back
     assert_eq!(*num, 9);                 // it should have incremented at least 10 times...
 }
@@ -98,17 +114,18 @@ fn test_timer_runs_multiple_times() {
 #[cfg(test)]
 fn test_timer_runs_at_least_once() {
     use std::sync::{Arc, Mutex};
-    ::sdl::init().timer().unwrap();
+    let sdl_context = ::sdl::init().unwrap();
+    let timer_subsystem = sdl_context.timer().unwrap();
 
     let local_flag = Arc::new(Mutex::new(false));
     let timer_flag = local_flag.clone();
 
-    let _timer = Timer::new(20, Box::new(|| {
+    let _timer = timer_subsystem.add_timer(20, Box::new(|| {
         let mut flag = timer_flag.lock().unwrap();
         *flag = true; 0
     }));
 
-    delay(50);
+    ::std::thread::sleep_ms(50);
     let flag = local_flag.lock().unwrap();
     assert_eq!(*flag, true);
 }
@@ -116,25 +133,26 @@ fn test_timer_runs_at_least_once() {
 #[cfg(test)]
 fn test_timer_can_be_recreated() {
     use std::sync::{Arc, Mutex};
-    ::sdl::init().timer().unwrap();
+    let sdl_context = ::sdl::init().unwrap();
+    let timer_subsystem = sdl_context.timer().unwrap();
 
     let local_num = Arc::new(Mutex::new(0));
     let timer_num = local_num.clone();
 
     // run the timer once and reclaim its closure
-    let timer_1 = Timer::new(20, Box::new(move|| {
+    let timer_1 = timer_subsystem.add_timer(20, Box::new(move|| {
         let mut num = timer_num.lock().unwrap();
         *num += 1; // increment the number
         0          // do not run timer again
     }));
 
     // reclaim closure after timer runs
-    delay(50);
+    ::std::thread::sleep_ms(50);
     let closure = timer_1.into_inner();
 
     // create a second timer and increment again
-    let _timer_2 = Timer::new(20, closure);
-    delay(50);
+    let _timer_2 = timer_subsystem.add_timer(20, closure);
+    ::std::thread::sleep_ms(50);
 
     // check that timer was incremented twice
     let num = local_num.lock().unwrap();

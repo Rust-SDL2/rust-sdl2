@@ -5,9 +5,10 @@ use sdl2::rect::Rect;
 use sdl2::keyboard::Keycode;
 
 pub fn main() {
-    let mut sdl_context = sdl2::init().video().unwrap();
+    let sdl_context = sdl2::init().unwrap();
+    let video_subsystem = sdl_context.video().unwrap();
 
-    let window = sdl_context.window("rust-sdl2 demo: Video", 800, 600)
+    let window = video_subsystem.window("rust-sdl2 demo: Video", 800, 600)
         .position_centered()
         .opengl()
         .build()
@@ -50,9 +51,10 @@ pub fn main() {
     renderer.present();
 
     let mut running = true;
+    let mut event_pump = sdl_context.event_pump().unwrap();
 
     while running {
-        for event in sdl_context.event_pump().poll_iter() {
+        for event in event_pump.poll_iter() {
             use sdl2::event::Event;
 
             match event {

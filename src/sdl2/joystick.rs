@@ -1,5 +1,6 @@
 use sys::joystick as ll;
 
+use JoystickSubsystem;
 use SdlResult;
 use get_error;
 use clear_error;
@@ -8,71 +9,86 @@ use std::ffi::{CString, CStr, NulError};
 use std::fmt::{Display, Formatter, Error};
 use libc::c_char;
 
-/// Retreive the total number of attached joysticks *and* controllers
-/// identified by SDL.
-pub fn num_joysticks() -> SdlResult<i32> {
-    let result = unsafe { ll::SDL_NumJoysticks() };
+impl JoystickSubsystem {
+    /// Retreive the total number of attached joysticks *and* controllers identified by SDL.
+    pub fn num_joysticks(&self) -> SdlResult<u32> {
+        let result = unsafe { ll::SDL_NumJoysticks() };
 
-    if result >= 0 {
-        Ok(result)
-    } else {
-        Err(get_error())
+        if result >= 0 {
+            Ok(result as u32)
+        } else {
+            Err(get_error())
+        }
     }
-}
 
-/// Get the GUID for the joystick number `id`
-pub fn get_device_guid(id: i32) -> SdlResult<Guid> {
-    let raw = unsafe { ll::SDL_JoystickGetDeviceGUID(id) };
-
-    let guid = Guid { raw: raw };
-
-    if guid.is_zero() {
-        Err(get_error())
-    } else {
-        Ok(guid)
-    }
-}
-
-/// If state is `true` joystick events are processed, otherwise
-/// they're ignored.
-pub fn set_event_state(state: bool) {
-    unsafe { ll::SDL_JoystickEventState(state as i32) };
-}
-
-/// Return `true` if joystick events are processed.
-pub fn get_event_state() -> bool {
-    unsafe { ll::SDL_JoystickEventState(SDL_QUERY as i32)
-             == SDL_ENABLE as i32 }
-}
-
-/// Return the name of the joystick at index `id`
-pub fn name_for_index(id: i32) -> SdlResult<String> {
-    let name = unsafe { ll::SDL_JoystickNameForIndex(id) };
-
-    c_str_to_string_or_err(name)
-}
-
-/// Force joystick update when not using the event loop
-pub fn update() {
-    unsafe { ll::SDL_JoystickUpdate() };
-}
-
-/// Wrapper around the SDL_Joystick object
-pub struct Joystick {
-    raw: *mut ll::SDL_Joystick,
-}
-
-impl Joystick {
     /// Attempt to open the joystick at number `id` and return it.
-    pub fn open(id: i32) -> SdlResult<Joystick> {
+    pub fn open(&self, id: u32) -> SdlResult<Joystick> {
+        let id = try!(u32_to_int!(id));
+
         let joystick = unsafe { ll::SDL_JoystickOpen(id) };
 
         if joystick.is_null() {
             Err(get_error())
         } else {
-            Ok(Joystick { raw: joystick })
+            Ok(Joystick {
+                subsystem: self.clone(),
+                raw: joystick
+            })
         }
     }
+    
+    /// Return the name of the joystick at index `id`
+    pub fn name_for_index(&self, id: u32) -> SdlResult<String> {
+        let id = try!(u32_to_int!(id));
+        let name = unsafe { ll::SDL_JoystickNameForIndex(id) };
+
+        c_str_to_string_or_err(name)
+    }
+
+    /// Get the GUID for the joystick number `id`
+    pub fn get_device_guid(&self, id: u32) -> SdlResult<Guid> {
+        let id = try!(u32_to_int!(id));
+
+        let raw = unsafe { ll::SDL_JoystickGetDeviceGUID(id) };
+
+        let guid = Guid { raw: raw };
+
+        if guid.is_zero() {
+            Err(get_error())
+        } else {
+            Ok(guid)
+        }
+    }
+
+    /// If state is `true` joystick events are processed, otherwise
+    /// they're ignored.
+    pub fn set_event_state(&self, state: bool) {
+        unsafe { ll::SDL_JoystickEventState(state as i32) };
+    }
+
+    /// Return `true` if joystick events are processed.
+    pub fn get_event_state(&self) -> bool {
+        unsafe { ll::SDL_JoystickEventState(SDL_QUERY as i32)
+                 == SDL_ENABLE as i32 }
+    }
+
+    /// Force joystick update when not using the event loop
+    #[inline]
+    pub fn update(&self) {
+        unsafe { ll::SDL_JoystickUpdate() };
+    }
+
+}
+
+/// Wrapper around the SDL_Joystick object
+pub struct Joystick {
+    subsystem: JoystickSubsystem,
+    raw: *mut ll::SDL_Joystick
+}
+
+impl Joystick {
+    #[inline]
+    pub fn subsystem(&self) -> &JoystickSubsystem { &self.subsystem }
 
     /// Return the name of the joystick or an empty string if no name
     /// is found.

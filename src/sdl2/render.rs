@@ -28,7 +28,7 @@
 //! None of the draw methods in `Renderer` are expected to fail.
 //! If they do, a panic is raised and the program is aborted.
 
-use Sdl;
+use EventPump;
 use video::{Window, WindowProperties, WindowPropertiesGetters};
 use surface;
 use surface::{Surface, SurfaceRef};
@@ -75,7 +75,7 @@ impl FromPrimitive for TextureAccess {
 /// or the current render context.
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
 pub struct RendererInfo {
-    pub name: String,
+    pub name: &'static str,
     pub flags: u32,
     pub texture_formats: Vec<pixels::PixelFormatEnum>,
     pub max_texture_width: u32,
@@ -108,12 +108,17 @@ impl FromPrimitive for BlendMode {
 
 impl RendererInfo {
     pub unsafe fn from_ll(info: &ll::SDL_RendererInfo) -> RendererInfo {
+        use std::str;
+
         let texture_formats: Vec<pixels::PixelFormatEnum> = info.texture_formats[0..(info.num_texture_formats as usize)].iter().map(|&format| {
             FromPrimitive::from_i64(format as i64).unwrap()
         }).collect();
 
+        // The driver name is always a static string, compiled into SDL2.
+        let name = str::from_utf8(CStr::from_ptr(info.name).to_bytes()).unwrap();
+
         RendererInfo {
-            name: String::from_utf8_lossy(CStr::from_ptr(info.name).to_bytes()).to_string(),
+            name: name,
             flags: info.flags,
             texture_formats: texture_formats,
             max_texture_width: info.max_texture_width as u32,
@@ -265,10 +270,10 @@ impl<'a> Renderer<'a> {
 
     /// Accesses the Window properties, such as the position, size and title of a Window.
     /// Returns None if the renderer is not associated with a Window.
-    pub fn window_properties<'b>(&'b mut self, sdl: &'b Sdl) -> Option<WindowProperties<'b>>
+    pub fn window_properties<'b>(&'b mut self, e: &'b EventPump) -> Option<WindowProperties<'b>>
     {
         match self.parent.as_mut() {
-            Some(&mut RendererParent::Window(ref mut window)) => Some(window.properties(sdl)),
+            Some(&mut RendererParent::Window(ref mut window)) => Some(window.properties(e)),
             _ => None
         }
     }
@@ -1205,24 +1210,48 @@ impl Texture {
     pub unsafe fn raw(&self) -> *mut ll::SDL_Texture { self.raw }
 }
 
+#[derive(Copy, Clone)]
+pub struct DriverIterator {
+    length: i32,
+    index: i32
+}
 
-pub fn get_num_render_drivers() -> SdlResult<u32> {
-    let result = unsafe { ll::SDL_GetNumRenderDrivers() };
-    if result > 0 {
-        Ok(result as u32)
-    } else {
-        Err(get_error())
+impl Iterator for DriverIterator {
+    type Item = RendererInfo;
+
+    #[inline]
+    fn next(&mut self) -> Option<RendererInfo> {
+        if self.index >= self.length {
+            None
+        } else {
+            let mut out = unsafe { mem::uninitialized() };
+            let result = unsafe { ll::SDL_GetRenderDriverInfo(self.index, &mut out) == 0 };
+            assert!(result, 0);
+            self.index += 1;
+
+            unsafe { Some(RendererInfo::from_ll(&out)) }
+        }
+    }
+
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let l = self.length as usize;
+        (l, Some(l))
     }
 }
 
-pub fn get_render_driver_info(index: u32) -> SdlResult<RendererInfo> {
-    let mut out = unsafe { mem::uninitialized() };
-    let index = try!(u32_to_int!(index));
-    let result = unsafe { ll::SDL_GetRenderDriverInfo(index, &mut out) == 0 };
-    if result {
-        unsafe { Ok(RendererInfo::from_ll(&out)) }
-    } else {
-        Err(get_error())
+impl ExactSizeIterator for DriverIterator { }
+
+/// Gets an iterator of all render drivers compiled into the SDL2 library.
+#[inline]
+pub fn drivers() -> DriverIterator {
+    // This function is thread-safe and doesn't require the video subsystem to be initialized.
+    // The list of drivers are read-only and statically compiled into SDL2, varying by platform.
+
+    // SDL_GetNumRenderDrivers can never return a negative value.
+    DriverIterator {
+        length: unsafe { ll::SDL_GetNumRenderDrivers() },
+        index: 0
     }
 }
 

@@ -1,12 +1,11 @@
 extern crate sdl2;
 
-use sdl2::joystick::{Joystick, num_joysticks};
-
 fn main() {
-    let mut sdl_context = sdl2::init().joystick().unwrap();
+    let sdl_context = sdl2::init().unwrap();
+    let joystick_subsystem = sdl_context.joystick().unwrap();
 
     let available =
-        match num_joysticks() {
+        match joystick_subsystem.num_joysticks() {
             Ok(n)  => n,
             Err(e) => panic!("can't enumerate joysticks: {}", e),
         };
@@ -18,7 +17,7 @@ fn main() {
     // Iterate over all available joysticks and stop once we manage to
     // open one.
     for id in 0..available {
-        match Joystick::open(id) {
+        match joystick_subsystem.open(id) {
             Ok(c) => {
                 println!("Success: opened \"{}\"", c.name());
                 joystick = Some(c);
@@ -32,7 +31,7 @@ fn main() {
         panic!("Couldn't open any joystick");
     };
 
-    for event in sdl_context.event_pump().wait_iter() {
+    for event in sdl_context.event_pump().unwrap().wait_iter() {
         use sdl2::event::Event;
 
         match event {

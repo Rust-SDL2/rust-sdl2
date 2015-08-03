@@ -1,13 +1,11 @@
 extern crate sdl2;
 
-use sdl2::{joystick, controller};
-use sdl2::controller::GameController;
-
 fn main() {
-    let mut sdl_context = sdl2::init().game_controller().unwrap();
+    let sdl_context = sdl2::init().unwrap();
+    let game_controller_subsystem = sdl_context.game_controller().unwrap();
 
     let available =
-        match joystick::num_joysticks() {
+        match game_controller_subsystem.num_joysticks() {
             Ok(n)  => n,
             Err(e) => panic!("can't enumerate joysticks: {}", e),
         };
@@ -19,10 +17,10 @@ fn main() {
     // Iterate over all available joysticks and look for game
     // controllers.
     for id in 0..available {
-        if controller::is_game_controller(id) {
+        if game_controller_subsystem.is_game_controller(id) {
             println!("Attempting to open controller {}", id);
 
-            match GameController::open(id) {
+            match game_controller_subsystem.open(id) {
                 Ok(c) => {
                     // We managed to find and open a game controller,
                     // exit the loop
@@ -46,7 +44,7 @@ fn main() {
 
     println!("Controller mapping: {}", controller.mapping());
 
-    for event in sdl_context.event_pump().wait_iter() {
+    for event in sdl_context.event_pump().unwrap().wait_iter() {
         use sdl2::event::Event;
 
         match event {

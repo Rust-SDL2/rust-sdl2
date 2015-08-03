@@ -3,9 +3,10 @@ extern crate sdl2;
 use sdl2::pixels::Color;
 
 pub fn main() {
-    let mut sdl_context = sdl2::init().video().unwrap();
+    let sdl_context = sdl2::init().unwrap();
+    let video_subsystem = sdl_context.video().unwrap();
 
-    let window = sdl_context.window("rust-sdl2 demo: Window", 800, 600)
+    let window = video_subsystem.window("rust-sdl2 demo: Window", 800, 600)
         .resizable()
         .build()
         .unwrap();
@@ -15,8 +16,10 @@ pub fn main() {
     let mut running = true;
     let mut tick = 0;
 
+    let mut event_pump = sdl_context.event_pump().unwrap();
+
     while running {
-        for event in sdl_context.event_pump().poll_iter() {
+        for event in event_pump.poll_iter() {
             use sdl2::event::Event;
             use sdl2::keyboard::Keycode;
 
@@ -30,11 +33,11 @@ pub fn main() {
 
         {
             // Update the window title.
-            // &sdl_context is needed to safely access the Window and to ensure that the event loop
+            // &event_pump is needed to safely access the Window and to ensure that the event loop
             // isn't running (which could mutate the Window).
 
-            // Note: if you don't use renderer: window.properties(&sdl_context);
-            let mut props = renderer.window_properties(&sdl_context).unwrap();
+            // Note: if you don't use renderer: window.properties(&event_pump);
+            let mut props = renderer.window_properties(&event_pump).unwrap();
 
             let position = props.get_position();
             let size = props.get_size();
