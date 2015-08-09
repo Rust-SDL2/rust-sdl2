@@ -1,6 +1,7 @@
 use std::ffi::{CString, NulError};
 
 use SdlResult;
+use ErrorMessage;
 
 pub trait CStringExt {
     /// Returns an SDL error if the string contains a nul byte.
@@ -15,7 +16,7 @@ pub trait CStringExt {
 
 impl CStringExt for Result<CString, NulError> {
     fn unwrap_or_sdlresult(self) -> SdlResult<CString> {
-        self.or(Err(format!("argument string cannot contain an interior nul byte")))
+        self.or(Err(ErrorMessage("argument string cannot contain an interior nul byte".into())))
     }
 
     fn remove_nul(self) -> CString {

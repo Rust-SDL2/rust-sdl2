@@ -36,7 +36,7 @@ impl JoystickSubsystem {
             })
         }
     }
-    
+
     /// Return the name of the joystick at index `id`
     pub fn name_for_index(&self, id: u32) -> SdlResult<String> {
         let id = try!(u32_to_int!(id));
@@ -159,7 +159,7 @@ impl Joystick {
         } else {
             let err = get_error();
 
-            if err.is_empty() {
+            if err.0.is_empty() {
                 Ok(pos)
             } else {
                 Err(err)
@@ -195,7 +195,7 @@ impl Joystick {
             0 => {
                 let err = get_error();
 
-                if err.is_empty() {
+                if err.0.is_empty() {
                     // Button is not pressed
                     Ok(false)
                 } else {
@@ -264,7 +264,7 @@ impl Joystick {
         } else {
             let err = get_error();
 
-            if err.is_empty() {
+            if err.0.is_empty() {
                 Ok(state)
             } else {
                 Err(err)

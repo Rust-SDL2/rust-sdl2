@@ -4,6 +4,7 @@ use std::ptr;
 use std::ops::{BitAnd, BitOr};
 
 use SdlResult;
+use ErrorMessage;
 
 /// Immutable point type, consisting of x and y.
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Hash)]
@@ -124,9 +125,9 @@ impl Rect {
         let height = try!(u32_to_int!(height));
 
         if x.checked_add(width).is_none() {
-            Err(format!("`x` + `width` overflows."))
+            Err(ErrorMessage("`x` + `width` overflows.".into()))
         } else if y.checked_add(height).is_none() {
-            Err(format!("`y` + `height` overflows."))
+            Err(ErrorMessage("`y` + `height` overflows.".into()))
         } else {
             match (width, height) {
                 (0, _) | (_, 0) => Ok(None),
@@ -194,7 +195,7 @@ impl Rect {
             // Return an error if the dimensions are too large.
             match Rect::from_ll(out).unwrap() {
                 Some(r) => Ok(Some(r)),
-                None => Err(format!("Enclosed point rectangle is too large."))
+                None => Err(ErrorMessage("Enclosed point rectangle is too large.".into()))
             }
         } else {
             Ok(None)

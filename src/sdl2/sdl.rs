@@ -1,5 +1,7 @@
 use std::ffi::{CStr, CString};
 use std::rc::Rc;
+use std::fmt;
+use std::error;
 
 use sys::sdl as ll;
 use util::CStringExt;
@@ -13,7 +15,28 @@ pub enum Error {
     UnsupportedError = ll::SDL_UNSUPPORTED as isize
 }
 
-pub type SdlResult<T> = Result<T, String>;
+#[derive(Clone, Eq, PartialEq, Hash, Debug)]
+pub struct ErrorMessage(pub String);
+
+impl fmt::Display for ErrorMessage {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "SDL error: {}", self.0)
+    }
+}
+
+impl error::Error for ErrorMessage {
+    fn description(&self) -> &str {
+        "SDL error"
+    }
+}
+
+impl From<String> for ErrorMessage {
+    fn from(src: String) -> Self {
+        ErrorMessage(src)
+    }
+}
+
+pub type SdlResult<T> = Result<T, ErrorMessage>;
 
 use std::sync::atomic::{AtomicBool, ATOMIC_BOOL_INIT};
 /// Only one Sdl context can be alive at a time.
@@ -47,7 +70,7 @@ impl Sdl {
             let was_alive = IS_SDL_CONTEXT_ALIVE.swap(true, Ordering::Relaxed);
 
             if was_alive {
-                Err(format!("Cannot initialize `Sdl` more than once at a time."))
+                Err(ErrorMessage("Cannot initialize `Sdl` more than once at a time.".into()))
             } else {
                 // Initialize SDL without any explicit subsystems (flags = 0).
                 if ll::SDL_Init(0) == 0 {
@@ -181,7 +204,7 @@ macro_rules! subsystem {
                     _subsystem_drop: self._subsystem_drop.clone()
                 }
             }
-            
+
             /// Obtain an SDL context.
             #[inline]
             pub fn sdl(&mut self) -> Sdl {
@@ -233,7 +256,7 @@ impl EventPump {
 
         unsafe {
             if IS_EVENT_PUMP_ALIVE {
-                Err(format!("an `EventPump` instance is already alive - there can only be one `EventPump` in use at a time."))
+                Err(ErrorMessage("an `EventPump` instance is already alive - there can only be one `EventPump` in use at a time.".into()))
             } else {
                 // Initialize the events subsystem, just in case none of the other subsystems have done it yet.
                 let result = ll::SDL_InitSubSystem(ll::SDL_INIT_EVENTS);
@@ -282,10 +305,10 @@ impl Drop for EventPump {
 #[inline]
 pub fn init() -> SdlResult<Sdl> { Sdl::new() }
 
-pub fn get_error() -> String {
+pub fn get_error() -> ErrorMessage {
     unsafe {
         let err = ll::SDL_GetError();
-        String::from_utf8_lossy(CStr::from_ptr(err).to_bytes()).to_string()
+        ErrorMessage(String::from_utf8_lossy(CStr::from_ptr(err).to_bytes()).to_string())
     }
 }
 
