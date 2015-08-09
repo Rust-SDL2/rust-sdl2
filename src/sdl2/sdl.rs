@@ -15,6 +15,7 @@ pub enum Error {
     UnsupportedError = ll::SDL_UNSUPPORTED as isize
 }
 
+/// A message with information about an error that SDL has encountered.
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
 pub struct ErrorMessage(pub String);
 
