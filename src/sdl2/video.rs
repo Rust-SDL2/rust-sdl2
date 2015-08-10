@@ -395,22 +395,22 @@ impl DisplayMode {
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum FullscreenType {
-    FTOff = 0,
-    FTTrue = 0x00000001,
-    FTDesktop = 0x00001001,
+    Off = 0,
+    True = 0x00000001,
+    Desktop = 0x00001001,
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum WindowPos {
-    PosUndefined,
-    PosCentered,
+    Undefined,
+    Centered,
     Positioned(i32)
 }
 
 fn unwrap_windowpos (pos: WindowPos) -> ll::SDL_WindowPos {
     match pos {
-        WindowPos::PosUndefined => ll::SDL_WINDOWPOS_UNDEFINED,
-        WindowPos::PosCentered => ll::SDL_WINDOWPOS_CENTERED,
+        WindowPos::Undefined => ll::SDL_WINDOWPOS_UNDEFINED,
+        WindowPos::Centered => ll::SDL_WINDOWPOS_CENTERED,
         WindowPos::Positioned(x) => x as ll::SDL_WindowPos
     }
 }
@@ -692,8 +692,8 @@ impl WindowBuilder {
             title: CString::new(title).remove_nul(),
             width: width,
             height: height,
-            x: WindowPos::PosUndefined,
-            y: WindowPos::PosUndefined,
+            x: WindowPos::Undefined,
+            y: WindowPos::Undefined,
             window_flags: 0,
             subsystem: v.clone()
         }
@@ -749,8 +749,8 @@ impl WindowBuilder {
 
     /// Centers the window.
     pub fn position_centered(&mut self) -> &mut WindowBuilder {
-        self.x = WindowPos::PosCentered;
-        self.y = WindowPos::PosCentered;
+        self.x = WindowPos::Centered;
+        self.y = WindowPos::Centered;
         self
     }
 
