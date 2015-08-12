@@ -5,6 +5,7 @@ use std::path::Path;
 use rect::Rect;
 use get_error;
 use SdlResult;
+use ErrorMessage;
 use std::ptr;
 use libc::c_int;
 use num::FromPrimitive;
@@ -110,7 +111,7 @@ impl<'a> Surface<'a> {
     pub fn from_pixelmasks(width: u32, height: u32, masks: pixels::PixelMasks) -> SdlResult<Surface<'static>> {
         unsafe {
             if width >= (1<<31) || height >= (1<<31) {
-                Err(format!("Image is too large."))
+                Err(ErrorMessage("Image is too large.".into()))
             } else {
                 let raw = ll::SDL_CreateRGBSurface(0, width as c_int, height as c_int,
                     masks.bpp as c_int, masks.rmask, masks.gmask, masks.bmask, masks.amask);
@@ -137,9 +138,9 @@ impl<'a> Surface<'a> {
     pub fn from_data_pixelmasks(data: &'a mut [u8], width: u32, height: u32, pitch: u32, masks: pixels::PixelMasks) -> SdlResult<Surface<'a>> {
         unsafe {
             if width >= (1<<31) || height >= (1<<31) {
-                Err(format!("Image is too large."))
+                Err(ErrorMessage("Image is too large.".into()))
             } else if pitch >= (1<<31) {
-                Err(format!("Pitch is too large."))
+                Err(ErrorMessage("Pitch is too large.".into()))
             } else {
                 let raw = ll::SDL_CreateRGBSurfaceFrom(
                     data.as_mut_ptr() as *mut _, width as c_int, height as c_int,

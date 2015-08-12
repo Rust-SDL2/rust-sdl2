@@ -24,6 +24,7 @@ use mouse::{Mouse, MouseState};
 use keyboard::Scancode;
 use get_error;
 use SdlResult;
+use ErrorMessage;
 
 use sys::event as ll;
 
@@ -98,7 +99,7 @@ impl ::EventSubsystem {
                 else { Err(get_error()) }
             },
             None => {
-                Err(format!("Cannot push unsupported event type to the queue"))
+                Err(ErrorMessage("Cannot push unsupported event type to the queue".into()))
             }
         }
     }

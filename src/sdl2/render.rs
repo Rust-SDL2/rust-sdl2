@@ -35,6 +35,7 @@ use pixels;
 use pixels::PixelFormatEnum;
 use get_error;
 use SdlResult;
+use ErrorMessage;
 use std::mem;
 use std::ptr;
 use libc::{c_int, uint32_t, c_double, c_void};
@@ -339,7 +340,7 @@ impl<'a> Renderer<'a> {
         match format {
             PixelFormatEnum::YV12 | PixelFormatEnum::IYUV => {
                 if width % 2 != 0 || height % 2 != 0 {
-                    return Err(format!("The width and height must be multiples-of-two for planar YUV 4:2:0 pixel formats"));
+                    return Err(ErrorMessage("The width and height must be multiples-of-two for planar YUV 4:2:0 pixel formats".into()));
                 }
             },
             _ => ()
@@ -1036,7 +1037,7 @@ impl Texture {
                 match self.query() {
                     TextureQuery { format: PixelFormatEnum::YV12, .. } |
                     TextureQuery { format: PixelFormatEnum::IYUV, .. } => {
-                        return Err(format!("The rectangle dimensions and pitch must be multiples-of-two for planar YUV 4:2:0 pixel formats"));
+                        return Err(ErrorMessage("The rectangle dimensions and pitch must be multiples-of-two for planar YUV 4:2:0 pixel formats".into()));
                     },
                     _ => ()
                 }
@@ -1066,7 +1067,7 @@ impl Texture {
         };
 
         if rect_is_odd {
-            return Err(format!("The rectangle dimensions must be multiples-of-two for planar YUV 4:2:0 pixel formats"));
+            return Err(ErrorMessage("The rectangle dimensions must be multiples-of-two for planar YUV 4:2:0 pixel formats".into()));
         }
 
         // We need the height in order to check the array slice lengths.
@@ -1082,7 +1083,7 @@ impl Texture {
             (v_plane.len() != (v_pitch * height/2));
 
         if wrong_length {
-            return Err(format!("One or more of the plane lengths is not correct (should be pitch * height)."));
+            return Err(ErrorMessage("One or more of the plane lengths is not correct (should be pitch * height).".into()));
         }
 
         let y_pitch = try!(usize_to_int!(y_pitch));

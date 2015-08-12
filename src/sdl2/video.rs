@@ -12,6 +12,7 @@ use pixels;
 use VideoSubsystem;
 use EventPump;
 use SdlResult;
+use ErrorMessage;
 use num::FromPrimitive;
 use util::CStringExt;
 
@@ -704,7 +705,7 @@ impl WindowBuilder {
         unsafe {
             if self.width >= (1<<31) || self.height >= (1<<31) {
                 // SDL2 only supports int (signed 32-bit) arguments.
-                Err(format!("Window is too large."))
+                Err(ErrorMessage("Window is too large.".into()))
             } else {
                 let raw_width = self.width as c_int;
                 let raw_height = self.height as c_int;
