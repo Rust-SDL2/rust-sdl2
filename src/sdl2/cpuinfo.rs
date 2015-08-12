@@ -2,11 +2,11 @@ use sys::cpuinfo as ll;
 
 pub const CACHELINESIZE: u8 = 128;
 
-pub fn get_cpu_count() -> i32 {
+pub fn cpu_count() -> i32 {
     unsafe { ll::SDL_GetCPUCount() }
 }
 
-pub fn get_cpu_cache_line_size() -> i32 {
+pub fn cpu_cache_line_size() -> i32 {
     unsafe { ll::SDL_GetCPUCacheLineSize() }
 }
 
@@ -50,6 +50,6 @@ pub fn has_avx() -> bool {
     unsafe { ll::SDL_HasAVX() == 1 }
 }
 
-pub fn get_system_ram() -> i32 {
+pub fn system_ram() -> i32 {
     unsafe { ll::SDL_GetSystemRAM() }
 }

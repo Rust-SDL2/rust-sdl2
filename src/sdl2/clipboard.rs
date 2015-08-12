@@ -41,7 +41,7 @@ impl ClipboardUtil {
         }
     }
 
-    pub fn get_clipboard_text(&self) -> SdlResult<String> {
+    pub fn clipboard_text(&self) -> SdlResult<String> {
         unsafe {
             let buf = ll::SDL_GetClipboardText();
 

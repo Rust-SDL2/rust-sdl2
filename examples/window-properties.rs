@@ -35,8 +35,8 @@ pub fn main() {
             // Update the window title.
             let mut window = renderer.window_mut().unwrap();
 
-            let position = window.get_position();
-            let size = window.get_size();
+            let position = window.position();
+            let size = window.size();
             let title = format!("Window - pos({}x{}), size({}x{}): {}", position.0, position.1, size.0, size.1, tick);
             window.set_title(&title);
 

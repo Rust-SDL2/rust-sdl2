@@ -46,7 +46,7 @@ impl JoystickSubsystem {
     }
 
     /// Get the GUID for the joystick number `id`
-    pub fn get_device_guid(&self, id: u32) -> SdlResult<Guid> {
+    pub fn device_guid(&self, id: u32) -> SdlResult<Guid> {
         let id = try!(u32_to_int!(id));
 
         let raw = unsafe { ll::SDL_JoystickGetDeviceGUID(id) };
@@ -67,7 +67,7 @@ impl JoystickSubsystem {
     }
 
     /// Return `true` if joystick events are processed.
-    pub fn get_event_state(&self) -> bool {
+    pub fn event_state(&self) -> bool {
         unsafe { ll::SDL_JoystickEventState(SDL_QUERY as i32)
                  == SDL_ENABLE as i32 }
     }
@@ -100,11 +100,11 @@ impl Joystick {
 
     /// Return true if the joystick has been opened and currently
     /// connected.
-    pub fn get_attached(&self) -> bool {
+    pub fn attached(&self) -> bool {
         unsafe { ll::SDL_JoystickGetAttached(self.raw) != 0 }
     }
 
-    pub fn get_instance_id(&self) -> i32 {
+    pub fn instance_id(&self) -> i32 {
         let result = unsafe { ll::SDL_JoystickInstanceID(self.raw) };
 
         if result < 0 {
@@ -116,7 +116,7 @@ impl Joystick {
     }
 
     /// Retreive the joystick's GUID
-    pub fn get_guid(&self) -> Guid {
+    pub fn guid(&self) -> Guid {
         let raw = unsafe { ll::SDL_JoystickGetGUID(self.raw) };
 
         let guid = Guid { raw: raw };
@@ -130,7 +130,7 @@ impl Joystick {
     }
 
     /// Retreive the number of axes for this joystick
-    pub fn get_num_axes(&self) -> u32 {
+    pub fn num_axes(&self) -> u32 {
         let result = unsafe { ll::SDL_JoystickNumAxes(self.raw) };
 
         if result < 0 {
@@ -144,7 +144,7 @@ impl Joystick {
     /// Gets the position of the given `axis`.
     ///
     /// The function will fail if the joystick doesn't have the provided axis.
-    pub fn get_axis(&self, axis: u32) -> SdlResult<i16> {
+    pub fn axis(&self, axis: u32) -> SdlResult<i16> {
         // This interface is a bit messed up: 0 is a valid position
         // but can also mean that an error occured. As far as I can
         // tell the only way to know if an error happened is to see if
@@ -168,7 +168,7 @@ impl Joystick {
     }
 
     /// Retreive the number of buttons for this joystick
-    pub fn get_num_buttons(&self) -> u32 {
+    pub fn num_buttons(&self) -> u32 {
         let result = unsafe { ll::SDL_JoystickNumButtons(self.raw) };
 
         if result < 0 {
@@ -182,8 +182,8 @@ impl Joystick {
     /// Return `Ok(true)` if `button` is pressed.
     ///
     /// The function will fail if the joystick doesn't have the provided button.
-    pub fn get_button(&self, button: u32) -> SdlResult<bool> {
-        // Same deal as get_axis, 0 can mean both unpressed or
+    pub fn button(&self, button: u32) -> SdlResult<bool> {
+        // Same deal as axis, 0 can mean both unpressed or
         // error...
         clear_error();
 
@@ -208,7 +208,7 @@ impl Joystick {
     }
 
     /// Retreive the number of balls for this joystick
-    pub fn get_num_balls(&self) -> u32 {
+    pub fn num_balls(&self) -> u32 {
         let result = unsafe { ll::SDL_JoystickNumBalls(self.raw) };
 
         if result < 0 {
@@ -221,7 +221,7 @@ impl Joystick {
 
     /// Return a pair `(dx, dy)` containing the difference in axis
     /// position since the last poll
-    pub fn get_ball(&self, ball: u32) -> SdlResult<(i32, i32)> {
+    pub fn ball(&self, ball: u32) -> SdlResult<(i32, i32)> {
         let mut dx = 0;
         let mut dy = 0;
 
@@ -236,7 +236,7 @@ impl Joystick {
     }
 
     /// Retreive the number of balls for this joystick
-    pub fn get_num_hats(&self) -> u32 {
+    pub fn num_hats(&self) -> u32 {
         let result = unsafe { ll::SDL_JoystickNumHats(self.raw) };
 
         if result < 0 {
@@ -248,10 +248,10 @@ impl Joystick {
     }
 
     /// Return the position of `hat` for this joystick
-    pub fn get_hat(&self, hat: u32) -> SdlResult<HatState> {
+    pub fn hat(&self, hat: u32) -> SdlResult<HatState> {
         // Guess what? This function as well uses 0 to report an error
         // but 0 is also a valid value (HatState::Centered). So we
-        // have to use the same hack as `get_axis`...
+        // have to use the same hack as `axis`...
         clear_error();
 
         let hat = try!(u32_to_int!(hat));
@@ -275,7 +275,7 @@ impl Joystick {
 
 impl Drop for Joystick {
     fn drop(&mut self) {
-        if self.get_attached() {
+        if self.attached() {
             unsafe { ll::SDL_JoystickClose(self.raw) }
         }
     }
@@ -310,7 +310,7 @@ impl Guid {
     }
 
     /// Return a String representation of GUID
-    pub fn get_string(&self) -> String {
+    pub fn string(&self) -> String {
         // Doc says "buf should supply at least 33bytes". I took that
         // to mean that 33bytes should be enough in all cases, but
         // maybe I'm wrong?
@@ -337,7 +337,7 @@ impl Guid {
 
 impl Display for Guid {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "{}", self.get_string())
+        write!(f, "{}", self.string())
     }
 }
 
