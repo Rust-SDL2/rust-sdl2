@@ -8,6 +8,6 @@ fn audio_spec_wav() {
     assert_eq!(wav.format, sdl2::audio::AudioFormat::S16LSB);
     assert_eq!(wav.channels, 1);
 
-    let buffer = wav.get_buffer();
+    let buffer = wav.buffer();
     assert_eq!(buffer.len(), 4410);
 }

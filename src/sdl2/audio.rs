@@ -73,7 +73,7 @@ impl AudioSubsystem {
         AudioDevice::open_playback(self, device, spec, get_callback)
     }
 
-    pub fn get_current_audio_driver(&self) -> &'static str {
+    pub fn current_audio_driver(&self) -> &'static str {
         use std::str;
 
         unsafe {
@@ -84,7 +84,7 @@ impl AudioSubsystem {
         }
     }
 
-    pub fn get_num_audio_playback_devices(&self) -> Option<u32> {
+    pub fn num_audio_playback_devices(&self) -> Option<u32> {
         let result = unsafe { ll::SDL_GetNumAudioDevices(0) };
         if result < 0 {
             // SDL cannot retreive a list of audio devices. This is not necessarily an error (see the SDL2 docs).
@@ -94,7 +94,7 @@ impl AudioSubsystem {
         }
     }
 
-    pub fn get_audio_playback_device_name(&self, index: u32) -> SdlResult<String> {
+    pub fn audio_playback_device_name(&self, index: u32) -> SdlResult<String> {
         unsafe {
             let dev_name = ll::SDL_GetAudioDeviceName(index as c_int, 0);
             if dev_name.is_null() {
@@ -287,7 +287,7 @@ impl AudioSpecWAV {
         }
     }
 
-    pub fn get_buffer(&self) -> &[u8] {
+    pub fn buffer(&self) -> &[u8] {
         use std::slice::from_raw_parts;
         unsafe {
             let ptr = self.audio_buf as *const u8;
@@ -314,38 +314,38 @@ where Self::Channel: AudioFormatNum + 'static
 /// A phantom type for retreiving the SDL_AudioFormat of a given generic type.
 /// All format types are returned as native-endian.
 pub trait AudioFormatNum {
-    fn get_audio_format() -> AudioFormat;
+    fn audio_format() -> AudioFormat;
     fn zero() -> Self;
 }
 
 /// AUDIO_S8
 impl AudioFormatNum for i8 {
-    fn get_audio_format() -> AudioFormat { AudioFormat::S8 }
+    fn audio_format() -> AudioFormat { AudioFormat::S8 }
     fn zero() -> i8 { 0 }
 }
 /// AUDIO_U8
 impl AudioFormatNum for u8 {
-    fn get_audio_format() -> AudioFormat { AudioFormat::U8 }
+    fn audio_format() -> AudioFormat { AudioFormat::U8 }
     fn zero() -> u8 { 0 }
 }
 /// AUDIO_S16
 impl AudioFormatNum for i16 {
-    fn get_audio_format() -> AudioFormat { AudioFormat::s16_sys() }
+    fn audio_format() -> AudioFormat { AudioFormat::s16_sys() }
     fn zero() -> i16 { 0 }
 }
 /// AUDIO_U16
 impl AudioFormatNum for u16 {
-    fn get_audio_format() -> AudioFormat { AudioFormat::u16_sys() }
+    fn audio_format() -> AudioFormat { AudioFormat::u16_sys() }
     fn zero() -> u16 { 0 }
 }
 /// AUDIO_S32
 impl AudioFormatNum for i32 {
-    fn get_audio_format() -> AudioFormat { AudioFormat::s32_sys() }
+    fn audio_format() -> AudioFormat { AudioFormat::s32_sys() }
     fn zero() -> i32 { 0 }
 }
 /// AUDIO_F32
 impl AudioFormatNum for f32 {
-    fn get_audio_format() -> AudioFormat { AudioFormat::f32_sys() }
+    fn audio_format() -> AudioFormat { AudioFormat::f32_sys() }
     fn zero() -> f32 { 0.0 }
 }
 
@@ -386,7 +386,7 @@ impl AudioSpecDesired {
         unsafe {
             ll::SDL_AudioSpec {
                 freq: freq.unwrap_or(0),
-                format: <CB::Channel as AudioFormatNum>::get_audio_format().to_ll(),
+                format: <CB::Channel as AudioFormatNum>::audio_format().to_ll(),
                 channels: channels.unwrap_or(0),
                 silence: 0,
                 samples: samples.unwrap_or(0),
@@ -506,7 +506,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
     #[inline]
     pub fn subsystem(&self) -> &AudioSubsystem { &self.subsystem }
 
-    pub fn get_status(&self) -> AudioStatus {
+    pub fn status(&self) -> AudioStatus {
         unsafe {
             let status = ll::SDL_GetAudioDeviceStatus(self.device_id.id());
             FromPrimitive::from_i32(status as i32).unwrap()
@@ -604,7 +604,7 @@ impl AudioCVT {
 
                 // calculate the size of the dst buffer
                 raw.len = num::cast(src.len()).expect("Buffer length overflow");
-                let dst_size = self.get_capacity(src.len());
+                let dst_size = self.capacity(src.len());
                 let needed = dst_size - src.len();
                 src.reserve_exact(needed);
 
@@ -634,7 +634,7 @@ impl AudioCVT {
 
     /// Gets the buffer capacity that can contain both the original and
     /// converted data.
-    pub fn get_capacity(&self, src_len: usize) -> usize {
+    pub fn capacity(&self, src_len: usize) -> usize {
         src_len.checked_mul(self.raw.len_mult as usize).expect("Integer overflow")
     }
 }
@@ -656,7 +656,7 @@ mod test {
 
         let cvt = AudioCVT::new(AudioFormat::U8, 1, 44100, AudioFormat::U8, 2, 44100).unwrap();
         assert!(cvt.is_conversion_needed());
-        assert_eq!(cvt.get_capacity(255), 255*2);
+        assert_eq!(cvt.capacity(255), 255*2);
 
         let new_buffer = cvt.convert(buffer);
         assert_eq!(new_buffer.len(), new_buffer_expected.len());

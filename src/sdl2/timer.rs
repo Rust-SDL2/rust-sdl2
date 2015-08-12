@@ -30,7 +30,7 @@ impl TimerSubsystem {
     /// Gets the number of milliseconds elapsed since the timer subsystem was initialized.
     ///
     /// It's recommended that you use another library for timekeeping, such as `time`.
-    pub fn get_ticks(&mut self) -> u32 {
+    pub fn ticks(&mut self) -> u32 {
         // Google says this is probably not thread-safe (TODO: prove/disprove this).
         unsafe { ll::SDL_GetTicks() }
     }
@@ -43,11 +43,11 @@ impl TimerSubsystem {
         unsafe { ll::SDL_Delay(ms) }
     }
 
-    pub fn get_performance_counter(&self) -> u64 {
+    pub fn performance_counter(&self) -> u64 {
         unsafe { ll::SDL_GetPerformanceCounter() }
     }
 
-    pub fn get_performance_frequency(&self) -> u64 {
+    pub fn performance_frequency(&self) -> u64 {
         unsafe { ll::SDL_GetPerformanceFrequency() }
     }
 }

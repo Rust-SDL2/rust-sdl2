@@ -165,7 +165,7 @@ impl ::VideoSubsystem {
 /// ```no_run
 /// let sdl_context = sdl2::init().unwrap();
 ///
-/// let focused = sdl_context.keyboard().get_focused_window_id().is_some();
+/// let focused = sdl_context.keyboard().focused_window_id().is_some();
 /// ```
 pub struct KeyboardUtil {
     _sdldrop: ::std::rc::Rc<::SdlDrop>
@@ -173,7 +173,7 @@ pub struct KeyboardUtil {
 
 impl KeyboardUtil {
     /// Gets the id of the window which currently has keyboard focus.
-    pub fn get_focused_window_id(&self) -> Option<u32> {
+    pub fn focused_window_id(&self) -> Option<u32> {
         let raw = unsafe { ll::SDL_GetKeyboardFocus() };
         if raw == ptr::null_mut() {
             None

@@ -65,7 +65,7 @@ impl GameControllerSubsystem {
     }
 
     /// Return `true` if controller events are processed.
-    pub fn get_event_state(&self) -> bool {
+    pub fn event_state(&self) -> bool {
         unsafe { ll::SDL_GameControllerEventState(SDL_QUERY as i32)
                  == SDL_ENABLE as i32 }
     }
@@ -122,7 +122,7 @@ impl Axis {
 
     /// Return a string for a given axis in the same format using by
     /// the game controller mapping strings
-    pub fn get_string(self) -> String {
+    pub fn string(self) -> String {
         let axis = self as ll::SDL_GameControllerAxis;
 
         let string = unsafe { ll::SDL_GameControllerGetStringForAxis(axis) };
@@ -179,7 +179,7 @@ impl Button {
 
     /// Return a string for a given button in the same format using by
     /// the game controller mapping strings
-    pub fn get_string(self) -> String {
+    pub fn string(self) -> String {
         let button = self as ll::SDL_GameControllerButton;
 
         let string = unsafe { ll::SDL_GameControllerGetStringForButton(button) };
@@ -245,12 +245,12 @@ impl GameController {
 
     /// Return true if the controller has been opened and currently
     /// connected.
-    pub fn get_attached(&self) -> bool {
+    pub fn attached(&self) -> bool {
         unsafe { ll::SDL_GameControllerGetAttached(self.raw) != 0 }
     }
 
     /// Get the position of the given `axis`
-    pub fn get_axis(&self, axis: Axis) -> i16 {
+    pub fn axis(&self, axis: Axis) -> i16 {
         // This interface is a bit messed up: 0 is a valid position
         // but can also mean that an error occured.
         // Fortunately, an error can only occur if the controller pointer is NULL.
@@ -262,7 +262,7 @@ impl GameController {
     }
 
     /// Returns `true` if `button` is pressed.
-    pub fn get_button(&self, button: Button) -> bool {
+    pub fn button(&self, button: Button) -> bool {
         // This interface is a bit messed up: 0 is a valid position
         // but can also mean that an error occured.
         // Fortunately, an error can only occur if the controller pointer is NULL.

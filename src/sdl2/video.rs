@@ -468,7 +468,7 @@ impl VideoSubsystem {
         WindowBuilder::new(self, title, width, height)
     }
 
-    pub fn get_current_video_driver(&self) -> &'static str {
+    pub fn current_video_driver(&self) -> &'static str {
         use std::str;
 
         unsafe {
@@ -479,7 +479,7 @@ impl VideoSubsystem {
         }
     }
 
-    pub fn get_num_video_displays(&self) -> SdlResult<i32> {
+    pub fn num_video_displays(&self) -> SdlResult<i32> {
         let result = unsafe { ll::SDL_GetNumVideoDisplays() };
         if result < 0 {
             Err(get_error())
@@ -488,14 +488,14 @@ impl VideoSubsystem {
         }
     }
 
-    pub fn get_display_name(&self, display_index: i32) -> String {
+    pub fn display_name(&self, display_index: i32) -> String {
         unsafe {
             let display = ll::SDL_GetDisplayName(display_index as c_int);
             String::from_utf8_lossy(CStr::from_ptr(display).to_bytes()).to_string()
         }
     }
 
-    pub fn get_display_bounds(&self, display_index: i32) -> SdlResult<Rect> {
+    pub fn display_bounds(&self, display_index: i32) -> SdlResult<Rect> {
         let mut out = unsafe { mem::uninitialized() };
         let result = unsafe { ll::SDL_GetDisplayBounds(display_index as c_int, &mut out) == 0 };
 
@@ -507,7 +507,7 @@ impl VideoSubsystem {
         }
     }
 
-    pub fn get_num_display_modes(&self, display_index: i32) -> SdlResult<i32> {
+    pub fn num_display_modes(&self, display_index: i32) -> SdlResult<i32> {
         let result = unsafe { ll::SDL_GetNumDisplayModes(display_index as c_int) };
         if result < 0 {
             Err(get_error())
@@ -516,7 +516,7 @@ impl VideoSubsystem {
         }
     }
 
-    pub fn get_display_mode(&self, display_index: i32, mode_index: i32) -> SdlResult<DisplayMode> {
+    pub fn display_mode(&self, display_index: i32, mode_index: i32) -> SdlResult<DisplayMode> {
         let mut dm = unsafe { mem::uninitialized() };
         let result = unsafe { ll::SDL_GetDisplayMode(display_index as c_int, mode_index as c_int, &mut dm) == 0};
 
@@ -527,7 +527,7 @@ impl VideoSubsystem {
         }
     }
 
-    pub fn get_desktop_display_mode(&self, display_index: i32) -> SdlResult<DisplayMode> {
+    pub fn desktop_display_mode(&self, display_index: i32) -> SdlResult<DisplayMode> {
         let mut dm = unsafe { mem::uninitialized() };
         let result = unsafe { ll::SDL_GetDesktopDisplayMode(display_index as c_int, &mut dm) == 0};
 
@@ -538,7 +538,7 @@ impl VideoSubsystem {
         }
     }
 
-    pub fn get_current_display_mode(&self, display_index: i32) -> SdlResult<DisplayMode> {
+    pub fn current_display_mode(&self, display_index: i32) -> SdlResult<DisplayMode> {
         let mut dm = unsafe { mem::uninitialized() };
         let result = unsafe { ll::SDL_GetCurrentDisplayMode(display_index as c_int, &mut dm) == 0};
 
@@ -549,7 +549,7 @@ impl VideoSubsystem {
         }
     }
 
-    pub fn get_closest_display_mode(&self, display_index: i32, mode: &DisplayMode) -> SdlResult<DisplayMode> {
+    pub fn closest_display_mode(&self, display_index: i32, mode: &DisplayMode) -> SdlResult<DisplayMode> {
         let input = mode.to_ll();
         let mut dm = unsafe { mem::uninitialized() };
 
@@ -731,7 +731,7 @@ impl WindowBuilder {
     }
 
     /// Gets the underlying window flags.
-    pub fn get_window_flags(&self) -> u32 { self.window_flags }
+    pub fn window_flags(&self) -> u32 { self.window_flags }
 
     /// Sets the underlying window flags.
     /// This will effectively undo any previous build operations, excluding window size and position.
@@ -838,7 +838,7 @@ impl WindowRef {
         mem::transmute(raw)
     }
 
-    pub fn get_id(&self) -> u32 {
+    pub fn id(&self) -> u32 {
         unsafe { ll::SDL_GetWindowID(self.raw()) }
     }
 
@@ -882,7 +882,7 @@ impl WindowRef {
         unsafe { ll::SDL_GL_SwapWindow(self.raw()) }
     }
 
-    pub fn get_display_index(&self) -> SdlResult<i32> {
+    pub fn display_index(&self) -> SdlResult<i32> {
         let result = unsafe { ll::SDL_GetWindowDisplayIndex(self.raw()) };
         if result < 0 {
             return Err(get_error())
@@ -908,7 +908,7 @@ impl WindowRef {
         }
     }
 
-    pub fn get_display_mode(&self) -> SdlResult<DisplayMode> {
+    pub fn display_mode(&self) -> SdlResult<DisplayMode> {
         let mut dm = unsafe { mem::uninitialized() };
 
         let result = unsafe {
@@ -925,11 +925,11 @@ impl WindowRef {
         }
     }
 
-    pub fn get_window_pixel_format(&self) -> pixels::PixelFormatEnum {
+    pub fn window_pixel_format(&self) -> pixels::PixelFormatEnum {
         unsafe{ FromPrimitive::from_u64(ll::SDL_GetWindowPixelFormat(self.raw()) as u64).unwrap() }
     }
 
-    pub fn get_window_flags(&self) -> u32 {
+    pub fn window_flags(&self) -> u32 {
         unsafe {
             ll::SDL_GetWindowFlags(self.raw())
         }
@@ -940,7 +940,7 @@ impl WindowRef {
         unsafe { ll::SDL_SetWindowTitle(self.raw(), title.as_ptr()); }
     }
 
-    pub fn get_title(&self) -> &str {
+    pub fn title(&self) -> &str {
         use std::ffi::CStr;
         use std::str;
 
@@ -963,7 +963,7 @@ impl WindowRef {
         unsafe { ll::SDL_SetWindowPosition(self.raw(), unwrap_windowpos(x), unwrap_windowpos(y)) }
     }
 
-    pub fn get_position(&self) -> (i32, i32) {
+    pub fn position(&self) -> (i32, i32) {
         let mut x: c_int = 0;
         let mut y: c_int = 0;
         unsafe { ll::SDL_GetWindowPosition(self.raw(), &mut x, &mut y) };
@@ -977,14 +977,14 @@ impl WindowRef {
         }
     }
 
-    pub fn get_size(&self) -> (u32, u32) {
+    pub fn size(&self) -> (u32, u32) {
         let mut w: c_int = 0;
         let mut h: c_int = 0;
         unsafe { ll::SDL_GetWindowSize(self.raw(), &mut w, &mut h) };
         (w as u32, h as u32)
     }
 
-    pub fn get_drawable_size(&self) -> (u32, u32) {
+    pub fn drawable_size(&self) -> (u32, u32) {
         let mut w: c_int = 0;
         let mut h: c_int = 0;
         unsafe { ll::SDL_GL_GetDrawableSize(self.raw(), &mut w, &mut h) };
@@ -998,7 +998,7 @@ impl WindowRef {
         }
     }
 
-    pub fn get_minimum_size(&self) -> (u32, u32) {
+    pub fn minimum_size(&self) -> (u32, u32) {
         let mut w: c_int = 0;
         let mut h: c_int = 0;
         unsafe { ll::SDL_GetWindowMinimumSize(self.raw(), &mut w, &mut h) };
@@ -1012,7 +1012,7 @@ impl WindowRef {
         }
     }
 
-    pub fn get_maximum_size(&self) -> (u32, u32) {
+    pub fn maximum_size(&self) -> (u32, u32) {
         let mut w: c_int = 0;
         let mut h: c_int = 0;
         unsafe { ll::SDL_GetWindowMaximumSize(self.raw(), &mut w, &mut h) };
@@ -1057,7 +1057,7 @@ impl WindowRef {
         }
     }
 
-    pub fn get_surface<'a>(&'a self, _e: &'a EventPump) -> SdlResult<&'a SurfaceRef> {
+    pub fn surface<'a>(&'a self, _e: &'a EventPump) -> SdlResult<&'a SurfaceRef> {
         let raw = unsafe { ll::SDL_GetWindowSurface(self.raw()) };
 
         if raw.is_null() {
@@ -1067,7 +1067,7 @@ impl WindowRef {
         }
     }
 
-    pub fn get_surface_mut<'a>(&'a mut self, _e: &'a EventPump) -> SdlResult<&'a mut SurfaceRef> {
+    pub fn surface_mut<'a>(&'a mut self, _e: &'a EventPump) -> SdlResult<&'a mut SurfaceRef> {
         let raw = unsafe { ll::SDL_GetWindowSurface(self.raw()) };
 
         if raw.is_null() {
@@ -1101,7 +1101,7 @@ impl WindowRef {
         unsafe { ll::SDL_SetWindowGrab(self.raw(), if grabbed { 1 } else { 0 }) }
     }
 
-    pub fn get_grab(&self) -> bool {
+    pub fn grab(&self) -> bool {
         unsafe { ll::SDL_GetWindowGrab(self.raw()) == 1 }
     }
 
@@ -1115,7 +1115,7 @@ impl WindowRef {
         }
     }
 
-    pub fn get_brightness(&self) -> f64 {
+    pub fn brightness(&self) -> f64 {
         unsafe { ll::SDL_GetWindowBrightness(self.raw()) as f64 }
     }
 
@@ -1142,7 +1142,7 @@ impl WindowRef {
         }
     }
 
-    pub fn get_gamma_ramp(&self) -> SdlResult<(Vec<u16>, Vec<u16>, Vec<u16>)> {
+    pub fn gamma_ramp(&self) -> SdlResult<(Vec<u16>, Vec<u16>, Vec<u16>)> {
         let mut red: Vec<u16> = Vec::with_capacity(256);
         let mut green: Vec<u16> = Vec::with_capacity(256);
         let mut blue: Vec<u16> = Vec::with_capacity(256);

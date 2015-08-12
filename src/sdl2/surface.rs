@@ -199,27 +199,27 @@ impl SurfaceRef {
         unsafe { mem::transmute(self) }
     }
 
-    pub fn get_width(&self) -> u32 {
+    pub fn width(&self) -> u32 {
         self.raw_ref().w as u32
     }
 
-    pub fn get_height(&self) -> u32 {
+    pub fn height(&self) -> u32 {
         self.raw_ref().h as u32
     }
 
-    pub fn get_pitch(&self) -> u32 {
+    pub fn pitch(&self) -> u32 {
         self.raw_ref().pitch as u32
     }
 
-    pub fn get_size(&self) -> (u32, u32) {
-        (self.get_width(), self.get_height())
+    pub fn size(&self) -> (u32, u32) {
+        (self.width(), self.height())
     }
 
-    pub fn get_rect(&self) -> Rect {
-        Rect::new_unwrap(0, 0, self.get_width(), self.get_height())
+    pub fn rect(&self) -> Rect {
+        Rect::new_unwrap(0, 0, self.width(), self.height())
     }
 
-    pub fn get_pixel_format(&self) -> pixels::PixelFormat {
+    pub fn pixel_format(&self) -> pixels::PixelFormat {
         unsafe {
             pixels::PixelFormat::from_ll(self.raw_ref().format)
         }
@@ -332,7 +332,7 @@ impl SurfaceRef {
     }
 
     pub fn set_color_key(&mut self, enable: bool, color: pixels::Color) -> SdlResult<()> {
-        let key = color.to_u32(&self.get_pixel_format());
+        let key = color.to_u32(&self.pixel_format());
         let result = unsafe {
             ll::SDL_SetColorKey(self.raw(), if enable { 1 } else { 0 }, key)
         };
@@ -344,7 +344,7 @@ impl SurfaceRef {
     }
 
     /// The function will fail if the surface doesn't have color key enabled.
-    pub fn get_color_key(&self) -> SdlResult<pixels::Color> {
+    pub fn color_key(&self) -> SdlResult<pixels::Color> {
         let mut key = 0;
 
         // SDL_GetColorKey does not mutate, but requires a non-const pointer anyway.
@@ -354,7 +354,7 @@ impl SurfaceRef {
         };
 
         if result == 0 {
-            Ok(pixels::Color::from_u32(&self.get_pixel_format(), key))
+            Ok(pixels::Color::from_u32(&self.pixel_format(), key))
         } else {
             Err(get_error())
         }
@@ -374,7 +374,7 @@ impl SurfaceRef {
         }
     }
 
-    pub fn get_color_mod(&self) -> pixels::Color {
+    pub fn color_mod(&self) -> pixels::Color {
         let mut r = 0;
         let mut g = 0;
         let mut b = 0;
@@ -396,7 +396,7 @@ impl SurfaceRef {
     pub fn fill_rect(&mut self, rect: Option<Rect>, color: pixels::Color) -> SdlResult<()> {
         unsafe {
             let rect_ptr = mem::transmute( rect.as_ref() );
-            let format = self.get_pixel_format();
+            let format = self.pixel_format();
             let result = ll::SDL_FillRect(self.raw(), rect_ptr, color.to_u32(&format) );
             match result {
                 0 => Ok(()),
@@ -428,7 +428,7 @@ impl SurfaceRef {
         }
     }
 
-    pub fn get_alpha_mod(&self) -> u8 {
+    pub fn alpha_mod(&self) -> u8 {
         let mut alpha = 0;
         let result = unsafe {
             ll::SDL_GetSurfaceAlphaMod(self.raw(), &mut alpha)
@@ -453,7 +453,7 @@ impl SurfaceRef {
         }
     }
 
-    pub fn get_blend_mode(&self) -> BlendMode {
+    pub fn blend_mode(&self) -> BlendMode {
         let mut mode: ll::SDL_BlendMode = 0;
         let result = unsafe {
             ll::SDL_GetSurfaceBlendMode(self.raw(), &mut mode)
@@ -481,7 +481,7 @@ impl SurfaceRef {
     /// Gets the clip rectangle for the surface.
     ///
     /// Returns `None` if clipping is disabled.
-    pub fn get_clip_rect(&self) -> Option<Rect> {
+    pub fn clip_rect(&self) -> Option<Rect> {
         let mut rect = unsafe { mem::uninitialized() };
         unsafe {
             ll::SDL_GetClipRect(self.raw(), &mut rect)

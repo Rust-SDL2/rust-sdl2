@@ -235,7 +235,7 @@ impl<'a> Renderer<'a> {
     }
 
     /// Gets information about the rendering context.
-    pub fn get_info(&self) -> RendererInfo {
+    pub fn info(&self) -> RendererInfo {
         unsafe {
             let mut renderer_info_raw = mem::uninitialized();
             if ll::SDL_GetRendererInfo(self.raw, &mut renderer_info_raw) != 0 {
@@ -248,15 +248,15 @@ impl<'a> Renderer<'a> {
     }
 
     #[inline]
-    fn get_parent(&self) -> &RendererParent { self.parent.as_ref().unwrap() }
+    fn parent(&self) -> &RendererParent { self.parent.as_ref().unwrap() }
 
     #[inline]
-    fn get_parent_mut(&mut self) -> &mut RendererParent<'a> { self.parent.as_mut().unwrap() }
+    fn parent_mut(&mut self) -> &mut RendererParent<'a> { self.parent.as_mut().unwrap() }
 
     /// Gets the associated window reference of the Renderer, if there is one.
     #[inline]
     pub fn window(&self) -> Option<&WindowRef> {
-        match self.get_parent() {
+        match self.parent() {
             &RendererParent::Window(ref window) => Some(window),
             _ => None
         }
@@ -265,7 +265,7 @@ impl<'a> Renderer<'a> {
     /// Gets the associated window reference of the Renderer, if there is one.
     #[inline]
     pub fn window_mut(&mut self) -> Option<&mut WindowRef> {
-        match self.get_parent_mut() {
+        match self.parent_mut() {
             &mut RendererParent::Window(ref mut window) => Some(window),
             _ => None
         }
@@ -274,7 +274,7 @@ impl<'a> Renderer<'a> {
     /// Gets the associated surface reference of the Renderer, if there is one.
     #[inline]
     pub fn surface(&self) -> Option<&SurfaceRef> {
-        match self.get_parent() {
+        match self.parent() {
             &RendererParent::Surface(ref surface) => Some(surface),
             _ => None
         }
@@ -283,7 +283,7 @@ impl<'a> Renderer<'a> {
     /// Gets the associated surface reference of the Renderer, if there is one.
     #[inline]
     pub fn surface_mut(&mut self) -> Option<&mut SurfaceRef> {
-        match self.get_parent_mut() {
+        match self.parent_mut() {
             &mut RendererParent::Surface(ref mut surface) => Some(surface),
             _ => None
         }
@@ -420,7 +420,7 @@ impl<'a> Renderer<'a> {
     }
 
     /// Gets the color used for drawing operations (Rect, Line and Clear).
-    pub fn get_draw_color(&self) -> pixels::Color {
+    pub fn draw_color(&self) -> pixels::Color {
         let (mut r, mut g, mut b, mut a) = (0, 0, 0, 0);
         let ret = unsafe { ll::SDL_GetRenderDrawColor(self.raw, &mut r, &mut g, &mut b, &mut a) };
         // Should only fail on an invalid renderer
@@ -436,7 +436,7 @@ impl<'a> Renderer<'a> {
     }
 
     /// Gets the blend mode used for drawing operations.
-    pub fn get_blend_mode(&self) -> BlendMode {
+    pub fn blend_mode(&self) -> BlendMode {
         let mut blend = 0;
         let ret = unsafe { ll::SDL_GetRenderDrawBlendMode(self.raw, &mut blend) };
         // Should only fail on an invalid renderer
@@ -462,7 +462,7 @@ impl<'a> Renderer<'a> {
     }
 
     /// Gets the output size of a rendering context.
-    pub fn get_output_size(&self) -> SdlResult<(u32, u32)> {
+    pub fn output_size(&self) -> SdlResult<(u32, u32)> {
         let mut width = 0;
         let mut height = 0;
 
@@ -487,7 +487,7 @@ impl<'a> Renderer<'a> {
     }
 
     /// Gets device independent resolution for rendering.
-    pub fn get_logical_size(&self) -> (u32, u32) {
+    pub fn logical_size(&self) -> (u32, u32) {
         let mut width = 0;
         let mut height = 0;
 
@@ -507,7 +507,7 @@ impl<'a> Renderer<'a> {
     }
 
     /// Gets the drawing area for the current target.
-    pub fn get_viewport(&self) -> Rect {
+    pub fn viewport(&self) -> Rect {
         let mut rect = unsafe { mem::uninitialized() };
         unsafe { ll::SDL_RenderGetViewport(self.raw, &mut rect) };
         Rect::from_ll(rect).unwrap().unwrap()
@@ -532,7 +532,7 @@ impl<'a> Renderer<'a> {
     /// Gets the clip rectangle for the current target.
     ///
     /// Returns `None` if clipping is disabled.
-    pub fn get_clip_rect(&self) -> Option<Rect> {
+    pub fn clip_rect(&self) -> Option<Rect> {
         let mut rect = unsafe { mem::uninitialized() };
         unsafe { ll::SDL_RenderGetClipRect(self.raw, &mut rect) };
         Rect::from_ll(rect).unwrap()
@@ -546,7 +546,7 @@ impl<'a> Renderer<'a> {
     }
 
     /// Gets the drawing scale for the current target.
-    pub fn get_scale(&self) -> (f32, f32) {
+    pub fn scale(&self) -> (f32, f32) {
         let mut scale_x = 0.0;
         let mut scale_y = 0.0;
         unsafe { ll::SDL_RenderGetScale(self.raw, &mut scale_x, &mut scale_y) };
@@ -733,7 +733,7 @@ impl<'a> Renderer<'a> {
             let (actual_rect, w, h) = match rect {
                 Some(ref rect) => (rect.raw(), rect.width() as usize, rect.height() as usize),
                 None => {
-                    let (w, h) = try!(self.get_output_size());
+                    let (w, h) = try!(self.output_size());
                     (ptr::null(), w as usize, h as usize)
                 }
             };
@@ -950,7 +950,7 @@ impl Texture {
     }
 
     /// Gets the additional color value multiplied into render copy operations.
-    pub fn get_color_mod(&self) -> (u8, u8, u8) {
+    pub fn color_mod(&self) -> (u8, u8, u8) {
         self.check_renderer();
 
         let (mut r, mut g, mut b) = (0, 0, 0);
@@ -973,7 +973,7 @@ impl Texture {
     }
 
     /// Gets the additional alpha value multiplied into render copy operations.
-    pub fn get_alpha_mod(&self) -> u8 {
+    pub fn alpha_mod(&self) -> u8 {
         self.check_renderer();
 
         let mut alpha = 0;
@@ -996,7 +996,7 @@ impl Texture {
     }
 
     /// Gets the blend mode used for texture copy operations.
-    pub fn get_blend_mode(&self) -> BlendMode {
+    pub fn blend_mode(&self) -> BlendMode {
         self.check_renderer();
 
         let mut blend = 0;

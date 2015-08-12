@@ -32,7 +32,7 @@ impl fmt::Display for Version {
 }
 
 /// Get the version of SDL that is linked against your program.
-pub fn get_version() -> Version {
+pub fn version() -> Version {
     unsafe {
         let mut cver = ll::SDL_version { major: 0, minor: 0, patch: 0};
         ll::SDL_GetVersion(&mut cver);
@@ -41,7 +41,7 @@ pub fn get_version() -> Version {
 }
 
 /// Get the code revision of SDL that is linked against your program.
-pub fn get_revision() -> String {
+pub fn revision() -> String {
     unsafe {
         let rev = ll::SDL_GetRevision();
         String::from_utf8_lossy(CStr::from_ptr(rev).to_bytes()).to_string()
@@ -49,7 +49,7 @@ pub fn get_revision() -> String {
 }
 
 /// Get the revision number of SDL that is linked against your program.
-pub fn get_revision_number() -> i32 {
+pub fn revision_number() -> i32 {
     unsafe {
         ll::SDL_GetRevisionNumber()
     }

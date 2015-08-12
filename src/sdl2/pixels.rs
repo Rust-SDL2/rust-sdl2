@@ -40,7 +40,7 @@ impl Color {
         Color::RGBA(r, g, b, a)
     }
 
-    pub fn get_rgb(&self) -> (u8, u8, u8) {
+    pub fn rgb(&self) -> (u8, u8, u8) {
         match self {
             &Color::RGB(r, g, b) => (r, g, b),
             &Color::RGBA(r, g, b, _) => (r, g, b)

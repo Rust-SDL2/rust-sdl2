@@ -170,7 +170,7 @@ pub struct MouseUtil {
 
 impl MouseUtil {
     /// Gets the id of the window which currently has mouse focus.
-    pub fn get_focused_window_id(&self) -> Option<u32> {
+    pub fn focused_window_id(&self) -> Option<u32> {
         let raw = unsafe { ll::SDL_GetMouseFocus() };
         if raw == ptr::null_mut() {
             None
@@ -180,7 +180,7 @@ impl MouseUtil {
         }
     }
 
-    pub fn get_mouse_state(&self) -> (MouseState, i32, i32) {
+    pub fn mouse_state(&self) -> (MouseState, i32, i32) {
         let mut x = 0;
         let mut y = 0;
         unsafe {
@@ -189,7 +189,7 @@ impl MouseUtil {
         }
     }
 
-    pub fn get_relative_mouse_state(&self) -> (MouseState, i32, i32) {
+    pub fn relative_mouse_state(&self) -> (MouseState, i32, i32) {
         let mut x = 0;
         let mut y = 0;
         unsafe {
@@ -206,7 +206,7 @@ impl MouseUtil {
         unsafe { ll::SDL_SetRelativeMouseMode(on as i32); }
     }
 
-    pub fn get_relative_mouse_mode(&self) -> bool {
+    pub fn relative_mouse_mode(&self) -> bool {
         unsafe { ll::SDL_GetRelativeMouseMode() == 1 }
     }
 
