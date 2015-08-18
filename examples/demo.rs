@@ -24,10 +24,11 @@ macro_rules! rect(
 );
 
 fn run(filename: &Path) {
-    let mut sdl_context = sdl2::init().video().unwrap();
+    let sdl_context = sdl2::init().unwrap();
+    let video_subsys = sdl_context.video().unwrap();
     sdl2_ttf::init();
 
-    let window = sdl_context.window("rust-sdl2 demo: Video", 800, 600)
+    let window = video_subsys.window("rust-sdl2 demo: Video", 800, 600)
         .position_centered()
         .opengl()
         .build()
@@ -52,7 +53,7 @@ fn run(filename: &Path) {
     renderer.present();
 
     'mainloop: loop {
-        for event in sdl_context.event_pump().poll_iter() {
+        for event in sdl_context.event_pump().unwrap().poll_iter() {
             match event {
                 Event::Quit{..} => break 'mainloop,
                 Event::KeyDown {keycode: Some(Keycode::Escape), ..} => break 'mainloop,
