@@ -3,7 +3,7 @@
 use libc;
 use libc::{c_void, uint32_t, malloc, size_t};
 use std::mem;
-use sdl2::SdlResult;
+use sdl2::{SdlResult, ErrorMessage};
 
 
 mod ll {
@@ -47,7 +47,7 @@ impl FPSManager {
     pub fn set_framerate(&mut self, rate: u32) -> SdlResult<()> {
         let ret = unsafe { ll::SDL_setFramerate(self.raw, rate as uint32_t) };
         if ret == 0 { Ok(()) }
-        else { Err("set_framerate error: beyond lower/upper limit.".to_string()) }
+        else { Err(ErrorMessage("set_framerate error: beyond lower/upper limit.".into())) }
     }
 
     /// Return the current target framerate in Hz.

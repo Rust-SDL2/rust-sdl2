@@ -2,7 +2,7 @@
 
 use libc::c_int;
 use sdl2::surface::Surface;
-use sdl2::SdlResult;
+use sdl2::{SdlResult, ErrorMessage};
 pub use std::f64::consts::PI;
 
 
@@ -56,7 +56,7 @@ impl<'a> RotozoomSurface for Surface<'a> {
             ll::rotozoomSurface(self.raw(), angle, zoom, smooth as c_int)
         };
         if (raw as *mut ()).is_null() {
-            Err("rotozoomSurface: error.".to_string())
+            Err(ErrorMessage("rotozoomSurface: error.".into()))
         } else {
             unsafe { Ok(Surface::from_ll(raw)) }
         }
@@ -66,7 +66,7 @@ impl<'a> RotozoomSurface for Surface<'a> {
             ll::rotozoomSurfaceXY(self.raw(), angle, zoomx, zoomy, smooth as c_int)
         };
         if (raw as *mut ()).is_null() {
-            Err("rotozoomSurfaceXY: error.".to_string())
+            Err(ErrorMessage("rotozoomSurfaceXY: error.".into()))
         } else {
             unsafe { Ok(Surface::from_ll(raw)) }
         }
@@ -76,7 +76,7 @@ impl<'a> RotozoomSurface for Surface<'a> {
             ll::zoomSurface(self.raw(), zoomx, zoomy, smooth as c_int)
         };
         if (raw as *mut ()).is_null() {
-            Err("zoomSurface: error.".to_string())
+            Err(ErrorMessage("zoomSurface: error.".into()))
         } else {
             unsafe { Ok(Surface::from_ll(raw)) }
         }
@@ -86,7 +86,7 @@ impl<'a> RotozoomSurface for Surface<'a> {
             ll::shrinkSurface(self.raw(), factorx as c_int, factory as c_int)
         };
         if (raw as *mut ()).is_null() {
-            Err("shrinkSurface: error.".to_string())
+            Err(ErrorMessage("shrinkSurface: error.".into()))
         } else {
             unsafe { Ok(Surface::from_ll(raw)) }
         }
@@ -96,7 +96,7 @@ impl<'a> RotozoomSurface for Surface<'a> {
             ll::rotateSurface90Degrees(self.raw(), turns as c_int)
         };
         if (raw as *mut ()).is_null() {
-            Err("rotateSurface90Degrees: error.".to_string())
+            Err(ErrorMessage("rotateSurface90Degrees: error.".into()))
         } else {
             unsafe { Ok(Surface::from_ll(raw)) }
         }

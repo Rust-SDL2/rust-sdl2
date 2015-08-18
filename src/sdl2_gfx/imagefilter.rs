@@ -3,7 +3,7 @@
 use std::mem;
 use libc;
 use libc::{size_t, c_void, c_uint, c_int};
-use sdl2::SdlResult;
+use sdl2::{SdlResult, ErrorMessage};
 use c_vec::CVec;
 
 mod ll {
@@ -121,7 +121,7 @@ pub fn add(src1: CVec<u8>, src2: CVec<u8>) -> SdlResult<CVec<u8>> {
                                               mem::transmute(dest.get(0)),
                                               size as c_uint) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterAdd error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterAdd error".into())) }
 }
 
 /// Filter using Mean: D = S1/2 + S2/2.
@@ -134,7 +134,7 @@ pub fn mean(src1: CVec<u8>, src2: CVec<u8>) -> SdlResult<CVec<u8>> {
                                                mem::transmute(dest.get(0)),
                                                size as c_uint) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterMean error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterMean error".into())) }
 }
 
 /// Filter using Sub: D = saturation0(S1 - S2).
@@ -147,7 +147,7 @@ pub fn sub(src1: CVec<u8>, src2: CVec<u8>) -> SdlResult<CVec<u8>> {
                                               mem::transmute(dest.get(0)),
                                               size as c_uint) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterSub error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterSub error".into())) }
 }
 
 /// Filter using AbsDiff: D = | S1 - S2 |.
@@ -160,7 +160,7 @@ pub fn abs_diff(src1: CVec<u8>, src2: CVec<u8>) -> SdlResult<CVec<u8>> {
                                                   mem::transmute(dest.get(0)),
                                                   size as c_uint) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterAbsDiff error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterAbsDiff error".into())) }
 }
 
 /// Filter using Mult: D = saturation255(S1 * S2).
@@ -173,7 +173,7 @@ pub fn mult(src1: CVec<u8>, src2: CVec<u8>) -> SdlResult<CVec<u8>> {
                                                mem::transmute(dest.get(0)),
                                                size as c_uint) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterMult error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterMult error".into())) }
 }
 
 /// Filter using MultNor: D = S1 * S2.
@@ -186,7 +186,7 @@ pub fn mult_nor(src1: CVec<u8>, src2: CVec<u8>) -> SdlResult<CVec<u8>> {
                                                   mem::transmute(dest.get(0)),
                                                   size as c_uint) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterMultNor error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterMultNor error".into())) }
 }
 
 /// Filter using MultDivby2: D = saturation255(S1/2 * S2).
@@ -199,7 +199,7 @@ pub fn mult_div_by2(src1: CVec<u8>, src2: CVec<u8>) -> SdlResult<CVec<u8>> {
                                                      mem::transmute(dest.get(0)),
                                                      size as c_uint) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterMultDivby2 error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterMultDivby2 error".into())) }
 }
 
 /// Filter using MultDivby4: D = saturation255(S1/2 * S2/2).
@@ -212,7 +212,7 @@ pub fn mult_div_by4(src1: CVec<u8>, src2: CVec<u8>) -> SdlResult<CVec<u8>> {
                                                      mem::transmute(dest.get(0)),
                                                      size as c_uint) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterMultDivby4 error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterMultDivby4 error".into())) }
 }
 
 /// Filter using BitAnd: D = S1 & S2.
@@ -225,7 +225,7 @@ pub fn bit_and(src1: CVec<u8>, src2: CVec<u8>) -> SdlResult<CVec<u8>> {
                                                  mem::transmute(dest.get(0)),
                                                  size as c_uint) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterBitAnd error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterBitAnd error".into())) }
 }
 
 /// Filter using BitOr: D = S1 | S2.
@@ -238,7 +238,7 @@ pub fn bit_or(src1: CVec<u8>, src2: CVec<u8>) -> SdlResult<CVec<u8>> {
                                                 mem::transmute(dest.get(0)),
                                                 size as c_uint) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterBitOr error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterBitOr error".into())) }
 }
 
 /// Filter using Div: D = S1 / S2.
@@ -251,7 +251,7 @@ pub fn div(src1: CVec<u8>, src2: CVec<u8>) -> SdlResult<CVec<u8>> {
                                               mem::transmute(dest.get(0)),
                                               size as c_uint) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterDiv error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterDiv error".into())) }
 }
 
 /// Filter using BitNegation: D = !S.
@@ -262,7 +262,7 @@ pub fn bit_negation(src1: CVec<u8>) -> SdlResult<CVec<u8>> {
                                                       mem::transmute(dest.get(0)),
                                                       size as c_uint) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterBitNegation error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterBitNegation error".into())) }
 }
 
 /// Filter using AddByte: D = saturation255(S + C).
@@ -273,7 +273,7 @@ pub fn add_byte(src1: CVec<u8>, c: u8) -> SdlResult<CVec<u8>> {
                                                   mem::transmute(dest.get(0)),
                                                   size as c_uint, c) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterAddByte error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterAddByte error".into())) }
 }
 
 /// Filter using AddUint: D = saturation255((S[i] + Cs[i % 4]), Cs=Swap32((uint)C).
@@ -284,7 +284,7 @@ pub fn add_uint(src1: CVec<u8>, c: u32) -> SdlResult<CVec<u8>> {
                                                   mem::transmute(dest.get(0)),
                                                   size as c_uint, c) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterAddUint error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterAddUint error".into())) }
 }
 
 /// Filter using AddByteToHalf: D = saturation255(S/2 + C).
@@ -295,7 +295,7 @@ pub fn add_byte_to_half(src1: CVec<u8>, c: u8) -> SdlResult<CVec<u8>> {
                                                         mem::transmute(dest.get(0)),
                                                         size as c_uint, c) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterAddByteToHalf error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterAddByteToHalf error".into())) }
 }
 
 /// Filter using SubByte: D = saturation0(S - C).
@@ -306,7 +306,7 @@ pub fn sub_byte(src1: CVec<u8>, c: u8) -> SdlResult<CVec<u8>> {
                                                   mem::transmute(dest.get(0)),
                                                   size as c_uint, c) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterSubByte error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterSubByte error".into())) }
 }
 
 /// Filter using SubUint: D = saturation0(S[i] - Cs[i % 4]), Cs=Swap32((uint)C).
@@ -317,7 +317,7 @@ pub fn sub_uint(src1: CVec<u8>, c: u32) -> SdlResult<CVec<u8>> {
                                                   mem::transmute(dest.get(0)),
                                                   size as c_uint, c) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterSubUint error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterSubUint error".into())) }
 }
 
 /// Filter using ShiftRight: D = saturation0(S >> N).
@@ -328,7 +328,7 @@ pub fn shift_right(src1: CVec<u8>, n: u8) -> SdlResult<CVec<u8>> {
                                                      mem::transmute(dest.get(0)),
                                                      size as c_uint, n) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterShiftRight error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterShiftRight error".into())) }
 }
 
 /// Filter using ShiftRightUint: D = saturation0((uint)S[i] >> N).
@@ -339,7 +339,7 @@ pub fn shift_right_uint(src1: CVec<u8>, n: u8) -> SdlResult<CVec<u8>> {
                                                          mem::transmute(dest.get(0)),
                                                          size as c_uint, n) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterShiftRightUint error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterShiftRightUint error".into())) }
 }
 
 /// Filter using MultByByte: D = saturation255(S * C).
@@ -350,7 +350,7 @@ pub fn mult_by_byte(src1: CVec<u8>, c: u8) -> SdlResult<CVec<u8>> {
                                                      mem::transmute(dest.get(0)),
                                                      size as c_uint, c) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterMultByByte error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterMultByByte error".into())) }
 }
 
 /// Filter using ShiftRightAndMultByByte: D = saturation255((S >> N) * C).
@@ -361,7 +361,7 @@ pub fn shift_right_and_mult_by_byte(src1: CVec<u8>, n: u8, c: u8) -> SdlResult<C
                                                                   mem::transmute(dest.get(0)),
                                                                   size as c_uint, n, c) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterShiftRightAndMultByByte error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterShiftRightAndMultByByte error".into())) }
 }
 
 /// Filter using ShiftLeftByte: D = (S << N).
@@ -372,7 +372,7 @@ pub fn shift_left_byte(src1: CVec<u8>, n: u8) -> SdlResult<CVec<u8>> {
                                                         mem::transmute(dest.get(0)),
                                                         size as c_uint, n) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterShiftLeftByte error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterShiftLeftByte error".into())) }
 }
 
 /// Filter using ShiftLeftUint: D = ((uint)S << N).
@@ -383,7 +383,7 @@ pub fn shift_left_uint(src1: CVec<u8>, n: u8) -> SdlResult<CVec<u8>> {
                                                         mem::transmute(dest.get(0)),
                                                         size as c_uint, n) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterShiftLeftUint error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterShiftLeftUint error".into())) }
 }
 
 /// Filter ShiftLeft: D = saturation255(S << N).
@@ -394,7 +394,7 @@ pub fn shift_left(src1: CVec<u8>, n: u8) -> SdlResult<CVec<u8>> {
                                                     mem::transmute(dest.get(0)),
                                                     size as c_uint, n) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterShiftLeft error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterShiftLeft error".into())) }
 }
 
 /// Filter using BinarizeUsingThreshold: D = (S >= T) ? 255:0.
@@ -405,7 +405,7 @@ pub fn binarize_using_threshold(src1: CVec<u8>, t: u8) -> SdlResult<CVec<u8>> {
                                                                  mem::transmute(dest.get(0)),
                                                                  size as c_uint, t) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterBinarizeUsingThreshold error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterBinarizeUsingThreshold error".into())) }
 }
 
 /// Filter using ClipToRange: D = (S >= Tmin) & (S <= Tmax) S:Tmin | Tmax.
@@ -416,7 +416,7 @@ pub fn clip_to_range(src1: CVec<u8>, tmin: u8, tmax: u8) -> SdlResult<CVec<u8>> 
                                                       mem::transmute(dest.get(0)),
                                                       size as c_uint, tmin, tmax) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterClipToRange error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterClipToRange error".into())) }
 }
 
 /// Filter using NormalizeLinear: D = saturation255((Nmax - Nmin)/(Cmax - Cmin)*(S - Cmin) + Nmin).
@@ -429,5 +429,5 @@ pub fn normalize_linear(src1: CVec<u8>, cmin: isize, cmax: isize, nmin: isize, n
                                                           cmin as c_int, cmax as c_int,
                                                           nmin as c_int, nmax as c_int) };
     if ret == 0 { Ok(dest) }
-    else { Err("SDL_imageFilterNormalizeLinear error".to_string()) }
+    else { Err(ErrorMessage("SDL_imageFilterNormalizeLinear error".into())) }
 }
