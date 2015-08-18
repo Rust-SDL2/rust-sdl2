@@ -19,9 +19,9 @@ macro_rules! rect(
 
 fn main() {
 
-    let mut context = sdl2::init().video().unwrap();
-
-    let window = context.window("rust-sdl2_gfx: draw line & FPSManager", SCREEN_WIDTH, SCREEN_HEIGHT)
+    let sdl_context = sdl2::init().unwrap();
+    let video_subsys = sdl_context.video().unwrap();
+    let window = video_subsys.window("rust-sdl2_gfx: draw line & FPSManager", SCREEN_WIDTH, SCREEN_HEIGHT)
         .position_centered()
         .opengl()
         .build()
@@ -36,7 +36,7 @@ fn main() {
     let mut lastx = 0;
     let mut lasty = 0;
 
-    let mut events = context.event_pump();
+    let mut events = sdl_context.event_pump().unwrap();
 
     'main: loop {
         for event in events.poll_iter() {
