@@ -6,9 +6,10 @@ use sdl2::keyboard::Keycode;
 
 pub fn main(png: &Path) {
 
-    let mut context = sdl2::init().video().unwrap();
+    let sdl_context = sdl2::init().unwrap();
+    let video_subsystem = sdl_context.video().unwrap();
     sdl2_image::init(INIT_PNG | INIT_JPG);
-    let window = context.window("rust-sdl2 demo: Video", 800, 600)
+    let window = video_subsystem.window("rust-sdl2 demo: Video", 800, 600)
       .position_centered()
       .build()
       .unwrap();
@@ -20,7 +21,7 @@ pub fn main(png: &Path) {
     renderer.present();
 
     'mainloop: loop {
-        for event in context.event_pump().poll_iter() {
+        for event in sdl_context.event_pump().unwrap().poll_iter() {
             match event {
                 Event::Quit{..} |
                 Event::KeyDown {keycode: Option::Some(Keycode::Escape), ..} =>
