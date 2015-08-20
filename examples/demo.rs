@@ -22,7 +22,9 @@ fn demo(filename: &Path) {
 
     println!("linked version: {}", sdl2_mixer::get_linked_version());
 
-    let _ = sdl2::init().audio().timer();
+    let sdl = sdl2::init().unwrap();
+    let _audio = sdl.audio().unwrap();
+    let mut timer = sdl.timer().unwrap();
 
     println!("mixer initialized: {}", sdl2_mixer::init(
         INIT_MP3 | INIT_FLAC | INIT_MOD | INIT_FLUIDSYNTH |
@@ -66,17 +68,17 @@ fn demo(filename: &Path) {
         println!("music volume => {:?}", sdl2_mixer::Music::get_volume());
         println!("play => {:?}", music.play(1));
 
-        sdl2::timer::delay(10000);
+        timer.delay(10000);
 
         println!("fading out ... {:?}", sdl2_mixer::Music::fade_out(4000));
 
-        sdl2::timer::delay(5000);
+        timer.delay(5000);
 
         println!("fading in from pos ... {:?}", music.fade_in_from_pos(1, 10000, 100.0));
 
-        sdl2::timer::delay(5000);
+        timer.delay(5000);
         sdl2_mixer::Music::halt();
-        sdl2::timer::delay(1000);
+        timer.delay(1000);
     }
 
     // here will print hook_finished
