@@ -52,7 +52,7 @@ bitflags! {
 }
 
 /// Static method extensions for creating Surfaces
-pub trait LoadSurface {
+pub trait LoadSurface: Sized {
     // Self is only returned here to type hint to the compiler.
     // The syntax for type hinting in this case is not yet defined.
     // The intended return value is SdlResult<~Surface>.
