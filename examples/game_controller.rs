@@ -53,7 +53,7 @@ fn main() {
                 // [-32768, 32767]. Let's simulate a very rough dead
                 // zone to ignore spurious events.
                 let dead_zone = 10000;
-                if val.abs() > dead_zone || val.abs() < -dead_zone {
+                if val > dead_zone || val < -dead_zone {
                     println!("Axis {:?} moved to {}", axis, val);
                 }
             }
