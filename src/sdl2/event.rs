@@ -81,7 +81,7 @@ impl ::EventSubsystem {
                 // The only error possible is "Couldn't lock event queue"
                 panic!(get_error());
             } else {
-                events.set_len(max_amount as usize);
+                events.set_len(result as usize);
 
                 events.into_iter().map(|event_raw| {
                     Event::from_ll(event_raw)
