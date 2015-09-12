@@ -22,7 +22,7 @@ Cargo.toml file:
 
 ```toml
 [dependencies]
-sdl2_image = "0.2.1"
+sdl2_image = "0.3"
 ```
 
 Or, to reference this repository directly:
