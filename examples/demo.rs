@@ -14,12 +14,7 @@ use sdl2::pixels::Color;
 static SCREEN_WIDTH : u32 = 800;
 static SCREEN_HEIGHT : u32 = 600;
 
-// fail when error
-macro_rules! trying(
-    ($e:expr) => (match $e { Ok(e) => e, Err(e) => panic!("failed: {}", e) })
-);
-
-// hadle the annoying Rect i32
+// handle the annoying Rect i32
 macro_rules! rect(
     ($x:expr, $y:expr, $w:expr, $h:expr) => (
         Rect::new_unwrap($x as i32, $y as i32, $w as u32, $h as u32)
@@ -53,9 +48,9 @@ fn get_centered_rect(rect_width: u32, rect_height: u32, cons_width: u32, cons_he
 fn run(filename: &Path) {
     let sdl_context = sdl2::init().unwrap();
     let video_subsys = sdl_context.video().unwrap();
-    sdl2_ttf::init();
+    let ttf_context = sdl2_ttf::init();
 
-    let window = video_subsys.window("rust-sdl2 demo: Video", SCREEN_WIDTH, SCREEN_HEIGHT)
+    let window = video_subsys.window("SDL2_TTF Example", SCREEN_WIDTH, SCREEN_HEIGHT)
         .position_centered()
         .opengl()
         .build()
@@ -64,11 +59,12 @@ fn run(filename: &Path) {
     let mut renderer = window.renderer().build().unwrap();
 
     // Load a font
-    let font = trying!(sdl2_ttf::Font::from_file(filename, 128));
+    let font = sdl2_ttf::Font::from_file(filename, 128).unwrap();
 
     // render a surface, and convert it to a texture bound to the renderer
-    let surface = trying!(font.render_str_blended("Hello Rust!", Color::RGBA(255, 0, 0, 255)));
-    let mut texture = trying!(renderer.create_texture_from_surface(&surface));
+    let surface = font.render("Hello Rust!",
+        sdl2_ttf::blended(Color::RGBA(255, 0, 0, 255))).unwrap();
+    let mut texture = renderer.create_texture_from_surface(&surface).unwrap();
 
     renderer.set_draw_color(Color::RGBA(195, 217, 255, 255));
     renderer.clear();
@@ -91,8 +87,6 @@ fn run(filename: &Path) {
             }
         }
     }
-
-    sdl2_ttf::quit();
 }
 
 fn main() {
