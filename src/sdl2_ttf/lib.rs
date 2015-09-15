@@ -20,6 +20,7 @@ use sdl2_sys::pixels::SDL_Color;
 use sdl2::rwops::RWops;
 use sdl2::version::Version;
 use sdl2::SdlResult;
+use std::fmt::{Display, Formatter};
 
 // Setup linking for all targets.
 #[cfg(target_os="macos")]
@@ -79,6 +80,17 @@ pub struct GlyphMetrics {
     pub advance: i32
 }
 
+/// A context manager for SDL2_TTF to manage C code init and quit
+#[must_use]
+pub struct Sdl2TtfContext;
+
+// Clean up the context once it goes out of scope
+impl Drop for Sdl2TtfContext {
+    fn drop(&mut self) {
+        unsafe { ffi::TTF_Quit(); }
+    }
+}
+
 /// Returns the version of the dynamically linked SDL_ttf library
 pub fn get_linked_version() -> Version {
     unsafe {
@@ -86,27 +98,57 @@ pub fn get_linked_version() -> Version {
     }
 }
 
-pub fn init() -> bool {
-    //! Initialize the truetype font API.
-    unsafe {
-        if ffi::TTF_WasInit() == 1 {
-            true
-        } else {
-            ffi::TTF_Init() == 0
+/// An error for when sdl2_ttf is attempted initialized twice
+// Necessary for context management, unless we find a way to have a singleton
+#[derive(Debug)]
+pub enum Error {
+    InitializationError(std::io::Error),
+    AlreadyInitializedError,
+}
+
+impl std::error::Error for Error {
+    fn description(&self) -> &str {
+        match self {
+            &Error::AlreadyInitializedError => "SDL2_TTF has already been initialized",
+            &Error::InitializationError(ref error) => error.description(),
+        }
+    }
+
+    fn cause<'a>(&'a self) -> Option<&'a std::error::Error> {
+        match self {
+            &Error::AlreadyInitializedError => None,
+            &Error::InitializationError(ref error) => Some(error),
         }
     }
 }
 
-pub fn was_inited() -> bool {
-    //! Query the initilization status of the truetype font API.
-    unsafe {
-        ffi::TTF_WasInit() == 1
+impl Display for Error {
+    fn fmt(&self, formatter: &mut Formatter) -> Result<(), std::fmt::Error> {
+        formatter.write_str("SDL2_TTF has already been initialized")
     }
 }
 
-pub fn quit() {
-    //! Shutdown and cleanup the truetype font API.
-    unsafe { ffi::TTF_Quit(); }
+/// Initialize the truetype font API and returns a context manager which will clean up the library
+/// once it goes out of scope. You can't really use it, but keep the reference alive :)
+pub fn init() -> Result<Sdl2TtfContext, Error> {
+    unsafe {
+        if ffi::TTF_WasInit() == 1 {
+            Err(Error::AlreadyInitializedError)
+        } else {
+            if ffi::TTF_Init() == 0 {
+                Ok(Sdl2TtfContext)
+            } else {
+                Err(Error::InitializationError(std::io::Error::last_os_error()))
+            }
+        }
+    }
+}
+
+/// Returns whether the underlying library has been initialized
+pub fn has_been_initialized() -> bool {
+    unsafe {
+        ffi::TTF_WasInit() == 1
+    }
 }
 
 /// The opaque holder of a loaded font.
@@ -128,6 +170,57 @@ impl Drop for Font {
             }
         }
     }
+}
+
+/// A renderable piece of text in the UTF8 or Latin-1 format
+pub enum Text<'a> {
+    Latin1(&'a [u8]),
+    Utf8(&'a str),
+    Char(char),
+}
+
+/// Automatically convert strings to the right format
+impl <'a> From<&'a str> for Text<'a> {
+    fn from(string: &'a str) -> Text<'a> {
+        Text::Utf8(string)
+    }
+}
+
+/// Automatically convert chars to the right format
+impl <'a> From<char> for Text<'a> {
+    fn from(ch: char) -> Text<'a> {
+        Text::Char(ch)
+    }
+}
+
+/// Automatically convert latin-1 bytes to the right format
+impl <'a> From<&'a [u8]> for Text<'a> {
+    fn from(bytes: &'a [u8]) -> Text<'a> {
+        Text::Latin1(bytes)
+    }
+}
+
+/// The supported text rendering modes and their parameters
+pub enum RenderMode {
+    Solid { foreground: Color },
+    Shaded { foreground: Color, background: Color },
+    Blended { foreground: Color },
+}
+
+/// Constructor for solid font rendering
+pub fn solid<T>(foreground: T) -> RenderMode where T: Into<Color> {
+    RenderMode::Solid { foreground: foreground.into() }
+}
+
+/// Constructor for blended font rendering
+pub fn blended<T>(foreground: T) -> RenderMode where T: Into<Color> {
+    RenderMode::Blended { foreground: foreground.into() }
+}
+
+/// Constructor for shaded font rendering
+pub fn shaded<T, U>(foreground: T, background: U) -> RenderMode
+        where T: Into<Color>, U: Into<Color> {
+    RenderMode::Shaded { foreground: foreground.into(), background: background.into() }
 }
 
 impl Font {
@@ -323,142 +416,92 @@ impl Font {
         }
     }
 
-    pub fn size_of_bytes(&self, text: &[u8]) -> SdlResult<(i32, i32)> {
-        //! Get size of LATIN1 text string as would be rendered.
-        let w = 0;
-        let h = 0;
+    /// Get the size of the given text piece when rendered using this font
+    #[allow(unused_mut)]
+    pub fn size<'a, T>(&self, text: T) -> SdlResult<(u32, u32)> where T: Into<Text<'a>> {
+        let mut w = 0; // mutated by C code
+        let mut h = 0; // mutated by C code
+        let ctext = match text.into() {
+            Text::Latin1(bytes) => CString::new(bytes).unwrap(),
+            Text::Utf8(string) => CString::new(string.as_bytes()).unwrap(),
+            Text::Char(ch) => {
+                let mut s: String = String::new();
+                s.push(ch);
+                CString::new(s.as_bytes()).unwrap()
+            },
+        };
         let ret = unsafe {
-            let ctext = CString::new(text).unwrap().as_ptr();
-            ffi::TTF_SizeText(self.raw, ctext, &w, &h)
+            ffi::TTF_SizeText(self.raw, ctext.as_ptr(), &w, &h)
         };
         if ret != 0 {
             Err(get_error())
         } else {
-            Ok((w as i32, h as i32))
+            Ok((w as u32, h as u32))
         }
     }
 
-    pub fn size_of_str(&self, text: &str) -> SdlResult<(i32, i32)> {
-        //! Get size of UTF8 text string as would be rendered.
-        let w = 0;
-        let h = 0;
-        let ret = unsafe {
-            let ctext = CString::new(text.as_bytes()).unwrap();
-            ffi::TTF_SizeUTF8(self.raw, ctext.as_ptr(), &w, &h)
-        };
-        if ret != 0 {
-            Err(get_error())
-        } else {
-            Ok((w, h))
-        }
-    }
-
-    pub fn render_bytes_solid(&self, text: &[u8], fg: Color) -> SdlResult<Surface> {
-        //! Draw LATIN1 text in solid mode.
+    /// Attempt to render the given text to a SDL surface with the given mode.
+    /// The text argument can be either a &str, a &[u8] latin-1 array or a char
+    /// (This is because the Into trait has been implemented for these types)
+    pub fn render<'a, T>(&self, text: T, mode: RenderMode) -> SdlResult<Surface>
+            where T: Into<Text<'a>> {
         unsafe {
-            let ctext = CString::new(text).unwrap().as_ptr();
-            let raw = ffi::TTF_RenderText_Solid(self.raw, ctext, color_to_c_color(fg));
-            if (raw as *mut ()).is_null() {
-                Err(get_error())
-            } else {
-                Ok(Surface::from_ll(raw))
-            }
-        }
-    }
-
-    pub fn render_str_solid(&self, text: &str, fg: Color) -> SdlResult<Surface> {
-        //! Draw UTF8 text in solid mode.
-        unsafe {
-            let ctext = CString::new(text.as_bytes()).unwrap();
-            let raw = ffi::TTF_RenderUTF8_Solid(self.raw, ctext.as_ptr(), color_to_c_color(fg));
-            if (raw as *mut ()).is_null() {
-                Err(get_error())
-            } else {
-                Ok(Surface::from_ll(raw))
-            }
-        }
-    }
-
-    pub fn render_char_solid(&self, ch: char, fg: Color) -> SdlResult<Surface> {
-        //! Draw a UNICODE glyph in solid mode.
-        unsafe {
-            let raw = ffi::TTF_RenderGlyph_Solid(self.raw, ch as u16, color_to_c_color(fg));
-            if (raw as *mut ()).is_null() {
-                Err(get_error())
-            } else {
-                Ok(Surface::from_ll(raw))
-            }
-        }
-    }
-
-    pub fn render_bytes_shaded(&self, text: &[u8], fg: Color, bg: Color) -> SdlResult<Surface> {
-        //! Draw LATIN1 text in shaded mode.
-        unsafe {
-            let ctext = CString::new(text).unwrap().as_ptr();
-            let raw = ffi::TTF_RenderText_Shaded(self.raw, ctext, color_to_c_color(fg), color_to_c_color(bg));
-            if (raw as *mut ()).is_null() {
-                Err(get_error())
-            } else {
-                Ok(Surface::from_ll(raw))
-            }
-        }
-    }
-
-    pub fn render_str_shaded(&self, text: &str, fg: Color, bg: Color) -> SdlResult<Surface> {
-        //! Draw UTF8 text in shaded mode.
-        unsafe {
-            let ctext = CString::new(text.as_bytes()).unwrap();
-            let raw = ffi::TTF_RenderUTF8_Shaded(self.raw, ctext.as_ptr(), color_to_c_color(fg), color_to_c_color(bg));
-            if (raw as *mut ()).is_null() {
-                Err(get_error())
-            } else {
-                Ok(Surface::from_ll(raw))
-            }
-        }
-    }
-
-    pub fn render_char_shaded(&self, ch: char, fg: Color, bg: Color) -> SdlResult<Surface> {
-        //! Draw a UNICODE glyph in shaded mode.
-        unsafe {
-            let raw = ffi::TTF_RenderGlyph_Shaded(self.raw, ch as u16, color_to_c_color(fg), color_to_c_color(bg));
-            if (raw as *mut ()).is_null() {
-                Err(get_error())
-            } else {
-                Ok(Surface::from_ll(raw))
-            }
-        }
-    }
-
-    pub fn render_bytes_blended(&self, text: &[u8], fg: Color) -> SdlResult<Surface> {
-        //! Draw LATIN1 text in blended mode.
-        unsafe {
-            let ctext = CString::new(text).unwrap().as_ptr();
-            let raw = ffi::TTF_RenderText_Blended(self.raw, ctext, color_to_c_color(fg));
-            if (raw as *mut ()).is_null() {
-                Err(get_error())
-            } else {
-                Ok(Surface::from_ll(raw))
-            }
-        }
-    }
-
-    pub fn render_str_blended(&self, text: &str, fg: Color) -> SdlResult<Surface> {
-        //! Draw UTF8 text in blended mode.
-        unsafe {
-            let ctext = CString::new(text.as_bytes()).unwrap();
-            let raw = ffi::TTF_RenderUTF8_Blended(self.raw, ctext.as_ptr(), color_to_c_color(fg));
-            if (raw as *mut ()).is_null() {
-                Err(get_error())
-            } else {
-                Ok(Surface::from_ll(raw))
-            }
-        }
-    }
-
-    pub fn render_char_blended(&self, ch: char, fg: Color) -> SdlResult<Surface> {
-        //! Draw a UNICODE glyph in blended mode.
-        unsafe {
-            let raw = ffi::TTF_RenderGlyph_Blended(self.raw, ch as u16, color_to_c_color(fg));
+            let raw = match text.into() {
+                // Render a latin-1 string of bytes
+                Text::Latin1(bytes) => {
+                    let source = CString::new(bytes).unwrap();
+                    match mode {
+                        RenderMode::Solid { foreground } => {
+                            ffi::TTF_RenderText_Solid(self.raw, source.as_ptr(),
+                                color_to_c_color(foreground))
+                        },
+                        RenderMode::Shaded { foreground, background } => {
+                            ffi::TTF_RenderText_Shaded(self.raw, source.as_ptr(),
+                                color_to_c_color(foreground), color_to_c_color(background))
+                        },
+                        RenderMode::Blended { foreground } => {
+                            ffi::TTF_RenderText_Blended(self.raw, source.as_ptr(),
+                                color_to_c_color(foreground))
+                        }
+                    }
+                },
+                // Render a UTF-8 string
+                Text::Utf8(string) => {
+                    let source = CString::new(string.as_bytes()).unwrap();
+                    match mode {
+                        RenderMode::Solid { foreground } => {
+                            ffi::TTF_RenderUTF8_Solid(self.raw, source.as_ptr(),
+                                color_to_c_color(foreground))
+                        },
+                        RenderMode::Shaded { foreground, background } => {
+                            ffi::TTF_RenderUTF8_Shaded(self.raw, source.as_ptr(),
+                                color_to_c_color(foreground), color_to_c_color(background))
+                        },
+                        RenderMode::Blended { foreground } => {
+                            ffi::TTF_RenderUTF8_Blended(self.raw, source.as_ptr(),
+                                color_to_c_color(foreground))
+                        }
+                    }
+                },
+                // Render a char
+                Text::Char(ch) => {
+                    let source = ch as u16;
+                    match mode {
+                        RenderMode::Solid { foreground } => {
+                            ffi::TTF_RenderGlyph_Solid(self.raw, source,
+                                color_to_c_color(foreground))
+                        },
+                        RenderMode::Shaded { foreground, background } => {
+                            ffi::TTF_RenderGlyph_Shaded(self.raw, source,
+                                color_to_c_color(foreground), color_to_c_color(background))
+                        },
+                        RenderMode::Blended { foreground } => {
+                            ffi::TTF_RenderGlyph_Blended(self.raw, source,
+                                color_to_c_color(foreground))
+                        }
+                    }
+                }
+            };
             if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
@@ -469,15 +512,15 @@ impl Font {
 }
 
 
-/// Loader trait for RWops
-pub trait LoaderRWops {
+/// Extension trait for RWops to more easily load fonts
+pub trait RWopsFontExt {
     /// Load src for use as a font.
     fn load_font(&self, ptsize: i32) -> SdlResult<Font>;
     /// Load src for use as a font.
     fn load_font_index(&self, ptsize: i32, index: i32) -> SdlResult<Font>;
 }
 
-impl<'a> LoaderRWops for RWops<'a> {
+impl<'a> RWopsFontExt for RWops<'a> {
     fn load_font(&self, ptsize: i32) -> SdlResult<Font> {
         let raw = unsafe {
             ffi::TTF_OpenFontRW(self.raw(), 0, ptsize as c_int)
