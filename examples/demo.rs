@@ -48,7 +48,7 @@ fn get_centered_rect(rect_width: u32, rect_height: u32, cons_width: u32, cons_he
 fn run(filename: &Path) {
     let sdl_context = sdl2::init().unwrap();
     let video_subsys = sdl_context.video().unwrap();
-    let ttf_context = sdl2_ttf::init();
+    let _ttf_context = sdl2_ttf::init();
 
     let window = video_subsys.window("SDL2_TTF Example", SCREEN_WIDTH, SCREEN_HEIGHT)
         .position_centered()
