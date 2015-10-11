@@ -17,6 +17,10 @@ Rust-SDL2_mixer uses the MIT licence.
 * SDL2_mixer development libraries
 * Rust master or nightly
 
+#### OSX
+
+    brew install sdl2_mixer
+    
 ## Installation
 
 Place the following into your project's Cargo.toml file:
