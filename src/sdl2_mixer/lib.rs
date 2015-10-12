@@ -249,6 +249,11 @@ pub enum Fading {
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Channel(isize);
 
+/// Return a channel object.
+pub fn channel(chan: isize) -> Channel {
+    Channel(chan)
+}
+
 /// Set the number of channels being mixed.
 pub fn allocate_channels(numchans: isize) -> isize {
     unsafe {
