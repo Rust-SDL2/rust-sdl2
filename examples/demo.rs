@@ -1,6 +1,7 @@
 extern crate sdl2;
 
 use sdl2::pixels::Color;
+use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 
 pub fn main() {
@@ -19,16 +20,13 @@ pub fn main() {
     renderer.clear();
     renderer.present();
 
-    let mut running = true;
     let mut event_pump = sdl_context.event_pump().unwrap();
 
-    while running {
+    'running: loop {
         for event in event_pump.poll_iter() {
-            use sdl2::event::Event;
-
             match event {
                 Event::Quit {..} | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
-                    running = false
+                    break 'running
                 },
                 _ => {}
             }
