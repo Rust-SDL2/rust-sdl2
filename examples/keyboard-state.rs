@@ -1,5 +1,6 @@
 extern crate sdl2;
 
+use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use std::collections::HashSet;
 
@@ -12,17 +13,14 @@ pub fn main() {
         .build()
         .unwrap();
 
-    let mut running = true;
     let mut events = sdl_context.event_pump().unwrap();
 
     let mut prev_keys = HashSet::new();
 
-    while running {
+    'running: loop {
         for event in events.poll_iter() {
-            use sdl2::event::Event;
-
             match event {
-                Event::Quit {..} => running = false,
+                Event::Quit {..} => break 'running,
                 _ => ()
             }
         }
