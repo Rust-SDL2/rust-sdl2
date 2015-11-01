@@ -28,7 +28,7 @@ pub mod video;
 pub mod timer;
 pub mod render;
 pub mod rwops;
-mod sdl;
+pub mod sdl;
 pub mod audio;
 pub mod version;
 pub mod messagebox;
