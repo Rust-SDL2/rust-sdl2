@@ -205,6 +205,7 @@ pub enum RenderMode {
     Solid { foreground: Color },
     Shaded { foreground: Color, background: Color },
     Blended { foreground: Color },
+    BlendedWrapped { foreground: Color, wrap_length: u32 },
 }
 
 /// Constructor for solid font rendering
@@ -215,6 +216,15 @@ pub fn solid<T>(foreground: T) -> RenderMode where T: Into<Color> {
 /// Constructor for blended font rendering
 pub fn blended<T>(foreground: T) -> RenderMode where T: Into<Color> {
     RenderMode::Blended { foreground: foreground.into() }
+}
+
+/// Constructor for blended wrapped font rendering
+pub fn blended_wrapped<T>(foreground: T, wrap_length: u32) -> RenderMode
+        where T: Into<Color> {
+    RenderMode::BlendedWrapped {
+        foreground: foreground.into(),
+        wrap_length: wrap_length,
+    }
 }
 
 /// Constructor for shaded font rendering
@@ -462,6 +472,10 @@ impl Font {
                         RenderMode::Blended { foreground } => {
                             ffi::TTF_RenderText_Blended(self.raw, source.as_ptr(),
                                 color_to_c_color(foreground))
+                        },
+                        RenderMode::BlendedWrapped { foreground, wrap_length } => {
+                            ffi::TTF_RenderText_Blended_Wrapped(self.raw, source.as_ptr(),
+                                color_to_c_color(foreground), wrap_length)
                         }
                     }
                 },
@@ -480,6 +494,10 @@ impl Font {
                         RenderMode::Blended { foreground } => {
                             ffi::TTF_RenderUTF8_Blended(self.raw, source.as_ptr(),
                                 color_to_c_color(foreground))
+                        },
+                        RenderMode::BlendedWrapped { foreground, wrap_length } => {
+                            ffi::TTF_RenderUTF8_Blended_Wrapped(self.raw, source.as_ptr(),
+                                color_to_c_color(foreground), wrap_length)
                         }
                     }
                 },
@@ -496,6 +514,10 @@ impl Font {
                                 color_to_c_color(foreground), color_to_c_color(background))
                         },
                         RenderMode::Blended { foreground } => {
+                            ffi::TTF_RenderGlyph_Blended(self.raw, source,
+                                color_to_c_color(foreground))
+                        },
+                        RenderMode::BlendedWrapped { foreground, wrap_length: _ } => {
                             ffi::TTF_RenderGlyph_Blended(self.raw, source,
                                 color_to_c_color(foreground))
                         }
