@@ -20,8 +20,8 @@ pub fn main() {
     let mut texture = renderer.create_texture_streaming(PixelFormatEnum::RGB24, (256, 256)).unwrap();
     // Create a red-green gradient
     texture.with_lock(None, |buffer: &mut [u8], pitch: usize| {
-        for y in (0..256) {
-            for x in (0..256) {
+        for y in 0..256 {
+            for x in 0..256 {
                 let offset = y*pitch + x*3;
                 buffer[offset + 0] = x as u8;
                 buffer[offset + 1] = y as u8;
