@@ -37,7 +37,7 @@ fn demo(filename: &Path) {
     {
         let n = sdl2_mixer::get_chunk_decoders_number();
         println!("available chunk(sample) decoders: {}", n);
-        for i in (0..n) {
+        for i in 0..n {
             println!("  decoder {} => {}", i, sdl2_mixer::get_chunk_decoder(i));
         }
     }
@@ -45,7 +45,7 @@ fn demo(filename: &Path) {
     {
         let n = sdl2_mixer::get_music_decoders_number();
         println!("available music decoders: {}", n);
-        for i in (0..n) {
+        for i in 0..n {
             println!("  decoder {} => {}", i, sdl2_mixer::get_music_decoder(i));
         }
     }
