@@ -15,7 +15,7 @@ If you want a library compatible with earlier versions of SDL, please see
 
 # Documentation
 
-* [http://angrylawyer.github.io/rust-sdl2/sdl2/index.html](http://angrylawyer.github.io/rust-sdl2/sdl2/index.html)
+* [http://angrylawyer.github.io/rust-sdl2/sdl2/](http://angrylawyer.github.io/rust-sdl2/sdl2/)
 
 
 ## Where are SDL_image, SDL_mixer, and SDL_ttf?
