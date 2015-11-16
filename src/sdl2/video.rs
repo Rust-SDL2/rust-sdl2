@@ -1,4 +1,4 @@
-use libc::{c_void, c_int, c_float, uint32_t};
+use libc::{c_int, c_float, uint32_t};
 use std::ffi::{CStr, CString};
 use std::mem;
 use std::ops::{Deref, DerefMut};
@@ -620,9 +620,9 @@ impl VideoSubsystem {
     /// Gets the pointer to the named OpenGL function.
     ///
     /// This is useful for OpenGL wrappers such as [`gl-rs`](https://github.com/bjz/gl-rs).
-    pub fn gl_get_proc_address(&self, procname: &str) -> *const c_void {
+    pub fn gl_get_proc_address(&self, procname: &str) -> *const () {
         match CString::new(procname) {
-            Ok(procname) => unsafe { ll::SDL_GL_GetProcAddress(procname.as_ptr()) },
+            Ok(procname) => unsafe { ll::SDL_GL_GetProcAddress(procname.as_ptr()) as *const () },
             // string contains a nul byte - it won't match anything.
             Err(_) => ptr::null()
         }
