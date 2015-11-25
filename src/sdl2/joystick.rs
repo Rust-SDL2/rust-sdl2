@@ -293,7 +293,7 @@ impl Guid {
     pub fn from_string(guid: &str) -> Result<Guid, NulError> {
         let guid = try!(CString::new(guid));
 
-        let raw = unsafe { ll::SDL_JoystickGetGUIDFromString(guid.as_ptr()) };
+        let raw = unsafe { ll::SDL_JoystickGetGUIDFromString(guid.as_ptr() as *const c_char) };
 
         Ok(Guid { raw: raw })
     }
@@ -381,7 +381,7 @@ fn c_str_to_string(c_str: *const c_char) -> String {
     if c_str.is_null() {
         String::new()
     } else {
-        let bytes = unsafe { CStr::from_ptr(c_str).to_bytes() };
+        let bytes = unsafe { CStr::from_ptr(c_str as *const i8).to_bytes() };
 
         String::from_utf8_lossy(bytes).to_string()
     }
@@ -393,7 +393,7 @@ fn c_str_to_string_or_err(c_str: *const c_char) -> SdlResult<String> {
     if c_str.is_null() {
         Err(get_error())
     } else {
-        let bytes = unsafe { CStr::from_ptr(c_str).to_bytes() };
+        let bytes = unsafe { CStr::from_ptr(c_str as *const i8).to_bytes() };
 
         Ok(String::from_utf8_lossy(bytes).to_string())
     }

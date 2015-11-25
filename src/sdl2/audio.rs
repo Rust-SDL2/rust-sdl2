@@ -51,7 +51,7 @@
 //! ```
 use std::ffi::{CStr, CString};
 use num::FromPrimitive;
-use libc::{c_int, c_void, uint8_t};
+use libc::{c_int, c_void, uint8_t, c_char};
 use std::ops::{Deref, DerefMut};
 use std::path::Path;
 use std::marker::PhantomData;
@@ -80,7 +80,7 @@ impl AudioSubsystem {
             let buf = ll::SDL_GetCurrentAudioDriver();
             assert!(!buf.is_null());
 
-            str::from_utf8(CStr::from_ptr(buf).to_bytes()).unwrap()
+            str::from_utf8(CStr::from_ptr(buf as *const i8).to_bytes()).unwrap()
         }
     }
 
@@ -100,7 +100,7 @@ impl AudioSubsystem {
             if dev_name.is_null() {
                 Err(get_error())
             } else {
-                Ok(String::from_utf8_lossy(CStr::from_ptr(dev_name).to_bytes()).to_string())
+                Ok(String::from_utf8_lossy(CStr::from_ptr(dev_name as *const i8).to_bytes()).to_string())
             }
         }
     }
@@ -221,7 +221,7 @@ impl Iterator for DriverIterator {
                 assert!(!buf.is_null());
                 self.index += 1;
 
-                Some(str::from_utf8(CStr::from_ptr(buf).to_bytes()).unwrap())
+                Some(str::from_utf8(CStr::from_ptr(buf as *const i8).to_bytes()).unwrap())
             }
         }
     }
@@ -480,7 +480,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
             let device_ptr = device.map_or(null(), |s| s.as_ptr());
 
             let iscapture_flag = 0;
-            let device_id = ll::SDL_OpenAudioDevice(device_ptr, iscapture_flag, &desired, &mut obtained, 0);
+            let device_id = ll::SDL_OpenAudioDevice(device_ptr as *const c_char, iscapture_flag, &desired, &mut obtained, 0);
             match device_id {
                 0 => {
                     Err(get_error())

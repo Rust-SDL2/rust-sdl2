@@ -662,7 +662,7 @@ impl Event {
 
                 let text = String::from_utf8_lossy(
                         &event.text.iter()
-                            .take_while(|&b| (*b) != 0i8)
+                            .take_while(|&b| (*b) != 0)
                             .map(|&b| b as u8)
                             .collect::<Vec<u8>>()
                     ).to_owned().into_owned();
@@ -679,7 +679,7 @@ impl Event {
 
                 let text = String::from_utf8_lossy(
                         &event.text.iter()
-                            .take_while(|&b| (*b) != 0i8)
+                            .take_while(|&b| (*b) != 0)
                             .map(|&b| b as u8)
                             .collect::<Vec<u8>>()
                     ).to_owned().into_owned();
@@ -937,7 +937,7 @@ impl Event {
             EventType::DropFile => {
                 let ref event = *raw.drop();
 
-                let buf = CStr::from_ptr(event.file).to_bytes();
+                let buf = CStr::from_ptr(event.file as *const i8).to_bytes();
                 let text = String::from_utf8_lossy(buf).to_string();
                 ll::SDL_free(event.file as *mut c_void);
 

@@ -1,5 +1,6 @@
 use num::{ToPrimitive, FromPrimitive};
 use std::ffi::{CString, CStr};
+use libc::c_char;
 
 use sys::keycode as ll;
 
@@ -533,7 +534,7 @@ impl Keycode {
     pub fn from_name(name: &str) -> Option<Keycode> {
         unsafe {
             match CString::new(name) {
-                Ok(name) => match ::sys::keyboard::SDL_GetKeyFromName(name.as_ptr()) {
+                Ok(name) => match ::sys::keyboard::SDL_GetKeyFromName(name.as_ptr() as *const c_char) {
                     ll::SDLK_UNKNOWN => None,
                     keycode_id => Some(FromPrimitive::from_isize(keycode_id as isize).unwrap())
                 },
@@ -548,7 +549,7 @@ impl Keycode {
         // Knowing this, we must always return a new string.
         unsafe {
             let buf = ::sys::keyboard::SDL_GetKeyName(self as i32);
-            String::from_utf8_lossy(CStr::from_ptr(buf).to_bytes()).to_string()
+            String::from_utf8_lossy(CStr::from_ptr(buf as *const i8).to_bytes()).to_string()
         }
     }
 }

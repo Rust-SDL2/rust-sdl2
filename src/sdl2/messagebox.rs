@@ -1,5 +1,6 @@
 use std::ffi::CString;
 use std::ptr;
+use libc::c_char;
 
 use video::Window;
 use get_error;
@@ -21,8 +22,8 @@ pub fn show_simple_message_box(flags: MessageBoxFlag, title: &str, message: &str
         let title = CString::new(title).remove_nul();
         let message = CString::new(message).remove_nul();
         ll::SDL_ShowSimpleMessageBox(flags.bits(),
-                                     title.as_ptr(),
-                                     message.as_ptr(),
+                                     title.as_ptr() as *const c_char,
+                                     message.as_ptr() as *const c_char,
                                      window.map_or(ptr::null_mut(), |win| win.raw()))
     } == 0;
 

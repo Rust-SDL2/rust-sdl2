@@ -1,4 +1,4 @@
-use libc::{c_int, c_float, uint32_t};
+use libc::{c_int, c_float, uint32_t, c_char};
 use std::ffi::{CStr, CString};
 use std::mem;
 use std::ops::{Deref, DerefMut};
@@ -476,7 +476,7 @@ impl VideoSubsystem {
             let buf = ll::SDL_GetCurrentVideoDriver();
             assert!(!buf.is_null());
 
-            str::from_utf8(CStr::from_ptr(buf).to_bytes()).unwrap()
+            str::from_utf8(CStr::from_ptr(buf as *const i8).to_bytes()).unwrap()
         }
     }
 
@@ -492,7 +492,7 @@ impl VideoSubsystem {
     pub fn display_name(&self, display_index: i32) -> String {
         unsafe {
             let display = ll::SDL_GetDisplayName(display_index as c_int);
-            String::from_utf8_lossy(CStr::from_ptr(display).to_bytes()).to_string()
+            String::from_utf8_lossy(CStr::from_ptr(display as *const i8).to_bytes()).to_string()
         }
     }
 
@@ -601,7 +601,7 @@ impl VideoSubsystem {
         unsafe {
             // TODO: use OsStr::to_cstring() once it's stable
             let path = CString::new(path.as_ref().to_str().unwrap()).unwrap();
-            if ll::SDL_GL_LoadLibrary(path.as_ptr()) == 0 {
+            if ll::SDL_GL_LoadLibrary(path.as_ptr() as *const c_char) == 0 {
                 Ok(())
             } else {
                 Err(get_error())
@@ -622,7 +622,7 @@ impl VideoSubsystem {
     /// This is useful for OpenGL wrappers such as [`gl-rs`](https://github.com/bjz/gl-rs).
     pub fn gl_get_proc_address(&self, procname: &str) -> *const () {
         match CString::new(procname) {
-            Ok(procname) => unsafe { ll::SDL_GL_GetProcAddress(procname.as_ptr()) as *const () },
+            Ok(procname) => unsafe { ll::SDL_GL_GetProcAddress(procname.as_ptr() as *const c_char) as *const () },
             // string contains a nul byte - it won't match anything.
             Err(_) => ptr::null()
         }
@@ -630,7 +630,7 @@ impl VideoSubsystem {
 
     pub fn gl_extension_supported(&self, extension: &str) -> bool {
         match CString::new(extension) {
-            Ok(extension) => unsafe { ll::SDL_GL_ExtensionSupported(extension.as_ptr()) != 0 },
+            Ok(extension) => unsafe { ll::SDL_GL_ExtensionSupported(extension.as_ptr() as *const c_char) != 0 },
             // string contains a nul byte - it won't match anything.
             Err(_) => false
         }
@@ -711,7 +711,7 @@ impl WindowBuilder {
                 let raw_height = self.height as c_int;
 
                 let raw = ll::SDL_CreateWindow(
-                        self.title.as_ptr(),
+                        self.title.as_ptr() as *const c_char,
                         unwrap_windowpos(self.x),
                         unwrap_windowpos(self.y),
                         raw_width,
@@ -938,7 +938,7 @@ impl WindowRef {
 
     pub fn set_title(&mut self, title: &str) {
         let title = CString::new(title).remove_nul();
-        unsafe { ll::SDL_SetWindowTitle(self.raw(), title.as_ptr()); }
+        unsafe { ll::SDL_SetWindowTitle(self.raw(), title.as_ptr() as *const c_char); }
     }
 
     pub fn title(&self) -> &str {
@@ -949,7 +949,7 @@ impl WindowRef {
             let buf = ll::SDL_GetWindowTitle(self.raw());
 
             // The window title must be encoded in UTF-8.
-            str::from_utf8(CStr::from_ptr(buf).to_bytes()).unwrap()
+            str::from_utf8(CStr::from_ptr(buf as *const i8).to_bytes()).unwrap()
         }
     }
 
@@ -1177,7 +1177,7 @@ impl Iterator for DriverIterator {
                 assert!(!buf.is_null());
                 self.index += 1;
 
-                Some(str::from_utf8(CStr::from_ptr(buf).to_bytes()).unwrap())
+                Some(str::from_utf8(CStr::from_ptr(buf as *const i8).to_bytes()).unwrap())
             }
         }
     }

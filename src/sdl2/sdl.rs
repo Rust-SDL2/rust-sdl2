@@ -2,6 +2,7 @@ use std::ffi::{CStr, CString};
 use std::rc::Rc;
 use std::fmt;
 use std::error;
+use libc::c_char;
 
 use sys::sdl as ll;
 use util::CStringExt;
@@ -309,13 +310,13 @@ pub fn init() -> SdlResult<Sdl> { Sdl::new() }
 pub fn get_error() -> ErrorMessage {
     unsafe {
         let err = ll::SDL_GetError();
-        ErrorMessage(String::from_utf8_lossy(CStr::from_ptr(err).to_bytes()).to_string())
+        ErrorMessage(String::from_utf8_lossy(CStr::from_ptr(err as *const i8).to_bytes()).to_string())
     }
 }
 
 pub fn set_error(err: &str) {
     let err = CString::new(err).remove_nul();
-    unsafe { ll::SDL_SetError(err.as_ptr()); }
+    unsafe { ll::SDL_SetError(err.as_ptr() as *const c_char); }
 }
 
 pub fn set_error_from_code(err: Error) {

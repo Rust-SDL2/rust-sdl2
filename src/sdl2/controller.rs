@@ -74,7 +74,7 @@ impl GameControllerSubsystem {
     pub fn add_mapping(&self, mapping: &str) -> SdlResult<MappingStatus> {
         let mapping = try!(CString::new(mapping).unwrap_or_sdlresult());
 
-        let result = unsafe { ll::SDL_GameControllerAddMapping(mapping.as_ptr()) };
+        let result = unsafe { ll::SDL_GameControllerAddMapping(mapping.as_ptr() as *const c_char) };
 
         match result {
             1 => Ok(MappingStatus::Added),
@@ -112,7 +112,7 @@ impl Axis {
     /// used by the game controller mapping strings.
     pub fn from_string(axis: &str) -> Option<Axis> {
         let id = match CString::new(axis) {
-            Ok(axis) => unsafe { ll::SDL_GameControllerGetAxisFromString(axis.as_ptr()) },
+            Ok(axis) => unsafe { ll::SDL_GameControllerGetAxisFromString(axis.as_ptr() as *const c_char) },
             // string contains a nul byte - it won't match anything.
             Err(_) => ll::SDL_CONTROLLER_AXIS_INVALID
         };
@@ -169,7 +169,7 @@ impl Button {
     /// used by the game controller mapping strings.
     pub fn from_string(button: &str) -> Option<Button> {
         let id = match CString::new(button) {
-            Ok(button) => unsafe { ll::SDL_GameControllerGetButtonFromString(button.as_ptr()) },
+            Ok(button) => unsafe { ll::SDL_GameControllerGetButtonFromString(button.as_ptr() as *const c_char) },
             // string contains a nul byte - it won't match anything.
             Err(_) => ll::SDL_CONTROLLER_BUTTON_INVALID
         };
@@ -286,7 +286,7 @@ fn c_str_to_string(c_str: *const c_char) -> String {
     if c_str.is_null() {
         String::new()
     } else {
-        let bytes = unsafe { CStr::from_ptr(c_str).to_bytes() };
+        let bytes = unsafe { CStr::from_ptr(c_str as *const i8).to_bytes() };
 
         String::from_utf8_lossy(bytes).to_string()
     }
@@ -298,7 +298,7 @@ fn c_str_to_string_or_err(c_str: *const c_char) -> SdlResult<String> {
     if c_str.is_null() {
         Err(get_error())
     } else {
-        let bytes = unsafe { CStr::from_ptr(c_str).to_bytes() };
+        let bytes = unsafe { CStr::from_ptr(c_str as *const i8).to_bytes() };
 
         Ok(String::from_utf8_lossy(bytes).to_string())
     }
