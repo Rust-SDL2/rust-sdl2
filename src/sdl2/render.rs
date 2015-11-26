@@ -1070,11 +1070,28 @@ impl Texture {
             return Err(ErrorMessage("The rectangle dimensions must be multiples-of-two for planar YUV 4:2:0 pixel formats".into()));
         }
 
+        // If the destination rectangle lies outside the texture boundaries,
+        // SDL_UpdateYUVTexture will write outside allocated texture memory.
+        let tex_info = self.query();
+        let rect_inside_texture = match rect {
+            Some(r) => {
+                let tex_rect = Rect::new_unwrap(0, 0, tex_info.width, tex_info.height);
+                match r.intersect(&tex_rect) {
+                    Some(intersection) => intersection == r,
+                    None => false,
+                }
+            },
+            None => true,
+        };
+        if !rect_inside_texture {
+            return Err(ErrorMessage("The destination rectangle cannot lie outside the texture boundaries".into()));
+        }
+
         // We need the height in order to check the array slice lengths.
         // Checking the lengths can prevent buffer overruns in SDL_UpdateYUVTexture.
         let height = match rect {
             Some(r) => r.height(),
-            None => self.query().height
+            None => tex_info.height,
         } as usize;
 
         let wrong_length =
