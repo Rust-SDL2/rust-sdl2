@@ -2,7 +2,7 @@ use std::ffi::CString;
 use std::io;
 use std::path::Path;
 use std::marker::PhantomData;
-use libc::{c_void, c_int, size_t};
+use libc::{c_void, c_int, size_t, c_char};
 use get_error;
 use SdlResult;
 
@@ -29,7 +29,7 @@ impl<'a> RWops<'a> {
         let raw = unsafe {
             let path_c = CString::new(path.as_ref().to_str().unwrap()).unwrap();
             let mode_c = CString::new(mode).unwrap();
-            ll::SDL_RWFromFile(path_c.as_ptr(), mode_c.as_ptr())
+            ll::SDL_RWFromFile(path_c.as_ptr() as *const c_char, mode_c.as_ptr() as *const c_char)
         };
 
         if raw.is_null() {

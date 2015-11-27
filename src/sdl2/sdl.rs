@@ -2,6 +2,7 @@ use std::ffi::{CStr, CString};
 use std::rc::Rc;
 use std::fmt;
 use std::error;
+use libc::c_char;
 
 use sys::sdl as ll;
 use util::CStringExt;
@@ -315,7 +316,7 @@ pub fn get_error() -> ErrorMessage {
 
 pub fn set_error(err: &str) {
     let err = CString::new(err).remove_nul();
-    unsafe { ll::SDL_SetError(err.as_ptr()); }
+    unsafe { ll::SDL_SetError(err.as_ptr() as *const c_char); }
 }
 
 pub fn set_error_from_code(err: Error) {

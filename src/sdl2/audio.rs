@@ -51,7 +51,7 @@
 //! ```
 use std::ffi::{CStr, CString};
 use num::FromPrimitive;
-use libc::{c_int, c_void, uint8_t};
+use libc::{c_int, c_void, uint8_t, c_char};
 use std::ops::{Deref, DerefMut};
 use std::path::Path;
 use std::marker::PhantomData;
@@ -480,7 +480,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
             let device_ptr = device.map_or(null(), |s| s.as_ptr());
 
             let iscapture_flag = 0;
-            let device_id = ll::SDL_OpenAudioDevice(device_ptr, iscapture_flag, &desired, &mut obtained, 0);
+            let device_id = ll::SDL_OpenAudioDevice(device_ptr as *const c_char, iscapture_flag, &desired, &mut obtained, 0);
             match device_id {
                 0 => {
                     Err(get_error())

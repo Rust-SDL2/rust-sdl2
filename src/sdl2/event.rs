@@ -662,7 +662,7 @@ impl Event {
 
                 let text = String::from_utf8_lossy(
                         &event.text.iter()
-                            .take_while(|&b| (*b) != 0i8)
+                            .take_while(|&b| (*b) != 0)
                             .map(|&b| b as u8)
                             .collect::<Vec<u8>>()
                     ).to_owned().into_owned();
@@ -679,7 +679,7 @@ impl Event {
 
                 let text = String::from_utf8_lossy(
                         &event.text.iter()
-                            .take_while(|&b| (*b) != 0i8)
+                            .take_while(|&b| (*b) != 0)
                             .map(|&b| b as u8)
                             .collect::<Vec<u8>>()
                     ).to_owned().into_owned();

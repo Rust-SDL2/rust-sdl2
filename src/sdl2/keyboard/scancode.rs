@@ -1,5 +1,6 @@
 use num::{ToPrimitive, FromPrimitive};
 use std::ffi::{CString, CStr};
+use libc::c_char;
 
 use sys::scancode as ll;
 
@@ -543,7 +544,7 @@ impl Scancode {
     pub fn from_name(name: &str) -> Option<Scancode> {
         unsafe {
             match CString::new(name) {
-                Ok(name) => match ::sys::keyboard::SDL_GetScancodeFromName(name.as_ptr()) {
+                Ok(name) => match ::sys::keyboard::SDL_GetScancodeFromName(name.as_ptr() as *const c_char) {
                     ll::SDL_SCANCODE_UNKNOWN => None,
                     scancode_id => Some(FromPrimitive::from_isize(scancode_id as isize).unwrap())
                 },

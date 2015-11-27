@@ -1,6 +1,7 @@
 use std::ffi::{CString, CStr};
 use sys::hint as ll;
 use std::ptr;
+use libc::c_char;
 
 pub enum Hint {
     Default,
@@ -12,7 +13,7 @@ pub fn set(name: &str, value: &str) -> bool{
     let name = CString::new(name).unwrap();
     let value = CString::new(value).unwrap();
     unsafe {
-        ll::SDL_SetHint(name.as_ptr(), value.as_ptr()) == 1
+        ll::SDL_SetHint(name.as_ptr() as *const c_char, value.as_ptr() as *const c_char) == 1
     }
 }
 
@@ -22,7 +23,7 @@ pub fn get(name: &str) -> Option<String> {
     let name = CString::new(name).unwrap();
 
     unsafe {
-        let res = ll::SDL_GetHint(name.as_ptr());
+        let res = ll::SDL_GetHint(name.as_ptr() as *const c_char);
 
         if res == ptr::null_mut() {
             None
@@ -43,6 +44,6 @@ pub fn set_with_priority(name: &str, value: &str, priority: Hint) -> bool {
     };
 
     unsafe {
-        ll::SDL_SetHintWithPriority(name.as_ptr(), value.as_ptr(), priority_val) == 1
+        ll::SDL_SetHintWithPriority(name.as_ptr() as *const c_char, value.as_ptr() as *const c_char, priority_val) == 1
     }
 }

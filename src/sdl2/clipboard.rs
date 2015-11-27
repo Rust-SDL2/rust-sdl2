@@ -1,4 +1,5 @@
 use std::ffi::{CString, CStr};
+use libc::c_char;
 use SdlResult;
 use get_error;
 
@@ -31,7 +32,7 @@ impl ClipboardUtil {
     pub fn set_clipboard_text(&self, text: &str) -> SdlResult<()> {
         unsafe {
             let text = CString::new(text).unwrap();
-            let result = ll::SDL_SetClipboardText(text.as_ptr());
+            let result = ll::SDL_SetClipboardText(text.as_ptr() as *const c_char);
 
             if result == 0 {
                 Err(get_error())

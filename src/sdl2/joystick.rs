@@ -293,7 +293,7 @@ impl Guid {
     pub fn from_string(guid: &str) -> Result<Guid, NulError> {
         let guid = try!(CString::new(guid));
 
-        let raw = unsafe { ll::SDL_JoystickGetGUIDFromString(guid.as_ptr()) };
+        let raw = unsafe { ll::SDL_JoystickGetGUIDFromString(guid.as_ptr() as *const c_char) };
 
         Ok(Guid { raw: raw })
     }
