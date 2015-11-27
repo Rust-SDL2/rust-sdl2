@@ -80,7 +80,7 @@ impl AudioSubsystem {
             let buf = ll::SDL_GetCurrentAudioDriver();
             assert!(!buf.is_null());
 
-            str::from_utf8(CStr::from_ptr(buf as *const i8).to_bytes()).unwrap()
+            str::from_utf8(CStr::from_ptr(buf).to_bytes()).unwrap()
         }
     }
 
@@ -100,7 +100,7 @@ impl AudioSubsystem {
             if dev_name.is_null() {
                 Err(get_error())
             } else {
-                Ok(String::from_utf8_lossy(CStr::from_ptr(dev_name as *const i8).to_bytes()).to_string())
+                Ok(String::from_utf8_lossy(CStr::from_ptr(dev_name).to_bytes()).to_string())
             }
         }
     }
@@ -221,7 +221,7 @@ impl Iterator for DriverIterator {
                 assert!(!buf.is_null());
                 self.index += 1;
 
-                Some(str::from_utf8(CStr::from_ptr(buf as *const i8).to_bytes()).unwrap())
+                Some(str::from_utf8(CStr::from_ptr(buf).to_bytes()).unwrap())
             }
         }
     }

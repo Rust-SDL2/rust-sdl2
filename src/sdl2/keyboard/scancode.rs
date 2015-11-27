@@ -559,7 +559,7 @@ impl Scancode {
         // Knowing this, we can always return a string slice.
         unsafe {
             let buf = ::sys::keyboard::SDL_GetScancodeName(self as u32);
-            ::std::str::from_utf8(CStr::from_ptr(buf as *const i8).to_bytes()).unwrap()
+            ::std::str::from_utf8(CStr::from_ptr(buf).to_bytes()).unwrap()
         }
     }
 }

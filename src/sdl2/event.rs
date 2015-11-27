@@ -937,7 +937,7 @@ impl Event {
             EventType::DropFile => {
                 let ref event = *raw.drop();
 
-                let buf = CStr::from_ptr(event.file as *const i8).to_bytes();
+                let buf = CStr::from_ptr(event.file).to_bytes();
                 let text = String::from_utf8_lossy(buf).to_string();
                 ll::SDL_free(event.file as *mut c_void);
 

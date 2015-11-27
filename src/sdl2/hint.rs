@@ -28,7 +28,7 @@ pub fn get(name: &str) -> Option<String> {
         if res == ptr::null_mut() {
             None
         } else {
-            Some(str::from_utf8(CStr::from_ptr(res as *const i8).to_bytes()).unwrap().to_owned())
+            Some(str::from_utf8(CStr::from_ptr(res).to_bytes()).unwrap().to_owned())
         }
     }
 }
