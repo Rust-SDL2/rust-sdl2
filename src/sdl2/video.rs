@@ -476,7 +476,7 @@ impl VideoSubsystem {
             let buf = ll::SDL_GetCurrentVideoDriver();
             assert!(!buf.is_null());
 
-            str::from_utf8(CStr::from_ptr(buf).to_bytes()).unwrap()
+            str::from_utf8(CStr::from_ptr(buf as *const _).to_bytes()).unwrap()
         }
     }
 
@@ -492,7 +492,7 @@ impl VideoSubsystem {
     pub fn display_name(&self, display_index: i32) -> String {
         unsafe {
             let display = ll::SDL_GetDisplayName(display_index as c_int);
-            String::from_utf8_lossy(CStr::from_ptr(display).to_bytes()).to_string()
+            String::from_utf8_lossy(CStr::from_ptr(display as *const _).to_bytes()).to_string()
         }
     }
 
@@ -949,7 +949,7 @@ impl WindowRef {
             let buf = ll::SDL_GetWindowTitle(self.raw());
 
             // The window title must be encoded in UTF-8.
-            str::from_utf8(CStr::from_ptr(buf).to_bytes()).unwrap()
+            str::from_utf8(CStr::from_ptr(buf as *const _).to_bytes()).unwrap()
         }
     }
 
@@ -1177,7 +1177,7 @@ impl Iterator for DriverIterator {
                 assert!(!buf.is_null());
                 self.index += 1;
 
-                Some(str::from_utf8(CStr::from_ptr(buf).to_bytes()).unwrap())
+                Some(str::from_utf8(CStr::from_ptr(buf as *const _).to_bytes()).unwrap())
             }
         }
     }

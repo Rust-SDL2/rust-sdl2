@@ -115,7 +115,7 @@ impl RendererInfo {
         }).collect();
 
         // The driver name is always a static string, compiled into SDL2.
-        let name = str::from_utf8(CStr::from_ptr(info.name).to_bytes()).unwrap();
+        let name = str::from_utf8(CStr::from_ptr(info.name as *const _).to_bytes()).unwrap();
 
         RendererInfo {
             name: name,

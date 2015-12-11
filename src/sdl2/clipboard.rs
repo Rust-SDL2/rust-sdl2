@@ -49,7 +49,7 @@ impl ClipboardUtil {
             if buf.is_null() {
                 Err(get_error())
             } else {
-                Ok(String::from_utf8_lossy(CStr::from_ptr(buf).to_bytes()).into_owned())
+                Ok(String::from_utf8_lossy(CStr::from_ptr(buf as *const _).to_bytes()).into_owned())
             }
         }
     }

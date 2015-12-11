@@ -549,7 +549,7 @@ impl Keycode {
         // Knowing this, we must always return a new string.
         unsafe {
             let buf = ::sys::keyboard::SDL_GetKeyName(self as i32);
-            String::from_utf8_lossy(CStr::from_ptr(buf).to_bytes()).to_string()
+            String::from_utf8_lossy(CStr::from_ptr(buf as *const _).to_bytes()).to_string()
         }
     }
 }

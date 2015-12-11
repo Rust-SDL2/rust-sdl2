@@ -310,7 +310,7 @@ pub fn init() -> SdlResult<Sdl> { Sdl::new() }
 pub fn get_error() -> ErrorMessage {
     unsafe {
         let err = ll::SDL_GetError();
-        ErrorMessage(String::from_utf8_lossy(CStr::from_ptr(err).to_bytes()).to_string())
+        ErrorMessage(String::from_utf8_lossy(CStr::from_ptr(err as *const _).to_bytes()).to_string())
     }
 }
 
