@@ -179,9 +179,16 @@ pub enum Text<'a> {
     Char(char),
 }
 
-/// Automatically convert strings to the right format
+/// Automatically convert strs to the right format
 impl <'a> From<&'a str> for Text<'a> {
     fn from(string: &'a str) -> Text<'a> {
+        Text::Utf8(string)
+    }
+}
+
+/// Automatically convert Strings to the right format
+impl <'a> From<&'a String> for Text<'a> {
+    fn from(string: &'a String) -> Text<'a> {
         Text::Utf8(string)
     }
 }
