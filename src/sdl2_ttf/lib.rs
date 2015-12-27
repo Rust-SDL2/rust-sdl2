@@ -152,7 +152,6 @@ pub fn has_been_initialized() -> bool {
 }
 
 /// The opaque holder of a loaded font.
-#[allow(raw_pointer_derive)]
 #[derive(PartialEq)]
 pub struct Font {
     raw: *const ffi::TTF_Font,
