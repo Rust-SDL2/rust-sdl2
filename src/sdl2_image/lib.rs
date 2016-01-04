@@ -70,7 +70,7 @@ impl<'a> LoadSurface for Surface<'a> {
     fn from_file(filename: &Path) -> SdlResult<Surface<'a>> {
         //! Loads an SDL Surface from a file
         unsafe {
-            let raw = ffi::IMG_Load(CString::new(filename.to_str().unwrap()).unwrap().as_ptr());
+            let raw = ffi::IMG_Load(CString::new(filename.to_str().unwrap()).unwrap().as_ptr() as *const i8);
             if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
@@ -96,7 +96,7 @@ impl<'a> SaveSurface for Surface<'a> {
     fn save(&self, filename: &Path) -> SdlResult<()> {
         //! Saves an SDL Surface to a file
         unsafe {
-            let status = ffi::IMG_SavePNG(self.raw(), CString::new(filename.to_str().unwrap()).unwrap().as_ptr());
+            let status = ffi::IMG_SavePNG(self.raw(), CString::new(filename.to_str().unwrap()).unwrap().as_ptr() as *const i8);
             if status != 0 {
                 Err(get_error())
             } else {
@@ -128,7 +128,7 @@ impl<'a> LoadTexture for Renderer<'a> {
     fn load_texture(&self, filename: &Path) -> SdlResult<Texture> {
         //! Loads an SDL Texture from a file
         unsafe {
-            let raw = ffi::IMG_LoadTexture(self.raw(), CString::new(filename.to_str().unwrap()).unwrap().as_ptr());
+            let raw = ffi::IMG_LoadTexture(self.raw(), CString::new(filename.to_str().unwrap()).unwrap().as_ptr() as *const i8);
             if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
@@ -215,7 +215,7 @@ impl<'a> ImageRWops for RWops<'a> {
     }
     fn load_typed(&self, _type: &str) -> SdlResult<Surface> {
         let raw = unsafe {
-            ffi::IMG_LoadTyped_RW(self.raw(), 0, CString::new(_type.as_bytes()).unwrap().as_ptr())
+            ffi::IMG_LoadTyped_RW(self.raw(), 0, CString::new(_type.as_bytes()).unwrap().as_ptr() as *const i8)
         };
         to_surface_result(raw)
     }
