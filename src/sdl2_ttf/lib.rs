@@ -62,7 +62,7 @@ bitflags! {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Hinting {
     Normal = ffi::TTF_HINTING_NORMAL as isize,
     Light  = ffi::TTF_HINTING_LIGHT  as isize,
