@@ -4,8 +4,8 @@ extern crate sdl2_mixer;
 use std::env;
 use std::path::Path;
 use sdl2::*;
-use sdl2_mixer::{INIT_MP3, INIT_FLAC, INIT_MOD, INIT_FLUIDSYNTH, INIT_MODPLUG,
-                 INIT_OGG, DEFAULT_FREQUENCY};
+use sdl2_mixer::{INIT_MP3, INIT_FLAC, INIT_MOD, INIT_FLUIDSYNTH, INIT_MODPLUG, INIT_OGG,
+                 AUDIO_S16LSB};
 
 fn main() {
 
@@ -25,13 +25,16 @@ fn demo(filename: &Path) {
     let sdl = sdl2::init().unwrap();
     let _audio = sdl.audio().unwrap();
     let mut timer = sdl.timer().unwrap();
+    let _mixer_context = sdl2_mixer::init(INIT_MP3 | INIT_FLAC | INIT_MOD | INIT_FLUIDSYNTH |
+                                          INIT_MODPLUG |
+                                          INIT_OGG)
+                            .unwrap();
 
-    println!("mixer initialized: {}", sdl2_mixer::init(
-        INIT_MP3 | INIT_FLAC | INIT_MOD | INIT_FLUIDSYNTH |
-        INIT_MODPLUG | INIT_OGG).bits());
-
-    // TODO: 0x8010 is SDL_audio flag
-    let _ = sdl2_mixer::open_audio(DEFAULT_FREQUENCY, 0x8010u16, 2, 1024);
+    let frequency = 44100;
+    let format = AUDIO_S16LSB; // signed 16 bit samples, in little-endian byte order
+    let channels = 2; // Stereo
+    let chunk_size = 1024;
+    let _ = sdl2_mixer::open_audio(frequency, format, channels, chunk_size).unwrap();
     sdl2_mixer::allocate_channels(0);
 
     {
@@ -52,38 +55,33 @@ fn demo(filename: &Path) {
 
     println!("query spec => {:?}", sdl2_mixer::query_spec());
 
-    // We want music to be freed before we quit sdl2_mixer (otherwise an error
-    // happens), so we do all of the following within its own block.
-    {
-        let music = sdl2_mixer::Music::from_file(filename).unwrap();
 
-        fn hook_finished() {
-            println!("play ends! from rust cb");
-        }
+    let music = sdl2_mixer::Music::from_file(filename).unwrap();
 
-        sdl2_mixer::Music::hook_finished(hook_finished);
-
-        println!("music => {:?}", music);
-        println!("music type => {:?}", music.get_type());
-        println!("music volume => {:?}", sdl2_mixer::Music::get_volume());
-        println!("play => {:?}", music.play(1));
-
-        timer.delay(10000);
-
-        println!("fading out ... {:?}", sdl2_mixer::Music::fade_out(4000));
-
-        timer.delay(5000);
-
-        println!("fading in from pos ... {:?}", music.fade_in_from_pos(1, 10000, 100.0));
-
-        timer.delay(5000);
-        sdl2_mixer::Music::halt();
-        timer.delay(1000);
+    fn hook_finished() {
+        println!("play ends! from rust cb");
     }
 
-    // here will print hook_finished
+    sdl2_mixer::Music::hook_finished(hook_finished);
 
-    println!("qutting mixer");
-    sdl2_mixer::quit();
+    println!("music => {:?}", music);
+    println!("music type => {:?}", music.get_type());
+    println!("music volume => {:?}", sdl2_mixer::Music::get_volume());
+    println!("play => {:?}", music.play(1));
+
+    timer.delay(10000);
+
+    println!("fading out ... {:?}", sdl2_mixer::Music::fade_out(4000));
+
+    timer.delay(5000);
+
+    println!("fading in from pos ... {:?}",
+             music.fade_in_from_pos(1, 10000, 100.0));
+
+    timer.delay(5000);
+    sdl2_mixer::Music::halt();
+    timer.delay(1000);
+
+
     println!("quitting sdl");
 }
