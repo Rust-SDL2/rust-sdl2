@@ -2,7 +2,6 @@
 #![cfg_attr(feature = "no_std", no_std)]
 #![allow(non_camel_case_types)]
 
-extern crate num;
 extern crate libc;
 #[cfg(feature = "no_std")]
 extern crate core;

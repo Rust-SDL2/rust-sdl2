@@ -4,7 +4,6 @@ use surface::SDL_Surface;
 #[cfg(feature = "no_std")]
 use core::prelude::*;
 use libc::{c_void, c_int, c_float, c_char, uint16_t, uint32_t};
-use num::FromPrimitive;
 
 pub type SDL_bool = c_int;
 
@@ -95,6 +94,11 @@ pub enum SDL_GLattr {
     SDL_GL_FRAMEBUFFER_SRGB_CAPABLE = 23
 }
 
+trait FromPrimitive {
+    fn from_i64(n: i64) -> Option<SDL_GLattr>;
+    fn from_u64(n: u64) -> Option<SDL_GLattr>;
+}
+
 impl FromPrimitive for SDL_GLattr {
     fn from_i64(n: i64) -> Option<SDL_GLattr> {
         use self::SDL_GLattr::*;
@@ -128,7 +132,7 @@ impl FromPrimitive for SDL_GLattr {
         })
     }
 
-    fn from_u64(n: u64) -> Option<SDL_GLattr> { FromPrimitive::from_i64(n as i64) }
+    fn from_u64(n: u64) -> Option<SDL_GLattr> { SDL_GLattr::from_i64(n as i64) }
 }
 
 #[derive(Copy, Clone)]
