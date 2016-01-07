@@ -1,6 +1,6 @@
 [package]
 name = "sdl2_gfx"
-version = "0.7.0"
+version = "0.8.0"
 authors = ["ShuYu Wang <andelf@gmail.com>"]
 description = "SDL2_gfx bindings for Rust"
 homepage = "https://github.com/andelf/rust-sdl2_gfx"
