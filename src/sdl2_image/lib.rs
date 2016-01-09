@@ -51,6 +51,27 @@ bitflags! {
     }
 }
 
+// This is used for error message for init
+impl ToString for InitFlag {
+    fn to_string(&self) -> String {
+        let mut string = "".to_string();
+        if self.contains(INIT_JPG) {
+            string = string + &"INIT_JPG ".to_string();
+        }
+        if self.contains(INIT_PNG) {
+            string = string + &"INIT_PNG ".to_string();
+        }
+        if self.contains(INIT_TIF) {
+            string = string + &"INIT_TIF ".to_string();
+        }
+        if self.contains(INIT_WEBP) {
+            string = string + &"INIT_WEBP ".to_string();
+        }
+        string
+    }
+}
+
+
 /// Static method extensions for creating Surfaces
 pub trait LoadSurface: Sized {
     // Self is only returned here to type hint to the compiler.
@@ -138,18 +159,34 @@ impl<'a> LoadTexture for Renderer<'a> {
     }
 }
 
-pub fn init(flags: InitFlag) -> InitFlag {
-    //! Initializes SDL2_image with InitFlags and returns which
-    //! InitFlags were actually used.
-    unsafe {
-        let used = ffi::IMG_Init(flags.bits() as c_int);
-        InitFlag::from_bits_truncate(used as u32)
+/// Context manager for sdl2_image to manage quiting. Can't do much with it but
+/// keep it alive while you are using it.
+pub struct Sdl2ImageContext;
+
+impl Drop for Sdl2ImageContext {
+    fn drop(&mut self) {
+        unsafe { ffi::IMG_Quit(); }
     }
 }
 
-pub fn quit() {
-    //! Teardown the SDL2_Image subsystem
-    unsafe { ffi::IMG_Quit(); }
+pub fn init(flags: InitFlag) -> SdlResult<Sdl2ImageContext> {
+    //! Initializes SDL2_image with InitFlags.
+    //! If not every flag is set it returns an error
+    let return_flags = unsafe {
+        let used = ffi::IMG_Init(flags.bits() as c_int);
+        InitFlag::from_bits_truncate(used as u32)
+    };
+    if !flags.intersects(return_flags) {
+        // According to docs, error message text is not always set
+        if get_error() == sdl2::ErrorMessage("".to_string()) {
+            let un_init_flags = return_flags ^ flags;
+            let error_str = &("Could not init: ".to_string() + &un_init_flags.to_string());
+            sdl2::set_error(error_str);
+        }
+        Err(get_error())
+    } else {
+        Ok(Sdl2ImageContext)
+    }
 }
 
 pub fn get_linked_version() -> Version {
