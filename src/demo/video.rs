@@ -8,7 +8,7 @@ pub fn main(png: &Path) {
 
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
-    sdl2_image::init(INIT_PNG | INIT_JPG);
+    let _image_context = sdl2_image::init(INIT_PNG | INIT_JPG).unwrap();
     let window = video_subsystem.window("rust-sdl2 demo: Video", 800, 600)
       .position_centered()
       .build()
@@ -30,6 +30,4 @@ pub fn main(png: &Path) {
             }
         }
     }
-
-    sdl2_image::quit();
 }
