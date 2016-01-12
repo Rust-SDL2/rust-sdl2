@@ -20,14 +20,14 @@ Rust-SDL2_mixer uses the MIT licence.
 #### OSX
 
     brew install sdl2_mixer
-    
+
 ## Installation
 
 Place the following into your project's Cargo.toml file:
 
 ```toml
 [dependencies]
-sdl2_mixer = "0.11.0"
+sdl2_mixer = "0.12.0"
 ```
 
 Or, to depend on the newest rust-sdl2_mixer, reference the repository:
