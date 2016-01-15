@@ -1,7 +1,4 @@
-extern crate sdl2;
-extern crate sdl2_sys as sdl2_sys;
-
-use libc::{c_int, c_char, c_long, c_void, uint16_t, uint32_t};
+use std::os::raw::{c_int, c_char, c_long, c_void};
 use sdl2_sys::surface::SDL_Surface;
 use sdl2_sys::pixels::SDL_Color;
 use sdl2_sys::rwops::SDL_RWops;
@@ -47,23 +44,23 @@ extern "C" {
     pub fn TTF_FontFaceIsFixedWidth(font: *const TTF_Font) -> c_int;
     pub fn TTF_FontFaceFamilyName(font: *const TTF_Font) -> *const c_char;
     pub fn TTF_FontFaceStyleName(font: *const TTF_Font) -> *const c_char;
-    pub fn TTF_GlyphIsProvided(font: *const TTF_Font, ch: uint16_t) -> c_int;
-    pub fn TTF_GlyphMetrics(font: *const TTF_Font, ch: uint16_t, minx: *const c_int,
+    pub fn TTF_GlyphIsProvided(font: *const TTF_Font, ch: u16) -> c_int;
+    pub fn TTF_GlyphMetrics(font: *const TTF_Font, ch: u16, minx: *const c_int,
                             maxx: *const c_int, miny: *const c_int,
                             maxy: *const c_int, advance: *const c_int) -> c_int;
     pub fn TTF_SizeText(font: *const TTF_Font, text: *const c_char, w: *const c_int,
                         h: *const c_int) -> c_int;
     pub fn TTF_SizeUTF8(font: *const TTF_Font, text: *const c_char, w: *const c_int,
                         h: *const c_int) -> c_int;
-    pub fn TTF_SizeUNICODE(font: *const TTF_Font, text: *const uint16_t, w: *const c_int,
+    pub fn TTF_SizeUNICODE(font: *const TTF_Font, text: *const u16, w: *const c_int,
                            h: *const c_int) -> c_int;
     pub fn TTF_RenderText_Solid(font: *const TTF_Font, text: *const c_char,
                                 fg: SDL_Color) -> *mut SDL_Surface;
     pub fn TTF_RenderUTF8_Solid(font: *const TTF_Font, text: *const c_char,
                                 fg: SDL_Color) -> *mut SDL_Surface;
-    pub fn TTF_RenderUNICODE_Solid(font: *const TTF_Font, text: *const uint16_t,
+    pub fn TTF_RenderUNICODE_Solid(font: *const TTF_Font, text: *const u16,
                                    fg: SDL_Color) -> *mut SDL_Surface;
-    pub fn TTF_RenderGlyph_Solid(font: *const TTF_Font, ch: uint16_t,
+    pub fn TTF_RenderGlyph_Solid(font: *const TTF_Font, ch: u16,
                                  fg: SDL_Color) -> *mut SDL_Surface;
     pub fn TTF_RenderText_Shaded(font: *const TTF_Font, text: *const c_char,
                                  fg: SDL_Color, bg: SDL_Color) ->
@@ -71,29 +68,29 @@ extern "C" {
     pub fn TTF_RenderUTF8_Shaded(font: *const TTF_Font, text: *const c_char,
                                  fg: SDL_Color, bg: SDL_Color) ->
      *mut SDL_Surface;
-    pub fn TTF_RenderUNICODE_Shaded(font: *const TTF_Font, text: *const uint16_t,
+    pub fn TTF_RenderUNICODE_Shaded(font: *const TTF_Font, text: *const u16,
                                     fg: SDL_Color, bg: SDL_Color) ->
      *mut SDL_Surface;
-    pub fn TTF_RenderGlyph_Shaded(font: *const TTF_Font, ch: uint16_t,
+    pub fn TTF_RenderGlyph_Shaded(font: *const TTF_Font, ch: u16,
                                   fg: SDL_Color, bg: SDL_Color) ->
      *mut SDL_Surface;
     pub fn TTF_RenderText_Blended(font: *const TTF_Font, text: *const c_char,
                                   fg: SDL_Color) -> *mut SDL_Surface;
     pub fn TTF_RenderUTF8_Blended(font: *const TTF_Font, text: *const c_char,
                                   fg: SDL_Color) -> *mut SDL_Surface;
-    pub fn TTF_RenderUNICODE_Blended(font: *const TTF_Font, text: *const uint16_t,
+    pub fn TTF_RenderUNICODE_Blended(font: *const TTF_Font, text: *const u16,
                                      fg: SDL_Color) -> *mut SDL_Surface;
     pub fn TTF_RenderText_Blended_Wrapped(font: *const TTF_Font, text: *const c_char,
-                                          fg: SDL_Color, wrapLength: uint32_t)
+                                          fg: SDL_Color, wrapLength: u32)
      -> *mut SDL_Surface;
     pub fn TTF_RenderUTF8_Blended_Wrapped(font: *const TTF_Font, text: *const c_char,
-                                          fg: SDL_Color, wrapLength: uint32_t)
+                                          fg: SDL_Color, wrapLength: u32)
      -> *mut SDL_Surface;
     pub fn TTF_RenderUNICODE_Blended_Wrapped(font: *const TTF_Font,
-                                             text: *const uint16_t, fg: SDL_Color,
-                                             wrapLength: uint32_t) ->
+                                             text: *const u16, fg: SDL_Color,
+                                             wrapLength: u32) ->
      *const SDL_Surface;
-    pub fn TTF_RenderGlyph_Blended(font: *const TTF_Font, ch: uint16_t,
+    pub fn TTF_RenderGlyph_Blended(font: *const TTF_Font, ch: u16,
                                    fg: SDL_Color) -> *mut SDL_Surface;
     pub fn TTF_CloseFont(font: *const TTF_Font);
     pub fn TTF_Quit();

@@ -2,14 +2,13 @@
 A binding for SDL2_ttf.
  */
 
-extern crate libc;
 extern crate sdl2;
 extern crate sdl2_sys;
 
 #[macro_use]
 extern crate bitflags;
 
-use libc::{c_int, c_long};
+use std::os::raw::{c_int, c_long};
 use std::ffi::{CString, CStr};
 use std::path::Path;
 use sdl2::surface::Surface;
