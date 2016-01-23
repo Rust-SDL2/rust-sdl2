@@ -34,7 +34,7 @@
 //!     samples: None       // default sample size
 //! };
 //!
-//! let device = audio_subsystem.open_playback(None, desired_spec, |spec| {
+//! let device = audio_subsystem.open_playback(None, &desired_spec, |spec| {
 //!     // initialize the audio callback
 //!     SquareWave {
 //!         phase_inc: 440.0 / spec.freq as f32,
@@ -67,7 +67,7 @@ use sys::audio as ll;
 impl AudioSubsystem {
     /// Opens a new audio device given the desired parameters and callback.
     #[inline]
-    pub fn open_playback<CB, F>(&self, device: Option<&str>, spec: AudioSpecDesired, get_callback: F) -> SdlResult<AudioDevice<CB>>
+    pub fn open_playback<CB, F>(&self, device: Option<&str>, spec: &AudioSpecDesired, get_callback: F) -> SdlResult<AudioDevice<CB>>
     where CB: AudioCallback, F: FnOnce(AudioSpec) -> CB
     {
         AudioDevice::open_playback(self, device, spec, get_callback)
@@ -364,6 +364,7 @@ extern "C" fn audio_callback_marshall<CB: AudioCallback>
     }
 }
 
+#[derive(Clone)]
 pub struct AudioSpecDesired {
     /// DSP frequency (samples per second). Set to None for the device's fallback frequency.
     pub freq: Option<i32>,
@@ -456,7 +457,7 @@ pub struct AudioDevice<CB: AudioCallback> {
 
 impl<CB: AudioCallback> AudioDevice<CB> {
     /// Opens a new audio device given the desired parameters and callback.
-    pub fn open_playback<F>(a: &AudioSubsystem, device: Option<&str>, spec: AudioSpecDesired, get_callback: F) -> SdlResult<AudioDevice<CB>>
+    pub fn open_playback<F>(a: &AudioSubsystem, device: Option<&str>, spec: &AudioSpecDesired, get_callback: F) -> SdlResult<AudioDevice<CB>>
     where F: FnOnce(AudioSpec) -> CB
     {
         use std::mem;

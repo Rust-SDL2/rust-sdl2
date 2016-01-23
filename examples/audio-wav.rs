@@ -32,7 +32,7 @@ fn main() {
         samples: None      // default
     };
 
-    let device = audio_subsystem.open_playback(None, desired_spec, |spec| {
+    let device = audio_subsystem.open_playback(None, &desired_spec, |spec| {
         let wav = AudioSpecWAV::load_wav("./tests/sine.wav")
             .ok()
             .expect("Could not load test WAV file");
