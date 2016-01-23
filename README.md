@@ -138,7 +138,7 @@ bindings:
 let sdl_context = sdl2::init().unwrap();
 let video_subsystem = sdl_context.video().unwrap();
 
-gl::load_with(|name| video_subsystem.gl_get_proc_address(name));
+gl::load_with(|name| video_subsystem.gl_get_proc_address(name) as *const _);
 ```
 
 Note that these bindings are very raw, and many of the calls will require
