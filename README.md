@@ -82,7 +82,10 @@ http://www.libsdl.org/ (SDL2-devel-2.0.x-mingw.tar.gz).
 
     inside
     > C:\Rust\bin\rustlib\x86_64-pc-windows-gnu\lib
-
+    
+	For Multirust Users, this folder will be in 
+	> C:\Users\{Your Username}\AppData\Local\.multirust\toolchains\{current toolchain}\lib\rustlib\x86_64-pc-windows-gnu\lib
+	
 4. Copy SDL2.dll from
     > SDL2-devel-2.0.x-mingw\SDL2-2.0.x\x86_64-w64-mingw32\bin
 
