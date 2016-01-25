@@ -35,6 +35,6 @@ pub use context::{
     init, has_been_initialized, get_linked_version, Sdl2TtfContext
 };
 pub use font::{
-    Font, FontStyle, Hinting, GlyphMetrics, PartialRender, FontError, 
+    Font, FontStyle, Hinting, GlyphMetrics, PartialRendering, FontError, 
     FontResult,
 };

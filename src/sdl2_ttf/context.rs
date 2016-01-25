@@ -18,7 +18,7 @@ use font::{
 
 use ffi;
 
-/// A context manager for SDL2_TTF to manage C code init and quit
+/// A context manager for SDL2_TTF to manage C code initialization and clean-up.
 #[must_use]
 pub struct Sdl2TtfContext;
 
@@ -35,6 +35,8 @@ impl Sdl2TtfContext {
         internal_load_font(path, point_size)
     }
     
+    /// Loads the font at the given index of the file, with the given 
+    /// size in points. 
     pub fn load_font_at_index(&self, path: &Path, index: u32, point_size: u16)
             -> SdlResult<Font> {
         internal_load_font_at_index(path, index, point_size)
@@ -54,7 +56,7 @@ impl Sdl2TtfContext {
         }
     }
     
-    /// Loads the font at the given index in the given SDL2 rwops object with
+    /// Loads the font at the given index of the SDL2 rwops object with
     /// the given size in points.
     pub fn load_font_at_index_from_rwops(&self, rwops: RWops, index: u32, 
             point_size: u16) -> SdlResult<Font> {
@@ -78,7 +80,7 @@ pub fn get_linked_version() -> Version {
 }
 
 /// An error for when sdl2_ttf is attempted initialized twice
-// Necessary for context management, unless we find a way to have a singleton
+/// Necessary for context management, unless we find a way to have a singleton
 #[derive(Debug)]
 pub enum InitError {
     InitializationError(io::Error),
@@ -115,9 +117,8 @@ impl fmt::Display for InitError {
     }
 }
 
-/// Initialize the truetype font API and returns a context manager which will 
+/// Initializes the truetype font API and returns a context manager which will 
 /// clean up the library once it goes out of scope. 
-/// You can't really use it, but keep the reference alive.
 pub fn init() -> Result<Sdl2TtfContext, InitError> {
     unsafe {
         if ffi::TTF_WasInit() == 1 {
@@ -134,7 +135,7 @@ pub fn init() -> Result<Sdl2TtfContext, InitError> {
     }
 }
 
-/// Returns whether the underlying library has been initialized
+/// Returns whether library has been initialized already.
 pub fn has_been_initialized() -> bool {
     unsafe {
         ffi::TTF_WasInit() == 1

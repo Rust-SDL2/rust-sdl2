@@ -1,5 +1,6 @@
 # Changelog
 ## 0.14.0
+- Added a changelog
 - The ttf context is now needed to create fonts, which should make it more apparent that it needs to live
 - Changed all i32 indices to u16
 - Moved font creation to the TTF context
@@ -14,5 +15,6 @@
 - ```Font.get_outline``` -> ```Font.get_outline_width```
 - ```Font.set_outline``` -> ```Font.set_outline_width```
 - ```Font.line_skip``` -> ```Font.recommended_line_spacing```
+- ```Font.faces``` -> ```Font.face_count```
 - ```Font.index_of_char``` -> ```Font.find_glyph```
 - ```Font.metrics_of_char``` -> ```Font.find_glyph_metrics```

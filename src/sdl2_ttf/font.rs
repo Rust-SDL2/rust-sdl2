@@ -15,6 +15,7 @@ use sdl2_sys::pixels::SDL_Color;
 use sdl2::SdlResult;
 use ffi;
 
+/// Converts a rust-SDL2 color to its C ffi representation.
 #[inline]
 fn color_to_c_color(color: Color) -> SDL_Color {
     match color {
@@ -23,8 +24,8 @@ fn color_to_c_color(color: Color) -> SDL_Color {
     }
 }
 
-/// Font Style
 bitflags! {
+    /// The styling of a font.
     flags FontStyle : c_int {
     const STYLE_NORMAL        = ffi::TTF_STYLE_NORMAL,
     const STYLE_BOLD          = ffi::TTF_STYLE_BOLD,
@@ -34,6 +35,8 @@ bitflags! {
     }
 }
 
+/// Information about the hinting of a font.
+/// See [wikipedia](https://en.wikipedia.org/wiki/Font_hinting)
 #[derive(Debug, PartialEq, Clone)]
 pub enum Hinting {
     Normal = ffi::TTF_HINTING_NORMAL as isize,
@@ -42,7 +45,7 @@ pub enum Hinting {
     None   = ffi::TTF_HINTING_NONE   as isize
 }
 
-/// Glyph Metrics
+/// Information about a specific glyph (character) in a font face.
 #[derive(Debug, PartialEq, Clone)]
 pub struct GlyphMetrics {
     pub minx: i32,
@@ -130,7 +133,7 @@ impl<'a> RenderableText<'a> {
 
 /// A builder for a font rendering.
 #[must_use]
-pub struct PartialRender<'a> {
+pub struct PartialRendering<'a> {
     text: RenderableText<'a>,
     font: &'a Font,
 }
@@ -146,8 +149,10 @@ fn convert_to_surface<'a>(raw: *mut SDL_Surface) -> FontResult<Surface<'a>> {
     }
 }
 
-impl<'a> PartialRender<'a> {
-    /// Renders the text using the given solid color.
+impl<'a> PartialRendering<'a> {
+    /// Renders the text in *solid* mode.
+    /// See [the SDL2_TTF docs](https://www.libsdl.org/projects/SDL_ttf/docs/SDL_ttf.html#SEC42)
+    /// for an explanation.
     pub fn solid<'b, T>(self, color: T )
             -> FontResult<Surface<'b>> where T: Into<Color> {
         let source = try!(self.text.convert());
@@ -167,7 +172,9 @@ impl<'a> PartialRender<'a> {
         convert_to_surface(raw)
     }
     
-    /// Renders the text.
+    /// Renders the text in *shaded* mode.
+    /// See [the SDL2_TTF docs](https://www.libsdl.org/projects/SDL_ttf/docs/SDL_ttf.html#SEC42)
+    /// for an explanation.
     pub fn shaded<'b, T>(self, color: T, background: T) 
             -> FontResult<Surface<'b>> where T: Into<Color> {
         let source = try!(self.text.convert());
@@ -188,7 +195,9 @@ impl<'a> PartialRender<'a> {
         convert_to_surface(raw)
     }
     
-    /// Renders the text.
+    /// Renders the text in *blended* mode.
+    /// See [the SDL2_TTF docs](https://www.libsdl.org/projects/SDL_ttf/docs/SDL_ttf.html#SEC42)
+    /// for an explanation.
     pub fn blended<'b, T>(self, color: T) 
             -> FontResult<Surface<'b>> where T: Into<Color> {
         let source = try!(self.text.convert());
@@ -208,8 +217,10 @@ impl<'a> PartialRender<'a> {
         convert_to_surface(raw)
     }
     
-    /// Renders the text blendedly but wrapping the words if the width exceeds
-    /// the given maximum width.
+    /// Renders the text in *blended* mode but wrapping the words if the width 
+    /// exceeds the given maximum width.
+    /// See [the SDL2_TTF docs](https://www.libsdl.org/projects/SDL_ttf/docs/SDL_ttf.html#SEC42)
+    /// for an explanation of the mode.
     pub fn blended_wrapped<'b, T>(self, color: T, wrap_max_width: u32) 
             -> FontResult<Surface<'b>> where T: Into<Color> {
         let source = try!(self.text.convert());
@@ -230,7 +241,7 @@ impl<'a> PartialRender<'a> {
     }
 }
 
-/// The opaque holder of a loaded font.
+/// A loaded TTF font.
 #[derive(PartialEq)]
 pub struct Font {
     raw: *const ffi::TTF_Font,
@@ -250,6 +261,7 @@ impl Drop for Font {
     }
 }
 
+/// Internally used to load a font (for internal visibility).
 pub fn internal_load_font(path: &Path, ptsize: u16) -> SdlResult<Font> {
     unsafe {
         let cstring = CString::new(path.to_str().unwrap()).unwrap();
@@ -262,11 +274,13 @@ pub fn internal_load_font(path: &Path, ptsize: u16) -> SdlResult<Font> {
     }
 }
 
+/// Internally used to load a font (for internal visibility).
 pub fn internal_load_font_from_ll(raw: *const ffi::TTF_Font, owned: bool) 
         -> Font {
     Font { raw: raw, owned: owned }
 }
 
+/// Internally used to load a font (for internal visibility).
 pub fn internal_load_font_at_index(path: &Path, index: u32, ptsize: u16)
         -> SdlResult<Font> {
     unsafe {
@@ -288,20 +302,52 @@ impl Font {
         self.raw
     }
     
-    /// Starts specifying a render of the given UTF-8 text.
-    pub fn render<'a>(&'a self, text: &'a str) -> PartialRender<'a> {
-        PartialRender { 
+    /// Starts specifying a rendering of the given UTF-8-encoded text.
+    pub fn render<'a>(&'a self, text: &'a str) -> PartialRendering<'a> {
+        PartialRendering { 
             text: RenderableText::Utf8(text),
             font: self,
         }
     }
     
-    /// Starts specifying of the given Latin-1 text.
-    pub fn render_latin1<'a>(&'a self, text: &'a [u8]) -> PartialRender<'a> {
-        PartialRender {
+    /// Starts specifying a rendering of the given Latin-1-encoded text.
+    pub fn render_latin1<'a>(&'a self, text: &'a [u8]) -> PartialRendering<'a> {
+        PartialRendering {
             text: RenderableText::Latin1(text),
             font: self,
         }
+    }
+
+    /// Returns the surface size of a c-style string when rendered using this
+    /// font.
+    #[allow(unused_mut)]
+    fn size_of_c_string(&self, text: &CString) -> FontResult<(u32, u32)> {
+        let (res, size) = unsafe {
+            let mut w = 0; // mutated by C code
+            let mut h = 0; // mutated by C code
+            let ret = ffi::TTF_SizeText(self.raw, text.as_ptr(), &w, &h);
+            (ret, (w as u32, h as u32))
+        };
+        if res != 0 {
+            Err(FontError::SdlError(get_error()))
+        } else {
+            Ok(size)
+        }
+    }
+
+    /// Returns the width and height of the given text when rendered using this
+    /// font.
+    pub fn size_of(&self, text: &str) -> FontResult<(u32, u32)> {
+        let c_string = try!(RenderableText::Utf8(text).convert());
+        self.size_of_c_string(&c_string)
+    }
+    
+    /// Returns the width and height of the given text when rendered using this
+    /// font.
+    pub fn size_of_latin1(&self, text: &[u8]) 
+        -> FontResult<(u32, u32)> {
+        let c_string = try!(RenderableText::Latin1(text).convert());
+        self.size_of_c_string(&c_string)
     }
     
     /// Returns the font's style flags.
@@ -335,7 +381,6 @@ impl Font {
     
     /// Returns the font's freetype hints.
     pub fn get_hinting(&self) -> Hinting {
-        //! Get freetype hinter setting.
         unsafe {
             match ffi::TTF_GetFontHinting(self.raw) as c_int {
                 ffi::TTF_HINTING_NORMAL => Hinting::Normal,
@@ -467,37 +512,5 @@ impl Font {
                 maxy: maxy as i32, advance: advance as i32
             } )
         }
-    }
-    
-    /// Returns the surface size of a c-style string when rendered using this
-    /// font.
-    #[allow(unused_mut)]
-    fn size_of_c_string(&self, text: &CString) -> FontResult<(u32, u32)> {
-        let (res, size) = unsafe {
-            let mut w = 0; // mutated by C code
-            let mut h = 0; // mutated by C code
-            let ret = ffi::TTF_SizeText(self.raw, text.as_ptr(), &w, &h);
-            (ret, (w as u32, h as u32))
-        };
-        if res != 0 {
-            Err(FontError::SdlError(get_error()))
-        } else {
-            Ok(size)
-        }
-    }
-
-    /// Returns the width and height of the given text when rendered using this
-    /// font.
-    pub fn size_of(&self, text: &str) -> FontResult<(u32, u32)> {
-        let c_string = try!(RenderableText::Utf8(text).convert());
-        self.size_of_c_string(&c_string)
-    }
-    
-    /// Returns the width and height of the given text when rendered using this
-    /// font.
-    pub fn size_of_latin1(&self, text: &[u8]) 
-        -> FontResult<(u32, u32)> {
-        let c_string = try!(RenderableText::Latin1(text).convert());
-        self.size_of_c_string(&c_string)
     }
 }
