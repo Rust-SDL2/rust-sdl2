@@ -44,10 +44,10 @@ fn get_centered_rect(rect_width: u32, rect_height: u32, cons_width: u32, cons_he
     rect!(cx, cy, w, h)
 }
 
-fn run(filename: &Path) {
+fn run(font_path: &Path) {
     let sdl_context = sdl2::init().unwrap();
     let video_subsys = sdl_context.video().unwrap();
-    let _ttf_context = sdl2_ttf::init();
+    let ttf_context = sdl2_ttf::init().unwrap();
 
     let window = video_subsys.window("SDL2_TTF Example", SCREEN_WIDTH, SCREEN_HEIGHT)
         .position_centered()
@@ -58,11 +58,11 @@ fn run(filename: &Path) {
     let mut renderer = window.renderer().build().unwrap();
 
     // Load a font
-    let font = sdl2_ttf::Font::from_file(filename, 128).unwrap();
+    let font = ttf_context.load_font(font_path, 128).unwrap();
 
     // render a surface, and convert it to a texture bound to the renderer
-    let surface = font.render("Hello Rust!",
-        sdl2_ttf::blended(Color::RGBA(255, 0, 0, 255))).unwrap();
+    let surface = font.render("Hello Rust!")
+        .blended(Color::RGBA(255, 0, 0, 255)).unwrap();
     let mut texture = renderer.create_texture_from_surface(&surface).unwrap();
 
     renderer.set_draw_color(Color::RGBA(195, 217, 255, 255));
