@@ -33,7 +33,7 @@ fn main() {
         samples: None       // default sample size
     };
 
-    let device = audio_subsystem.open_playback(None, desired_spec, |spec| {
+    let device = audio_subsystem.open_playback(None, &desired_spec, |spec| {
         // Show obtained AudioSpec
         println!("{:?}", spec);
 

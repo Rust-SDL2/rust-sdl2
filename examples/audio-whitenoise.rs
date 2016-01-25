@@ -31,7 +31,7 @@ fn main() {
     };
 
     // None: use default device
-    let mut device = audio_subsystem.open_playback(None, desired_spec, |spec| {
+    let mut device = audio_subsystem.open_playback(None, &desired_spec, |spec| {
         // Show obtained AudioSpec
         println!("{:?}", spec);
 
