@@ -109,6 +109,7 @@ impl fmt::Display for FontError {
 enum RenderableText<'a> {
     Utf8(&'a str),
     Latin1(&'a [u8]),
+    Char(String),
 }
 impl<'a> RenderableText<'a> {
     /// Converts the given text to a c-style string if possible.
@@ -126,6 +127,9 @@ impl<'a> RenderableText<'a> {
                         Ok(cstring)
                     }
                 }
+            },
+            &RenderableText::Char(ref string) => {
+                Ok(CString::new(string.as_bytes()).unwrap())
             }
         }
     }
@@ -159,7 +163,7 @@ impl<'a> PartialRendering<'a> {
         let color = color_to_c_color(color.into());
         let raw = unsafe {
             match self.text {
-                RenderableText::Utf8(_) => {
+                RenderableText::Utf8(_) | RenderableText::Char(_) => {
                     ffi::TTF_RenderUTF8_Solid(self.font.raw(), 
                         source.as_ptr(), color)
                 },
@@ -182,7 +186,7 @@ impl<'a> PartialRendering<'a> {
         let background = color_to_c_color(background.into());
         let raw = unsafe {
             match self.text {
-                RenderableText::Utf8(_) => {
+                RenderableText::Utf8(_) | RenderableText::Char(_) => {
                     ffi::TTF_RenderUTF8_Shaded(self.font.raw(), 
                         source.as_ptr(), foreground, background)
                 },
@@ -204,7 +208,7 @@ impl<'a> PartialRendering<'a> {
         let color = color_to_c_color(color.into());
         let raw = unsafe {
             match self.text {
-                RenderableText::Utf8(_) => {
+                RenderableText::Utf8(_) | RenderableText::Char(_) => {
                     ffi::TTF_RenderUTF8_Blended(self.font.raw(), 
                         source.as_ptr(), color)
                 },
@@ -227,7 +231,7 @@ impl<'a> PartialRendering<'a> {
         let color = color_to_c_color(color.into());
         let raw = unsafe {
             match self.text {
-                RenderableText::Utf8(_) => {
+                RenderableText::Utf8(_) | RenderableText::Char(_) => {
                     ffi::TTF_RenderUTF8_Blended_Wrapped(self.font.raw(), 
                         source.as_ptr(), color, wrap_max_width)
                 },
@@ -319,14 +323,18 @@ impl Font {
     }
     
     /// Starts specifying a rendering of the given UTF-8-encoded character.
-    pub fn render_char(&self, ch: char) -> PartialRendering<'a> {
+    pub fn render_char<'a>(&'a self, ch: char) -> PartialRendering<'a> {
         let mut s = String::new();
         s.push(ch);
-        self.render(&s)
+        PartialRendering {
+            text: RenderableText::Char(s),
+            font: self,
+        }
     }
 
     /// Returns the width and height of the given text when rendered using this
     /// font.
+    #[allow(unused_mut)]
     pub fn size_of(&self, text: &str) -> FontResult<(u32, u32)> {
         let c_string = try!(RenderableText::Utf8(text).convert());
         let (res, size) = unsafe {
@@ -344,6 +352,7 @@ impl Font {
     
     /// Returns the width and height of the given text when rendered using this
     /// font.
+    #[allow(unused_mut)]
     pub fn size_of_latin1(&self, text: &[u8]) 
         -> FontResult<(u32, u32)> {
         let c_string = try!(RenderableText::Latin1(text).convert());
