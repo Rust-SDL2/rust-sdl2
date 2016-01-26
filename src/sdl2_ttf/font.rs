@@ -413,31 +413,31 @@ impl Font {
         }
     }
 
-    pub fn height(&self) -> u16 {
+    pub fn height(&self) -> i32 {
         //! Get font maximum total height.
         unsafe {
-            ffi::TTF_FontHeight(self.raw) as u16
+            ffi::TTF_FontHeight(self.raw) as i32
         }
     }
 
     /// Returns the font's highest ascent (height above base).
-    pub fn ascent(&self) -> u16 {
+    pub fn ascent(&self) -> i32 {
         unsafe {
-            ffi::TTF_FontAscent(self.raw) as u16
+            ffi::TTF_FontAscent(self.raw) as i32
         }
     }
 
     /// Returns the font's lowest descent (height below base).
-    pub fn descent(&self) -> u16 {
+    pub fn descent(&self) -> i32 {
         unsafe {
-            ffi::TTF_FontDescent(self.raw) as u16
+            ffi::TTF_FontDescent(self.raw) as i32
         }
     }
     
     /// Returns the recommended line spacing for text rendered with this font.
-    pub fn recommended_line_spacing(&self) -> u16 {
+    pub fn recommended_line_spacing(&self) -> i32 {
         unsafe {
-            ffi::TTF_FontLineSkip(self.raw) as u16
+            ffi::TTF_FontLineSkip(self.raw) as i32
         }
     }
     
