@@ -317,15 +317,22 @@ impl Font {
             font: self,
         }
     }
+    
+    /// Starts specifying a rendering of the given UTF-8-encoded character.
+    pub fn render_char(&self, ch: char) -> PartialRendering<'a> {
+        let mut s = String::new();
+        s.push(ch);
+        self.render(&s)
+    }
 
-    /// Returns the surface size of a c-style string when rendered using this
+    /// Returns the width and height of the given text when rendered using this
     /// font.
-    #[allow(unused_mut)]
-    fn size_of_c_string(&self, text: &CString) -> FontResult<(u32, u32)> {
+    pub fn size_of(&self, text: &str) -> FontResult<(u32, u32)> {
+        let c_string = try!(RenderableText::Utf8(text).convert());
         let (res, size) = unsafe {
             let mut w = 0; // mutated by C code
             let mut h = 0; // mutated by C code
-            let ret = ffi::TTF_SizeText(self.raw, text.as_ptr(), &w, &h);
+            let ret = ffi::TTF_SizeUTF8(self.raw, c_string.as_ptr(), &w, &h);
             (ret, (w as u32, h as u32))
         };
         if res != 0 {
@@ -334,20 +341,31 @@ impl Font {
             Ok(size)
         }
     }
-
-    /// Returns the width and height of the given text when rendered using this
-    /// font.
-    pub fn size_of(&self, text: &str) -> FontResult<(u32, u32)> {
-        let c_string = try!(RenderableText::Utf8(text).convert());
-        self.size_of_c_string(&c_string)
-    }
     
     /// Returns the width and height of the given text when rendered using this
     /// font.
     pub fn size_of_latin1(&self, text: &[u8]) 
         -> FontResult<(u32, u32)> {
         let c_string = try!(RenderableText::Latin1(text).convert());
-        self.size_of_c_string(&c_string)
+        let (res, size) = unsafe {
+            let mut w = 0; // mutated by C code
+            let mut h = 0; // mutated by C code
+            let ret = ffi::TTF_SizeText(self.raw, c_string.as_ptr(), &w, &h);
+            (ret, (w as u32, h as u32))
+        };
+        if res != 0 {
+            Err(FontError::SdlError(get_error()))
+        } else {
+            Ok(size)
+        }
+    }
+    
+    /// Returns the width and height of the given text when rendered using this
+    /// font.
+    pub fn size_of_char(&self, ch: char) -> FontResult<(u32, u32)> {
+        let mut s = String::new();
+        s.push(ch);
+        self.size_of(&s)
     }
     
     /// Returns the font's style flags.
@@ -427,7 +445,8 @@ impl Font {
         }
     }
 
-    /// Returns the font's lowest descent (height below base).
+    /// Returns the font's lowest descent (height below base). 
+    /// This is a negative number.
     pub fn descent(&self) -> i32 {
         unsafe {
             ffi::TTF_FontDescent(self.raw) as i32
