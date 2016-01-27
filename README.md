@@ -12,7 +12,7 @@ Rust-SDL2_image uses the MIT license.
 # Requirements
 
 * [Rust-SDL2](https://github.com/AngryLawyer/rust-sdl2)
-* SDL_image 2.0 development libraries
+* [SDL_image 2.0 development libraries](https://www.libsdl.org/projects/SDL_image/)
 * Rust master -- usage of Nightly is recommended
 
 # Installation
