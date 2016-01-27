@@ -6,7 +6,7 @@ version = "0.14.0"
 license = "MIT"
 readme = "README.md"
 authors = ["ShuYu Wang <andelf@gmail.com>"]
-keywords = ["SDL", "SDL2", "windowing", "graphics", "font", "ttf"]
+keywords = ["SDL", "SDL2", "windowing", "graphics", "font"]
 
 [lib]
 name = "sdl2_ttf"
