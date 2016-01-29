@@ -510,7 +510,9 @@ pub enum Event {
         timestamp: u32,
         window_id: u32,
         type_: u32,
-        code: i32
+        code: i32,
+        data1: *mut c_void,
+        data2: *mut c_void
     },
 
     Unknown {
@@ -570,15 +572,14 @@ impl Event {
     fn to_ll(self) -> Option<ll::SDL_Event> {
         let mut ret = unsafe { mem::uninitialized() };
         match self {
-            // just ignore timestamp
-            Event::User { window_id, type_, code, .. } => {
+            Event::User { window_id, type_, code, data1, data2, timestamp} => {
                 let event = ll::SDL_UserEvent {
                     type_: type_ as uint32_t,
-                    timestamp: 0,
+                    timestamp: timestamp,
                     windowID: window_id,
                     code: code as i32,
-                    data1: ptr::null_mut(),
-                    data2: ptr::null_mut(),
+                    data1: data1,
+                    data2: data2
                 };
                 unsafe {
                     ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_UserEvent, 1);
@@ -981,7 +982,9 @@ impl Event {
                         timestamp: event.timestamp,
                         window_id: event.windowID,
                         type_: raw_type,
-                        code: event.code
+                        code: event.code,
+                        data1: event.data1,
+                        data2: event.data2
                     }
                 }
             }
