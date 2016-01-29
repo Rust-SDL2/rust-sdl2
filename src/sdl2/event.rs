@@ -103,6 +103,18 @@ impl ::EventSubsystem {
             }
         }
     }
+
+    /// Registers a custom events.
+    /// If `Ok(nr) = register_event(2);`, then the caller has sucessfully created the custom events `nr` and `nr + 1`
+    pub fn register_events(&self, nr: u32) -> SdlResult<u32> {
+        let result = unsafe { ll::SDL_RegisterEvents(nr as ::libc::c_int) };
+        const ERR_NR:u32 = ::std::u32::MAX - 1;
+
+        match result {
+            ERR_NR => { Err(ErrorMessage("No more user events can be created; SDL_LASTEVENT reached".to_owned())) },
+            _ => Ok(result)
+        }
+    }
 }
 
 /// Types of events that can be delivered.
