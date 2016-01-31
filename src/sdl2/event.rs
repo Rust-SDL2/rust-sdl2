@@ -104,7 +104,7 @@ impl ::EventSubsystem {
         }
     }
 
-    /// Registers a custom events.
+    /// Registers custom SDL events.
     /// If `Ok(nr) = register_event(2);`, then the caller has sucessfully created the custom events `nr` and `nr + 1`
     pub fn register_events(&self, nr: u32) -> SdlResult<u32> {
         let result = unsafe { ll::SDL_RegisterEvents(nr as ::libc::c_int) };
