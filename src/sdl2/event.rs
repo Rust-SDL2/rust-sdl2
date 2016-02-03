@@ -104,15 +104,50 @@ impl ::EventSubsystem {
         }
     }
 
+    /// Register a custom SDL event.
+    ///
+    /// When pushing a user event, you must make sure that the ``type_`` field is set to a
+    /// registered SDL event number.
+    ///
+    /// The ``code``, ``data1``,  and ``data2`` fields can be used to store user defined data.
+    ///
+    /// See the (SDL documentation)[https://wiki.libsdl.org/SDL_UserEvent] for more information.
+    ///
+    /// # Example
+    /// ```
+    /// let sdl = sdl2::init().unwrap();
+    /// let ev = sdl.event().unwrap();
+    ///
+    /// let custom_event_type_id = ev.register_event().unwrap();
+    /// let event = sdl2::event::Event::User {
+    ///    timestamp: 0,
+    ///    window_id: 0,
+    ///    type_: custom_event_type_id,
+    ///    code: 456,
+    ///    data1: 0x1234 as *mut ::sdl2::libc::c_void,
+    ///    data2: 0x5678 as *mut ::sdl2::libc::c_void,
+    /// };
+    ///
+    /// ev.push_event(event);
+    ///
+    /// ```
+    pub fn register_event(&self) -> SdlResult<u32> {
+        Ok(*try!(self.register_events(1)).first().unwrap())
+    }
+
     /// Registers custom SDL events.
-    /// If `Ok(nr) = register_event(2);`, then the caller has sucessfully created the custom events `nr` and `nr + 1`
-    pub fn register_events(&self, nr: u32) -> SdlResult<u32> {
+    ///
+    /// See (register_event)[#method.register_event] for the usage details.
+    pub fn register_events(&self, nr: u32) -> SdlResult<Vec<u32>> {
         let result = unsafe { ll::SDL_RegisterEvents(nr as ::libc::c_int) };
         const ERR_NR:u32 = ::std::u32::MAX - 1;
 
         match result {
             ERR_NR => { Err(ErrorMessage("No more user events can be created; SDL_LASTEVENT reached".to_owned())) },
-            _ => Ok(result)
+            _ => {
+                let event_ids = (result..(result+nr)).collect();
+                Ok(event_ids)
+            }
         }
     }
 }
