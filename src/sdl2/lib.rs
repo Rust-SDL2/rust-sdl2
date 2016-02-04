@@ -6,6 +6,9 @@ extern crate libc as libc_crate;
 pub use libc_crate as libc;
 
 #[macro_use]
+extern crate lazy_static;
+
+#[macro_use]
 extern crate bitflags;
 extern crate sdl2_sys as sys;
 

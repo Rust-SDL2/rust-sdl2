@@ -24,6 +24,7 @@ num = "0.1"
 bitflags = "0.3"
 libc = "0.2"
 rand = "0.3"
+lazy_static="0.1"
 
 [dependencies.sdl2-sys]
 
