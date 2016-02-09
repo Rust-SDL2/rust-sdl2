@@ -782,7 +782,7 @@ impl<'a> Renderer<'a> {
 ///     // Start drawing
 ///     r.clear();
 ///     r.set_draw_color(Color::RGB(255, 0, 0));
-///     r.fill_rect(Rect::new_unwrap(100, 100, 256, 256));
+///     r.fill_rect(Rect::new(100, 100, 256, 256).unwrap());
 ///
 ///     let texture: Option<Texture> = r.render_target().unwrap().reset().unwrap();
 ///     texture.unwrap()

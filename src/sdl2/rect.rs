@@ -306,7 +306,7 @@ mod test {
     use super::{Rect, Point};
 
     fn rect(x: i32, y: i32, w: u32, h: u32) -> Rect {
-        Rect::new_unwrap(x, y, w, h)
+        Rect::new(x, y, w, h).unwrap()
     }
 
     #[test]
