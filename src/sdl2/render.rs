@@ -46,6 +46,7 @@ use std::ffi::CStr;
 use num::FromPrimitive;
 use std::vec::Vec;
 use std::rc::Rc;
+use util::validate_int;
 
 use sys::render as ll;
 
@@ -173,7 +174,7 @@ impl RendererBuilder {
     pub fn build(self) -> SdlResult<Renderer<'static>> {
         let index = match self.index {
             None => -1,
-            Some(index) => try!(u32_to_int!(index))
+            Some(index) => try!(validate_int(index))
         };
         let raw = unsafe {
             ll::SDL_CreateRenderer(self.window.raw(), index, self.renderer_flags)
@@ -332,8 +333,8 @@ impl<'a> Renderer<'a> {
     ///
     /// `size` is the width and height of the texture.
     pub fn create_texture(&self, format: pixels::PixelFormatEnum, access: TextureAccess, (width, height): (u32, u32)) -> SdlResult<Texture> {
-        let width = try!(u32_to_int!(width));
-        let height = try!(u32_to_int!(height));
+        let width = try!(validate_int(width));
+        let height = try!(validate_int(height));
 
         // If the pixel format is YUV 4:2:0 and planar, the width and height must
         // be multiples-of-two. See issue #334 for details.
@@ -478,8 +479,8 @@ impl<'a> Renderer<'a> {
 
     /// Sets a device independent resolution for rendering.
     pub fn set_logical_size(&mut self, width: u32, height: u32) -> SdlResult<()> {
-        let width = try!(u32_to_int!(width));
-        let height = try!(u32_to_int!(height));
+        let width = try!(validate_int(width));
+        let height = try!(validate_int(height));
         let result = unsafe { ll::SDL_RenderSetLogicalSize(self.raw, width, height) };
         match result {
             0 => Ok(()),
@@ -837,8 +838,8 @@ impl<'renderer> RenderTarget<'renderer> {
     ///
     /// The old render target is returned if the function is successful.
     pub fn create_and_set(&mut self, format: pixels::PixelFormatEnum, (width, height): (u32, u32)) -> SdlResult<Option<Texture>> {
-        let width = try!(u32_to_int!(width));
-        let height = try!(u32_to_int!(height));
+        let width = try!(validate_int(width));
+        let height = try!(validate_int(height));
 
         let new_texture_raw = unsafe {
             let access = ll::SDL_TEXTUREACCESS_TARGET;
@@ -1043,7 +1044,7 @@ impl Texture {
                 }
             }
 
-            let pitch = try!(usize_to_int!(pitch));
+            let pitch = try!(validate_int(pitch as u32));
 
             ll::SDL_UpdateTexture(self.raw, rect_raw_ptr, pixel_data.as_ptr() as *const _, pitch)
         };
@@ -1103,9 +1104,9 @@ impl Texture {
             return Err(ErrorMessage("One or more of the plane lengths is not correct (should be pitch * height).".into()));
         }
 
-        let y_pitch = try!(usize_to_int!(y_pitch));
-        let u_pitch = try!(usize_to_int!(u_pitch));
-        let v_pitch = try!(usize_to_int!(v_pitch));
+        let y_pitch = try!(validate_int(y_pitch as u32));
+        let u_pitch = try!(validate_int(u_pitch as u32));
+        let v_pitch = try!(validate_int(v_pitch as u32));
 
         unsafe {
             let result = ll::SDL_UpdateYUVTexture(

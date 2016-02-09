@@ -5,7 +5,7 @@ use GameControllerSubsystem;
 use SdlResult;
 use get_error;
 use joystick;
-use util::CStringExt;
+use util::{CStringExt, validate_int};
 
 use sys::controller as ll;
 use sys::event::{SDL_QUERY, SDL_ENABLE};
@@ -25,7 +25,7 @@ impl GameControllerSubsystem {
     /// Return true if the joystick at index `id` is a game controller.
     #[inline]
     pub fn is_game_controller(&self, id: u32) -> bool {
-        match u32_to_int!(id) {
+        match validate_int(id) {
             Ok(id) => unsafe { ll::SDL_IsGameController(id) != 0 },
             Err(..) => false
         }
@@ -36,7 +36,7 @@ impl GameControllerSubsystem {
     /// maximum number can be retreived using the `SDL_NumJoysticks`
     /// function.
     pub fn open(&self, id: u32) -> SdlResult<GameController> {
-        let id = try!(u32_to_int!(id));
+        let id = try!(validate_int(id));
 
         let controller = unsafe { ll::SDL_GameControllerOpen(id) };
 
@@ -52,7 +52,7 @@ impl GameControllerSubsystem {
 
     /// Return the name of the controller at index `id`
     pub fn name_for_index(&self, id: u32) -> SdlResult<String> {
-        let id = try!(u32_to_int!(id));
+        let id = try!(validate_int(id));
         let name = unsafe { ll::SDL_GameControllerNameForIndex(id) };
 
         c_str_to_string_or_err(name)

@@ -14,7 +14,7 @@ use EventPump;
 use SdlResult;
 use ErrorMessage;
 use num::FromPrimitive;
-use util::CStringExt;
+use util::{CStringExt, validate_int};
 
 use get_error;
 
@@ -972,7 +972,7 @@ impl WindowRef {
     }
 
     pub fn set_size(&mut self, w: u32, h: u32) {
-        match (u32_to_int!(w), u32_to_int!(h)) {
+        match (validate_int(w), validate_int(h)) {
             (Ok(w), Ok(h)) => unsafe { ll::SDL_SetWindowSize(self.raw(), w, h) },
             _ => ()     // silently fail (`SDL_SetWindowSize` returns void)
         }
@@ -993,7 +993,7 @@ impl WindowRef {
     }
 
     pub fn set_minimum_size(&mut self, w: u32, h: u32) {
-        match (u32_to_int!(w), u32_to_int!(h)) {
+        match (validate_int(w), validate_int(h)) {
             (Ok(w), Ok(h)) => unsafe { ll::SDL_SetWindowMinimumSize(self.raw(), w, h) },
             _ => ()     // silently fail (`SDL_SetWindowMinimumSize` returns void)
         }
@@ -1007,7 +1007,7 @@ impl WindowRef {
     }
 
     pub fn set_maximum_size(&mut self, w: u32, h: u32) {
-        match (u32_to_int!(w), u32_to_int!(h)) {
+        match (validate_int(w), validate_int(h)) {
             (Ok(w), Ok(h)) => unsafe { ll::SDL_SetWindowMaximumSize(self.raw(), w, h) },
             _ => ()     // silently fail (`SDL_SetWindowMaximumSize` returns void)
         }

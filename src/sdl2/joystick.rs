@@ -8,6 +8,7 @@ use sys::event::{SDL_QUERY, SDL_ENABLE};
 use std::ffi::{CString, CStr, NulError};
 use std::fmt::{Display, Formatter, Error};
 use libc::c_char;
+use util::validate_int;
 
 impl JoystickSubsystem {
     /// Retreive the total number of attached joysticks *and* controllers identified by SDL.
@@ -23,7 +24,7 @@ impl JoystickSubsystem {
 
     /// Attempt to open the joystick at number `id` and return it.
     pub fn open(&self, id: u32) -> SdlResult<Joystick> {
-        let id = try!(u32_to_int!(id));
+        let id = try!(validate_int(id));
 
         let joystick = unsafe { ll::SDL_JoystickOpen(id) };
 
@@ -39,7 +40,7 @@ impl JoystickSubsystem {
 
     /// Return the name of the joystick at index `id`
     pub fn name_for_index(&self, id: u32) -> SdlResult<String> {
-        let id = try!(u32_to_int!(id));
+        let id = try!(validate_int(id));
         let name = unsafe { ll::SDL_JoystickNameForIndex(id) };
 
         c_str_to_string_or_err(name)
@@ -47,7 +48,7 @@ impl JoystickSubsystem {
 
     /// Get the GUID for the joystick number `id`
     pub fn device_guid(&self, id: u32) -> SdlResult<Guid> {
-        let id = try!(u32_to_int!(id));
+        let id = try!(validate_int(id));
 
         let raw = unsafe { ll::SDL_JoystickGetDeviceGUID(id) };
 
@@ -151,7 +152,7 @@ impl Joystick {
         // get_error() returns a non-empty string.
         clear_error();
 
-        let axis = try!(u32_to_int!(axis));
+        let axis = try!(validate_int(axis));
         let pos = unsafe { ll::SDL_JoystickGetAxis(self.raw, axis) };
 
         if pos != 0 {
@@ -187,7 +188,7 @@ impl Joystick {
         // error...
         clear_error();
 
-        let button = try!(u32_to_int!(button));
+        let button = try!(validate_int(button));
         let pressed = unsafe { ll::SDL_JoystickGetButton(self.raw, button) };
 
         match pressed {
@@ -225,7 +226,7 @@ impl Joystick {
         let mut dx = 0;
         let mut dy = 0;
 
-        let ball = try!(u32_to_int!(ball));
+        let ball = try!(validate_int(ball));
         let result = unsafe { ll::SDL_JoystickGetBall(self.raw, ball, &mut dx, &mut dy) };
 
         if result == 0 {
@@ -254,7 +255,7 @@ impl Joystick {
         // have to use the same hack as `axis`...
         clear_error();
 
-        let hat = try!(u32_to_int!(hat));
+        let hat = try!(validate_int(hat));
         let result = unsafe { ll::SDL_JoystickGetHat(self.raw, hat) };
 
         let state = HatState::from_raw(result as u8);

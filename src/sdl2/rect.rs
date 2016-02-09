@@ -2,6 +2,7 @@ use sys::rect as ll;
 use std::mem;
 use std::ptr;
 use std::ops::{BitAnd, BitOr};
+use util::validate_int;
 
 use SdlResult;
 use ErrorMessage;
@@ -121,8 +122,8 @@ impl Rect {
     /// If `width` or `height` is zero, `Ok(None)` is returned.
     /// If the arguments violate any of the other rectangle invariants, an error is returned.
     pub fn new(x: i32, y: i32, width: u32, height: u32) -> SdlResult<Option<Rect>> {
-        let width = try!(u32_to_int!(width));
-        let height = try!(u32_to_int!(height));
+        let width = try!(validate_int(width));
+        let height = try!(validate_int(height));
 
         if x.checked_add(width).is_none() {
             Err(ErrorMessage("`x` + `width` overflows.".into()))
