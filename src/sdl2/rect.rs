@@ -3,9 +3,7 @@ use std::mem;
 use std::ptr;
 use std::ops::{BitAnd, BitOr};
 use util::validate_int;
-
-use SdlResult;
-use ErrorMessage;
+use get_error;
 
 /// Immutable point type, consisting of x and y.
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Hash)]
@@ -109,11 +107,13 @@ impl Rect {
     }
 
     #[inline]
-    pub fn from_ll(raw: ll::SDL_Rect) -> SdlResult<Option<Rect>> {
-        if raw.w > 0 && raw.h > 0 {
-            Rect::new(raw.x, raw.y, raw.w as u32, raw.h as u32)
+    pub fn from_ll(raw: ll::SDL_Rect) -> Result<Rect, String> {
+        if raw.w == 0 {
+            Err("The width of the C rect is zero".to_owned())
+        } else if raw.h == 0 {
+            Err("The height of the C rect is zero".to_owned())
         } else {
-            Ok(None)
+            Rect::new(raw.x, raw.y, raw.w as u32, raw.h as u32)
         }
     }
 
@@ -121,44 +121,42 @@ impl Rect {
     ///
     /// If `width` or `height` is zero, `Ok(None)` is returned.
     /// If the arguments violate any of the other rectangle invariants, an error is returned.
-    pub fn new(x: i32, y: i32, width: u32, height: u32) -> SdlResult<Option<Rect>> {
+    pub fn new(x: i32, y: i32, width: u32, height: u32) -> Result<Rect, String> {
         let width = try!(validate_int(width));
         let height = try!(validate_int(height));
 
         if x.checked_add(width).is_none() {
-            Err(ErrorMessage("`x` + `width` overflows.".into()))
+            Err("`x` + `width` overflows.".to_owned())
         } else if y.checked_add(height).is_none() {
-            Err(ErrorMessage("`y` + `height` overflows.".into()))
+            Err("`y` + `height` overflows.".to_owned())
         } else {
             match (width, height) {
-                (0, _) | (_, 0) => Ok(None),
-                (w, h) => Ok(Some(Rect {
-                    raw: ll::SDL_Rect {
-                        x: x,
-                        y: y,
-                        w: w,
-                        h: h
-                    }
-                }))
+                (0, _) => {
+                    Err("The width is zero.".to_owned())
+                },
+                (_, 0) => {
+                    Err("The height is zero.".to_owned())
+                },
+                (w, h) => {
+                    Ok( Rect {
+                        raw: ll::SDL_Rect {
+                            x: x,
+                            y: y,
+                            w: w,
+                            h: h
+                        }
+                    })
+                }
             }
         }
-    }
-
-    /// Creates a new rectangle. Convenience function that unwraps the result of `Rect::new()` twice.
-    ///
-    /// Make sure to only use this function if you're certain the rectangle meets all the invariants.
-    #[inline]
-    pub fn new_unwrap(x: i32, y: i32, width: u32, height: u32) -> Rect {
-        Rect::new(x, y, width, height).unwrap().expect("Rectangle is empty (width or height was 0).")
     }
 
     /// Offsets the rectangle's x and y coordinates.
     ///
     /// If the new rectangle violates any invariants, an error is returned.
     #[inline]
-    pub fn offset(&self, x: i32, y: i32) -> SdlResult<Rect> {
-        let rect = try!(Rect::new(self.x() + x, self.y() + y, self.width(), self.height()));
-        Ok(rect.unwrap())
+    pub fn offset(&self, x: i32, y: i32) -> Result<Rect, String> {
+        Rect::new(self.x() + x, self.y() + y, self.width(), self.height())
     }
 
     #[inline]
@@ -175,7 +173,8 @@ impl Rect {
     ///
     /// Returns `Ok(None)` if there are no points, or no points within the clipping rectangle.
     /// Returns an error if the resulting rectangle's dimensions are too large for the points.
-    pub fn from_enclose_points(points: &[Point], clip: Option<Rect>) -> SdlResult<Option<Rect>> {
+    pub fn from_enclose_points(points: &[Point], clip: Option<Rect>) 
+            -> Result<Rect, String> {
         let mut out = unsafe { mem::uninitialized() };
 
         let clip_ptr = match clip.as_ref() {
@@ -194,12 +193,9 @@ impl Rect {
 
         if result {
             // Return an error if the dimensions are too large.
-            match Rect::from_ll(out).unwrap() {
-                Some(r) => Ok(Some(r)),
-                None => Err(ErrorMessage("Enclosed point rectangle is too large.".into()))
-            }
+            Rect::from_ll(out)
         } else {
-            Ok(None)
+            Err(get_error())
         }
     }
 
@@ -210,22 +206,24 @@ impl Rect {
         }
     }
 
-    /// Calculate the intersection of two rectangles. The bitwise AND operator `&` can also be used.
+    /// Calculate the intersection of two rectangles. 
+    /// The bitwise AND operator `&` can also be used.
     pub fn intersect(&self, other: &Rect) -> Option<Rect> {
         let mut out = unsafe { mem::uninitialized() };
 
-        let result = unsafe {
+        let success = unsafe {
             ll::SDL_IntersectRect(self.raw(), other.raw(), &mut out) != 0
         };
 
-        if result {
-            Some(Rect::from_ll(out).unwrap().unwrap())
+        if success {
+            Some(Rect::from_ll(out).unwrap())
         } else {
             None
         }
     }
 
-    /// Calculate the union of two rectangles. The bitwise OR operator `|` can also be used.
+    /// Calculate the union of two rectangles. 
+    /// The bitwise OR operator `|` can also be used.
     pub fn union(&self, other: &Rect) -> Rect {
         let mut out = unsafe { mem::uninitialized() };
 
@@ -235,7 +233,7 @@ impl Rect {
             ll::SDL_UnionRect(self.raw(), other.raw(), &mut out)
         };
 
-        Rect::from_ll(out).unwrap().unwrap()
+        Rect::from_ll(out).unwrap()
     }
 
     /// Calculate the intersection of a rectangle and line segment. return points of intersection.

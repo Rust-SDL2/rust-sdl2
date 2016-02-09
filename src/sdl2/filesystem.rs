@@ -1,12 +1,11 @@
 use std::ffi::{CStr, CString};
-use SdlResult;
 use get_error;
 use util::CStringExt;
 use libc::c_char;
 
 use sys::filesystem as ll;
 
-pub fn base_path() -> SdlResult<String> {
+pub fn base_path() -> Result<String, String> {
     let result = unsafe {
         let buf = ll::SDL_GetBasePath();
         String::from_utf8_lossy(CStr::from_ptr(buf as *const _).to_bytes()).to_string()
@@ -19,7 +18,7 @@ pub fn base_path() -> SdlResult<String> {
     }
 }
 
-pub fn pref_path(org: &str, app: &str) -> SdlResult<String> {
+pub fn pref_path(org: &str, app: &str) -> Result<String, String> {
     let result = unsafe {
         let org = try!(CString::new(org).unwrap_or_sdlresult());
         let app = try!(CString::new(app).unwrap_or_sdlresult());

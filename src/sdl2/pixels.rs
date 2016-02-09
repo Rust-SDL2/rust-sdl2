@@ -4,7 +4,6 @@ use num::FromPrimitive;
 
 use sys::pixels as ll;
 
-use SdlResult;
 use get_error;
 
 pub struct Palette {
@@ -123,7 +122,7 @@ impl PixelFormatEnum {
         }
     }
 
-    pub fn into_masks(self) -> SdlResult<PixelMasks> {
+    pub fn into_masks(self) -> Result<PixelMasks, String> {
         let format: u32 = self as u32;
         let mut bpp = 0;
         let mut rmask = 0;

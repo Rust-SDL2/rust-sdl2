@@ -59,7 +59,6 @@ use std::marker::PhantomData;
 use AudioSubsystem;
 use get_error;
 use rwops::RWops;
-use SdlResult;
 use util::CStringExt;
 
 use sys::audio as ll;
@@ -67,7 +66,7 @@ use sys::audio as ll;
 impl AudioSubsystem {
     /// Opens a new audio device given the desired parameters and callback.
     #[inline]
-    pub fn open_playback<CB, F>(&self, device: Option<&str>, spec: &AudioSpecDesired, get_callback: F) -> SdlResult<AudioDevice<CB>>
+    pub fn open_playback<CB, F>(&self, device: Option<&str>, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
     where CB: AudioCallback, F: FnOnce(AudioSpec) -> CB
     {
         AudioDevice::open_playback(self, device, spec, get_callback)
@@ -80,7 +79,7 @@ impl AudioSubsystem {
             let buf = ll::SDL_GetCurrentAudioDriver();
             assert!(!buf.is_null());
 
-            str::from_utf8(CStr::from_ptr(buf as *const _).to_bytes()).unwrap()
+            CStr::from_ptr(buf as *const _).to_str().unwrap()
         }
     }
 
@@ -94,13 +93,14 @@ impl AudioSubsystem {
         }
     }
 
-    pub fn audio_playback_device_name(&self, index: u32) -> SdlResult<String> {
+    pub fn audio_playback_device_name(&self, index: u32) -> Result<String, String> {
         unsafe {
             let dev_name = ll::SDL_GetAudioDeviceName(index as c_int, 0);
             if dev_name.is_null() {
                 Err(get_error())
             } else {
-                Ok(String::from_utf8_lossy(CStr::from_ptr(dev_name as *const _).to_bytes()).to_string())
+                let cstr = CStr::from_ptr(dev_name as *const _);
+                Ok(cstr.to_str().unwrap().to_owned())
             }
         }
     }
@@ -221,7 +221,7 @@ impl Iterator for DriverIterator {
                 assert!(!buf.is_null());
                 self.index += 1;
 
-                Some(str::from_utf8(CStr::from_ptr(buf as *const _).to_bytes()).unwrap())
+                Some(CStr::from_ptr(buf as *const _).to_str().unwrap())
             }
         }
     }
@@ -258,13 +258,13 @@ pub struct AudioSpecWAV {
 
 impl AudioSpecWAV {
     /// Loads a WAVE from the file path.
-    pub fn load_wav<P: AsRef<Path>>(path: P) -> SdlResult<AudioSpecWAV> {
+    pub fn load_wav<P: AsRef<Path>>(path: P) -> Result<AudioSpecWAV, String> {
         let mut file = try!(RWops::from_file(path, "rb"));
         AudioSpecWAV::load_wav_rw(&mut file)
     }
 
     /// Loads a WAVE from the data source.
-    pub fn load_wav_rw(src: &mut RWops) -> SdlResult<AudioSpecWAV> {
+    pub fn load_wav_rw(src: &mut RWops) -> Result<AudioSpecWAV, String> {
         use std::mem::uninitialized;
         use std::ptr::null_mut;
 
@@ -457,7 +457,7 @@ pub struct AudioDevice<CB: AudioCallback> {
 
 impl<CB: AudioCallback> AudioDevice<CB> {
     /// Opens a new audio device given the desired parameters and callback.
-    pub fn open_playback<F>(a: &AudioSubsystem, device: Option<&str>, spec: &AudioSpecDesired, get_callback: F) -> SdlResult<AudioDevice<CB>>
+    pub fn open_playback<F>(a: &AudioSubsystem, device: Option<&str>, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
     where F: FnOnce(AudioSpec) -> CB
     {
         use std::mem;
@@ -575,7 +575,7 @@ pub struct AudioCVT {
 
 impl AudioCVT {
     pub fn new(src_format: AudioFormat, src_channels: u8, src_rate: i32,
-               dst_format: AudioFormat, dst_channels: u8, dst_rate: i32) -> SdlResult<AudioCVT>
+               dst_format: AudioFormat, dst_channels: u8, dst_rate: i32) -> Result<AudioCVT, String>
     {
         use std::mem;
         unsafe {

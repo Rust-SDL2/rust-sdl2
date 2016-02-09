@@ -4,7 +4,6 @@ use libc::c_char;
 
 use video::Window;
 use get_error;
-use SdlResult;
 use util::CStringExt;
 
 use sys::messagebox as ll;
@@ -17,7 +16,7 @@ bitflags! {
     }
 }
 
-pub fn show_simple_message_box(flags: MessageBoxFlag, title: &str, message: &str, window: Option<&Window>) -> SdlResult<()> {
+pub fn show_simple_message_box(flags: MessageBoxFlag, title: &str, message: &str, window: Option<&Window>) -> Result<(), String> {
     let result = unsafe {
         let title = CString::new(title).remove_nul();
         let message = CString::new(message).remove_nul();

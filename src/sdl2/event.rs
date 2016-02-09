@@ -23,8 +23,6 @@ use mouse;
 use mouse::{Mouse, MouseState};
 use keyboard::Scancode;
 use get_error;
-use SdlResult;
-use ErrorMessage;
 
 use sys::event as ll;
 
@@ -91,7 +89,7 @@ impl ::EventSubsystem {
     }
 
     /// Pushes an event to the event queue.
-    pub fn push_event(&self, event: Event) -> SdlResult<()> {
+    pub fn push_event(&self, event: Event) -> Result<(), String> {
         match event.to_ll() {
             Some(mut raw_event) => {
                 let ok = unsafe { ll::SDL_PushEvent(&mut raw_event) == 1 };
@@ -99,7 +97,7 @@ impl ::EventSubsystem {
                 else { Err(get_error()) }
             },
             None => {
-                Err(ErrorMessage("Cannot push unsupported event type to the queue".into()))
+                Err("Cannot push unsupported event type to the queue".to_owned())
             }
         }
     }
@@ -660,12 +658,12 @@ impl Event {
             EventType::TextEditing => {
                 let ref event = *raw.edit();
 
-                let text = String::from_utf8_lossy(
-                        &event.text.iter()
-                            .take_while(|&b| (*b) != 0)
-                            .map(|&b| b as u8)
-                            .collect::<Vec<u8>>()
-                    ).to_owned().into_owned();
+                let text = String::from_utf8(
+                    event.text.iter()
+                    .take_while(|&b| (*b) != 0)
+                    .map(|&b| b as u8)
+                    .collect::<Vec<u8>>()
+                ).expect("Invalid TextEditing string");
                 Event::TextEditing {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
@@ -677,12 +675,12 @@ impl Event {
             EventType::TextInput => {
                 let ref event = *raw.text();
 
-                let text = String::from_utf8_lossy(
-                        &event.text.iter()
+                let text = String::from_utf8(
+                        event.text.iter()
                             .take_while(|&b| (*b) != 0)
                             .map(|&b| b as u8)
                             .collect::<Vec<u8>>()
-                    ).to_owned().into_owned();
+                    ).expect("Invalid TextInput string");
                 Event::TextInput {
                     timestamp: event.timestamp,
                     window_id: event.windowID,

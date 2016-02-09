@@ -1,7 +1,6 @@
 use sys::joystick as ll;
 
 use JoystickSubsystem;
-use SdlResult;
 use get_error;
 use clear_error;
 use sys::event::{SDL_QUERY, SDL_ENABLE};
@@ -12,7 +11,7 @@ use util::validate_int;
 
 impl JoystickSubsystem {
     /// Retreive the total number of attached joysticks *and* controllers identified by SDL.
-    pub fn num_joysticks(&self) -> SdlResult<u32> {
+    pub fn num_joysticks(&self) -> Result<u32, String> {
         let result = unsafe { ll::SDL_NumJoysticks() };
 
         if result >= 0 {
@@ -23,7 +22,7 @@ impl JoystickSubsystem {
     }
 
     /// Attempt to open the joystick at number `id` and return it.
-    pub fn open(&self, id: u32) -> SdlResult<Joystick> {
+    pub fn open(&self, id: u32) -> Result<Joystick, String> {
         let id = try!(validate_int(id));
 
         let joystick = unsafe { ll::SDL_JoystickOpen(id) };
@@ -39,7 +38,7 @@ impl JoystickSubsystem {
     }
 
     /// Return the name of the joystick at index `id`
-    pub fn name_for_index(&self, id: u32) -> SdlResult<String> {
+    pub fn name_for_index(&self, id: u32) -> Result<String, String> {
         let id = try!(validate_int(id));
         let name = unsafe { ll::SDL_JoystickNameForIndex(id) };
 
@@ -47,7 +46,7 @@ impl JoystickSubsystem {
     }
 
     /// Get the GUID for the joystick number `id`
-    pub fn device_guid(&self, id: u32) -> SdlResult<Guid> {
+    pub fn device_guid(&self, id: u32) -> Result<Guid, String> {
         let id = try!(validate_int(id));
 
         let raw = unsafe { ll::SDL_JoystickGetDeviceGUID(id) };
@@ -145,7 +144,7 @@ impl Joystick {
     /// Gets the position of the given `axis`.
     ///
     /// The function will fail if the joystick doesn't have the provided axis.
-    pub fn axis(&self, axis: u32) -> SdlResult<i16> {
+    pub fn axis(&self, axis: u32) -> Result<i16, String> {
         // This interface is a bit messed up: 0 is a valid position
         // but can also mean that an error occured. As far as I can
         // tell the only way to know if an error happened is to see if
@@ -160,7 +159,7 @@ impl Joystick {
         } else {
             let err = get_error();
 
-            if err.0.is_empty() {
+            if err.is_empty() {
                 Ok(pos)
             } else {
                 Err(err)
@@ -183,7 +182,7 @@ impl Joystick {
     /// Return `Ok(true)` if `button` is pressed.
     ///
     /// The function will fail if the joystick doesn't have the provided button.
-    pub fn button(&self, button: u32) -> SdlResult<bool> {
+    pub fn button(&self, button: u32) -> Result<bool, String> {
         // Same deal as axis, 0 can mean both unpressed or
         // error...
         clear_error();
@@ -196,7 +195,7 @@ impl Joystick {
             0 => {
                 let err = get_error();
 
-                if err.0.is_empty() {
+                if err.is_empty() {
                     // Button is not pressed
                     Ok(false)
                 } else {
@@ -222,7 +221,7 @@ impl Joystick {
 
     /// Return a pair `(dx, dy)` containing the difference in axis
     /// position since the last poll
-    pub fn ball(&self, ball: u32) -> SdlResult<(i32, i32)> {
+    pub fn ball(&self, ball: u32) -> Result<(i32, i32), String> {
         let mut dx = 0;
         let mut dy = 0;
 
@@ -249,7 +248,7 @@ impl Joystick {
     }
 
     /// Return the position of `hat` for this joystick
-    pub fn hat(&self, hat: u32) -> SdlResult<HatState> {
+    pub fn hat(&self, hat: u32) -> Result<HatState, String> {
         // Guess what? This function as well uses 0 to report an error
         // but 0 is also a valid value (HatState::Centered). So we
         // have to use the same hack as `axis`...
@@ -265,7 +264,7 @@ impl Joystick {
         } else {
             let err = get_error();
 
-            if err.0.is_empty() {
+            if err.is_empty() {
                 Ok(state)
             } else {
                 Err(err)
@@ -390,7 +389,7 @@ fn c_str_to_string(c_str: *const c_char) -> String {
 
 /// Convert C string `c_str` to a String. Return an SDL error if
 /// `c_str` is NULL.
-fn c_str_to_string_or_err(c_str: *const c_char) -> SdlResult<String> {
+fn c_str_to_string_or_err(c_str: *const c_char) -> Result<String, String> {
     if c_str.is_null() {
         Err(get_error())
     } else {

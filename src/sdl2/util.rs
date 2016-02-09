@@ -1,8 +1,6 @@
 use std::ffi::{CString, NulError};
 use std::ops::Add;
 
-use SdlResult;
-use ErrorMessage;
 
 /// Validates and converts the given u32 to a positive C integer.
 pub fn validate_int(value: u32) -> Result<::libc::c_int, String> {
@@ -56,7 +54,7 @@ impl CheckedInteger {
 
 pub trait CStringExt {
     /// Returns an SDL error if the string contains a nul byte.
-    fn unwrap_or_sdlresult(self) -> SdlResult<CString>;
+    fn unwrap_or_sdlresult(self) -> Result<CString, String>;
 
     /// Removes any nul bytes so that they can be displayed in a C string.
     ///
@@ -66,8 +64,8 @@ pub trait CStringExt {
 }
 
 impl CStringExt for Result<CString, NulError> {
-    fn unwrap_or_sdlresult(self) -> SdlResult<CString> {
-        self.or(Err(ErrorMessage("argument string cannot contain an interior nul byte".into())))
+    fn unwrap_or_sdlresult(self) -> Result<CString, String> {
+        self.or(Err("argument string cannot contain an interior nul byte".to_owned()))
     }
 
     fn remove_nul(self) -> CString {
