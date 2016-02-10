@@ -14,11 +14,17 @@ keywords = ["SDL", "windowing", "graphics"]
 name       = "sdl2"
 path       = "src/sdl2/lib.rs"
 
+
+[[test]]
+name="events"
+harness=false
+
 [dependencies]
 num = "0.1"
 bitflags = "0.3"
 libc = "0.2"
 rand = "0.3"
+lazy_static="0.1"
 
 [dependencies.sdl2-sys]
 
