@@ -2,7 +2,7 @@ use sys::rect as ll;
 use std::mem;
 use std::ptr;
 use std::ops::{BitAnd, BitOr};
-use common::{validate_int, IntegerOrSdlError};
+use common::{validate_int};
 use get_error;
 
 /// Immutable point type, consisting of x and y.
@@ -91,7 +91,7 @@ pub enum EnclosePointsError {
 }
 
 impl From<CreateRectError> for EnclosePointsError {
-    pub fn from(err: CreateRectError) -> EnclosePointsError {
+    fn from(err: CreateRectError) -> EnclosePointsError {
         EnclosePointsError::CreateError(err)
     }
 }

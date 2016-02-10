@@ -74,8 +74,6 @@ impl AudioSubsystem {
     }
 
     pub fn current_audio_driver(&self) -> &'static str {
-        use std::str;
-
         unsafe {
             let buf = ll::SDL_GetCurrentAudioDriver();
             assert!(!buf.is_null());
@@ -215,8 +213,6 @@ impl Iterator for DriverIterator {
         if self.index >= self.length {
             None
         } else {
-            use std::str;
-
             unsafe {
                 let buf = ll::SDL_GetAudioDriver(self.index);
                 assert!(!buf.is_null());

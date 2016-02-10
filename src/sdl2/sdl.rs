@@ -1,7 +1,5 @@
-use std::ffi::{CStr, CString};
+use std::ffi::{CStr, CString, NulError};
 use std::rc::Rc;
-use std::fmt;
-use std::error;
 use libc::c_char;
 
 use sys::sdl as ll;
@@ -109,6 +107,7 @@ impl Sdl {
 
 /// When SDL is no longer in use (the refcount in an `Rc<SdlDrop>` reaches 0), the library is quit.
 #[doc(hidden)]
+#[derive(Debug)]
 pub struct SdlDrop;
 
 impl Drop for SdlDrop {
@@ -289,9 +288,11 @@ pub fn get_error() -> String {
     }
 }
 
-pub fn set_error(err: &str) {
-    let err = CString::new(err).remove_nul();
-    unsafe { ll::SDL_SetError(err.as_ptr() as *const c_char); }
+pub fn set_error(err: &str) -> Result<(), NulError> {
+    let c_string = try!(CString::new(err));
+    Ok(unsafe { 
+        ll::SDL_SetError(c_string.as_ptr() as *const c_char);
+    })
 }
 
 pub fn set_error_from_code(err: Error) {
