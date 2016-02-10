@@ -7,7 +7,7 @@ use sys::event::{SDL_QUERY, SDL_ENABLE};
 use std::ffi::{CString, CStr, NulError};
 use std::fmt::{Display, Formatter, Error};
 use libc::c_char;
-use util::{validate_int, IdOrSdlError};
+use common::{validate_int, IdOrSdlError};
 
 impl JoystickSubsystem {
     /// Retreive the total number of attached joysticks *and* controllers identified by SDL.
@@ -23,7 +23,7 @@ impl JoystickSubsystem {
 
     /// Attempt to open the joystick at number `id` and return it.
     pub fn open(&self, id: u32) -> Result<Joystick, IdOrSdlError> {
-        use util::IdOrSdlError::*;
+        use common::IdOrSdlError::*;
         let id = match validate_int(id) {
             Some(id) => id,
             None => return Err(IdTooBig(id)),
@@ -43,7 +43,7 @@ impl JoystickSubsystem {
 
     /// Return the name of the joystick at index `id`
     pub fn name_for_index(&self, id: u32) -> Result<String, IdOrSdlError> {
-        use util::IdOrSdlError::*;
+        use common::IdOrSdlError::*;
         let id = match validate_int(id) {
             Some(id) => id,
             None => return Err(IdTooBig(id)),
@@ -61,7 +61,7 @@ impl JoystickSubsystem {
 
     /// Get the GUID for the joystick number `id`
     pub fn device_guid(&self, id: u32) -> Result<Guid, IdOrSdlError> {
-        use util::IdOrSdlError::*;
+        use common::IdOrSdlError::*;
         let id = match validate_int(id) {
             Some(id) => id,
             None => return Err(IdTooBig(id)),
@@ -163,7 +163,7 @@ impl Joystick {
     ///
     /// The function will fail if the joystick doesn't have the provided axis.
     pub fn axis(&self, axis: u32) -> Result<i16, IdOrSdlError> {
-        use util::IdOrSdlError::*;
+        use common::IdOrSdlError::*;
         // This interface is a bit messed up: 0 is a valid position
         // but can also mean that an error occured. As far as I can
         // tell the only way to know if an error happened is to see if
@@ -205,7 +205,7 @@ impl Joystick {
     ///
     /// The function will fail if the joystick doesn't have the provided button.
     pub fn button(&self, button: u32) -> Result<bool, IdOrSdlError> {
-        use util::IdOrSdlError::*;
+        use common::IdOrSdlError::*;
         // Same deal as axis, 0 can mean both unpressed or
         // error...
         clear_error();
@@ -248,7 +248,7 @@ impl Joystick {
     /// Return a pair `(dx, dy)` containing the difference in axis
     /// position since the last poll
     pub fn ball(&self, ball: u32) -> Result<(i32, i32), IdOrSdlError> {
-        use util::IdOrSdlError::*;
+        use common::IdOrSdlError::*;
         let mut dx = 0;
         let mut dy = 0;
 
@@ -279,7 +279,7 @@ impl Joystick {
 
     /// Return the position of `hat` for this joystick
     pub fn hat(&self, hat: u32) -> Result<HatState, IdOrSdlError> {
-        use util::IdOrSdlError::*;
+        use common::IdOrSdlError::*;
         // Guess what? This function as well uses 0 to report an error
         // but 0 is also a valid value (HatState::Centered). So we
         // have to use the same hack as `axis`...

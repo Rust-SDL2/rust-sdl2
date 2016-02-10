@@ -34,4 +34,6 @@ pub mod version;
 pub mod messagebox;
 pub mod hint;
 
-mod util;
+mod common;
+// Export return types and such from the common module.
+pub use common::IdOrSdlError;

@@ -44,7 +44,7 @@ use std::ffi::CStr;
 use num::FromPrimitive;
 use std::vec::Vec;
 use std::rc::Rc;
-use util::validate_int;
+use common::validate_int;
 
 use sys::render as ll;
 

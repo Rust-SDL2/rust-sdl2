@@ -4,7 +4,7 @@ use std::ffi::{CString, CStr, NulError};
 use GameControllerSubsystem;
 use get_error;
 use joystick;
-use util::{validate_int, IdOrSdlError};
+use common::{validate_int, IdOrSdlError};
 
 use sys::controller as ll;
 use sys::event::{SDL_QUERY, SDL_ENABLE};
@@ -41,7 +41,7 @@ impl GameControllerSubsystem {
     /// maximum number can be retreived using the `SDL_NumJoysticks`
     /// function.
     pub fn open(&self, id: u32) -> Result<GameController, IdOrSdlError> {
-        use util::IdOrSdlError::*;
+        use common::IdOrSdlError::*;
         let id = if let Some(i) = validate_int(id) {
             i
         } else {
@@ -62,7 +62,7 @@ impl GameControllerSubsystem {
 
     /// Return the name of the controller at index `id`
     pub fn name_for_index(&self, id: u32) -> Result<String, IdOrSdlError> {
-        use util::IdOrSdlError::*;
+        use common::IdOrSdlError::*;
         let id = if let Some(i) = validate_int(id) {
             i
         } else {
