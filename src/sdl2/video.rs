@@ -12,7 +12,7 @@ use pixels;
 use VideoSubsystem;
 use EventPump;
 use num::FromPrimitive;
-use util::{CStringExt, validate_int};
+use util::validate_int;
 
 use get_error;
 

@@ -1,6 +1,5 @@
-use std::ffi::{CStr, CString};
+use std::ffi::{CStr, CString, NulError};
 use get_error;
-use util::CStringExt;
 use libc::c_char;
 
 use sys::filesystem as ll;
@@ -18,16 +17,33 @@ pub fn base_path() -> Result<String, String> {
     }
 }
 
-pub fn pref_path(org: &str, app: &str) -> Result<String, String> {
+pub enum PrefPathError {
+    InvalidOrganizationName(NulError),
+    InvalidApplicationName(NulError),
+    SdlError(String),
+}
+
+// TODO: Change to OsStr or something?
+/// Return the preferred directory for the application to write files on this
+/// system, based on the given organization and application name.
+pub fn pref_path(org_name: &str, app_name: &str)
+        -> Result<String, PrefPathError> {
+    use self::PrefPathError::*;
     let result = unsafe {
-        let org = try!(CString::new(org).unwrap_or_sdlresult());
-        let app = try!(CString::new(app).unwrap_or_sdlresult());
+        let org = match CString::new(org_name) {
+            Ok(s) => s,
+            Err(err) => return Err(InvalidOrganizationName(err)),
+        };
+        let app = match CString::new(app_name) {
+            Ok(s) =>s,
+            Err(err) => return Err(InvalidApplicationName(err)),
+        };
         let buf = ll::SDL_GetPrefPath(org.as_ptr() as *const c_char, app.as_ptr() as *const c_char);
-        String::from_utf8_lossy(CStr::from_ptr(buf as *const _).to_bytes()).to_string()
+        CStr::from_ptr(buf as *const _).to_str().unwrap().to_owned()
     };
 
     if result.len() == 0 {
-        Err(get_error())
+        Err(SdlError(get_error()))
     } else {
         Ok(result)
     }

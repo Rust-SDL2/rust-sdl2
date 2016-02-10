@@ -81,6 +81,31 @@ impl Into<(i32, i32, u32, u32)> for Rect {
     }
 }
 
+/// An error found when creating a rectangle enclosing a set of points.
+#[derive(Debug)]
+pub enum EnclosePointsError {
+    NoPointsGiven,
+    NoPointsContained,
+    CreateError(CreateRectError),
+    SdlError(String),
+}
+
+impl From<CreateRectError> for EnclosePointsError {
+    pub fn from(err: CreateRectError) -> EnclosePointsError {
+        EnclosePointsError::CreateError(err)
+    }
+}
+
+#[derive(Debug)]
+pub enum CreateRectError {
+    WidthIsZero,
+    HeightIsZero,
+    WidthOverflows(u32),
+    HeightOverflows(u32),
+    RightOverflows { x: i32, width: u32 },
+    BottomOverflows { y: i32, height: u32 },
+}
+
 impl Rect {
     #[inline]
     pub fn raw(&self) -> *const ll::SDL_Rect { &self.raw }
@@ -107,37 +132,41 @@ impl Rect {
     }
 
     #[inline]
-    pub fn from_ll(raw: ll::SDL_Rect) -> Result<Rect, String> {
-        if raw.w == 0 {
-            Err("The width of the C rect is zero".to_owned())
-        } else if raw.h == 0 {
-            Err("The height of the C rect is zero".to_owned())
-        } else {
-            Rect::new(raw.x, raw.y, raw.w as u32, raw.h as u32)
-        }
+    pub fn from_ll(raw: ll::SDL_Rect) -> Result<Rect, CreateRectError> {
+        Rect::new(raw.x, raw.y, raw.w as u32, raw.h as u32)
     }
 
     /// Creates a new rectangle.
     ///
     /// If `width` or `height` is zero, `Ok(None)` is returned.
     /// If the arguments violate any of the other rectangle invariants, an error is returned.
-    pub fn new(x: i32, y: i32, width: u32, height: u32) -> Result<Rect, String> {
-        let width = try!(validate_int(width));
-        let height = try!(validate_int(height));
-
-        if x.checked_add(width).is_none() {
-            Err("`x` + `width` overflows.".to_owned())
-        } else if y.checked_add(height).is_none() {
-            Err("`y` + `height` overflows.".to_owned())
+    pub fn new(x: i32, y: i32, width: u32, height: u32)
+            -> Result<Rect, CreateRectError> {
+        use self::CreateRectError::*;
+        let w = if let Some(i) = validate_int(width) {
+            i
         } else {
-            match (width, height) {
+            return Err(WidthOverflows(width));
+        };
+        let h = if let Some(i) = validate_int(height) {
+            i
+        } else {
+            return Err(HeightOverflows(height));
+        };
+
+        if x.checked_add(w).is_none() {
+            return Err(RightOverflows { x: x, width: width })
+        } else if y.checked_add(h).is_none() {
+            return Err(BottomOverflows { y: y, height: height })
+        } else {
+            match (w, h) {
                 (0, _) => {
-                    Err("The width is zero.".to_owned())
+                    Err(WidthIsZero)
                 },
                 (_, 0) => {
-                    Err("The height is zero.".to_owned())
+                    Err(HeightIsZero)
                 },
-                (w, h) => {
+                _ => {
                     Ok( Rect {
                         raw: ll::SDL_Rect {
                             x: x,
@@ -155,7 +184,7 @@ impl Rect {
     ///
     /// If the new rectangle violates any invariants, an error is returned.
     #[inline]
-    pub fn offset(&self, x: i32, y: i32) -> Result<Rect, String> {
+    pub fn offset(&self, x: i32, y: i32) -> Result<Rect, CreateRectError> {
         Rect::new(self.x() + x, self.y() + y, self.width(), self.height())
     }
 
@@ -174,7 +203,11 @@ impl Rect {
     /// Returns `Ok(None)` if there are no points, or no points within the clipping rectangle.
     /// Returns an error if the resulting rectangle's dimensions are too large for the points.
     pub fn from_enclose_points(points: &[Point], clip: Option<Rect>) 
-            -> Result<Rect, String> {
+            -> Result<Rect, EnclosePointsError> {
+        use self::EnclosePointsError::*;
+        if points.len() == 0 {
+            return Err(NoPointsGiven);
+        }
         let mut out = unsafe { mem::uninitialized() };
 
         let clip_ptr = match clip.as_ref() {
@@ -193,9 +226,9 @@ impl Rect {
 
         if result {
             // Return an error if the dimensions are too large.
-            Rect::from_ll(out)
+            Ok(try!(Rect::from_ll(out)))
         } else {
-            Err(get_error())
+            Err(SdlError(get_error()))
         }
     }
 
@@ -313,10 +346,17 @@ mod test {
     fn test_from_enclose_points() {
         use std::i32;
 
-        assert_eq!(Rect::from_enclose_points(&[Point::new(2, 4), Point::new(5,9)], None),
-                   Ok(Some(rect(2, 4, 4, 6))));
-        assert_eq!(Rect::from_enclose_points(&[Point::new(0, 0), Point::new(10,10)],
-                                          Some(rect(3, 3, 1, 1))), Ok(None));
+        assert_eq!(
+            Rect::from_enclose_points(
+                &[Point::new(2, 4), Point::new(5,9)], 
+                None
+            ),
+            Ok(rect(2, 4, 4, 6))
+        );
+        assert_eq!(
+            Rect::from_enclose_points(
+                &[Point::new(0, 0), Point::new(10,10)], 
+                Some(rect(3, 3, 1, 1))), Ok(None));
 
         // Try to enclose the top-left-most and bottom-right-most points.
         // The rectangle will be too large, and the function should return an error.

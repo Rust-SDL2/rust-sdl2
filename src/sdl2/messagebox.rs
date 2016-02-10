@@ -1,10 +1,9 @@
-use std::ffi::CString;
+use std::ffi::{CString, NulError};
 use std::ptr;
 use libc::c_char;
 
 use video::Window;
 use get_error;
-use util::CStringExt;
 
 use sys::messagebox as ll;
 
@@ -16,19 +15,36 @@ bitflags! {
     }
 }
 
-pub fn show_simple_message_box(flags: MessageBoxFlag, title: &str, message: &str, window: Option<&Window>) -> Result<(), String> {
+pub enum ShowMessageError {
+    InvalidTitle(NulError),
+    InvalidMessage(NulError),
+    SdlError(String),
+}
+
+pub fn show_simple_message_box(flags: MessageBoxFlag, title: &str, 
+        message: &str, window: Option<&Window>) 
+        -> Result<(), ShowMessageError> {
+    use self::ShowMessageError::*;
     let result = unsafe {
-        let title = CString::new(title).remove_nul();
-        let message = CString::new(message).remove_nul();
-        ll::SDL_ShowSimpleMessageBox(flags.bits(),
-                                     title.as_ptr() as *const c_char,
-                                     message.as_ptr() as *const c_char,
-                                     window.map_or(ptr::null_mut(), |win| win.raw()))
+        let title = match CString::new(title) {
+            Ok(s) => s,
+            Err(err) => return Err(InvalidTitle(err)),
+        };
+        let message = match CString::new(message) {
+            Ok(s) => s,
+            Err(err) => return Err(InvalidMessage(err)),
+        };
+        ll::SDL_ShowSimpleMessageBox(
+            flags.bits(),
+            title.as_ptr() as *const c_char,
+            message.as_ptr() as *const c_char,
+            window.map_or(ptr::null_mut(), |win| win.raw())
+        )
     } == 0;
 
     if result {
         Ok(())
     } else {
-        Err(get_error())
+        Err(SdlError(get_error()))
     }
 }

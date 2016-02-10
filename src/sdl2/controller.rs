@@ -1,13 +1,19 @@
 use libc::c_char;
-use std::ffi::{CString, CStr};
+use std::ffi::{CString, CStr, NulError};
 
 use GameControllerSubsystem;
 use get_error;
 use joystick;
-use util::{CStringExt, validate_int};
+use util::{validate_int, IdOrSdlError};
 
 use sys::controller as ll;
 use sys::event::{SDL_QUERY, SDL_ENABLE};
+
+#[derive(Debug)]
+pub enum AddMappingError {
+    InvalidMapping(NulError),
+    SdlError(String),
+}
 
 impl GameControllerSubsystem {
     /// Retreive the total number of attached joysticks *and* controllers identified by SDL.
@@ -25,8 +31,8 @@ impl GameControllerSubsystem {
     #[inline]
     pub fn is_game_controller(&self, id: u32) -> bool {
         match validate_int(id) {
-            Ok(id) => unsafe { ll::SDL_IsGameController(id) != 0 },
-            Err(..) => false
+            Some(id) => unsafe { ll::SDL_IsGameController(id) != 0 },
+            None => false
         }
     }
 
@@ -34,13 +40,18 @@ impl GameControllerSubsystem {
     /// it. Controller IDs are the same as joystick IDs and the
     /// maximum number can be retreived using the `SDL_NumJoysticks`
     /// function.
-    pub fn open(&self, id: u32) -> Result<GameController, String> {
-        let id = try!(validate_int(id));
+    pub fn open(&self, id: u32) -> Result<GameController, IdOrSdlError> {
+        use util::IdOrSdlError::*;
+        let id = if let Some(i) = validate_int(id) {
+            i
+        } else {
+            return Err(IdTooBig(id));
+        };
 
         let controller = unsafe { ll::SDL_GameControllerOpen(id) };
 
         if controller.is_null() {
-            Err(get_error())
+            Err(SdlError(get_error()))
         } else {
             Ok(GameController {
                 subsystem: self.clone(),
@@ -50,11 +61,22 @@ impl GameControllerSubsystem {
     }
 
     /// Return the name of the controller at index `id`
-    pub fn name_for_index(&self, id: u32) -> Result<String, String> {
-        let id = try!(validate_int(id));
-        let name = unsafe { ll::SDL_GameControllerNameForIndex(id) };
+    pub fn name_for_index(&self, id: u32) -> Result<String, IdOrSdlError> {
+        use util::IdOrSdlError::*;
+        let id = if let Some(i) = validate_int(id) {
+            i
+        } else {
+            return Err(IdTooBig(id));
+        };
+        let c_str = unsafe { ll::SDL_GameControllerNameForIndex(id) };
 
-        c_str_to_string_or_err(name)
+        if c_str.is_null() {
+            Err(SdlError(get_error()))
+        } else {
+            Ok(unsafe {
+                CStr::from_ptr(c_str as *const _).to_str().unwrap().to_owned()
+            })
+        }
     }
 
     /// If state is `true` controller events are processed, otherwise
@@ -70,15 +92,20 @@ impl GameControllerSubsystem {
     }
 
     /// Add a new mapping from a mapping string
-    pub fn add_mapping(&self, mapping: &str) -> Result<MappingStatus, String> {
-        let mapping = try!(CString::new(mapping).unwrap_or_sdlresult());
+    pub fn add_mapping(&self, mapping: &str) 
+            -> Result<MappingStatus, AddMappingError> {
+        use self::AddMappingError::*;
+        let mapping = match CString::new(mapping) {
+            Ok(s) => s,
+            Err(err) => return Err(InvalidMapping(err)),
+        };
 
         let result = unsafe { ll::SDL_GameControllerAddMapping(mapping.as_ptr() as *const c_char) };
 
         match result {
             1 => Ok(MappingStatus::Added),
             0 => Ok(MappingStatus::Updated),
-            _ => Err(get_error()),
+            _ => Err(SdlError(get_error())),
         }
     }
 

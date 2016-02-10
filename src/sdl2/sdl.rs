@@ -5,7 +5,6 @@ use std::error;
 use libc::c_char;
 
 use sys::sdl as ll;
-use util::CStringExt;
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum Error {
