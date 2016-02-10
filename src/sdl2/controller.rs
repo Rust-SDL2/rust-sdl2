@@ -4,7 +4,7 @@ use std::ffi::{CString, CStr, NulError};
 use GameControllerSubsystem;
 use get_error;
 use joystick;
-use common::{validate_int, IdOrSdlError};
+use common::{validate_int, IntegerOrSdlError};
 
 use sys::controller as ll;
 use sys::event::{SDL_QUERY, SDL_ENABLE};
@@ -30,9 +30,9 @@ impl GameControllerSubsystem {
     /// Return true if the joystick at index `id` is a game controller.
     #[inline]
     pub fn is_game_controller(&self, id: u32) -> bool {
-        match validate_int(id) {
-            Some(id) => unsafe { ll::SDL_IsGameController(id) != 0 },
-            None => false
+        match validate_int(id, "id") {
+            Ok(id) => unsafe { ll::SDL_IsGameController(id) != 0 },
+            Err(_) => false
         }
     }
 
@@ -40,14 +40,9 @@ impl GameControllerSubsystem {
     /// it. Controller IDs are the same as joystick IDs and the
     /// maximum number can be retreived using the `SDL_NumJoysticks`
     /// function.
-    pub fn open(&self, id: u32) -> Result<GameController, IdOrSdlError> {
-        use common::IdOrSdlError::*;
-        let id = if let Some(i) = validate_int(id) {
-            i
-        } else {
-            return Err(IdTooBig(id));
-        };
-
+    pub fn open(&self, id: u32) -> Result<GameController, IntegerOrSdlError> {
+        use common::IntegerOrSdlError::*;
+        let id = try!(validate_int(id, "id"));
         let controller = unsafe { ll::SDL_GameControllerOpen(id) };
 
         if controller.is_null() {
@@ -60,15 +55,11 @@ impl GameControllerSubsystem {
         }
     }
 
-    /// Return the name of the controller at index `id`
-    pub fn name_for_index(&self, id: u32) -> Result<String, IdOrSdlError> {
-        use common::IdOrSdlError::*;
-        let id = if let Some(i) = validate_int(id) {
-            i
-        } else {
-            return Err(IdTooBig(id));
-        };
-        let c_str = unsafe { ll::SDL_GameControllerNameForIndex(id) };
+    /// Return the name of the controller at the given index.
+    pub fn name_for_index(&self, index: u32) -> Result<String, IntegerOrSdlError> {
+        use common::IntegerOrSdlError::*;
+        let index = try!(validate_int(index, "index"));
+        let c_str = unsafe { ll::SDL_GameControllerNameForIndex(index) };
 
         if c_str.is_null() {
             Err(SdlError(get_error()))

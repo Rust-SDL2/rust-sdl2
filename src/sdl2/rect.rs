@@ -2,7 +2,7 @@ use sys::rect as ll;
 use std::mem;
 use std::ptr;
 use std::ops::{BitAnd, BitOr};
-use common::validate_int;
+use common::{validate_int, IntegerOrSdlError};
 use get_error;
 
 /// Immutable point type, consisting of x and y.
@@ -143,15 +143,13 @@ impl Rect {
     pub fn new(x: i32, y: i32, width: u32, height: u32)
             -> Result<Rect, CreateRectError> {
         use self::CreateRectError::*;
-        let w = if let Some(i) = validate_int(width) {
-            i
-        } else {
-            return Err(WidthOverflows(width));
+        let w = match validate_int(width, "width") {
+            Ok(w) => w,
+            Err(_) => return Err(WidthOverflows(width)),
         };
-        let h = if let Some(i) = validate_int(height) {
-            i
-        } else {
-            return Err(HeightOverflows(height));
+        let h = match validate_int(height, "height") {
+            Ok(h) => h,
+            Err(_) => return Err(HeightOverflows(height)),
         };
 
         if x.checked_add(w).is_none() {

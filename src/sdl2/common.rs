@@ -1,16 +1,18 @@
 use std::ffi::{CString, NulError};
 use std::ops::Add;
 
-/// A given ID was too big (made the i32 representation become negative),
-/// or something else bad happened in the C layer.
+/// A given integer was so big that its representation as a C integer would be
+/// negative.
 #[derive(Debug)]
-pub enum IdOrSdlError {
-    IdTooBig(u32),
+pub enum IntegerOrSdlError {
+    IntegerOverflows(&'static str, u32),
     SdlError(String)
 }
 
 /// Validates and converts the given u32 to a positive C integer.
-pub fn validate_int(value: u32) -> Option<::libc::c_int> {
+pub fn validate_int(value: u32, name: &'static str)
+        -> Result<::libc::c_int, IntegerOrSdlError> {
+    use self::IntegerOrSdlError::*;
     // Many SDL functions will accept `int` values, even if it doesn't make sense 
     // for the values to be negative.
     // In the cases that SDL doesn't check negativity, passing negative values 
@@ -19,9 +21,9 @@ pub fn validate_int(value: u32) -> Option<::libc::c_int> {
     // array without checking if it's negative, which could potentially lead to 
     // segmentation faults.
     if value >= 1 << 31 { 
-        None
+        Err(IntegerOverflows(name, value))
     } else { 
-        Some(value as ::libc::c_int)
+        Ok(value as ::libc::c_int)
     }
 }
 

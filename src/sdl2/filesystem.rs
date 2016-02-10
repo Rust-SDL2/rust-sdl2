@@ -7,7 +7,7 @@ use sys::filesystem as ll;
 pub fn base_path() -> Result<String, String> {
     let result = unsafe {
         let buf = ll::SDL_GetBasePath();
-        String::from_utf8_lossy(CStr::from_ptr(buf as *const _).to_bytes()).to_string()
+        CStr::from_ptr(buf as *const _).to_str().unwrap().to_owned()
     };
 
     if result.len() == 0 {

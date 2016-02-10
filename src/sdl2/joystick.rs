@@ -7,7 +7,7 @@ use sys::event::{SDL_QUERY, SDL_ENABLE};
 use std::ffi::{CString, CStr, NulError};
 use std::fmt::{Display, Formatter, Error};
 use libc::c_char;
-use common::{validate_int, IdOrSdlError};
+use common::{validate_int, IntegerOrSdlError};
 
 impl JoystickSubsystem {
     /// Retreive the total number of attached joysticks *and* controllers identified by SDL.
@@ -22,14 +22,12 @@ impl JoystickSubsystem {
     }
 
     /// Attempt to open the joystick at number `id` and return it.
-    pub fn open(&self, id: u32) -> Result<Joystick, IdOrSdlError> {
-        use common::IdOrSdlError::*;
-        let id = match validate_int(id) {
-            Some(id) => id,
-            None => return Err(IdTooBig(id)),
-        };
+    pub fn open(&self, joystick_index: u32) 
+            -> Result<Joystick, IntegerOrSdlError> {
+        use common::IntegerOrSdlError::*;
+        let joystick_index = try!(validate_int(joystick_index, "joystick_index"));
 
-        let joystick = unsafe { ll::SDL_JoystickOpen(id) };
+        let joystick = unsafe { ll::SDL_JoystickOpen(joystick_index) };
 
         if joystick.is_null() {
             Err(SdlError(get_error()))
@@ -42,13 +40,11 @@ impl JoystickSubsystem {
     }
 
     /// Return the name of the joystick at index `id`
-    pub fn name_for_index(&self, id: u32) -> Result<String, IdOrSdlError> {
-        use common::IdOrSdlError::*;
-        let id = match validate_int(id) {
-            Some(id) => id,
-            None => return Err(IdTooBig(id)),
-        };
-        let c_str = unsafe { ll::SDL_JoystickNameForIndex(id) };
+    pub fn name_for_index(&self, joystick_index: u32) -> Result<String, IntegerOrSdlError> {
+        use common::IntegerOrSdlError::*;
+        let joystick_index = try!(validate_int(joystick_index, "joystick_index"));
+        
+        let c_str = unsafe { ll::SDL_JoystickNameForIndex(joystick_index) };
         
         if c_str.is_null() {
             Err(SdlError(get_error()))
@@ -60,14 +56,11 @@ impl JoystickSubsystem {
     }
 
     /// Get the GUID for the joystick number `id`
-    pub fn device_guid(&self, id: u32) -> Result<Guid, IdOrSdlError> {
-        use common::IdOrSdlError::*;
-        let id = match validate_int(id) {
-            Some(id) => id,
-            None => return Err(IdTooBig(id)),
-        };
+    pub fn device_guid(&self, joystick_index: u32) -> Result<Guid, IntegerOrSdlError> {
+        use common::IntegerOrSdlError::*;
+        let joystick_index = try!(validate_int(joystick_index, "joystick_index"));
 
-        let raw = unsafe { ll::SDL_JoystickGetDeviceGUID(id) };
+        let raw = unsafe { ll::SDL_JoystickGetDeviceGUID(joystick_index) };
 
         let guid = Guid { raw: raw };
 
@@ -162,18 +155,15 @@ impl Joystick {
     /// Gets the position of the given `axis`.
     ///
     /// The function will fail if the joystick doesn't have the provided axis.
-    pub fn axis(&self, axis: u32) -> Result<i16, IdOrSdlError> {
-        use common::IdOrSdlError::*;
+    pub fn axis(&self, axis: u32) -> Result<i16, IntegerOrSdlError> {
+        use common::IntegerOrSdlError::*;
         // This interface is a bit messed up: 0 is a valid position
         // but can also mean that an error occured. As far as I can
         // tell the only way to know if an error happened is to see if
         // get_error() returns a non-empty string.
         clear_error();
 
-        let axis = match validate_int(axis) {
-            Some(i) => i,
-            None => return Err(IdTooBig(axis)),
-        };
+        let axis = try!(validate_int(axis, "axis"));
         let pos = unsafe { ll::SDL_JoystickGetAxis(self.raw, axis) };
 
         if pos != 0 {
@@ -204,16 +194,13 @@ impl Joystick {
     /// Return `Ok(true)` if `button` is pressed.
     ///
     /// The function will fail if the joystick doesn't have the provided button.
-    pub fn button(&self, button: u32) -> Result<bool, IdOrSdlError> {
-        use common::IdOrSdlError::*;
+    pub fn button(&self, button: u32) -> Result<bool, IntegerOrSdlError> {
+        use common::IntegerOrSdlError::*;
         // Same deal as axis, 0 can mean both unpressed or
         // error...
         clear_error();
 
-        let button = match validate_int(button) {
-            Some(i) => i,
-            None => return Err(IdTooBig(button)),
-        };
+        let button = try!(validate_int(button, "button"));
         let pressed = unsafe { ll::SDL_JoystickGetButton(self.raw, button) };
 
         match pressed {
@@ -247,15 +234,12 @@ impl Joystick {
 
     /// Return a pair `(dx, dy)` containing the difference in axis
     /// position since the last poll
-    pub fn ball(&self, ball: u32) -> Result<(i32, i32), IdOrSdlError> {
-        use common::IdOrSdlError::*;
+    pub fn ball(&self, ball: u32) -> Result<(i32, i32), IntegerOrSdlError> {
+        use common::IntegerOrSdlError::*;
         let mut dx = 0;
         let mut dy = 0;
 
-        let ball = match validate_int(ball) {
-            Some(i) => i,
-            None => return Err(IdTooBig(ball)),
-        };
+        let ball = try!(validate_int(ball, "ball"));
         let result = unsafe { ll::SDL_JoystickGetBall(self.raw, ball, &mut dx, &mut dy) };
 
         if result == 0 {
@@ -278,17 +262,14 @@ impl Joystick {
     }
 
     /// Return the position of `hat` for this joystick
-    pub fn hat(&self, hat: u32) -> Result<HatState, IdOrSdlError> {
-        use common::IdOrSdlError::*;
+    pub fn hat(&self, hat: u32) -> Result<HatState, IntegerOrSdlError> {
+        use common::IntegerOrSdlError::*;
         // Guess what? This function as well uses 0 to report an error
         // but 0 is also a valid value (HatState::Centered). So we
         // have to use the same hack as `axis`...
         clear_error();
 
-        let hat = match validate_int(hat) {
-            Some(i) => i,
-            None => return Err(IdTooBig(hat)),
-        };
+        let hat = try!(validate_int(hat, "hat"));
         let result = unsafe { ll::SDL_JoystickGetHat(self.raw, hat) };
 
         let state = HatState::from_raw(result as u8);

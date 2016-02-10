@@ -1,5 +1,5 @@
 use libc::{c_int, c_float, uint32_t, c_char};
-use std::ffi::{CStr, CString};
+use std::ffi::{CStr, CString, NulError};
 use std::mem;
 use std::ops::{Deref, DerefMut};
 use std::ptr;
@@ -12,7 +12,7 @@ use pixels;
 use VideoSubsystem;
 use EventPump;
 use num::FromPrimitive;
-use common::validate_int;
+use common::{validate_int, IntegerOrSdlError};
 
 use get_error;
 
@@ -406,7 +406,7 @@ pub enum WindowPos {
     Positioned(i32)
 }
 
-fn unwrap_windowpos (pos: WindowPos) -> ll::SDL_WindowPos {
+fn to_ll_windowpos (pos: WindowPos) -> ll::SDL_WindowPos {
     match pos {
         WindowPos::Undefined => ll::SDL_WINDOWPOS_UNDEFINED,
         WindowPos::Centered => ll::SDL_WINDOWPOS_CENTERED,
@@ -490,7 +490,7 @@ impl VideoSubsystem {
     pub fn display_name(&self, display_index: i32) -> String {
         unsafe {
             let display = ll::SDL_GetDisplayName(display_index as c_int);
-            String::from_utf8_lossy(CStr::from_ptr(display as *const _).to_bytes()).to_string()
+            CStr::from_ptr(display as *const _).to_str().unwrap().to_owned()
         }
     }
 
@@ -671,9 +671,18 @@ impl Drop for Window {
     }
 }
 
+#[derive(Debug)]
+pub enum WindowBuildResult {
+    HeightOverflows(u32),
+    WidthOverflows(u32),
+    InvalidTitle(NulError),
+    SdlError(String),
+}
+
 /// The type that allows you to build windows.
+#[derive(Debug)]
 pub struct WindowBuilder {
-    title: CString,
+    title: String,
     width: u32,
     height: u32,
     x: WindowPos,
@@ -688,7 +697,7 @@ impl WindowBuilder {
     /// Initializes a new `WindowBuilder`.
     pub fn new(v: &VideoSubsystem, title: &str, width: u32, height: u32) -> WindowBuilder {
         WindowBuilder {
-            title: CString::new(title).remove_nul(),
+            title: title.to_owned(),
             width: width,
             height: height,
             x: WindowPos::Undefined,
@@ -699,32 +708,38 @@ impl WindowBuilder {
     }
 
     /// Builds the window.
-    pub fn build(&self) -> Result<Window, String> {
+    pub fn build(&self) -> Result<Window, WindowBuildResult> {
+        use self::WindowBuildResult::*;
+        let title = match CString::new(self.title) {
+            Ok(t) => t,
+            Err(err) => return Err(InvalidTitle(err)),
+        };
+        if self.width >= (1 << 31) {
+            return Err(WidthOverflows(self.width));
+        }
+        if self.height >= (1 << 31) {
+            return Err(HeightOverflows(self.width));
+        }
+        
+        let raw_width = self.width as c_int;
+        let raw_height = self.height as c_int;
         unsafe {
-            if self.width >= (1<<31) || self.height >= (1<<31) {
-                // SDL2 only supports int (signed 32-bit) arguments.
-                Err("Window is too large.".to_owned())
+            let raw = ll::SDL_CreateWindow(
+                self.title.as_ptr() as *const c_char,
+                to_ll_windowpos(self.x),
+                to_ll_windowpos(self.y),
+                raw_width,
+                raw_height,
+                self.window_flags
+            );
+
+            if raw == ptr::null_mut() {
+                Err(SdlError(get_error()))
             } else {
-                let raw_width = self.width as c_int;
-                let raw_height = self.height as c_int;
-
-                let raw = ll::SDL_CreateWindow(
-                        self.title.as_ptr() as *const c_char,
-                        unwrap_windowpos(self.x),
-                        unwrap_windowpos(self.y),
-                        raw_width,
-                        raw_height,
-                        self.window_flags
-                );
-
-                if raw == ptr::null_mut() {
-                    Err(get_error())
-                } else {
-                    Ok(Window {
-                        subsystem: self.subsystem.clone(),
-                        raw: raw
-                    })
-                }
+                Ok(Window {
+                    subsystem: self.subsystem.clone(),
+                    raw: raw,
+                })
             }
         }
     }
@@ -934,9 +949,11 @@ impl WindowRef {
         }
     }
 
-    pub fn set_title(&mut self, title: &str) {
-        let title = CString::new(title).remove_nul();
-        unsafe { ll::SDL_SetWindowTitle(self.raw(), title.as_ptr() as *const c_char); }
+    pub fn set_title(&mut self, title: &str) -> Result<(), NulError> {
+        let title = try!(CString::new(title));
+        Ok(unsafe { 
+            ll::SDL_SetWindowTitle(self.raw(), title.as_ptr() as *const c_char);
+        })
     }
 
     pub fn title(&self) -> &str {
@@ -947,7 +964,7 @@ impl WindowRef {
             let buf = ll::SDL_GetWindowTitle(self.raw());
 
             // The window title must be encoded in UTF-8.
-            str::from_utf8(CStr::from_ptr(buf as *const _).to_bytes()).unwrap()
+            CStr::from_ptr(buf as *const _).to_str().unwrap()
         }
     }
 
@@ -959,7 +976,7 @@ impl WindowRef {
     //pub fn SDL_GetWindowData(window: *SDL_Window, name: *c_char) -> *c_void;
 
     pub fn set_position(&mut self, x: WindowPos, y: WindowPos) {
-        unsafe { ll::SDL_SetWindowPosition(self.raw(), unwrap_windowpos(x), unwrap_windowpos(y)) }
+        unsafe { ll::SDL_SetWindowPosition(self.raw(), to_ll_windowpos(x), to_ll_windowpos(y)) }
     }
 
     pub fn position(&self) -> (i32, i32) {
@@ -969,11 +986,13 @@ impl WindowRef {
         (x as i32, y as i32)
     }
 
-    pub fn set_size(&mut self, w: u32, h: u32) {
-        match (validate_int(w), validate_int(h)) {
-            (Ok(w), Ok(h)) => unsafe { ll::SDL_SetWindowSize(self.raw(), w, h) },
-            _ => ()     // silently fail (`SDL_SetWindowSize` returns void)
-        }
+    pub fn set_size(&mut self, width: u32, height: u32) -> Result<(), IntegerOrSdlError> {
+        use common::IntegerOrSdlError::*;
+        let w = try!(validate_int(width, "width"));
+        let h = try!(validate_int(height, "height"));
+        Ok(unsafe { 
+            ll::SDL_SetWindowSize(self.raw(), w, h)
+        })
     }
 
     pub fn size(&self) -> (u32, u32) {
@@ -990,11 +1009,14 @@ impl WindowRef {
         (w as u32, h as u32)
     }
 
-    pub fn set_minimum_size(&mut self, w: u32, h: u32) {
-        match (validate_int(w), validate_int(h)) {
-            (Ok(w), Ok(h)) => unsafe { ll::SDL_SetWindowMinimumSize(self.raw(), w, h) },
-            _ => ()     // silently fail (`SDL_SetWindowMinimumSize` returns void)
-        }
+    pub fn set_minimum_size(&mut self, width: u32, height: u32)
+            -> Result<(), IntegerOrSdlError> {
+        use common::IntegerOrSdlError::*;
+        let w = try!(validate_int(width, "width"));
+        let h = try!(validate_int(height, "height"));
+        Ok(unsafe {
+            ll::SDL_SetWindowMinimumSize(self.raw(), w, h)
+        })
     }
 
     pub fn minimum_size(&self) -> (u32, u32) {
@@ -1004,11 +1026,14 @@ impl WindowRef {
         (w as u32, h as u32)
     }
 
-    pub fn set_maximum_size(&mut self, w: u32, h: u32) {
-        match (validate_int(w), validate_int(h)) {
-            (Ok(w), Ok(h)) => unsafe { ll::SDL_SetWindowMaximumSize(self.raw(), w, h) },
-            _ => ()     // silently fail (`SDL_SetWindowMaximumSize` returns void)
-        }
+    pub fn set_maximum_size(&mut self, width: u32, height: u32)
+            -> Result<(), IntegerOrSdlError> {
+        use common::IntegerOrSdlError::*;
+        let w = try!(validate_int(width, "width"));
+        let h = try!(validate_int(height, "height"));
+        Ok(unsafe {
+            ll::SDL_SetWindowMaximumSize(self.raw(), w, h)
+        })
     }
 
     pub fn maximum_size(&self) -> (u32, u32) {
@@ -1046,9 +1071,13 @@ impl WindowRef {
         unsafe { ll::SDL_RestoreWindow(self.raw()) }
     }
 
-    pub fn set_fullscreen(&mut self, fullscreen_type: FullscreenType) -> Result<(), String> {
+    pub fn set_fullscreen(&mut self, fullscreen_type: FullscreenType)
+            -> Result<(), String> {
         unsafe {
-            if ll::SDL_SetWindowFullscreen(self.raw(), fullscreen_type as uint32_t) == 0 {
+            let result = ll::SDL_SetWindowFullscreen(
+                self.raw(), fullscreen_type as uint32_t
+            );
+            if result == 0 {
                 Ok(())
             } else {
                 Err(get_error())

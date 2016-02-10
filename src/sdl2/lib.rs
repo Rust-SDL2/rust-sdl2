@@ -36,4 +36,4 @@ pub mod hint;
 
 mod common;
 // Export return types and such from the common module.
-pub use common::IdOrSdlError;
+pub use common::IntegerOrSdlError;

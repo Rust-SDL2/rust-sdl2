@@ -149,7 +149,7 @@ macro_rules! subsystem {
         }
     );
     ($name:ident, $flag:expr, nosync) => (
-        #[derive(Clone)]
+        #[derive(Debug, Clone)]
         pub struct $name {
             /// Subsystems cannot be moved or (usually) used on non-main threads.
             /// Luckily, Rc restricts use to the main thread.
@@ -195,7 +195,7 @@ macro_rules! subsystem {
 
 /// When a subsystem is no longer in use (the refcount in an `Rc<SubsystemDrop>` reaches 0),
 /// the subsystem is quit.
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 struct SubsystemDrop {
     _sdldrop: Rc<SdlDrop>,
     flag: ll::SDL_InitFlag
