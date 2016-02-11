@@ -151,19 +151,22 @@ impl ::EventSubsystem {
     ///
     /// ```
     #[inline(always)]
-    pub unsafe fn register_event(&self) -> SdlResult<u32> {
+    pub unsafe fn register_event(&self) -> Result<u32, String> {
         Ok(*try!(self.register_events(1)).first().unwrap())
     }
 
     /// Registers custom SDL events.
     ///
     /// Returns an error, if no more user events can be created.
-    pub unsafe fn register_events(&self, nr: u32) -> SdlResult<Vec<u32>> {
+    pub unsafe fn register_events(&self, nr: u32) -> Result<Vec<u32>, String> {
         let result = unsafe { ll::SDL_RegisterEvents(nr as ::libc::c_int) };
         const ERR_NR:u32 = ::std::u32::MAX - 1;
 
         match result {
-            ERR_NR => { Err(ErrorMessage("No more user events can be created; SDL_LASTEVENT reached".to_owned())) },
+            ERR_NR => { 
+                Err("No more user events can be created; SDL_LASTEVENT reached"
+                    .to_owned())
+            },
             _ => {
                 let event_ids = (result..(result+nr)).collect();
                 Ok(event_ids)
@@ -178,14 +181,17 @@ impl ::EventSubsystem {
     /// # Example
     /// See [push_custom_event](#method.push_custom_event)
     #[inline(always)]
-    pub fn register_custom_event<T: ::std::any::Any>(&self) -> SdlResult<()> {
+    pub fn register_custom_event<T: ::std::any::Any>(&self)
+            -> Result<(), String> {
         use ::std::any::TypeId;
         let event_id = *try!(unsafe { self.register_events(1) }).first().unwrap();
         let mut cet = CUSTOM_EVENT_TYPES.lock().unwrap();
         let type_id = TypeId::of::<Box<T>>();
 
         if cet.type_id_to_sdl_id.contains_key(&type_id) {
-            return Err(ErrorMessage("Can not register the same event type twice!".into()));
+            return Err(
+                "The same event type can not be registered twice!".to_owned()
+            );
         }
 
         cet.sdl_id_to_type_id.insert(event_id, type_id);
@@ -222,19 +228,22 @@ impl ::EventSubsystem {
     ///     assert_eq!(e2.a, 42);
     /// }
     /// ```
-    pub fn push_custom_event<T: ::std::any::Any>(&self, event:T) -> SdlResult<()> {
+    pub fn push_custom_event<T: ::std::any::Any>(&self, event:T)
+            -> Result<(), String> {
         use ::std::any::TypeId;
         let cet = CUSTOM_EVENT_TYPES.lock().unwrap();
         let type_id = TypeId::of::<Box<T>>();
 
         let user_event_id = *match cet.type_id_to_sdl_id.get(&type_id) {
             Some(id) => id,
-            None => { return Err(ErrorMessage("Type is not registered as a custom event type!".into())); }
+            None => { 
+                return Err(
+                    "Type is not registered as a custom event type!".to_owned()
+                );
+            }
         };
-
-        let event_box = Box::new(event);
-        let type_id_box = Box::new(type_id);
-
+        
+        let event_box = Box::new(event); 
         let event = Event::User {
            timestamp: 0,
            window_id: 0,
@@ -244,7 +253,7 @@ impl ::EventSubsystem {
            data2: ::std::ptr::null_mut()
         };
 
-        self.push_event(event);
+        try!(self.push_event(event));
 
         Ok(())
     }
@@ -1140,7 +1149,7 @@ impl Event {
             _ => { return None }
         };
 
-        let mut cet = CUSTOM_EVENT_TYPES.lock().unwrap();
+        let cet = CUSTOM_EVENT_TYPES.lock().unwrap();
 
         let event_type_id = match cet.sdl_id_to_type_id.get(&event_id) {
             Some(id) => id,

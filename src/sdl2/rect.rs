@@ -1,3 +1,5 @@
+//! Rectangles and points.
+
 use sys::rect as ll;
 use std::mem;
 use std::ptr;
