@@ -1,4 +1,5 @@
 //! Rectangles and points.
+#![allow(const_err)]
 
 use sys::rect as ll;
 use std::mem;
@@ -11,6 +12,15 @@ use std::ops::{BitAnd, BitOr};
 /// rect sizes will never have to be truncated when clamping.
 pub fn max_int_value() -> u32 {
     i32::max_value() as u32 / 2
+}
+
+/// The minimal integer value that can be used for rectangle positions 
+/// and points.
+///
+/// This value is needed, because otherwise the width of a rectangle created
+/// from a point would be able to exceed the maximum width.
+pub fn min_int_value() -> i32 {
+    i32::min_value() / 2
 }
 
 fn clamp_size(val: u32) -> u32 {
@@ -26,6 +36,8 @@ fn clamp_size(val: u32) -> u32 {
 fn clamp_position(val: i32) -> i32 {
     if val > max_int_value() as i32 {
         max_int_value() as i32
+    } else if val < min_int_value() {
+        min_int_value()
     } else {
         val
     }
@@ -76,6 +88,30 @@ impl Rect {
         self.raw.h as u32
     }
     
+    /// Sets the horizontal position of this rectangle to the given value,
+    /// clamped to be less than or equal to i32::max_value() / 2.
+    pub fn set_x(&mut self, x: i32) {
+        self.raw.x = clamp_position(x);
+    }
+    
+    /// Sets the vertical position of this rectangle to the given value,
+    /// clamped to be less than or equal to i32::max_value() / 2.
+    pub fn set_y(&mut self, y: i32) {
+        self.raw.y = clamp_position(y);
+    }
+    
+    /// Sets the width of this rectangle to the given value,
+    /// clamped to be less than or equal to i32::max_value() / 2.
+    pub fn set_width(&mut self, width: u32) {
+        self.raw.w = clamp_size(width) as i32;
+    }
+    
+    /// Sets the height of this rectangle to the given value,
+    /// clamped to be less than or equal to i32::max_value() / 2.
+    pub fn set_height(&mut self, height: u32) {
+        self.raw.h = clamp_size(height) as i32;
+    }
+    
     /// Returns the x-position of the left side of this rectangle.
     pub fn left(&self) -> i32 {
         self.raw.x
@@ -94,6 +130,18 @@ impl Rect {
     /// Returns the y-position of the bottom side of this rectangle.
     pub fn bottom(&self) -> i32 {
         self.raw.y + self.raw.h
+    }
+    
+    /// Sets the position of the right side of this rectangle to the given 
+    /// value, clamped to be less than or equal to i32::max_value() / 2.
+    pub fn set_right(&mut self, right: i32) {
+        self.raw.x = clamp_position(right) - self.raw.w;
+    }
+    
+    /// Sets the position of the bottom side of this rectangle to the given 
+    /// value, clamped to be less than or equal to i32::max_value() / 2.
+    pub fn set_bottom(&mut self, bottom: i32) {
+        self.raw.y = clamp_position(bottom) - self.raw.h;
     }
     
     /// Move this rect and clamp the positions to prevent over/underflow.
@@ -336,7 +384,10 @@ impl Into<(i32, i32)> for Point {
 impl Point {
     pub fn new(x: i32, y: i32) -> Point {
         Point {
-            raw: ll::SDL_Point { x: x, y: y }
+            raw: ll::SDL_Point { 
+                x: clamp_position(x),
+                y: clamp_position(y),
+            }
         }
     }
     
@@ -355,7 +406,27 @@ impl Point {
     }
 
     pub fn offset(&self, x: i32, y: i32) -> Point {
-        Point::new(self.x() + x, self.y() + y)
+        let x = match self.raw.x.checked_add(x) {
+            Some(val) => val,
+            None => {
+                if x < 0 {
+                    min_int_value()
+                } else {
+                    max_int_value() as i32
+                }
+            }
+        };
+        let y = match self.raw.y.checked_add(y) {
+            Some(val) => val,
+            None => {
+                if y < 0 {
+                    min_int_value()
+                } else {
+                    max_int_value() as i32
+                }
+            }
+        };
+        Point::new(x, y)
     }
 
     pub fn x(&self) -> i32 {
@@ -367,109 +438,168 @@ impl Point {
     }
 }
 
-/* // Deprecated at the moment. Sorry.
 #[cfg(test)]
 mod test {
-    use super::{Rect, Point};
-
-    fn rect(x: i32, y: i32, w: u32, h: u32) -> Rect {
-        Rect::new(x, y, w, h).unwrap()
+    use super::{Rect, Point, max_int_value, min_int_value};
+    
+    /// Used to compare "literal" (unclamped) rect values.
+    fn tuple(x: i32, y: i32, w: u32, h: u32) -> (i32, i32, u32, u32) {
+        (x, y, w, h)
     }
 
     #[test]
-    fn test_from_enclose_points() {
-        use std::i32;
-
+    fn enclose_points_valid() {
         assert_eq!(
+            Some(tuple(2, 4, 4, 6)),
             Rect::from_enclose_points(
                 &[Point::new(2, 4), Point::new(5,9)], 
                 None
-            ),
-            Ok(rect(2, 4, 4, 6))
+            ).map(|r| r.into())
         );
+    }
+    
+    #[test]
+    fn enclose_points_outside_clip_rect() {
         assert_eq!(
             Rect::from_enclose_points(
                 &[Point::new(0, 0), Point::new(10,10)], 
-                Some(rect(3, 3, 1, 1))), Ok(None));
-
+                Some(Rect::new(3, 3, 1, 1))), 
+            None
+        );
+    }
+    
+    #[test]
+    fn enclose_points_max_values() {
         // Try to enclose the top-left-most and bottom-right-most points.
-        // The rectangle will be too large, and the function should return an error.
-        assert!(Rect::from_enclose_points(&[Point::new(i32::MIN, i32::MIN), Point::new(i32::MAX, i32::MAX)], None).is_err());
+        assert_eq!(
+            Some(tuple(
+                min_int_value(), min_int_value(), 
+                max_int_value(), max_int_value()
+            )),
+            Rect::from_enclose_points(
+                &[Point::new(i32::min_value(), i32::min_value()), 
+                Point::new(i32::max_value(), i32::max_value())], None
+            ).map(|r| r.into())
+        );
     }
 
     #[test]
-    fn test_has_intersection() {
-        assert!(rect(0, 0, 10, 10).has_intersection(&rect(9, 9, 10, 10)));
+    fn has_intersection() {
+        let rect = Rect::new(0, 0, 10, 10);
+        assert!(rect.has_intersection(&Rect::new(9, 9, 10, 10)));
         // edge
-        assert!(! rect(0, 0, 10, 10).has_intersection(&rect(10, 10, 10, 10)));
+        assert!(! rect.has_intersection(&Rect::new(10, 10, 10, 10)));
         // out
-        assert!(! rect(0, 0, 10, 10).has_intersection(&rect(11, 11, 10, 10)));
+        assert!(! rect.has_intersection(&Rect::new(11, 11, 10, 10)));
     }
 
     #[test]
-    fn test_intersection() {
-        assert_eq!(rect(0, 0, 10, 10) & rect(9, 9, 10, 10), Some(rect(9, 9, 1, 1)));
-        assert!((rect(0, 0, 10, 10) & rect(11, 11, 10, 10)).is_none());
+    fn intersection() {
+        let rect = Rect::new(0, 0, 10, 10);
+        assert_eq!(
+            &rect & Rect::new(9, 9, 10, 10),
+            Some(Rect::new(9, 9, 1, 1))
+        );
+        assert_eq!(
+            &rect & Rect::new(11, 11, 10, 10),
+            None
+        );
     }
 
     #[test]
-    fn test_union() {
-        assert_eq!(rect(0, 0, 1, 1) | rect(9, 9, 1, 1), rect(0, 0, 10, 10));
+    fn union() {
+        assert_eq!(
+            Rect::new(0, 0, 1, 1) | Rect::new(9, 9, 1, 1), 
+            Rect::new(0, 0, 10, 10)
+        );
     }
 
     #[test]
-    fn test_intersect_line() {
-        assert_eq!(rect(1, 1, 5, 5).intersect_line(Point::new(0, 0), Point::new(10, 10)),
-                   Some((Point::new(1, 1), Point::new(5, 5))));
+    fn intersect_line() {
+        assert_eq!(
+            Rect::new(1, 1, 5, 5).intersect_line(
+                Point::new(0, 0), Point::new(10, 10)
+            ),
+            Some((Point::new(1, 1), Point::new(5, 5)))
+        );
     }
-
+    
     #[test]
-    fn test_rect_invariants() {
-        use std::i32;
-        const MAX_SIZE: u32 = i32::MAX as u32;
-
-        let pass_nonempty = &[(0, 0, 1, 1), (i32::MIN, i32::MIN, MAX_SIZE, MAX_SIZE), (0, 0, MAX_SIZE, MAX_SIZE)];
-        let pass_empty = &[(0, 0, 1, 0), (i32::MAX, i32::MAX, 0, 0)];
-        let fail = &[(1, 1, MAX_SIZE, MAX_SIZE), (-1, -1, MAX_SIZE+1, MAX_SIZE+1), (i32::MAX, i32::MAX, 1, 1)];
-
-        for &(x, y, w, h) in pass_nonempty {
-            // Should be non-empty.
-            match Rect::new(x, y, w, h) {
-                Ok(None) | Err(..) => panic!("{:?}", (x, y, w, h)),
-                _ => ()
-            }
-        }
-
-        for &(x, y, w, h) in pass_empty {
-            // Should be empty.
-            match Rect::new(x, y, w, h) {
-                Ok(Some(..)) | Err(..) => panic!("{:?}", (x, y, w, h)),
-                _ => ()
-            }
-        }
-
-        for &(x, y, w, h) in fail {
-            // Should fail.
-            assert!(Rect::new(x, y, w, h).is_err(), "{:?}", (x, y, w, h));
-        }
+    fn clamp_size_zero() {
+        assert_eq!(
+            tuple(0, 0, 1, 1),
+            Rect::new(0, 0, 0, 0).into()
+        );
     }
-
+    
     #[test]
-    fn test_rect_convert() {
-        // Rect into
-        let r = rect(-11, 5, 50, 20);
-        let r_tuple: (i32, i32, u32, u32) = r.into();
-        assert_eq!(r.xywh(), r_tuple);
-
-        // Point into
-        let p = Point::new(-11, 5);
-        let p_tuple = p.into();
-        assert_eq!(p.xy(), p_tuple);
-
-        // Point from
-        let p_tuple = (-11, 5);
-        let p: Point = Point::from(p_tuple);
-        assert_eq!(p, Point::new(-11, 5));
+    fn clamp_position_min() {
+        assert_eq!(
+            tuple(min_int_value(), min_int_value(), 1, 1),
+            Rect::new(i32::min_value(), i32::min_value(), 1, 1).into()
+        );
+    }
+    
+    #[test]
+    fn clamp_size_max() {
+        assert_eq!(
+            tuple(0, 0, max_int_value(), max_int_value()),
+            Rect::new(0, 0, max_int_value() + 1, max_int_value() + 1).into()
+        );
+    }
+    
+    #[test]
+    fn clamp_i32_max() {
+        assert_eq!(
+            tuple(0, 0, max_int_value(), max_int_value()),
+            Rect::new(
+                0, 0, i32::max_value() as u32, i32::max_value() as u32
+            ).into()
+        )
+    }
+    
+    #[test]
+    fn clamp_position_max() {
+        assert_eq!(
+            tuple(max_int_value() as i32, max_int_value() as i32, 1, 1),
+            Rect::new(
+                max_int_value() as i32 + 1, max_int_value() as i32 + 1, 1, 1
+            ).into()
+        );
+    }
+    
+    #[test]
+    fn rect_into() {
+        let test: (i32, i32, u32, u32) = (-11, 5, 50, 20);
+        assert_eq!(
+            test,
+            Rect::new(-11, 5, 50, 20).into()
+        );
+    }
+    
+    #[test]
+    fn rect_from() {
+        assert_eq!(
+            Rect::from((-11, 5, 50, 20)), 
+            Rect::new(-11, 5, 50, 20)
+        );
+    }
+    
+    #[test]
+    fn point_into() {
+        let test: (i32, i32) = (-11, 5);
+        assert_eq!(
+            test,
+            Point::new(-11, 5).into()
+        );
+    }
+    
+    #[test]
+    fn point_from() {
+        let test: (i32, i32) = (-11, 5);
+        assert_eq!(
+            test,
+            Point::new(-11, 5).into()
+        );
     }
  }
- */
