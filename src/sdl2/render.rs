@@ -870,12 +870,12 @@ impl<'a> Renderer<'a> {
 /// fn draw_to_texture(r: &mut Renderer) -> Texture {
 ///     r.render_target()
 ///         .expect("This platform doesn't support render targets")
-///         .create_and_set(PixelFormatEnum::RGBA8888, (512, 512));
+///         .create_and_set(PixelFormatEnum::RGBA8888, 512, 512);
 ///
 ///     // Start drawing
 ///     r.clear();
 ///     r.set_draw_color(Color::RGB(255, 0, 0));
-///     r.fill_rect(Rect::new(100, 100, 256, 256).unwrap());
+///     r.fill_rect(Rect::new(100, 100, 256, 256));
 ///
 ///     let texture: Option<Texture> = r.render_target().unwrap().reset().unwrap();
 ///     texture.unwrap()

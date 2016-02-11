@@ -89,6 +89,8 @@ extern "C" fn c_timer_callback(_interval: u32, param: *mut c_void) -> uint32_t {
 #[cfg(test)]
 fn test_timer_runs_multiple_times() {
     use std::sync::{Arc, Mutex};
+    use std::time::Duration;
+    
     let sdl_context = ::sdl::init().unwrap();
     let timer_subsystem = sdl_context.timer().unwrap();
 
@@ -106,7 +108,7 @@ fn test_timer_runs_multiple_times() {
         } else { 0 }
     }));
 
-    ::std::thread::sleep_ms(250);              // tick the timer at least 10 times w/ 200ms of "buffer"
+    ::std::thread::sleep(Duration::from_millis(250));              // tick the timer at least 10 times w/ 200ms of "buffer"
     let num = local_num.lock().unwrap(); // read the number back
     assert_eq!(*num, 9);                 // it should have incremented at least 10 times...
 }
@@ -114,6 +116,8 @@ fn test_timer_runs_multiple_times() {
 #[cfg(test)]
 fn test_timer_runs_at_least_once() {
     use std::sync::{Arc, Mutex};
+    use std::time::Duration;
+    
     let sdl_context = ::sdl::init().unwrap();
     let timer_subsystem = sdl_context.timer().unwrap();
 
@@ -125,14 +129,16 @@ fn test_timer_runs_at_least_once() {
         *flag = true; 0
     }));
 
-    ::std::thread::sleep_ms(50);
+    ::std::thread::sleep(Duration::from_millis(50));
     let flag = local_flag.lock().unwrap();
     assert_eq!(*flag, true);
 }
 
 #[cfg(test)]
 fn test_timer_can_be_recreated() {
+    use std::time::Duration;
     use std::sync::{Arc, Mutex};
+    
     let sdl_context = ::sdl::init().unwrap();
     let timer_subsystem = sdl_context.timer().unwrap();
 
@@ -147,12 +153,12 @@ fn test_timer_can_be_recreated() {
     }));
 
     // reclaim closure after timer runs
-    ::std::thread::sleep_ms(50);
+    ::std::thread::sleep(Duration::from_millis(50));
     let closure = timer_1.into_inner();
 
     // create a second timer and increment again
     let _timer_2 = timer_subsystem.add_timer(20, closure);
-    ::std::thread::sleep_ms(50);
+    ::std::thread::sleep(Duration::from_millis(50));
 
     // check that timer was incremented twice
     let num = local_num.lock().unwrap();

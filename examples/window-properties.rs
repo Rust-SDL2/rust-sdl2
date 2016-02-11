@@ -22,7 +22,8 @@ pub fn main() {
     'running: loop {
         for event in event_pump.poll_iter() {
             match event {
-                Event::Quit {..} | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
+                Event::Quit {..}
+                | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
                     break 'running
                 },
                 _ => {}
@@ -36,7 +37,7 @@ pub fn main() {
             let position = window.position();
             let size = window.size();
             let title = format!("Window - pos({}x{}), size({}x{}): {}", position.0, position.1, size.0, size.1, tick);
-            window.set_title(&title);
+            window.set_title(&title).unwrap();
 
             tick += 1;
         }

@@ -48,32 +48,35 @@ fn test2(ev: &sdl2::EventSubsystem, ep: &mut sdl2::EventPump) {
     }
 }
 
-struct SomeEventType_test3 {
+#[allow(unused)]
+struct SomeEventTypeTest3 {
     a: u32
 }
-struct SomeOtherEventType_test3 {
+
+#[allow(unused)]
+struct SomeOtherEventTypeTest3 {
     b: u32
 }
 
 fn test3(ev: &sdl2::EventSubsystem) {
-    ev.register_custom_event::<SomeEventType_test3>().unwrap();
-    ev.register_custom_event::<SomeOtherEventType_test3>().unwrap();
+    ev.register_custom_event::<SomeEventTypeTest3>().unwrap();
+    ev.register_custom_event::<SomeOtherEventTypeTest3>().unwrap();
 
-    assert!(ev.register_custom_event::<SomeEventType_test3>().is_err());
+    assert!(ev.register_custom_event::<SomeEventTypeTest3>().is_err());
 }
 
-struct SomeEventType_test4 {
+struct SomeEventTypeTest4 {
     a: u32
 }
 
 fn test4(ev: &sdl2::EventSubsystem, ep: &mut sdl2::EventPump) {
-    ev.register_custom_event::<SomeEventType_test4>().unwrap();
-    let event = SomeEventType_test4 { a: 42 };
-    ev.push_custom_event(event);
+    ev.register_custom_event::<SomeEventTypeTest4>().unwrap();
+    let event = SomeEventTypeTest4 { a: 42 };
+    ev.push_custom_event(event).unwrap();
 
     let received = ep.poll_event().unwrap();
     if received.is_user_event() {
-        let e2 = received.as_user_event_type::<SomeEventType_test4>().unwrap();
+        let e2 = received.as_user_event_type::<SomeEventTypeTest4>().unwrap();
         assert_eq!(e2.a, 42);
     }
 }

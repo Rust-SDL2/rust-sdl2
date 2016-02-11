@@ -159,7 +159,7 @@ impl ::EventSubsystem {
     ///
     /// Returns an error, if no more user events can be created.
     pub unsafe fn register_events(&self, nr: u32) -> Result<Vec<u32>, String> {
-        let result = unsafe { ll::SDL_RegisterEvents(nr as ::libc::c_int) };
+        let result = ll::SDL_RegisterEvents(nr as ::libc::c_int);
         const ERR_NR:u32 = ::std::u32::MAX - 1;
 
         match result {

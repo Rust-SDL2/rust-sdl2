@@ -3,6 +3,7 @@
 //! # Example
 //! ```no_run
 //! use sdl2::audio::{AudioCallback, AudioSpecDesired};
+//! use std::time::Duration;
 //!
 //! struct SquareWave {
 //!     phase_inc: f32,
@@ -47,7 +48,7 @@
 //! device.resume();
 //!
 //! // Play for 2 seconds
-//! std::thread::sleep_ms(2000);
+//! std::thread::sleep(Duration::from_millis(2000));
 //! ```
 use std::ffi::{CStr, CString};
 use num::FromPrimitive;
