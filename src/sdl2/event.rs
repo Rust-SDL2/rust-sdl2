@@ -10,6 +10,8 @@ use std::ptr;
 use std::borrow::ToOwned;
 use std::iter::FromIterator;
 use std::marker::PhantomData;
+use std::collections::HashMap;
+use std::sync::Mutex;
 
 use controller;
 use controller::{Axis, Button};
@@ -25,6 +27,24 @@ use keyboard::Scancode;
 use get_error;
 
 use sys::event as ll;
+
+struct CustomEventTypeMaps {
+    sdl_id_to_type_id: HashMap<u32, ::std::any::TypeId>,
+    type_id_to_sdl_id: HashMap<::std::any::TypeId, u32>
+}
+
+impl CustomEventTypeMaps {
+    fn new() -> Self {
+        CustomEventTypeMaps {
+            sdl_id_to_type_id: HashMap::new(),
+            type_id_to_sdl_id: HashMap::new()
+        }
+    }
+}
+
+lazy_static! {
+    static ref CUSTOM_EVENT_TYPES : Mutex<CustomEventTypeMaps> = { Mutex::new(CustomEventTypeMaps::new()) };
+}
 
 impl ::EventSubsystem {
     /// Removes all events in the event queue that match the specified event type.
@@ -100,6 +120,133 @@ impl ::EventSubsystem {
                 Err("Cannot push unsupported event type to the queue".to_owned())
             }
         }
+    }
+
+
+    /// Register a custom SDL event.
+    ///
+    /// When pushing a user event, you must make sure that the ``type_`` field is set to a
+    /// registered SDL event number.
+    ///
+    /// The ``code``, ``data1``,  and ``data2`` fields can be used to store user defined data.
+    ///
+    /// See the [SDL documentation](https://wiki.libsdl.org/SDL_UserEvent) for more information.
+    ///
+    /// # Example
+    /// ```
+    /// let sdl = sdl2::init().unwrap();
+    /// let ev = sdl.event().unwrap();
+    ///
+    /// let custom_event_type_id = unsafe { ev.register_event().unwrap() };
+    /// let event = sdl2::event::Event::User {
+    ///    timestamp: 0,
+    ///    window_id: 0,
+    ///    type_: custom_event_type_id,
+    ///    code: 456,
+    ///    data1: 0x1234 as *mut ::sdl2::libc::c_void,
+    ///    data2: 0x5678 as *mut ::sdl2::libc::c_void,
+    /// };
+    ///
+    /// ev.push_event(event);
+    ///
+    /// ```
+    #[inline(always)]
+    pub unsafe fn register_event(&self) -> SdlResult<u32> {
+        Ok(*try!(self.register_events(1)).first().unwrap())
+    }
+
+    /// Registers custom SDL events.
+    ///
+    /// Returns an error, if no more user events can be created.
+    pub unsafe fn register_events(&self, nr: u32) -> SdlResult<Vec<u32>> {
+        let result = unsafe { ll::SDL_RegisterEvents(nr as ::libc::c_int) };
+        const ERR_NR:u32 = ::std::u32::MAX - 1;
+
+        match result {
+            ERR_NR => { Err(ErrorMessage("No more user events can be created; SDL_LASTEVENT reached".to_owned())) },
+            _ => {
+                let event_ids = (result..(result+nr)).collect();
+                Ok(event_ids)
+            }
+        }
+    }
+
+    /// Register a custom event
+    ///
+    /// It returns an error when the same type is registered twice.
+    ///
+    /// # Example
+    /// See [push_custom_event](#method.push_custom_event)
+    #[inline(always)]
+    pub fn register_custom_event<T: ::std::any::Any>(&self) -> SdlResult<()> {
+        use ::std::any::TypeId;
+        let event_id = *try!(unsafe { self.register_events(1) }).first().unwrap();
+        let mut cet = CUSTOM_EVENT_TYPES.lock().unwrap();
+        let type_id = TypeId::of::<Box<T>>();
+
+        if cet.type_id_to_sdl_id.contains_key(&type_id) {
+            return Err(ErrorMessage("Can not register the same event type twice!".into()));
+        }
+
+        cet.sdl_id_to_type_id.insert(event_id, type_id);
+        cet.type_id_to_sdl_id.insert(type_id, event_id);
+
+        Ok(())
+    }
+
+    /// Push a custom event
+    ///
+    /// If the event type ``T`` was not registered using
+    /// [register_custom_event](#method.register_custom_event),
+    /// this method will panic.
+    ///
+    /// # Example: pushing and receiving a custom event
+    /// ```
+    /// struct SomeCustomEvent {
+    ///     a: i32
+    /// }
+    ///
+    /// let sdl = sdl2::init().unwrap();
+    /// let ev = sdl.event().unwrap();
+    /// let mut ep = sdl.event_pump().unwrap();
+    ///
+    /// ev.register_custom_event::<SomeCustomEvent>().unwrap();
+    ///
+    /// let event = SomeCustomEvent { a: 42 };
+    ///
+    /// ev.push_custom_event(event);
+    ///
+    /// let received = ep.poll_event().unwrap(); // or within a for event in ep.poll_iter()
+    /// if received.is_user_event() {
+    ///     let e2 = received.as_user_event_type::<SomeCustomEvent>().unwrap();
+    ///     assert_eq!(e2.a, 42);
+    /// }
+    /// ```
+    pub fn push_custom_event<T: ::std::any::Any>(&self, event:T) -> SdlResult<()> {
+        use ::std::any::TypeId;
+        let cet = CUSTOM_EVENT_TYPES.lock().unwrap();
+        let type_id = TypeId::of::<Box<T>>();
+
+        let user_event_id = *match cet.type_id_to_sdl_id.get(&type_id) {
+            Some(id) => id,
+            None => { return Err(ErrorMessage("Type is not registered as a custom event type!".into())); }
+        };
+
+        let event_box = Box::new(event);
+        let type_id_box = Box::new(type_id);
+
+        let event = Event::User {
+           timestamp: 0,
+           window_id: 0,
+           type_: user_event_id,
+           code: 0,
+           data1: Box::into_raw(event_box) as *mut ::libc::c_void,
+           data2: ::std::ptr::null_mut()
+        };
+
+        self.push_event(event);
+
+        Ok(())
     }
 }
 
@@ -496,7 +643,9 @@ pub enum Event {
         timestamp: u32,
         window_id: u32,
         type_: u32,
-        code: i32
+        code: i32,
+        data1: *mut c_void,
+        data2: *mut c_void
     },
 
     Unknown {
@@ -556,15 +705,14 @@ impl Event {
     fn to_ll(self) -> Option<ll::SDL_Event> {
         let mut ret = unsafe { mem::uninitialized() };
         match self {
-            // just ignore timestamp
-            Event::User { window_id, type_, code, .. } => {
+            Event::User { window_id, type_, code, data1, data2, timestamp} => {
                 let event = ll::SDL_UserEvent {
                     type_: type_ as uint32_t,
-                    timestamp: 0,
+                    timestamp: timestamp,
                     windowID: window_id,
                     code: code as i32,
-                    data1: ptr::null_mut(),
-                    data2: ptr::null_mut(),
+                    data1: data1,
+                    data2: data2
                 };
                 unsafe {
                     ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_UserEvent, 1);
@@ -967,11 +1115,45 @@ impl Event {
                         timestamp: event.timestamp,
                         window_id: event.windowID,
                         type_: raw_type,
-                        code: event.code
+                        code: event.code,
+                        data1: event.data1,
+                        data2: event.data2
                     }
                 }
             }
         }}                      // close unsafe & match
+    }
+
+    pub fn is_user_event(&self) -> bool {
+        match self {
+            &Event::User { .. } => true,
+            _ => false
+        }
+    }
+
+    pub fn as_user_event_type<T: ::std::any::Any>(&self) -> Option<T> {
+        use ::std::any::TypeId;
+        let type_id = TypeId::of::<Box<T>>();
+
+        let (event_id, event_box_ptr) = match self {
+            &Event::User { type_, data1, .. } => { (type_, data1) },
+            _ => { return None }
+        };
+
+        let mut cet = CUSTOM_EVENT_TYPES.lock().unwrap();
+
+        let event_type_id = match cet.sdl_id_to_type_id.get(&event_id) {
+            Some(id) => id,
+            None => { panic!("internal error; could not find typeid") }
+        };
+
+        if &type_id != event_type_id {
+            return None;
+        }
+
+        let event_box : Box<T> = unsafe { Box::from_raw(event_box_ptr as *mut T) };
+
+        Some(*event_box)
     }
 }
 
@@ -1125,3 +1307,4 @@ impl<'a> Iterator for EventWaitTimeoutIterator<'a> {
     type Item = Event;
     fn next(&mut self) -> Option<Event> { unsafe { wait_event_timeout(self.timeout) } }
 }
+
