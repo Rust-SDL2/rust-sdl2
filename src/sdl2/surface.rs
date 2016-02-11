@@ -215,7 +215,7 @@ impl SurfaceRef {
     }
 
     pub fn rect(&self) -> Rect {
-        Rect::new(0, 0, self.width(), self.height()).unwrap()
+        Rect::new(0, 0, self.width(), self.height())
     }
 
     pub fn pixel_format(&self) -> pixels::PixelFormat {
@@ -405,8 +405,8 @@ impl SurfaceRef {
     }
 
     pub fn fill_rects(&mut self, rects: &[Option<Rect>], color: pixels::Color) -> Result<(), String> {
-        for &rect in rects.iter() {
-            let result = self.fill_rect(rect, color);
+        for rect in rects.iter() {
+            let result = self.fill_rect(rect.clone(), color);
             match result {
                 Err(e) => return Err(e),
                 _ => ()
@@ -488,7 +488,7 @@ impl SurfaceRef {
         if raw.w == 0 || raw.h == 0 {
             None
         } else {
-            Some(Rect::from_ll(raw).unwrap())
+            Some(Rect::from_ll(raw))
         }
     }
 

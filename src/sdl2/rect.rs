@@ -2,8 +2,316 @@ use sys::rect as ll;
 use std::mem;
 use std::ptr;
 use std::ops::{BitAnd, BitOr};
-use common::{validate_int};
-use get_error;
+
+/// The maximal integer value that can be used for rectangles.
+///
+/// This value is smaller than strictly needed, but is useful in ensuring that
+/// rect sizes will never have to be truncated when clamping.
+pub fn max_int_value() -> u32 {
+    i32::max_value() as u32 / 2
+}
+
+fn clamp_size(val: u32) -> u32 {
+    if val == 0 {
+        1
+    } else if val > max_int_value() {
+        max_int_value()
+    } else {
+        val
+    }
+}
+
+fn clamp_position(val: i32) -> i32 {
+    if val > max_int_value() as i32 {
+        max_int_value() as i32
+    } else {
+        val
+    }
+}
+
+/// A rectangle.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Rect {
+    raw: ll::SDL_Rect,
+}
+
+impl Rect {
+    /// Creates a new rectangle from the given values.
+    ///
+    /// The width and height are clamped to ensure that the right and bottom
+    /// sides of the rectangle does not exceed i32::max_value().
+    /// (The value 2147483647, the maximal positive size of an i32)
+    ///
+    /// This means that the rect size will behave oddly if you move it very far
+    /// to the right or downwards on the screen.
+    pub fn new(x: i32, y: i32, width: u32, height: u32) -> Rect {
+        let raw = ll::SDL_Rect {
+            x: clamp_position(x),
+            y: clamp_position(y),
+            w: clamp_size(width) as i32,
+            h: clamp_size(height) as i32,
+        };
+        Rect { raw: raw }
+    }
+    
+    /// The horizontal position of this rectangle.
+    pub fn x(&self) -> i32 {
+        self.raw.x
+    }
+    
+    /// The vertical position of this rectangle.
+    pub fn y(&self) -> i32 {
+        self.raw.y
+    }
+    
+    /// The width of this rectangle.
+    pub fn width(&self) -> u32 {
+        self.raw.w as u32
+    }
+    
+    /// The height of this rectangle.
+    pub fn height(&self) -> u32 {
+        self.raw.h as u32
+    }
+    
+    /// Returns the x-position of the left side of this rectangle.
+    pub fn left(&self) -> i32 {
+        self.raw.x
+    }
+    
+    /// Returns the x-position of the right side of this rectangle.
+    pub fn right(&self) -> i32 {
+        self.raw.x + self.raw.w
+    }
+    
+    /// Returns the y-position of the top side of this rectangle.
+    pub fn top(&self) -> i32 {
+        self.raw.y
+    }
+    
+    /// Returns the y-position of the bottom side of this rectangle.
+    pub fn bottom(&self) -> i32 {
+        self.raw.y + self.raw.h
+    }
+    
+    /// Move this rect and clamp the positions to prevent over/underflow.
+    /// This also clamps the size to prevent overflow.
+    pub fn offset(&mut self, x: i32, y: i32) {
+        match self.raw.x.checked_add(x) {
+            Some(val) => self.raw.x = clamp_position(val),
+            None => {
+                if x >= 0 {
+                    self.raw.x = max_int_value() as i32;
+                } else {
+                    self.raw.x = i32::min_value();
+                }
+            },
+        }
+        match self.raw.y.checked_add(y) {
+            Some(val) => self.raw.y = clamp_position(val),
+            None => {
+                if y >= 0 {
+                    self.raw.y = max_int_value() as i32;
+                } else {
+                    self.raw.y = i32::min_value();
+                }
+            },
+        }
+    }
+    
+    /// Moves this rect to the given position after clamping the values.
+    pub fn reposition(&mut self, x: i32, y: i32) {
+        self.raw.x = clamp_position(x);
+        self.raw.y = clamp_position(y);
+    }
+    
+    /// Resizes this rect to the given size after clamping the values.
+    pub fn resize(&mut self, width: u32, height: u32) {
+        self.raw.w = clamp_size(width) as i32;
+        self.raw.h = clamp_size(height) as i32;
+    }
+    
+    /// Returns the underlying C Rect.
+    pub fn raw(&self) -> *const ll::SDL_Rect {
+        &self.raw
+    }
+    
+    pub fn raw_from_option(rect: Option<&Rect>) -> *const ll::SDL_Rect {
+        match rect {
+            Some(ref r) => r.raw(),
+            None => ptr::null()
+        }
+    }
+
+    pub fn raw_mut_from_option(v: Option<&mut Rect>) -> *mut ll::SDL_Rect {
+        match v {
+            Some(ref r) => r.raw() as *mut _,
+            None => ptr::null_mut()
+        }
+    }
+
+    pub fn raw_slice(slice: &[Rect]) -> *const ll::SDL_Rect {
+        unsafe { 
+            mem::transmute(slice.as_ptr())
+        }
+    }
+
+    pub fn from_ll(raw: ll::SDL_Rect) -> Rect {
+        Rect::new(raw.x, raw.y, raw.w as u32, raw.h as u32)
+    }
+    
+    /// Calculate a minimal rectangle enclosing a set of points.
+    /// If a clipping rectangle is given, only points that are within it will be
+    /// considered.
+    pub fn from_enclose_points(points: &[Point], clipping_rect: Option<Rect>) 
+            -> Option<Rect> {
+        
+        if points.len() == 0 {
+            return None;
+        }
+        
+        let mut out = unsafe {
+            mem::uninitialized()
+        };
+
+        let clip_ptr = match clipping_rect.as_ref() {
+            Some(r) => r.raw(),
+            None => ptr::null()
+        };
+
+        let result = unsafe {
+            ll::SDL_EnclosePoints(
+                Point::raw_slice(points),
+                points.len() as i32,
+                clip_ptr,
+                &mut out
+            ) != 0
+        };
+
+        if result {
+            // Return an error if the dimensions are too large.
+            Some(Rect::from_ll(out))
+        } else {
+            None
+        }
+    }
+
+    /// Determine whether two rectangles intersect.
+    pub fn has_intersection(&self, other: &Rect) -> bool {
+        unsafe {
+            ll::SDL_HasIntersection(self.raw(), other.raw()) != 0
+        }
+    }
+
+    /// Calculate the intersection of two rectangles. 
+    /// The bitwise AND operator `&` can also be used.
+    pub fn intersection(&self, other: &Rect) -> Option<Rect> {
+        let mut out = unsafe { mem::uninitialized() };
+
+        let success = unsafe {
+            ll::SDL_IntersectRect(self.raw(), other.raw(), &mut out) != 0
+        };
+
+        if success {
+            Some(Rect::from_ll(out))
+        } else {
+            None
+        }
+    }
+
+    /// Calculate the union of two rectangles. 
+    /// The bitwise OR operator `|` can also be used.
+    pub fn union(&self, other: &Rect) -> Rect {
+        let mut out = unsafe {
+            mem::uninitialized()
+        };
+
+        unsafe {
+            // If `self` and `other` are both empty, `out` remains uninitialized.
+            // Because empty rectangles aren't allowed in Rect, we don't need to worry about this.
+            ll::SDL_UnionRect(self.raw(), other.raw(), &mut out)
+        };
+
+        Rect::from_ll(out)
+    }
+
+    /// Calculates the intersection of a rectangle and a line segment and 
+    /// returns the points of their intersection.
+    pub fn intersect_line(&self, start: Point, end: Point)
+            -> Option<(Point, Point)> {
+        
+        let (mut start_x, mut start_y) = (start.x(), start.y());
+        let (mut end_x, mut end_y) = (end.x(), end.y());
+
+        let intersected = unsafe {
+            ll::SDL_IntersectRectAndLine(
+                self.raw(), 
+                &mut start_x, &mut start_y,
+                &mut end_x, &mut end_y
+            ) != 0
+        };
+
+        if intersected {
+            Some((Point::new(start_x, start_y), Point::new(end_x, end_y)))
+        } else {
+            None
+        }
+    }
+}
+
+impl Into<(i32, i32, u32, u32)> for Rect {
+    fn into(self) -> (i32, i32, u32, u32) {
+        (self.raw.x, self.raw.y, self.raw.w as u32, self.raw.h as u32)
+    }
+}
+
+impl From<(i32, i32, u32, u32)> for Rect {
+    fn from((x, y, width, height): (i32, i32, u32, u32)) -> Rect {
+        Rect::new(x, y, width, height)
+    }
+}
+
+// Intersection
+impl BitAnd<Rect> for Rect {
+    type Output = Option<Rect>;
+    fn bitand(self, rhs: Rect) -> Option<Rect> { self.intersection(&rhs) }
+}
+
+impl<'a> BitAnd<&'a Rect> for Rect {
+    type Output = Option<Rect>;
+    fn bitand(self, rhs: &Rect) -> Option<Rect> { self.intersection(rhs) }
+}
+
+impl<'a> BitAnd<Rect> for &'a Rect {
+    type Output = Option<Rect>;
+    fn bitand(self, rhs: Rect) -> Option<Rect> { self.intersection(&rhs) }
+}
+
+impl<'a> BitAnd<&'a Rect> for &'a Rect {
+    type Output = Option<Rect>;
+    fn bitand(self, rhs: &Rect) -> Option<Rect> { self.intersection(rhs) }
+}
+
+// Union
+impl BitOr<Rect> for Rect {
+    type Output = Rect;
+    fn bitor(self, rhs: Rect) -> Rect { self.union(&rhs) }
+}
+
+impl<'a> BitOr<&'a Rect> for Rect {
+    type Output = Rect;
+    fn bitor(self, rhs: &Rect) -> Rect { self.union(rhs) }
+}
+
+impl<'a> BitOr<Rect> for &'a Rect {
+    type Output = Rect;
+    fn bitor(self, rhs: Rect) -> Rect { self.union(&rhs) }
+}
+
+impl<'a> BitOr<&'a Rect> for &'a Rect {
+    type Output = Rect;
+    fn bitor(self, rhs: &Rect) -> Rect { self.union(rhs) }
+}
 
 /// Immutable point type, consisting of x and y.
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Hash)]
@@ -19,319 +327,45 @@ impl From<(i32, i32)> for Point {
 
 impl Into<(i32, i32)> for Point {
     fn into(self) -> (i32, i32) {
-        self.xy()
+        (self.x(), self.y())
     }
 }
 
 impl Point {
-    #[inline]
-    pub fn raw(&self) -> *const ll::SDL_Point { &self.raw }
-
-    #[inline]
-    pub fn raw_slice(slice: &[Point]) -> *const ll::SDL_Point {
-        unsafe { mem::transmute(slice.as_ptr()) }
-    }
-
-    #[inline]
-    pub fn from_ll(raw: ll::SDL_Point) -> Point {
-        Point::new(raw.x, raw.y)
-    }
-
-    #[inline]
     pub fn new(x: i32, y: i32) -> Point {
         Point {
             raw: ll::SDL_Point { x: x, y: y }
         }
     }
+    
+    pub fn from_ll(raw: ll::SDL_Point) -> Point {
+        Point::new(raw.x, raw.y)
+    }
+    
+    pub fn raw_slice(slice: &[Point]) -> *const ll::SDL_Point {
+        unsafe {
+            mem::transmute(slice.as_ptr())
+        }
+    }
+    
+    pub fn raw(&self) -> *const ll::SDL_Point { 
+        &self.raw
+    }
 
-    #[inline]
     pub fn offset(&self, x: i32, y: i32) -> Point {
         Point::new(self.x() + x, self.y() + y)
     }
 
-    #[inline]
-    pub fn xy(&self) -> (i32, i32) {
-        (self.raw.x, self.raw.y)
+    pub fn x(&self) -> i32 {
+        self.raw.x
     }
-
-    #[inline] pub fn x(&self) -> i32 { self.raw.x }
-    #[inline] pub fn y(&self) -> i32 { self.raw.y }
-}
-
-/// Immutable rectangle type, consisting of x, y, width and height.
-///
-/// Rectangle invariants:
-///
-/// * `width` and `height` are positive and non-zero.
-/// * `width` and `height` are less than `1<<31` (2,147,483,648).
-/// * `x + width` and `y + height` do not overflow.
-///
-/// These invariants exist in the wrapper because many SDL functions that accept rectangles don't
-/// behave predictably if the above conditions aren't met.
-#[derive(Copy, Clone, Eq, PartialEq, Debug, Hash)]
-pub struct Rect {
-    raw: ll::SDL_Rect
-}
-
-// We can't implement From, so it's just Into for Rect.
-
-impl Into<(i32, i32, u32, u32)> for Rect {
-    fn into(self) -> (i32, i32, u32, u32) {
-        self.xywh()
+    
+    pub fn y(&self) -> i32 {
+        self.raw.y
     }
 }
 
-/// An error found when creating a rectangle enclosing a set of points.
-#[derive(Debug)]
-pub enum EnclosePointsError {
-    NoPointsGiven,
-    NoPointsContained,
-    CreateError(CreateRectError),
-    SdlError(String),
-}
-
-impl From<CreateRectError> for EnclosePointsError {
-    fn from(err: CreateRectError) -> EnclosePointsError {
-        EnclosePointsError::CreateError(err)
-    }
-}
-
-#[derive(Debug)]
-pub enum CreateRectError {
-    WidthIsZero,
-    HeightIsZero,
-    WidthOverflows(u32),
-    HeightOverflows(u32),
-    RightOverflows { x: i32, width: u32 },
-    BottomOverflows { y: i32, height: u32 },
-}
-
-impl Rect {
-    #[inline]
-    pub fn raw(&self) -> *const ll::SDL_Rect { &self.raw }
-
-    #[inline]
-    pub fn raw_from_option(v: Option<&Rect>) -> *const ll::SDL_Rect {
-        match v {
-            Some(ref r) => r.raw(),
-            None => ptr::null()
-        }
-    }
-
-    #[inline]
-    pub fn raw_mut_from_option(v: Option<&mut Rect>) -> *mut ll::SDL_Rect {
-        match v {
-            Some(ref r) => r.raw() as *mut _,
-            None => ptr::null_mut()
-        }
-    }
-
-    #[inline]
-    pub fn raw_slice(slice: &[Rect]) -> *const ll::SDL_Rect {
-        unsafe { mem::transmute(slice.as_ptr()) }
-    }
-
-    #[inline]
-    pub fn from_ll(raw: ll::SDL_Rect) -> Result<Rect, CreateRectError> {
-        Rect::new(raw.x, raw.y, raw.w as u32, raw.h as u32)
-    }
-
-    /// Creates a new rectangle.
-    ///
-    /// If `width` or `height` is zero, `Ok(None)` is returned.
-    /// If the arguments violate any of the other rectangle invariants, an error is returned.
-    pub fn new(x: i32, y: i32, width: u32, height: u32)
-            -> Result<Rect, CreateRectError> {
-        use self::CreateRectError::*;
-        let w = match validate_int(width, "width") {
-            Ok(w) => w,
-            Err(_) => return Err(WidthOverflows(width)),
-        };
-        let h = match validate_int(height, "height") {
-            Ok(h) => h,
-            Err(_) => return Err(HeightOverflows(height)),
-        };
-
-        if x.checked_add(w).is_none() {
-            return Err(RightOverflows { x: x, width: width })
-        } else if y.checked_add(h).is_none() {
-            return Err(BottomOverflows { y: y, height: height })
-        } else {
-            match (w, h) {
-                (0, _) => {
-                    Err(WidthIsZero)
-                },
-                (_, 0) => {
-                    Err(HeightIsZero)
-                },
-                _ => {
-                    Ok( Rect {
-                        raw: ll::SDL_Rect {
-                            x: x,
-                            y: y,
-                            w: w,
-                            h: h
-                        }
-                    })
-                }
-            }
-        }
-    }
-
-    /// Offsets the rectangle's x and y coordinates.
-    ///
-    /// If the new rectangle violates any invariants, an error is returned.
-    #[inline]
-    pub fn offset(&self, x: i32, y: i32) -> Result<Rect, CreateRectError> {
-        Rect::new(self.x() + x, self.y() + y, self.width(), self.height())
-    }
-
-    #[inline]
-    pub fn xywh(&self) -> (i32, i32, u32, u32) {
-        (self.raw.x, self.raw.y, self.raw.w as u32, self.raw.h as u32)
-    }
-
-    #[inline] pub fn x(&self) -> i32 { self.raw.x }
-    #[inline] pub fn y(&self) -> i32 { self.raw.y }
-    #[inline] pub fn width(&self) -> u32 { self.raw.w as u32 }
-    #[inline] pub fn height(&self) -> u32 { self.raw.h as u32 }
-
-    /// Calculate a minimal rectangle enclosing a set of points.
-    ///
-    /// Returns `Ok(None)` if there are no points, or no points within the clipping rectangle.
-    /// Returns an error if the resulting rectangle's dimensions are too large for the points.
-    pub fn from_enclose_points(points: &[Point], clip: Option<Rect>) 
-            -> Result<Rect, EnclosePointsError> {
-        use self::EnclosePointsError::*;
-        if points.len() == 0 {
-            return Err(NoPointsGiven);
-        }
-        let mut out = unsafe { mem::uninitialized() };
-
-        let clip_ptr = match clip.as_ref() {
-            Some(r) => r.raw(),
-            None => ::std::ptr::null()
-        };
-
-        let result = unsafe {
-            ll::SDL_EnclosePoints(
-                Point::raw_slice(points),
-                points.len() as i32,
-                clip_ptr,
-                &mut out
-            ) != 0
-        };
-
-        if result {
-            // Return an error if the dimensions are too large.
-            Ok(try!(Rect::from_ll(out)))
-        } else {
-            Err(SdlError(get_error()))
-        }
-    }
-
-    /// Determine whether two rectangles intersect.
-    pub fn has_intersection(&self, other: &Rect) -> bool {
-        unsafe {
-            ll::SDL_HasIntersection(self.raw(), other.raw()) != 0
-        }
-    }
-
-    /// Calculate the intersection of two rectangles. 
-    /// The bitwise AND operator `&` can also be used.
-    pub fn intersect(&self, other: &Rect) -> Option<Rect> {
-        let mut out = unsafe { mem::uninitialized() };
-
-        let success = unsafe {
-            ll::SDL_IntersectRect(self.raw(), other.raw(), &mut out) != 0
-        };
-
-        if success {
-            Some(Rect::from_ll(out).unwrap())
-        } else {
-            None
-        }
-    }
-
-    /// Calculate the union of two rectangles. 
-    /// The bitwise OR operator `|` can also be used.
-    pub fn union(&self, other: &Rect) -> Rect {
-        let mut out = unsafe { mem::uninitialized() };
-
-        unsafe {
-            // If `self` and `other` are both empty, `out` remains uninitialized.
-            // Because empty rectangles aren't allowed in Rect, we don't need to worry about this.
-            ll::SDL_UnionRect(self.raw(), other.raw(), &mut out)
-        };
-
-        Rect::from_ll(out).unwrap()
-    }
-
-    /// Calculate the intersection of a rectangle and line segment. return points of intersection.
-    pub fn intersect_line(&self, start: Point, end: Point) -> Option<(Point, Point)> {
-        let (mut start_x, mut start_y) = start.xy();
-        let (mut end_x, mut end_y) = end.xy();
-
-        let intersected = unsafe {
-            ll::SDL_IntersectRectAndLine(self.raw(), &mut start_x, &mut start_y, &mut end_x, &mut end_y) != 0
-        };
-
-        if intersected {
-            Some((Point::new(start_x, start_y), Point::new(end_x, end_y)))
-        } else {
-            None
-        }
-    }
-}
-
-/// Intersect
-impl BitAnd<Rect> for Rect {
-    type Output = Option<Rect>;
-    fn bitand(self, rhs: Rect) -> Option<Rect> { self.intersect(&rhs) }
-}
-
-/// Intersect
-impl<'a> BitAnd<&'a Rect> for Rect {
-    type Output = Option<Rect>;
-    fn bitand(self, rhs: &Rect) -> Option<Rect> { self.intersect(rhs) }
-}
-
-/// Intersect
-impl<'a> BitAnd<Rect> for &'a Rect {
-    type Output = Option<Rect>;
-    fn bitand(self, rhs: Rect) -> Option<Rect> { self.intersect(&rhs) }
-}
-
-/// Intersect
-impl<'a> BitAnd<&'a Rect> for &'a Rect {
-    type Output = Option<Rect>;
-    fn bitand(self, rhs: &Rect) -> Option<Rect> { self.intersect(rhs) }
-}
-
-/// Union
-impl BitOr<Rect> for Rect {
-    type Output = Rect;
-    fn bitor(self, rhs: Rect) -> Rect { self.union(&rhs) }
-}
-
-/// Union
-impl<'a> BitOr<&'a Rect> for Rect {
-    type Output = Rect;
-    fn bitor(self, rhs: &Rect) -> Rect { self.union(rhs) }
-}
-
-/// Union
-impl<'a> BitOr<Rect> for &'a Rect {
-    type Output = Rect;
-    fn bitor(self, rhs: Rect) -> Rect { self.union(&rhs) }
-}
-
-/// Union
-impl<'a> BitOr<&'a Rect> for &'a Rect {
-    type Output = Rect;
-    fn bitor(self, rhs: &Rect) -> Rect { self.union(rhs) }
-}
-
+/* // Deprecated at the moment. Sorry.
 #[cfg(test)]
 mod test {
     use super::{Rect, Point};
@@ -436,3 +470,4 @@ mod test {
         assert_eq!(p, Point::new(-11, 5));
     }
  }
+ */

@@ -499,8 +499,7 @@ impl VideoSubsystem {
         let result = unsafe { ll::SDL_GetDisplayBounds(display_index as c_int, &mut out) == 0 };
 
         if result {
-            // Unwrap twice because there is always a non-empty rect.
-            Ok(Rect::from_ll(out).unwrap())
+            Ok(Rect::from_ll(out))
         } else {
             Err(get_error())
         }

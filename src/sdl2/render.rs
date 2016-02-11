@@ -554,15 +554,19 @@ impl<'a> Renderer<'a> {
             Some(ref rect) => rect.raw(),
             None => ptr::null()
         };
-        let ret = unsafe { ll::SDL_RenderSetViewport(self.raw, ptr) };
+        let ret = unsafe { 
+            ll::SDL_RenderSetViewport(self.raw, ptr)
+        };
         if ret != 0 { panic!("Could not set viewport: {}", get_error()) }
     }
 
     /// Gets the drawing area for the current target.
     pub fn viewport(&self) -> Rect {
         let mut rect = unsafe { mem::uninitialized() };
-        unsafe { ll::SDL_RenderGetViewport(self.raw, &mut rect) };
-        Rect::from_ll(rect).unwrap()
+        unsafe { 
+            ll::SDL_RenderGetViewport(self.raw, &mut rect)
+        };
+        Rect::from_ll(rect)
     }
 
     /// Sets the clip rectangle for rendering on the specified target.
@@ -592,7 +596,7 @@ impl<'a> Renderer<'a> {
         if raw.w == 0 || raw.h == 0 {
             None
         } else {
-            Some(Rect::from_ll(raw).unwrap())
+            Some(Rect::from_ll(raw))
         }
     }
 
@@ -1218,7 +1222,7 @@ impl Texture {
         };
 
         match rect {
-            Some(r) => {
+            Some(ref r) => {
                 if r.x() % 2 != 0 {
                     return Err(XMustBeMultipleOfTwoForFormat(r.x()));
                 } else if r.y() % 2 != 0 {
@@ -1235,11 +1239,10 @@ impl Texture {
         // If the destination rectangle lies outside the texture boundaries,
         // SDL_UpdateYUVTexture will write outside allocated texture memory.
         let tex_info = self.query();
-        if let Some(r) = rect {
-            let tex_rect = Rect::new(0, 0, tex_info.width, tex_info.height)
-                .unwrap();
-            let inside = match r.intersect(&tex_rect) {
-                Some(intersection) => intersection == r,
+        if let Some(ref r) = rect {
+            let tex_rect = Rect::new(0, 0, tex_info.width, tex_info.height);
+            let inside = match r.intersection(&tex_rect) {
+                Some(intersection) => intersection == *r,
                 None => false,
             };
             // The destination rectangle cannot lie outside the texture boundaries
@@ -1251,7 +1254,7 @@ impl Texture {
         // We need the height in order to check the array slice lengths.
         // Checking the lengths can prevent buffer overruns in SDL_UpdateYUVTexture.
         let height = match rect {
-            Some(r) => r.height(),
+            Some(ref r) => r.height(),
             None => tex_info.height,
         } as usize;
 
