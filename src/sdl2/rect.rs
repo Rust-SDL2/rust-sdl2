@@ -44,7 +44,7 @@ fn clamp_position(val: i32) -> i32 {
 }
 
 /// A rectangle.
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Rect {
     raw: ll::SDL_Rect,
 }
@@ -185,19 +185,9 @@ impl Rect {
     pub fn raw(&self) -> *const ll::SDL_Rect {
         &self.raw
     }
-    
-    pub fn raw_from_option(rect: Option<&Rect>) -> *const ll::SDL_Rect {
-        match rect {
-            Some(ref r) => r.raw(),
-            None => ptr::null()
-        }
-    }
 
-    pub fn raw_mut_from_option(v: Option<&mut Rect>) -> *mut ll::SDL_Rect {
-        match v {
-            Some(ref r) => r.raw() as *mut _,
-            None => ptr::null_mut()
-        }
+    pub fn raw_mut(&mut self) -> *mut ll::SDL_Rect {
+        self.raw() as *mut _
     }
 
     pub fn raw_slice(slice: &[Rect]) -> *const ll::SDL_Rect {
@@ -247,7 +237,7 @@ impl Rect {
     }
 
     /// Determine whether two rectangles intersect.
-    pub fn has_intersection(&self, other: &Rect) -> bool {
+    pub fn has_intersection(&self, other: Rect) -> bool {
         unsafe {
             ll::SDL_HasIntersection(self.raw(), other.raw()) != 0
         }
@@ -255,7 +245,7 @@ impl Rect {
 
     /// Calculate the intersection of two rectangles. 
     /// The bitwise AND operator `&` can also be used.
-    pub fn intersection(&self, other: &Rect) -> Option<Rect> {
+    pub fn intersection(&self, other: Rect) -> Option<Rect> {
         let mut out = unsafe { mem::uninitialized() };
 
         let success = unsafe {
@@ -271,7 +261,7 @@ impl Rect {
 
     /// Calculate the union of two rectangles. 
     /// The bitwise OR operator `|` can also be used.
-    pub fn union(&self, other: &Rect) -> Rect {
+    pub fn union(&self, other: Rect) -> Rect {
         let mut out = unsafe {
             mem::uninitialized()
         };
@@ -324,43 +314,13 @@ impl From<(i32, i32, u32, u32)> for Rect {
 // Intersection
 impl BitAnd<Rect> for Rect {
     type Output = Option<Rect>;
-    fn bitand(self, rhs: Rect) -> Option<Rect> { self.intersection(&rhs) }
-}
-
-impl<'a> BitAnd<&'a Rect> for Rect {
-    type Output = Option<Rect>;
-    fn bitand(self, rhs: &Rect) -> Option<Rect> { self.intersection(rhs) }
-}
-
-impl<'a> BitAnd<Rect> for &'a Rect {
-    type Output = Option<Rect>;
-    fn bitand(self, rhs: Rect) -> Option<Rect> { self.intersection(&rhs) }
-}
-
-impl<'a> BitAnd<&'a Rect> for &'a Rect {
-    type Output = Option<Rect>;
-    fn bitand(self, rhs: &Rect) -> Option<Rect> { self.intersection(rhs) }
+    fn bitand(self, rhs: Rect) -> Option<Rect> { self.intersection(rhs) }
 }
 
 // Union
 impl BitOr<Rect> for Rect {
     type Output = Rect;
-    fn bitor(self, rhs: Rect) -> Rect { self.union(&rhs) }
-}
-
-impl<'a> BitOr<&'a Rect> for Rect {
-    type Output = Rect;
-    fn bitor(self, rhs: &Rect) -> Rect { self.union(rhs) }
-}
-
-impl<'a> BitOr<Rect> for &'a Rect {
-    type Output = Rect;
-    fn bitor(self, rhs: Rect) -> Rect { self.union(&rhs) }
-}
-
-impl<'a> BitOr<&'a Rect> for &'a Rect {
-    type Output = Rect;
-    fn bitor(self, rhs: &Rect) -> Rect { self.union(rhs) }
+    fn bitor(self, rhs: Rect) -> Rect { self.union(rhs) }
 }
 
 /// Immutable point type, consisting of x and y.
@@ -486,11 +446,11 @@ mod test {
     #[test]
     fn has_intersection() {
         let rect = Rect::new(0, 0, 10, 10);
-        assert!(rect.has_intersection(&Rect::new(9, 9, 10, 10)));
+        assert!(rect.has_intersection(Rect::new(9, 9, 10, 10)));
         // edge
-        assert!(! rect.has_intersection(&Rect::new(10, 10, 10, 10)));
+        assert!(! rect.has_intersection(Rect::new(10, 10, 10, 10)));
         // out
-        assert!(! rect.has_intersection(&Rect::new(11, 11, 10, 10)));
+        assert!(! rect.has_intersection(Rect::new(11, 11, 10, 10)));
     }
 
     #[test]

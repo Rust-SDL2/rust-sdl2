@@ -1241,7 +1241,7 @@ impl Texture {
         let tex_info = self.query();
         if let Some(ref r) = rect {
             let tex_rect = Rect::new(0, 0, tex_info.width, tex_info.height);
-            let inside = match r.intersection(&tex_rect) {
+            let inside = match r.intersection(tex_rect) {
                 Some(intersection) => intersection == *r,
                 None => false,
             };

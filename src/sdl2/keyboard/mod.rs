@@ -220,7 +220,7 @@ impl TextInputUtil {
         unsafe { ll::SDL_StopTextInput(); }
     }
 
-    pub fn set_rect(&self, rect: &Rect) {
+    pub fn set_rect(&self, rect: Rect) {
         unsafe { ll::SDL_SetTextInputRect(rect.raw()); }
     }
 

@@ -504,17 +504,27 @@ impl SurfaceRef {
         }
     }
 
-    // Note: There's no need to implement SDL_ConvertSurfaceFormat, as it does the same thing as
-    // SDL_ConvertSurface but with a slightly different function signature.
+    // Note: There's no need to implement SDL_ConvertSurfaceFormat, as it 
+    // does the same thing as SDL_ConvertSurface but with a slightly different
+    // function signature.
 
     /// Performs surface blitting (surface copying).
     ///
     /// Returns the final blit rectangle, if a `dst_rect` was provided.
-    pub fn blit<S: AsMut<SurfaceRef>>(&self, src_rect: Option<Rect>, mut dst: S, mut dst_rect: Option<Rect>) -> Result<Option<Rect>, String> {
+    pub fn blit<S: AsMut<SurfaceRef>>(&self, src_rect: Option<Rect>, 
+            mut dst: S, dst_rect: Option<Rect>) 
+            -> Result<Option<Rect>, String> {
         unsafe {
-            let src_rect_ptr = Rect::raw_from_option(src_rect.as_ref());
-            let dst_rect_ptr = Rect::raw_mut_from_option(dst_rect.as_mut());
-            let result = ll::SDL_UpperBlit(self.raw(), src_rect_ptr, dst.as_mut().raw(), dst_rect_ptr);
+            let src_rect_ptr = src_rect.map(|r| r.raw()).unwrap_or(ptr::null());
+            
+            // Copy the rect here to make a mutable copy without requiring
+            // a mutable argument
+            let dst_rect = dst_rect;
+            let dst_rect_ptr = dst_rect.map(|mut r| r.raw_mut())
+                .unwrap_or(ptr::null_mut());
+            let result = ll::SDL_UpperBlit(
+                self.raw(), src_rect_ptr, dst.as_mut().raw(), dst_rect_ptr
+            );
 
             if result == 0 {
                 Ok(dst_rect)
@@ -533,8 +543,10 @@ impl SurfaceRef {
 
         match {
             // The rectangles don't change, but the function requires mutable pointers.
-            let src_rect_ptr = Rect::raw_from_option(src_rect.as_ref()) as *mut _;
-            let dst_rect_ptr = Rect::raw_from_option(dst_rect.as_ref()) as *mut _;
+            let src_rect_ptr = src_rect.map(|r| r.raw())
+                .unwrap_or(ptr::null()) as *mut _;
+            let dst_rect_ptr = dst_rect.map(|r| r.raw())
+                .unwrap_or(ptr::null()) as *mut _;
             ll::SDL_LowerBlit(self.raw(), src_rect_ptr, dst.as_mut().raw(), dst_rect_ptr)
         } {
             0 => Ok(()),
@@ -546,11 +558,16 @@ impl SurfaceRef {
     ///
     /// Returns the final blit rectangle, if a `dst_rect` was provided.
     pub fn blit_scaled<S: AsMut<SurfaceRef>>(&self, src_rect: Option<Rect>,
-                             mut dst: S, mut dst_rect: Option<Rect>) -> Result<Option<Rect>, String> {
+                             mut dst: S, dst_rect: Option<Rect>) -> Result<Option<Rect>, String> {
 
         match unsafe {
-            let src_rect_ptr = Rect::raw_from_option(src_rect.as_ref());
-            let dst_rect_ptr = Rect::raw_mut_from_option(dst_rect.as_mut());
+            let src_rect_ptr = src_rect.map(|r| r.raw()).unwrap_or(ptr::null());
+            
+            // Copy the rect here to make a mutable copy without requiring
+            // a mutable argument
+            let dst_rect = dst_rect;
+            let dst_rect_ptr = dst_rect.map(|mut r| r.raw_mut())
+                .unwrap_or(ptr::null_mut());
             ll::SDL_UpperBlitScaled(self.raw(), src_rect_ptr, dst.as_mut().raw(), dst_rect_ptr)
         } {
             0 => Ok(dst_rect),
@@ -567,8 +584,10 @@ impl SurfaceRef {
 
         match {
             // The rectangles don't change, but the function requires mutable pointers.
-            let src_rect_ptr = Rect::raw_from_option(src_rect.as_ref()) as *mut _;
-            let dst_rect_ptr = Rect::raw_from_option(dst_rect.as_ref()) as *mut _;
+            let src_rect_ptr = src_rect.map(|r| r.raw())
+                .unwrap_or(ptr::null()) as *mut _;
+            let dst_rect_ptr = dst_rect.map(|r| r.raw())
+                .unwrap_or(ptr::null()) as *mut _;
             ll::SDL_LowerBlitScaled(self.raw(), src_rect_ptr, dst.as_mut().raw(), dst_rect_ptr)
         } {
             0 => Ok(()),
