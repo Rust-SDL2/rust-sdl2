@@ -3,7 +3,6 @@ extern crate sdl2_mixer;
 
 use std::env;
 use std::path::Path;
-use sdl2::*;
 use sdl2_mixer::{INIT_MP3, INIT_FLAC, INIT_MOD, INIT_FLUIDSYNTH, INIT_MODPLUG, INIT_OGG,
                  AUDIO_S16LSB};
 
