@@ -457,11 +457,11 @@ mod test {
     fn intersection() {
         let rect = Rect::new(0, 0, 10, 10);
         assert_eq!(
-            &rect & Rect::new(9, 9, 10, 10),
+            rect & Rect::new(9, 9, 10, 10),
             Some(Rect::new(9, 9, 1, 1))
         );
         assert_eq!(
-            &rect & Rect::new(11, 11, 10, 10),
+            rect & Rect::new(11, 11, 10, 10),
             None
         );
     }
