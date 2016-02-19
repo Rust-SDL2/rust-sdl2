@@ -18,5 +18,6 @@ lib/
 src/demo/main
 doc/
 target/
+.DS_Store
 
 Cargo.lock

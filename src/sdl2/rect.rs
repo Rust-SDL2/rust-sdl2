@@ -68,6 +68,27 @@ impl Rect {
         Rect { raw: raw }
     }
     
+    /// Creates a new rectangle centered on the given position.
+    ///
+    /// The width and height are clamped to ensure that the right and bottom
+    /// sides of the rectangle does not exceed i32::max_value().
+    /// (The value 2147483647, the maximal positive size of an i32)
+    ///
+    /// This means that the rect size will behave oddly if you move it very far
+    /// to the right or downwards on the screen.
+    pub fn from_center<P>(center: P, width: u32, height: u32)
+            -> Rect where P: Into<Point> {
+        let raw = ll::SDL_Rect {
+            x: 0,
+            y: 0,
+            w: clamp_size(width) as i32,
+            h: clamp_size(height) as i32,
+        };
+        let mut rect = Rect { raw: raw };
+        rect.center_on(center.into());
+        rect
+    }
+    
     /// The horizontal position of this rectangle.
     pub fn x(&self) -> i32 {
         self.raw.x
@@ -132,16 +153,30 @@ impl Rect {
         self.raw.y + self.raw.h
     }
     
+    /// Returns the center of this rectangle.
+    pub fn center(&self) -> Point {
+        let x = self.raw.x + (self.raw.w / 2);
+        let y = self.raw.y + (self.raw.h / 2);
+        Point::new(x, y)
+    }
+    
     /// Sets the position of the right side of this rectangle to the given 
     /// value, clamped to be less than or equal to i32::max_value() / 2.
     pub fn set_right(&mut self, right: i32) {
-        self.raw.x = clamp_position(right) - self.raw.w;
+        self.raw.x = clamp_position(clamp_position(right) - self.raw.w);
     }
     
     /// Sets the position of the bottom side of this rectangle to the given 
     /// value, clamped to be less than or equal to i32::max_value() / 2.
     pub fn set_bottom(&mut self, bottom: i32) {
-        self.raw.y = clamp_position(bottom) - self.raw.h;
+        self.raw.y = clamp_position(clamp_position(bottom) - self.raw.h);
+    }
+    
+    /// Centers the rectangle on the given point.
+    pub fn center_on<P>(&mut self, point: P) where P: Into<(i32, i32)> {
+        let (x, y) = point.into();
+        self.raw.x = clamp_position(clamp_position(x) - self.raw.w / 2);
+        self.raw.y = clamp_position(clamp_position(y) - self.raw. h / 2);
     }
     
     /// Move this rect and clamp the positions to prevent over/underflow.
@@ -170,7 +205,8 @@ impl Rect {
     }
     
     /// Moves this rect to the given position after clamping the values.
-    pub fn reposition(&mut self, x: i32, y: i32) {
+    pub fn reposition<P>(&mut self, point: P) where P: Into<(i32, i32)> {
+        let (x, y) = point.into();
         self.raw.x = clamp_position(x);
         self.raw.y = clamp_position(y);
     }
@@ -179,6 +215,13 @@ impl Rect {
     pub fn resize(&mut self, width: u32, height: u32) {
         self.raw.w = clamp_size(width) as i32;
         self.raw.h = clamp_size(height) as i32;
+    }
+    
+    /// Checks whether this rect contains a given point.
+    pub fn contains<P>(&self, point: P) -> bool where P: Into<(i32, i32)> {
+        let (x, y) = point.into();
+        let inside_x = x >= self.left() && x <= self.right();
+        inside_x && (y >= self.top() && y <= self.bottom())
     }
     
     /// Returns the underlying C Rect.
