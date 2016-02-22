@@ -1,11 +1,8 @@
-use std::ffi::{CStr, CString};
+use std::ffi::{CStr, CString, NulError};
 use std::rc::Rc;
-use std::fmt;
-use std::error;
 use libc::c_char;
 
 use sys::sdl as ll;
-use util::CStringExt;
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum Error {
@@ -15,30 +12,6 @@ pub enum Error {
     SeekError = ll::SDL_EFSEEK as isize,
     UnsupportedError = ll::SDL_UNSUPPORTED as isize
 }
-
-/// A message with information about an error that SDL has encountered.
-#[derive(Clone, Eq, PartialEq, Hash, Debug)]
-pub struct ErrorMessage(pub String);
-
-impl fmt::Display for ErrorMessage {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "SDL error: {}", self.0)
-    }
-}
-
-impl error::Error for ErrorMessage {
-    fn description(&self) -> &str {
-        "SDL error"
-    }
-}
-
-impl From<String> for ErrorMessage {
-    fn from(src: String) -> Self {
-        ErrorMessage(src)
-    }
-}
-
-pub type SdlResult<T> = Result<T, ErrorMessage>;
 
 use std::sync::atomic::{AtomicBool, ATOMIC_BOOL_INIT};
 /// Only one Sdl context can be alive at a time.
@@ -64,7 +37,7 @@ pub struct Sdl {
 
 impl Sdl {
     #[inline]
-    fn new() -> SdlResult<Sdl> {
+    fn new() -> Result<Sdl, String> {
         unsafe {
             use std::sync::atomic::Ordering;
 
@@ -72,7 +45,7 @@ impl Sdl {
             let was_alive = IS_SDL_CONTEXT_ALIVE.swap(true, Ordering::Relaxed);
 
             if was_alive {
-                Err(ErrorMessage("Cannot initialize `Sdl` more than once at a time.".into()))
+                Err("Cannot initialize `Sdl` more than once at a time.".to_owned())
             } else {
                 // Initialize SDL without any explicit subsystems (flags = 0).
                 if ll::SDL_Init(0) == 0 {
@@ -89,31 +62,31 @@ impl Sdl {
 
     /// Initializes the audio subsystem.
     #[inline]
-    pub fn audio(&self) -> SdlResult<AudioSubsystem> { AudioSubsystem::new(self) }
+    pub fn audio(&self) -> Result<AudioSubsystem, String> { AudioSubsystem::new(self) }
 
     /// Initializes the event subsystem.
     #[inline]
-    pub fn event(&self) -> SdlResult<EventSubsystem> { EventSubsystem::new(self) }
+    pub fn event(&self) -> Result<EventSubsystem, String> { EventSubsystem::new(self) }
 
     /// Initializes the joystick subsystem.
     #[inline]
-    pub fn joystick(&self) -> SdlResult<JoystickSubsystem> { JoystickSubsystem::new(self) }
+    pub fn joystick(&self) -> Result<JoystickSubsystem, String> { JoystickSubsystem::new(self) }
 
     /// Initializes the haptic subsystem.
     #[inline]
-    pub fn haptic(&self) -> SdlResult<HapticSubsystem> { HapticSubsystem::new(self) }
+    pub fn haptic(&self) -> Result<HapticSubsystem, String> { HapticSubsystem::new(self) }
 
     /// Initializes the game controller subsystem.
     #[inline]
-    pub fn game_controller(&self) -> SdlResult<GameControllerSubsystem> { GameControllerSubsystem::new(self) }
+    pub fn game_controller(&self) -> Result<GameControllerSubsystem, String> { GameControllerSubsystem::new(self) }
 
     /// Initializes the timer subsystem.
     #[inline]
-    pub fn timer(&self) -> SdlResult<TimerSubsystem> { TimerSubsystem::new(self) }
+    pub fn timer(&self) -> Result<TimerSubsystem, String> { TimerSubsystem::new(self) }
 
     /// Initializes the video subsystem.
     #[inline]
-    pub fn video(&self) -> SdlResult<VideoSubsystem> { VideoSubsystem::new(self) }
+    pub fn video(&self) -> Result<VideoSubsystem, String> { VideoSubsystem::new(self) }
 
     /// Obtains the SDL event pump.
     ///
@@ -121,7 +94,7 @@ impl Sdl {
     /// If this function is called while an `EventPump` instance is alive, the function will return
     /// an error.
     #[inline]
-    pub fn event_pump(&self) -> SdlResult<EventPump> {
+    pub fn event_pump(&self) -> Result<EventPump, String> {
         EventPump::new(self)
     }
 
@@ -134,6 +107,7 @@ impl Sdl {
 
 /// When SDL is no longer in use (the refcount in an `Rc<SdlDrop>` reaches 0), the library is quit.
 #[doc(hidden)]
+#[derive(Debug)]
 pub struct SdlDrop;
 
 impl Drop for SdlDrop {
@@ -157,7 +131,7 @@ macro_rules! subsystem {
     ($name:ident, $flag:expr) => (
         impl $name {
             #[inline]
-            fn new(sdl: &Sdl) -> SdlResult<$name> {
+            fn new(sdl: &Sdl) -> Result<$name, String> {
                 let result = unsafe { ll::SDL_InitSubSystem($flag) };
 
                 if result == 0 {
@@ -174,7 +148,7 @@ macro_rules! subsystem {
         }
     );
     ($name:ident, $flag:expr, nosync) => (
-        #[derive(Clone)]
+        #[derive(Debug, Clone)]
         pub struct $name {
             /// Subsystems cannot be moved or (usually) used on non-main threads.
             /// Luckily, Rc restricts use to the main thread.
@@ -220,7 +194,7 @@ macro_rules! subsystem {
 
 /// When a subsystem is no longer in use (the refcount in an `Rc<SubsystemDrop>` reaches 0),
 /// the subsystem is quit.
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 struct SubsystemDrop {
     _sdldrop: Rc<SdlDrop>,
     flag: ll::SDL_InitFlag
@@ -253,12 +227,12 @@ pub struct EventPump {
 impl EventPump {
     /// Obtains the SDL event pump.
     #[inline]
-    fn new(sdl: &Sdl) -> SdlResult<EventPump> {
+    fn new(sdl: &Sdl) -> Result<EventPump, String> {
         // Called on the main SDL thread.
 
         unsafe {
             if IS_EVENT_PUMP_ALIVE {
-                Err(ErrorMessage("an `EventPump` instance is already alive - there can only be one `EventPump` in use at a time.".into()))
+                Err("an `EventPump` instance is already alive - there can only be one `EventPump` in use at a time.".to_owned())
             } else {
                 // Initialize the events subsystem, just in case none of the other subsystems have done it yet.
                 let result = ll::SDL_InitSubSystem(ll::SDL_INIT_EVENTS);
@@ -305,18 +279,20 @@ impl Drop for EventPump {
 /// // SDL_Quit() is called here as `sdl_context` is dropped.
 /// ```
 #[inline]
-pub fn init() -> SdlResult<Sdl> { Sdl::new() }
+pub fn init() -> Result<Sdl, String> { Sdl::new() }
 
-pub fn get_error() -> ErrorMessage {
+pub fn get_error() -> String {
     unsafe {
         let err = ll::SDL_GetError();
-        ErrorMessage(String::from_utf8_lossy(CStr::from_ptr(err as *const _).to_bytes()).to_string())
+        CStr::from_ptr(err as *const _).to_str().unwrap().to_owned()
     }
 }
 
-pub fn set_error(err: &str) {
-    let err = CString::new(err).remove_nul();
-    unsafe { ll::SDL_SetError(err.as_ptr() as *const c_char); }
+pub fn set_error(err: &str) -> Result<(), NulError> {
+    let c_string = try!(CString::new(err));
+    Ok(unsafe { 
+        ll::SDL_SetError(c_string.as_ptr() as *const c_char);
+    })
 }
 
 pub fn set_error_from_code(err: Error) {

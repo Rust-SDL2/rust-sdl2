@@ -1,5 +1,5 @@
 use libc::{c_int, c_float, uint32_t, c_char};
-use std::ffi::{CStr, CString};
+use std::ffi::{CStr, CString, NulError};
 use std::mem;
 use std::ops::{Deref, DerefMut};
 use std::ptr;
@@ -11,10 +11,8 @@ use surface::SurfaceRef;
 use pixels;
 use VideoSubsystem;
 use EventPump;
-use SdlResult;
-use ErrorMessage;
 use num::FromPrimitive;
-use util::CStringExt;
+use common::{validate_int, IntegerOrSdlError};
 
 use get_error;
 
@@ -408,7 +406,7 @@ pub enum WindowPos {
     Positioned(i32)
 }
 
-fn unwrap_windowpos (pos: WindowPos) -> ll::SDL_WindowPos {
+fn to_ll_windowpos (pos: WindowPos) -> ll::SDL_WindowPos {
     match pos {
         WindowPos::Undefined => ll::SDL_WINDOWPOS_UNDEFINED,
         WindowPos::Centered => ll::SDL_WINDOWPOS_CENTERED,
@@ -480,7 +478,7 @@ impl VideoSubsystem {
         }
     }
 
-    pub fn num_video_displays(&self) -> SdlResult<i32> {
+    pub fn num_video_displays(&self) -> Result<i32, String> {
         let result = unsafe { ll::SDL_GetNumVideoDisplays() };
         if result < 0 {
             Err(get_error())
@@ -492,23 +490,22 @@ impl VideoSubsystem {
     pub fn display_name(&self, display_index: i32) -> String {
         unsafe {
             let display = ll::SDL_GetDisplayName(display_index as c_int);
-            String::from_utf8_lossy(CStr::from_ptr(display as *const _).to_bytes()).to_string()
+            CStr::from_ptr(display as *const _).to_str().unwrap().to_owned()
         }
     }
 
-    pub fn display_bounds(&self, display_index: i32) -> SdlResult<Rect> {
+    pub fn display_bounds(&self, display_index: i32) -> Result<Rect, String> {
         let mut out = unsafe { mem::uninitialized() };
         let result = unsafe { ll::SDL_GetDisplayBounds(display_index as c_int, &mut out) == 0 };
 
         if result {
-            // Unwrap twice because there is always a non-empty rect.
-            Ok(Rect::from_ll(out).unwrap().unwrap())
+            Ok(Rect::from_ll(out))
         } else {
             Err(get_error())
         }
     }
 
-    pub fn num_display_modes(&self, display_index: i32) -> SdlResult<i32> {
+    pub fn num_display_modes(&self, display_index: i32) -> Result<i32, String> {
         let result = unsafe { ll::SDL_GetNumDisplayModes(display_index as c_int) };
         if result < 0 {
             Err(get_error())
@@ -517,7 +514,7 @@ impl VideoSubsystem {
         }
     }
 
-    pub fn display_mode(&self, display_index: i32, mode_index: i32) -> SdlResult<DisplayMode> {
+    pub fn display_mode(&self, display_index: i32, mode_index: i32) -> Result<DisplayMode, String> {
         let mut dm = unsafe { mem::uninitialized() };
         let result = unsafe { ll::SDL_GetDisplayMode(display_index as c_int, mode_index as c_int, &mut dm) == 0};
 
@@ -528,7 +525,7 @@ impl VideoSubsystem {
         }
     }
 
-    pub fn desktop_display_mode(&self, display_index: i32) -> SdlResult<DisplayMode> {
+    pub fn desktop_display_mode(&self, display_index: i32) -> Result<DisplayMode, String> {
         let mut dm = unsafe { mem::uninitialized() };
         let result = unsafe { ll::SDL_GetDesktopDisplayMode(display_index as c_int, &mut dm) == 0};
 
@@ -539,7 +536,7 @@ impl VideoSubsystem {
         }
     }
 
-    pub fn current_display_mode(&self, display_index: i32) -> SdlResult<DisplayMode> {
+    pub fn current_display_mode(&self, display_index: i32) -> Result<DisplayMode, String> {
         let mut dm = unsafe { mem::uninitialized() };
         let result = unsafe { ll::SDL_GetCurrentDisplayMode(display_index as c_int, &mut dm) == 0};
 
@@ -550,7 +547,7 @@ impl VideoSubsystem {
         }
     }
 
-    pub fn closest_display_mode(&self, display_index: i32, mode: &DisplayMode) -> SdlResult<DisplayMode> {
+    pub fn closest_display_mode(&self, display_index: i32, mode: &DisplayMode) -> Result<DisplayMode, String> {
         let input = mode.to_ll();
         let mut dm = unsafe { mem::uninitialized() };
 
@@ -581,7 +578,7 @@ impl VideoSubsystem {
     /// If no OpenGL library is loaded, the default library will be loaded upon creation of the first OpenGL window.
     ///
     /// If a different library is already loaded, this function will return an error.
-    pub fn gl_load_library_default(&self) -> SdlResult<()> {
+    pub fn gl_load_library_default(&self) -> Result<(), String> {
         unsafe {
             if ll::SDL_GL_LoadLibrary(ptr::null()) == 0 {
                 Ok(())
@@ -597,7 +594,7 @@ impl VideoSubsystem {
     /// If no OpenGL library is loaded, the default library will be loaded upon creation of the first OpenGL window.
     ///
     /// If a different library is already loaded, this function will return an error.
-    pub fn gl_load_library<P: AsRef<::std::path::Path>>(&self, path: P) -> SdlResult<()> {
+    pub fn gl_load_library<P: AsRef<::std::path::Path>>(&self, path: P) -> Result<(), String> {
         unsafe {
             // TODO: use OsStr::to_cstring() once it's stable
             let path = CString::new(path.as_ref().to_str().unwrap()).unwrap();
@@ -636,7 +633,7 @@ impl VideoSubsystem {
         }
     }
 
-    pub fn gl_get_current_window_id(&self) -> SdlResult<u32> {
+    pub fn gl_get_current_window_id(&self) -> Result<u32, String> {
         let raw = unsafe { ll::SDL_GL_GetCurrentWindow() };
         if raw == ptr::null_mut() {
             Err(get_error())
@@ -647,7 +644,7 @@ impl VideoSubsystem {
     }
 
     /// Releases the thread's current OpenGL context, i.e. sets the current OpenGL context to nothing.
-    pub fn gl_release_current_context(&self) -> SdlResult<()> {
+    pub fn gl_release_current_context(&self) -> Result<(), String> {
         let result = unsafe { ll::SDL_GL_MakeCurrent(ptr::null_mut(), ptr::null()) };
 
         if result == 0 {
@@ -673,9 +670,18 @@ impl Drop for Window {
     }
 }
 
+#[derive(Debug)]
+pub enum WindowBuildResult {
+    HeightOverflows(u32),
+    WidthOverflows(u32),
+    InvalidTitle(NulError),
+    SdlError(String),
+}
+
 /// The type that allows you to build windows.
+#[derive(Debug)]
 pub struct WindowBuilder {
-    title: CString,
+    title: String,
     width: u32,
     height: u32,
     x: WindowPos,
@@ -690,7 +696,7 @@ impl WindowBuilder {
     /// Initializes a new `WindowBuilder`.
     pub fn new(v: &VideoSubsystem, title: &str, width: u32, height: u32) -> WindowBuilder {
         WindowBuilder {
-            title: CString::new(title).remove_nul(),
+            title: title.to_owned(),
             width: width,
             height: height,
             x: WindowPos::Undefined,
@@ -701,32 +707,38 @@ impl WindowBuilder {
     }
 
     /// Builds the window.
-    pub fn build(&self) -> SdlResult<Window> {
+    pub fn build(&self) -> Result<Window, WindowBuildResult> {
+        use self::WindowBuildResult::*;
+        let title = match CString::new(self.title.clone()) {
+            Ok(t) => t,
+            Err(err) => return Err(InvalidTitle(err)),
+        };
+        if self.width >= (1 << 31) {
+            return Err(WidthOverflows(self.width));
+        }
+        if self.height >= (1 << 31) {
+            return Err(HeightOverflows(self.width));
+        }
+        
+        let raw_width = self.width as c_int;
+        let raw_height = self.height as c_int;
         unsafe {
-            if self.width >= (1<<31) || self.height >= (1<<31) {
-                // SDL2 only supports int (signed 32-bit) arguments.
-                Err(ErrorMessage("Window is too large.".into()))
+            let raw = ll::SDL_CreateWindow(
+                title.as_ptr() as *const c_char,
+                to_ll_windowpos(self.x),
+                to_ll_windowpos(self.y),
+                raw_width,
+                raw_height,
+                self.window_flags
+            );
+
+            if raw == ptr::null_mut() {
+                Err(SdlError(get_error()))
             } else {
-                let raw_width = self.width as c_int;
-                let raw_height = self.height as c_int;
-
-                let raw = ll::SDL_CreateWindow(
-                        self.title.as_ptr() as *const c_char,
-                        unwrap_windowpos(self.x),
-                        unwrap_windowpos(self.y),
-                        raw_width,
-                        raw_height,
-                        self.window_flags
-                );
-
-                if raw == ptr::null_mut() {
-                    Err(get_error())
-                } else {
-                    Ok(Window {
-                        subsystem: self.subsystem.clone(),
-                        raw: raw
-                    })
-                }
+                Ok(Window {
+                    subsystem: self.subsystem.clone(),
+                    raw: raw,
+                })
             }
         }
     }
@@ -756,34 +768,64 @@ impl WindowBuilder {
     }
 
     /// Sets the window to fullscreen.
-    pub fn fullscreen(&mut self) -> &mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_FULLSCREEN as u32; self }
+    pub fn fullscreen(&mut self) -> &mut WindowBuilder { 
+        self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_FULLSCREEN as u32;
+        self
+    }
 
     /// Sets the window to fullscreen at the current desktop resolution.
-    pub fn fullscreen_desktop(&mut self) -> &mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_FULLSCREEN_DESKTOP as u32; self }
+    pub fn fullscreen_desktop(&mut self) -> &mut WindowBuilder {
+        self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_FULLSCREEN_DESKTOP as u32;
+        self
+    }
 
     /// Sets the window to be usable with an OpenGL context
-    pub fn opengl(&mut self) -> & mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_OPENGL as u32; self }
+    pub fn opengl(&mut self) -> & mut WindowBuilder {
+        self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_OPENGL as u32;
+        self
+    }
 
     /// Hides the window.
-    pub fn hidden(&mut self) -> &mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_HIDDEN as u32; self }
+    pub fn hidden(&mut self) -> &mut WindowBuilder {
+        self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_HIDDEN as u32;
+        self
+    }
 
     /// Removes the window decoration.
-    pub fn borderless(&mut self) -> &mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_BORDERLESS as u32; self }
+    pub fn borderless(&mut self) -> &mut WindowBuilder {
+        self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_BORDERLESS as u32;
+        self
+    }
 
     /// Sets the window to be resizable.
-    pub fn resizable(&mut self) -> &mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_RESIZABLE as u32; self }
+    pub fn resizable(&mut self) -> &mut WindowBuilder {
+        self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_RESIZABLE as u32;
+        self
+    }
 
     /// Minimizes the window.
-    pub fn minimized(&mut self) -> &mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_MINIMIZED as u32; self }
+    pub fn minimized(&mut self) -> &mut WindowBuilder {
+        self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_MINIMIZED as u32;
+        self
+    }
 
     /// Maximizes the window.
-    pub fn maximized(&mut self) -> &mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_MAXIMIZED as u32; self }
+    pub fn maximized(&mut self) -> &mut WindowBuilder {
+        self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_MAXIMIZED as u32;
+        self
+    }
 
     /// Sets the window to have grabbed input focus.
-    pub fn input_grabbed(&mut self) -> &mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_INPUT_GRABBED as u32; self }
+    pub fn input_grabbed(&mut self) -> &mut WindowBuilder {
+        self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_INPUT_GRABBED as u32;
+        self
+    }
 
     /// Creates the window in high-DPI mode if supported (>= SDL 2.0.1)
-    pub fn allow_highdpi(&mut self) -> &mut WindowBuilder { self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_ALLOW_HIGHDPI as u32; self }
+    pub fn allow_highdpi(&mut self) -> &mut WindowBuilder {
+        self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_ALLOW_HIGHDPI as u32;
+        self
+    }
 }
 
 impl Window {
@@ -843,7 +885,7 @@ impl WindowRef {
         unsafe { ll::SDL_GetWindowID(self.raw()) }
     }
 
-    pub fn gl_create_context(&self) -> SdlResult<GLContext> {
+    pub fn gl_create_context(&self) -> Result<GLContext, String> {
         let result = unsafe { ll::SDL_GL_CreateContext(self.raw()) };
         if result == ptr::null_mut() {
             Err(get_error())
@@ -853,7 +895,7 @@ impl WindowRef {
     }
 
     /// Set the window's OpenGL context to the current context on the thread.
-    pub fn gl_set_context_to_current(&self) -> SdlResult<()> {
+    pub fn gl_set_context_to_current(&self) -> Result<(), String> {
         unsafe {
             let context_raw = ll::SDL_GL_GetCurrentContext();
 
@@ -869,7 +911,7 @@ impl WindowRef {
         }
     }
 
-    pub fn gl_make_current(&self, context: &GLContext) -> SdlResult<()> {
+    pub fn gl_make_current(&self, context: &GLContext) -> Result<(), String> {
         unsafe {
             if ll::SDL_GL_MakeCurrent(self.raw(), context.raw) == 0 {
                 Ok(())
@@ -883,7 +925,7 @@ impl WindowRef {
         unsafe { ll::SDL_GL_SwapWindow(self.raw()) }
     }
 
-    pub fn display_index(&self) -> SdlResult<i32> {
+    pub fn display_index(&self) -> Result<i32, String> {
         let result = unsafe { ll::SDL_GetWindowDisplayIndex(self.raw()) };
         if result < 0 {
             return Err(get_error())
@@ -892,7 +934,7 @@ impl WindowRef {
         }
     }
 
-    pub fn set_display_mode(&mut self, display_mode: Option<DisplayMode>) -> SdlResult<()> {
+    pub fn set_display_mode(&mut self, display_mode: Option<DisplayMode>) -> Result<(), String> {
         unsafe {
             let result = ll::SDL_SetWindowDisplayMode(
                 self.raw(),
@@ -909,7 +951,7 @@ impl WindowRef {
         }
     }
 
-    pub fn display_mode(&self) -> SdlResult<DisplayMode> {
+    pub fn display_mode(&self) -> Result<DisplayMode, String> {
         let mut dm = unsafe { mem::uninitialized() };
 
         let result = unsafe {
@@ -936,32 +978,37 @@ impl WindowRef {
         }
     }
 
-    pub fn set_title(&mut self, title: &str) {
-        let title = CString::new(title).remove_nul();
-        unsafe { ll::SDL_SetWindowTitle(self.raw(), title.as_ptr() as *const c_char); }
+    pub fn set_title(&mut self, title: &str) -> Result<(), NulError> {
+        let title = try!(CString::new(title));
+        Ok(unsafe { 
+            ll::SDL_SetWindowTitle(self.raw(), title.as_ptr() as *const c_char);
+        })
     }
 
     pub fn title(&self) -> &str {
-        use std::ffi::CStr;
-        use std::str;
-
         unsafe {
             let buf = ll::SDL_GetWindowTitle(self.raw());
 
             // The window title must be encoded in UTF-8.
-            str::from_utf8(CStr::from_ptr(buf as *const _).to_bytes()).unwrap()
+            CStr::from_ptr(buf as *const _).to_str().unwrap()
         }
     }
 
     pub fn set_icon<S: AsRef<SurfaceRef>>(&mut self, icon: S) {
-        unsafe { ll::SDL_SetWindowIcon(self.raw(), icon.as_ref().raw()) }
+        unsafe { 
+            ll::SDL_SetWindowIcon(self.raw(), icon.as_ref().raw())
+        }
     }
 
     //pub fn SDL_SetWindowData(window: *SDL_Window, name: *c_char, userdata: *c_void) -> *c_void; //TODO: Figure out what this does
     //pub fn SDL_GetWindowData(window: *SDL_Window, name: *c_char) -> *c_void;
 
     pub fn set_position(&mut self, x: WindowPos, y: WindowPos) {
-        unsafe { ll::SDL_SetWindowPosition(self.raw(), unwrap_windowpos(x), unwrap_windowpos(y)) }
+        unsafe { 
+            ll::SDL_SetWindowPosition(
+                self.raw(), to_ll_windowpos(x), to_ll_windowpos(y)
+            )
+        }
     }
 
     pub fn position(&self) -> (i32, i32) {
@@ -971,11 +1018,13 @@ impl WindowRef {
         (x as i32, y as i32)
     }
 
-    pub fn set_size(&mut self, w: u32, h: u32) {
-        match (u32_to_int!(w), u32_to_int!(h)) {
-            (Ok(w), Ok(h)) => unsafe { ll::SDL_SetWindowSize(self.raw(), w, h) },
-            _ => ()     // silently fail (`SDL_SetWindowSize` returns void)
-        }
+    pub fn set_size(&mut self, width: u32, height: u32) 
+            -> Result<(), IntegerOrSdlError> {
+        let w = try!(validate_int(width, "width"));
+        let h = try!(validate_int(height, "height"));
+        Ok(unsafe { 
+            ll::SDL_SetWindowSize(self.raw(), w, h)
+        })
     }
 
     pub fn size(&self) -> (u32, u32) {
@@ -992,11 +1041,13 @@ impl WindowRef {
         (w as u32, h as u32)
     }
 
-    pub fn set_minimum_size(&mut self, w: u32, h: u32) {
-        match (u32_to_int!(w), u32_to_int!(h)) {
-            (Ok(w), Ok(h)) => unsafe { ll::SDL_SetWindowMinimumSize(self.raw(), w, h) },
-            _ => ()     // silently fail (`SDL_SetWindowMinimumSize` returns void)
-        }
+    pub fn set_minimum_size(&mut self, width: u32, height: u32)
+            -> Result<(), IntegerOrSdlError> {
+        let w = try!(validate_int(width, "width"));
+        let h = try!(validate_int(height, "height"));
+        Ok(unsafe {
+            ll::SDL_SetWindowMinimumSize(self.raw(), w, h)
+        })
     }
 
     pub fn minimum_size(&self) -> (u32, u32) {
@@ -1006,22 +1057,31 @@ impl WindowRef {
         (w as u32, h as u32)
     }
 
-    pub fn set_maximum_size(&mut self, w: u32, h: u32) {
-        match (u32_to_int!(w), u32_to_int!(h)) {
-            (Ok(w), Ok(h)) => unsafe { ll::SDL_SetWindowMaximumSize(self.raw(), w, h) },
-            _ => ()     // silently fail (`SDL_SetWindowMaximumSize` returns void)
-        }
+    pub fn set_maximum_size(&mut self, width: u32, height: u32)
+            -> Result<(), IntegerOrSdlError> {
+        let w = try!(validate_int(width, "width"));
+        let h = try!(validate_int(height, "height"));
+        Ok(unsafe {
+            ll::SDL_SetWindowMaximumSize(self.raw(), w, h)
+        })
     }
 
     pub fn maximum_size(&self) -> (u32, u32) {
         let mut w: c_int = 0;
         let mut h: c_int = 0;
-        unsafe { ll::SDL_GetWindowMaximumSize(self.raw(), &mut w, &mut h) };
+        unsafe { 
+            ll::SDL_GetWindowMaximumSize(self.raw(), &mut w, &mut h)
+        };
         (w as u32, h as u32)
     }
 
     pub fn set_bordered(&mut self, bordered: bool) {
-        unsafe { ll::SDL_SetWindowBordered(self.raw(), if bordered { 1 } else { 0 }) }
+        unsafe {
+            ll::SDL_SetWindowBordered(
+                self.raw(), 
+                if bordered { 1 } else { 0 }
+            )
+        }
     }
 
     pub fn show(&mut self) {
@@ -1048,9 +1108,13 @@ impl WindowRef {
         unsafe { ll::SDL_RestoreWindow(self.raw()) }
     }
 
-    pub fn set_fullscreen(&mut self, fullscreen_type: FullscreenType) -> SdlResult<()> {
+    pub fn set_fullscreen(&mut self, fullscreen_type: FullscreenType)
+            -> Result<(), String> {
         unsafe {
-            if ll::SDL_SetWindowFullscreen(self.raw(), fullscreen_type as uint32_t) == 0 {
+            let result = ll::SDL_SetWindowFullscreen(
+                self.raw(), fullscreen_type as uint32_t
+            );
+            if result == 0 {
                 Ok(())
             } else {
                 Err(get_error())
@@ -1058,7 +1122,7 @@ impl WindowRef {
         }
     }
 
-    pub fn surface<'a>(&'a self, _e: &'a EventPump) -> SdlResult<&'a SurfaceRef> {
+    pub fn surface<'a>(&'a self, _e: &'a EventPump) -> Result<&'a SurfaceRef, String> {
         let raw = unsafe { ll::SDL_GetWindowSurface(self.raw()) };
 
         if raw.is_null() {
@@ -1068,7 +1132,7 @@ impl WindowRef {
         }
     }
 
-    pub fn surface_mut<'a>(&'a mut self, _e: &'a EventPump) -> SdlResult<&'a mut SurfaceRef> {
+    pub fn surface_mut<'a>(&'a mut self, _e: &'a EventPump) -> Result<&'a mut SurfaceRef, String> {
         let raw = unsafe { ll::SDL_GetWindowSurface(self.raw()) };
 
         if raw.is_null() {
@@ -1078,7 +1142,7 @@ impl WindowRef {
         }
     }
 
-    pub fn update_surface(&self) -> SdlResult<()> {
+    pub fn update_surface(&self) -> Result<(), String> {
         unsafe {
             if ll::SDL_UpdateWindowSurface(self.raw()) == 0 {
                 Ok(())
@@ -1088,7 +1152,7 @@ impl WindowRef {
         }
     }
 
-    pub fn update_surface_rects(&self, rects: &[Rect]) -> SdlResult<()> {
+    pub fn update_surface_rects(&self, rects: &[Rect]) -> Result<(), String> {
         unsafe {
             if ll::SDL_UpdateWindowSurfaceRects(self.raw(), Rect::raw_slice(rects), rects.len() as c_int) == 0 {
                 Ok(())
@@ -1106,7 +1170,7 @@ impl WindowRef {
         unsafe { ll::SDL_GetWindowGrab(self.raw()) == 1 }
     }
 
-    pub fn set_brightness(&mut self, brightness: f64) -> SdlResult<()> {
+    pub fn set_brightness(&mut self, brightness: f64) -> Result<(), String> {
         unsafe {
             if ll::SDL_SetWindowBrightness(self.raw(), brightness as c_float) == 0 {
                 Ok(())
@@ -1120,35 +1184,44 @@ impl WindowRef {
         unsafe { ll::SDL_GetWindowBrightness(self.raw()) as f64 }
     }
 
-    pub fn set_gamma_ramp(&mut self, red: Option<&[u16; 256]>, green: Option<&[u16; 256]>, blue: Option<&[u16; 256]>) -> SdlResult<()> {
-        unsafe {
-            let unwrapped_red = match red {
-                Some(values) => values.as_ptr(),
-                None => ptr::null()
-            };
-            let unwrapped_green = match green {
-                Some(values) => values.as_ptr(),
-                None => ptr::null()
-            };
-            let unwrapped_blue = match blue {
-                Some(values) => values.as_ptr(),
-                None => ptr::null()
-            };
-
-            if ll::SDL_SetWindowGammaRamp(self.raw(), unwrapped_red, unwrapped_green, unwrapped_blue) == 0 {
-                Ok(())
-            } else {
-                Err(get_error())
-            }
+    pub fn set_gamma_ramp(&mut self, red: Option<&[u16; 256]>, 
+            green: Option<&[u16; 256]>, blue: Option<&[u16; 256]>) 
+            -> Result<(), String> {
+        let unwrapped_red = match red {
+            Some(values) => values.as_ptr(),
+            None => ptr::null()
+        };
+        let unwrapped_green = match green {
+            Some(values) => values.as_ptr(),
+            None => ptr::null()
+        };
+        let unwrapped_blue = match blue {
+            Some(values) => values.as_ptr(),
+            None => ptr::null()
+        };
+        let result = unsafe {
+            ll::SDL_SetWindowGammaRamp(
+                self.raw(), unwrapped_red, unwrapped_green, unwrapped_blue
+            )
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
         }
     }
 
-    pub fn gamma_ramp(&self) -> SdlResult<(Vec<u16>, Vec<u16>, Vec<u16>)> {
+    pub fn gamma_ramp(&self) -> Result<(Vec<u16>, Vec<u16>, Vec<u16>), String> {
         let mut red: Vec<u16> = Vec::with_capacity(256);
         let mut green: Vec<u16> = Vec::with_capacity(256);
         let mut blue: Vec<u16> = Vec::with_capacity(256);
-        let result = unsafe {ll::SDL_GetWindowGammaRamp(self.raw(), red.as_mut_ptr(), green.as_mut_ptr(), blue.as_mut_ptr()) == 0};
-        if result {
+        let result = unsafe {
+            ll::SDL_GetWindowGammaRamp(
+                self.raw(), red.as_mut_ptr(), green.as_mut_ptr(), 
+                blue.as_mut_ptr()
+            )
+        };
+        if result == 0 {
             Ok((red, green, blue))
         } else {
             Err(get_error())

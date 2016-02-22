@@ -2,6 +2,7 @@ extern crate sdl2;
 extern crate rand;
 
 use sdl2::audio::{AudioCallback, AudioSpecDesired};
+use std::time::Duration;
 
 struct MyCallback {
     volume: f32
@@ -42,7 +43,7 @@ fn main() {
     device.resume();
 
     // Play for 1 second
-    std::thread::sleep_ms(1000);
+    std::thread::sleep(Duration::from_millis(1000));
 
     {
         // Acquire a lock. This lets us read and modify callback data.
@@ -52,7 +53,7 @@ fn main() {
     }
 
     // Play for another second
-    std::thread::sleep_ms(1000);
+    std::thread::sleep(Duration::from_millis(1000));
 
     // Device is automatically closed when dropped
 }

@@ -34,8 +34,6 @@ use surface::{Surface, SurfaceRef};
 use pixels;
 use pixels::PixelFormatEnum;
 use get_error;
-use SdlResult;
-use ErrorMessage;
 use std::mem;
 use std::ptr;
 use libc::{c_int, uint32_t, c_double, c_void};
@@ -46,6 +44,7 @@ use std::ffi::CStr;
 use num::FromPrimitive;
 use std::vec::Vec;
 use std::rc::Rc;
+use common::{validate_int, IntegerOrSdlError};
 
 use sys::render as ll;
 
@@ -108,14 +107,14 @@ impl FromPrimitive for BlendMode {
 
 impl RendererInfo {
     pub unsafe fn from_ll(info: &ll::SDL_RendererInfo) -> RendererInfo {
-        use std::str;
-
-        let texture_formats: Vec<pixels::PixelFormatEnum> = info.texture_formats[0..(info.num_texture_formats as usize)].iter().map(|&format| {
-            FromPrimitive::from_i64(format as i64).unwrap()
-        }).collect();
+        let texture_formats: Vec<pixels::PixelFormatEnum> = 
+            info.texture_formats[0..(info.num_texture_formats as usize)]
+            .iter().map(|&format| {
+                FromPrimitive::from_i64(format as i64).unwrap()
+            }).collect();
 
         // The driver name is always a static string, compiled into SDL2.
-        let name = str::from_utf8(CStr::from_ptr(info.name as *const _).to_bytes()).unwrap();
+        let name = CStr::from_ptr(info.name as *const _).to_str().unwrap();
 
         RendererInfo {
             name: name,
@@ -150,7 +149,8 @@ impl<'a> Drop for Renderer<'a> {
 
 /// The type that allows you to build Window-based renderers.
 ///
-/// By default, the renderer builder will prioritize for a hardware-accelerated renderer.
+/// By default, the renderer builder will prioritize for a hardware-accelerated
+/// renderer.
 pub struct RendererBuilder {
     window: Window,
     index: Option<u32>,
@@ -162,25 +162,28 @@ impl RendererBuilder {
     pub fn new(window: Window) -> RendererBuilder {
         RendererBuilder {
             window: window,
-            // -1 means to initialize the first rendering driver supporting the renderer flags
+            // -1 means to initialize the first rendering driver supporting the
+            // renderer flags
             index: None,
-            // no flags gives priority to available SDL_RENDERER_ACCELERATED renderers
+            // no flags gives priority to available SDL_RENDERER_ACCELERATED
+            // renderers
             renderer_flags: 0
         }
     }
 
     /// Builds the renderer.
-    pub fn build(self) -> SdlResult<Renderer<'static>> {
+    pub fn build(self) -> Result<Renderer<'static>, IntegerOrSdlError> {
+        use common::IntegerOrSdlError::*;
         let index = match self.index {
             None => -1,
-            Some(index) => try!(u32_to_int!(index))
+            Some(index) => try!(validate_int(index, "index")),
         };
         let raw = unsafe {
             ll::SDL_CreateRenderer(self.window.raw(), index, self.renderer_flags)
         };
 
         if raw.is_null() {
-            Err(get_error())
+            Err(SdlError(get_error()))
         } else {
             unsafe {
                 Ok(Renderer::from_ll(raw, RendererParent::Window(self.window)))
@@ -222,9 +225,10 @@ impl RendererBuilder {
 impl<'a> Renderer<'a> {
     /// Creates a 2D software rendering context for a surface.
     ///
-    /// This method should only fail if SDL2 is not built with rendering support, or there's
-    /// an out-of-memory error.
-    pub fn from_surface(surface: surface::Surface<'a>) -> SdlResult<Renderer<'a>> {
+    /// This method should only fail if SDL2 is not built with rendering 
+    /// support, or there's an out-of-memory error.
+    pub fn from_surface(surface: surface::Surface<'a>) 
+            -> Result<Renderer<'a>, String> {
         let raw_renderer = unsafe { ll::SDL_CreateSoftwareRenderer(surface.raw()) };
         if raw_renderer != ptr::null_mut() {
             unsafe {
@@ -252,7 +256,9 @@ impl<'a> Renderer<'a> {
     fn parent(&self) -> &RendererParent { self.parent.as_ref().unwrap() }
 
     #[inline]
-    fn parent_mut(&mut self) -> &mut RendererParent<'a> { self.parent.as_mut().unwrap() }
+    fn parent_mut(&mut self) -> &mut RendererParent<'a> { 
+        self.parent.as_mut().unwrap() 
+    }
 
     /// Gets the associated window reference of the Renderer, if there is one.
     #[inline]
@@ -326,56 +332,87 @@ impl<'a> Renderer<'a> {
     }
 }
 
+#[derive(Debug)]
+pub enum TextureValueError {
+    WidthOverflows(u32),
+    HeightOverflows(u32),
+    WidthMustBeMultipleOfTwoForFormat(u32, PixelFormatEnum),
+    SdlError(String),
+}
+
 /// Texture-creating methods for the renderer
 impl<'a> Renderer<'a> {
     /// Creates a texture for a rendering context.
     ///
     /// `size` is the width and height of the texture.
-    pub fn create_texture(&self, format: pixels::PixelFormatEnum, access: TextureAccess, (width, height): (u32, u32)) -> SdlResult<Texture> {
-        let width = try!(u32_to_int!(width));
-        let height = try!(u32_to_int!(height));
+    pub fn create_texture(&self, format: pixels::PixelFormatEnum, 
+            access: TextureAccess, width: u32, height: u32) 
+            -> Result<Texture, TextureValueError> {
+        use self::TextureValueError::*;
+        let w = match validate_int(width, "width") {
+            Ok(w) => w,
+            Err(_) => return Err(WidthOverflows(width)),
+        };
+        let h = match validate_int(height, "height") {
+            Ok(h) => h,
+            Err(_) => return Err(HeightOverflows(height)),
+        };
 
         // If the pixel format is YUV 4:2:0 and planar, the width and height must
         // be multiples-of-two. See issue #334 for details.
         match format {
             PixelFormatEnum::YV12 | PixelFormatEnum::IYUV => {
-                if width % 2 != 0 || height % 2 != 0 {
-                    return Err(ErrorMessage("The width and height must be multiples-of-two for planar YUV 4:2:0 pixel formats".into()));
+                if w % 2 != 0 || h % 2 != 0 {
+                    return Err(WidthMustBeMultipleOfTwoForFormat(width, format));
                 }
             },
             _ => ()
         }
 
-        let result = unsafe { ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width, height) };
+        let result = unsafe { 
+            ll::SDL_CreateTexture(
+                self.raw, format as uint32_t, access as c_int, w, h
+            )
+        };
         if result == ptr::null_mut() {
-            Err(get_error())
+            Err(SdlError(get_error()))
         } else {
             unsafe { Ok(Texture::from_ll(self, result)) }
         }
     }
 
     /// Shorthand for `create_texture(format, TextureAccess::Static, size)`
-    pub fn create_texture_static(&self, format: pixels::PixelFormatEnum, size: (u32, u32)) -> SdlResult<Texture> {
-        self.create_texture(format, TextureAccess::Static, size)
+    pub fn create_texture_static(&self, format: pixels::PixelFormatEnum, 
+            width: u32, height: u32) 
+            -> Result<Texture, TextureValueError> {
+        self.create_texture(format, TextureAccess::Static, width, height)
     }
 
     /// Shorthand for `create_texture(format, TextureAccess::Streaming, size)`
-    pub fn create_texture_streaming(&self, format: pixels::PixelFormatEnum, size: (u32, u32)) -> SdlResult<Texture> {
-        self.create_texture(format, TextureAccess::Streaming, size)
+    pub fn create_texture_streaming(&self, format: pixels::PixelFormatEnum, 
+            width: u32, height: u32)
+            -> Result<Texture, TextureValueError> {
+        self.create_texture(format, TextureAccess::Streaming, width, height)
     }
 
     /// Shorthand for `create_texture(format, TextureAccess::Target, size)`
-    pub fn create_texture_target(&self, format: pixels::PixelFormatEnum, size: (u32, u32)) -> SdlResult<Texture> {
-        self.create_texture(format, TextureAccess::Target, size)
+    pub fn create_texture_target(&self, format: pixels::PixelFormatEnum, 
+            width: u32, height: u32)
+            -> Result<Texture, TextureValueError> {
+        self.create_texture(format, TextureAccess::Target, width, height)
     }
 
     /// Creates a texture from an existing surface.
     /// # Remarks
     /// The access hint for the created texture is `TextureAccess::Static`.
-    pub fn create_texture_from_surface<S: AsRef<SurfaceRef>>(&self, surface: S) -> SdlResult<Texture> {
-        let result = unsafe { ll::SDL_CreateTextureFromSurface(self.raw, surface.as_ref().raw()) };
+    pub fn create_texture_from_surface<S: AsRef<SurfaceRef>>(&self, surface: S)
+            -> Result<Texture, TextureValueError> {
+        use self::TextureValueError::*;
+        let result = unsafe { 
+            ll::SDL_CreateTextureFromSurface(self.raw, surface.as_ref().raw())
+        };
         if result == ptr::null_mut() {
-            Err(get_error())
+            Err(SdlError(get_error()))
         } else {
             unsafe { Ok(Texture::from_ll(self, result)) }
         }
@@ -423,7 +460,9 @@ impl<'a> Renderer<'a> {
     /// Gets the color used for drawing operations (Rect, Line and Clear).
     pub fn draw_color(&self) -> pixels::Color {
         let (mut r, mut g, mut b, mut a) = (0, 0, 0, 0);
-        let ret = unsafe { ll::SDL_GetRenderDrawColor(self.raw, &mut r, &mut g, &mut b, &mut a) };
+        let ret = unsafe { 
+            ll::SDL_GetRenderDrawColor(self.raw, &mut r, &mut g, &mut b, &mut a)
+        };
         // Should only fail on an invalid renderer
         if ret != 0 { panic!(get_error()) }
         else { pixels::Color::RGBA(r, g, b, a) }
@@ -431,7 +470,11 @@ impl<'a> Renderer<'a> {
 
     /// Sets the blend mode used for drawing operations (Fill and Line).
     pub fn set_blend_mode(&mut self, blend: BlendMode) {
-        let ret = unsafe { ll::SDL_SetRenderDrawBlendMode(self.raw, FromPrimitive::from_i64(blend as i64).unwrap()) };
+        let ret = unsafe { 
+            ll::SDL_SetRenderDrawBlendMode(
+                self.raw, FromPrimitive::from_i64(blend as i64).unwrap()
+            )
+        };
         // Should only fail on an invalid renderer
         if ret != 0 { panic!(get_error()) }
     }
@@ -463,13 +506,15 @@ impl<'a> Renderer<'a> {
     }
 
     /// Gets the output size of a rendering context.
-    pub fn output_size(&self) -> SdlResult<(u32, u32)> {
+    pub fn output_size(&self) -> Result<(u32, u32), String> {
         let mut width = 0;
         let mut height = 0;
 
-        let result = unsafe { ll::SDL_GetRendererOutputSize(self.raw, &mut width, &mut height) == 0 };
+        let result = unsafe { 
+            ll::SDL_GetRendererOutputSize(self.raw, &mut width, &mut height)
+        };
 
-        if result {
+        if result == 0 {
             Ok((width as u32, height as u32))
         } else {
             Err(get_error())
@@ -477,13 +522,17 @@ impl<'a> Renderer<'a> {
     }
 
     /// Sets a device independent resolution for rendering.
-    pub fn set_logical_size(&mut self, width: u32, height: u32) -> SdlResult<()> {
-        let width = try!(u32_to_int!(width));
-        let height = try!(u32_to_int!(height));
-        let result = unsafe { ll::SDL_RenderSetLogicalSize(self.raw, width, height) };
+    pub fn set_logical_size(&mut self, width: u32, height: u32) 
+            -> Result<(), IntegerOrSdlError> {
+        use common::IntegerOrSdlError::*;
+        let width = try!(validate_int(width, "width"));
+        let height = try!(validate_int(height, "height"));
+        let result = unsafe {
+            ll::SDL_RenderSetLogicalSize(self.raw, width, height)
+        };
         match result {
             0 => Ok(()),
-            _ => Err(get_error())
+            _ => Err(SdlError(get_error()))
         }
     }
 
@@ -492,7 +541,9 @@ impl<'a> Renderer<'a> {
         let mut width = 0;
         let mut height = 0;
 
-        unsafe { ll::SDL_RenderGetLogicalSize(self.raw, &mut width, &mut height) };
+        unsafe {
+            ll::SDL_RenderGetLogicalSize(self.raw, &mut width, &mut height)
+        };
 
         (width as u32, height as u32)
     }
@@ -503,15 +554,19 @@ impl<'a> Renderer<'a> {
             Some(ref rect) => rect.raw(),
             None => ptr::null()
         };
-        let ret = unsafe { ll::SDL_RenderSetViewport(self.raw, ptr) };
+        let ret = unsafe { 
+            ll::SDL_RenderSetViewport(self.raw, ptr)
+        };
         if ret != 0 { panic!("Could not set viewport: {}", get_error()) }
     }
 
     /// Gets the drawing area for the current target.
     pub fn viewport(&self) -> Rect {
         let mut rect = unsafe { mem::uninitialized() };
-        unsafe { ll::SDL_RenderGetViewport(self.raw, &mut rect) };
-        Rect::from_ll(rect).unwrap().unwrap()
+        unsafe { 
+            ll::SDL_RenderGetViewport(self.raw, &mut rect)
+        };
+        Rect::from_ll(rect)
     }
 
     /// Sets the clip rectangle for rendering on the specified target.
@@ -534,16 +589,27 @@ impl<'a> Renderer<'a> {
     ///
     /// Returns `None` if clipping is disabled.
     pub fn clip_rect(&self) -> Option<Rect> {
-        let mut rect = unsafe { mem::uninitialized() };
-        unsafe { ll::SDL_RenderGetClipRect(self.raw, &mut rect) };
-        Rect::from_ll(rect).unwrap()
+        let mut raw = unsafe { mem::uninitialized() };
+        unsafe { 
+            ll::SDL_RenderGetClipRect(self.raw, &mut raw) 
+        };
+        if raw.w == 0 || raw.h == 0 {
+            None
+        } else {
+            Some(Rect::from_ll(raw))
+        }
     }
 
     /// Sets the drawing scale for rendering on the current target.
-    pub fn set_scale(&mut self, scale_x: f32, scale_y: f32) {
+    pub fn set_scale(&mut self, scale_x: f32, scale_y: f32) 
+            -> Result<(), String> {
         let ret = unsafe { ll::SDL_RenderSetScale(self.raw, scale_x, scale_y) };
         // Should only fail on an invalid renderer
-        if ret != 0 { panic!(get_error()) }
+        if ret != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
     }
 
     /// Gets the drawing scale for the current target.
@@ -555,92 +621,120 @@ impl<'a> Renderer<'a> {
     }
 
     /// Draws a point on the current rendering target.
-    /// # Panics
-    /// Panics if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_point(&mut self, point: Point) {
-        unsafe {
-            if ll::SDL_RenderDrawPoint(self.raw, point.x(), point.y()) != 0 {
-                panic!("Error drawing point: {}", get_error())
-            }
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    pub fn draw_point(&mut self, point: Point) -> Result<(), String> {
+        let result = unsafe {
+            ll::SDL_RenderDrawPoint(self.raw, point.x(), point.y())
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
         }
     }
 
     /// Draws multiple points on the current rendering target.
-    /// # Panics
-    /// Panics if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_points(&mut self, points: &[Point]) {
-        unsafe {
-            if ll::SDL_RenderDrawPoints(self.raw, Point::raw_slice(points), points.len() as c_int) != 0 {
-                panic!("Error drawing points: {}", get_error())
-            }
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    pub fn draw_points(&mut self, points: &[Point]) -> Result<(), String> {
+        let result = unsafe {
+            ll::SDL_RenderDrawPoints(
+                self.raw, Point::raw_slice(points), points.len() as c_int
+            )
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
         }
     }
 
-    // Draws a line on the current rendering target.
-    /// # Panics
-    /// Panics if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_line(&mut self, start: Point, end: Point) {
-        unsafe {
-            if ll::SDL_RenderDrawLine(self.raw, start.x(), start.y(), end.x(), end.y()) != 0 {
-                panic!("Error drawing line: {}", get_error())
-            }
+    /// Draws a line on the current rendering target.
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    pub fn draw_line(&mut self, start: Point, end: Point)
+            -> Result<(), String> {
+        let result = unsafe {
+            ll::SDL_RenderDrawLine(
+                self.raw, start.x(), start.y(), end.x(), end.y()
+            )
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
         }
     }
 
     /// Draws a series of connected lines on the current rendering target.
     /// # Panics
     /// Panics if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_lines(&mut self, points: &[Point]) {
-        unsafe {
-            if ll::SDL_RenderDrawLines(self.raw, Point::raw_slice(points), points.len() as c_int) != 0 {
-                panic!("Error drawing lines: {}", get_error())
-            }
+    pub fn draw_lines(&mut self, points: &[Point]) -> Result<(), String> {
+        let result = unsafe {
+            ll::SDL_RenderDrawLines(
+                self.raw, Point::raw_slice(points), points.len() as c_int
+            )
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
         }
     }
 
     /// Draws a rectangle on the current rendering target.
-    /// # Panics
-    /// Panics if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_rect(&mut self, rect: Rect) {
-        unsafe {
-            if ll::SDL_RenderDrawRect(self.raw, rect.raw()) != 0 {
-                panic!("Error drawing rect: {}", get_error())
-            }
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    pub fn draw_rect(&mut self, rect: Rect) -> Result<(), String> {
+        let result = unsafe {
+            ll::SDL_RenderDrawRect(self.raw, rect.raw())
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
         }
     }
 
     /// Draws some number of rectangles on the current rendering target.
-    /// # Panics
-    /// Panics if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_rects(&mut self, rects: &[Rect]) {
-        unsafe {
-            if ll::SDL_RenderDrawRects(self.raw, Rect::raw_slice(rects), rects.len() as c_int) != 0 {
-                panic!("Error drawing rects: {}", get_error())
-            }
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    pub fn draw_rects(&mut self, rects: &[Rect]) -> Result<(), String> {
+        let result = unsafe {
+            ll::SDL_RenderDrawRects(
+                self.raw, Rect::raw_slice(rects), rects.len() as c_int
+            )
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
         }
     }
 
     /// Fills a rectangle on the current rendering target with the drawing
     /// color.
-    /// # Panics
-    /// Panics if drawing fails for any reason (e.g. driver failure)
-    pub fn fill_rect(&mut self, rect: Rect) {
-        unsafe {
-            if ll::SDL_RenderFillRect(self.raw, rect.raw()) != 0 {
-                panic!("Error filling rect: {}", get_error())
-            }
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    pub fn fill_rect(&mut self, rect: Rect) -> Result<(), String> {
+        let result = unsafe {
+            ll::SDL_RenderFillRect(self.raw, rect.raw())
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
         }
     }
 
     /// Fills some number of rectangles on the current rendering target with
     /// the drawing color.
-    /// # Panics
-    /// Panics if drawing fails for any reason (e.g. driver failure)
-    pub fn fill_rects(&mut self, rects: &[Rect]) {
-        unsafe {
-            if ll::SDL_RenderFillRects(self.raw, Rect::raw_slice(rects), rects.len() as c_int) != 0 {
-                panic!("Error filling rects: {}", get_error())
-            }
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    pub fn fill_rects(&mut self, rects: &[Rect]) -> Result<(), String> {
+        let result = unsafe {
+            ll::SDL_RenderFillRects(
+                self.raw, Rect::raw_slice(rects), rects.len() as c_int
+            )
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
         }
     }
 
@@ -686,11 +780,13 @@ impl<'a> Renderer<'a> {
     /// * If `center` is `None`, rotation will be done around the center point
     ///   of `dst`, or `src` if `dst` is None.
     ///
-    /// # Panics
-    /// Panics if drawing fails for any reason (e.g. driver failure),
+    /// Errors if drawing fails for any reason (e.g. driver failure),
     /// if the provided texture does not belong to the renderer,
     /// or if the driver does not support RenderCopyEx.
-    pub fn copy_ex(&mut self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>, angle: f64, center: Option<Point>, (flip_horizontal, flip_vertical): (bool, bool)) {
+    pub fn copy_ex(&mut self, texture: &Texture, src: Option<Rect>,
+            dst: Option<Rect>, angle: f64, center: Option<Point>, 
+            flip_horizontal: bool, flip_vertical: bool) 
+            -> Result<(), String> {
         texture.check_renderer();
 
         let flip = match (flip_horizontal, flip_vertical) {
@@ -722,14 +818,18 @@ impl<'a> Renderer<'a> {
         };
 
         if ret != 0 {
-            panic!("Error copying texture (ex): {}", get_error())
+            Err(get_error())
+        } else {
+            Ok(())
         }
     }
 
     /// Reads pixels from the current rendering target.
     /// # Remarks
     /// WARNING: This is a very slow operation, and should not be used frequently.
-    pub fn read_pixels(&self, rect: Option<Rect>, format: pixels::PixelFormatEnum) -> SdlResult<Vec<u8>> {
+    pub fn read_pixels(&self, rect: Option<Rect>, 
+            format: pixels::PixelFormatEnum)
+            -> Result<Vec<u8>, String> {
         unsafe {
             let (actual_rect, w, h) = match rect {
                 Some(ref rect) => (rect.raw(), rect.width() as usize, rect.height() as usize),
@@ -770,12 +870,12 @@ impl<'a> Renderer<'a> {
 /// fn draw_to_texture(r: &mut Renderer) -> Texture {
 ///     r.render_target()
 ///         .expect("This platform doesn't support render targets")
-///         .create_and_set(PixelFormatEnum::RGBA8888, (512, 512));
+///         .create_and_set(PixelFormatEnum::RGBA8888, 512, 512);
 ///
 ///     // Start drawing
 ///     r.clear();
 ///     r.set_draw_color(Color::RGB(255, 0, 0));
-///     r.fill_rect(Rect::new_unwrap(100, 100, 256, 256));
+///     r.fill_rect(Rect::new(100, 100, 256, 256));
 ///
 ///     let texture: Option<Texture> = r.render_target().unwrap().reset().unwrap();
 ///     texture.unwrap()
@@ -790,7 +890,7 @@ impl<'renderer> RenderTarget<'renderer> {
     /// Resets the render target to the default render target.
     ///
     /// The old render target is returned if the function is successful.
-    pub fn reset(&mut self) -> SdlResult<Option<Texture>> {
+    pub fn reset(&mut self) -> Result<Option<Texture>, String> {
         unsafe {
             let old_texture_raw = ll::SDL_GetRenderTarget(self.raw);
 
@@ -812,7 +912,7 @@ impl<'renderer> RenderTarget<'renderer> {
     /// The texture must be created with the texture access: `sdl2::render::TextureAccess::Target`.
     ///
     /// The old render target is returned if the function is successful.
-    pub fn set(&mut self, texture: Texture) -> SdlResult<Option<Texture>> {
+    pub fn set(&mut self, texture: Texture) -> Result<Option<Texture>, String> {
         texture.check_renderer();
 
         unsafe {
@@ -836,9 +936,12 @@ impl<'renderer> RenderTarget<'renderer> {
     /// Creates a new texture and sets it as the render target.
     ///
     /// The old render target is returned if the function is successful.
-    pub fn create_and_set(&mut self, format: pixels::PixelFormatEnum, (width, height): (u32, u32)) -> SdlResult<Option<Texture>> {
-        let width = try!(u32_to_int!(width));
-        let height = try!(u32_to_int!(height));
+    pub fn create_and_set(&mut self, format: pixels::PixelFormatEnum, 
+            width: u32, height: u32)
+            -> Result<Option<Texture>, IntegerOrSdlError> {
+        use common::IntegerOrSdlError::*;
+        let width = try!(validate_int(width, "width"));
+        let height = try!(validate_int(height, "height"));
 
         let new_texture_raw = unsafe {
             let access = ll::SDL_TEXTUREACCESS_TARGET;
@@ -846,7 +949,7 @@ impl<'renderer> RenderTarget<'renderer> {
         };
 
         if new_texture_raw == ptr::null_mut() {
-            Err(get_error())
+            Err(SdlError(get_error()))
         } else {
             unsafe {
                 let old_texture_raw = ll::SDL_GetRenderTarget(self.raw);
@@ -860,7 +963,7 @@ impl<'renderer> RenderTarget<'renderer> {
                         })
                     })
                 } else {
-                    Err(get_error())
+                    Err(SdlError(get_error()))
                 }
             }
         }
@@ -895,6 +998,29 @@ impl Drop for Texture {
             }
         }
     }
+}
+
+#[derive(Debug)]
+pub enum UpdateTextureError {
+    PitchOverflows(usize),
+    PitchMustBeMultipleOfTwoForFormat(usize, PixelFormatEnum),
+    XMustBeMultipleOfTwoForFormat(i32, PixelFormatEnum),
+    YMustBeMultipleOfTwoForFormat(i32, PixelFormatEnum),
+    WidthMustBeMultipleOfTwoForFormat(u32, PixelFormatEnum),
+    HeightMustBeMultipleOfTwoForFormat(u32, PixelFormatEnum),
+    SdlError(String),
+}
+
+#[derive(Debug)]
+pub enum UpdateTextureYUVError {
+    PitchOverflows { plane: &'static str, value: usize },
+    InvalidPlaneLength{ plane: &'static str, length: usize, pitch: usize, height: usize },
+    XMustBeMultipleOfTwoForFormat(i32),
+    YMustBeMultipleOfTwoForFormat(i32),
+    WidthMustBeMultipleOfTwoForFormat(u32),
+    HeightMustBeMultipleOfTwoForFormat(u32),
+    RectNotInsideTexture(Rect),
+    SdlError(String),
 }
 
 impl Texture {
@@ -1014,46 +1140,80 @@ impl Texture {
     /// between lines
     ///
     /// * If `rect` is `None`, the entire texture is updated.
-    pub fn update(&mut self, rect: Option<Rect>, pixel_data: &[u8], pitch: usize) -> SdlResult<()> {
+    pub fn update(&mut self, rect: Option<Rect>,
+            pixel_data: &[u8], pitch: usize) 
+            -> Result<(), UpdateTextureError> {
+        use self::UpdateTextureError::*;
         self.check_renderer();
-
-        let ret = unsafe {
-            let rect_raw_ptr = match rect {
-                Some(ref rect) => rect.raw(),
-                None => ptr::null()
-            };
-
-            // Check if the rectangle's position or size is odd, and if the pitch is odd.
-            // This needs to be done in case the texture's pixel format is planar YUV.
-            // See issue #334 for details.
-            let rect_is_odd = match rect {
-                Some(r) => (r.x() % 2 != 0) || (r.y() % 2 != 0) || (r.width() % 2 != 0) || (r.height() % 2 != 0),
-                None => false
-            };
-            let pitch_is_odd = pitch % 2 != 0;
-
-            if rect_is_odd || pitch_is_odd {
-                // Query the texture's format
-                match self.query() {
-                    TextureQuery { format: PixelFormatEnum::YV12, .. } |
-                    TextureQuery { format: PixelFormatEnum::IYUV, .. } => {
-                        return Err(ErrorMessage("The rectangle dimensions and pitch must be multiples-of-two for planar YUV 4:2:0 pixel formats".into()));
+        
+        let rect_raw_ptr = match rect {
+            Some(ref rect) => rect.raw(),
+            None => ptr::null()
+        };
+        
+        // Check if the rectangle's position or size is odd, and if the pitch is odd.
+        // This needs to be done in case the texture's pixel format is planar YUV.
+        // See issue #334 for details.
+        let TextureQuery { format, .. } = self.query();
+        match format {
+            PixelFormatEnum::YV12 | PixelFormatEnum::IYUV => {
+                match rect {
+                    Some(r) => {
+                        if r.x() % 2 != 0 {
+                            return Err(
+                                XMustBeMultipleOfTwoForFormat(r.x(), format)
+                            );
+                        } else if r.y() % 2 != 0 {
+                            return Err(
+                                YMustBeMultipleOfTwoForFormat(r.y(), format)
+                            );
+                        } else if r.width() % 2 != 0 {
+                            return Err(
+                                WidthMustBeMultipleOfTwoForFormat(
+                                    r.width(), format
+                                )
+                            );
+                        } else if r.height() % 2 != 0 {
+                            return Err(
+                                HeightMustBeMultipleOfTwoForFormat(
+                                    r.height(), format
+                                )
+                            );
+                        }
                     },
-                    _ => ()
+                    _ => {}
+                };
+                if pitch % 2 != 0 {
+                    return Err(PitchMustBeMultipleOfTwoForFormat(pitch, format));
                 }
-            }
+            },
+            _ => {},
+        }
 
-            let pitch = try!(usize_to_int!(pitch));
-
-            ll::SDL_UpdateTexture(self.raw, rect_raw_ptr, pixel_data.as_ptr() as *const _, pitch)
+        let pitch = match validate_int(pitch as u32, "pitch") {
+            Ok(p) => p,
+            Err(_) => return Err(PitchOverflows(pitch)),
+        };
+        
+        let result = unsafe {
+            ll::SDL_UpdateTexture(
+                self.raw, rect_raw_ptr, pixel_data.as_ptr() as *const _, pitch
+            )
         };
 
-        if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+        if result != 0 { 
+            Err(SdlError(get_error()))
+        } else { 
+            Ok(())
+        }
     }
 
     /// Updates a rectangle within a planar YV12 or IYUV texture with new pixel data.
-    pub fn update_yuv(&mut self, rect: Option<Rect>, y_plane: &[u8], y_pitch: usize, u_plane: &[u8], u_pitch: usize, v_plane: &[u8], v_pitch: usize) -> SdlResult<()> {
+    pub fn update_yuv(&mut self, rect: Option<Rect>, y_plane: &[u8], 
+            y_pitch: usize, u_plane: &[u8], u_pitch: usize, v_plane: &[u8], 
+            v_pitch: usize) 
+            -> Result<(), UpdateTextureYUVError> {
+        use self::UpdateTextureYUVError::*;
         self.check_renderer();
 
         let rect_raw_ptr = match rect {
@@ -1061,54 +1221,77 @@ impl Texture {
             None => ptr::null()
         };
 
-        let rect_is_odd = match rect {
-            Some(r) => (r.x() % 2 != 0) || (r.y() % 2 != 0) || (r.width() % 2 != 0) || (r.height() % 2 != 0),
-            None => false
+        match rect {
+            Some(ref r) => {
+                if r.x() % 2 != 0 {
+                    return Err(XMustBeMultipleOfTwoForFormat(r.x()));
+                } else if r.y() % 2 != 0 {
+                    return Err(YMustBeMultipleOfTwoForFormat(r.y()));
+                } else if r.width() % 2 != 0 {
+                    return Err(WidthMustBeMultipleOfTwoForFormat(r.width()));
+                } else if r.height() % 2 != 0 {
+                    return Err(HeightMustBeMultipleOfTwoForFormat(r.height()));
+                }
+            },
+            _ => {}
         };
-
-        if rect_is_odd {
-            return Err(ErrorMessage("The rectangle dimensions must be multiples-of-two for planar YUV 4:2:0 pixel formats".into()));
-        }
 
         // If the destination rectangle lies outside the texture boundaries,
         // SDL_UpdateYUVTexture will write outside allocated texture memory.
         let tex_info = self.query();
-        let rect_inside_texture = match rect {
-            Some(r) => {
-                let tex_rect = Rect::new_unwrap(0, 0, tex_info.width, tex_info.height);
-                match r.intersect(&tex_rect) {
-                    Some(intersection) => intersection == r,
-                    None => false,
-                }
-            },
-            None => true,
-        };
-        if !rect_inside_texture {
-            return Err(ErrorMessage("The destination rectangle cannot lie outside the texture boundaries".into()));
+        if let Some(ref r) = rect {
+            let tex_rect = Rect::new(0, 0, tex_info.width, tex_info.height);
+            let inside = match r.intersection(tex_rect) {
+                Some(intersection) => intersection == *r,
+                None => false,
+            };
+            // The destination rectangle cannot lie outside the texture boundaries
+            if ! inside {
+                return Err(RectNotInsideTexture(r.clone()));
+            }
         }
 
         // We need the height in order to check the array slice lengths.
         // Checking the lengths can prevent buffer overruns in SDL_UpdateYUVTexture.
         let height = match rect {
-            Some(r) => r.height(),
+            Some(ref r) => r.height(),
             None => tex_info.height,
         } as usize;
 
-        let wrong_length =
-            (y_plane.len() != (y_pitch * height)) ||
-            (u_plane.len() != (u_pitch * height/2)) ||
-            (v_plane.len() != (v_pitch * height/2));
-
-        if wrong_length {
-            return Err(ErrorMessage("One or more of the plane lengths is not correct (should be pitch * height).".into()));
+        //let wrong_length =
+        if y_plane.len() != (y_pitch * height) {
+            return Err(InvalidPlaneLength { 
+                plane: "y", length: y_plane.len(), pitch: y_pitch, height: height
+            });
+        }
+        if u_plane.len() != (u_pitch * height / 2) {
+            return Err(InvalidPlaneLength { 
+                plane: "u", length: u_plane.len(), pitch: u_pitch, 
+                height: height / 2
+            });
+        } 
+        if v_plane.len() != (v_pitch * height / 2) {
+            return Err(InvalidPlaneLength { 
+                plane: "v", length: v_plane.len(), pitch: v_pitch, 
+                height: height / 2
+            });
         }
 
-        let y_pitch = try!(usize_to_int!(y_pitch));
-        let u_pitch = try!(usize_to_int!(u_pitch));
-        let v_pitch = try!(usize_to_int!(v_pitch));
+        let y_pitch = match validate_int(y_pitch as u32, "y_pitch") {
+            Ok(p) => p,
+            Err(_) => return Err(PitchOverflows { plane: "y", value: y_pitch }),
+        };
+        let u_pitch = match validate_int(u_pitch as u32, "u_pitch") {
+            Ok(p) => p,
+            Err(_) => return Err(PitchOverflows { plane: "u", value: u_pitch }),
+        };
+        let v_pitch = match validate_int(v_pitch as u32, "v_pitch") {
+            Ok(p) => p,
+            Err(_) => return Err(PitchOverflows { plane: "v", value: v_pitch }),
+        };
 
-        unsafe {
-            let result = ll::SDL_UpdateYUVTexture(
+        let result = unsafe {
+            ll::SDL_UpdateYUVTexture(
                 self.raw,
                 rect_raw_ptr,
                 y_plane.as_ptr(),
@@ -1117,10 +1300,12 @@ impl Texture {
                 u_pitch,
                 v_plane.as_ptr(),
                 v_pitch
-            );
-
-            if result == 0 { Ok(()) }
-            else { Err(get_error()) }
+            )
+        };
+        if result != 0 { 
+            Err(SdlError(get_error()))
+        } else {
+            Ok(())
         }
     }
 
@@ -1134,7 +1319,7 @@ impl Texture {
     /// necessarily contain the old texture data.
     /// This is a write-only operation, and if you need to keep a copy of the
     /// texture data you should do that at the application level.
-    pub fn with_lock<F, R>(&mut self, rect: Option<Rect>, func: F) -> SdlResult<R>
+    pub fn with_lock<F, R>(&mut self, rect: Option<Rect>, func: F) -> Result<R, String>
     where F: FnOnce(&mut [u8], usize) -> R
     {
         self.check_renderer();

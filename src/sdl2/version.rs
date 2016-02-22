@@ -44,7 +44,7 @@ pub fn version() -> Version {
 pub fn revision() -> String {
     unsafe {
         let rev = ll::SDL_GetRevision();
-        String::from_utf8_lossy(CStr::from_ptr(rev as *const _).to_bytes()).to_string()
+        CStr::from_ptr(rev as *const _).to_str().unwrap().to_owned()
     }
 }
 

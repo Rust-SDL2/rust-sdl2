@@ -3,6 +3,7 @@ extern crate sdl2;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use std::collections::HashSet;
+use std::time::Duration;
 
 pub fn main() {
     let sdl_context = sdl2::init().unwrap();
@@ -38,6 +39,6 @@ pub fn main() {
 
         prev_keys = keys;
 
-        std::thread::sleep_ms(100);
+        std::thread::sleep(Duration::from_millis(100));
     }
 }

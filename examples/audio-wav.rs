@@ -1,6 +1,7 @@
 extern crate sdl2;
 
 use sdl2::audio::{AudioCallback, AudioSpecDesired,AudioSpecWAV,AudioCVT};
+use std::time::Duration;
 
 // NOTE: You probably want to investigate SDL_Mixer
 // (https://github.com/andelf/rust-sdl2_mixer) for real use cases.
@@ -57,7 +58,7 @@ fn main() {
     device.resume();
 
     // Play for a second
-    std::thread::sleep_ms(1000);
+    std::thread::sleep(Duration::from_millis(1000));
 
     // Device is automatically closed when dropped
 }

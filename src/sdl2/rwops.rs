@@ -4,7 +4,6 @@ use std::path::Path;
 use std::marker::PhantomData;
 use libc::{c_void, c_int, size_t, c_char};
 use get_error;
-use SdlResult;
 
 use sys::rwops as ll;
 
@@ -25,7 +24,7 @@ impl<'a> RWops<'a> {
     }
 
     /// Creates an SDL file stream.
-    pub fn from_file<P: AsRef<Path>>(path: P, mode: &str) -> SdlResult<RWops<'static>> {
+    pub fn from_file<P: AsRef<Path>>(path: P, mode: &str) -> Result<RWops <'static>, String> {
         let raw = unsafe {
             let path_c = CString::new(path.as_ref().to_str().unwrap()).unwrap();
             let mode_c = CString::new(mode).unwrap();
@@ -45,7 +44,7 @@ impl<'a> RWops<'a> {
     /// Prepares a read-only memory buffer for use with `RWops`.
     ///
     /// This method can only fail if the buffer size is zero.
-    pub fn from_bytes(buf: &'a [u8]) -> SdlResult<RWops<'a>> {
+    pub fn from_bytes(buf: &'a [u8]) -> Result<RWops <'a>, String> {
         let raw = unsafe {
             ll::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int)
         };
@@ -63,7 +62,7 @@ impl<'a> RWops<'a> {
     /// Prepares a read-write memory buffer for use with `RWops`.
     ///
     /// This method can only fail if the buffer size is zero.
-    pub fn from_bytes_mut(buf: &'a mut [u8]) -> SdlResult<RWops<'a>> {
+    pub fn from_bytes_mut(buf: &'a mut [u8]) -> Result<RWops <'a>, String> {
         let raw = unsafe {
             ll::SDL_RWFromMem(buf.as_ptr() as *mut c_void, buf.len() as c_int)
         };

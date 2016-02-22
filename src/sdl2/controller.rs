@@ -1,18 +1,23 @@
 use libc::c_char;
-use std::ffi::{CString, CStr};
+use std::ffi::{CString, CStr, NulError};
 
 use GameControllerSubsystem;
-use SdlResult;
 use get_error;
 use joystick;
-use util::CStringExt;
+use common::{validate_int, IntegerOrSdlError};
 
 use sys::controller as ll;
 use sys::event::{SDL_QUERY, SDL_ENABLE};
 
+#[derive(Debug)]
+pub enum AddMappingError {
+    InvalidMapping(NulError),
+    SdlError(String),
+}
+
 impl GameControllerSubsystem {
     /// Retreive the total number of attached joysticks *and* controllers identified by SDL.
-    pub fn num_joysticks(&self) -> SdlResult<u32> {
+    pub fn num_joysticks(&self) -> Result<u32, String> {
         let result = unsafe { ::sys::joystick::SDL_NumJoysticks() };
 
         if result >= 0 {
@@ -25,9 +30,9 @@ impl GameControllerSubsystem {
     /// Return true if the joystick at index `id` is a game controller.
     #[inline]
     pub fn is_game_controller(&self, id: u32) -> bool {
-        match u32_to_int!(id) {
+        match validate_int(id, "id") {
             Ok(id) => unsafe { ll::SDL_IsGameController(id) != 0 },
-            Err(..) => false
+            Err(_) => false
         }
     }
 
@@ -35,13 +40,13 @@ impl GameControllerSubsystem {
     /// it. Controller IDs are the same as joystick IDs and the
     /// maximum number can be retreived using the `SDL_NumJoysticks`
     /// function.
-    pub fn open(&self, id: u32) -> SdlResult<GameController> {
-        let id = try!(u32_to_int!(id));
-
+    pub fn open(&self, id: u32) -> Result<GameController, IntegerOrSdlError> {
+        use common::IntegerOrSdlError::*;
+        let id = try!(validate_int(id, "id"));
         let controller = unsafe { ll::SDL_GameControllerOpen(id) };
 
         if controller.is_null() {
-            Err(get_error())
+            Err(SdlError(get_error()))
         } else {
             Ok(GameController {
                 subsystem: self.clone(),
@@ -50,12 +55,19 @@ impl GameControllerSubsystem {
         }
     }
 
-    /// Return the name of the controller at index `id`
-    pub fn name_for_index(&self, id: u32) -> SdlResult<String> {
-        let id = try!(u32_to_int!(id));
-        let name = unsafe { ll::SDL_GameControllerNameForIndex(id) };
+    /// Return the name of the controller at the given index.
+    pub fn name_for_index(&self, index: u32) -> Result<String, IntegerOrSdlError> {
+        use common::IntegerOrSdlError::*;
+        let index = try!(validate_int(index, "index"));
+        let c_str = unsafe { ll::SDL_GameControllerNameForIndex(index) };
 
-        c_str_to_string_or_err(name)
+        if c_str.is_null() {
+            Err(SdlError(get_error()))
+        } else {
+            Ok(unsafe {
+                CStr::from_ptr(c_str as *const _).to_str().unwrap().to_owned()
+            })
+        }
     }
 
     /// If state is `true` controller events are processed, otherwise
@@ -71,19 +83,24 @@ impl GameControllerSubsystem {
     }
 
     /// Add a new mapping from a mapping string
-    pub fn add_mapping(&self, mapping: &str) -> SdlResult<MappingStatus> {
-        let mapping = try!(CString::new(mapping).unwrap_or_sdlresult());
+    pub fn add_mapping(&self, mapping: &str) 
+            -> Result<MappingStatus, AddMappingError> {
+        use self::AddMappingError::*;
+        let mapping = match CString::new(mapping) {
+            Ok(s) => s,
+            Err(err) => return Err(InvalidMapping(err)),
+        };
 
         let result = unsafe { ll::SDL_GameControllerAddMapping(mapping.as_ptr() as *const c_char) };
 
         match result {
             1 => Ok(MappingStatus::Added),
             0 => Ok(MappingStatus::Updated),
-            _ => Err(get_error()),
+            _ => Err(SdlError(get_error())),
         }
     }
 
-    pub fn mapping_for_guid(&self, guid: joystick::Guid) -> SdlResult<String> {
+    pub fn mapping_for_guid(&self, guid: joystick::Guid) -> Result<String, String> {
         let c_str = unsafe { ll::SDL_GameControllerMappingForGUID(guid.raw()) };
 
         c_str_to_string_or_err(c_str)
@@ -286,20 +303,20 @@ fn c_str_to_string(c_str: *const c_char) -> String {
     if c_str.is_null() {
         String::new()
     } else {
-        let bytes = unsafe { CStr::from_ptr(c_str as *const _).to_bytes() };
-
-        String::from_utf8_lossy(bytes).to_string()
+        unsafe { 
+            CStr::from_ptr(c_str as *const _).to_str().unwrap().to_owned()
+        }
     }
 }
 
 /// Convert C string `c_str` to a String. Return an SDL error if
 /// `c_str` is NULL.
-fn c_str_to_string_or_err(c_str: *const c_char) -> SdlResult<String> {
+fn c_str_to_string_or_err(c_str: *const c_char) -> Result<String, String> {
     if c_str.is_null() {
         Err(get_error())
     } else {
-        let bytes = unsafe { CStr::from_ptr(c_str as *const _).to_bytes() };
-
-        Ok(String::from_utf8_lossy(bytes).to_string())
+        Ok(unsafe { 
+            CStr::from_ptr(c_str as *const _).to_str().unwrap().to_owned()
+        })
     }
 }

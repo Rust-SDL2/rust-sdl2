@@ -17,7 +17,8 @@ pub fn main() {
 
     let mut renderer = window.renderer().build().unwrap();
 
-    let mut texture = renderer.create_texture_streaming(PixelFormatEnum::RGB24, (256, 256)).unwrap();
+    let mut texture = renderer.create_texture_streaming(
+        PixelFormatEnum::RGB24, 256, 256).unwrap();
     // Create a red-green gradient
     texture.with_lock(None, |buffer: &mut [u8], pitch: usize| {
         for y in 0..256 {
@@ -31,8 +32,9 @@ pub fn main() {
     }).unwrap();
 
     renderer.clear();
-    renderer.copy(&texture, None, Some(Rect::new_unwrap(100, 100, 256, 256)));
-    renderer.copy_ex(&texture, None, Some(Rect::new_unwrap(450, 100, 256, 256)), 30.0, None, (false, false));
+    renderer.copy(&texture, None, Some(Rect::new(100, 100, 256, 256)));
+    renderer.copy_ex(&texture, None, 
+        Some(Rect::new(450, 100, 256, 256)), 30.0, None, false, false).unwrap();
     renderer.present();
 
     let mut event_pump = sdl_context.event_pump().unwrap();
@@ -40,7 +42,8 @@ pub fn main() {
     'running: loop {
         for event in event_pump.poll_iter() {
             match event {
-                Event::Quit {..} | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
+                Event::Quit {..} 
+                | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
                     break 'running
                 },
                 _ => {}
