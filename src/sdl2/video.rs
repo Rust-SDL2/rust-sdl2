@@ -692,7 +692,14 @@ impl fmt::Display for WindowBuildError {
 
 impl Error for WindowBuildError {
     fn description(&self) -> &str {
-        "window build error"
+        use self::WindowBuildError::*;
+
+        match *self {
+            HeightOverflows(_) => "window height overflow",
+            WidthOverflows(_) => "window width overflow",
+            InvalidTitle(_) => "invalid window title",
+            SdlError(ref e) => e,
+        }
     }
 }
 
