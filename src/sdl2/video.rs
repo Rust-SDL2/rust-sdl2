@@ -1,9 +1,8 @@
 use libc::{c_int, c_float, uint32_t, c_char};
 use std::ffi::{CStr, CString, NulError};
-use std::mem;
+use std::{mem, ptr, fmt};
 use std::ops::{Deref, DerefMut};
-use std::ptr;
-use std::vec::Vec;
+use std::error::Error;
 
 use rect::Rect;
 use render::RendererBuilder;
@@ -671,11 +670,30 @@ impl Drop for Window {
 }
 
 #[derive(Debug)]
-pub enum WindowBuildResult {
+pub enum WindowBuildError {
     HeightOverflows(u32),
     WidthOverflows(u32),
     InvalidTitle(NulError),
     SdlError(String),
+}
+
+impl fmt::Display for WindowBuildError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use self::WindowBuildError::*;
+
+        match *self {
+            HeightOverflows(h) => write!(f, "Window height ({}) is too high.", h),
+            WidthOverflows(w) => write!(f, "Window width ({}) is too high.", w),
+            InvalidTitle(ref e) => write!(f, "Invalid window title: {}", e),
+            SdlError(ref e) => write!(f, "SDL error: {}", e),
+        }
+    }
+}
+
+impl Error for WindowBuildError {
+    fn description(&self) -> &str {
+        "window build error"
+    }
 }
 
 /// The type that allows you to build windows.
@@ -707,8 +725,8 @@ impl WindowBuilder {
     }
 
     /// Builds the window.
-    pub fn build(&self) -> Result<Window, WindowBuildResult> {
-        use self::WindowBuildResult::*;
+    pub fn build(&self) -> Result<Window, WindowBuildError> {
+        use self::WindowBuildError::*;
         let title = match CString::new(self.title.clone()) {
             Ok(t) => t,
             Err(err) => return Err(InvalidTitle(err)),
@@ -719,7 +737,7 @@ impl WindowBuilder {
         if self.height >= (1 << 31) {
             return Err(HeightOverflows(self.width));
         }
-        
+
         let raw_width = self.width as c_int;
         let raw_height = self.height as c_int;
         unsafe {
@@ -768,7 +786,7 @@ impl WindowBuilder {
     }
 
     /// Sets the window to fullscreen.
-    pub fn fullscreen(&mut self) -> &mut WindowBuilder { 
+    pub fn fullscreen(&mut self) -> &mut WindowBuilder {
         self.window_flags |= ll::SDL_WindowFlags::SDL_WINDOW_FULLSCREEN as u32;
         self
     }
@@ -980,7 +998,7 @@ impl WindowRef {
 
     pub fn set_title(&mut self, title: &str) -> Result<(), NulError> {
         let title = try!(CString::new(title));
-        Ok(unsafe { 
+        Ok(unsafe {
             ll::SDL_SetWindowTitle(self.raw(), title.as_ptr() as *const c_char);
         })
     }
@@ -995,7 +1013,7 @@ impl WindowRef {
     }
 
     pub fn set_icon<S: AsRef<SurfaceRef>>(&mut self, icon: S) {
-        unsafe { 
+        unsafe {
             ll::SDL_SetWindowIcon(self.raw(), icon.as_ref().raw())
         }
     }
@@ -1004,7 +1022,7 @@ impl WindowRef {
     //pub fn SDL_GetWindowData(window: *SDL_Window, name: *c_char) -> *c_void;
 
     pub fn set_position(&mut self, x: WindowPos, y: WindowPos) {
-        unsafe { 
+        unsafe {
             ll::SDL_SetWindowPosition(
                 self.raw(), to_ll_windowpos(x), to_ll_windowpos(y)
             )
@@ -1018,11 +1036,11 @@ impl WindowRef {
         (x as i32, y as i32)
     }
 
-    pub fn set_size(&mut self, width: u32, height: u32) 
+    pub fn set_size(&mut self, width: u32, height: u32)
             -> Result<(), IntegerOrSdlError> {
         let w = try!(validate_int(width, "width"));
         let h = try!(validate_int(height, "height"));
-        Ok(unsafe { 
+        Ok(unsafe {
             ll::SDL_SetWindowSize(self.raw(), w, h)
         })
     }
@@ -1069,7 +1087,7 @@ impl WindowRef {
     pub fn maximum_size(&self) -> (u32, u32) {
         let mut w: c_int = 0;
         let mut h: c_int = 0;
-        unsafe { 
+        unsafe {
             ll::SDL_GetWindowMaximumSize(self.raw(), &mut w, &mut h)
         };
         (w as u32, h as u32)
@@ -1078,7 +1096,7 @@ impl WindowRef {
     pub fn set_bordered(&mut self, bordered: bool) {
         unsafe {
             ll::SDL_SetWindowBordered(
-                self.raw(), 
+                self.raw(),
                 if bordered { 1 } else { 0 }
             )
         }
@@ -1184,8 +1202,8 @@ impl WindowRef {
         unsafe { ll::SDL_GetWindowBrightness(self.raw()) as f64 }
     }
 
-    pub fn set_gamma_ramp(&mut self, red: Option<&[u16; 256]>, 
-            green: Option<&[u16; 256]>, blue: Option<&[u16; 256]>) 
+    pub fn set_gamma_ramp(&mut self, red: Option<&[u16; 256]>,
+            green: Option<&[u16; 256]>, blue: Option<&[u16; 256]>)
             -> Result<(), String> {
         let unwrapped_red = match red {
             Some(values) => values.as_ptr(),
@@ -1217,7 +1235,7 @@ impl WindowRef {
         let mut blue: Vec<u16> = Vec::with_capacity(256);
         let result = unsafe {
             ll::SDL_GetWindowGammaRamp(
-                self.raw(), red.as_mut_ptr(), green.as_mut_ptr(), 
+                self.raw(), red.as_mut_ptr(), green.as_mut_ptr(),
                 blue.as_mut_ptr()
             )
         };
