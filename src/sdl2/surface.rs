@@ -511,8 +511,8 @@ impl SurfaceRef {
     /// Performs surface blitting (surface copying).
     ///
     /// Returns the final blit rectangle, if a `dst_rect` was provided.
-    pub fn blit<S: AsMut<SurfaceRef>>(&self, src_rect: Option<Rect>, 
-            mut dst: S, dst_rect: Option<Rect>) 
+    pub fn blit(&self, src_rect: Option<Rect>, 
+            dst: &mut SurfaceRef, dst_rect: Option<Rect>) 
             -> Result<Option<Rect>, String> {
         unsafe {
             let src_rect_ptr = src_rect.map(|r| r.raw()).unwrap_or(ptr::null());
@@ -523,7 +523,7 @@ impl SurfaceRef {
             let dst_rect_ptr = dst_rect.map(|mut r| r.raw_mut())
                 .unwrap_or(ptr::null_mut());
             let result = ll::SDL_UpperBlit(
-                self.raw(), src_rect_ptr, dst.as_mut().raw(), dst_rect_ptr
+                self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr
             );
 
             if result == 0 {
