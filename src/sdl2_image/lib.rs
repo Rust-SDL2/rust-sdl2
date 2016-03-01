@@ -17,7 +17,6 @@ use sdl2::render::Renderer;
 use sdl2::rwops::RWops;
 use sdl2::version::Version;
 use sdl2::get_error;
-use sdl2::SdlResult;
 
 // Setup linking for all targets.
 #[cfg(target_os="macos")]
@@ -76,19 +75,19 @@ impl ToString for InitFlag {
 pub trait LoadSurface: Sized {
     // Self is only returned here to type hint to the compiler.
     // The syntax for type hinting in this case is not yet defined.
-    // The intended return value is SdlResult<~Surface>.
-    fn from_file(filename: &Path) -> SdlResult<Self>;
-    fn from_xpm_array(xpm: *const *const i8) -> SdlResult<Self>;
+    // The intended return value is Result<~Surface, String>.
+    fn from_file(filename: &Path) -> Result<Self, String>;
+    fn from_xpm_array(xpm: *const *const i8) -> Result<Self, String>;
 }
 
 /// Method extensions to Surface for saving to disk
 pub trait SaveSurface {
-    fn save(&self, filename: &Path) -> SdlResult<()>;
-    fn save_rw(&self, dst: &mut RWops) -> SdlResult<()>;
+    fn save(&self, filename: &Path) -> Result<(), String>;
+    fn save_rw(&self, dst: &mut RWops) -> Result<(), String>;
 }
 
 impl<'a> LoadSurface for Surface<'a> {
-    fn from_file(filename: &Path) -> SdlResult<Surface<'a>> {
+    fn from_file(filename: &Path) -> Result<Surface<'a>, String> {
         //! Loads an SDL Surface from a file
         unsafe {
             let raw = ffi::IMG_Load(CString::new(filename.to_str().unwrap()).unwrap().as_ptr() as *const _);
@@ -100,7 +99,7 @@ impl<'a> LoadSurface for Surface<'a> {
         }
     }
 
-    fn from_xpm_array(xpm: *const *const i8) -> SdlResult<Surface<'a>> {
+    fn from_xpm_array(xpm: *const *const i8) -> Result<Surface<'a>, String> {
         //! Loads an SDL Surface from XPM data
         unsafe {
             let raw = ffi::IMG_ReadXPMFromArray(xpm as *const *const c_char);
@@ -114,7 +113,7 @@ impl<'a> LoadSurface for Surface<'a> {
 }
 
 impl<'a> SaveSurface for Surface<'a> {
-    fn save(&self, filename: &Path) -> SdlResult<()> {
+    fn save(&self, filename: &Path) -> Result<(), String> {
         //! Saves an SDL Surface to a file
         unsafe {
             let status = ffi::IMG_SavePNG(self.raw(), CString::new(filename.to_str().unwrap()).unwrap().as_ptr() as *const _);
@@ -126,7 +125,7 @@ impl<'a> SaveSurface for Surface<'a> {
         }
     }
 
-    fn save_rw(&self, dst: &mut RWops) -> SdlResult<()> {
+    fn save_rw(&self, dst: &mut RWops) -> Result<(), String> {
         //! Saves an SDL Surface to an RWops
         unsafe {
             let status = ffi::IMG_SavePNG_RW(self.raw(), dst.raw(), 0);
@@ -142,11 +141,11 @@ impl<'a> SaveSurface for Surface<'a> {
 
 /// Method extensions for creating Textures from a Renderer
 pub trait LoadTexture {
-    fn load_texture(&self, filename: &Path) -> SdlResult<Texture>;
+    fn load_texture(&self, filename: &Path) -> Result<Texture, String>;
 }
 
 impl<'a> LoadTexture for Renderer<'a> {
-    fn load_texture(&self, filename: &Path) -> SdlResult<Texture> {
+    fn load_texture(&self, filename: &Path) -> Result<Texture, String> {
         //! Loads an SDL Texture from a file
         unsafe {
             let raw = ffi::IMG_LoadTexture(self.raw(), CString::new(filename.to_str().unwrap()).unwrap().as_ptr() as *const _);
@@ -169,7 +168,7 @@ impl Drop for Sdl2ImageContext {
     }
 }
 
-pub fn init(flags: InitFlag) -> SdlResult<Sdl2ImageContext> {
+pub fn init(flags: InitFlag) -> Result<Sdl2ImageContext, String> {
     //! Initializes SDL2_image with InitFlags.
     //! If not every flag is set it returns an error
     let return_flags = unsafe {
@@ -178,10 +177,10 @@ pub fn init(flags: InitFlag) -> SdlResult<Sdl2ImageContext> {
     };
     if !flags.intersects(return_flags) {
         // According to docs, error message text is not always set
-        if get_error() == sdl2::ErrorMessage("".to_string()) {
+        if get_error() == "" {
             let un_init_flags = return_flags ^ flags;
             let error_str = &("Could not init: ".to_string() + &un_init_flags.to_string());
-            sdl2::set_error(error_str);
+            let _ = sdl2::set_error(error_str);
         }
         Err(get_error())
     } else {
@@ -197,7 +196,7 @@ pub fn get_linked_version() -> Version {
 }
 
 #[inline]
-fn to_surface_result<'a>(raw: *mut sys::surface::SDL_Surface) -> SdlResult<Surface<'a>> {
+fn to_surface_result<'a>(raw: *mut sys::surface::SDL_Surface) -> Result<Surface<'a>, String> {
     if (raw as *mut ()).is_null() {
         Err(get_error())
     } else {
@@ -207,25 +206,25 @@ fn to_surface_result<'a>(raw: *mut sys::surface::SDL_Surface) -> SdlResult<Surfa
 
 pub trait ImageRWops {
     /// load as a surface. except TGA
-    fn load(&self) -> SdlResult<Surface>;
+    fn load(&self) -> Result<Surface, String>;
     /// load as a surface. This can load all supported image formats.
-    fn load_typed(&self, _type: &str) -> SdlResult<Surface>;
+    fn load_typed(&self, _type: &str) -> Result<Surface, String>;
 
-    fn load_cur(&self) -> SdlResult<Surface>;
-    fn load_ico(&self) -> SdlResult<Surface>;
-    fn load_bmp(&self) -> SdlResult<Surface>;
-    fn load_pnm(&self) -> SdlResult<Surface>;
-    fn load_xpm(&self) -> SdlResult<Surface>;
-    fn load_xcf(&self) -> SdlResult<Surface>;
-    fn load_pcx(&self) -> SdlResult<Surface>;
-    fn load_gif(&self) -> SdlResult<Surface>;
-    fn load_jpg(&self) -> SdlResult<Surface>;
-    fn load_tif(&self) -> SdlResult<Surface>;
-    fn load_png(&self) -> SdlResult<Surface>;
-    fn load_tga(&self) -> SdlResult<Surface>;
-    fn load_lbm(&self) -> SdlResult<Surface>;
-    fn load_xv(&self)  -> SdlResult<Surface>;
-    fn load_webp(&self) -> SdlResult<Surface>;
+    fn load_cur(&self) -> Result<Surface, String>;
+    fn load_ico(&self) -> Result<Surface, String>;
+    fn load_bmp(&self) -> Result<Surface, String>;
+    fn load_pnm(&self) -> Result<Surface, String>;
+    fn load_xpm(&self) -> Result<Surface, String>;
+    fn load_xcf(&self) -> Result<Surface, String>;
+    fn load_pcx(&self) -> Result<Surface, String>;
+    fn load_gif(&self) -> Result<Surface, String>;
+    fn load_jpg(&self) -> Result<Surface, String>;
+    fn load_tif(&self) -> Result<Surface, String>;
+    fn load_png(&self) -> Result<Surface, String>;
+    fn load_tga(&self) -> Result<Surface, String>;
+    fn load_lbm(&self) -> Result<Surface, String>;
+    fn load_xv(&self)  -> Result<Surface, String>;
+    fn load_webp(&self) -> Result<Surface, String>;
 
     fn is_cur(&self) -> bool;
     fn is_ico(&self) -> bool;
@@ -244,76 +243,76 @@ pub trait ImageRWops {
 }
 
 impl<'a> ImageRWops for RWops<'a> {
-    fn load(&self) -> SdlResult<Surface> {
+    fn load(&self) -> Result<Surface, String> {
         let raw = unsafe {
             ffi::IMG_Load_RW(self.raw(), 0)
         };
         to_surface_result(raw)
     }
-    fn load_typed(&self, _type: &str) -> SdlResult<Surface> {
+    fn load_typed(&self, _type: &str) -> Result<Surface, String> {
         let raw = unsafe {
             ffi::IMG_LoadTyped_RW(self.raw(), 0, CString::new(_type.as_bytes()).unwrap().as_ptr() as *const _)
         };
         to_surface_result(raw)
     }
 
-    fn load_cur(&self) -> SdlResult<Surface> {
+    fn load_cur(&self) -> Result<Surface, String> {
         let raw = unsafe { ffi::IMG_LoadCUR_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_ico(&self) -> SdlResult<Surface> {
+    fn load_ico(&self) -> Result<Surface, String> {
         let raw = unsafe { ffi::IMG_LoadICO_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_bmp(&self) -> SdlResult<Surface> {
+    fn load_bmp(&self) -> Result<Surface, String> {
         let raw = unsafe { ffi::IMG_LoadBMP_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_pnm(&self) -> SdlResult<Surface> {
+    fn load_pnm(&self) -> Result<Surface, String> {
         let raw = unsafe { ffi::IMG_LoadPNM_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_xpm(&self) -> SdlResult<Surface> {
+    fn load_xpm(&self) -> Result<Surface, String> {
         let raw = unsafe { ffi::IMG_LoadXPM_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_xcf(&self) -> SdlResult<Surface> {
+    fn load_xcf(&self) -> Result<Surface, String> {
         let raw = unsafe { ffi::IMG_LoadXCF_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_pcx(&self) -> SdlResult<Surface> {
+    fn load_pcx(&self) -> Result<Surface, String> {
         let raw = unsafe { ffi::IMG_LoadPCX_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_gif(&self) -> SdlResult<Surface> {
+    fn load_gif(&self) -> Result<Surface, String> {
         let raw = unsafe { ffi::IMG_LoadGIF_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_jpg(&self) -> SdlResult<Surface> {
+    fn load_jpg(&self) -> Result<Surface, String> {
         let raw = unsafe { ffi::IMG_LoadJPG_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_tif(&self) -> SdlResult<Surface> {
+    fn load_tif(&self) -> Result<Surface, String> {
         let raw = unsafe { ffi::IMG_LoadTIF_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_png(&self) -> SdlResult<Surface> {
+    fn load_png(&self) -> Result<Surface, String> {
         let raw = unsafe { ffi::IMG_LoadPNG_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_tga(&self) -> SdlResult<Surface> {
+    fn load_tga(&self) -> Result<Surface, String> {
         let raw = unsafe { ffi::IMG_LoadTGA_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_lbm(&self) -> SdlResult<Surface> {
+    fn load_lbm(&self) -> Result<Surface, String> {
         let raw = unsafe { ffi::IMG_LoadLBM_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_xv(&self)  -> SdlResult<Surface> {
+    fn load_xv(&self)  -> Result<Surface, String> {
         let raw = unsafe { ffi::IMG_LoadXV_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_webp(&self)  -> SdlResult<Surface> {
+    fn load_webp(&self)  -> Result<Surface, String> {
         let raw = unsafe { ffi::IMG_LoadWEBP_RW(self.raw()) };
         to_surface_result(raw)
     }
