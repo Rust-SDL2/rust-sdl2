@@ -5,14 +5,12 @@ use std::error;
 use std::error::Error;
 use std::ffi::NulError;
 use std::fmt;
-use sdl2::ErrorMessage;
 use sdl2::surface::Surface;
 use sdl2_sys::surface::SDL_Surface;
 use sdl2::get_error;
 use sdl2::pixels;
 use sdl2::pixels::Color;
 use sdl2_sys::pixels::SDL_Color;
-use sdl2::SdlResult;
 use ffi;
 
 /// Converts a rust-SDL2 color to its C ffi representation.
@@ -64,7 +62,7 @@ pub enum FontError {
     /// A Latin-1 encoded byte string is invalid.
     InvalidLatin1Text(NulError),
     /// A SDL2-related error occured.
-    SdlError(ErrorMessage),
+    SdlError(String),
 }
 
 impl error::Error for FontError {
@@ -74,7 +72,7 @@ impl error::Error for FontError {
                 error.description()
             },
             &FontError::SdlError(ref message) => {
-                message.description()
+                message
             },
         }
     }
@@ -101,7 +99,7 @@ impl fmt::Display for FontError {
                 write!(f, "SDL2 error: {}", msg)
             },
         }
-        
+
     }
 }
 
@@ -147,7 +145,7 @@ fn convert_to_surface<'a>(raw: *mut SDL_Surface) -> FontResult<Surface<'a>> {
     if (raw as *mut ()).is_null() {
         Err(FontError::SdlError(get_error()))
     } else {
-        Ok(unsafe { 
+        Ok(unsafe {
             Surface::from_ll(raw)
         })
     }
@@ -164,22 +162,22 @@ impl<'a> PartialRendering<'a> {
         let raw = unsafe {
             match self.text {
                 RenderableText::Utf8(_) | RenderableText::Char(_) => {
-                    ffi::TTF_RenderUTF8_Solid(self.font.raw(), 
+                    ffi::TTF_RenderUTF8_Solid(self.font.raw(),
                         source.as_ptr(), color)
                 },
                 RenderableText::Latin1(_) => {
-                    ffi::TTF_RenderText_Solid(self.font.raw(), 
+                    ffi::TTF_RenderText_Solid(self.font.raw(),
                         source.as_ptr(), color)
                 },
             }
         };
         convert_to_surface(raw)
     }
-    
+
     /// Renders the text in *shaded* mode.
     /// See [the SDL2_TTF docs](https://www.libsdl.org/projects/SDL_ttf/docs/SDL_ttf.html#SEC42)
     /// for an explanation.
-    pub fn shaded<'b, T>(self, color: T, background: T) 
+    pub fn shaded<'b, T>(self, color: T, background: T)
             -> FontResult<Surface<'b>> where T: Into<Color> {
         let source = try!(self.text.convert());
         let foreground = color_to_c_color(color.into());
@@ -187,56 +185,56 @@ impl<'a> PartialRendering<'a> {
         let raw = unsafe {
             match self.text {
                 RenderableText::Utf8(_) | RenderableText::Char(_) => {
-                    ffi::TTF_RenderUTF8_Shaded(self.font.raw(), 
+                    ffi::TTF_RenderUTF8_Shaded(self.font.raw(),
                         source.as_ptr(), foreground, background)
                 },
                 RenderableText::Latin1(_) => {
-                    ffi::TTF_RenderText_Shaded(self.font.raw(), 
+                    ffi::TTF_RenderText_Shaded(self.font.raw(),
                         source.as_ptr(), foreground, background)
                 },
             }
         };
         convert_to_surface(raw)
     }
-    
+
     /// Renders the text in *blended* mode.
     /// See [the SDL2_TTF docs](https://www.libsdl.org/projects/SDL_ttf/docs/SDL_ttf.html#SEC42)
     /// for an explanation.
-    pub fn blended<'b, T>(self, color: T) 
+    pub fn blended<'b, T>(self, color: T)
             -> FontResult<Surface<'b>> where T: Into<Color> {
         let source = try!(self.text.convert());
         let color = color_to_c_color(color.into());
         let raw = unsafe {
             match self.text {
                 RenderableText::Utf8(_) | RenderableText::Char(_) => {
-                    ffi::TTF_RenderUTF8_Blended(self.font.raw(), 
+                    ffi::TTF_RenderUTF8_Blended(self.font.raw(),
                         source.as_ptr(), color)
                 },
                 RenderableText::Latin1(_) => {
-                    ffi::TTF_RenderText_Blended(self.font.raw(), 
+                    ffi::TTF_RenderText_Blended(self.font.raw(),
                         source.as_ptr(), color)
                 },
             }
         };
         convert_to_surface(raw)
     }
-    
-    /// Renders the text in *blended* mode but wrapping the words if the width 
+
+    /// Renders the text in *blended* mode but wrapping the words if the width
     /// exceeds the given maximum width.
     /// See [the SDL2_TTF docs](https://www.libsdl.org/projects/SDL_ttf/docs/SDL_ttf.html#SEC42)
     /// for an explanation of the mode.
-    pub fn blended_wrapped<'b, T>(self, color: T, wrap_max_width: u32) 
+    pub fn blended_wrapped<'b, T>(self, color: T, wrap_max_width: u32)
             -> FontResult<Surface<'b>> where T: Into<Color> {
         let source = try!(self.text.convert());
         let color = color_to_c_color(color.into());
         let raw = unsafe {
             match self.text {
                 RenderableText::Utf8(_) | RenderableText::Char(_) => {
-                    ffi::TTF_RenderUTF8_Blended_Wrapped(self.font.raw(), 
+                    ffi::TTF_RenderUTF8_Blended_Wrapped(self.font.raw(),
                         source.as_ptr(), color, wrap_max_width)
                 },
                 RenderableText::Latin1(_) => {
-                    ffi::TTF_RenderText_Blended_Wrapped(self.font.raw(), 
+                    ffi::TTF_RenderText_Blended_Wrapped(self.font.raw(),
                         source.as_ptr(), color, wrap_max_width)
                 },
             }
@@ -266,7 +264,7 @@ impl Drop for Font {
 }
 
 /// Internally used to load a font (for internal visibility).
-pub fn internal_load_font(path: &Path, ptsize: u16) -> SdlResult<Font> {
+pub fn internal_load_font(path: &Path, ptsize: u16) -> Result<Font, String> {
     unsafe {
         let cstring = CString::new(path.to_str().unwrap()).unwrap();
         let raw = ffi::TTF_OpenFont(cstring.as_ptr(), ptsize as c_int);
@@ -279,18 +277,18 @@ pub fn internal_load_font(path: &Path, ptsize: u16) -> SdlResult<Font> {
 }
 
 /// Internally used to load a font (for internal visibility).
-pub fn internal_load_font_from_ll(raw: *const ffi::TTF_Font, owned: bool) 
+pub fn internal_load_font_from_ll(raw: *const ffi::TTF_Font, owned: bool)
         -> Font {
     Font { raw: raw, owned: owned }
 }
 
 /// Internally used to load a font (for internal visibility).
 pub fn internal_load_font_at_index(path: &Path, index: u32, ptsize: u16)
-        -> SdlResult<Font> {
+        -> Result<Font, String> {
     unsafe {
         let cstring = CString::new(path.to_str().unwrap().as_bytes())
             .unwrap();
-        let raw = ffi::TTF_OpenFontIndex(cstring.as_ptr(), 
+        let raw = ffi::TTF_OpenFontIndex(cstring.as_ptr(),
             ptsize as c_int, index as c_long);
         if raw.is_null() {
             Err(get_error())
@@ -305,15 +303,15 @@ impl Font {
     unsafe fn raw(&self) -> *const ffi::TTF_Font {
         self.raw
     }
-    
+
     /// Starts specifying a rendering of the given UTF-8-encoded text.
     pub fn render<'a>(&'a self, text: &'a str) -> PartialRendering<'a> {
-        PartialRendering { 
+        PartialRendering {
             text: RenderableText::Utf8(text),
             font: self,
         }
     }
-    
+
     /// Starts specifying a rendering of the given Latin-1-encoded text.
     pub fn render_latin1<'a>(&'a self, text: &'a [u8]) -> PartialRendering<'a> {
         PartialRendering {
@@ -321,7 +319,7 @@ impl Font {
             font: self,
         }
     }
-    
+
     /// Starts specifying a rendering of the given UTF-8-encoded character.
     pub fn render_char<'a>(&'a self, ch: char) -> PartialRendering<'a> {
         let mut s = String::new();
@@ -349,11 +347,11 @@ impl Font {
             Ok(size)
         }
     }
-    
+
     /// Returns the width and height of the given text when rendered using this
     /// font.
     #[allow(unused_mut)]
-    pub fn size_of_latin1(&self, text: &[u8]) 
+    pub fn size_of_latin1(&self, text: &[u8])
         -> FontResult<(u32, u32)> {
         let c_string = try!(RenderableText::Latin1(text).convert());
         let (res, size) = unsafe {
@@ -368,7 +366,7 @@ impl Font {
             Ok(size)
         }
     }
-    
+
     /// Returns the width and height of the given text when rendered using this
     /// font.
     pub fn size_of_char(&self, ch: char) -> FontResult<(u32, u32)> {
@@ -376,7 +374,7 @@ impl Font {
         s.push(ch);
         self.size_of(&s)
     }
-    
+
     /// Returns the font's style flags.
     pub fn get_style(&self) -> FontStyle {
         unsafe {
@@ -391,21 +389,21 @@ impl Font {
             ffi::TTF_SetFontStyle(self.raw, styles.bits())
         }
     }
-    
+
     /// Returns the width of the font's outline.
     pub fn get_outline_width(&self) -> u16 {
         unsafe {
             ffi::TTF_GetFontOutline(self.raw) as u16
         }
     }
-    
+
     /// Sets the width of the font's outline.
     pub fn set_outline_width(&mut self, width: u16) {
         unsafe {
             ffi::TTF_SetFontOutline(self.raw, width as c_int)
         }
     }
-    
+
     /// Returns the font's freetype hints.
     pub fn get_hinting(&self) -> Hinting {
         unsafe {
@@ -425,14 +423,14 @@ impl Font {
             ffi::TTF_SetFontHinting(self.raw, hinting as c_int)
         }
     }
-    
+
     /// Returns whether the font is kerning.
     pub fn get_kerning(&self) -> bool {
         unsafe {
             ffi::TTF_GetFontKerning(self.raw) != 0
         }
     }
-    
+
     /// Sets whether the font should use kerning.
     pub fn set_kerning(&mut self, kerning: bool) {
         unsafe {
@@ -454,21 +452,21 @@ impl Font {
         }
     }
 
-    /// Returns the font's lowest descent (height below base). 
+    /// Returns the font's lowest descent (height below base).
     /// This is a negative number.
     pub fn descent(&self) -> i32 {
         unsafe {
             ffi::TTF_FontDescent(self.raw) as i32
         }
     }
-    
+
     /// Returns the recommended line spacing for text rendered with this font.
     pub fn recommended_line_spacing(&self) -> i32 {
         unsafe {
             ffi::TTF_FontLineSkip(self.raw) as i32
         }
     }
-    
+
     /// Returns the number of faces in this font.
     pub fn face_count(&self) -> u16 {
         unsafe {
@@ -482,7 +480,7 @@ impl Font {
             ffi::TTF_FontFaceIsFixedWidth(self.raw) != 0
         }
     }
-    
+
     /// Returns the family name of the current font face.
     pub fn face_family_name(&self) -> Option<String> {
         unsafe {
@@ -495,7 +493,7 @@ impl Font {
             }
         }
     }
-    
+
     /// Returns the name of the current font face.
     pub fn face_style_name(&self) -> Option<String> {
         unsafe {
@@ -507,7 +505,7 @@ impl Font {
             }
         }
     }
-    
+
     /// Returns the index of the given character in this font face.
     pub fn find_glyph(&self, ch: char) -> Option<u16> {
         unsafe {
@@ -519,7 +517,7 @@ impl Font {
             }
         }
     }
-    
+
     /// Returns the glyph metrics of the given character in this font face.
     pub fn find_glyph_metrics(&self, ch: char) -> Option<GlyphMetrics> {
         let minx = 0;
@@ -535,7 +533,7 @@ impl Font {
         if ret != 0 {
             None
         } else {
-            Some(GlyphMetrics { 
+            Some(GlyphMetrics {
                 minx: minx as i32, maxx: maxx as i32, miny: miny as i32,
                 maxy: maxy as i32, advance: advance as i32
             } )
