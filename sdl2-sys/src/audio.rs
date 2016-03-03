@@ -42,7 +42,7 @@ pub struct SDL_AudioSpec {
 }
 pub type SDL_AudioFilter =
     Option<extern "C" fn (arg1: *mut SDL_AudioCVT, arg2: SDL_AudioFormat)>;
-#[allow(dead_code, missing_copy_implementations, raw_pointer_derive)]
+#[allow(dead_code, missing_copy_implementations)]
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct SDL_AudioCVT {
