@@ -511,8 +511,8 @@ impl SurfaceRef {
     /// Performs surface blitting (surface copying).
     ///
     /// Returns the final blit rectangle, if a `dst_rect` was provided.
-    pub fn blit<S: AsMut<SurfaceRef>>(&self, src_rect: Option<Rect>, 
-            mut dst: S, dst_rect: Option<Rect>) 
+    pub fn blit(&self, src_rect: Option<Rect>, 
+            dst: &mut SurfaceRef, dst_rect: Option<Rect>) 
             -> Result<Option<Rect>, String> {
         unsafe {
             let src_rect_ptr = src_rect.map(|r| r.raw()).unwrap_or(ptr::null());
@@ -523,7 +523,7 @@ impl SurfaceRef {
             let dst_rect_ptr = dst_rect.map(|mut r| r.raw_mut())
                 .unwrap_or(ptr::null_mut());
             let result = ll::SDL_UpperBlit(
-                self.raw(), src_rect_ptr, dst.as_mut().raw(), dst_rect_ptr
+                self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr
             );
 
             if result == 0 {
@@ -538,8 +538,8 @@ impl SurfaceRef {
     ///
     /// Unless you know what you're doing, use `blit()` instead, which will clip the input rectangles.
     /// This function could crash if the rectangles aren't pre-clipped to the surface, and is therefore unsafe.
-    pub unsafe fn lower_blit<S: AsMut<SurfaceRef>>(&self, src_rect: Option<Rect>,
-                      mut dst: S, dst_rect: Option<Rect>) -> Result<(), String> {
+    pub unsafe fn lower_blit(&self, src_rect: Option<Rect>,
+                      dst: &mut SurfaceRef, dst_rect: Option<Rect>) -> Result<(), String> {
 
         match {
             // The rectangles don't change, but the function requires mutable pointers.
@@ -547,7 +547,7 @@ impl SurfaceRef {
                 .unwrap_or(ptr::null()) as *mut _;
             let dst_rect_ptr = dst_rect.map(|r| r.raw())
                 .unwrap_or(ptr::null()) as *mut _;
-            ll::SDL_LowerBlit(self.raw(), src_rect_ptr, dst.as_mut().raw(), dst_rect_ptr)
+            ll::SDL_LowerBlit(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
         } {
             0 => Ok(()),
             _ => Err(get_error())
@@ -557,8 +557,8 @@ impl SurfaceRef {
     /// Performs scaled surface bliting (surface copying).
     ///
     /// Returns the final blit rectangle, if a `dst_rect` was provided.
-    pub fn blit_scaled<S: AsMut<SurfaceRef>>(&self, src_rect: Option<Rect>,
-                             mut dst: S, dst_rect: Option<Rect>) -> Result<Option<Rect>, String> {
+    pub fn blit_scaled(&self, src_rect: Option<Rect>,
+                             dst: &mut SurfaceRef, dst_rect: Option<Rect>) -> Result<Option<Rect>, String> {
 
         match unsafe {
             let src_rect_ptr = src_rect.map(|r| r.raw()).unwrap_or(ptr::null());
@@ -568,7 +568,7 @@ impl SurfaceRef {
             let dst_rect = dst_rect;
             let dst_rect_ptr = dst_rect.map(|mut r| r.raw_mut())
                 .unwrap_or(ptr::null_mut());
-            ll::SDL_UpperBlitScaled(self.raw(), src_rect_ptr, dst.as_mut().raw(), dst_rect_ptr)
+            ll::SDL_UpperBlitScaled(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
         } {
             0 => Ok(dst_rect),
             _ => Err(get_error())
@@ -579,8 +579,8 @@ impl SurfaceRef {
     ///
     /// Unless you know what you're doing, use `blit_scaled()` instead, which will clip the input rectangles.
     /// This function could crash if the rectangles aren't pre-clipped to the surface, and is therefore unsafe.
-    pub unsafe fn lower_blit_scaled<S: AsMut<SurfaceRef>>(&self, src_rect: Option<Rect>,
-                             mut dst: S, dst_rect: Option<Rect>) -> Result<(), String> {
+    pub unsafe fn lower_blit_scaled(&self, src_rect: Option<Rect>,
+                             dst: &mut SurfaceRef, dst_rect: Option<Rect>) -> Result<(), String> {
 
         match {
             // The rectangles don't change, but the function requires mutable pointers.
@@ -588,7 +588,7 @@ impl SurfaceRef {
                 .unwrap_or(ptr::null()) as *mut _;
             let dst_rect_ptr = dst_rect.map(|r| r.raw())
                 .unwrap_or(ptr::null()) as *mut _;
-            ll::SDL_LowerBlitScaled(self.raw(), src_rect_ptr, dst.as_mut().raw(), dst_rect_ptr)
+            ll::SDL_LowerBlitScaled(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
         } {
             0 => Ok(()),
             _ => Err(get_error())
