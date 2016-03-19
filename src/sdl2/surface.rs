@@ -515,12 +515,12 @@ impl SurfaceRef {
             dst: &mut SurfaceRef, dst_rect: Option<Rect>) 
             -> Result<Option<Rect>, String> {
         unsafe {
-            let src_rect_ptr = src_rect.map(|r| r.raw()).unwrap_or(ptr::null());
-            
+            let src_rect_ptr = src_rect.as_ref().map(|r| r.raw()).unwrap_or(ptr::null());
+
             // Copy the rect here to make a mutable copy without requiring
             // a mutable argument
-            let dst_rect = dst_rect;
-            let dst_rect_ptr = dst_rect.map(|mut r| r.raw_mut())
+            let mut dst_rect = dst_rect;
+            let dst_rect_ptr = dst_rect.as_mut().map(|mut r| r.raw_mut())
                 .unwrap_or(ptr::null_mut());
             let result = ll::SDL_UpperBlit(
                 self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr
@@ -543,9 +543,9 @@ impl SurfaceRef {
 
         match {
             // The rectangles don't change, but the function requires mutable pointers.
-            let src_rect_ptr = src_rect.map(|r| r.raw())
+            let src_rect_ptr = src_rect.as_ref().map(|r| r.raw())
                 .unwrap_or(ptr::null()) as *mut _;
-            let dst_rect_ptr = dst_rect.map(|r| r.raw())
+            let dst_rect_ptr = dst_rect.as_ref().map(|r| r.raw())
                 .unwrap_or(ptr::null()) as *mut _;
             ll::SDL_LowerBlit(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
         } {
@@ -561,12 +561,12 @@ impl SurfaceRef {
                              dst: &mut SurfaceRef, dst_rect: Option<Rect>) -> Result<Option<Rect>, String> {
 
         match unsafe {
-            let src_rect_ptr = src_rect.map(|r| r.raw()).unwrap_or(ptr::null());
-            
+            let src_rect_ptr = src_rect.as_ref().map(|r| r.raw()).unwrap_or(ptr::null());
+
             // Copy the rect here to make a mutable copy without requiring
             // a mutable argument
-            let dst_rect = dst_rect;
-            let dst_rect_ptr = dst_rect.map(|mut r| r.raw_mut())
+            let mut dst_rect = dst_rect;
+            let dst_rect_ptr = dst_rect.as_mut().map(|mut r| r.raw_mut())
                 .unwrap_or(ptr::null_mut());
             ll::SDL_UpperBlitScaled(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
         } {
@@ -584,9 +584,9 @@ impl SurfaceRef {
 
         match {
             // The rectangles don't change, but the function requires mutable pointers.
-            let src_rect_ptr = src_rect.map(|r| r.raw())
+            let src_rect_ptr = src_rect.as_ref().map(|r| r.raw())
                 .unwrap_or(ptr::null()) as *mut _;
-            let dst_rect_ptr = dst_rect.map(|r| r.raw())
+            let dst_rect_ptr = dst_rect.as_ref().map(|r| r.raw())
                 .unwrap_or(ptr::null()) as *mut _;
             ll::SDL_LowerBlitScaled(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
         } {
