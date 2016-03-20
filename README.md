@@ -23,10 +23,15 @@ Place the following into your project's Cargo.toml file:
 
 ```toml
 [dependencies]
-sdl2_ttf = "0.13.0"
+sdl2_ttf = "0.16"
 ```
 
-Or, to use the newest rust-sdl2_ttf, reference the repository:
+sdl2_ttf is directly compatible with the corresponding version of sdl2.
+Hence sdl2_ttf v0.15 is compatible with sdl2 0.15, and so forth.
+Backwards compatibility is not guaranteed by rust-sdl2, so take that into
+account when creating new projects !
+
+If you want the newest rust-sdl2_ttf, reference the repository:
 
 ```toml
 [dependencies.sdl2_ttf]
