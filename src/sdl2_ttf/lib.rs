@@ -36,5 +36,5 @@ pub use context::{
 };
 pub use font::{
     Font, FontStyle, Hinting, GlyphMetrics, PartialRendering, FontError, 
-    FontResult,
+    FontResult, STYLE_NORMAL, STYLE_BOLD, STYLE_ITALIC, STYLE_UNDERLINE, STYLE_STRIKETHROUGH
 };
