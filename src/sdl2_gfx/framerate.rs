@@ -1,9 +1,9 @@
 //! Framerate control
 
 use libc;
-use libc::{c_void, uint32_t, malloc, size_t};
+use libc::{c_void, uint32_t, size_t};
 use std::mem;
-use sdl2::{SdlResult, ErrorMessage};
+use sdl2::get_error;
 
 
 mod ll {
@@ -44,10 +44,12 @@ impl FPSManager {
     }
 
     /// Set the framerate in Hz.
-    pub fn set_framerate(&mut self, rate: u32) -> SdlResult<()> {
+    pub fn set_framerate(&mut self, rate: u32) -> Result<(), String> {
         let ret = unsafe { ll::SDL_setFramerate(self.raw, rate as uint32_t) };
-        if ret == 0 { Ok(()) }
-        else { Err(ErrorMessage("set_framerate error: beyond lower/upper limit.".into())) }
+        match ret {
+            0 => Ok(()),
+            _ => Err(get_error())
+        }
     }
 
     /// Return the current target framerate in Hz.

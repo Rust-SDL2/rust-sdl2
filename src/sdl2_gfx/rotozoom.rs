@@ -2,7 +2,7 @@
 
 use libc::c_int;
 use sdl2::surface::Surface;
-use sdl2::{SdlResult, ErrorMessage};
+use sdl2::get_error;
 pub use std::f64::consts::PI;
 
 
@@ -39,64 +39,64 @@ mod ll {
 /// RotozoomSurface for work with rust-sdl2 Surface type
 pub trait RotozoomSurface {
     /// Rotates and zooms a surface and optional anti-aliasing.
-    fn rotozoom(&self, angle: f64, zoom: f64, smooth: bool) -> SdlResult<Surface>;
+    fn rotozoom(&self, angle: f64, zoom: f64, smooth: bool) -> Result<Surface, String>;
     /// Rotates and zooms a surface with different horizontal and vertival scaling factors and optional anti-aliasing.
-    fn rotozoom_xy(&self, angle: f64, zoomx: f64, zoomy: f64, smooth: bool) -> SdlResult<Surface>;
+    fn rotozoom_xy(&self, angle: f64, zoomx: f64, zoomy: f64, smooth: bool) -> Result<Surface, String>;
     /// Zoom a surface by independent horizontal and vertical factors with optional smoothing.
-    fn zoom(&self, zoomx: f64, zoomy: f64, smooth: bool) -> SdlResult<Surface>;
+    fn zoom(&self, zoomx: f64, zoomy: f64, smooth: bool) -> Result<Surface, String>;
     /// Shrink a surface by an integer ratio using averaging.
-    fn shrink(&self, factorx: isize, factory: isize) -> SdlResult<Surface>;
+    fn shrink(&self, factorx: isize, factory: isize) -> Result<Surface, String>;
     /// Rotates a 8/16/24/32 bit surface in increments of 90 degrees.
-    fn rotate_90deg(&self, turns: isize) -> SdlResult<Surface>;
+    fn rotate_90deg(&self, turns: isize) -> Result<Surface, String>;
 }
 
 impl<'a> RotozoomSurface for Surface<'a> {
-    fn rotozoom(&self, angle: f64, zoom: f64, smooth: bool) -> SdlResult<Surface> {
+    fn rotozoom(&self, angle: f64, zoom: f64, smooth: bool) -> Result<Surface, String> {
         let raw = unsafe {
             ll::rotozoomSurface(self.raw(), angle, zoom, smooth as c_int)
         };
         if (raw as *mut ()).is_null() {
-            Err(ErrorMessage("rotozoomSurface: error.".into()))
+            Err(get_error())
         } else {
             unsafe { Ok(Surface::from_ll(raw)) }
         }
     }
-    fn rotozoom_xy(&self, angle: f64, zoomx: f64, zoomy: f64, smooth: bool) -> SdlResult<Surface> {
+    fn rotozoom_xy(&self, angle: f64, zoomx: f64, zoomy: f64, smooth: bool) -> Result<Surface, String> {
         let raw = unsafe {
             ll::rotozoomSurfaceXY(self.raw(), angle, zoomx, zoomy, smooth as c_int)
         };
         if (raw as *mut ()).is_null() {
-            Err(ErrorMessage("rotozoomSurfaceXY: error.".into()))
+            Err(get_error())
         } else {
             unsafe { Ok(Surface::from_ll(raw)) }
         }
     }
-    fn zoom(&self, zoomx: f64, zoomy: f64, smooth: bool) -> SdlResult<Surface> {
+    fn zoom(&self, zoomx: f64, zoomy: f64, smooth: bool) -> Result<Surface, String> {
         let raw = unsafe {
             ll::zoomSurface(self.raw(), zoomx, zoomy, smooth as c_int)
         };
         if (raw as *mut ()).is_null() {
-            Err(ErrorMessage("zoomSurface: error.".into()))
+            Err(get_error())
         } else {
             unsafe { Ok(Surface::from_ll(raw)) }
         }
     }
-    fn shrink(&self, factorx: isize, factory: isize) -> SdlResult<Surface> {
+    fn shrink(&self, factorx: isize, factory: isize) -> Result<Surface, String> {
         let raw = unsafe {
             ll::shrinkSurface(self.raw(), factorx as c_int, factory as c_int)
         };
         if (raw as *mut ()).is_null() {
-            Err(ErrorMessage("shrinkSurface: error.".into()))
+            Err(get_error())
         } else {
             unsafe { Ok(Surface::from_ll(raw)) }
         }
     }
-    fn rotate_90deg(&self, turns: isize) -> SdlResult<Surface> {
+    fn rotate_90deg(&self, turns: isize) -> Result<Surface, String> {
         let raw = unsafe {
             ll::rotateSurface90Degrees(self.raw(), turns as c_int)
         };
         if (raw as *mut ()).is_null() {
-            Err(ErrorMessage("rotateSurface90Degrees: error.".into()))
+            Err(get_error())
         } else {
             unsafe { Ok(Surface::from_ll(raw)) }
         }

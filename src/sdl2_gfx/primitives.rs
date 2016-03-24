@@ -9,7 +9,6 @@ use sdl2::render::Renderer;
 use sdl2::surface::Surface;
 use sdl2::pixels;
 use sdl2::get_error;
-use sdl2::SdlResult;
 
 #[allow(dead_code)]
 mod ll {
@@ -241,186 +240,186 @@ impl ToColor for isize {
 
 /// For drawing with rust-sdl2 Renderer
 pub trait DrawRenderer {
-    fn pixel<C: ToColor>(&self, x: i16, y: i16, color: C) -> SdlResult<()>;
-    fn hline<C: ToColor>(&self, x1: i16, x2: i16, y: i16, color: C) -> SdlResult<()>;
-    fn vline<C: ToColor>(&self, x: i16, y1: i16, y2: i16, color: C) -> SdlResult<()>;
-    fn rectangle<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, color: C) -> SdlResult<()>;
-    fn rounded_rectangle<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, rad: i16, color: C) -> SdlResult<()>;
-    fn box_<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, color: C) -> SdlResult<()>;
-    fn rounded_box<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, rad: i16, color: C) -> SdlResult<()>;
-    fn line<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, color: C) -> SdlResult<()>;
-    fn aa_line<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, color: C) -> SdlResult<()>;
-    fn thick_line<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, width: u8, color: C) -> SdlResult<()>;
-    fn circle<C: ToColor>(&self, x: i16, y: i16, rad: i16, color: C) -> SdlResult<()>;
-    fn aa_circle<C: ToColor>(&self, x: i16, y: i16, rad: i16, color: C) -> SdlResult<()>;
-    fn filled_circle<C: ToColor>(&self, x: i16, y: i16, rad: i16, color: C) -> SdlResult<()>;
-    fn arc<C: ToColor>(&self, x: i16, y: i16, rad: i16, start: i16, end: i16, color: C) -> SdlResult<()>;
-    fn ellipse<C: ToColor>(&self, x: i16, y: i16, rx: i16, ry: i16, color: C) -> SdlResult<()>;
-    fn aa_ellipse<C: ToColor>(&self, x: i16, y: i16, rx: i16, ry: i16, color: C) -> SdlResult<()>;
-    fn filled_ellipse<C: ToColor>(&self, x: i16, y: i16, rx: i16, ry: i16, color: C) -> SdlResult<()>;
-    fn pie<C: ToColor>(&self, x: i16, y: i16, rad: i16, start: i16, end: i16, color: C) -> SdlResult<()>;
-    fn filled_pie<C: ToColor>(&self, x: i16, y: i16, rad: i16, start: i16, end: i16, color: C) -> SdlResult<()>;
-    fn trigon<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, x3: i16, y3: i16, color: C) -> SdlResult<()>;
-    fn aa_trigon<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, x3: i16, y3: i16, color: C) -> SdlResult<()>;
-    fn filled_trigon<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, x3: i16, y3: i16, color: C) -> SdlResult<()>;
-    fn polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], color: C) -> SdlResult<()>;
-    fn aa_polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], color: C) -> SdlResult<()>;
-    fn filled_polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], color: C) -> SdlResult<()>;
-    fn textured_polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], texture: &Surface, texture_dx: i16, texture_dy: i16, color: C) -> SdlResult<()>;
-    fn bezier<C: ToColor>(&self, vx: &[i16], vy: &[i16], s: isize, color: C) -> SdlResult<()>;
-    fn character<C: ToColor>(&self, x: i16, y: i16, c: char, color: C) -> SdlResult<()>;
-    fn string<C: ToColor>(&self, x: i16, y: i16, s: &str, color: C) -> SdlResult<()>;
+    fn pixel<C: ToColor>(&self, x: i16, y: i16, color: C) -> Result<(), String>;
+    fn hline<C: ToColor>(&self, x1: i16, x2: i16, y: i16, color: C) -> Result<(), String>;
+    fn vline<C: ToColor>(&self, x: i16, y1: i16, y2: i16, color: C) -> Result<(), String>;
+    fn rectangle<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, color: C) -> Result<(), String>;
+    fn rounded_rectangle<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, rad: i16, color: C) -> Result<(), String>;
+    fn box_<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, color: C) -> Result<(), String>;
+    fn rounded_box<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, rad: i16, color: C) -> Result<(), String>;
+    fn line<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, color: C) -> Result<(), String>;
+    fn aa_line<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, color: C) -> Result<(), String>;
+    fn thick_line<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, width: u8, color: C) -> Result<(), String>;
+    fn circle<C: ToColor>(&self, x: i16, y: i16, rad: i16, color: C) -> Result<(), String>;
+    fn aa_circle<C: ToColor>(&self, x: i16, y: i16, rad: i16, color: C) -> Result<(), String>;
+    fn filled_circle<C: ToColor>(&self, x: i16, y: i16, rad: i16, color: C) -> Result<(), String>;
+    fn arc<C: ToColor>(&self, x: i16, y: i16, rad: i16, start: i16, end: i16, color: C) -> Result<(), String>;
+    fn ellipse<C: ToColor>(&self, x: i16, y: i16, rx: i16, ry: i16, color: C) -> Result<(), String>;
+    fn aa_ellipse<C: ToColor>(&self, x: i16, y: i16, rx: i16, ry: i16, color: C) -> Result<(), String>;
+    fn filled_ellipse<C: ToColor>(&self, x: i16, y: i16, rx: i16, ry: i16, color: C) -> Result<(), String>;
+    fn pie<C: ToColor>(&self, x: i16, y: i16, rad: i16, start: i16, end: i16, color: C) -> Result<(), String>;
+    fn filled_pie<C: ToColor>(&self, x: i16, y: i16, rad: i16, start: i16, end: i16, color: C) -> Result<(), String>;
+    fn trigon<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, x3: i16, y3: i16, color: C) -> Result<(), String>;
+    fn aa_trigon<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, x3: i16, y3: i16, color: C) -> Result<(), String>;
+    fn filled_trigon<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, x3: i16, y3: i16, color: C) -> Result<(), String>;
+    fn polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], color: C) -> Result<(), String>;
+    fn aa_polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], color: C) -> Result<(), String>;
+    fn filled_polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], color: C) -> Result<(), String>;
+    fn textured_polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], texture: &Surface, texture_dx: i16, texture_dy: i16, color: C) -> Result<(), String>;
+    fn bezier<C: ToColor>(&self, vx: &[i16], vy: &[i16], s: isize, color: C) -> Result<(), String>;
+    fn character<C: ToColor>(&self, x: i16, y: i16, c: char, color: C) -> Result<(), String>;
+    fn string<C: ToColor>(&self, x: i16, y: i16, s: &str, color: C) -> Result<(), String>;
 }
 
 impl<'a> DrawRenderer for Renderer<'a> {
-    fn pixel<C: ToColor>(&self, x: i16, y: i16, color: C) -> SdlResult<()> {
+    fn pixel<C: ToColor>(&self, x: i16, y: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::pixelColor(self.raw(), x, y, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn hline<C: ToColor>(&self, x1: i16, x2: i16, y: i16, color: C) -> SdlResult<()> {
+    fn hline<C: ToColor>(&self, x1: i16, x2: i16, y: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::hlineColor(self.raw(), x1, x2, y, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn vline<C: ToColor>(&self, x: i16, y1: i16, y2: i16, color: C) -> SdlResult<()> {
+    fn vline<C: ToColor>(&self, x: i16, y1: i16, y2: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::vlineColor(self.raw(), x, y1, y2, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn rectangle<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, color: C) -> SdlResult<()> {
+    fn rectangle<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::rectangleColor(self.raw(), x1, y1, x2, y2, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn rounded_rectangle<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, rad: i16, color: C) -> SdlResult<()> {
+    fn rounded_rectangle<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, rad: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::roundedRectangleColor(self.raw(), x1, y1, x2, y2, rad, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn box_<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, color: C) -> SdlResult<()> {
+    fn box_<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::boxColor(self.raw(), x1, y1, x2, y2, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn rounded_box<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, rad: i16, color: C) -> SdlResult<()> {
+    fn rounded_box<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, rad: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::roundedBoxColor(self.raw(), x1, y1, x2, y2, rad, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn line<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, color: C) -> SdlResult<()> {
+    fn line<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::lineColor(self.raw(), x1, y1, x2, y2, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn aa_line<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, color: C) -> SdlResult<()> {
+    fn aa_line<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::aalineColor(self.raw(), x1, y1, x2, y2, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn thick_line<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, width: u8, color: C) -> SdlResult<()> {
+    fn thick_line<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, width: u8, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::thickLineColor(self.raw(), x1, y1, x2, y2, width, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn circle<C: ToColor>(&self, x: i16, y: i16, rad: i16, color: C) -> SdlResult<()> {
+    fn circle<C: ToColor>(&self, x: i16, y: i16, rad: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::circleColor(self.raw(), x, y, rad, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn aa_circle<C: ToColor>(&self, x: i16, y: i16, rad: i16, color: C) -> SdlResult<()> {
+    fn aa_circle<C: ToColor>(&self, x: i16, y: i16, rad: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::aacircleColor(self.raw(), x, y, rad, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn filled_circle<C: ToColor>(&self, x: i16, y: i16, rad: i16, color: C) -> SdlResult<()> {
+    fn filled_circle<C: ToColor>(&self, x: i16, y: i16, rad: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::filledCircleColor(self.raw(), x, y, rad, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn arc<C: ToColor>(&self, x: i16, y: i16, rad: i16, start: i16, end: i16, color: C) -> SdlResult<()> {
+    fn arc<C: ToColor>(&self, x: i16, y: i16, rad: i16, start: i16, end: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::arcColor(self.raw(), x, y, rad, start, end, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn ellipse<C: ToColor>(&self, x: i16, y: i16, rx: i16, ry: i16, color: C) -> SdlResult<()> {
+    fn ellipse<C: ToColor>(&self, x: i16, y: i16, rx: i16, ry: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::ellipseColor(self.raw(), x, y, rx, ry, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn aa_ellipse<C: ToColor>(&self, x: i16, y: i16, rx: i16, ry: i16, color: C) -> SdlResult<()> {
+    fn aa_ellipse<C: ToColor>(&self, x: i16, y: i16, rx: i16, ry: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::aaellipseColor(self.raw(), x, y, rx, ry, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn filled_ellipse<C: ToColor>(&self, x: i16, y: i16, rx: i16, ry: i16, color: C) -> SdlResult<()> {
+    fn filled_ellipse<C: ToColor>(&self, x: i16, y: i16, rx: i16, ry: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::filledEllipseColor(self.raw(), x, y, rx, ry, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn pie<C: ToColor>(&self, x: i16, y: i16, rad: i16, start: i16, end: i16, color: C) -> SdlResult<()> {
+    fn pie<C: ToColor>(&self, x: i16, y: i16, rad: i16, start: i16, end: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::pieColor(self.raw(), x, y, rad, start, end, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn filled_pie<C: ToColor>(&self, x: i16, y: i16, rad: i16, start: i16, end: i16, color: C) -> SdlResult<()> {
+    fn filled_pie<C: ToColor>(&self, x: i16, y: i16, rad: i16, start: i16, end: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::filledPieColor(self.raw(), x, y, rad, start, end, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn trigon<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, x3: i16, y3: i16, color: C) -> SdlResult<()> {
+    fn trigon<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, x3: i16, y3: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::trigonColor(self.raw(), x1, y1, x2, y2, x3, y3, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn aa_trigon<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, x3: i16, y3: i16, color: C) -> SdlResult<()> {
+    fn aa_trigon<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, x3: i16, y3: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::aatrigonColor(self.raw(), x1, y1, x2, y2, x3, y3, color.as_u32())
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
     }
-    fn filled_trigon<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, x3: i16, y3: i16, color: C) -> SdlResult<()> {
+    fn filled_trigon<C: ToColor>(&self, x1: i16, y1: i16, x2: i16, y2: i16, x3: i16, y3: i16, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::filledTrigonColor(self.raw(), x1, y1, x2, y2, x3, y3, color.as_u32())
         };
@@ -428,7 +427,7 @@ impl<'a> DrawRenderer for Renderer<'a> {
         else { Err(get_error()) }
     }
     // FIXME: may we use pointer tuple?
-    fn polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], color: C) -> SdlResult<()> {
+    fn polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], color: C) -> Result<(), String> {
         assert_eq!(vx.len(), vy.len());
         let n = vx.len() as c_int;
         let ret = unsafe {
@@ -438,7 +437,7 @@ impl<'a> DrawRenderer for Renderer<'a> {
         else { Err(get_error()) }
     }
 
-    fn aa_polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], color: C) -> SdlResult<()> {
+    fn aa_polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], color: C) -> Result<(), String> {
         assert_eq!(vx.len(), vy.len());
         let n = vx.len() as c_int;
         let ret = unsafe {
@@ -448,7 +447,7 @@ impl<'a> DrawRenderer for Renderer<'a> {
         else { Err(get_error()) }
     }
 
-    fn filled_polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], color: C) -> SdlResult<()> {
+    fn filled_polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], color: C) -> Result<(), String> {
         assert_eq!(vx.len(), vy.len());
         let n = vx.len() as c_int;
         let ret = unsafe {
@@ -458,11 +457,11 @@ impl<'a> DrawRenderer for Renderer<'a> {
         else { Err(get_error()) }
     }
     #[allow(unused_variables)]
-    fn textured_polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], texture: &Surface, texture_dx: i16, texture_dy: i16, color: C) -> SdlResult<()> {
+    fn textured_polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], texture: &Surface, texture_dx: i16, texture_dy: i16, color: C) -> Result<(), String> {
         unimplemented!()
     }
 
-    fn bezier<C: ToColor>(&self, vx: &[i16], vy: &[i16], s: isize, color: C) -> SdlResult<()> {
+    fn bezier<C: ToColor>(&self, vx: &[i16], vy: &[i16], s: isize, color: C) -> Result<(), String> {
         assert_eq!(vx.len(), vy.len());
         let n = vx.len() as c_int;
         let ret = unsafe {
@@ -472,7 +471,7 @@ impl<'a> DrawRenderer for Renderer<'a> {
         else { Err(get_error()) }
     }
 
-    fn character<C: ToColor>(&self, x: i16, y: i16, c: char, color: C) -> SdlResult<()> {
+    fn character<C: ToColor>(&self, x: i16, y: i16, c: char, color: C) -> Result<(), String> {
         let ret = unsafe {
             ll::characterColor(self.raw(), x, y, c as c_char, color.as_u32())
         };
@@ -480,7 +479,7 @@ impl<'a> DrawRenderer for Renderer<'a> {
         else { Err(get_error()) }
     }
 
-    fn string<C: ToColor>(&self, x: i16, y: i16, s: &str, color: C) -> SdlResult<()> {
+    fn string<C: ToColor>(&self, x: i16, y: i16, s: &str, color: C) -> Result<(), String> {
         let ret = unsafe {
             let buf = CString::new(s).unwrap().as_bytes().as_ptr();
             ll::stringColor(self.raw(), x, y, buf as *mut i8, color.as_u32())
