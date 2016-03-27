@@ -22,7 +22,7 @@ pub enum ShowMessageError {
 }
 
 pub fn show_simple_message_box(flags: MessageBoxFlag, title: &str, 
-        message: &str, window: Option<&Window>) 
+        message: &str, window: Option<&WindowRef>) 
         -> Result<(), ShowMessageError> {
     use self::ShowMessageError::*;
     let result = unsafe {
