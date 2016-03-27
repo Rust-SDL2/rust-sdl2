@@ -2,7 +2,7 @@ use std::ffi::{CString, NulError};
 use std::ptr;
 use libc::c_char;
 
-use video::Window;
+use video::WindowRef;
 use get_error;
 
 use sys::messagebox as ll;
