@@ -8,10 +8,10 @@ use get_error;
 use sys::messagebox as ll;
 
 bitflags! {
-    flags MessageBoxFlag: u32 {
-        const MESSAGEBOX_ERROR = ll::SDL_MESSAGEBOX_ERROR,
-        const MESSAGEBOX_WARNING = ll::SDL_MESSAGEBOX_WARNING,
-        const MESSAGEBOX_INFORMATION = ll::SDL_MESSAGEBOX_INFORMATION
+    pub flags MessageBoxFlag: u32 {
+        const MESSAGEBOX_ERROR = ::sys::messagebox::SDL_MESSAGEBOX_ERROR,
+        const MESSAGEBOX_WARNING = ::sys::messagebox::SDL_MESSAGEBOX_WARNING,
+        const MESSAGEBOX_INFORMATION = ::sys::messagebox::SDL_MESSAGEBOX_INFORMATION
     }
 }
 
@@ -21,8 +21,8 @@ pub enum ShowMessageError {
     SdlError(String),
 }
 
-pub fn show_simple_message_box(flags: MessageBoxFlag, title: &str, 
-        message: &str, window: Option<&WindowRef>) 
+pub fn show_simple_message_box(flags: MessageBoxFlag, title: &str,
+        message: &str, window: Option<&WindowRef>)
         -> Result<(), ShowMessageError> {
     use self::ShowMessageError::*;
     let result = unsafe {

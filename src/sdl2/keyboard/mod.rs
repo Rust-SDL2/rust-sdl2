@@ -13,7 +13,7 @@ pub use self::keycode::Keycode;
 pub use self::scancode::Scancode;
 
 bitflags! {
-    flags Mod: u32 {
+    pub flags Mod: u32 {
         const NOMOD = 0x0000,
         const LSHIFTMOD = 0x0001,
         const RSHIFTMOD = 0x0002,
