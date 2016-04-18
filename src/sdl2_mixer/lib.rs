@@ -106,13 +106,13 @@ pub fn get_linked_version() -> Version {
     unsafe { Version::from_ll(*ffi::Mix_Linked_Version()) }
 }
 
-bitflags!(flags InitFlag : u32 {
-    const INIT_FLAC       = ffi::MIX_INIT_FLAC as u32,
-    const INIT_MOD        = ffi::MIX_INIT_MOD as u32,
-    const INIT_MODPLUG    = ffi::MIX_INIT_MODPLUG as u32,
-    const INIT_MP3        = ffi::MIX_INIT_MP3 as u32,
-    const INIT_OGG        = ffi::MIX_INIT_OGG as u32,
-    const INIT_FLUIDSYNTH = ffi::MIX_INIT_FLUIDSYNTH as u32
+bitflags!(pub flags InitFlag : u32 {
+    const INIT_FLAC       = ::ffi::MIX_INIT_FLAC as u32,
+    const INIT_MOD        = ::ffi::MIX_INIT_MOD as u32,
+    const INIT_MODPLUG    = ::ffi::MIX_INIT_MODPLUG as u32,
+    const INIT_MP3        = ::ffi::MIX_INIT_MP3 as u32,
+    const INIT_OGG        = ::ffi::MIX_INIT_OGG as u32,
+    const INIT_FLUIDSYNTH = ::ffi::MIX_INIT_FLUIDSYNTH as u32
 });
 
 impl ToString for InitFlag {
