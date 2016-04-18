@@ -22,14 +22,16 @@ fn color_to_c_color(color: Color) -> SDL_Color {
     }
 }
 
+
+// Absolute paths are a workaround for https://github.com/rust-lang-nursery/bitflags/issues/39 .
 bitflags! {
     /// The styling of a font.
-    flags FontStyle : c_int {
-    const STYLE_NORMAL        = ffi::TTF_STYLE_NORMAL,
-    const STYLE_BOLD          = ffi::TTF_STYLE_BOLD,
-    const STYLE_ITALIC        = ffi::TTF_STYLE_ITALIC,
-    const STYLE_UNDERLINE     = ffi::TTF_STYLE_UNDERLINE,
-    const STYLE_STRIKETHROUGH = ffi::TTF_STYLE_STRIKETHROUGH,
+    pub flags FontStyle : ::std::os::raw::c_int {
+        const STYLE_NORMAL        = ::ffi::TTF_STYLE_NORMAL,
+        const STYLE_BOLD          = ::ffi::TTF_STYLE_BOLD,
+        const STYLE_ITALIC        = ::ffi::TTF_STYLE_ITALIC,
+        const STYLE_UNDERLINE     = ::ffi::TTF_STYLE_UNDERLINE,
+        const STYLE_STRIKETHROUGH = ::ffi::TTF_STYLE_STRIKETHROUGH,
     }
 }
 
