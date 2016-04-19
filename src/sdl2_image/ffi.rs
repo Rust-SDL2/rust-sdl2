@@ -1,7 +1,7 @@
 extern crate sdl2;
 extern crate sdl2_sys as sys;
 
-use libc::{c_int, c_char};
+use std::os::raw::{c_int, c_char};
 use sys::surface::SDL_Surface;
 use sys::rwops::SDL_RWops;
 use sys::render::SDL_Texture;

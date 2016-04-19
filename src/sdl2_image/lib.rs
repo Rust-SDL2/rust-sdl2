@@ -2,13 +2,12 @@
 #![crate_type = "lib"]
 
 extern crate sdl2;
-extern crate libc;
 extern crate sdl2_sys as sys;
 
 #[macro_use]
 extern crate bitflags;
 
-use libc::{c_int, c_char};
+use std::os::raw::{c_int, c_char};
 use std::ffi::CString;
 use std::path::Path;
 use sdl2::surface::Surface;
