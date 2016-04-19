@@ -42,11 +42,11 @@ mod ffi;
 /// InitFlags are passed to init() to control which subsystem
 /// functionality to load.
 bitflags! {
-    flags InitFlag : u32 {
-        const INIT_JPG  = ffi::IMG_INIT_JPG as u32,
-        const INIT_PNG  = ffi::IMG_INIT_PNG as u32,
-        const INIT_TIF  = ffi::IMG_INIT_TIF as u32,
-        const INIT_WEBP = ffi::IMG_INIT_WEBP as u32
+    pub flags InitFlag : u32 {
+        const INIT_JPG  = ::ffi::IMG_INIT_JPG as u32,
+        const INIT_PNG  = ::ffi::IMG_INIT_PNG as u32,
+        const INIT_TIF  = ::ffi::IMG_INIT_TIF as u32,
+        const INIT_WEBP = ::ffi::IMG_INIT_WEBP as u32
     }
 }
 
