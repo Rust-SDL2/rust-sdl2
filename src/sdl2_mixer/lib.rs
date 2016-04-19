@@ -1,4 +1,4 @@
-//! A binding for SDL2_mixer.
+//! A binding for `SDL2_mixer`.
 //!
 
 #![crate_name = "sdl2_mixer"]
@@ -100,7 +100,7 @@ pub const DEFAULT_FREQUENCY: isize = 22050;
 /// Maximum value for any volume setting.
 pub const MAX_VOLUME: isize = 128;
 
-/// Returns the version of the dynamically linked SDL_mixer library
+/// Returns the version of the dynamically linked `SDL_mixer` library
 pub fn get_linked_version() -> Version {
 
     unsafe { Version::from_ll(*ffi::Mix_Linked_Version()) }
@@ -140,7 +140,7 @@ impl ToString for InitFlag {
     }
 }
 
-/// Context manager for sdl2_mixer to manage init and quit
+/// Context manager for `sdl2_mixer` to manage init and quit
 pub struct Sdl2MixerContext;
 
 /// Cleans up all dynamically loaded library handles, freeing memory.
@@ -153,14 +153,16 @@ impl Drop for Sdl2MixerContext {
 }
 
 /// Loads dynamic libraries and prepares them for use.  Flags should be
-/// one or more flags from InitFlag.
+/// one or more flags from `InitFlag`.
 pub fn init(flags: InitFlag) -> Result<Sdl2MixerContext, String> {
     let return_flags = unsafe {
         let ret = ffi::Mix_Init(flags.bits() as c_int);
         InitFlag::from_bits_truncate(ret as u32)
     };
     // Check if all init flags were set
-    if !flags.intersects(return_flags) {
+    if flags.intersects(return_flags) {
+        Ok(Sdl2MixerContext)
+    } else {
         // Flags not matching won't always set the error message text
         // according to sdl docs
         if get_error() == "" {
@@ -169,8 +171,6 @@ pub fn init(flags: InitFlag) -> Result<Sdl2MixerContext, String> {
             let _ = sdl2::set_error(error_str);
         }
         Err(get_error())
-    } else {
-        Ok(Sdl2MixerContext)
     }
 }
 
@@ -214,7 +214,7 @@ pub fn query_spec() -> Result<(isize, AudioFormat, isize), String> {
 
 // 4.2 Samples
 
-/// Get the number of sample chunk decoders available from the Mix_GetChunkDecoder function.
+/// Get the number of sample chunk decoders available from the `Mix_GetChunkDecoder` function.
 pub fn get_chunk_decoders_number() -> isize {
     unsafe { ffi::Mix_GetNumChunkDecoders() as isize }
 }
@@ -267,7 +267,7 @@ impl Chunk {
     }
 }
 
-/// Loader trait for RWops
+/// Loader trait for `RWops`
 pub trait LoaderRWops {
     /// Load src for use as a sample.
     fn load_wav(&self) -> Result<Chunk, String>;
@@ -325,7 +325,7 @@ extern "C" fn c_channel_finished_callback(ch: c_int) {
     }
 }
 
-/// When channel playback is halted, then the specified channel_finished function is called.
+/// When channel playback is halted, then the specified `channel_finished` function is called.
 pub fn set_channel_finished(f: fn(Channel)) {
     unsafe {
         channel_finished_callback = Some(f);
@@ -461,10 +461,9 @@ impl Channel {
         let Channel(ch) = self;
         let ret = unsafe { ffi::Mix_FadingChannel(ch as c_int) as c_uint };
         match ret {
-            ffi::MIX_NO_FADING => Fading::NoFading,
-            ffi::MIX_FADING_OUT => Fading::FadingOut,
-            ffi::MIX_FADING_IN => Fading::FadingIn,
-            _ => Fading::NoFading,
+            ffi::MIX_FADING_OUT    => Fading::FadingOut,
+            ffi::MIX_FADING_IN     => Fading::FadingIn,
+            ffi::MIX_NO_FADING | _ => Fading::NoFading
         }
     }
 
@@ -758,17 +757,16 @@ impl Music {
     pub fn get_type(&self) -> MusicType {
         let ret = unsafe { ffi::Mix_GetMusicType(self.raw) as isize } as c_uint;
         match ret {
-            ffi::MUS_NONE => MusicType::MusicNone,
-            ffi::MUS_CMD => MusicType::MusicCmd,
-            ffi::MUS_WAV => MusicType::MusicWav,
-            ffi::MUS_MOD => MusicType::MusicMod,
-            ffi::MUS_MID => MusicType::MusicMid,
-            ffi::MUS_OGG => MusicType::MusicOgg,
-            ffi::MUS_MP3 => MusicType::MusicMp3,
-            ffi::MUS_MP3_MAD => MusicType::MusicMp3Mad,
-            ffi::MUS_FLAC => MusicType::MusicFlac,
-            ffi::MUS_MODPLUG => MusicType::MusicModPlug,
-            _ => MusicType::MusicNone,
+            ffi::MUS_CMD      => MusicType::MusicCmd,
+            ffi::MUS_WAV      => MusicType::MusicWav,
+            ffi::MUS_MOD      => MusicType::MusicMod,
+            ffi::MUS_MID      => MusicType::MusicMid,
+            ffi::MUS_OGG      => MusicType::MusicOgg,
+            ffi::MUS_MP3      => MusicType::MusicMp3,
+            ffi::MUS_MP3_MAD  => MusicType::MusicMp3Mad,
+            ffi::MUS_FLAC     => MusicType::MusicFlac,
+            ffi::MUS_MODPLUG  => MusicType::MusicModPlug,
+            ffi::MUS_NONE | _ => MusicType::MusicNone
         }
     }
 
@@ -920,10 +918,9 @@ impl Music {
     pub fn get_fading() -> Fading {
         let ret = unsafe { ffi::Mix_FadingMusic() as isize } as c_uint;
         match ret {
-            ffi::MIX_NO_FADING => Fading::NoFading,
-            ffi::MIX_FADING_OUT => Fading::FadingOut,
-            ffi::MIX_FADING_IN => Fading::FadingIn,
-            _ => Fading::NoFading,
+            ffi::MIX_FADING_OUT    => Fading::FadingOut,
+            ffi::MIX_FADING_IN     => Fading::FadingIn,
+            ffi::MIX_NO_FADING | _ => Fading::NoFading
         }
     }
 }
