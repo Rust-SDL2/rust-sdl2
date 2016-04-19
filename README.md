@@ -2,6 +2,7 @@ Rust-SDL2_mixer
 =============
 
 [![Build Status](https://travis-ci.org/andelf/rust-sdl2_mixer.svg?branch=master)](https://travis-ci.org/andelf/rust-sdl2_mixer)
+[![crates.io](http://meritbadge.herokuapp.com/sdl2_mixer)](https://crates.io/crates/sdl2_mixer)
 
 Rust bindings for SDL2_mixer.
 
@@ -27,7 +28,7 @@ Place the following into your project's Cargo.toml file:
 
 ```toml
 [dependencies]
-sdl2_mixer = "0.12.0"
+sdl2_mixer = "0.17.0"
 ```
 
 Or, to depend on the newest rust-sdl2_mixer, reference the repository:
