@@ -2,6 +2,7 @@ Rust-SDL2_ttf
 =============
 
 [![Build Status](https://travis-ci.org/andelf/rust-sdl2_ttf.svg?branch=master)](https://travis-ci.org/andelf/rust-sdl2_ttf)
+[![crates.io](http://meritbadge.herokuapp.com/sdl2_ttf)](https://crates.io/crates/sdl2_ttf)
 
 Rust bindings for SDL2_ttf.
 
