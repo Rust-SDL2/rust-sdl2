@@ -26,7 +26,7 @@ fn color_to_c_color(color: Color) -> SDL_Color {
 // Absolute paths are a workaround for https://github.com/rust-lang-nursery/bitflags/issues/39 .
 bitflags! {
     /// The styling of a font.
-    pub flags FontStyle : ::std::os::raw::c_int {
+    pub flags FontStyle: ::std::os::raw::c_int {
         const STYLE_NORMAL        = ::ffi::TTF_STYLE_NORMAL,
         const STYLE_BOLD          = ::ffi::TTF_STYLE_BOLD,
         const STYLE_ITALIC        = ::ffi::TTF_STYLE_ITALIC,
@@ -55,7 +55,7 @@ pub struct GlyphMetrics {
     pub advance: i32
 }
 
-/// The result of an SDL2_TTF font operation.
+/// The result of an `SDL2_TTF` font operation.
 pub type FontResult<T> = Result<T, FontError>;
 
 /// A font-related error.
@@ -69,22 +69,22 @@ pub enum FontError {
 
 impl error::Error for FontError {
     fn description(&self) -> &str {
-        match self {
-            &FontError::InvalidLatin1Text(ref error) => {
+        match *self {
+            FontError::InvalidLatin1Text(ref error) => {
                 error.description()
             },
-            &FontError::SdlError(ref message) => {
+            FontError::SdlError(ref message) => {
                 message
             },
         }
     }
 
-    fn cause<'a>(&'a self) -> Option<&'a error::Error> {
-        match self {
-            &FontError::InvalidLatin1Text(ref error) => {
+    fn cause(&self) -> Option<&error::Error> {
+        match *self {
+            FontError::InvalidLatin1Text(ref error) => {
                 Some(error)
             },
-            &FontError::SdlError(_) => {
+            FontError::SdlError(_) => {
                 None
             },
         }
@@ -93,11 +93,11 @@ impl error::Error for FontError {
 
 impl fmt::Display for FontError {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        match self {
-            &FontError::InvalidLatin1Text(ref err) => {
+        match *self {
+            FontError::InvalidLatin1Text(ref err) => {
                 write!(f, "Invalid Latin-1 bytes: {}", err.description())
             },
-            &FontError::SdlError(ref msg) => {
+            FontError::SdlError(ref msg) => {
                 write!(f, "SDL2 error: {}", msg)
             },
         }
@@ -114,11 +114,11 @@ enum RenderableText<'a> {
 impl<'a> RenderableText<'a> {
     /// Converts the given text to a c-style string if possible.
     fn convert(&self) -> FontResult<CString> {
-        match self {
-            &RenderableText::Utf8(text) => {
+        match *self {
+            RenderableText::Utf8(text) => {
                 Ok(CString::new(text).unwrap())
             },
-            &RenderableText::Latin1(bytes) => {
+            RenderableText::Latin1(bytes) => {
                 match CString::new(bytes) {
                     Err(err) => {
                         Err(FontError::InvalidLatin1Text(err))
@@ -128,7 +128,7 @@ impl<'a> RenderableText<'a> {
                     }
                 }
             },
-            &RenderableText::Char(ref string) => {
+            RenderableText::Char(ref string) => {
                 Ok(CString::new(string.as_bytes()).unwrap())
             }
         }
@@ -323,7 +323,7 @@ impl Font {
     }
 
     /// Starts specifying a rendering of the given UTF-8-encoded character.
-    pub fn render_char<'a>(&'a self, ch: char) -> PartialRendering<'a> {
+    pub fn render_char(&self, ch: char) -> PartialRendering {
         let mut s = String::new();
         s.push(ch);
         PartialRendering {
@@ -343,10 +343,10 @@ impl Font {
             let ret = ffi::TTF_SizeUTF8(self.raw, c_string.as_ptr(), &w, &h);
             (ret, (w as u32, h as u32))
         };
-        if res != 0 {
-            Err(FontError::SdlError(get_error()))
-        } else {
+        if res == 0 {
             Ok(size)
+        } else {
+            Err(FontError::SdlError(get_error()))
         }
     }
 
@@ -362,10 +362,10 @@ impl Font {
             let ret = ffi::TTF_SizeText(self.raw, c_string.as_ptr(), &w, &h);
             (ret, (w as u32, h as u32))
         };
-        if res != 0 {
-            Err(FontError::SdlError(get_error()))
-        } else {
+        if res == 0 {
             Ok(size)
+        } else {
+            Err(FontError::SdlError(get_error()))
         }
     }
 
@@ -410,11 +410,10 @@ impl Font {
     pub fn get_hinting(&self) -> Hinting {
         unsafe {
             match ffi::TTF_GetFontHinting(self.raw) as c_int {
-                ffi::TTF_HINTING_NORMAL => Hinting::Normal,
-                ffi::TTF_HINTING_LIGHT  => Hinting::Light,
-                ffi::TTF_HINTING_MONO   => Hinting::Mono,
-                ffi::TTF_HINTING_NONE   => Hinting::None,
-                _                       => Hinting::None
+                ffi::TTF_HINTING_NORMAL   => Hinting::Normal,
+                ffi::TTF_HINTING_LIGHT    => Hinting::Light,
+                ffi::TTF_HINTING_MONO     => Hinting::Mono,
+                ffi::TTF_HINTING_NONE | _ => Hinting::None
             }
         }
     }
@@ -532,13 +531,13 @@ impl Font {
                 self.raw, ch as u16, &minx, &maxx, &miny, &maxy, &advance
             )
         };
-        if ret != 0 {
-            None
-        } else {
+        if ret == 0 {
             Some(GlyphMetrics {
                 minx: minx as i32, maxx: maxx as i32, miny: miny as i32,
                 maxy: maxy as i32, advance: advance as i32
             } )
+        } else {
+            None
         }
     }
 }

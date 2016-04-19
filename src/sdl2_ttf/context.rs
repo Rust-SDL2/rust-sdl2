@@ -1,4 +1,3 @@
-
 use std::io;
 use std::error;
 use std::fmt;
@@ -17,7 +16,7 @@ use font::{
 
 use ffi;
 
-/// A context manager for SDL2_TTF to manage C code initialization and clean-up.
+/// A context manager for `SDL2_TTF` to manage C code initialization and clean-up.
 #[must_use]
 pub struct Sdl2TtfContext;
 
@@ -71,14 +70,14 @@ impl Sdl2TtfContext {
     }
 }
 
-/// Returns the version of the dynamically linked SDL_ttf library
+/// Returns the version of the dynamically linked `SDL_TTF` library
 pub fn get_linked_version() -> Version {
     unsafe {
         Version::from_ll(*ffi::TTF_Linked_Version())
     }
 }
 
-/// An error for when sdl2_ttf is attempted initialized twice
+/// An error for when `sdl2_ttf` is attempted initialized twice
 /// Necessary for context management, unless we find a way to have a singleton
 #[derive(Debug)]
 pub enum InitError {
@@ -88,22 +87,22 @@ pub enum InitError {
 
 impl error::Error for InitError {
     fn description(&self) -> &str {
-        match self {
-            &InitError::AlreadyInitializedError => {
+        match *self {
+            InitError::AlreadyInitializedError => {
                 "SDL2_TTF has already been initialized"
             },
-            &InitError::InitializationError(ref error) => {
+            InitError::InitializationError(ref error) => {
                 error.description()
             },
         }
     }
 
-    fn cause<'a>(&'a self) -> Option<&'a error::Error> {
-        match self {
-            &InitError::AlreadyInitializedError => {
+    fn cause(&self) -> Option<&error::Error> {
+        match *self {
+            InitError::AlreadyInitializedError => {
                 None
             },
-            &InitError::InitializationError(ref error) => {
+            InitError::InitializationError(ref error) => {
                 Some(error)
             },
         }
@@ -122,14 +121,12 @@ pub fn init() -> Result<Sdl2TtfContext, InitError> {
     unsafe {
         if ffi::TTF_WasInit() == 1 {
             Err(InitError::AlreadyInitializedError)
+        } else if ffi::TTF_Init() == 0 {
+            Ok(Sdl2TtfContext)
         } else {
-            if ffi::TTF_Init() == 0 {
-                Ok(Sdl2TtfContext)
-            } else {
-                Err(InitError::InitializationError(
-                    io::Error::last_os_error()
-                ))
-            }
+            Err(InitError::InitializationError(
+                io::Error::last_os_error()
+                    ))
         }
     }
 }
