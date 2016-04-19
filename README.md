@@ -1,6 +1,7 @@
 # Rust-SDL2_gfx
 
-[![Build Status](https://travis-ci.org/andelf/rust-sdl2_gfx.svg?branch=master)](https://travis-ci.org/andelf/rust-sdl2_gfx)
+[![Travis Build Status](https://travis-ci.org/andelf/rust-sdl2_gfx.svg?branch=master)](https://travis-ci.org/andelf/rust-sdl2_gfx)
+[![crates.io](http://meritbadge.herokuapp.com/sdl2_gfx)](https://crates.io/crates/sdl2_gfx)
 
 Rust bindings for SDL2_gfx
 
@@ -12,7 +13,7 @@ Rust bindings for SDL2_gfx
 
 ## Installation
 
-:) with cargo.
+:) with cargo. This crate use the same ``x.y.*`` version number as ``rust-sdl2``.
 
 ```
 git clone https://github.com/andelf/rust-sdl2_gfx
