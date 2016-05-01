@@ -3,11 +3,11 @@ use libc::{c_int, c_uint, c_char, uint32_t};
 // Setup linking for all targets.
 #[cfg(target_os="macos")]
 mod mac {
-    #[cfg(mac_framework)]
+    #[cfg(any(mac_framework, feature="use_mac_framework"))]
     #[link(kind="framework", name="SDL2")]
     extern {}
 
-    #[cfg(not(mac_framework))]
+    #[cfg(not(any(mac_framework, feature="use_mac_framework")))]
     #[link(name="SDL2")]
     extern {}
 }

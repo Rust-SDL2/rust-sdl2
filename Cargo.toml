@@ -35,3 +35,4 @@ version = "0.8.1"
 
 default = []
 use-pkgconfig = [ "sdl2-sys/use-pkgconfig" ]
+use_mac_framework = ["sdl2-sys/use_mac_framework"]

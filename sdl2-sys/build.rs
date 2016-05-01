@@ -3,7 +3,11 @@ extern crate pkg_config;
 
 fn main() {
     if !build_pkgconfig() {
-      println!("cargo:rustc-flags=-l SDL2");
+        if cfg!(feature="use_mac_framework") {
+            println!("cargo:rustc-flags=-l framework=SDL2");
+        } else {
+            println!("cargo:rustc-flags=-l SDL2");
+        }
     }
 }
 
