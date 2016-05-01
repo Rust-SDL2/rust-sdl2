@@ -2,8 +2,7 @@
 #![crate_type = "lib"]
 
 extern crate num;
-extern crate libc as libc_crate;
-pub use libc_crate as libc;
+pub extern crate libc;
 
 #[macro_use]
 extern crate lazy_static;
