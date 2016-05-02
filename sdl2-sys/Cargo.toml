@@ -25,3 +25,4 @@ optional = true
 default = []
 use-pkgconfig = ["pkg-config"]
 no_std = []
+use_mac_framework = []

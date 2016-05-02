@@ -70,6 +70,35 @@ Then add the following to your `~/.bash_profile` if not already present.
 
 If you're having issues with either homebrew or macports, [see here][pdev-issue].
 
+#### If you are using the SDL2 framework
+
+You can download and install the SDL2 Mac OS X framework from:
+https://www.libsdl.org/download-2.0.php
+
+To make the `sdl2` crate link with the SDL2 framework, you will need to enable
+the `use_mac_framework` feature.  To build and test the `sdl2` crate with this
+feature, use:
+
+> cargo test --features use_mac_framework
+
+To depend on the `sdl2` crate with this feature enabled, put the following in
+your project's `Cargo.toml` file:
+
+```toml
+[dependencies.sdl2]
+features = ["use_mac_framework"]
+version = ...  # Whichever version you are using
+```
+
+Alternatively, you can re-export the feature in your package by putting the
+following in your `Cargo.toml` file:
+
+```toml
+[features]
+default = []
+use_sdl2_mac_framework = ["sdl2/use_mac_framework"]
+```
+
 ### Windows (MinGW)
 On Windows, make certain you are using the MinGW version of SDL; the native
 version will crash on `sdl2::init`.
