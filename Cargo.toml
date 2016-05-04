@@ -2,7 +2,7 @@
 name = "sdl2_mixer"
 description = "SDL2_mixer bindings for Rust"
 repository = "https://github.com/andelf/rust-sdl2_mixer"
-version = "0.17.0"
+version = "0.18.0"
 license = "MIT"
 authors = ["ShuYu Wang <andelf@gmail.com>"]
 keywords = ["SDL", "windowing", "graphics", "music", "sound"]
@@ -12,9 +12,9 @@ name = "sdl2_mixer"
 path = "src/sdl2_mixer/lib.rs"
 
 [dependencies]
-bitflags = "0.5.0"
-sdl2 = "0.18"
-sdl2-sys = "0.8.1"
+bitflags = "0.6.0"
+sdl2 = "0.19"
+sdl2-sys = "0.19"
 libc = "0.2"
 
 # [dependencies.sdl2]
