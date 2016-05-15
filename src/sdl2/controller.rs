@@ -266,6 +266,21 @@ impl GameController {
         unsafe { ll::SDL_GameControllerGetAttached(self.raw) != 0 }
     }
 
+    /// Return the joystick id of this controller
+    pub fn instance_id(&self) -> i32 {
+        let result = unsafe {
+          let joystick = ll::SDL_GameControllerGetJoystick(self.raw);
+          ::sys::joystick::SDL_JoystickInstanceID(joystick)
+        };
+
+        if result < 0 {
+            // Should only fail if the joystick is NULL.
+            panic!(get_error())
+        } else {
+            result
+        }
+    }
+
     /// Get the position of the given `axis`
     pub fn axis(&self, axis: Axis) -> i16 {
         // This interface is a bit messed up: 0 is a valid position
