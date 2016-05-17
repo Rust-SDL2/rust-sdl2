@@ -1,10 +1,15 @@
+#![crate_type = "bin"]
+
+extern crate sdl2;
+extern crate sdl2_image;
+
+use std::env;
 use std::path::Path;
-use sdl2;
 use sdl2_image::{self, LoadTexture, INIT_PNG, INIT_JPG};
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 
-pub fn main(png: &Path) {
+pub fn run(png: &Path) {
 
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
@@ -29,5 +34,17 @@ pub fn main(png: &Path) {
                 _ => {}
             }
         }
+    }
+}
+
+
+fn main() {
+
+    let args: Vec<_> = env::args().collect();
+
+    if args.len() < 2 {
+        println!("Usage: cargo run /path/to/image.(png|jpg)")
+    } else {
+        run(Path::new(&args[1]));
     }
 }
