@@ -42,7 +42,7 @@ impl Sdl2TtfContext {
 
     /// Loads a font from the given SDL2 rwops object with the given size in
     /// points.
-    pub fn load_font_from_rwops(&self, rwops: RWops, point_size: u16)
+    pub fn load_font_from_rwops(&self, rwops: &RWops, point_size: u16)
             -> Result<Font, String> {
         let raw = unsafe {
             ffi::TTF_OpenFontRW(rwops.raw(), 0, point_size as c_int)
@@ -56,7 +56,7 @@ impl Sdl2TtfContext {
 
     /// Loads the font at the given index of the SDL2 rwops object with
     /// the given size in points.
-    pub fn load_font_at_index_from_rwops(&self, rwops: RWops, index: u32,
+    pub fn load_font_at_index_from_rwops(&self, rwops: &RWops, index: u32,
             point_size: u16) -> Result<Font, String> {
         let raw = unsafe {
             ffi::TTF_OpenFontIndexRW(rwops.raw(), 0, point_size as c_int,
