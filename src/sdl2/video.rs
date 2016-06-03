@@ -1145,6 +1145,10 @@ impl WindowRef {
         unsafe { ll::SDL_RestoreWindow(self.raw()) }
     }
 
+    pub fn fullscreen_state(&self) -> FullscreenType {
+        FullscreenType::from_window_flags(self.window_flags())
+    }
+
     pub fn set_fullscreen(&mut self, fullscreen_type: FullscreenType)
             -> Result<(), String> {
         unsafe {
