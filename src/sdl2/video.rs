@@ -398,6 +398,18 @@ pub enum FullscreenType {
     Desktop = 0x00001001,
 }
 
+impl FullscreenType {
+    pub fn from_window_flags(window_flags:u32) -> FullscreenType {
+        if window_flags & FullscreenType::Desktop as u32 == FullscreenType::Desktop as u32 {
+            FullscreenType::Desktop
+        } else if window_flags & FullscreenType::True as u32 == FullscreenType::True as u32  {
+            FullscreenType::True
+        } else {
+            FullscreenType::Off
+        }
+    }
+}
+
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum WindowPos {
     Undefined,
@@ -1131,6 +1143,10 @@ impl WindowRef {
 
     pub fn restore(&mut self) {
         unsafe { ll::SDL_RestoreWindow(self.raw()) }
+    }
+
+    pub fn fullscreen_state(&self) -> FullscreenType {
+        FullscreenType::from_window_flags(self.window_flags())
     }
 
     pub fn set_fullscreen(&mut self, fullscreen_type: FullscreenType)

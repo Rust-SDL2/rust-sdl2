@@ -19,7 +19,6 @@ pub fn main() {
     renderer.set_draw_color(Color::RGB(255, 0, 0));
     renderer.clear();
     renderer.present();
-
     let mut event_pump = sdl_context.event_pump().unwrap();
 
     'running: loop {
