@@ -149,9 +149,6 @@ We have some simple example projects included:
 
 > cargo run --example audio-whitenoise
 
-Some additional examples can be found in the
-[rs-sdl2-examples][examples] repo.
-
 # OpenGL
 
 If you want to use OpenGL, you also need the
