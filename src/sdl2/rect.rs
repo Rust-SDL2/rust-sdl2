@@ -14,7 +14,7 @@ pub fn max_int_value() -> u32 {
     i32::max_value() as u32 / 2
 }
 
-/// The minimal integer value that can be used for rectangle positions 
+/// The minimal integer value that can be used for rectangle positions
 /// and points.
 ///
 /// This value is needed, because otherwise the width of a rectangle created
@@ -67,7 +67,7 @@ impl Rect {
         };
         Rect { raw: raw }
     }
-    
+
     /// Creates a new rectangle centered on the given position.
     ///
     /// The width and height are clamped to ensure that the right and bottom
@@ -88,97 +88,108 @@ impl Rect {
         rect.center_on(center.into());
         rect
     }
-    
+
     /// The horizontal position of this rectangle.
     pub fn x(&self) -> i32 {
         self.raw.x
     }
-    
+
     /// The vertical position of this rectangle.
     pub fn y(&self) -> i32 {
         self.raw.y
     }
-    
+
     /// The width of this rectangle.
     pub fn width(&self) -> u32 {
         self.raw.w as u32
     }
-    
+
     /// The height of this rectangle.
     pub fn height(&self) -> u32 {
         self.raw.h as u32
     }
-    
+
     /// Sets the horizontal position of this rectangle to the given value,
     /// clamped to be less than or equal to i32::max_value() / 2.
     pub fn set_x(&mut self, x: i32) {
         self.raw.x = clamp_position(x);
     }
-    
+
     /// Sets the vertical position of this rectangle to the given value,
     /// clamped to be less than or equal to i32::max_value() / 2.
     pub fn set_y(&mut self, y: i32) {
         self.raw.y = clamp_position(y);
     }
-    
+
     /// Sets the width of this rectangle to the given value,
     /// clamped to be less than or equal to i32::max_value() / 2.
     pub fn set_width(&mut self, width: u32) {
         self.raw.w = clamp_size(width) as i32;
     }
-    
+
     /// Sets the height of this rectangle to the given value,
     /// clamped to be less than or equal to i32::max_value() / 2.
     pub fn set_height(&mut self, height: u32) {
         self.raw.h = clamp_size(height) as i32;
     }
-    
+
     /// Returns the x-position of the left side of this rectangle.
     pub fn left(&self) -> i32 {
         self.raw.x
     }
-    
+
     /// Returns the x-position of the right side of this rectangle.
     pub fn right(&self) -> i32 {
         self.raw.x + self.raw.w
     }
-    
+
     /// Returns the y-position of the top side of this rectangle.
     pub fn top(&self) -> i32 {
         self.raw.y
     }
-    
+
     /// Returns the y-position of the bottom side of this rectangle.
     pub fn bottom(&self) -> i32 {
         self.raw.y + self.raw.h
     }
-    
-    /// Returns the center of this rectangle.
+
+    /// Returns the center position of this rectangle.
+    ///
+    /// Note that if the width or height is not a multiple of two,
+    /// the center will be rounded down.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::rect::{Rect,Point};
+    /// let rect = Rect::new(1,0,2,3);
+    /// assert_eq!(Point::new(2,1),rect.center());
+    /// ```
     pub fn center(&self) -> Point {
         let x = self.raw.x + (self.raw.w / 2);
         let y = self.raw.y + (self.raw.h / 2);
         Point::new(x, y)
     }
-    
-    /// Sets the position of the right side of this rectangle to the given 
+
+    /// Sets the position of the right side of this rectangle to the given
     /// value, clamped to be less than or equal to i32::max_value() / 2.
     pub fn set_right(&mut self, right: i32) {
         self.raw.x = clamp_position(clamp_position(right) - self.raw.w);
     }
-    
-    /// Sets the position of the bottom side of this rectangle to the given 
+
+    /// Sets the position of the bottom side of this rectangle to the given
     /// value, clamped to be less than or equal to i32::max_value() / 2.
     pub fn set_bottom(&mut self, bottom: i32) {
         self.raw.y = clamp_position(clamp_position(bottom) - self.raw.h);
     }
-    
+
     /// Centers the rectangle on the given point.
     pub fn center_on<P>(&mut self, point: P) where P: Into<(i32, i32)> {
         let (x, y) = point.into();
         self.raw.x = clamp_position(clamp_position(x) - self.raw.w / 2);
         self.raw.y = clamp_position(clamp_position(y) - self.raw. h / 2);
     }
-    
+
     /// Move this rect and clamp the positions to prevent over/underflow.
     /// This also clamps the size to prevent overflow.
     pub fn offset(&mut self, x: i32, y: i32) {
@@ -203,27 +214,27 @@ impl Rect {
             },
         }
     }
-    
+
     /// Moves this rect to the given position after clamping the values.
     pub fn reposition<P>(&mut self, point: P) where P: Into<(i32, i32)> {
         let (x, y) = point.into();
         self.raw.x = clamp_position(x);
         self.raw.y = clamp_position(y);
     }
-    
+
     /// Resizes this rect to the given size after clamping the values.
     pub fn resize(&mut self, width: u32, height: u32) {
         self.raw.w = clamp_size(width) as i32;
         self.raw.h = clamp_size(height) as i32;
     }
-    
+
     /// Checks whether this rect contains a given point.
     pub fn contains<P>(&self, point: P) -> bool where P: Into<(i32, i32)> {
         let (x, y) = point.into();
         let inside_x = x >= self.left() && x <= self.right();
         inside_x && (y >= self.top() && y <= self.bottom())
     }
-    
+
     /// Returns the underlying C Rect.
     pub fn raw(&self) -> *const ll::SDL_Rect {
         &self.raw
@@ -234,7 +245,7 @@ impl Rect {
     }
 
     pub fn raw_slice(slice: &[Rect]) -> *const ll::SDL_Rect {
-        unsafe { 
+        unsafe {
             mem::transmute(slice.as_ptr())
         }
     }
@@ -242,17 +253,17 @@ impl Rect {
     pub fn from_ll(raw: ll::SDL_Rect) -> Rect {
         Rect::new(raw.x, raw.y, raw.w as u32, raw.h as u32)
     }
-    
+
     /// Calculate a minimal rectangle enclosing a set of points.
     /// If a clipping rectangle is given, only points that are within it will be
     /// considered.
-    pub fn from_enclose_points(points: &[Point], clipping_rect: Option<Rect>) 
+    pub fn from_enclose_points(points: &[Point], clipping_rect: Option<Rect>)
             -> Option<Rect> {
-        
+
         if points.len() == 0 {
             return None;
         }
-        
+
         let mut out = unsafe {
             mem::uninitialized()
         };
@@ -286,7 +297,7 @@ impl Rect {
         }
     }
 
-    /// Calculate the intersection of two rectangles. 
+    /// Calculate the intersection of two rectangles.
     /// The bitwise AND operator `&` can also be used.
     pub fn intersection(&self, other: Rect) -> Option<Rect> {
         let mut out = unsafe { mem::uninitialized() };
@@ -302,7 +313,7 @@ impl Rect {
         }
     }
 
-    /// Calculate the union of two rectangles. 
+    /// Calculate the union of two rectangles.
     /// The bitwise OR operator `|` can also be used.
     pub fn union(&self, other: Rect) -> Rect {
         let mut out = unsafe {
@@ -318,17 +329,17 @@ impl Rect {
         Rect::from_ll(out)
     }
 
-    /// Calculates the intersection of a rectangle and a line segment and 
+    /// Calculates the intersection of a rectangle and a line segment and
     /// returns the points of their intersection.
     pub fn intersect_line(&self, start: Point, end: Point)
             -> Option<(Point, Point)> {
-        
+
         let (mut start_x, mut start_y) = (start.x(), start.y());
         let (mut end_x, mut end_y) = (end.x(), end.y());
 
         let intersected = unsafe {
             ll::SDL_IntersectRectAndLine(
-                self.raw(), 
+                self.raw(),
                 &mut start_x, &mut start_y,
                 &mut end_x, &mut end_y
             ) != 0
@@ -387,24 +398,24 @@ impl Into<(i32, i32)> for Point {
 impl Point {
     pub fn new(x: i32, y: i32) -> Point {
         Point {
-            raw: ll::SDL_Point { 
+            raw: ll::SDL_Point {
                 x: clamp_position(x),
                 y: clamp_position(y),
             }
         }
     }
-    
+
     pub fn from_ll(raw: ll::SDL_Point) -> Point {
         Point::new(raw.x, raw.y)
     }
-    
+
     pub fn raw_slice(slice: &[Point]) -> *const ll::SDL_Point {
         unsafe {
             mem::transmute(slice.as_ptr())
         }
     }
-    
-    pub fn raw(&self) -> *const ll::SDL_Point { 
+
+    pub fn raw(&self) -> *const ll::SDL_Point {
         &self.raw
     }
 
@@ -435,7 +446,7 @@ impl Point {
     pub fn x(&self) -> i32 {
         self.raw.x
     }
-    
+
     pub fn y(&self) -> i32 {
         self.raw.y
     }
@@ -444,7 +455,7 @@ impl Point {
 #[cfg(test)]
 mod test {
     use super::{Rect, Point, max_int_value, min_int_value};
-    
+
     /// Used to compare "literal" (unclamped) rect values.
     fn tuple(x: i32, y: i32, w: u32, h: u32) -> (i32, i32, u32, u32) {
         (x, y, w, h)
@@ -455,32 +466,32 @@ mod test {
         assert_eq!(
             Some(tuple(2, 4, 4, 6)),
             Rect::from_enclose_points(
-                &[Point::new(2, 4), Point::new(5,9)], 
+                &[Point::new(2, 4), Point::new(5,9)],
                 None
             ).map(|r| r.into())
         );
     }
-    
+
     #[test]
     fn enclose_points_outside_clip_rect() {
         assert_eq!(
             Rect::from_enclose_points(
-                &[Point::new(0, 0), Point::new(10,10)], 
-                Some(Rect::new(3, 3, 1, 1))), 
+                &[Point::new(0, 0), Point::new(10,10)],
+                Some(Rect::new(3, 3, 1, 1))),
             None
         );
     }
-    
+
     #[test]
     fn enclose_points_max_values() {
         // Try to enclose the top-left-most and bottom-right-most points.
         assert_eq!(
             Some(tuple(
-                min_int_value(), min_int_value(), 
+                min_int_value(), min_int_value(),
                 max_int_value(), max_int_value()
             )),
             Rect::from_enclose_points(
-                &[Point::new(i32::min_value(), i32::min_value()), 
+                &[Point::new(i32::min_value(), i32::min_value()),
                 Point::new(i32::max_value(), i32::max_value())], None
             ).map(|r| r.into())
         );
@@ -512,7 +523,7 @@ mod test {
     #[test]
     fn union() {
         assert_eq!(
-            Rect::new(0, 0, 1, 1) | Rect::new(9, 9, 1, 1), 
+            Rect::new(0, 0, 1, 1) | Rect::new(9, 9, 1, 1),
             Rect::new(0, 0, 10, 10)
         );
     }
@@ -526,7 +537,7 @@ mod test {
             Some((Point::new(1, 1), Point::new(5, 5)))
         );
     }
-    
+
     #[test]
     fn clamp_size_zero() {
         assert_eq!(
@@ -534,7 +545,7 @@ mod test {
             Rect::new(0, 0, 0, 0).into()
         );
     }
-    
+
     #[test]
     fn clamp_position_min() {
         assert_eq!(
@@ -542,7 +553,7 @@ mod test {
             Rect::new(i32::min_value(), i32::min_value(), 1, 1).into()
         );
     }
-    
+
     #[test]
     fn clamp_size_max() {
         assert_eq!(
@@ -550,7 +561,7 @@ mod test {
             Rect::new(0, 0, max_int_value() + 1, max_int_value() + 1).into()
         );
     }
-    
+
     #[test]
     fn clamp_i32_max() {
         assert_eq!(
@@ -560,7 +571,7 @@ mod test {
             ).into()
         )
     }
-    
+
     #[test]
     fn clamp_position_max() {
         assert_eq!(
@@ -570,7 +581,7 @@ mod test {
             ).into()
         );
     }
-    
+
     #[test]
     fn rect_into() {
         let test: (i32, i32, u32, u32) = (-11, 5, 50, 20);
@@ -579,15 +590,15 @@ mod test {
             Rect::new(-11, 5, 50, 20).into()
         );
     }
-    
+
     #[test]
     fn rect_from() {
         assert_eq!(
-            Rect::from((-11, 5, 50, 20)), 
+            Rect::from((-11, 5, 50, 20)),
             Rect::new(-11, 5, 50, 20)
         );
     }
-    
+
     #[test]
     fn point_into() {
         let test: (i32, i32) = (-11, 5);
@@ -596,7 +607,7 @@ mod test {
             Point::new(-11, 5).into()
         );
     }
-    
+
     #[test]
     fn point_from() {
         let test: (i32, i32) = (-11, 5);
