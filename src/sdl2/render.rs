@@ -110,7 +110,7 @@ impl RendererInfo {
         let texture_formats: Vec<pixels::PixelFormatEnum> = 
             info.texture_formats[0..(info.num_texture_formats as usize)]
             .iter().map(|&format| {
-                FromPrimitive::from_i64(format as i64).unwrap()
+                PixelFormatEnum::from_i64(format as i64).unwrap_or(PixelFormatEnum::Unknown)
             }).collect();
 
         // The driver name is always a static string, compiled into SDL2.
