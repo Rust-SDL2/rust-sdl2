@@ -201,10 +201,10 @@ pub fn close_audio() {
 
 /// Get the actual audio format in use by the opened audio device.
 pub fn query_spec() -> Result<(isize, AudioFormat, isize), String> {
-    let frequency: c_int = 0;
-    let format: uint16_t = 0;
-    let channels: c_int = 0;
-    let ret = unsafe { ffi::Mix_QuerySpec(&frequency, &format, &channels) };
+    let mut frequency: c_int = 0;
+    let mut format: uint16_t = 0;
+    let mut channels: c_int = 0;
+    let ret = unsafe { ffi::Mix_QuerySpec(&mut frequency, &mut format, &mut channels) };
     if ret == 0 {
         Err(get_error())
     } else {
@@ -230,7 +230,7 @@ pub fn get_chunk_decoder(index: isize) -> String {
 /// The internal format for an audio chunk.
 #[derive(PartialEq)]
 pub struct Chunk {
-    pub raw: *const ffi::Mix_Chunk,
+    pub raw: *mut ffi::Mix_Chunk,
     pub owned: bool,
 }
 
@@ -277,7 +277,7 @@ impl<'a> LoaderRWops for RWops<'a> {
     /// Load src for use as a sample.
     fn load_wav(&self) -> Result<Chunk, String> {
         let raw = unsafe { ffi::Mix_LoadWAV_RW(self.raw(), 0) };
-        if raw == ptr::null() {
+        if raw == ptr::null_mut() {
             Err(get_error())
         } else {
             Ok(Chunk {
@@ -718,7 +718,7 @@ extern "C" fn c_music_finished_hook() {
 /// This is an opaque data type used for Music data.
 #[derive(PartialEq)]
 pub struct Music {
-    pub raw: *const ffi::Mix_Music,
+    pub raw: *mut ffi::Mix_Music,
     pub owned: bool,
 }
 
