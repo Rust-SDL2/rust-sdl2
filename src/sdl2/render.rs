@@ -34,6 +34,7 @@ use surface::{Surface, SurfaceRef};
 use pixels;
 use pixels::PixelFormatEnum;
 use get_error;
+use std::fmt;
 use std::mem;
 use std::ptr;
 use libc::{c_int, uint32_t, c_double, c_void};
@@ -338,6 +339,21 @@ pub enum TextureValueError {
     HeightOverflows(u32),
     WidthMustBeMultipleOfTwoForFormat(u32, PixelFormatEnum),
     SdlError(String),
+}
+
+impl fmt::Display for TextureValueError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use self::TextureValueError::*;
+
+        match *self {
+            WidthOverflows(value) => write!(f, "Integer width overflows ({})", value),
+            HeightOverflows(value) => write!(f, "Integer height overflows ({})", value),
+            WidthMustBeMultipleOfTwoForFormat(value, format) => write!(f,
+                "Texture width must be multiple of two for pixel format '{:?}' ({})",
+                format, value),
+            SdlError(ref e) => write!(f, "SDL error: {}", e)
+        }
+    }
 }
 
 /// Texture-creating methods for the renderer
