@@ -1,5 +1,7 @@
 use libc::c_char;
 use std::ffi::{CString, CStr, NulError};
+use std::path::Path;
+use rwops::RWops;
 
 use GameControllerSubsystem;
 use get_error;
@@ -12,6 +14,7 @@ use sys::event::{SDL_QUERY, SDL_ENABLE};
 #[derive(Debug)]
 pub enum AddMappingError {
     InvalidMapping(NulError),
+    InvalidFilePath(String),
     SdlError(String),
 }
 
@@ -99,6 +102,25 @@ impl GameControllerSubsystem {
             _ => Err(SdlError(get_error())),
         }
     }
+
+    /// Load mappings from a file
+    pub fn load_mappings<P: AsRef<Path>>(&self, path: P)
+            -> Result<i32, AddMappingError> {
+        use self::AddMappingError::*;
+
+        let file = match RWops::from_file(path, "r") {
+            Ok(f) => f,
+            Err(s) => return Err(InvalidFilePath(s))
+        };
+
+        let result = unsafe { ll::SDL_GameControllerAddMappingsFromRW(file.raw(), 0) };
+
+        match result {
+            -1 => Err(SdlError(get_error())),
+            _ => Ok(result)
+        }
+    }
+
 
     pub fn mapping_for_guid(&self, guid: joystick::Guid) -> Result<String, String> {
         let c_str = unsafe { ll::SDL_GameControllerMappingForGUID(guid.raw()) };
