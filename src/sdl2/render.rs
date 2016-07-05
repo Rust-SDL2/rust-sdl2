@@ -35,6 +35,7 @@ use pixels;
 use pixels::PixelFormatEnum;
 use get_error;
 use std::fmt;
+use std::error::Error;
 use std::mem;
 use std::ptr;
 use libc::{c_int, uint32_t, c_double, c_void};
@@ -352,6 +353,19 @@ impl fmt::Display for TextureValueError {
                 "Texture width must be multiple of two for pixel format '{:?}' ({})",
                 format, value),
             SdlError(ref e) => write!(f, "SDL error: {}", e)
+        }
+    }
+}
+
+impl Error for TextureValueError {
+    fn description(&self) -> &str {
+        use self::TextureValueError::*;
+
+        match *self {
+            WidthOverflows(_) => "texture width overflow",
+            HeightOverflows(_) => "texture height overflow",
+            WidthMustBeMultipleOfTwoForFormat(..) => "texture width must be multiple of two",
+            SdlError(ref e) => e,
         }
     }
 }
