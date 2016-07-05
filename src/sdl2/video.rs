@@ -571,6 +571,20 @@ impl VideoSubsystem {
         }
     }
 
+    /// Return a triplet `(ddpi, hdpi, vdpi)` containing the diagonal, horizontal and vertical
+    /// dots/pixels-per-inch of a display
+    pub fn display_dpi(&self, display_index: i32) -> Result<(f32, f32, f32), String> {
+        let mut ddpi = 0.0;
+        let mut hdpi = 0.0;
+        let mut vdpi = 0.0;
+        let result = unsafe { ll::SDL_GetDisplayDPI(display_index as c_int, &mut ddpi, &mut hdpi, &mut vdpi) };
+        if result < 0 {
+            Err(get_error())
+        } else {
+            Ok((ddpi, hdpi, vdpi))
+        }
+    }
+
     pub fn is_screen_saver_enabled(&self) -> bool {
         unsafe { ll::SDL_IsScreenSaverEnabled() == 1 }
     }

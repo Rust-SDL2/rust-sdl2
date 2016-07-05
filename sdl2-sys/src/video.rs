@@ -160,6 +160,7 @@ extern "C" {
     pub fn SDL_GetWindowDisplayIndex(window: *mut SDL_Window) -> c_int;
     pub fn SDL_SetWindowDisplayMode(window: *mut SDL_Window, mode: *const SDL_DisplayMode) -> c_int;
     pub fn SDL_GetWindowDisplayMode(window: *mut SDL_Window, mode: *mut SDL_DisplayMode) -> c_int;
+    pub fn SDL_GetDisplayDPI(displayIndex: c_int, ddpi: *mut c_float, hdpi: *mut c_float, vdpi: *mut c_float) -> c_int;
     pub fn SDL_GetWindowPixelFormat(window: *mut SDL_Window) -> uint32_t;
     pub fn SDL_CreateWindow(title: *const c_char, x: c_int, y: c_int, w: c_int, h: c_int, flags: uint32_t) -> *mut SDL_Window;
     pub fn SDL_CreateWindowFrom(data: *const c_void) -> *mut SDL_Window;
