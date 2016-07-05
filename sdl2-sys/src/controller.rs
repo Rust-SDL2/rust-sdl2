@@ -2,6 +2,7 @@
 use core::prelude::*;
 use libc::{c_int, c_char, c_uchar, c_uint, c_void, int16_t, uint8_t};
 use joystick::{SDL_Joystick, SDL_JoystickGUID};
+use super::rwops::SDL_RWops;
 
 pub type SDL_bool = c_int;
 
@@ -78,6 +79,7 @@ pub const SDL_CONTROLLER_BUTTON_MAX: SDL_GameControllerButton = 15;
 
 extern "C" {
     pub fn SDL_GameControllerAddMapping(mappingString: *const c_char) -> c_int;
+    pub fn SDL_GameControllerAddMappingsFromRW(rw: *mut SDL_RWops, freerw: c_int) -> c_int;
     pub fn SDL_GameControllerMappingForGUID(guid: SDL_JoystickGUID) ->
               *const c_char;
     pub fn SDL_GameControllerMapping(gamecontroller: *mut SDL_GameController)
