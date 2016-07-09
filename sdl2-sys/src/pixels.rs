@@ -91,4 +91,8 @@ extern "C" {
 
     pub fn SDL_PixelFormatEnumToMasks(format: uint32_t, bpp: *mut c_int, rmask: *mut uint32_t, gmask: *mut uint32_t, bmask: *mut uint32_t, amask: *mut uint32_t) -> SDL_bool;
     pub fn SDL_MasksToPixelFormatEnum(bpp: c_int, rmask: uint32_t, gmask: uint32_t, bmask: uint32_t, amask: uint32_t) -> uint32_t;
+
+    pub fn SDL_AllocPalette(ncolors: c_int) -> *mut SDL_Palette;
+    pub fn SDL_FreePalette(palette: *mut SDL_Palette);
+    pub fn SDL_SetPaletteColors(palette: *mut SDL_Palette, colors: *const SDL_Color, firstcolor: c_int, ncolors: c_int) -> c_int;
 }
