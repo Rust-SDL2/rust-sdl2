@@ -10,7 +10,83 @@ pub struct Palette {
     raw: *mut ll::SDL_Palette
 }
 
+impl Palette {
+    #[inline]
+    /// Creates a new, uninitialized palette
+    pub fn new(mut capacity: usize) -> Result<Self, String> {
+        use common::*;
+
+        let ncolors = {
+            // This is kind of a hack. We have to cast twice because
+            // ncolors is a c_int, and validate_int only takes a u32.
+            // FIXME: Modify validate_int to make this unnecessary
+            let u32_max = u32::max_value() as usize;
+            if capacity > u32_max { capacity = u32_max; }
+
+            match validate_int(capacity as u32, "capacity") {
+                Ok(len) => len,
+                Err(e) => return Err(format!("{}", e)),
+            }
+        };
+
+        let raw = unsafe { ll::SDL_AllocPalette(ncolors) };
+
+        if raw.is_null() {
+            Err(get_error())
+        } else {
+            Ok(Palette {
+                raw: raw,
+            })
+        }
+    }
+
+    /// Creates a palette from the provided colors
+    pub fn with_colors(colors: &[Color]) -> Result<Self, String> {
+        let pal = try!(Self::new(colors.len()));
+
+        // Already validated, so don't check again
+        let ncolors = colors.len() as ::libc::c_int;
+
+        let result = unsafe {
+            let mut raw_colors: Vec<ll::SDL_Color> = colors.iter()
+                .map(|color| color.raw())
+                .collect();
+
+            let pal_ptr = (&mut raw_colors[0]) as *mut ll::SDL_Color;
+
+            ll::SDL_SetPaletteColors(pal.raw, pal_ptr, 0, ncolors)
+        };
+
+        if result < 0 {
+            Err(get_error())
+        } else {
+            Ok(pal)
+        }
+    }
+
+    pub fn len(&self) -> usize {
+        unsafe { (*self.raw).ncolors as usize }
+    }
+}
+
+impl Drop for Palette {
+    fn drop(&mut self) {
+        unsafe { ll::SDL_FreePalette(self.raw); }
+    }
+}
+
 impl_raw_accessors!((Palette, *mut ll::SDL_Palette));
+
+#[test]
+fn create_palette() {
+    let colors: Vec<_> = (0 .. 0xff).map(|u| {
+        Color::RGB(u, 0, 0xff - u)
+    }).collect();
+
+    let palette = Palette::with_colors(&colors).unwrap();
+
+    assert!(palette.len() == 255);
+}
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum Color {
@@ -44,6 +120,19 @@ impl Color {
             &Color::RGB(r, g, b) => (r, g, b),
             &Color::RGBA(r, g, b, _) => (r, g, b)
         }
+    }
+
+    pub fn rgba(&self) -> (u8, u8, u8, u8) {
+        match self {
+            &Color::RGB(r, g, b) => (r, g, b, 0xff),
+            &Color::RGBA(r, g, b, a) => (r, g, b, a),
+        }
+    }
+
+    // Implemented manually and kept private, because reasons
+    unsafe fn raw(&self) -> ll::SDL_Color {
+        let (r, g, b, a) = self.rgba();
+        ll::SDL_Color { r: r, g: g, b: b, a: a }
     }
 }
 
