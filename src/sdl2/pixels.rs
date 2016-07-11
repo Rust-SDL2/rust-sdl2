@@ -69,8 +69,11 @@ impl Palette {
     }
 }
 
-// TODO: ll::SDL_FreePalette(...)
-// impl Drop for Palette { ... }
+impl Drop for Palette {
+    fn drop(&mut self) {
+        unsafe { ll::SDL_FreePalette(self.raw); }
+    }
+}
 
 impl_raw_accessors!((Palette, *mut ll::SDL_Palette));
 
