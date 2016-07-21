@@ -4,7 +4,7 @@
 use sys::rect as ll;
 use std::mem;
 use std::ptr;
-use std::ops::{BitAnd, BitOr};
+use std::ops::{Add, BitAnd, BitOr, Div, Mul, Neg, Sub};
 
 /// The maximal integer value that can be used for rectangles.
 ///
@@ -40,6 +40,19 @@ fn clamp_position(val: i32) -> i32 {
         min_int_value()
     } else {
         val
+    }
+}
+
+fn clamped_mul(a: i32, b: i32) -> i32 {
+    match a.checked_mul(b) {
+        Some(val) => val,
+        None => {
+            if (a < 0) ^ (b < 0) {
+                min_int_value()
+            } else {
+                max_int_value() as i32
+            }
+        }
     }
 }
 
@@ -109,6 +122,11 @@ impl Rect {
         self.raw.h as u32
     }
 
+    /// Returns the width and height of this rectangle.
+    pub fn size(&self) -> (u32, u32) {
+        (self.width(), self.height())
+    }
+
     /// Sets the horizontal position of this rectangle to the given value,
     /// clamped to be less than or equal to i32::max_value() / 2.
     pub fn set_x(&mut self, x: i32) {
@@ -169,6 +187,58 @@ impl Rect {
         let x = self.raw.x + (self.raw.w / 2);
         let y = self.raw.y + (self.raw.h / 2);
         Point::new(x, y)
+    }
+
+    /// Returns the top-left corner of this rectangle.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::rect::{Rect, Point};
+    /// let rect = Rect::new(1, 0, 2, 3);
+    /// assert_eq!(Point::new(1, 0), rect.top_left());
+    /// ```
+    pub fn top_left(&self) -> Point {
+        Point::new(self.left(), self.top())
+    }
+
+    /// Returns the top-right corner of this rectangle.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::rect::{Rect, Point};
+    /// let rect = Rect::new(1, 0, 2, 3);
+    /// assert_eq!(Point::new(3, 0), rect.top_right());
+    /// ```
+    pub fn top_right(&self) -> Point {
+        Point::new(self.right(), self.top())
+    }
+
+    /// Returns the bottom-left corner of this rectangle.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::rect::{Rect, Point};
+    /// let rect = Rect::new(1, 0, 2, 3);
+    /// assert_eq!(Point::new(1, 3), rect.bottom_left());
+    /// ```
+    pub fn bottom_left(&self) -> Point {
+        Point::new(self.left(), self.bottom())
+    }
+
+    /// Returns the bottom-right corner of this rectangle.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::rect::{Rect, Point};
+    /// let rect = Rect::new(1, 0, 2, 3);
+    /// assert_eq!(Point::new(3, 3), rect.bottom_right());
+    /// ```
+    pub fn bottom_right(&self) -> Point {
+        Point::new(self.right(), self.bottom())
     }
 
     /// Sets the position of the right side of this rectangle to the given
@@ -396,6 +466,7 @@ impl Into<(i32, i32)> for Point {
 }
 
 impl Point {
+    /// Creates a new point from the given coordinates.
     pub fn new(x: i32, y: i32) -> Point {
         Point {
             raw: ll::SDL_Point {
@@ -419,6 +490,8 @@ impl Point {
         &self.raw
     }
 
+    /// Returns a new point by shifting this point's coordinates by the given
+    /// x and y values.
     pub fn offset(&self, x: i32, y: i32) -> Point {
         let x = match self.raw.x.checked_add(x) {
             Some(val) => val,
@@ -443,12 +516,61 @@ impl Point {
         Point::new(x, y)
     }
 
+    /// Returns a new point by multiplying this point's coordinates by the
+    /// given scale factor.
+    pub fn scale(&self, f: i32) -> Point {
+        Point::new(clamped_mul(self.raw.x, f),
+                   clamped_mul(self.raw.y, f))
+    }
+
+    /// Returns the x-coordinate of this point.
     pub fn x(&self) -> i32 {
         self.raw.x
     }
 
+    /// Returns the y-coordinate of this point.
     pub fn y(&self) -> i32 {
         self.raw.y
+    }
+}
+
+impl Add for Point {
+    type Output = Point;
+
+    fn add(self, rhs: Point) -> Point {
+        self.offset(rhs.x(), rhs.y())
+    }
+}
+
+impl Neg for Point {
+    type Output = Point;
+
+    fn neg(self) -> Point {
+        Point::new(-self.x(), -self.y())
+    }
+}
+
+impl Sub for Point {
+    type Output = Point;
+
+    fn sub(self, rhs: Point) -> Point {
+        self.offset(-rhs.x(), -rhs.y())
+    }
+}
+
+impl Mul<i32> for Point {
+    type Output = Point;
+
+    fn mul(self, rhs: i32) -> Point {
+        self.scale(rhs)
+    }
+}
+
+impl Div<i32> for Point {
+    type Output = Point;
+
+    fn div(self, rhs: i32) -> Point {
+        Point::new(self.x() / rhs, self.y() / rhs)
     }
 }
 
@@ -614,6 +736,46 @@ mod test {
         assert_eq!(
             test,
             Point::new(-11, 5).into()
+        );
+    }
+
+    #[test]
+    fn point_add() {
+        assert_eq!(
+            Point::new(-5, 7),
+            Point::new(-11, 5) + Point::new(6, 2)
+        );
+    }
+
+    #[test]
+    fn point_sub() {
+        assert_eq!(
+            Point::new(-17, 3),
+            Point::new(-11, 5) - Point::new(6, 2)
+        );
+    }
+
+    #[test]
+    fn point_mul() {
+        assert_eq!(
+            Point::new(-33, 15),
+            Point::new(-11, 5) * 3
+        );
+    }
+
+    #[test]
+    fn point_mul_clamp() {
+        assert_eq!(
+            Point::new(0x7fffffff, -0x7fffffff),
+            Point::new(-1000000, 5000000) * -3000000
+        );
+    }
+
+    #[test]
+    fn point_div() {
+        assert_eq!(
+            Point::new(-3, 1),
+            Point::new(-11, 5) / 3
         );
     }
  }
