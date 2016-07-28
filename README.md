@@ -109,8 +109,14 @@ http://www.libsdl.org/ (SDL2-devel-2.0.x-mingw.tar.gz).
 3. Copy all lib files from
     > SDL2-devel-2.0.x-mingw\SDL2-2.0.x\x86_64-w64-mingw32\lib
 
-    inside
-    > C:\Rust\bin\rustlib\x86_64-pc-windows-gnu\lib
+    to (for Rust 1.6 and above) 
+    > C:\Program Files\Rust\\**lib**\rustlib\x86_64-pc-windows-gnu\lib
+
+    or to (for Rust versions 1.5 and below)
+    > C:\Program Files\Rust\\**bin**\rustlib\x86_64-pc-windows-gnu\lib
+    
+    or to your library folder of choice, and ensure you have a system environment variable of
+    > LIBRARY_PATH = C:\your\rust\library\folder
 
 	For Multirust Users, this folder will be in
 	> C:\Users\{Your Username}\AppData\Local\.multirust\toolchains\{current toolchain}\lib\rustlib\x86_64-pc-windows-gnu\lib
