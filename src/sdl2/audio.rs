@@ -525,9 +525,19 @@ impl AudioQueue {
         unsafe { ll::SDL_PauseAudioDevice(self.device_id.id(), 0) }
     }
 
+    /// Adds data to the audio queue.
     pub fn queue<Channel>(&self, data: &[Channel]) -> bool {
         let result = unsafe {ll::SDL_QueueAudio(self.device_id.id(), data.as_ptr() as *const c_void, data.len() as u32)};
         result == 0
+    }
+
+    pub fn size(&self) -> u32 {
+        unsafe {ll::SDL_GetQueuedAudioSize(self.device_id.id())}
+    }
+
+    /// Clears all data from the current audio queue.
+    pub fn clear(&self) {
+        unsafe {ll::SDL_ClearQueuedAudio(self.device_id.id());}
     }
 }
 
