@@ -76,10 +76,9 @@ impl AudioSubsystem {
 
     /// Opens a new audio device which uses queueing rather than older callback method.
     #[inline]
-    pub fn open_queue<CB>(&self, device: Option<&str>, spec: &AudioSpecDesired) -> Result<AudioQueue, String>
-    where CB: AudioCallback
+    pub fn open_queue<Channel>(&self, device: Option<&str>, spec: &AudioSpecDesired) -> Result<AudioQueue<Channel>, String> where Channel: AudioFormatNum
     {
-        AudioQueue::open_queue::<CB>(self, device, spec)
+        AudioQueue::open_queue(self, device, spec)
     }
 
     pub fn current_audio_driver(&self) -> &'static str {
@@ -381,7 +380,7 @@ pub struct AudioSpecDesired {
 }
 
 impl AudioSpecDesired {
-    fn convert_to_ll<CB: AudioCallback>(freq: Option<i32>, channels: Option<u8>, samples: Option<u16>, userdata: Option<*mut CB>) -> ll::SDL_AudioSpec {
+    fn convert_to_ll<CB: AudioCallback>(freq: Option<i32>, channels: Option<u8>, samples: Option<u16>, userdata: *mut CB) -> ll::SDL_AudioSpec {
         use std::mem::transmute;
 
         if let Some(freq) = freq { assert!(freq > 0); }
@@ -389,8 +388,6 @@ impl AudioSpecDesired {
         if let Some(samples) = samples { assert!(samples > 0); }
 
         // A value of 0 means "fallback" or "default".
-
-        
 
         unsafe {
             ll::SDL_AudioSpec {
@@ -401,23 +398,33 @@ impl AudioSpecDesired {
                 samples: samples.unwrap_or(0),
                 padding: 0,
                 size: 0,
-                callback: if userdata.is_some() {
-                    Some(audio_callback_marshall::<CB>
+                callback: Some(audio_callback_marshall::<CB>
                         as extern "C" fn
                             (arg1: *mut c_void,
                              arg2: *mut uint8_t,
-                             arg3: c_int))
-                }
-                else {
-                    None
-                },
-                userdata: if userdata.is_some() {
-                    transmute(userdata.expect("userdata error in AudioSpecDesired::convert_to_ll"))
-                }
-                else {
-                    0 as *mut c_void
-                }
+                             arg3: c_int)),
+                userdata: transmute(userdata)
             }
+        }
+    }
+
+    fn convert_queue_to_ll<Channel: AudioFormatNum>(freq: Option<i32>, channels: Option<u8>, samples: Option<u16>) -> ll::SDL_AudioSpec {
+        if let Some(freq) = freq { assert!(freq > 0); }
+        if let Some(channels) = channels { assert!(channels > 0); }
+        if let Some(samples) = samples { assert!(samples > 0); }
+
+        // A value of 0 means "fallback" or "default".
+
+        ll::SDL_AudioSpec {
+            freq: freq.unwrap_or(0),
+            format: <Channel as AudioFormatNum>::audio_format().to_ll(),
+            channels: channels.unwrap_or(0),
+            silence: 0,
+            samples: samples.unwrap_or(0),
+            padding: 0,
+            size: 0,
+            callback: None,
+            userdata: 0 as *mut c_void
         }
     }
 }
@@ -466,15 +473,16 @@ impl Drop for AudioDeviceID {
 }
 
 /// Wraps SDL_AudioDeviceID and owns the callback data used by the audio device.
-pub struct AudioQueue {
+pub struct AudioQueue<Channel: AudioFormatNum> {
     subsystem: AudioSubsystem,
     device_id: AudioDeviceID,
+    phantom: PhantomData<Channel>
 }
 
-impl AudioQueue {
+impl<Channel: AudioFormatNum> AudioQueue<Channel> {
     /// Opens a new audio device given the desired parameters and callback.
-    pub fn open_queue<CB> (a: &AudioSubsystem, device: Option<&str>, spec: &AudioSpecDesired) -> Result<AudioQueue, String> where CB: AudioCallback {
-        let desired = AudioSpecDesired::convert_to_ll::<CB>(spec.freq, spec.channels, spec.samples, None);
+    pub fn open_queue(a: &AudioSubsystem, device: Option<&str>, spec: &AudioSpecDesired) -> Result<AudioQueue<Channel>, String> {
+        let desired = AudioSpecDesired::convert_queue_to_ll::<Channel>(spec.freq, spec.channels, spec.samples);
 
         let mut obtained = unsafe { mem::uninitialized::<ll::SDL_AudioSpec>() };
         unsafe {
@@ -499,6 +507,7 @@ impl AudioQueue {
                     Ok(AudioQueue {
                         subsystem: a.clone(),
                         device_id: device_id,
+                        phantom: PhantomData::default()
                     })
                 }
             }
@@ -526,7 +535,7 @@ impl AudioQueue {
     }
 
     /// Adds data to the audio queue.
-    pub fn queue<Channel>(&self, data: &[Channel]) -> bool {
+    pub fn queue(&self, data: &[Channel]) -> bool {
         let result = unsafe {ll::SDL_QueueAudio(self.device_id.id(), data.as_ptr() as *const c_void, data.len() as u32)};
         result == 0
     }
@@ -562,7 +571,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
             let b: Box<CB> = Box::new(mem::uninitialized());
             mem::transmute(b)
         };
-        let desired = AudioSpecDesired::convert_to_ll(spec.freq, spec.channels, spec.samples, Some(userdata));
+        let desired = AudioSpecDesired::convert_to_ll(spec.freq, spec.channels, spec.samples, userdata);
 
         let mut obtained = unsafe { mem::uninitialized::<ll::SDL_AudioSpec>() };
         unsafe {
