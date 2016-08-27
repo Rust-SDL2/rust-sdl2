@@ -76,8 +76,10 @@ impl AudioSubsystem {
 
     /// Opens a new audio device which uses queueing rather than older callback method.
     #[inline]
-    pub fn open_queued_playback(&self, device: Option<&str>, spec: &AudioSpecDesired) {
-        AudioDevice::open_queued_playback(self, device, spec);
+    pub fn open_queue<CB>(&self, device: Option<&str>, spec: &AudioSpecDesired) -> Result<AudioQueue, String>
+    where CB: AudioCallback
+    {
+        AudioQueue::open_queue::<CB>(self, device, spec)
     }
 
     pub fn current_audio_driver(&self) -> &'static str {
@@ -464,11 +466,77 @@ impl Drop for AudioDeviceID {
 }
 
 /// Wraps SDL_AudioDeviceID and owns the callback data used by the audio device.
+pub struct AudioQueue {
+    subsystem: AudioSubsystem,
+    device_id: AudioDeviceID,
+}
+
+impl AudioQueue {
+    /// Opens a new audio device given the desired parameters and callback.
+    pub fn open_queue<CB> (a: &AudioSubsystem, device: Option<&str>, spec: &AudioSpecDesired) -> Result<AudioQueue, String> where CB: AudioCallback {
+        let desired = AudioSpecDesired::convert_to_ll::<CB>(spec.freq, spec.channels, spec.samples, None);
+
+        let mut obtained = unsafe { mem::uninitialized::<ll::SDL_AudioSpec>() };
+        unsafe {
+            let device = match device {
+                Some(device) => Some(CString::new(device).unwrap()),
+                None => None
+            };
+            let device_ptr = device.map_or(ptr::null(), |s| s.as_ptr());
+
+            let iscapture_flag = 0;
+            let device_id = ll::SDL_OpenAudioDevice(
+                device_ptr as *const c_char, iscapture_flag, &desired, 
+                &mut obtained, 0
+            );
+            match device_id {
+                0 => {
+                    Err(get_error())
+                },
+                id => {
+                    let device_id = AudioDeviceID::PlaybackDevice(id);
+
+                    Ok(AudioQueue {
+                        subsystem: a.clone(),
+                        device_id: device_id,
+                    })
+                }
+            }
+        }
+    }
+
+    #[inline]
+    pub fn subsystem(&self) -> &AudioSubsystem { &self.subsystem }
+
+    pub fn status(&self) -> AudioStatus {
+        unsafe {
+            let status = ll::SDL_GetAudioDeviceStatus(self.device_id.id());
+            FromPrimitive::from_i32(status as i32).unwrap()
+        }
+    }
+
+    /// Pauses playback of the audio device.
+    pub fn pause(&self) {
+        unsafe { ll::SDL_PauseAudioDevice(self.device_id.id(), 1) }
+    }
+
+    /// Starts playback of the audio device.
+    pub fn resume(&self) {
+        unsafe { ll::SDL_PauseAudioDevice(self.device_id.id(), 0) }
+    }
+
+    pub fn queue<Channel>(&self, data: &[Channel]) -> bool {
+        let result = unsafe {ll::SDL_QueueAudio(self.device_id.id(), data.as_ptr() as *const c_void, data.len() as u32)};
+        result == 0
+    }
+}
+
+/// Wraps SDL_AudioDeviceID and owns the callback data used by the audio device.
 pub struct AudioDevice<CB: AudioCallback> {
     subsystem: AudioSubsystem,
     device_id: AudioDeviceID,
     /// Store the callback to keep it alive for the entire duration of `AudioDevice`.
-    userdata: Option<Box<CB>>
+    userdata: Box<CB>
 }
 
 impl<CB: AudioCallback> AudioDevice<CB> {
@@ -484,7 +552,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
             let b: Box<CB> = Box::new(mem::uninitialized());
             mem::transmute(b)
         };
-        let desired = AudioSpecDesired::convert_to_ll(spec.freq, spec.channels, spec.samples, userdata);
+        let desired = AudioSpecDesired::convert_to_ll(spec.freq, spec.channels, spec.samples, Some(userdata));
 
         let mut obtained = unsafe { mem::uninitialized::<ll::SDL_AudioSpec>() };
         unsafe {
@@ -514,44 +582,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
                     Ok(AudioDevice {
                         subsystem: a.clone(),
                         device_id: device_id,
-                        userdata: Some(userdata)
-                    })
-                }
-            }
-        }
-    }
-
-    /// Opens a new queueing audio device given the desired parameters and callback.
-    pub fn open_queued_playback<F>(a: &AudioSubsystem, device: Option<&str>, spec: &AudioSpecDesired) -> Result<AudioDevice <CB>, String>
-    where F: FnOnce(AudioSpec) -> CB
-    {
-        let desired = AudioSpecDesired::convert_to_ll(spec.freq, spec.channels, spec.samples);
-
-        let mut obtained = unsafe { mem::uninitialized::<ll::SDL_AudioSpec>() };
-        unsafe {
-            let device = match device {
-                Some(device) => Some(CString::new(device).unwrap()),
-                None => None
-            };
-            let device_ptr = device.map_or(ptr::null(), |s| s.as_ptr());
-
-            let iscapture_flag = 0;
-            let device_id = ll::SDL_OpenAudioDevice(
-                device_ptr as *const c_char, iscapture_flag, &desired, 
-                &mut obtained, 0
-            );
-            match device_id {
-                0 => {
-                    Err(get_error())
-                },
-                id => {
-                    let device_id = AudioDeviceID::PlaybackDevice(id);
-                    let spec = AudioSpec::convert_from_ll(obtained);
-
-                    Ok(AudioDevice {
-                        subsystem: a.clone(),
-                        device_id: device_id,
-                        userdata: None
+                        userdata: userdata
                     })
                 }
             }
@@ -595,12 +626,9 @@ impl<CB: AudioCallback> AudioDevice<CB> {
     ///
     /// Note that simply dropping `AudioDevice` will close the audio device,
     /// but the callback data will be dropped.
-    ///
-    /// Also note that this method should not be called with a queueing playback
-    /// device, as there is no callback data to be dropped.
     pub fn close_and_get_callback(self) -> CB {
         drop(self.device_id);
-        *self.userdata.expect("Problem with AudioDeivce::close_and_get_callback")
+        *self.userdata
     }
 }
 
