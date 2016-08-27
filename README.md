@@ -166,7 +166,7 @@ If you want to use OpenGL, you also need the
     git = "https://github.com/bjz/gl-rs"
 ```
 
-Then you need to add this to add this initialization code to establish the
+Then you need to add this initialization code to establish the
 bindings:
 
 ```rust
