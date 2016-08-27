@@ -96,6 +96,9 @@ extern "C" {
     pub fn SDL_MixAudioFormat(dst: *mut uint8_t, src: *const uint8_t,
                               format: SDL_AudioFormat, len: uint32_t,
                               volume: c_int);
+    pub fn SDL_QueueAudio(dev: SDL_AudioDeviceID, data: *const c_void, len: uint32_t) -> c_int;
+    pub fn SDL_GetQueuedAudioSize(dev: SDL_AudioDeviceID) -> uint32_t;
+    pub fn SDL_ClearQueuedAudio(dev: SDL_AudioDeviceID);
     pub fn SDL_LockAudio();
     pub fn SDL_LockAudioDevice(dev: SDL_AudioDeviceID);
     pub fn SDL_UnlockAudio();
