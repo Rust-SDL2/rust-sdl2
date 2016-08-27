@@ -74,6 +74,12 @@ impl AudioSubsystem {
         AudioDevice::open_playback(self, device, spec, get_callback)
     }
 
+    /// Opens a new audio device which uses queueing rather than older callback method.
+    #[inline]
+    pub fn open_queued_playback(&self, device: Option<&str>, spec: &AudioSpecDesired) {
+        AudioDevice::open_queued_playback(self, device, spec);
+    }
+
     pub fn current_audio_driver(&self) -> &'static str {
         unsafe {
             let buf = ll::SDL_GetCurrentAudioDriver();
@@ -373,7 +379,7 @@ pub struct AudioSpecDesired {
 }
 
 impl AudioSpecDesired {
-    fn convert_to_ll<CB: AudioCallback>(freq: Option<i32>, channels: Option<u8>, samples: Option<u16>, userdata: *mut CB) -> ll::SDL_AudioSpec {
+    fn convert_to_ll<CB: AudioCallback>(freq: Option<i32>, channels: Option<u8>, samples: Option<u16>, userdata: Option<*mut CB>) -> ll::SDL_AudioSpec {
         use std::mem::transmute;
 
         if let Some(freq) = freq { assert!(freq > 0); }
@@ -381,6 +387,8 @@ impl AudioSpecDesired {
         if let Some(samples) = samples { assert!(samples > 0); }
 
         // A value of 0 means "fallback" or "default".
+
+        
 
         unsafe {
             ll::SDL_AudioSpec {
@@ -391,12 +399,22 @@ impl AudioSpecDesired {
                 samples: samples.unwrap_or(0),
                 padding: 0,
                 size: 0,
-                callback: Some(audio_callback_marshall::<CB>
-                    as extern "C" fn
-                        (arg1: *mut c_void,
-                         arg2: *mut uint8_t,
-                         arg3: c_int)),
-                userdata: transmute(userdata)
+                callback: if userdata.is_some() {
+                    Some(audio_callback_marshall::<CB>
+                        as extern "C" fn
+                            (arg1: *mut c_void,
+                             arg2: *mut uint8_t,
+                             arg3: c_int))
+                }
+                else {
+                    None
+                },
+                userdata: if userdata.is_some() {
+                    transmute(userdata.expect("userdata error in AudioSpecDesired::convert_to_ll"))
+                }
+                else {
+                    0 as *mut c_void
+                }
             }
         }
     }
@@ -450,7 +468,7 @@ pub struct AudioDevice<CB: AudioCallback> {
     subsystem: AudioSubsystem,
     device_id: AudioDeviceID,
     /// Store the callback to keep it alive for the entire duration of `AudioDevice`.
-    userdata: Box<CB>
+    userdata: Option<Box<CB>>
 }
 
 impl<CB: AudioCallback> AudioDevice<CB> {
@@ -496,7 +514,44 @@ impl<CB: AudioCallback> AudioDevice<CB> {
                     Ok(AudioDevice {
                         subsystem: a.clone(),
                         device_id: device_id,
-                        userdata: userdata
+                        userdata: Some(userdata)
+                    })
+                }
+            }
+        }
+    }
+
+    /// Opens a new queueing audio device given the desired parameters and callback.
+    pub fn open_queued_playback<F>(a: &AudioSubsystem, device: Option<&str>, spec: &AudioSpecDesired) -> Result<AudioDevice <CB>, String>
+    where F: FnOnce(AudioSpec) -> CB
+    {
+        let desired = AudioSpecDesired::convert_to_ll(spec.freq, spec.channels, spec.samples);
+
+        let mut obtained = unsafe { mem::uninitialized::<ll::SDL_AudioSpec>() };
+        unsafe {
+            let device = match device {
+                Some(device) => Some(CString::new(device).unwrap()),
+                None => None
+            };
+            let device_ptr = device.map_or(ptr::null(), |s| s.as_ptr());
+
+            let iscapture_flag = 0;
+            let device_id = ll::SDL_OpenAudioDevice(
+                device_ptr as *const c_char, iscapture_flag, &desired, 
+                &mut obtained, 0
+            );
+            match device_id {
+                0 => {
+                    Err(get_error())
+                },
+                id => {
+                    let device_id = AudioDeviceID::PlaybackDevice(id);
+                    let spec = AudioSpec::convert_from_ll(obtained);
+
+                    Ok(AudioDevice {
+                        subsystem: a.clone(),
+                        device_id: device_id,
+                        userdata: None
                     })
                 }
             }
@@ -540,9 +595,12 @@ impl<CB: AudioCallback> AudioDevice<CB> {
     ///
     /// Note that simply dropping `AudioDevice` will close the audio device,
     /// but the callback data will be dropped.
+    ///
+    /// Also note that this method should not be called with a queueing playback
+    /// device, as there is no callback data to be dropped.
     pub fn close_and_get_callback(self) -> CB {
         drop(self.device_id);
-        *self.userdata
+        *self.userdata.expect("Problem with AudioDeivce::close_and_get_callback")
     }
 }
 
