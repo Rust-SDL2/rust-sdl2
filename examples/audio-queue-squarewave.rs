@@ -7,7 +7,7 @@ fn gen_wave(bytes_to_write: i32) -> Vec<i16> {
     // Generate a square wave
     let tone_volume = 1000i16;
     let period = 48000 / 256;
-    let sample_count = bytes_to_write / 4;
+    let sample_count = bytes_to_write;
     let mut result = Vec::new();
 
     for x in 0..sample_count {
