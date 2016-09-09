@@ -74,6 +74,13 @@ impl AudioSubsystem {
         AudioDevice::open_playback(self, device, spec, get_callback)
     }
 
+    /// Opens a new audio device which uses queueing rather than older callback method.
+    #[inline]
+    pub fn open_queue<Channel>(&self, device: Option<&str>, spec: &AudioSpecDesired) -> Result<AudioQueue<Channel>, String> where Channel: AudioFormatNum
+    {
+        AudioQueue::open_queue(self, device, spec)
+    }
+
     pub fn current_audio_driver(&self) -> &'static str {
         unsafe {
             let buf = ll::SDL_GetCurrentAudioDriver();
@@ -392,12 +399,32 @@ impl AudioSpecDesired {
                 padding: 0,
                 size: 0,
                 callback: Some(audio_callback_marshall::<CB>
-                    as extern "C" fn
-                        (arg1: *mut c_void,
-                         arg2: *mut uint8_t,
-                         arg3: c_int)),
+                        as extern "C" fn
+                            (arg1: *mut c_void,
+                             arg2: *mut uint8_t,
+                             arg3: c_int)),
                 userdata: transmute(userdata)
             }
+        }
+    }
+
+    fn convert_queue_to_ll<Channel: AudioFormatNum>(freq: Option<i32>, channels: Option<u8>, samples: Option<u16>) -> ll::SDL_AudioSpec {
+        if let Some(freq) = freq { assert!(freq > 0); }
+        if let Some(channels) = channels { assert!(channels > 0); }
+        if let Some(samples) = samples { assert!(samples > 0); }
+
+        // A value of 0 means "fallback" or "default".
+
+        ll::SDL_AudioSpec {
+            freq: freq.unwrap_or(0),
+            format: <Channel as AudioFormatNum>::audio_format().to_ll(),
+            channels: channels.unwrap_or(0),
+            silence: 0,
+            samples: samples.unwrap_or(0),
+            padding: 0,
+            size: 0,
+            callback: None,
+            userdata: 0 as *mut c_void
         }
     }
 }
@@ -442,6 +469,84 @@ impl Drop for AudioDeviceID {
     fn drop(&mut self) {
         //! Shut down audio processing and close the audio device.
         unsafe { ll::SDL_CloseAudioDevice(self.id()) }
+    }
+}
+
+/// Wraps SDL_AudioDeviceID and owns the callback data used by the audio device.
+pub struct AudioQueue<Channel: AudioFormatNum> {
+    subsystem: AudioSubsystem,
+    device_id: AudioDeviceID,
+    phantom: PhantomData<Channel>
+}
+
+impl<Channel: AudioFormatNum> AudioQueue<Channel> {
+    /// Opens a new audio device given the desired parameters and callback.
+    pub fn open_queue(a: &AudioSubsystem, device: Option<&str>, spec: &AudioSpecDesired) -> Result<AudioQueue<Channel>, String> {
+        let desired = AudioSpecDesired::convert_queue_to_ll::<Channel>(spec.freq, spec.channels, spec.samples);
+
+        let mut obtained = unsafe { mem::uninitialized::<ll::SDL_AudioSpec>() };
+        unsafe {
+            let device = match device {
+                Some(device) => Some(CString::new(device).unwrap()),
+                None => None
+            };
+            let device_ptr = device.map_or(ptr::null(), |s| s.as_ptr());
+
+            let iscapture_flag = 0;
+            let device_id = ll::SDL_OpenAudioDevice(
+                device_ptr as *const c_char, iscapture_flag, &desired, 
+                &mut obtained, 0
+            );
+            match device_id {
+                0 => {
+                    Err(get_error())
+                },
+                id => {
+                    let device_id = AudioDeviceID::PlaybackDevice(id);
+
+                    Ok(AudioQueue {
+                        subsystem: a.clone(),
+                        device_id: device_id,
+                        phantom: PhantomData::default()
+                    })
+                }
+            }
+        }
+    }
+
+    #[inline]
+    pub fn subsystem(&self) -> &AudioSubsystem { &self.subsystem }
+
+    pub fn status(&self) -> AudioStatus {
+        unsafe {
+            let status = ll::SDL_GetAudioDeviceStatus(self.device_id.id());
+            FromPrimitive::from_i32(status as i32).unwrap()
+        }
+    }
+
+    /// Pauses playback of the audio device.
+    pub fn pause(&self) {
+        unsafe { ll::SDL_PauseAudioDevice(self.device_id.id(), 1) }
+    }
+
+    /// Starts playback of the audio device.
+    pub fn resume(&self) {
+        unsafe { ll::SDL_PauseAudioDevice(self.device_id.id(), 0) }
+    }
+
+    /// Adds data to the audio queue.
+    pub fn queue(&self, data: &[Channel]) -> bool {
+        let result = unsafe {ll::SDL_QueueAudio(self.device_id.id(), data.as_ptr() as *const c_void, data.len() as u32)};
+        result == 0
+    }
+
+    pub fn size(&self) -> u32 {
+        unsafe {ll::SDL_GetQueuedAudioSize(self.device_id.id())}
+    }
+
+    /// Clears all data from the current audio queue.
+    pub fn clear(&self) {
+        unsafe {ll::SDL_ClearQueuedAudio(self.device_id.id());}
     }
 }
 
