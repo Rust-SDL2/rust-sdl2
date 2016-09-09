@@ -5,8 +5,9 @@ rust:
 - nightly
 - stable
 install:
-- sudo apt-get update -q
-- sudo apt-get install libsdl2-dev
+- wget https://www.libsdl.org/release/SDL2-2.0.4.tar.gz -O /tmp/sdl2.tar.gz
+- tar xzf sdl2.tar.gz
+- pushd sdl2 && ./configure && make && sudo make install && popd
 before_script:
 - |
   pip install 'travis-cargo<0.2' --user &&
