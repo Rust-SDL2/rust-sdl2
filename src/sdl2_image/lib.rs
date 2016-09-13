@@ -89,7 +89,8 @@ impl<'a> LoadSurface for Surface<'a> {
     fn from_file(filename: &Path) -> Result<Surface<'a>, String> {
         //! Loads an SDL Surface from a file
         unsafe {
-            let raw = ffi::IMG_Load(CString::new(filename.to_str().unwrap()).unwrap().as_ptr() as *const _);
+            let c_filename = CString::new(filename.to_str().unwrap()).unwrap();
+            let raw = ffi::IMG_Load(c_filename.as_ptr() as *const _);
             if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
@@ -115,7 +116,8 @@ impl<'a> SaveSurface for Surface<'a> {
     fn save(&self, filename: &Path) -> Result<(), String> {
         //! Saves an SDL Surface to a file
         unsafe {
-            let status = ffi::IMG_SavePNG(self.raw(), CString::new(filename.to_str().unwrap()).unwrap().as_ptr() as *const _);
+            let c_filename = CString::new(filename.to_str().unwrap()).unwrap();
+            let status = ffi::IMG_SavePNG(self.raw(), c_filename.as_ptr() as *const _);
             if status != 0 {
                 Err(get_error())
             } else {
@@ -147,7 +149,8 @@ impl<'a> LoadTexture for Renderer<'a> {
     fn load_texture(&self, filename: &Path) -> Result<Texture, String> {
         //! Loads an SDL Texture from a file
         unsafe {
-            let raw = ffi::IMG_LoadTexture(self.raw(), CString::new(filename.to_str().unwrap()).unwrap().as_ptr() as *const _);
+            let c_filename = CString::new(filename.to_str().unwrap()).unwrap();
+            let raw = ffi::IMG_LoadTexture(self.raw(), c_filename.as_ptr() as *const _);
             if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
@@ -157,7 +160,7 @@ impl<'a> LoadTexture for Renderer<'a> {
     }
 }
 
-/// Context manager for sdl2_image to manage quiting. Can't do much with it but
+/// Context manager for `sdl2_image` to manage quiting. Can't do much with it but
 /// keep it alive while you are using it.
 pub struct Sdl2ImageContext;
 
@@ -167,9 +170,9 @@ impl Drop for Sdl2ImageContext {
     }
 }
 
+/// Initializes `SDL2_image` with `InitFlags`.
+/// If not every flag is set it returns an error
 pub fn init(flags: InitFlag) -> Result<Sdl2ImageContext, String> {
-    //! Initializes SDL2_image with InitFlags.
-    //! If not every flag is set it returns an error
     let return_flags = unsafe {
         let used = ffi::IMG_Init(flags.bits() as c_int);
         InitFlag::from_bits_truncate(used as u32)
@@ -187,8 +190,8 @@ pub fn init(flags: InitFlag) -> Result<Sdl2ImageContext, String> {
     }
 }
 
+/// Returns the version of the dynamically linked `SDL_image` library
 pub fn get_linked_version() -> Version {
-    //! Returns the version of the dynamically linked SDL_image library
     unsafe {
         Version::from_ll(*ffi::IMG_Linked_Version())
     }
@@ -250,7 +253,8 @@ impl<'a> ImageRWops for RWops<'a> {
     }
     fn load_typed(&self, _type: &str) -> Result<Surface, String> {
         let raw = unsafe {
-            ffi::IMG_LoadTyped_RW(self.raw(), 0, CString::new(_type.as_bytes()).unwrap().as_ptr() as *const _)
+            let c_type = CString::new(_type.as_bytes()).unwrap();
+            ffi::IMG_LoadTyped_RW(self.raw(), 0, c_type.as_ptr() as *const _)
         };
         to_surface_result(raw)
     }
