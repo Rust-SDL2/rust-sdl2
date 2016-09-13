@@ -1,5 +1,5 @@
 /*!
-A binding for SDL2_ttf.
+A binding for `SDL2_ttf`.
  */
 
 extern crate sdl2;
@@ -35,6 +35,6 @@ pub use context::{
     init, has_been_initialized, get_linked_version, Sdl2TtfContext
 };
 pub use font::{
-    Font, FontStyle, Hinting, GlyphMetrics, PartialRendering, FontError, 
+    Font, FontStyle, Hinting, GlyphMetrics, PartialRendering, FontError,
     FontResult, STYLE_NORMAL, STYLE_BOLD, STYLE_ITALIC, STYLE_UNDERLINE, STYLE_STRIKETHROUGH
 };
