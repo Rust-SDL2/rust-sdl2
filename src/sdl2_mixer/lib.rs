@@ -10,7 +10,6 @@ extern crate libc;
 extern crate sdl2;
 
 use std::default;
-use std::ptr;
 use std::fmt;
 use std::ffi::{CString, CStr};
 use std::str::from_utf8;
@@ -277,7 +276,7 @@ impl<'a> LoaderRWops for RWops<'a> {
     /// Load src for use as a sample.
     fn load_wav(&self) -> Result<Chunk, String> {
         let raw = unsafe { ffi::Mix_LoadWAV_RW(self.raw(), 0) };
-        if raw == ptr::null_mut() {
+        if raw.is_null() {
             Err(get_error())
         } else {
             Ok(Chunk {
@@ -741,7 +740,8 @@ impl Music {
     /// Load music file to use.
     pub fn from_file(path: &Path) -> Result<Music, String> {
         let raw = unsafe {
-            ffi::Mix_LoadMUS(CString::new(path.to_str().unwrap()).unwrap().as_ptr())
+            let c_path = CString::new(path.to_str().unwrap()).unwrap();
+            ffi::Mix_LoadMUS(c_path.as_ptr())
         };
         if raw.is_null() {
             Err(get_error())
@@ -849,7 +849,10 @@ impl Music {
 
     /// Setup a command line music player to use to play music.
     pub fn set_command(command: &str) -> Result<(), String> {
-        let ret = unsafe { ffi::Mix_SetMusicCMD(CString::new(command).unwrap().as_ptr()) };
+        let ret = unsafe {
+            let c_command = CString::new(command).unwrap();
+            ffi::Mix_SetMusicCMD(c_command.as_ptr())
+        };
         if ret == -1 {
             Err(get_error())
         } else {
