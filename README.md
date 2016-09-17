@@ -42,7 +42,7 @@ Rust-SDL2_mixer uses the MIT licence.
 	For Multirust Users, this folder will be in
 	> C:\Users\{Your Username}\AppData\Local\.multirust\toolchains\{current toolchain}\lib\rustlib\x86_64-pc-windows-gnu\lib
 4. Copy `SDL2_mixer.dll` and `smpeg2.dll` from 
-    > SDL2_mixer-2.0.1\x86_64-w64-mingw32\bin\
+    > SDL2_mixer-2.0.x\x86_64-w64-mingw32\bin\
 
     into your cargo project, right next to your `Cargo.toml`.
 
