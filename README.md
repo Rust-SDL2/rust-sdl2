@@ -16,7 +16,7 @@ Rust-SDL2_mixer uses the MIT licence.
 
 * [Rust-SDL2](https://github.com/AngryLawyer/rust-sdl2)
 * SDL2_mixer development libraries
-* Rust master or nightly
+* Latest stable Rust master
 
 #### OSX
 
