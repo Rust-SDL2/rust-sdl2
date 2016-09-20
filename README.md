@@ -32,8 +32,7 @@ These live outside of the repo.
 
 ## Rust
 
-We currently compile against the *Master* branch. I'd recommend using the
-Nightly installer, as that has the greatest chance of working.
+We currently target the latest stable release of Rust.
 
 ## *SDL2.0  development libraries*
 ### Linux
