@@ -17,6 +17,7 @@ pub fn base_path() -> Result<String, String> {
     }
 }
 
+#[derive(Debug)]
 pub enum PrefPathError {
     InvalidOrganizationName(NulError),
     InvalidApplicationName(NulError),
