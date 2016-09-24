@@ -3,7 +3,7 @@ name = "sdl2_mixer"
 description = "SDL2_mixer bindings for Rust"
 repository = "https://github.com/andelf/rust-sdl2_mixer"
 version = "0.23.0"
-license = "MIT"
+license = "MIT/Apache-2.0"
 authors = ["ShuYu Wang <andelf@gmail.com>"]
 keywords = ["SDL", "windowing", "graphics", "music", "sound"]
 
