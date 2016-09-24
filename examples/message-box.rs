@@ -45,4 +45,28 @@ pub fn main() {
         }
         // The rest of the game loop goes here...
     }
+    let buttons : Vec<_> = vec![
+        ButtonData {
+            flags:MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT,
+            button_id:1,
+            text:"Ok"
+        },
+        ButtonData {
+            flags:MESSAGEBOX_BUTTON_NOTHING,
+            button_id:2,
+            text:"No"
+        },
+        ButtonData {
+            flags:MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT,
+            button_id:3,
+            text:"Cancel"
+        },
+    ];
+    let res = show_message_box(MESSAGEBOX_WARNING,
+                               buttons.as_slice(),
+                               "Some warning",
+                               "You forget to do something, do it anyway ?",
+                               None,
+                               None);
+    println!("{:?}",res);
 }
