@@ -270,6 +270,8 @@ impl Chunk {
 pub trait LoaderRWops {
     /// Load src for use as a sample.
     fn load_wav(&self) -> Result<Chunk, String>;
+
+    fn load_music(&self) -> Result<Music, String>;
 }
 
 impl<'a> LoaderRWops for RWops<'a> {
@@ -285,6 +287,20 @@ impl<'a> LoaderRWops for RWops<'a> {
             })
         }
     }
+
+    /// Load src for use as music.
+    fn load_music(&self) -> Result<Music, String> {
+        let raw = unsafe { ffi::Mix_LoadMUS_RW(self.raw(), 0) };
+        if raw.is_null() {
+            Err(get_error())
+        } else {
+            Ok(Music {
+                raw: raw,
+                owned: true,
+            })
+        }
+    }
+
 }
 
 
