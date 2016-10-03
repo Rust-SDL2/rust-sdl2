@@ -1,6 +1,5 @@
 use libc::{c_int, uint8_t, uint32_t};
-
-pub type SDL_bool = c_int;
+use sdl::SDL_bool;
 
 //SDL_pixels.h
 #[derive(Copy, Clone)]

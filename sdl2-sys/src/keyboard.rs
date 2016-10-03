@@ -4,8 +4,7 @@ use rect::SDL_Rect;
 use video::SDL_Window;
 use scancode::SDL_Scancode;
 use keycode::{SDL_Keycode, SDL_Keymod};
-
-pub type SDL_bool = c_int;
+use sdl::SDL_bool;
 
 // SDL_keyboard.h
 #[derive(Copy, Clone)]

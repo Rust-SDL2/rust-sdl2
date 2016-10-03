@@ -1,4 +1,5 @@
 use libc::c_int;
+use sdl::SDL_bool;
 
 /// A structure that defines a two dimensional point.
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Hash)]
@@ -17,8 +18,6 @@ pub struct SDL_Rect {
     pub w: c_int,
     pub h: c_int
 }
-
-pub type SDL_bool = c_int;
 
 extern "C" {
     pub fn SDL_HasIntersection(A: *const SDL_Rect, B: *const SDL_Rect) -> SDL_bool;

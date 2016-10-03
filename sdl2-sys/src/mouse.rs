@@ -1,8 +1,9 @@
 use libc::{c_int, c_uint, c_void, uint8_t, uint32_t};
 use surface::SDL_Surface;
 use video::SDL_Window;
+use sdl::SDL_bool;
+use event::SDL_State;
 
-pub type SDL_bool = c_int;
 pub type SDL_Cursor = c_void;
 
 pub type SDL_SystemCursor = c_uint;
@@ -20,10 +21,7 @@ pub const SDL_SYSTEM_CURSOR_NO: SDL_SystemCursor = 10;
 pub const SDL_SYSTEM_CURSOR_HAND: SDL_SystemCursor = 11;
 pub const SDL_NUM_SYSTEM_CURSORS: SDL_SystemCursor = 12;
 
-pub type SDL_MouseState = c_int;
-pub const SDL_DISABLE: SDL_MouseState = 0;
-pub const SDL_ENABLE: SDL_MouseState = 1;
-pub const SDL_QUERY: SDL_MouseState = -1;
+
 
 pub const SDL_BUTTON_LEFT: u8 = 1;
 pub const SDL_BUTTON_MIDDLE: u8 = 2;
@@ -54,5 +52,5 @@ extern "C" {
     pub fn SDL_GetCursor() -> *mut SDL_Cursor;
     pub fn SDL_GetDefaultCursor() -> *mut SDL_Cursor;
     pub fn SDL_FreeCursor(cursor: *mut SDL_Cursor);
-    pub fn SDL_ShowCursor(toggle: SDL_MouseState) -> SDL_MouseState;
+    pub fn SDL_ShowCursor(toggle: SDL_State) -> SDL_State;
 }

@@ -1,6 +1,5 @@
 use libc::{c_int};
-
-pub type SDL_bool = c_int;
+use sdl::SDL_bool;
 
 // SDL_cpuinfo.h
 extern "C" {
