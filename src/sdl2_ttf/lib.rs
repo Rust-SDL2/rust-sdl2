@@ -32,7 +32,7 @@ mod others {
 }
 
 pub use context::{
-    init, has_been_initialized, get_linked_version, Sdl2TtfContext
+    init, has_been_initialized, get_linked_version, Sdl2TtfContext, InitError,
 };
 pub use font::{
     Font, FontStyle, Hinting, GlyphMetrics, PartialRendering, FontError,
