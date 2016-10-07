@@ -3,8 +3,7 @@ use core::prelude::*;
 use libc::{c_int, c_char, c_uchar, c_uint, c_void, int16_t, uint8_t};
 use joystick::{SDL_Joystick, SDL_JoystickGUID};
 use super::rwops::SDL_RWops;
-
-pub type SDL_bool = c_int;
+use sdl::SDL_bool;
 
 pub type SDL_GameController = c_void;
 

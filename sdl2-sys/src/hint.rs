@@ -1,6 +1,5 @@
-use libc::{c_int, c_char};
-
-pub type SDL_bool = c_int;
+use libc::c_char;
+use sdl::SDL_bool;
 
 #[derive(Copy, Clone)]
 #[repr(C)]

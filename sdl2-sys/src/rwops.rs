@@ -1,13 +1,12 @@
 use libc::{c_uchar, uint32_t, c_char, FILE, c_void};
 use libc::{c_int, int64_t, size_t};
+use sdl::SDL_bool;
 
 #[allow(dead_code)]
 #[repr(C)]
 struct SDL_RWops_Anon {
     data: [c_uchar; 24],
 }
-
-pub type SDL_bool = c_int;
 
 pub static RW_SEEK_SET: c_int = 0;
 pub static RW_SEEK_CUR: c_int = 1;

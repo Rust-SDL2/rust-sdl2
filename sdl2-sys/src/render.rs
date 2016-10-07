@@ -1,11 +1,9 @@
 use libc::{c_int, c_uint, c_char, c_void, c_float, c_double};
 use libc::{uint8_t, uint32_t};
 use rect::{SDL_Point, SDL_Rect};
-
 use surface::SDL_Surface;
 use video::SDL_Window;
-
-pub type SDL_bool = c_int;
+use sdl::SDL_bool;
 
 //SDL_render.h
 pub type SDL_RendererFlags = c_uint;

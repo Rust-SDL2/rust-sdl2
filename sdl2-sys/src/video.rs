@@ -1,11 +1,10 @@
 use rect::SDL_Rect;
 use surface::SDL_Surface;
+use sdl::SDL_bool;
 
 #[cfg(feature = "no_std")]
 use core::prelude::*;
 use libc::{c_void, c_int, c_float, c_char, uint16_t, uint32_t};
-
-pub type SDL_bool = c_int;
 
 //SDL_video.h
 #[allow(missing_copy_implementations)]
