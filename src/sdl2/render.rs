@@ -695,8 +695,7 @@ impl<'a> Renderer<'a> {
     }
 
     /// Draws a series of connected lines on the current rendering target.
-    /// # Panics
-    /// Panics if drawing fails for any reason (e.g. driver failure)
+    /// Errors if drawing fails for any reason (e.g. driver failure)
     pub fn draw_lines(&mut self, points: &[Point]) -> Result<(), String> {
         let result = unsafe {
             ll::SDL_RenderDrawLines(
@@ -774,10 +773,9 @@ impl<'a> Renderer<'a> {
     /// * If `dst` is `None`, the texture will be stretched to fill the given
     ///   rectangle.
     ///
-    /// # Panics
-    /// Panics if drawing fails for any reason (e.g. driver failure),
+    /// Errors if drawing fails for any reason (e.g. driver failure),
     /// or if the provided texture does not belong to the renderer.
-    pub fn copy(&mut self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>) 
+    pub fn copy(&mut self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>)
             -> Result<(), String> {
         texture.check_renderer();
 
@@ -817,8 +815,8 @@ impl<'a> Renderer<'a> {
     /// if the provided texture does not belong to the renderer,
     /// or if the driver does not support RenderCopyEx.
     pub fn copy_ex(&mut self, texture: &Texture, src: Option<Rect>,
-            dst: Option<Rect>, angle: f64, center: Option<Point>, 
-            flip_horizontal: bool, flip_vertical: bool) 
+            dst: Option<Rect>, angle: f64, center: Option<Point>,
+            flip_horizontal: bool, flip_vertical: bool)
             -> Result<(), String> {
         texture.check_renderer();
 
