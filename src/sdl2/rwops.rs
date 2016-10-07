@@ -59,6 +59,21 @@ impl<'a> RWops<'a> {
         }
     }
 
+    /// Reads a `Read` object into a buffer and then passes it to `RWops.from_bytes`.
+    ///
+    /// The buffer must be provided to this function and must live as long as the
+    /// `RWops`, but the `RWops` does not take ownership of it.
+    pub fn from_read<T>(r: &mut T, buffer: &'a mut Vec<u8>) -> Result<RWops<'a>, String>
+        where T: io::Read + Sized {
+        match r.read_to_end(buffer) {
+            Ok(_size) => RWops::from_bytes(buffer),
+            Err(ioerror) => {
+                let msg = format!("IO error: {}", ioerror);
+                Err(msg)
+            }
+        }
+    }
+
     /// Prepares a read-write memory buffer for use with `RWops`.
     ///
     /// This method can only fail if the buffer size is zero.

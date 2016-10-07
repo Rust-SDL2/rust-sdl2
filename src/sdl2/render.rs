@@ -777,7 +777,8 @@ impl<'a> Renderer<'a> {
     /// # Panics
     /// Panics if drawing fails for any reason (e.g. driver failure),
     /// or if the provided texture does not belong to the renderer.
-    pub fn copy(&mut self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>) {
+    pub fn copy(&mut self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>) 
+            -> Result<(), String> {
         texture.check_renderer();
 
         let ret = unsafe {
@@ -796,7 +797,9 @@ impl<'a> Renderer<'a> {
         };
 
         if ret != 0 {
-            panic!("Error copying texture: {}", get_error())
+            Err(get_error())
+        } else {
+            Ok(())
         }
     }
 
