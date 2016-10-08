@@ -224,6 +224,10 @@ impl SurfaceRef {
         }
     }
 
+    pub fn pixel_format_enum(&self) -> pixels::PixelFormatEnum {
+        pixels::PixelFormatEnum::from(self.pixel_format())
+    }
+
     /// Locks a surface so that the pixels can be directly accessed safely.
     pub fn with_lock<R, F: FnOnce(&[u8]) -> R>(&self, f: F) -> R {
         unsafe {
