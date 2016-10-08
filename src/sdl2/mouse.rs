@@ -210,7 +210,7 @@ impl MouseUtil {
     }
 
     pub fn is_cursor_showing(&self) -> bool {
-        unsafe { ll::SDL_ShowCursor(ll::SDL_QUERY) == 1 }
+        unsafe { ll::SDL_ShowCursor(::sys::SDL_QUERY) == 1 }
     }
 
     pub fn show_cursor(&self, show: bool) {

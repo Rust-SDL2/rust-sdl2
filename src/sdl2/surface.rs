@@ -453,7 +453,7 @@ impl SurfaceRef {
     }
 
     pub fn blend_mode(&self) -> BlendMode {
-        let mut mode: ll::SDL_BlendMode = 0;
+        let mut mode: ::sys::SDL_BlendMode = 0;
         let result = unsafe {
             ll::SDL_GetSurfaceBlendMode(self.raw(), &mut mode)
         };

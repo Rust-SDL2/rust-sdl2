@@ -1,6 +1,5 @@
 use libc::{c_int, c_char, c_void, int32_t, int16_t, int8_t, uint8_t};
-
-pub type SDL_bool = c_int;
+use sdl::SDL_bool;
 
 pub type SDL_Joystick = c_void;
 

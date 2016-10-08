@@ -3,9 +3,8 @@ use pixels::SDL_Palette;
 use rwops::SDL_RWops;
 use rect::SDL_Rect;
 use libc::{c_int, c_void, uint32_t, uint8_t};
-pub use render::SDL_BlendMode;
-
-pub type SDL_bool = c_int;
+use render::SDL_BlendMode;
+use sdl::SDL_bool;
 
 pub type SDL_SurfaceFlag = uint32_t;
 

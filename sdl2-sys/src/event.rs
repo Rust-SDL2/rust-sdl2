@@ -6,16 +6,16 @@ use gesture::SDL_GestureID;
 use keyboard::SDL_Keysym;
 use touch::SDL_FingerID;
 use touch::SDL_TouchID;
+use sdl::SDL_bool;
+
 #[cfg(feature = "no_std")]
 use core::prelude::*;
 
-pub type SDL_bool = c_int;
-
 // SDL_events.h
-pub type SDL_EventState = uint8_t;
-pub const SDL_DISABLE: SDL_EventState = 0;
-pub const SDL_ENABLE: SDL_EventState = 1;
-pub const SDL_QUERY: SDL_EventState = 0xFF;
+pub type SDL_State = c_int;
+pub const SDL_DISABLE: SDL_State = 0;
+pub const SDL_ENABLE: SDL_State = 1;
+pub const SDL_QUERY: SDL_State = -1;
 
 pub type SDL_SysWMmsg = c_void;
 
@@ -466,6 +466,6 @@ extern "C" {
     pub fn SDL_AddEventWatch(filter: SDL_EventFilter, userdata: *mut c_void);
     pub fn SDL_DelEventWatch(filter: SDL_EventFilter, userdata: *mut c_void);
     pub fn SDL_FilterEvents(filter: SDL_EventFilter, userdata: *mut c_void);
-    pub fn SDL_EventState(type_: uint32_t, state: SDL_EventState) -> SDL_EventState;
+    pub fn SDL_EventState(type_: uint32_t, state: SDL_State) -> SDL_State;
     pub fn SDL_RegisterEvents(numevents: c_int) -> uint32_t;
 }

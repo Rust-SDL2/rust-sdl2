@@ -18,6 +18,8 @@ mod others {
     extern {}
 }
 
+pub type SDL_bool = c_int;
+
 pub type SDL_errorcode = c_uint;
 pub const SDL_ENOMEM: SDL_errorcode = 0;
 pub const SDL_EFREAD: SDL_errorcode = 1;
@@ -50,7 +52,4 @@ extern "C" {
     pub fn SDL_QuitSubSystem(flags: SDL_InitFlag);
     pub fn SDL_WasInit(flags: SDL_InitFlag) -> SDL_InitFlag;
     pub fn SDL_Quit();
-
-    //SDL_timer.h
-    pub fn SDL_GetTicks() -> uint32_t;
 }
