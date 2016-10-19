@@ -324,6 +324,18 @@ impl PixelFormatEnum {
     }
 }
 
+impl From<PixelFormat> for PixelFormatEnum {
+    fn from(pf: PixelFormat) -> PixelFormatEnum {
+        unsafe {
+            let ref sdl_pf = *pf.raw;
+            match PixelFormatEnum::from_u64(sdl_pf.format as u64) {
+                Some(pfe) => pfe,
+                None => panic!("Unknown pixel format: {:?}", sdl_pf.format)
+            }
+        }
+    }
+}
+
 impl FromPrimitive for PixelFormatEnum {
     fn from_i64(n: i64) -> Option<PixelFormatEnum> {
         use self::PixelFormatEnum::*;
@@ -370,4 +382,47 @@ impl FromPrimitive for PixelFormatEnum {
     }
 
     fn from_u64(n: u64) -> Option<PixelFormatEnum> { FromPrimitive::from_i64(n as i64) }
+}
+
+
+// Just test a round-trip conversion from PixelFormat to
+// PixelFormatEnum and back.
+#[test]
+fn test_pixel_format_enum() {
+    let pixel_formats = vec![
+        PixelFormatEnum::RGB332,
+        PixelFormatEnum::RGB444, PixelFormatEnum::RGB555,
+        PixelFormatEnum::BGR555, PixelFormatEnum::ARGB4444,
+        PixelFormatEnum::RGBA4444, PixelFormatEnum::ABGR4444,
+        PixelFormatEnum::BGRA4444, PixelFormatEnum::ARGB1555,
+        PixelFormatEnum::RGBA5551, PixelFormatEnum::ABGR1555,
+        PixelFormatEnum::BGRA5551, PixelFormatEnum::RGB565,
+        PixelFormatEnum::BGR565,
+        PixelFormatEnum::RGB24, PixelFormatEnum::BGR24,
+        PixelFormatEnum::RGB888, PixelFormatEnum::RGBX8888,
+        PixelFormatEnum::BGR888, PixelFormatEnum::BGRX8888,
+        PixelFormatEnum::ARGB8888, PixelFormatEnum::RGBA8888,
+        PixelFormatEnum::ABGR8888, PixelFormatEnum::BGRA8888,
+        PixelFormatEnum::ARGB2101010,
+        PixelFormatEnum::YV12, PixelFormatEnum::IYUV,
+        PixelFormatEnum::YUY2, PixelFormatEnum::UYVY,
+        PixelFormatEnum::YVYU,
+        PixelFormatEnum::Index8,
+        // These don't seem to be supported;
+        // the round-trip 
+        //PixelFormatEnum::Unknown, PixelFormatEnum::Index1LSB,
+        //PixelFormatEnum::Index1MSB, PixelFormatEnum::Index4LSB,
+        //PixelFormatEnum::Index4MSB
+    ];
+
+    
+    let _sdl_context = ::sdl::init().unwrap();
+    for format in pixel_formats {
+        // If we don't support making a surface of a specific format,
+        // that's fine, just keep going the best we can.
+        if let Ok(surf) = super::surface::Surface::new(1, 1, format) {
+            let surf_format = surf.pixel_format();
+            assert_eq!(PixelFormatEnum::from(surf_format), format);
+        }
+    }
 }
