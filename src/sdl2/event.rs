@@ -6,6 +6,7 @@ use std::ffi::CStr;
 use std::mem;
 use libc::{c_int, c_void, uint32_t};
 use num::FromPrimitive;
+use num::ToPrimitive;
 use std::ptr;
 use std::borrow::ToOwned;
 use std::iter::FromIterator;
@@ -27,6 +28,9 @@ use keyboard::Scancode;
 use get_error;
 
 use sys::event as ll;
+use sys::scancode;
+use sys::keycode;
+use sys::keyboard as syskeyboard;
 
 struct CustomEventTypeMaps {
     sdl_id_to_type_id: HashMap<u32, ::std::any::TypeId>,
@@ -417,6 +421,27 @@ impl WindowEventId {
             _  => WindowEventId::None
         }
     }
+
+    fn to_ll(&self) -> u8 {
+        match *self {
+            WindowEventId::Shown => 1,
+            WindowEventId::Hidden => 2,
+            WindowEventId::Exposed => 3,
+            WindowEventId::Moved => 4,
+            WindowEventId::Resized => 5,
+            WindowEventId::SizeChanged => 6,
+            WindowEventId::Minimized => 7,
+            WindowEventId::Maximized => 8,
+            WindowEventId::Restored => 9,
+            WindowEventId::Enter => 10,
+            WindowEventId::Leave => 11,
+            WindowEventId::FocusGained => 12,
+            WindowEventId::FocusLost => 13,
+            WindowEventId::Close => 14,
+            WindowEventId::None => 0,
+        }
+    }
+
 }
 
 #[derive(Clone, PartialEq)]
@@ -709,6 +734,26 @@ impl ::std::fmt::Debug for Event {
     }
 }
 
+/// Helper function to make converting scancodes
+/// and keycodes to primitive SDL_Keysym types.
+fn mk_keysym(scancode: Option<Scancode>,
+             keycode: Option<Keycode>,
+             keymod: Mod) -> syskeyboard::SDL_Keysym {
+    let scancode = scancode
+        .map(|sc| sc.to_u32().unwrap_or(0u32))
+        .unwrap_or(scancode::SDL_SCANCODE_UNKNOWN);
+    let keycode = keycode
+        .map(|kc| kc.to_i32().unwrap_or(0i32))
+        .unwrap_or(keycode::SDLK_UNKNOWN);
+    let keymod = keymod.bits() as u16;
+    syskeyboard::SDL_Keysym {
+        scancode: scancode,
+        sym: keycode,
+        _mod: keymod,
+        unused: 0,
+    }
+}
+
 // TODO: Remove this when from_utf8 is updated in Rust
 impl Event {
     fn to_ll(self) -> Option<ll::SDL_Event> {
@@ -728,6 +773,118 @@ impl Event {
                 }
                 Some(ret)
             },
+
+            Event::Quit{timestamp} => {
+                let event = ll::SDL_QuitEvent {
+                    type_: ll::SDL_QUIT,
+                    timestamp: timestamp,
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_QuitEvent, 1);
+                }
+                Some(ret)
+            },
+
+            Event::Window{
+                timestamp,
+                window_id,
+                win_event_id,
+                data1,
+                data2,
+            } => {
+                let event = ll::SDL_WindowEvent {
+                    type_: ll::SDL_WINDOWEVENT,
+                    timestamp: timestamp,
+                    windowID: window_id,
+                    event: win_event_id.to_ll(),
+                    padding1: 0,
+                    padding2: 0,
+                    padding3: 0,
+                    data1: data1,
+                    data2: data2,
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_WindowEvent, 1);
+                }
+                Some(ret)
+            },
+
+            Event::KeyDown{
+                timestamp,
+                window_id,
+                keycode,
+                scancode,
+                keymod,
+                repeat,
+            } => {
+                let keysym = mk_keysym(scancode, keycode, keymod);
+                let event = ll::SDL_KeyboardEvent{
+                    type_: ll::SDL_KEYDOWN,
+                    timestamp: timestamp,
+                    windowID: window_id,
+                    state: ll::SDL_PRESSED,
+                    repeat: repeat as u8,
+                    padding2: 0,
+                    padding3: 0,
+                    keysym: keysym,
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_KeyboardEvent, 1);
+                }
+                Some(ret)
+            },
+            Event::KeyUp {
+                timestamp,
+                window_id,
+                keycode,
+                scancode,
+                keymod,
+                repeat,
+            } => {
+                let keysym = mk_keysym(scancode, keycode, keymod);
+                let event = ll::SDL_KeyboardEvent{
+                    type_: ll::SDL_KEYUP,
+                    timestamp: timestamp,
+                    windowID: window_id,
+                    state: ll::SDL_RELEASED,
+                    repeat: repeat as u8,
+                    padding2: 0,
+                    padding3: 0,
+                    keysym: keysym,
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_KeyboardEvent, 1);
+                }
+                Some(ret)
+            },
+            Event::TextEditing{..} | 
+            Event::TextInput{..} | 
+            Event::MouseMotion{..} | 
+            Event::MouseButtonDown{..} | 
+            Event::MouseButtonUp{..} | 
+            Event::MouseWheel{..} | 
+            Event::JoyAxisMotion{..} | 
+            Event::JoyBallMotion{..} | 
+            Event::JoyHatMotion{..} | 
+            Event::JoyButtonDown{..} | 
+            Event::JoyButtonUp{..} | 
+            Event::JoyDeviceAdded{..} | 
+            Event::JoyDeviceRemoved{..} | 
+            Event::ControllerAxisMotion{..} | 
+            Event::ControllerButtonDown{..} | 
+            Event::ControllerButtonUp{..} | 
+            Event::ControllerDeviceAdded{..} | 
+            Event::ControllerDeviceRemoved{..} | 
+            Event::ControllerDeviceRemapped{..} | 
+            Event::FingerDown{..} | 
+            Event::FingerUp{..} | 
+            Event::FingerMotion{..} | 
+            Event::DollarGesture{..} | 
+            Event::DollarRecord{..} | 
+            Event::MultiGesture{..} | 
+            Event::ClipboardUpdate{..} | 
+            Event::DropFile{..} | 
+            Event::Unknown{..} |
             _ => {
                 // don't know how to convert!
                 None
