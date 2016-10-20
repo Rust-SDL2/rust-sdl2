@@ -734,8 +734,8 @@ impl ::std::fmt::Debug for Event {
     }
 }
 
-/// Helper function to make converting scancode's
-/// and keycode's to primitive SDL_Keysym types.
+/// Helper function to make converting scancodes
+/// and keycodes to primitive SDL_Keysym types.
 fn mk_keysym(scancode: Option<Scancode>,
              keycode: Option<Keycode>,
              keymod: Mod) -> syskeyboard::SDL_Keysym {
