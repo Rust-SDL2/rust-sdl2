@@ -755,6 +755,8 @@ fn mk_keysym(scancode: Option<Scancode>,
 }
 
 // TODO: Remove this when from_utf8 is updated in Rust
+// This would honestly be nice if it took &self instead of self,
+// but Event::User's raw pointers kind of removes that possibility.
 impl Event {
     fn to_ll(self) -> Option<ll::SDL_Event> {
         let mut ret = unsafe { mem::uninitialized() };
@@ -857,25 +859,364 @@ impl Event {
                 }
                 Some(ret)
             },
-            Event::TextEditing{..} | 
-            Event::TextInput{..} | 
-            Event::MouseMotion{..} | 
-            Event::MouseButtonDown{..} | 
-            Event::MouseButtonUp{..} | 
-            Event::MouseWheel{..} | 
-            Event::JoyAxisMotion{..} | 
-            Event::JoyBallMotion{..} | 
-            Event::JoyHatMotion{..} | 
-            Event::JoyButtonDown{..} | 
-            Event::JoyButtonUp{..} | 
-            Event::JoyDeviceAdded{..} | 
-            Event::JoyDeviceRemoved{..} | 
-            Event::ControllerAxisMotion{..} | 
-            Event::ControllerButtonDown{..} | 
-            Event::ControllerButtonUp{..} | 
-            Event::ControllerDeviceAdded{..} | 
-            Event::ControllerDeviceRemoved{..} | 
-            Event::ControllerDeviceRemapped{..} | 
+            Event::MouseMotion{
+                timestamp,
+                window_id,
+                which,
+                mousestate,
+                x,
+                y,
+                xrel,
+                yrel
+            } => {
+                let state = mousestate.to_flags();
+                let event = ll::SDL_MouseMotionEvent {
+                    type_: ll::SDL_MOUSEMOTION,
+                    timestamp: timestamp,
+                    windowID: window_id,
+                    which: which,
+                    state: state,
+                    x: x,
+                    y: y,
+                    xrel: xrel,
+                    yrel: yrel,
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_MouseMotionEvent, 1);
+                }
+                Some(ret)
+
+            },
+            Event::MouseButtonDown{
+                timestamp,
+                window_id,
+                which,
+                mouse_btn,
+                x,
+                y
+            } => {
+                let button = mouse_btn.to_ll();
+                let event = ll::SDL_MouseButtonEvent {
+                    type_: ll::SDL_MOUSEBUTTONDOWN,
+                    timestamp: timestamp,
+                    windowID: window_id,
+                    which: which,
+                    button: button,
+                    state: ll::SDL_PRESSED,
+                    padding1: 0,
+                    padding2: 0,
+                    x: x,
+                    y: y
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_MouseButtonEvent, 1);
+                }
+                Some(ret)
+            },
+            Event::MouseButtonUp{
+                timestamp,
+                window_id,
+                which,
+                mouse_btn,
+                x,
+                y
+            } => {
+                let button = mouse_btn.to_ll();
+                let event = ll::SDL_MouseButtonEvent {
+                    type_: ll::SDL_MOUSEBUTTONUP,
+                    timestamp: timestamp,
+                    windowID: window_id,
+                    which: which,
+                    button: button,
+                    state: ll::SDL_RELEASED,
+                    padding1: 0,
+                    padding2: 0,
+                    x: x,
+                    y: y
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_MouseButtonEvent, 1);
+                }
+                Some(ret)
+            },
+
+            Event::MouseWheel{
+                timestamp,
+                window_id,
+                which,
+                x,
+                y
+            } => {
+                let event = ll::SDL_MouseWheelEvent {
+                    type_: ll::SDL_MOUSEWHEEL,
+                    timestamp: timestamp,
+                    windowID: window_id,
+                    which: which,
+                    x: x,
+                    y: y,
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_MouseWheelEvent, 1);
+                }
+                Some(ret)
+            },
+            Event::JoyAxisMotion{
+                timestamp,
+                which,
+                axis_idx,
+                value
+            } => {
+                let event = ll::SDL_JoyAxisEvent {
+                    type_: ll::SDL_JOYAXISMOTION,
+                    timestamp: timestamp,
+                    which: which,
+                    axis: axis_idx,
+                    value: value,
+                    padding1: 0,
+                    padding2: 0,
+                    padding3: 0,
+                    padding4: 0
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_JoyAxisEvent, 1);
+                }
+                Some(ret)
+
+            },
+            Event::JoyBallMotion{
+                timestamp,
+                which,
+                ball_idx,
+                xrel,
+                yrel
+            } => {
+                let event = ll::SDL_JoyBallEvent {
+                    type_: ll::SDL_JOYBALLMOTION,
+                    timestamp: timestamp,
+                    which: which,
+                    ball: ball_idx,
+                    xrel: xrel,
+                    yrel: yrel,
+                    padding1: 0,
+                    padding2: 0,
+                    padding3: 0
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_JoyBallEvent, 1);
+                }
+                Some(ret)
+
+            },                
+            Event::JoyHatMotion{
+                timestamp,
+                which,
+                hat_idx,
+                state,
+            } => {
+                let hatvalue = state.to_raw();
+                let event = ll::SDL_JoyHatEvent {
+                    type_: ll::SDL_JOYHATMOTION,
+                    timestamp: timestamp,
+                    which: which,
+                    hat: hat_idx,
+                    value: hatvalue,
+                    padding1: 0,
+                    padding2: 0
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_JoyHatEvent, 1);
+                }
+                Some(ret)
+
+            },
+            Event::JoyButtonDown{
+                timestamp,
+                which,
+                button_idx
+            } => {
+                let event = ll::SDL_JoyButtonEvent {
+                    type_: ll::SDL_JOYBUTTONDOWN,
+                    timestamp: timestamp,
+                    which: which,
+                    button: button_idx,
+                    state: ll::SDL_PRESSED,
+                    padding1: 0,
+                    padding2: 0,
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_JoyButtonEvent, 1);
+                }
+                Some(ret)
+
+            },
+
+            Event::JoyButtonUp{
+                timestamp,
+                which,
+                button_idx,
+            } => {
+                let event = ll::SDL_JoyButtonEvent {
+                    type_: ll::SDL_JOYBUTTONUP,
+                    timestamp: timestamp,
+                    which: which,
+                    button: button_idx,
+                    state: ll::SDL_RELEASED,
+                    padding1: 0,
+                    padding2: 0,
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_JoyButtonEvent, 1);
+                }
+                Some(ret)
+
+            },
+
+            Event::JoyDeviceAdded{
+                timestamp,
+                which,
+            } => {
+                let event = ll::SDL_JoyDeviceEvent {
+                    type_: ll::SDL_JOYDEVICEADDED,
+                    timestamp: timestamp,
+                    which: which,
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_JoyDeviceEvent, 1);
+                }
+                Some(ret)
+            },
+
+            Event::JoyDeviceRemoved{
+                timestamp,
+                which,
+            } => {
+                let event = ll::SDL_JoyDeviceEvent {
+                    type_: ll::SDL_JOYDEVICEREMOVED,
+                    timestamp: timestamp,
+                    which: which,
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_JoyDeviceEvent, 1);
+                }
+                Some(ret)
+
+            },
+            Event::ControllerAxisMotion{
+                timestamp,
+                which,
+                axis,
+                value,
+            } => {
+                let axisval = axis.to_ll();
+                let event = ll::SDL_ControllerAxisEvent {
+                    type_: ll::SDL_CONTROLLERAXISMOTION,
+                    timestamp: timestamp,
+                    which: which,
+                    axis: axisval as u8,
+                    value: value,
+                    padding1: 0,
+                    padding2: 0,
+                    padding3: 0,
+                    padding4: 0,
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_ControllerAxisEvent, 1);
+                }
+                Some(ret)
+            },
+            Event::ControllerButtonDown{
+                timestamp,
+                which,
+                button,
+            } => {
+                let buttonval = button.to_ll();
+                let event = ll::SDL_ControllerButtonEvent {
+                    type_: ll::SDL_CONTROLLERBUTTONDOWN,
+                    timestamp: timestamp,
+                    which: which,
+                    // This conversion turns an i32 into a u8; signed-to-unsigned conversions
+                    // are a bit of a code smellx, but that appears to be how SDL defines it.
+                    button: buttonval as u8,
+                    state: ll::SDL_PRESSED,
+                    padding1: 0,
+                    padding2: 0,
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_ControllerButtonEvent, 1);
+                }
+                Some(ret)
+            },
+
+            Event::ControllerButtonUp{
+                timestamp,
+                which,
+                button,
+            } => {
+                let buttonval = button.to_ll();
+                let event = ll::SDL_ControllerButtonEvent {
+                    type_: ll::SDL_CONTROLLERBUTTONDOWN,
+                    timestamp: timestamp,
+                    which: which,
+                    button: buttonval as u8,
+                    state: ll::SDL_PRESSED,
+                    padding1: 0,
+                    padding2: 0,
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_ControllerButtonEvent, 1);
+                }
+                Some(ret)
+            },
+
+            Event::ControllerDeviceAdded{
+                timestamp,
+                which,
+            } => {
+                let event = ll::SDL_ControllerDeviceEvent {
+                    type_: ll::SDL_CONTROLLERDEVICEADDED,
+                    timestamp: timestamp,
+                    which: which,
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_ControllerDeviceEvent, 1);
+                }
+                Some(ret)
+
+            },
+
+            Event::ControllerDeviceRemoved{
+                timestamp,
+                which,
+            } => {
+                let event = ll::SDL_ControllerDeviceEvent {
+                    type_: ll::SDL_CONTROLLERDEVICEREMOVED,
+                    timestamp: timestamp,
+                    which: which,
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_ControllerDeviceEvent, 1);
+                }
+                Some(ret)
+
+            },
+
+            Event::ControllerDeviceRemapped{
+                timestamp,
+                which,
+            } => {
+                let event = ll::SDL_ControllerDeviceEvent {
+                    type_: ll::SDL_CONTROLLERDEVICEREMAPPED,
+                    timestamp: timestamp,
+                    which: which,
+                };
+                unsafe {
+                    ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_ControllerDeviceEvent, 1);
+                }
+                Some(ret)
+
+            },
+
+            
             Event::FingerDown{..} | 
             Event::FingerUp{..} | 
             Event::FingerMotion{..} | 
@@ -883,7 +1224,9 @@ impl Event {
             Event::DollarRecord{..} | 
             Event::MultiGesture{..} | 
             Event::ClipboardUpdate{..} | 
-            Event::DropFile{..} | 
+            Event::DropFile{..} |
+            Event::TextEditing{..} | 
+            Event::TextInput{..} | 
             Event::Unknown{..} |
             _ => {
                 // don't know how to convert!
@@ -1474,3 +1817,227 @@ impl<'a> Iterator for EventWaitTimeoutIterator<'a> {
     fn next(&mut self) -> Option<Event> { unsafe { wait_event_timeout(self.timeout) } }
 }
 
+#[cfg(test)]
+mod test {
+    use super::Event;
+    use super::WindowEventId;
+    use super::super::controller::{Button, Axis};
+    use super::super::joystick::{HatState};
+    use super::super::mouse::{Mouse, MouseState};
+    use super::super::keyboard::{Keycode, Scancode, Mod};
+
+    // Tests a round-trip conversion from an Event type to
+    // the SDL event type and back, to make sure it's sane.
+    #[test]
+    fn test_to_from_ll() {
+        {
+            let e = Event::Quit{timestamp: 0};
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::Window{
+                timestamp: 0,
+                window_id: 0,
+                win_event_id: WindowEventId::Resized,
+                data1: 1,
+                data2: 2,
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::KeyDown{
+                timestamp: 0,
+                window_id: 1,
+                keycode: None,
+                scancode: Some(Scancode::Q),
+                keymod: Mod::all(),
+                repeat: false,
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::KeyUp{
+                timestamp: 123,
+                window_id: 0,
+                keycode: Some(Keycode::R),
+                scancode: Some(Scancode::R),
+                keymod: Mod::empty(),
+                repeat: true,
+
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::MouseMotion{
+                timestamp: 0,
+                window_id: 0,
+                which: 1,
+                mousestate: MouseState::from_flags(1),
+                x: 3,
+                y: 91,
+                xrel: -1,
+                yrel: 43,
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::MouseButtonDown{
+                timestamp: 5634,
+                window_id: 2,
+                which: 0,
+                mouse_btn: Mouse::Left,
+                x: 543,
+                y: 345,
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::MouseButtonUp{
+                timestamp: 0,
+                window_id: 2,
+                which: 0,
+                mouse_btn: Mouse::Left,
+                x: 543,
+                y: 345,
+
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::MouseWheel{
+                timestamp: 1,
+                window_id: 0,
+                which: 32,
+                x: 23,
+                y: 91
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::JoyAxisMotion{
+                timestamp: 0,
+                which: 1,
+                axis_idx: 1,
+                value: 12,
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::JoyBallMotion{
+                timestamp: 0,
+                which: 0,
+                ball_idx: 1,
+                xrel: 123,
+                yrel: 321,
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::JoyHatMotion{
+                timestamp: 0,
+                which: 3,
+                hat_idx: 1,
+                state: HatState::Left,
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::JoyButtonDown{
+                timestamp: 0,
+                which: 0,
+                button_idx: 3
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::JoyButtonUp{
+                timestamp: 9876,
+                which: 1,
+                button_idx: 2,
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::JoyDeviceAdded{
+                timestamp: 0,
+                which: 1
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::JoyDeviceRemoved{
+                timestamp: 0,
+                which: 2,
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::ControllerAxisMotion{
+                timestamp: 53,
+                which: 0,
+                axis: Axis::LeftX,
+                value: 3
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::ControllerButtonDown{
+                timestamp: 0,
+                which: 1,
+                button: Button::Guide,
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::ControllerButtonUp{
+                timestamp: 654214,
+                which: 0,
+                button: Button::DPadRight,
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::ControllerDeviceAdded{
+                timestamp: 543,
+                which: 3
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::ControllerDeviceRemoved{
+                timestamp: 555,
+                which: 3
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::ControllerDeviceRemapped{
+                timestamp: 654,
+                which: 0
+            };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        
+    }
+}

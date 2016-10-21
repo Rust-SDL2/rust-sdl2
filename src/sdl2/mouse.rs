@@ -102,6 +102,18 @@ impl Mouse {
             _ => Mouse::Unknown(button)
         }
     }
+    #[inline]
+    pub fn to_ll(&self) -> u8 {
+        match *self {
+            Mouse::Left => 1,
+            Mouse::Middle => 2,
+            Mouse::Right => 3,
+            Mouse::X1 => 4,
+            Mouse::X2 => 5,
+            Mouse::Unknown(button) => button,
+        }
+    }
+
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash)]
@@ -143,6 +155,10 @@ impl MouseState {
 
     pub fn from_flags(flags: u32) -> MouseState {
         MouseState { flags: flags }
+    }
+
+    pub fn to_flags(&self) -> u32 {
+        self.flags
     }
 }
 
