@@ -17,6 +17,10 @@ pub const SDL_DISABLE: SDL_State = 0;
 pub const SDL_ENABLE: SDL_State = 1;
 pub const SDL_QUERY: SDL_State = -1;
 
+pub type SDL_KeyState = uint8_t;
+pub const SDL_RELEASED: SDL_KeyState = 0;
+pub const SDL_PRESSED: SDL_KeyState = 1;
+
 pub type SDL_SysWMmsg = c_void;
 
 pub type SDL_EventType = c_uint;
