@@ -1154,11 +1154,11 @@ impl Event {
             } => {
                 let buttonval = button.to_ll();
                 let event = ll::SDL_ControllerButtonEvent {
-                    type_: ll::SDL_CONTROLLERBUTTONDOWN,
+                    type_: ll::SDL_CONTROLLERBUTTONUP,
                     timestamp: timestamp,
                     which: which,
                     button: buttonval as u8,
-                    state: ll::SDL_PRESSED,
+                    state: ll::SDL_RELEASED,
                     padding1: 0,
                     padding2: 0,
                 };
