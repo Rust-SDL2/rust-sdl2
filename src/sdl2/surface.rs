@@ -37,6 +37,12 @@ pub struct SurfaceRef {
     _raw: ()
 }
 
+impl AsRef<SurfaceRef> for SurfaceRef  {
+    fn as_ref(&self) -> &SurfaceRef {
+        self
+    }
+}
+
 #[test]
 fn test_surface_ref_size() {
     // `SurfaceRef` must be 0 bytes.
