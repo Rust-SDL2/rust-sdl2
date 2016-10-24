@@ -123,9 +123,9 @@ http://www.libsdl.org/ (SDL2-devel-2.0.x-mingw.tar.gz).
 
     into your cargo project, right next to your Cargo.toml.
 
-### Windows (MinGW)
+### Windows (MSVC)
 
-1. Download mingw development libraries from
+1. Download MSVC development libraries from
 http://www.libsdl.org/ (SDL2-devel-2.0.x-VC.zip).
 2. Unpack to a folder of your choosing (You can delete it afterwards).
 3. Copy both all lib files from
