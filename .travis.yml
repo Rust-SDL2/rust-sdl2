@@ -8,8 +8,8 @@ env:
     - LD_LIBRARY_PATH: /usr/local/lib
 install:
   - cd ..
-  - time wget -q http://www.libsdl.org/release/SDL2-2.0.3.tar.gz
-  - time wget -q http://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.0.tar.gz
+  - time wget -q https://www.libsdl.org/release/SDL2-2.0.3.tar.gz
+  - time wget -q https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.0.tar.gz
   - time tar xf SDL2-*.tar.gz
   - time tar xf SDL2_mixer-*.tar.gz
   - cd SDL2-*
@@ -25,4 +25,4 @@ script:
   - cargo doc -v
 after_script:
   - cp -R target/doc doc
-  - curl http://www.rust-ci.org/artifacts/put?t=$RUSTCI_TOKEN | sh
+  - curl https://www.rust-ci.org/artifacts/put?t=$RUSTCI_TOKEN | sh
