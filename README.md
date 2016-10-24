@@ -20,7 +20,9 @@ Rust-SDL2_mixer uses the MIT licence.
 
 #### OSX
 
-    brew install sdl2_mixer
+```bash
+    brew install sdl2_mixer --with-flac --with-fluid-synth --with-libmikmod --with-libmodplug --with-libvorbis --with-smpeg2
+```
     
 #### Windows
 
