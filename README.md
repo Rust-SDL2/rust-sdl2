@@ -3,7 +3,7 @@ Rust-SDL2_mixer
 
 [![Build Status](https://travis-ci.org/andelf/rust-sdl2_mixer.svg?branch=master)](https://travis-ci.org/andelf/rust-sdl2_mixer)
 [![crates.io](http://meritbadge.herokuapp.com/sdl2_mixer)](https://crates.io/crates/sdl2_mixer)
-[![Crates.io](https://img.shields.io/crates/l/sdl2-mixer.svg)](https://github.com/andelf/rust-sdl2_mixer/blob/master/LICENSE-MIT)
+[![Crates.io](https://img.shields.io/crates/l/sdl2_mixer.svg)](https://github.com/andelf/rust-sdl2_mixer/blob/master/LICENSE-MIT)
 
 Rust bindings for SDL2_mixer.
 
