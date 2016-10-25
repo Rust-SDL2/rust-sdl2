@@ -116,7 +116,7 @@ http://www.libsdl.org/ (SDL2-devel-2.0.x-mingw.tar.gz).
     > LIBRARY_PATH = C:\your\rust\library\folder
 
 	For Rustup users, this folder will be in
-	> C:\Users\{Your Username}\.multirust\toolchains\\{current toolchain}\lib\rustlib\\{current toolchain}\lib
+	> C:\Users\\{Your Username}\.multirust\toolchains\\{current toolchain}\lib\rustlib\\{current toolchain}\lib
 
   Where current toolchain is likely `stable-x86_64-pc-windows-gnu`.
 
@@ -142,7 +142,7 @@ http://www.libsdl.org/ (SDL2-devel-2.0.x-mingw.tar.gz).
     > LIB = C:\your\rust\library\folder
 
 	For Rustup users, this folder will be in
-	> C:\Users\{Your Username}\.multirust\toolchains\\{current toolchain}\lib\rustlib\\{current toolchain}\lib
+	> C:\Users\\{Your Username}\.multirust\toolchains\\{current toolchain}\lib\rustlib\\{current toolchain}\lib
 
   Where current toolchain is likely `stable-x86_64-pc-windows-msvc`.
 
