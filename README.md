@@ -115,8 +115,10 @@ http://www.libsdl.org/ (SDL2-devel-2.0.x-mingw.tar.gz).
     or to your library folder of choice, and ensure you have a system environment variable of
     > LIBRARY_PATH = C:\your\rust\library\folder
 
-	For Multirust Users, this folder will be in
-	> C:\Users\{Your Username}\AppData\Local\.multirust\toolchains\{current toolchain}\lib\rustlib\x86_64-pc-windows-gnu\lib
+	For Rustup users, this folder will be in
+	> C:\Users\{Your Username}\.multirust\toolchains\\{current toolchain}\lib\rustlib\\{current toolchain}\lib
+
+  Where current toolchain is likely `stable-x86_64-pc-windows-gnu`.
 
 4. Copy SDL2.dll from
     > SDL2-devel-2.0.x-mingw\SDL2-2.0.x\x86_64-w64-mingw32\bin
@@ -140,7 +142,7 @@ http://www.libsdl.org/ (SDL2-devel-2.0.x-mingw.tar.gz).
     > LIB = C:\your\rust\library\folder
 
 	For Rustup users, this folder will be in
-	> C:\Users\{Your Username}\.multirust\toolchains\{current toolchain}\lib\rustlib\{current toolchain}\lib
+	> C:\Users\{Your Username}\.multirust\toolchains\\{current toolchain}\lib\rustlib\\{current toolchain}\lib
 
   Where current toolchain is likely `stable-x86_64-pc-windows-msvc`.
 
