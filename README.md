@@ -99,8 +99,6 @@ use_sdl2_mac_framework = ["sdl2/use_mac_framework"]
 ```
 
 ### Windows (MinGW)
-On Windows, make certain you are using the MinGW version of SDL; the native
-version will crash on `sdl2::init`.
 
 1. Download mingw development libraries from
 http://www.libsdl.org/ (SDL2-devel-2.0.x-mingw.tar.gz).
@@ -127,8 +125,9 @@ http://www.libsdl.org/ (SDL2-devel-2.0.x-mingw.tar.gz).
 
 ### Windows (MSVC)
 
-1. Unpack SDL2-devel-2.0.x-VC.zip to a folder of your choosing (You can delete it afterwards).
-2. Copy all lib files from
+1. Download MSVC development libraries from http://www.libsdl.org/ (SDL2-devel-2.0.x-VC.zip).
+2. Unpack SDL2-devel-2.0.x-VC.zip to a folder of your choosing (You can delete it afterwards).
+3. Copy all lib files from
     > SDL2-devel-2.0.x-VC\SDL2-2.0.x\lib\x64\
 
     to (for Rust 1.6 and above)
@@ -145,7 +144,7 @@ http://www.libsdl.org/ (SDL2-devel-2.0.x-mingw.tar.gz).
 
   Where current toolchain is likely `stable-x86_64-pc-windows-msvc`.
 
-3. Copy SDL2.dll from
+4. Copy SDL2.dll from
     > SDL2-devel-2.0.x-VC\SDL2-2.0.x\lib\x64\
 
     into your cargo project, right next to your Cargo.toml.
