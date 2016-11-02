@@ -11,6 +11,7 @@ use sdl2::get_error;
 use sdl2::pixels;
 use sdl2::pixels::Color;
 use sdl2_sys::pixels::SDL_Color;
+use sdl2::rwops::RWops;
 use ffi;
 
 /// Converts a rust-SDL2 color to its C ffi representation.
@@ -139,7 +140,7 @@ impl<'a> RenderableText<'a> {
 #[must_use]
 pub struct PartialRendering<'a> {
     text: RenderableText<'a>,
-    font: &'a Font,
+    font: &'a Font<'a>,
 }
 
 /// Converts the given raw pointer to a surface.
@@ -246,20 +247,24 @@ impl<'a> PartialRendering<'a> {
 }
 
 /// A loaded TTF font.
-#[derive(PartialEq)]
-pub struct Font {
+pub struct Font<'a> {
     raw: *const ffi::TTF_Font,
-    owned: bool
+    // RWops is only stored here because it must not outlive
+    // the Font struct, and this RWops should not be used by
+    // anything else
+    // None means that the RWops is handled by SDL itself,
+    // and Some(rwops) means that the RWops is handled by the Rust
+    // side
+    #[allow(dead_code)]
+    rwops:Option<RWops<'a>>
 }
 
-impl Drop for Font {
+impl<'a> Drop for Font<'a> {
     fn drop(&mut self) {
-        if self.owned {
-            unsafe {
-                // avoid close font after quit()
-                if ffi::TTF_WasInit() == 1 {
-                    ffi::TTF_CloseFont(self.raw);
-                }
+        unsafe {
+            // avoid close font after quit()
+            if ffi::TTF_WasInit() == 1 {
+                ffi::TTF_CloseFont(self.raw);
             }
         }
     }
@@ -273,15 +278,15 @@ pub fn internal_load_font(path: &Path, ptsize: u16) -> Result<Font, String> {
         if raw.is_null() {
             Err(get_error())
         } else {
-            Ok(Font { raw: raw, owned: true })
+            Ok(Font { raw: raw, rwops: None })
         }
     }
 }
 
 /// Internally used to load a font (for internal visibility).
-pub fn internal_load_font_from_ll(raw: *const ffi::TTF_Font, owned: bool)
-        -> Font {
-    Font { raw: raw, owned: owned }
+pub fn internal_load_font_from_ll<'a>(raw: *const ffi::TTF_Font, rwops: Option<RWops<'a>>)
+        -> Font<'a> {
+    Font { raw: raw, rwops: rwops }
 }
 
 /// Internally used to load a font (for internal visibility).
@@ -295,19 +300,19 @@ pub fn internal_load_font_at_index(path: &Path, index: u32, ptsize: u16)
         if raw.is_null() {
             Err(get_error())
         } else {
-            Ok(Font { raw: raw, owned: true })
+            Ok(Font { raw: raw, rwops: None })
         }
     }
 }
 
-impl Font {
+impl<'a> Font<'a> {
     /// Returns the underlying C font object.
     unsafe fn raw(&self) -> *const ffi::TTF_Font {
         self.raw
     }
 
     /// Starts specifying a rendering of the given UTF-8-encoded text.
-    pub fn render<'a>(&'a self, text: &'a str) -> PartialRendering<'a> {
+    pub fn render(&'a self, text: &'a str) -> PartialRendering<'a> {
         PartialRendering {
             text: RenderableText::Utf8(text),
             font: self,
@@ -315,7 +320,7 @@ impl Font {
     }
 
     /// Starts specifying a rendering of the given Latin-1-encoded text.
-    pub fn render_latin1<'a>(&'a self, text: &'a [u8]) -> PartialRendering<'a> {
+    pub fn render_latin1(&'a self, text: &'a [u8]) -> PartialRendering<'a> {
         PartialRendering {
             text: RenderableText::Latin1(text),
             font: self,
@@ -323,7 +328,7 @@ impl Font {
     }
 
     /// Starts specifying a rendering of the given UTF-8-encoded character.
-    pub fn render_char(&self, ch: char) -> PartialRendering {
+    pub fn render_char(&'a self, ch: char) -> PartialRendering<'a> {
         let mut s = String::new();
         s.push(ch);
         PartialRendering {
