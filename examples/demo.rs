@@ -75,7 +75,7 @@ fn run(font_path: &Path) {
     let padding = 64;
     let target = get_centered_rect(width, height, SCREEN_WIDTH - padding, SCREEN_HEIGHT - padding);
 
-    renderer.copy(&mut texture, None, Some(target));
+    renderer.copy(&mut texture, None, Some(target)).unwrap();
     renderer.present();
 
     'mainloop: loop {
