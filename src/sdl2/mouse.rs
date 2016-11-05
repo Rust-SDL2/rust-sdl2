@@ -81,6 +81,49 @@ impl Cursor {
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+pub enum MouseWheelDirection {
+    Normal,
+    Flipped,
+    Unknown(u32),
+}
+
+// 0 and 1 are not fixed values in the SDL source code.  This value is defined as an enum which is then cast to a Uint32.
+// The enum in C is defined as such:
+
+/**
+ * \brief Scroll direction types for the Scroll event
+ */
+//typedef enum
+//{
+//    SDL_MOUSEWHEEL_NORMAL,    /**< The scroll direction is normal */
+//    SDL_MOUSEWHEEL_FLIPPED    /**< The scroll direction is flipped / natural */
+//} SDL_MouseWheelDirection;
+
+// Since no value is given in the enum definition these values are auto assigned by the C compiler starting at 0.
+// Normally I would prefer to use the enum rather than hard code what it is implied to represent however
+// the mouse wheel direction value could be descripted equally as well by a bool, so I don't think changes
+// to this enum in the C source code are going to be a problem.
+
+impl MouseWheelDirection {
+    #[inline]
+    pub fn from_ll(direction: u32) -> MouseWheelDirection {
+        match direction {
+            0 => MouseWheelDirection::Normal,
+            1 => MouseWheelDirection::Flipped,
+            _ => MouseWheelDirection::Unknown(direction),
+        }
+    }
+    #[inline]
+    pub fn to_ll(&self) -> u32 {
+        match *self {
+            MouseWheelDirection::Normal => 0,
+            MouseWheelDirection::Flipped => 1,
+            MouseWheelDirection::Unknown(direction) => direction,
+        }
+    }
+}
+
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum Mouse {
     Left,
     Middle,

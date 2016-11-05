@@ -23,7 +23,7 @@ use keyboard::Mod;
 use sys::keycode::SDL_Keymod;
 use keyboard::Keycode;
 use mouse;
-use mouse::{Mouse, MouseState};
+use mouse::{Mouse, MouseState, MouseWheelDirection};
 use keyboard::Scancode;
 use get_error;
 
@@ -167,7 +167,7 @@ impl ::EventSubsystem {
         const ERR_NR:u32 = ::std::u32::MAX - 1;
 
         match result {
-            ERR_NR => { 
+            ERR_NR => {
                 Err("No more user events can be created; SDL_LASTEVENT reached"
                     .to_owned())
             },
@@ -240,14 +240,14 @@ impl ::EventSubsystem {
 
         let user_event_id = *match cet.type_id_to_sdl_id.get(&type_id) {
             Some(id) => id,
-            None => { 
+            None => {
                 return Err(
                     "Type is not registered as a custom event type!".to_owned()
                 );
             }
         };
-        
-        let event_box = Box::new(event); 
+
+        let event_box = Box::new(event);
         let event = Event::User {
            timestamp: 0,
            window_id: 0,
@@ -528,7 +528,8 @@ pub enum Event {
         window_id: u32,
         which: u32,
         x: i32,
-        y: i32
+        y: i32,
+        direction: MouseWheelDirection,
     },
 
     JoyAxisMotion {
@@ -945,7 +946,8 @@ impl Event {
                 window_id,
                 which,
                 x,
-                y
+                y,
+                direction,
             } => {
                 let event = ll::SDL_MouseWheelEvent {
                     type_: ll::SDL_MOUSEWHEEL,
@@ -954,6 +956,7 @@ impl Event {
                     which: which,
                     x: x,
                     y: y,
+                    direction : direction.to_ll(),
                 };
                 unsafe {
                     ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_MouseWheelEvent, 1);
@@ -1006,7 +1009,7 @@ impl Event {
                 }
                 Some(ret)
 
-            },                
+            },
             Event::JoyHatMotion{
                 timestamp,
                 which,
@@ -1216,17 +1219,17 @@ impl Event {
 
             },
 
-            
-            Event::FingerDown{..} | 
-            Event::FingerUp{..} | 
-            Event::FingerMotion{..} | 
-            Event::DollarGesture{..} | 
-            Event::DollarRecord{..} | 
-            Event::MultiGesture{..} | 
-            Event::ClipboardUpdate{..} | 
+
+            Event::FingerDown{..} |
+            Event::FingerUp{..} |
+            Event::FingerMotion{..} |
+            Event::DollarGesture{..} |
+            Event::DollarRecord{..} |
+            Event::MultiGesture{..} |
+            Event::ClipboardUpdate{..} |
             Event::DropFile{..} |
-            Event::TextEditing{..} | 
-            Event::TextInput{..} | 
+            Event::TextEditing{..} |
+            Event::TextInput{..} |
             Event::Unknown{..} |
             _ => {
                 // don't know how to convert!
@@ -1391,7 +1394,8 @@ impl Event {
                     window_id: event.windowID,
                     which: event.which,
                     x: event.x,
-                    y: event.y
+                    y: event.y,
+                    direction: mouse::MouseWheelDirection::from_ll(event.direction),
                 }
             }
 
@@ -1916,7 +1920,8 @@ mod test {
                 window_id: 0,
                 which: 32,
                 x: 23,
-                y: 91
+                y: 91,
+                direction: MouseWheelDirection::Flipped,
             };
             let e2 = Event::from_ll(e.clone().to_ll().unwrap());
             assert_eq!(e, e2);
@@ -2038,6 +2043,6 @@ mod test {
             let e2 = Event::from_ll(e.clone().to_ll().unwrap());
             assert_eq!(e, e2);
         }
-        
+
     }
 }
