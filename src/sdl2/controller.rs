@@ -181,6 +181,17 @@ impl Axis {
             _ => panic!("unhandled controller axis")
         })
     }
+
+    pub fn to_ll(&self) -> ll::SDL_GameControllerAxis {
+        match *self {
+            Axis::LeftX => ll::SDL_CONTROLLER_AXIS_LEFTX,
+            Axis::LeftY => ll::SDL_CONTROLLER_AXIS_LEFTY,
+            Axis::RightX => ll::SDL_CONTROLLER_AXIS_RIGHTX,
+            Axis::RightY => ll::SDL_CONTROLLER_AXIS_RIGHTY,
+            Axis::TriggerLeft => ll::SDL_CONTROLLER_AXIS_TRIGGERLEFT,
+            Axis::TriggerRight => ll::SDL_CONTROLLER_AXIS_TRIGGERRIGHT,
+        }
+    }
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
@@ -246,6 +257,26 @@ impl Button {
             ll::SDL_CONTROLLER_BUTTON_DPAD_RIGHT    => Button::DPadRight,
             _ => panic!("unhandled controller button")
         })
+    }
+
+    pub fn to_ll(&self) -> ll::SDL_GameControllerButton {
+        match *self {
+            Button::A             => ll::SDL_CONTROLLER_BUTTON_A,
+            Button::B             => ll::SDL_CONTROLLER_BUTTON_B,
+            Button::X             => ll::SDL_CONTROLLER_BUTTON_X,
+            Button::Y             => ll::SDL_CONTROLLER_BUTTON_Y,
+            Button::Back          => ll::SDL_CONTROLLER_BUTTON_BACK,
+            Button::Guide         => ll::SDL_CONTROLLER_BUTTON_GUIDE,
+            Button::Start         => ll::SDL_CONTROLLER_BUTTON_START,
+            Button::LeftStick     => ll::SDL_CONTROLLER_BUTTON_LEFTSTICK,
+            Button::RightStick    => ll::SDL_CONTROLLER_BUTTON_RIGHTSTICK,
+            Button::LeftShoulder  => ll::SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
+            Button::RightShoulder => ll::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
+            Button::DPadUp        => ll::SDL_CONTROLLER_BUTTON_DPAD_UP,
+            Button::DPadDown      => ll::SDL_CONTROLLER_BUTTON_DPAD_DOWN,
+            Button::DPadLeft      => ll::SDL_CONTROLLER_BUTTON_DPAD_LEFT,
+            Button::DPadRight     => ll::SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
+        }
     }
 }
 

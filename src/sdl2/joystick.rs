@@ -394,6 +394,21 @@ impl HatState {
             _  => panic!("Unexpected hat position: {}", raw),
         }
     }
+
+    pub fn to_raw(&self) -> u8 {
+        match *self {
+            HatState::Centered => 0,
+            HatState::Up => 1,
+            HatState::Right => 2,
+            HatState::Down => 4,
+            HatState::Left => 8,
+            HatState::RightUp => 3,
+            HatState::RightDown => 6,
+            HatState::LeftUp => 9,
+            HatState::Leftdown => 12,
+        }
+
+    }
 }
 
 /// Convert C string `c_str` to a String. Return an empty string if
