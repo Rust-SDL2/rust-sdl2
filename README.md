@@ -24,7 +24,7 @@ Place the following into your project's Cargo.toml file:
 
 ```toml
 [dependencies]
-sdl2_ttf = "0.21"
+sdl2_ttf = "0.25"
 ```
 
 sdl2_ttf is directly compatible with the corresponding version of sdl2.
