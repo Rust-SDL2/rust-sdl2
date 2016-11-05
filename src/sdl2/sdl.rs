@@ -175,7 +175,7 @@ macro_rules! subsystem {
 
         impl $name {
             #[inline]
-            pub fn clone(&mut self) -> $name {
+            pub fn clone(&self) -> $name {
                 $name {
                     _subsystem_drop: self._subsystem_drop.clone()
                 }
@@ -183,7 +183,7 @@ macro_rules! subsystem {
 
             /// Obtain an SDL context.
             #[inline]
-            pub fn sdl(&mut self) -> Sdl {
+            pub fn sdl(&self) -> Sdl {
                 Sdl { sdldrop: self._subsystem_drop._sdldrop.clone() }
             }
         }
@@ -290,7 +290,7 @@ pub fn get_error() -> String {
 
 pub fn set_error(err: &str) -> Result<(), NulError> {
     let c_string = try!(CString::new(err));
-    Ok(unsafe { 
+    Ok(unsafe {
         ll::SDL_SetError(c_string.as_ptr() as *const c_char);
     })
 }
