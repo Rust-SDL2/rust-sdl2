@@ -17,6 +17,8 @@ Rust-SDL2_image uses the MIT license.
 * [SDL_image 2.0 development libraries](https://www.libsdl.org/projects/SDL_image/)
 * Rust master -- usage of Nightly is recommended
 
+# [Documentation](https://docs.rs/sdl2_image/0.25.0/sdl2_image/)
+
 # Installation
 
 If you're using Cargo to manage your project, enter the following into your
