@@ -12,6 +12,8 @@ Rust-SDL2_ttf is a library for talking to the new SDL2_ttf library from Rust.
 
 Rust-SDL2_ttf uses the MIT licence.
 
+## [Documentation](https://docs.rs/sdl2_ttf/0.25.0/sdl2_ttf/)
+
 ## Requirements
 
 * [Rust-SDL2](https://github.com/AngryLawyer/rust-sdl2)
