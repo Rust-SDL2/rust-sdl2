@@ -1827,7 +1827,7 @@ mod test {
     use super::WindowEventId;
     use super::super::controller::{Button, Axis};
     use super::super::joystick::{HatState};
-    use super::super::mouse::{Mouse, MouseState};
+    use super::super::mouse::{Mouse, MouseState, MouseWheelDirection};
     use super::super::keyboard::{Keycode, Scancode, Mod};
 
     // Tests a round-trip conversion from an Event type to
