@@ -23,8 +23,7 @@ use keyboard::Mod;
 use sys::keycode::SDL_Keymod;
 use keyboard::Keycode;
 use mouse;
-use mouse::{Mouse, MouseState};
-use mouse::MouseWheelDirection;
+use mouse::{Mouse, MouseState, MouseWheelDirection};
 use keyboard::Scancode;
 use get_error;
 
