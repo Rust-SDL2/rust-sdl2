@@ -101,7 +101,7 @@ pub enum MouseWheelDirection {
 
 // Since no value is given in the enum definition these values are auto assigned by the C compiler starting at 0.
 // Normally I would prefer to use the enum rather than hard code what it is implied to represent however
-// the mouse wheel direction value could be descripted equally as well by a bool, so I don't think changes
+// the mouse wheel direction value could be described equally as well by a bool, so I don't think changes
 // to this enum in the C source code are going to be a problem.
 
 impl MouseWheelDirection {
