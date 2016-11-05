@@ -20,11 +20,14 @@ name="events"
 harness=false
 
 [dependencies]
-num = "0.1"
 bitflags = "0.6"
 libc = "0.2"
 rand = "0.3"
 lazy_static="0.2"
+
+[dependencies.num]
+version = "0.1.25"
+default-features = false
 
 [dependencies.sdl2-sys]
 
