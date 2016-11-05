@@ -536,7 +536,7 @@ impl<Channel: AudioFormatNum> AudioQueue<Channel> {
 
     /// Adds data to the audio queue.
     pub fn queue(&self, data: &[Channel]) -> bool {
-        let result = unsafe {ll::SDL_QueueAudio(self.device_id.id(), data.as_ptr() as *const c_void, data.len() as u32)};
+        let result = unsafe {ll::SDL_QueueAudio(self.device_id.id(), data.as_ptr() as *const c_void, (data.len() * mem::size_of::<Channel>()) as u32)};
         result == 0
     }
 
