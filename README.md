@@ -3,7 +3,7 @@ Rust-SDL2_image
 
 Rust bindings for SDL2_image
 
-> **NOTE**: The 1.0.0 and 1.1.0 version of this crate are yanked because of [#65](https://github.com/xsleonard/rust-sdl2_image/issues/65)! We are now using same ``x.y._`` version number as [sdl2](https://crates.io/crates/sdl2). See [sdl2_image/0.16.0](https://crates.io/crates/sdl2_image/0.16.0).
+> **NOTE**: The 1.0.0 and 1.1.0 version of this crate are yanked because of [#65](https://github.com/xsleonard/rust-sdl2_image/issues/65)! We are now using same ``x.y._`` version number as [sdl2](https://crates.io/crates/sdl2). See [sdl2_image/0.25.0](https://crates.io/crates/sdl2_image/0.25.0).
 
 # Overview
 
@@ -24,8 +24,8 @@ Cargo.toml file:
 
 ```toml
 [dependencies]
-sdl2 = "0.16.0"
-sdl2_image = "0.16.0"
+sdl2 = "0.25.0"
+sdl2_image = "0.25.0"
 ```
 
 Or, to reference this repository directly:
