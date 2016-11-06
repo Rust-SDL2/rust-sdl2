@@ -2,7 +2,7 @@
 name = "sdl2_ttf"
 description = "SDL2_ttf bindings for Rust"
 repository = "https://github.com/andelf/rust-sdl2_ttf"
-version = "0.25.0"
+version = "0.25.1"
 license = "MIT"
 readme = "README.md"
 authors = ["ShuYu Wang <andelf@gmail.com>"]
