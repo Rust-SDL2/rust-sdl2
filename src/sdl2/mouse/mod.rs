@@ -183,22 +183,22 @@ impl MouseButton {
 #[derive(Copy, Clone, Eq, PartialEq, Hash)]
 pub struct MouseState {
     mouse_state: u32,
-    x: u32,
-    y: u32
+    x: i32,
+    y: i32
 }
 
 impl MouseState {
     pub fn new(_e: &EventPump) -> MouseState {
         let mut x = 0;
         let mut y = 0;
-        let mouse_state = unsafe {
+        let mouse_state: u32 = unsafe {
             ll::SDL_GetMouseState(&mut x, &mut y)
         };
 
         MouseState {
             mouse_state: mouse_state,
-            x: x as u32,
-            y: y as u32
+            x: x as i32,
+            y: y as i32
         }
     }
 
@@ -233,18 +233,25 @@ impl MouseState {
     /// Tests if the X2 mouse button was pressed.
     pub fn x2(&self) -> bool { (self.mouse_state & ll::SDL_BUTTON_X2MASK) != 0 }
 
+    /// Returns the x coordinate of the state
+    pub fn x(&self) -> i32 { self.x }
+
+    /// Returns the y coordinate of the state
+    pub fn y(&self) -> i32 { self.y }
+
     /// Returns true if the mouse button is pressed.
     ///
     /// # Example
     /// ```no_run
     /// use sdl2::mouse::MouseButton;
     ///
-    /// fn is_a_pressed(e: &sdl2::EventPump) -> bool {
+    /// fn is_left_pressed(e: &sdl2::EventPump) -> bool {
     ///     e.mouse_state().is_mouse_button_pressed(MouseButton::Left)
     /// }
     /// ```
     pub fn is_mouse_button_pressed(&self, mouse_button: MouseButton) -> bool {
-        self.mouse_state<<((mouse_button as u32)-1) != 0
+        let mask = 1 << ((mouse_button as u32)-1);
+        self.mouse_state & mask != 0
     }
 
     /// Returns an iterator all mouse buttons with a boolean indicating if the scancode is pressed.
@@ -305,12 +312,13 @@ impl<'a> Iterator for MouseButtonIterator<'a> {
     type Item = (MouseButton, bool);
 
     fn next(&mut self) -> Option<(MouseButton, bool)> {
-        if self.index < MouseButton::X2 as usize {
+        if self.index < MouseButton::X2 as usize +1 {
             let index = self.index;
             self.index += 1;
 
             if let Some(mouse_button) = FromPrimitive::from_usize(index) {
-                let pressed = self.mouse_state&(MouseButton::Middle as u32) != 0;
+                let mask = 1 << ((mouse_button as u32)-1);
+                let pressed = self.mouse_state & mask != 0;
 
                 Some((mouse_button, pressed))
             } else {

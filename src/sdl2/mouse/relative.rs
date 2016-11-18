@@ -7,8 +7,8 @@ use super::{MouseButton, MouseButtonIterator, PressedMouseButtonIterator};
 #[derive(Copy, Clone, Eq, PartialEq, Hash)]
 pub struct RelativeMouseState {
     mouse_state: u32,
-    x: u32,
-    y: u32
+    x: i32,
+    y: i32
 }
 
 impl RelativeMouseState {
@@ -22,8 +22,8 @@ impl RelativeMouseState {
 
         RelativeMouseState {
             mouse_state: mouse_state,
-            x: x as u32,
-            y: y as u32
+            x: x as i32,
+            y: y as i32
         }
     }
 
@@ -58,18 +58,25 @@ impl RelativeMouseState {
     /// Tests if the X2 mouse button was pressed.
     pub fn x2(&self) -> bool { (self.mouse_state & ll::SDL_BUTTON_X2MASK) != 0 }
 
+    /// Returns the x coordinate of the state
+    pub fn x(&self) -> i32 { self.x }
+
+    /// Returns the y coordinate of the state
+    pub fn y(&self) -> i32 { self.y }
+
     /// Returns true if the mouse button is pressed.
     ///
     /// # Example
     /// ```no_run
     /// use sdl2::mouse::MouseButton;
     ///
-    /// fn is_a_pressed(e: &sdl2::EventPump) -> bool {
+    /// fn is_left_pressed(e: &sdl2::EventPump) -> bool {
     ///     e.mouse_state().is_mouse_button_pressed(MouseButton::Left)
     /// }
     /// ```
     pub fn is_mouse_button_pressed(&self, mouse_button: MouseButton) -> bool {
-        self.mouse_state<<((mouse_button as u32)-1) != 0
+        let mask = 1 << ((mouse_button as u32)-1);
+        self.mouse_state & mask != 0
     }
 
     /// Returns an iterator all mouse buttons with a boolean indicating if the scancode is pressed.
