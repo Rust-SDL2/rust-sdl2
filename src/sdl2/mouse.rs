@@ -127,7 +127,7 @@ impl MouseWheelDirection {
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
-pub enum Mousecode {
+pub enum Mousebutton {
     Left   = ll::SDL_BUTTON_LEFT as isize,
     Middle = ll::SDL_BUTTON_MIDDLE as isize,
     Right  = ll::SDL_BUTTON_RIGHT as isize,
@@ -135,7 +135,7 @@ pub enum Mousecode {
     X2     = ll::SDL_BUTTON_X2 as isize,
 }
 
-impl ToPrimitive for Mousecode {
+impl ToPrimitive for Mousebutton {
     #[inline]
     fn to_i64(&self) -> Option<i64> {
         Some(*self as i64)
@@ -152,15 +152,22 @@ impl ToPrimitive for Mousecode {
     }
 }
 
-impl Mousecode {
+impl FromPrimitive for Mousebutton {
     #[inline]
-    pub fn from_ll(button: u8) -> Option<Mousecode> {
+    fn from_i64(n: i64) -> Option<Mousebutton> { Mousebutton::from_ll(n as u8) }
+    #[inline]
+    fn from_u64(n: u64) -> Option<Mousebutton> { Mousebutton::from_ll(n as u8) }
+}
+
+impl Mousebutton {
+    #[inline]
+    pub fn from_ll(button: u8) -> Option<Mousebutton> {
         Some(match button {
-            ll::SDL_BUTTON_LEFT   => Mousecode::Left,
-            ll::SDL_BUTTON_MIDDLE => Mousecode::Middle,
-            ll::SDL_BUTTON_RIGHT  => Mousecode::Right,
-            ll::SDL_BUTTON_X1     => Mousecode::X1,
-            ll::SDL_BUTTON_X2     => Mousecode::X2,
+            ll::SDL_BUTTON_LEFT   => Mousebutton::Left,
+            ll::SDL_BUTTON_MIDDLE => Mousebutton::Middle,
+            ll::SDL_BUTTON_RIGHT  => Mousebutton::Right,
+            ll::SDL_BUTTON_X1     => Mousebutton::X1,
+            ll::SDL_BUTTON_X2     => Mousebutton::X2,
             _ => return None,
         })
     }
@@ -194,6 +201,114 @@ impl MouseState {
     }
     pub fn to_sdl_state(&self) -> u32 {
         self.mouse_state
+    }
+
+    /// Returns true if the left mouse button is pressed.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use sdl2::mouse::Mousebutton;
+    ///
+    /// fn is_a_pressed(e: &sdl2::EventPump) -> bool {
+    ///     e.mouse_state().left()
+    /// }
+    pub fn left(&self) -> bool { (self.mouse_state & ll::SDL_BUTTON_LMASK) != 0 }
+
+    /// Tests if the middle mouse button was pressed.
+    pub fn middle(&self) -> bool { (self.mouse_state & ll::SDL_BUTTON_MMASK) != 0 }
+
+    /// Tests if the right mouse button was pressed.
+    pub fn right(&self) -> bool { (self.mouse_state & ll::SDL_BUTTON_RMASK) != 0 }
+
+    /// Tests if the X1 mouse button was pressed.
+    pub fn x1(&self) -> bool { (self.mouse_state & ll::SDL_BUTTON_X1MASK) != 0 }
+
+    /// Tests if the X2 mouse button was pressed.
+    pub fn x2(&self) -> bool { (self.mouse_state & ll::SDL_BUTTON_X2MASK) != 0 }
+
+    /// Returns true if the mouse button is pressed.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use sdl2::mouse::Mousebutton;
+    ///
+    /// fn is_a_pressed(e: &sdl2::EventPump) -> bool {
+    ///     e.mouse_state().is_mousebutton_pressed(Mousebutton::Left)
+    /// }
+    /// ```
+    pub fn is_mousebutton_pressed(&self, mousebutton: Mousebutton) -> bool {
+        self.mouse_state<<((mousebutton as u32)-1) != 0
+    }
+
+    /// Returns an iterator all scancodes with a boolean indicating if the scancode is pressed.
+    pub fn mousebuttons(&self) -> MousebuttonIterator {
+        MousebuttonIterator {
+            index: 0,
+            mouse_state: &self.mouse_state
+        }
+    }
+
+    /// Returns an iterator of pressed mouse buttons.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use sdl2::mouse::Mousebutton;
+    /// use std::collections::HashSet;
+    ///
+    /// fn pressed_mousebutton_set(e: &sdl2::EventPump) -> HashSet<Mousebutton> {
+    ///     e.mouse_state().pressed_mousebuttons().collect()
+    /// }
+    ///
+    /// fn newly_pressed(old: &HashSet<Mousebutton>, new: &HashSet<Mousebutton>) -> HashSet<Mousebutton> {
+    ///     new - old
+    ///     // sugar for: new.difference(old).collect()
+    /// }
+    /// ```
+    pub fn pressed_mousebuttons(&self) -> PressedMousebuttonIterator {
+        PressedMousebuttonIterator {
+            iter: self.mousebuttons()
+        }
+    }
+}
+
+pub struct MousebuttonIterator<'a> {
+    index: usize,
+    mouse_state: &'a u32
+}
+
+impl<'a> Iterator for MousebuttonIterator<'a> {
+    type Item = (Mousebutton, bool);
+
+    fn next(&mut self) -> Option<(Mousebutton, bool)> {
+        if self.index < Mousebutton::X2 as usize {
+            let index = self.index;
+            self.index += 1;
+
+            if let Some(mousebutton) = FromPrimitive::from_usize(index) {
+                let pressed = self.mouse_state&(Mousebutton::Middle as u32) != 0;
+
+                Some((mousebutton, pressed))
+            } else {
+                self.next()
+            }
+        } else {
+            None
+        }
+    }
+}
+
+pub struct PressedMousebuttonIterator<'a> {
+    iter: MousebuttonIterator<'a>
+}
+
+impl<'a> Iterator for PressedMousebuttonIterator<'a> {
+    type Item = Mousebutton;
+
+    fn next(&mut self) -> Option<Mousebutton> {
+        while let Some((mousebutton, pressed)) = self.iter.next() {
+            if pressed { return Some(mousebutton) }
+        }
+        None
     }
 }
 
@@ -229,13 +344,13 @@ impl MouseUtil {
             Some(id)
         }
     }
-/*
+
     pub fn mouse_state(&self) -> (MouseState, i32, i32) {
         let mut x = 0;
         let mut y = 0;
         unsafe {
             let raw = ll::SDL_GetMouseState(&mut x, &mut y);
-            return (MouseState::from_flags(raw), x as i32, y as i32);
+            return (MouseState::from_sdl_state(raw), x as i32, y as i32);
         }
     }
 
@@ -244,10 +359,10 @@ impl MouseUtil {
         let mut y = 0;
         unsafe {
             let raw = ll::SDL_GetRelativeMouseState(&mut x, &mut y);
-            return (MouseState::from_flags(raw), x as i32, y as i32);
+            return (MouseState::from_sdl_state(raw), x as i32, y as i32);
         }
     }
-*/
+
     pub fn warp_mouse_in_window(&self, window: &video::WindowRef, x: i32, y: i32) {
         unsafe { ll::SDL_WarpMouseInWindow(window.raw(), x, y); }
     }

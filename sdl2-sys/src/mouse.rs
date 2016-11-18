@@ -21,8 +21,7 @@ pub const SDL_SYSTEM_CURSOR_NO: SDL_SystemCursor = 10;
 pub const SDL_SYSTEM_CURSOR_HAND: SDL_SystemCursor = 11;
 pub const SDL_NUM_SYSTEM_CURSORS: SDL_SystemCursor = 12;
 
-// #define SDL_BUTTON(X)		(SDL_PRESSED<<(X-1))
-// need to shift the SDL_BUTTON_LEFT over per above
+
 pub const SDL_BUTTON_UNKNOWN: u8 = 0;
 pub const SDL_BUTTON_LEFT   : u8 = 1;
 pub const SDL_BUTTON_MIDDLE : u8 = 2;

@@ -23,7 +23,7 @@ use keyboard::Mod;
 use sys::keycode::SDL_Keymod;
 use keyboard::Keycode;
 use mouse;
-use mouse::{Mousecode, MouseState, MouseWheelDirection};
+use mouse::{Mousebutton, MouseState, MouseWheelDirection};
 use keyboard::Scancode;
 use get_error;
 
@@ -510,7 +510,7 @@ pub enum Event {
         timestamp: u32,
         window_id: u32,
         which: u32,
-        mouse_btn: Option<Mousecode>,
+        mouse_btn: Option<Mousebutton>,
         x: i32,
         y: i32
     },
@@ -518,7 +518,7 @@ pub enum Event {
         timestamp: u32,
         window_id: u32,
         which: u32,
-        mouse_btn: Option<Mousecode>,
+        mouse_btn: Option<Mousebutton>,
         x: i32,
         y: i32
     },
@@ -755,8 +755,9 @@ fn mk_keysym(scancode: Option<Scancode>,
     }
 }
 
-fn mk_mousesym(mousecode: Option<Mousecode>) -> u8 {
-    mousecode.unwrap().to_ll().unwrap()
+/// Helper function is only to unwrap a mousebutton to u8
+fn mk_mousesym(mousebutton: Option<Mousebutton>) -> u8 {
+    mousebutton.unwrap().to_ll().unwrap()
 }
 
 // TODO: Remove this when from_utf8 is updated in Rust
@@ -1373,7 +1374,7 @@ impl Event {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
                     which: event.which,
-                    mouse_btn: mouse::Mousecode::from_ll(event.button),
+                    mouse_btn: mouse::Mousebutton::from_ll(event.button),
                     x: event.x,
                     y: event.y
                 }
@@ -1385,7 +1386,7 @@ impl Event {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
                     which: event.which,
-                    mouse_btn: mouse::Mousecode::from_ll(event.button),
+                    mouse_btn: mouse::Mousebutton::from_ll(event.button),
                     x: event.x,
                     y: event.y
                 }
@@ -1836,7 +1837,7 @@ mod test {
     use super::WindowEventId;
     use super::super::controller::{Button, Axis};
     use super::super::joystick::{HatState};
-    use super::super::mouse::{Mouse, MouseState, MouseWheelDirection};
+    use super::super::mouse::{Mousebutton, MouseState, MouseWheelDirection};
     use super::super::keyboard::{Keycode, Scancode, Mod};
 
     // Tests a round-trip conversion from an Event type to
@@ -1889,7 +1890,7 @@ mod test {
                 timestamp: 0,
                 window_id: 0,
                 which: 1,
-                mousestate: MouseState::from_state(1),
+                mousestate: MouseState::from_sdl_state(1),
                 x: 3,
                 y: 91,
                 xrel: -1,
@@ -1903,7 +1904,7 @@ mod test {
                 timestamp: 5634,
                 window_id: 2,
                 which: 0,
-                mouse_btn: Mouse::Left,
+                mouse_btn: Some(Mousebutton::Left),
                 x: 543,
                 y: 345,
             };
@@ -1915,7 +1916,7 @@ mod test {
                 timestamp: 0,
                 window_id: 2,
                 which: 0,
-                mouse_btn: Mouse::Left,
+                mouse_btn: Some(Mousebutton::Left),
                 x: 543,
                 y: 345,
 
