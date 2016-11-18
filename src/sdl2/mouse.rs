@@ -1,8 +1,11 @@
+use num::{ToPrimitive, FromPrimitive};
 use std::ptr;
 
 use get_error;
 use surface::SurfaceRef;
 use video;
+//
+use EventPump;
 
 use sys::mouse as ll;
 
@@ -124,84 +127,73 @@ impl MouseWheelDirection {
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
-pub enum Mouse {
-    Left,
-    Middle,
-    Right,
-    X1,
-    X2,
-    Unknown(u8)
+pub enum Mousecode {
+    Left   = ll::SDL_BUTTON_LEFT as isize,
+    Middle = ll::SDL_BUTTON_MIDDLE as isize,
+    Right  = ll::SDL_BUTTON_RIGHT as isize,
+    X1     = ll::SDL_BUTTON_X1 as isize,
+    X2     = ll::SDL_BUTTON_X2 as isize,
 }
 
-impl Mouse {
+impl ToPrimitive for Mousecode {
     #[inline]
-    pub fn from_ll(button: u8) -> Mouse {
-        match button {
-            1 => Mouse::Left,
-            2 => Mouse::Middle,
-            3 => Mouse::Right,
-            4 => Mouse::X1,
-            5 => Mouse::X2,
-            _ => Mouse::Unknown(button)
-        }
+    fn to_i64(&self) -> Option<i64> {
+        Some(*self as i64)
+    }
+
+    #[inline]
+    fn to_u64(&self) -> Option<u64> {
+        Some(*self as u64)
+    }
+
+    #[inline]
+    fn to_isize(&self) -> Option<isize> {
+        Some(*self as isize)
+    }
+}
+
+impl Mousecode {
+    #[inline]
+    pub fn from_ll(button: u8) -> Option<Mousecode> {
+        Some(match button {
+            ll::SDL_BUTTON_LEFT   => Mousecode::Left,
+            ll::SDL_BUTTON_MIDDLE => Mousecode::Middle,
+            ll::SDL_BUTTON_RIGHT  => Mousecode::Right,
+            ll::SDL_BUTTON_X1     => Mousecode::X1,
+            ll::SDL_BUTTON_X2     => Mousecode::X2,
+            _ => return None,
+        })
     }
     #[inline]
-    pub fn to_ll(&self) -> u8 {
-        match *self {
-            Mouse::Left => 1,
-            Mouse::Middle => 2,
-            Mouse::Right => 3,
-            Mouse::X1 => 4,
-            Mouse::X2 => 5,
-            Mouse::Unknown(button) => button,
-        }
+    pub fn to_ll(&self) -> Option<u8> {
+        Some(*self as u8)
     }
 
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash)]
 pub struct MouseState {
-    flags: u32
+    mouse_state: u32,
 }
 
 impl MouseState {
-    /// Tests if a mouse button was pressed.
-    pub fn button(&self, button: Mouse) -> bool {
-        match button {
-            Mouse::Left => self.left(),
-            Mouse::Middle => self.middle(),
-            Mouse::Right => self.right(),
-            Mouse::X1 => self.x1(),
-            Mouse::X2 => self.x2(),
-            Mouse::Unknown(x) => {
-                assert!(x <= 32);
-                let mask = 1 << ((x as u32) - 1);
-                (self.flags & mask) != 0
-            }
+    pub fn new(_e: &EventPump) -> MouseState {
+        let mouse_state: u32 = unsafe {
+            let mut x = 0;
+            let mut y = 0;
+            ll::SDL_GetMouseState(&mut x, &mut y)
+        };
+
+        MouseState {
+            mouse_state: mouse_state
         }
     }
 
-    /// Tests if the left mouse button was pressed.
-    pub fn left(&self) -> bool { (self.flags & ll::SDL_BUTTON_LMASK) != 0 }
-
-    /// Tests if the middle mouse button was pressed.
-    pub fn middle(&self) -> bool { (self.flags & ll::SDL_BUTTON_MMASK) != 0 }
-
-    /// Tests if the right mouse button was pressed.
-    pub fn right(&self) -> bool { (self.flags & ll::SDL_BUTTON_RMASK) != 0 }
-
-    /// Tests if the X1 mouse button was pressed.
-    pub fn x1(&self) -> bool { (self.flags & ll::SDL_BUTTON_X1MASK) != 0 }
-
-    /// Tests if the X2 mouse button was pressed.
-    pub fn x2(&self) -> bool { (self.flags & ll::SDL_BUTTON_X2MASK) != 0 }
-
-    pub fn from_flags(flags: u32) -> MouseState {
-        MouseState { flags: flags }
+    pub fn from_sdl_state(state: u32) -> MouseState {
+        MouseState { mouse_state : state }
     }
-
-    pub fn to_flags(&self) -> u32 {
-        self.flags
+    pub fn to_sdl_state(&self) -> u32 {
+        self.mouse_state
     }
 }
 
@@ -237,7 +229,7 @@ impl MouseUtil {
             Some(id)
         }
     }
-
+/*
     pub fn mouse_state(&self) -> (MouseState, i32, i32) {
         let mut x = 0;
         let mut y = 0;
@@ -255,7 +247,7 @@ impl MouseUtil {
             return (MouseState::from_flags(raw), x as i32, y as i32);
         }
     }
-
+*/
     pub fn warp_mouse_in_window(&self, window: &video::WindowRef, x: i32, y: i32) {
         unsafe { ll::SDL_WarpMouseInWindow(window.raw(), x, y); }
     }
