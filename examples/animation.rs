@@ -4,6 +4,7 @@ use std::path::Path;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::rect::Rect;
+use sdl2::rect::Point;
 use std::time::Duration;
 
 fn main() {
@@ -14,7 +15,7 @@ fn main() {
         .position_centered().build().unwrap();
 
     let mut renderer = window.renderer()
-        .software().build().unwrap();
+        .accelerated().build().unwrap();
 
     renderer.set_draw_color(sdl2::pixels::Color::RGBA(0,0,0,255));
 
@@ -23,11 +24,13 @@ fn main() {
     let mut event_pump = sdl_context.event_pump().unwrap();
 
     let temp_surface = sdl2::surface::Surface::load_bmp(Path::new("assets/animate.bmp")).unwrap();
-    let texture = renderer.create_texture_from_surface(temp_surface).unwrap();
+    let texture = renderer.create_texture_from_surface(&temp_surface).unwrap();
     let texture_query  = texture.query();
 
+    let mut center = Point::new(320,240);
     let mut source_rect = Rect::new(0, 0, 128, 82);
-    let dest_rect = Rect::new(0, 0, 128, 82);
+    let mut dest_rect = Rect::new(0,0, 128, 82);
+    dest_rect.center_on(center);
 
     let mut running = true;
     while running {
@@ -42,15 +45,9 @@ fn main() {
 
         let ticks = timer.ticks();
 
-        // Cycle through coords
-        // 0
-        // 128
-        // 384
-        // 512
-        // 640
-    //    source_rect.set_x((128 * ((ticks / 100) % 6) ) as i32);
+        source_rect.set_x((128 * ((ticks / 100) % 6) ) as i32);
         renderer.clear();
-        renderer.copy_ex(&texture, Some(source_rect), Some(dest_rect), 0.0, None, true, false);
+        renderer.copy_ex(&texture, Some(source_rect), Some(dest_rect), 10.0, None, true, false);
         renderer.present();
 
         std::thread::sleep(Duration::from_millis(100));
