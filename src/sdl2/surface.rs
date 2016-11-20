@@ -177,7 +177,7 @@ impl<'a> Surface<'a> {
         }
     }
 
-    pub fn load_bmp<P: AsRef<Path>>(path: P) -> Result<Surface<'static>, String> {
+    pub fn load_bmp(path: &Path) -> Result<Surface<'static>, String> {
         let mut file = try!(RWops::from_file(path, "rb"));
         Surface::load_bmp_rw(&mut file)
     }
@@ -306,7 +306,7 @@ impl SurfaceRef {
         else { Err(get_error()) }
     }
 
-    pub fn save_bmp<P: AsRef<Path>>(&self, path: P) -> Result<(), String> {
+    pub fn save_bmp(&self, path: &Path) -> Result<(), String> {
         let mut file = try!(RWops::from_file(path, "wb"));
         self.save_bmp_rw(&mut file)
     }
@@ -514,15 +514,15 @@ impl SurfaceRef {
         }
     }
 
-    // Note: There's no need to implement SDL_ConvertSurfaceFormat, as it 
+    // Note: There's no need to implement SDL_ConvertSurfaceFormat, as it
     // does the same thing as SDL_ConvertSurface but with a slightly different
     // function signature.
 
     /// Performs surface blitting (surface copying).
     ///
     /// Returns the final blit rectangle, if a `dst_rect` was provided.
-    pub fn blit(&self, src_rect: Option<Rect>, 
-            dst: &mut SurfaceRef, dst_rect: Option<Rect>) 
+    pub fn blit(&self, src_rect: Option<Rect>,
+            dst: &mut SurfaceRef, dst_rect: Option<Rect>)
             -> Result<Option<Rect>, String> {
         unsafe {
             let src_rect_ptr = src_rect.as_ref().map(|r| r.raw()).unwrap_or(ptr::null());

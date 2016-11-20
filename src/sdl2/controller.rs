@@ -86,7 +86,7 @@ impl GameControllerSubsystem {
     }
 
     /// Add a new mapping from a mapping string
-    pub fn add_mapping(&self, mapping: &str) 
+    pub fn add_mapping(&self, mapping: &str)
             -> Result<MappingStatus, AddMappingError> {
         use self::AddMappingError::*;
         let mapping = match CString::new(mapping) {
@@ -104,7 +104,7 @@ impl GameControllerSubsystem {
     }
 
     /// Load mappings from a file
-    pub fn load_mappings<P: AsRef<Path>>(&self, path: P)
+    pub fn load_mappings(&self, path: &Path)
             -> Result<i32, AddMappingError> {
         use self::AddMappingError::*;
 
@@ -371,7 +371,7 @@ fn c_str_to_string(c_str: *const c_char) -> String {
     if c_str.is_null() {
         String::new()
     } else {
-        unsafe { 
+        unsafe {
             CStr::from_ptr(c_str as *const _).to_str().unwrap().to_owned()
         }
     }
@@ -383,7 +383,7 @@ fn c_str_to_string_or_err(c_str: *const c_char) -> Result<String, String> {
     if c_str.is_null() {
         Err(get_error())
     } else {
-        Ok(unsafe { 
+        Ok(unsafe {
             CStr::from_ptr(c_str as *const _).to_str().unwrap().to_owned()
         })
     }

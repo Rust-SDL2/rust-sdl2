@@ -24,9 +24,11 @@ impl<'a> RWops<'a> {
     }
 
     /// Creates an SDL file stream.
-    pub fn from_file<P: AsRef<Path>>(path: P, mode: &str) -> Result<RWops <'static>, String> {
+    pub fn from_file(path: &Path, mode: &str) -> Result<RWops <'static>, String> {
         let raw = unsafe {
-            let path_c = CString::new(path.as_ref().to_str().unwrap()).unwrap();
+            // Path is internally represented as an OsStr, which is UTF-8
+            // conversion to str for SDL2 *shouldn't* need checking
+            let path_c = CString::new(path.as_os_str().to_str().unwrap()).unwrap();
             let mode_c = CString::new(mode).unwrap();
             ll::SDL_RWFromFile(path_c.as_ptr() as *const c_char, mode_c.as_ptr() as *const c_char)
         };
