@@ -22,17 +22,17 @@ pub const SDL_SYSTEM_CURSOR_HAND: SDL_SystemCursor = 11;
 pub const SDL_NUM_SYSTEM_CURSORS: SDL_SystemCursor = 12;
 
 
-
-pub const SDL_BUTTON_LEFT: u8 = 1;
-pub const SDL_BUTTON_MIDDLE: u8 = 2;
-pub const SDL_BUTTON_RIGHT: u8 = 3;
-pub const SDL_BUTTON_X1: u8 = 4;
-pub const SDL_BUTTON_X2: u8 = 5;
-pub const SDL_BUTTON_LMASK: u32  = 0x01;
-pub const SDL_BUTTON_MMASK: u32  = 0x02;
-pub const SDL_BUTTON_RMASK: u32  = 0x04;
-pub const SDL_BUTTON_X1MASK: u32 = 0x08;
-pub const SDL_BUTTON_X2MASK: u32 = 0x10;
+pub const SDL_BUTTON_UNKNOWN: u8 = 0;
+pub const SDL_BUTTON_LEFT   : u8 = 1;
+pub const SDL_BUTTON_MIDDLE : u8 = 2;
+pub const SDL_BUTTON_RIGHT  : u8 = 3;
+pub const SDL_BUTTON_X1     : u8 = 4;
+pub const SDL_BUTTON_X2     : u8 = 5;
+pub const SDL_BUTTON_LMASK  : u32 = 0x01;
+pub const SDL_BUTTON_MMASK  : u32 = 0x02;
+pub const SDL_BUTTON_RMASK  : u32 = 0x04;
+pub const SDL_BUTTON_X1MASK : u32 = 0x08;
+pub const SDL_BUTTON_X2MASK : u32 = 0x10;
 
 
 extern "C" {

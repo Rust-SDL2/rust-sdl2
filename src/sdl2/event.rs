@@ -23,7 +23,7 @@ use keyboard::Mod;
 use sys::keycode::SDL_Keymod;
 use keyboard::Keycode;
 use mouse;
-use mouse::{Mouse, MouseState, MouseWheelDirection};
+use mouse::{MouseButton, MouseState, MouseWheelDirection};
 use keyboard::Scancode;
 use get_error;
 
@@ -456,7 +456,7 @@ pub enum Event {
     AppDidEnterForeground { timestamp: u32 },
 
     Window {
-        timestamp: u32 ,
+        timestamp: u32,
         window_id: u32,
         win_event_id: WindowEventId,
         data1: i32,
@@ -465,7 +465,7 @@ pub enum Event {
     // TODO: SysWMEvent
 
     KeyDown {
-        timestamp: u32 ,
+        timestamp: u32,
         window_id: u32,
         keycode: Option<Keycode>,
         scancode: Option<Scancode>,
@@ -473,7 +473,7 @@ pub enum Event {
         repeat: bool
     },
     KeyUp {
-        timestamp: u32 ,
+        timestamp: u32,
         window_id: u32,
         keycode: Option<Keycode>,
         scancode: Option<Scancode>,
@@ -510,7 +510,7 @@ pub enum Event {
         timestamp: u32,
         window_id: u32,
         which: u32,
-        mouse_btn: Mouse,
+        mouse_btn: Option<MouseButton>,
         x: i32,
         y: i32
     },
@@ -518,7 +518,7 @@ pub enum Event {
         timestamp: u32,
         window_id: u32,
         which: u32,
-        mouse_btn: Mouse,
+        mouse_btn: Option<MouseButton>,
         x: i32,
         y: i32
     },
@@ -755,6 +755,11 @@ fn mk_keysym(scancode: Option<Scancode>,
     }
 }
 
+/// Helper function is only to unwrap a mouse_button to u8
+fn mk_mouse_button(mouse_button: Option<MouseButton>) -> u8 {
+    mouse_button.unwrap().to_ll().unwrap()
+}
+
 // TODO: Remove this when from_utf8 is updated in Rust
 // This would honestly be nice if it took &self instead of self,
 // but Event::User's raw pointers kind of removes that possibility.
@@ -870,7 +875,7 @@ impl Event {
                 xrel,
                 yrel
             } => {
-                let state = mousestate.to_flags();
+                let state = mousestate.to_sdl_state();
                 let event = ll::SDL_MouseMotionEvent {
                     type_: ll::SDL_MOUSEMOTION,
                     timestamp: timestamp,
@@ -896,7 +901,7 @@ impl Event {
                 x,
                 y
             } => {
-                let button = mouse_btn.to_ll();
+                let button = mk_mouse_button(mouse_btn);
                 let event = ll::SDL_MouseButtonEvent {
                     type_: ll::SDL_MOUSEBUTTONDOWN,
                     timestamp: timestamp,
@@ -922,7 +927,7 @@ impl Event {
                 x,
                 y
             } => {
-                let button = mouse_btn.to_ll();
+                let button = mk_mouse_button(mouse_btn);
                 let event = ll::SDL_MouseButtonEvent {
                     type_: ll::SDL_MOUSEBUTTONUP,
                     timestamp: timestamp,
@@ -1355,7 +1360,7 @@ impl Event {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
                     which: event.which,
-                    mousestate: mouse::MouseState::from_flags(event.state),
+                    mousestate: mouse::MouseState::from_sdl_state(event.state),
                     x: event.x,
                     y: event.y,
                     xrel: event.xrel,
@@ -1369,7 +1374,7 @@ impl Event {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
                     which: event.which,
-                    mouse_btn: mouse::Mouse::from_ll(event.button),
+                    mouse_btn: mouse::MouseButton::from_ll(event.button),
                     x: event.x,
                     y: event.y
                 }
@@ -1381,7 +1386,7 @@ impl Event {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
                     which: event.which,
-                    mouse_btn: mouse::Mouse::from_ll(event.button),
+                    mouse_btn: mouse::MouseButton::from_ll(event.button),
                     x: event.x,
                     y: event.y
                 }
@@ -1784,6 +1789,16 @@ impl ::EventPump {
     pub fn keyboard_state(&self) -> ::keyboard::KeyboardState {
         ::keyboard::KeyboardState::new(self)
     }
+
+    #[inline]
+    pub fn mouse_state(&self) -> ::mouse::MouseState {
+        ::mouse::MouseState::new(self)
+    }
+
+    #[inline]
+    pub fn relative_mouse_state(&self) -> ::mouse::RelativeMouseState {
+        ::mouse::RelativeMouseState::new(self)
+    }
 }
 
 /// An iterator that calls `EventPump::poll_event()`.
@@ -1827,7 +1842,7 @@ mod test {
     use super::WindowEventId;
     use super::super::controller::{Button, Axis};
     use super::super::joystick::{HatState};
-    use super::super::mouse::{Mouse, MouseState, MouseWheelDirection};
+    use super::super::mouse::{MouseButton, MouseState, MouseWheelDirection};
     use super::super::keyboard::{Keycode, Scancode, Mod};
 
     // Tests a round-trip conversion from an Event type to
@@ -1880,7 +1895,7 @@ mod test {
                 timestamp: 0,
                 window_id: 0,
                 which: 1,
-                mousestate: MouseState::from_flags(1),
+                mousestate: MouseState::from_sdl_state(1),
                 x: 3,
                 y: 91,
                 xrel: -1,
@@ -1894,7 +1909,7 @@ mod test {
                 timestamp: 5634,
                 window_id: 2,
                 which: 0,
-                mouse_btn: Mouse::Left,
+                mouse_btn: Some(MouseButton::Left),
                 x: 543,
                 y: 345,
             };
@@ -1906,7 +1921,7 @@ mod test {
                 timestamp: 0,
                 window_id: 2,
                 which: 0,
-                mouse_btn: Mouse::Left,
+                mouse_btn: Some(MouseButton::Left),
                 x: 543,
                 y: 345,
 
