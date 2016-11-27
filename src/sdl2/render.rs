@@ -739,10 +739,11 @@ impl<'a> Renderer<'a> {
 
     /// Fills a rectangle on the current rendering target with the drawing
     /// color.
+    /// Passing None will fill the entire rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    pub fn fill_rect(&mut self, rect: Rect) -> Result<(), String> {
+    pub fn fill_rect<R: Into<Option<Rect>>>(&mut self, rect: R) -> Result<(), String> {
         let result = unsafe {
-            ll::SDL_RenderFillRect(self.raw, rect.raw())
+            ll::SDL_RenderFillRect(self.raw, rect.into().map(|r|{r.raw()}).unwrap_or(ptr::null()))
         };
         if result != 0 {
             Err(get_error())
