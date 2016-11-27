@@ -263,7 +263,7 @@ pub struct AudioSpecWAV {
 
 impl AudioSpecWAV {
     /// Loads a WAVE from the file path.
-    pub fn load_wav<P: AsRef<Path>>(path: P) -> Result<AudioSpecWAV, String> {
+    pub fn load_wav(path: &Path) -> Result<AudioSpecWAV, String> {
         let mut file = try!(RWops::from_file(path, "rb"));
         AudioSpecWAV::load_wav_rw(&mut file)
     }
@@ -494,7 +494,7 @@ impl<Channel: AudioFormatNum> AudioQueue<Channel> {
 
             let iscapture_flag = 0;
             let device_id = ll::SDL_OpenAudioDevice(
-                device_ptr as *const c_char, iscapture_flag, &desired, 
+                device_ptr as *const c_char, iscapture_flag, &desired,
                 &mut obtained, 0
             );
             match device_id {
@@ -583,7 +583,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
 
             let iscapture_flag = 0;
             let device_id = ll::SDL_OpenAudioDevice(
-                device_ptr as *const c_char, iscapture_flag, &desired, 
+                device_ptr as *const c_char, iscapture_flag, &desired,
                 &mut obtained, 0
             );
             match device_id {
