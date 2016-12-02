@@ -1,11 +1,8 @@
-#![crate_type = "bin"]
-
 extern crate sdl2;
-extern crate sdl2_image;
 
 use std::env;
 use std::path::Path;
-use sdl2_image::{self, LoadTexture, INIT_PNG, INIT_JPG};
+use sdl2::image::{LoadTexture, INIT_PNG, INIT_JPG};
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 
@@ -13,7 +10,7 @@ pub fn run(png: &Path) {
 
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
-    let _image_context = sdl2_image::init(INIT_PNG | INIT_JPG).unwrap();
+    let _image_context = sdl2::image::init(INIT_PNG | INIT_JPG).unwrap();
     let window = video_subsystem.window("rust-sdl2 demo: Video", 800, 600)
       .position_centered()
       .build()
@@ -22,7 +19,7 @@ pub fn run(png: &Path) {
     let mut renderer = window.renderer().software().build().unwrap();
     let texture = renderer.load_texture(png).unwrap();
 
-    renderer.copy(&texture, None, None);
+    renderer.copy(&texture, None, None).expect("Render failed");
     renderer.present();
 
     'mainloop: loop {
