@@ -1,0 +1,17 @@
+[package]
+name = "sdl2_image"
+version = "0.25.0"
+authors = ["xsleonard"]
+description = "SDL2_image bindings and wrappers"
+license = "MIT"
+repository = "https://github.com/xsleonard/rust-sdl2_image"
+keywords = ["SDL2"]
+
+[lib]
+name = "sdl2_image"
+path = "src/sdl2_image/lib.rs"
+
+[dependencies]
+bitflags = "0.7"
+sdl2 = "0.25.0"
+sdl2-sys = "0.25.0"
