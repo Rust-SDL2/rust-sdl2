@@ -14,10 +14,7 @@ pub fn main() {
         .unwrap();
 
     let mut events = sdl_context.event_pump().unwrap();
-
-    let mut state = events.relative_mouse_state();
-    let mut old_x = 0;
-    let mut old_y = 0;
+    let mut state;
 
     'running: loop {
         for event in events.poll_iter() {

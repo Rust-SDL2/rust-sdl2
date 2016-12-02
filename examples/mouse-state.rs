@@ -1,7 +1,6 @@
 extern crate sdl2;
 
 use sdl2::event::Event;
-use sdl2::mouse::MouseButton;
 use std::collections::HashSet;
 use std::time::Duration;
 
