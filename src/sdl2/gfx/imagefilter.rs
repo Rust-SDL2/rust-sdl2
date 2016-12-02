@@ -1,9 +1,9 @@
 //! MMX image filters
+extern crate c_vec;
 
 use std::mem;
-use libc;
-use libc::{size_t, c_void, c_uint, c_int};
-use sdl2::get_error;
+use libc::{self,size_t, c_void, c_uint, c_int};
+use ::get_error;
 use c_vec::CVec;
 
 mod ll {

@@ -1,8 +1,9 @@
 //! Surface Rotozoomer
+extern crate c_vec;
 
 use libc::c_int;
-use sdl2::surface::Surface;
-use sdl2::get_error;
+use ::surface::Surface;
+use ::get_error;
 pub use std::f64::consts::PI;
 
 

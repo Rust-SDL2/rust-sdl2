@@ -11,6 +11,9 @@ extern crate lazy_static;
 extern crate bitflags;
 extern crate sdl2_sys as sys;
 
+#[cfg(feature = "gfx")]
+extern crate c_vec;
+
 pub use sdl::*;
 
 pub mod clipboard;

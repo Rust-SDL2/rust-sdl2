@@ -1,14 +1,15 @@
 //! Graphic Primitives
+extern crate c_vec;
 
 use std::mem;
 use std::ptr;
 use std::ffi::CString;
 use num::traits::ToPrimitive;
 use libc::{c_void, c_int, c_char};
-use sdl2::render::Renderer;
-use sdl2::surface::Surface;
-use sdl2::pixels;
-use sdl2::get_error;
+use ::render::Renderer;
+use ::surface::Surface;
+use ::pixels;
+use ::get_error;
 
 #[allow(dead_code)]
 mod ll {

@@ -1,9 +1,10 @@
 //! Framerate control
+extern crate c_vec;
 
 use libc;
 use libc::{c_void, uint32_t, size_t};
 use std::mem;
-use sdl2::get_error;
+use ::get_error;
 
 
 mod ll {
