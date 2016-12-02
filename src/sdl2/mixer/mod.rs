@@ -8,9 +8,9 @@ use std::str::from_utf8;
 use std::borrow::ToOwned;
 use std::path::Path;
 use libc::{c_int, uint16_t, c_double, c_uint};
-use sdl2::get_error;
-use sdl2::rwops::RWops;
-use sdl2::version::Version;
+use ::get_error;
+use ::rwops::RWops;
+use ::version::Version;
 
 // Setup linking for all targets.
 #[cfg(target_os="macos")]
@@ -159,7 +159,7 @@ pub fn init(flags: InitFlag) -> Result<Sdl2MixerContext, String> {
         if get_error() == "" {
             let un_init_flags = return_flags ^ flags;
             let error_str = &("Could not init: ".to_string() + &un_init_flags.to_string());
-            let _ = sdl2::set_error(error_str);
+            let _ = ::set_error(error_str);
         }
         Err(get_error())
     }
