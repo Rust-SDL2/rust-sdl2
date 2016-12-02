@@ -1,12 +1,12 @@
 use std::os::raw::{c_int, c_char};
 use std::ffi::CString;
 use std::path::Path;
-use sdl2::surface::Surface;
-use sdl2::render::Texture;
-use sdl2::render::Renderer;
-use sdl2::rwops::RWops;
-use sdl2::version::Version;
-use sdl2::get_error;
+use ::surface::Surface;
+use ::render::{Renderer, Texture};
+use ::rwops::RWops;
+use ::version::Version;
+use ::get_error;
+use sys;
 
 // Setup linking for all targets.
 #[cfg(target_os="macos")]
@@ -173,7 +173,7 @@ pub fn init(flags: InitFlag) -> Result<Sdl2ImageContext, String> {
         if get_error() == "" {
             let un_init_flags = return_flags ^ flags;
             let error_str = &("Could not init: ".to_string() + &un_init_flags.to_string());
-            let _ = sdl2::set_error(error_str);
+            let _ = ::set_error(error_str);
         }
         Err(get_error())
     } else {
