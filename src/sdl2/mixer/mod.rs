@@ -897,7 +897,7 @@ impl Music {
     ///     println!("Music has ended");
     /// }
     ///
-    /// sdl2_mixer::Music::hook_finished(after_music);
+    /// sdl2::mixer::Music::hook_finished(after_music);
     /// ```
     pub fn hook_finished(f: fn()) {
         unsafe {
