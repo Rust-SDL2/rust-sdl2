@@ -1,0 +1,27 @@
+language: rust
+rust:
+  - beta
+  - stable
+env:
+  global:
+    - secure: bEpP3zUNn1g3jOhB9s0y8XDbxtAcf8rt2ilwkx6/OjhZm7mcfcvjoiEyG/c6iu4AOhF3CTvhnjZmuuD7d1eUChNwWpNhyWMZ3gj+lNNAugfZfOv7sFFQpEMZ2hbO1djr7/TeuXmQgJqIUHYfCoW2nXObXkESpl2yzOiYhhUdH58=
+    - LD_LIBRARY_PATH: /usr/local/lib
+install:
+  - cd ..
+  - time wget -q http://www.libsdl.org/release/SDL2-2.0.3.tar.gz
+  - time wget -q http://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.12.tar.gz
+  - time tar xf SDL2-*.tar.gz
+  - time tar xf SDL2_ttf-*.tar.gz
+  - cd SDL2-*
+  - ./configure && make && sudo make install
+  - cd -
+  - cd SDL2_ttf-*
+  - ./configure && make && sudo make install
+  - cd -
+script:
+  - cd rust-sdl2_ttf
+  - cargo build -v
+  - cargo test -v
+  - cargo doc -v
+after_script:
+  - curl http://www.rust-ci.org/artifacts/put?t=$RUSTCI_TOKEN | sh
