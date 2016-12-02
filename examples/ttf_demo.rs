@@ -1,5 +1,4 @@
 extern crate sdl2;
-extern crate sdl2_ttf;
 
 use std::env;
 use std::path::Path;
@@ -47,7 +46,7 @@ fn get_centered_rect(rect_width: u32, rect_height: u32, cons_width: u32, cons_he
 fn run(font_path: &Path) {
     let sdl_context = sdl2::init().unwrap();
     let video_subsys = sdl_context.video().unwrap();
-    let ttf_context = sdl2_ttf::init().unwrap();
+    let ttf_context = sdl2::ttf::init().unwrap();
 
     let window = video_subsys.window("SDL2_TTF Example", SCREEN_WIDTH, SCREEN_HEIGHT)
         .position_centered()
@@ -59,7 +58,7 @@ fn run(font_path: &Path) {
 
     // Load a font
     let mut font = ttf_context.load_font(font_path, 128).unwrap();
-    font.set_style(sdl2_ttf::STYLE_BOLD);
+    font.set_style(sdl2::ttf::STYLE_BOLD);
     
     // render a surface, and convert it to a texture bound to the renderer
     let surface = font.render("Hello Rust!")
@@ -92,7 +91,7 @@ fn run(font_path: &Path) {
 fn main() {
     let args: Vec<_> = env::args().collect();
 
-    println!("linked sdl2_ttf: {}", sdl2_ttf::get_linked_version());
+    println!("linked sdl2_ttf: {}", sdl2::ttf::get_linked_version());
 
     if args.len() < 2 {
         println!("Usage: ./demo font.[ttf|ttc|fon]")
