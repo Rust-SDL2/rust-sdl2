@@ -19,7 +19,7 @@ install:
 - pushd SDL2_ttf-* && ./configure && make && sudo make install && popd
 - pushd SDL2_image-* && ./configure && make && sudo make install && popd
 - pushd SDL2_mixer-* && ./configure && make && sudo make install && popd
-- pushd SDL2_gfx-* && ./configure && make && sudo make install && popd
+- pushd SDL2_gfx-* && ./autogen.sh && ./configure && make && sudo make install && popd
 
 before_script:
 - |
