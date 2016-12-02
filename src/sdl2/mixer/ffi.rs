@@ -1,5 +1,3 @@
-extern crate sdl2_sys as sys;
-
 use std::os::raw::{c_uint, c_int, c_char, c_double, c_void};
 use self::sys::rwops::SDL_RWops;
 use self::sys::version::SDL_version;

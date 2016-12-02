@@ -37,5 +37,10 @@ version = "0.26.0"
 [features]
 
 default = []
+ttf = []
+image = []
+gfx = []
+mixer = []
+
 use-pkgconfig = [ "sdl2-sys/use-pkgconfig" ]
 use_mac_framework = ["sdl2-sys/use_mac_framework"]

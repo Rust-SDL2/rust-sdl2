@@ -3,18 +3,18 @@ use std::error;
 use std::fmt;
 use std::os::raw::{c_int, c_long};
 use std::path::Path;
-use sdl2::get_error;
-use sdl2::rwops::RWops;
-use sdl2::version::Version;
+use ::get_error;
+use ::rwops::RWops;
+use ::version::Version;
 
-use font::{
+use super::font::{
     internal_load_font,
     internal_load_font_at_index,
     internal_load_font_from_ll,
     Font,
 };
 
-use ffi;
+use super::ffi;
 
 /// A context manager for `SDL2_TTF` to manage C code initialization and clean-up.
 #[must_use]

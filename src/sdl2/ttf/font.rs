@@ -5,14 +5,13 @@ use std::error;
 use std::error::Error;
 use std::ffi::NulError;
 use std::fmt;
-use sdl2::surface::Surface;
-use sdl2_sys::surface::SDL_Surface;
-use sdl2::get_error;
-use sdl2::pixels;
-use sdl2::pixels::Color;
-use sdl2_sys::pixels::SDL_Color;
-use sdl2::rwops::RWops;
-use ffi;
+use ::surface::Surface;
+use ::sys::surface::SDL_Surface;
+use ::get_error;
+use ::pixels::{self,Color};
+use ::sys::pixels::SDL_Color;
+use ::rwops::RWops;
+use super::ffi;
 
 /// Converts a rust-SDL2 color to its C ffi representation.
 #[inline]
@@ -28,11 +27,11 @@ fn color_to_c_color(color: Color) -> SDL_Color {
 bitflags! {
     /// The styling of a font.
     pub flags FontStyle: ::std::os::raw::c_int {
-        const STYLE_NORMAL        = ::ffi::TTF_STYLE_NORMAL,
-        const STYLE_BOLD          = ::ffi::TTF_STYLE_BOLD,
-        const STYLE_ITALIC        = ::ffi::TTF_STYLE_ITALIC,
-        const STYLE_UNDERLINE     = ::ffi::TTF_STYLE_UNDERLINE,
-        const STYLE_STRIKETHROUGH = ::ffi::TTF_STYLE_STRIKETHROUGH,
+        const STYLE_NORMAL        = ffi::TTF_STYLE_NORMAL,
+        const STYLE_BOLD          = ffi::TTF_STYLE_BOLD,
+        const STYLE_ITALIC        = ffi::TTF_STYLE_ITALIC,
+        const STYLE_UNDERLINE     = ffi::TTF_STYLE_UNDERLINE,
+        const STYLE_STRIKETHROUGH = ffi::TTF_STYLE_STRIKETHROUGH,
     }
 }
 

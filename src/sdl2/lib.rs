@@ -38,6 +38,16 @@ pub mod version;
 pub mod messagebox;
 pub mod hint;
 
+// modules
+#[cfg(feature = "ttf")]
+pub mod ttf;
+#[cfg(feature = "image")]
+pub mod image;
+#[cfg(feature = "mixer")]
+pub mod mixer;
+#[cfg(feature = "gfx")]
+pub mod gfx;
+
 mod common;
 // Export return types and such from the common module.
 pub use common::IntegerOrSdlError;

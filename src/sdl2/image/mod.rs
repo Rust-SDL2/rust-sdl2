@@ -1,12 +1,3 @@
-#![crate_name="sdl2_image"]
-#![crate_type = "lib"]
-
-extern crate sdl2;
-extern crate sdl2_sys as sys;
-
-#[macro_use]
-extern crate bitflags;
-
 use std::os::raw::{c_int, c_char};
 use std::ffi::CString;
 use std::path::Path;
@@ -42,10 +33,10 @@ mod ffi;
 /// functionality to load.
 bitflags! {
     pub flags InitFlag : u32 {
-        const INIT_JPG  = ::ffi::IMG_INIT_JPG as u32,
-        const INIT_PNG  = ::ffi::IMG_INIT_PNG as u32,
-        const INIT_TIF  = ::ffi::IMG_INIT_TIF as u32,
-        const INIT_WEBP = ::ffi::IMG_INIT_WEBP as u32
+        const INIT_JPG  = ffi::IMG_INIT_JPG as u32,
+        const INIT_PNG  = ffi::IMG_INIT_PNG as u32,
+        const INIT_TIF  = ffi::IMG_INIT_TIF as u32,
+        const INIT_WEBP = ffi::IMG_INIT_WEBP as u32
     }
 }
 

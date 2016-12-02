@@ -1,8 +1,8 @@
 use std::os::raw::{c_int, c_char, c_long, c_void};
-use sdl2_sys::surface::SDL_Surface;
-use sdl2_sys::pixels::SDL_Color;
-use sdl2_sys::rwops::SDL_RWops;
-use sdl2_sys::version::SDL_version;
+use ::sys::surface::SDL_Surface;
+use ::sys::pixels::SDL_Color;
+use ::sys::rwops::SDL_RWops;
+use ::sys::version::SDL_version;
 
 
 pub const TTF_STYLE_NORMAL        : c_int = 0x00;
