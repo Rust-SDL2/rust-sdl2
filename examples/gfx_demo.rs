@@ -1,11 +1,10 @@
 extern crate sdl2;
-extern crate sdl2_gfx;
 
 use sdl2::event::Event;
 use sdl2::pixels;
 use sdl2::keyboard::Keycode;
 
-use sdl2_gfx::primitives::DrawRenderer;
+use sdl2::gfx::primitives::DrawRenderer;
 
 const SCREEN_WIDTH: u32 = 800;
 const SCREEN_HEIGHT: u32 = 600;
