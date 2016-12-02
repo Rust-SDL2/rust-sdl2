@@ -1,0 +1,21 @@
+[package]
+name = "sdl2_gfx"
+version = "0.24.0"
+authors = ["ShuYu Wang <andelf@gmail.com>"]
+description = "SDL2_gfx bindings for Rust"
+homepage = "https://github.com/andelf/rust-sdl2_gfx"
+repository = "https://github.com/andelf/rust-sdl2_gfx"
+readme = "README.md"
+keywords = ["SDL", "windowing", "graphics", "SDL2"]
+license = "MIT"
+
+[lib]
+name = "sdl2_gfx"
+path = "src/sdl2_gfx/lib.rs"
+
+[dependencies]
+num = "0.1"
+libc = "0.2"
+sdl2 = "0.24"
+sdl2-sys = "0.24"
+c_vec = "1.0.*"

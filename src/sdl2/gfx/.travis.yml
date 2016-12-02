@@ -1,0 +1,29 @@
+language: rust
+os:
+  - linux
+  - osx
+env:
+  global:
+    - secure: pJW/r7h3r45pelA24GP34NjDFURoBriteNg6gXOQY2SVIWbwrXl/lwtgT7o04OUXO049ZsXxmmYyrvGkkIcEPCKh8ishE+nl1FOhrSmMjfNm3DAGtAgX3PP6EZco1QIYk86GbeOiN8oV7rm78Snz7g5VnVuSDXkCJqEFueitvaA=
+    - LD_LIBRARY_PATH: /usr/local/lib
+install:
+  - cd ..
+  - time wget -q http://www.libsdl.org/release/SDL2-2.0.5.tar.gz
+  - time wget -q http://internode.dl.sourceforge.net/project/sdl2gfx/SDL2_gfx-1.0.1.tar.gz
+  - time tar xf SDL2-*.tar.gz
+  - time tar xf SDL2_gfx-*.tar.gz
+  - cd SDL2-*
+  - ./configure && make && sudo make install
+  - cd -
+  - cd SDL2_gfx-*
+  - ./autogen.sh && ./configure && make && sudo make install
+  - cd -
+script:
+  - cd rust-sdl2_gfx
+  - cargo build -v
+  - cargo test -v
+  - cargo doc -v
+after_script:
+  - cp -R target/doc doc
+  - curl http://www.rust-ci.org/artifacts/put?t=$RUSTCI_TOKEN | sh
+  - rm -r doc
