@@ -151,7 +151,7 @@ download through Crates.io:
     sdl2 = "0.25"
 ```
 
-Alternatively, pull it from GitHub
+Alternatively, pull it from GitHub to obtain the latest version from master
 
 ```toml
     [dependencies.sdl2]
@@ -159,6 +159,10 @@ Alternatively, pull it from GitHub
 ```
 
 Otherwise, clone this repo and run [cargo][crates]
+
+```
+cargo build
+```
 
 You can enable features such as ttf, image, gfx and mixer by
 adding this instead:
@@ -173,11 +177,8 @@ Those features need their respective libraries, which
 can be found at these locations : (the install process
 is the same as SDL2)
 
-* [image, gfx, mixer](https://www.libsdl.org/projects/)
+* [image, ttf, mixer](https://www.libsdl.org/projects/)
 * [gfx](http://sourceforge.net/projects/sdl2gfx/)
-
-
-> cargo build
 
 ## What about sdl2\_net ?
 
