@@ -30,12 +30,20 @@ version = "0.1.25"
 default-features = false
 
 [dependencies.sdl2-sys]
-
 path = "sdl2-sys"
 version = "0.26.0"
+
+[dependencies.c_vec]
+version = "1.0.*"
+optional = true
 
 [features]
 
 default = []
+ttf = []
+image = []
+gfx = ["c_vec"]
+mixer = []
+
 use-pkgconfig = [ "sdl2-sys/use-pkgconfig" ]
 use_mac_framework = ["sdl2-sys/use_mac_framework"]

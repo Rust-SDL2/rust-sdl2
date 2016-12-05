@@ -49,7 +49,7 @@ pub fn main() {
     }).unwrap();
 
     renderer.clear();
-    renderer.copy(&texture, None, Some(Rect::new(100, 100, 256, 256)));
+    renderer.copy(&texture, None, Some(Rect::new(100, 100, 256, 256))).unwrap();
     renderer.present();
 
     let mut event_pump = sdl_context.event_pump().unwrap();

@@ -32,7 +32,7 @@ pub fn main() {
     }).unwrap();
 
     renderer.clear();
-    renderer.copy(&texture, None, Some(Rect::new(100, 100, 256, 256)));
+    renderer.copy(&texture, None, Some(Rect::new(100, 100, 256, 256))).unwrap();
     renderer.copy_ex(&texture, None, 
         Some(Rect::new(450, 100, 256, 256)), 30.0, None, false, false).unwrap();
     renderer.present();

@@ -15,18 +15,8 @@ If you want a library compatible with earlier versions of SDL, please see
 
 # Documentation
 
-* [http://angrylawyer.github.io/rust-sdl2/sdl2/](http://angrylawyer.github.io/rust-sdl2/sdl2/)
-
-
-## Where are SDL_image, SDL_mixer, and SDL_ttf?
-
-These live outside of the repo.
-
-* https://github.com/xsleonard/rust-sdl2_image
-* https://github.com/andelf/rust-sdl2_ttf
-* https://github.com/andelf/rust-sdl2_mixer
-* https://github.com/andelf/rust-sdl2_gfx
-* https://github.com/Limvot/rust-sdl2_net
+* [master documentation](http://angrylawyer.github.io/rust-sdl2/sdl2/)
+* [crates.io documentation](https://docs.rs/sdl2/0.26.0/sdl2/)
 
 # Requirements
 
@@ -34,7 +24,7 @@ These live outside of the repo.
 
 We currently target the latest stable release of Rust.
 
-## *SDL2.0  development libraries*
+## *SDL2.0 development libraries*
 ### Linux
 Install these through your favourite package management tool, or via
 http://www.libsdl.org/
@@ -56,7 +46,7 @@ On OSX, it's a good idea to install these via
 
 Then add the following to your `~/.bash_profile` if not already present.
 
-> export LIBRARY_PATH="$LIBRARY_PATH:/usr/local/lib"
+> export LIBRARY\_PATH="$LIBRARY\_PATH:/usr/local/lib"
 
 ##### Otherwise if you are using macports
 You can also get sdl2 via `macports`.
@@ -65,7 +55,7 @@ You can also get sdl2 via `macports`.
 
 Then add the following to your `~/.bash_profile` if not already present.
 
-> export LIBRARY_PATH="$LIBRARY_PATH:/opt/local/lib/"
+> export LIBRARY\_PATH="$LIBRARY\_PATH:/opt/local/lib/"
 
 If you're having issues with either homebrew or macports, [see here][pdev-issue].
 
@@ -78,7 +68,7 @@ To make the `sdl2` crate link with the SDL2 framework, you will need to enable
 the `use_mac_framework` feature.  To build and test the `sdl2` crate with this
 feature, use:
 
-> cargo test --features use_mac_framework
+> cargo test --features use\_mac\_framework
 
 To depend on the `sdl2` crate with this feature enabled, put the following in
 your project's `Cargo.toml` file:
@@ -163,22 +153,51 @@ download through Crates.io:
 
 Alternatively, pull it from GitHub
 
-```rust
+```toml
     [dependencies.sdl2]
     git = "https://github.com/AngryLawyer/rust-sdl2"
 ```
 
 Otherwise, clone this repo and run [cargo][crates]
 
+You can enable features such as ttf, image, gfx and mixer by
+adding this instead:
+
+```toml
+    [dependencies.sdl2]
+    version = "0.25"
+    features = ["ttf","image","gfx","mixer"]
+```
+
+Those features need their respective libraries, which
+can be found at these locations : (the install process
+is the same as SDL2)
+
+* [image, gfx, mixer](https://www.libsdl.org/projects/)
+* [gfx](http://sourceforge.net/projects/sdl2gfx/)
+
+
 > cargo build
+
+## What about sdl2\_net ?
+
+As of now, sdl2\_net meaningless compared to what other crates
+such as `serde` and `bincode` can offer.
+We highly recommend using those to develop anything UDP or TCP
+realted (along with futures or TCP/UDP from std).
+
+If you still want an implementation of sdl2\_net, you can try to
+add it in this repo as a feature via a Pull Request. A somewhat
+outdated version of this binding can be found
+[here](https://github.com/Limvot/rust-sdl2_net)
 
 # Demo
 
-We have some simple example projects included:
+We have several simple example projects included:
 
 > cargo run --example demo
 
-> cargo run --example audio-whitenoise
+You can see the full list in the `examples/` folder
 
 # OpenGL
 

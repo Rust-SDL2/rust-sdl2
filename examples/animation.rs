@@ -25,9 +25,8 @@ fn main() {
 
     let temp_surface = sdl2::surface::Surface::load_bmp(Path::new("assets/animate.bmp")).unwrap();
     let texture = renderer.create_texture_from_surface(&temp_surface).unwrap();
-    let texture_query  = texture.query();
-
-    let mut center = Point::new(320,240);
+    
+    let center = Point::new(320,240);
     let mut source_rect = Rect::new(0, 0, 128, 82);
     let mut dest_rect = Rect::new(0,0, 128, 82);
     dest_rect.center_on(center);
@@ -47,7 +46,7 @@ fn main() {
 
         source_rect.set_x((128 * ((ticks / 100) % 6) ) as i32);
         renderer.clear();
-        renderer.copy_ex(&texture, Some(source_rect), Some(dest_rect), 10.0, None, true, false);
+        renderer.copy_ex(&texture, Some(source_rect), Some(dest_rect), 10.0, None, true, false).unwrap();
         renderer.present();
 
         std::thread::sleep(Duration::from_millis(100));
