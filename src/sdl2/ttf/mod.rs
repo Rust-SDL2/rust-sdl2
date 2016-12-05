@@ -1,6 +1,23 @@
-/*!
-A binding for `SDL2_ttf`.
- */
+//!
+//! A binding for the library `SDL2_ttf`
+//!
+//! 
+//! Note that you need to build with the
+//! feature `ttf` for this module to be enabled,
+//! like so:
+//!
+//! ```bash
+//! $ cargo build --features "ttf"
+//! ```
+//!
+//! If you want to use this with from inside your own
+//! crate, you will need to add this in your Cargo.toml
+//!
+//! ```toml
+//! [dependencies.sdl2]
+//! version = ...
+//! features = ["ttf"]
+//! ```
 
 #[allow(non_camel_case_types, dead_code)]
 mod ffi;

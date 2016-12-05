@@ -1,3 +1,24 @@
+//!
+//! A binding for the library `SDL2_image`
+//!
+//! 
+//! Note that you need to build with the
+//! feature `image` for this module to be enabled,
+//! like so:
+//!
+//! ```bash
+//! $ cargo build --features "image"
+//! ```
+//!
+//! If you want to use this with from inside your own
+//! crate, you will need to add this in your Cargo.toml
+//!
+//! ```toml
+//! [dependencies.sdl2]
+//! version = ...
+//! features = ["image"]
+//! ```
+
 use std::os::raw::{c_int, c_char};
 use std::ffi::CString;
 use std::path::Path;

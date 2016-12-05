@@ -1,5 +1,23 @@
-//! A binding for `SDL2_mixer`.
 //!
+//! A binding for the library `SDL2_mixer`
+//!
+//! 
+//! Note that you need to build with the
+//! feature `mixer` for this module to be enabled,
+//! like so:
+//!
+//! ```bash
+//! $ cargo build --features "mixer"
+//! ```
+//!
+//! If you want to use this with from inside your own
+//! crate, you will need to add this in your Cargo.toml
+//!
+//! ```toml
+//! [dependencies.sdl2]
+//! version = ...
+//! features = ["mixer"]
+//! ```
 
 use std::default;
 use std::fmt;
