@@ -383,14 +383,14 @@ impl FromPrimitive for EventType {
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 /// An enum of window events.
-pub enum WindowEventId {
+pub enum WindowEvent {
     None,
     Shown,
     Hidden,
     Exposed,
-    Moved,
-    Resized,
-    SizeChanged,
+    Moved(i32,i32),
+    Resized(i32,i32),
+    SizeChanged(i32,i32),
     Minimized,
     Maximized,
     Restored,
@@ -399,46 +399,53 @@ pub enum WindowEventId {
     FocusGained,
     FocusLost,
     Close,
+    TakeFocus,
+    HitTest,
 }
 
-impl WindowEventId {
-    fn from_ll(id: u8) -> WindowEventId {
+impl WindowEvent {
+    fn from_ll(id: u8, data1: i32, data2: i32) -> WindowEvent {
         match id {
-            1  => WindowEventId::Shown,
-            2  => WindowEventId::Hidden,
-            3  => WindowEventId::Exposed,
-            4  => WindowEventId::Moved,
-            5  => WindowEventId::Resized,
-            6  => WindowEventId::SizeChanged,
-            7  => WindowEventId::Minimized,
-            8  => WindowEventId::Maximized,
-            9  => WindowEventId::Restored,
-            10 => WindowEventId::Enter,
-            11 => WindowEventId::Leave,
-            12 => WindowEventId::FocusGained,
-            13 => WindowEventId::FocusLost,
-            14 => WindowEventId::Close,
-            _  => WindowEventId::None
+            0  => WindowEvent::None,
+            1  => WindowEvent::Shown,
+            2  => WindowEvent::Hidden,
+            3  => WindowEvent::Exposed,
+            4  => WindowEvent::Moved(data1,data2),
+            5  => WindowEvent::Resized(data1,data2),
+            6  => WindowEvent::SizeChanged(data1,data2),
+            7  => WindowEvent::Minimized,
+            8  => WindowEvent::Maximized,
+            9  => WindowEvent::Restored,
+            10 => WindowEvent::Enter,
+            11 => WindowEvent::Leave,
+            12 => WindowEvent::FocusGained,
+            13 => WindowEvent::FocusLost,
+            14 => WindowEvent::Close,
+            15 => WindowEvent::TakeFocus,
+            16 => WindowEvent::HitTest,
+            _  => WindowEvent::None
         }
     }
 
-    fn to_ll(&self) -> u8 {
+    fn to_ll(&self) -> (u8, i32, i32) {
         match *self {
-            WindowEventId::Shown => 1,
-            WindowEventId::Hidden => 2,
-            WindowEventId::Exposed => 3,
-            WindowEventId::Moved => 4,
-            WindowEventId::Resized => 5,
-            WindowEventId::SizeChanged => 6,
-            WindowEventId::Minimized => 7,
-            WindowEventId::Maximized => 8,
-            WindowEventId::Restored => 9,
-            WindowEventId::Enter => 10,
-            WindowEventId::Leave => 11,
-            WindowEventId::FocusGained => 12,
-            WindowEventId::FocusLost => 13,
-            WindowEventId::Close => 14,
-            WindowEventId::None => 0,
+            WindowEvent::None => (0, 0, 0),
+            WindowEvent::Shown => (1, 0, 0),
+            WindowEvent::Hidden => (2, 0, 0),
+            WindowEvent::Exposed => (3, 0, 0),
+            WindowEvent::Moved(d1,d2) => (4, d1, d2),
+            WindowEvent::Resized(d1,d2) => (5, d1, d2),
+            WindowEvent::SizeChanged(d1,d2) => (6, d1, d2),
+            WindowEvent::Minimized => (7, 0, 0),
+            WindowEvent::Maximized => (8, 0, 0),
+            WindowEvent::Restored => (9, 0, 0),
+            WindowEvent::Enter => (10, 0, 0),
+            WindowEvent::Leave => (11, 0, 0),
+            WindowEvent::FocusGained => (12, 0, 0),
+            WindowEvent::FocusLost => (13, 0, 0),
+            WindowEvent::Close => (14, 0, 0),
+            WindowEvent::TakeFocus => (15, 0, 0),
+            WindowEvent::HitTest => (16, 0, 0),
         }
     }
 
@@ -458,9 +465,7 @@ pub enum Event {
     Window {
         timestamp: u32,
         window_id: u32,
-        win_event_id: WindowEventId,
-        data1: i32,
-        data2: i32
+        win_event: WindowEvent,
     },
     // TODO: SysWMEvent
 
@@ -796,15 +801,14 @@ impl Event {
             Event::Window{
                 timestamp,
                 window_id,
-                win_event_id,
-                data1,
-                data2,
+                win_event
             } => {
+                let (win_event_id, data1, data2) = win_event.to_ll(); 
                 let event = ll::SDL_WindowEvent {
                     type_: ll::SDL_WINDOWEVENT,
                     timestamp: timestamp,
                     windowID: window_id,
-                    event: win_event_id.to_ll(),
+                    event: win_event_id,
                     padding1: 0,
                     padding2: 0,
                     padding3: 0,
@@ -1289,9 +1293,7 @@ impl Event {
                 Event::Window {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
-                    win_event_id: WindowEventId::from_ll(event.event),
-                    data1: event.data1,
-                    data2: event.data2
+                    win_event: WindowEvent::from_ll(event.event, event.data1, event.data2),
                 }
             }
             // TODO: SysWMEventType
@@ -1839,7 +1841,7 @@ impl<'a> Iterator for EventWaitTimeoutIterator<'a> {
 #[cfg(test)]
 mod test {
     use super::Event;
-    use super::WindowEventId;
+    use super::WindowEvent;
     use super::super::controller::{Button, Axis};
     use super::super::joystick::{HatState};
     use super::super::mouse::{MouseButton, MouseState, MouseWheelDirection};
@@ -1858,9 +1860,7 @@ mod test {
             let e = Event::Window{
                 timestamp: 0,
                 window_id: 0,
-                win_event_id: WindowEventId::Resized,
-                data1: 1,
-                data2: 2,
+                win_event: WindowEvent::Resized(1, 2),
             };
             let e2 = Event::from_ll(e.clone().to_ll().unwrap());
             assert_eq!(e, e2);
