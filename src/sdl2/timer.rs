@@ -37,7 +37,7 @@ impl TimerSubsystem {
 
     /// Sleeps the current thread for the specified amount of milliseconds.
     ///
-    /// It's recommended that you use `std::thread::sleep_ms()` instead.
+    /// It's recommended that you use `std::thread::sleep()` instead.
     pub fn delay(&mut self, ms: u32) {
         // Google says this is probably not thread-safe (TODO: prove/disprove this).
         unsafe { ll::SDL_Delay(ms) }
