@@ -267,7 +267,7 @@ pub trait DrawRenderer {
     fn aa_polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], color: C) -> Result<(), String>;
     fn filled_polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], color: C) -> Result<(), String>;
     fn textured_polygon<C: ToColor>(&self, vx: &[i16], vy: &[i16], texture: &Surface, texture_dx: i16, texture_dy: i16, color: C) -> Result<(), String>;
-    fn bezier<C: ToColor>(&self, vx: &[i16], vy: &[i16], s: isize, color: C) -> Result<(), String>;
+    fn bezier<C: ToColor>(&self, vx: &[i16], vy: &[i16], s: i32, color: C) -> Result<(), String>;
     fn character<C: ToColor>(&self, x: i16, y: i16, c: char, color: C) -> Result<(), String>;
     fn string<C: ToColor>(&self, x: i16, y: i16, s: &str, color: C) -> Result<(), String>;
 }
@@ -462,7 +462,7 @@ impl<'a> DrawRenderer for Renderer<'a> {
         unimplemented!()
     }
 
-    fn bezier<C: ToColor>(&self, vx: &[i16], vy: &[i16], s: isize, color: C) -> Result<(), String> {
+    fn bezier<C: ToColor>(&self, vx: &[i16], vy: &[i16], s: i32, color: C) -> Result<(), String> {
         assert_eq!(vx.len(), vy.len());
         let n = vx.len() as c_int;
         let ret = unsafe {
