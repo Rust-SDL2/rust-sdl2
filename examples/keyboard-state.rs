@@ -34,7 +34,7 @@ pub fn main() {
         let old_keys = &prev_keys - &keys;
 
         if !new_keys.is_empty() || !old_keys.is_empty() {
-            println!("{:?} -> {:?}", new_keys, old_keys);
+            println!("new_keys: {:?}\told_keys:{:?}", new_keys, old_keys);
         }
 
         prev_keys = keys;

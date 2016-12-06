@@ -1,4 +1,3 @@
-use num::{ToPrimitive, FromPrimitive};
 use std::ptr;
 
 use get_error;
@@ -14,18 +13,18 @@ pub use self::relative::RelativeMouseState;
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(u32)]
 pub enum SystemCursor {
-    Arrow = ll::SDL_SYSTEM_CURSOR_ARROW,
-    IBeam = ll::SDL_SYSTEM_CURSOR_IBEAM,
-    Wait = ll::SDL_SYSTEM_CURSOR_WAIT,
-    Crosshair = ll::SDL_SYSTEM_CURSOR_CROSSHAIR,
-    WaitArrow = ll::SDL_SYSTEM_CURSOR_WAITARROW,
-    SizeNWSE = ll::SDL_SYSTEM_CURSOR_SIZENWSE,
-    SizeNESW = ll::SDL_SYSTEM_CURSOR_SIZENESW,
-    SizeWE = ll::SDL_SYSTEM_CURSOR_SIZEWE,
-    SizeNS = ll::SDL_SYSTEM_CURSOR_SIZENS,
-    SizeAll = ll::SDL_SYSTEM_CURSOR_SIZEALL,
-    No = ll::SDL_SYSTEM_CURSOR_NO,
-    Hand = ll::SDL_SYSTEM_CURSOR_HAND,
+    Arrow = ll::SDL_SYSTEM_CURSOR_ARROW as u32,
+    IBeam = ll::SDL_SYSTEM_CURSOR_IBEAM as u32,
+    Wait = ll::SDL_SYSTEM_CURSOR_WAIT as u32,
+    Crosshair = ll::SDL_SYSTEM_CURSOR_CROSSHAIR as u32,
+    WaitArrow = ll::SDL_SYSTEM_CURSOR_WAITARROW as u32,
+    SizeNWSE = ll::SDL_SYSTEM_CURSOR_SIZENWSE as u32,
+    SizeNESW = ll::SDL_SYSTEM_CURSOR_SIZENESW as u32,
+    SizeWE = ll::SDL_SYSTEM_CURSOR_SIZEWE as u32,
+    SizeNS = ll::SDL_SYSTEM_CURSOR_SIZENS as u32,
+    SizeAll = ll::SDL_SYSTEM_CURSOR_SIZEALL as u32,
+    No = ll::SDL_SYSTEM_CURSOR_NO as u32,
+    Hand = ll::SDL_SYSTEM_CURSOR_HAND as u32,
 }
 
 pub struct Cursor {
@@ -128,37 +127,15 @@ impl MouseWheelDirection {
     }
 }
 
+#[repr(u8)]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum MouseButton {
-    Left   = ll::SDL_BUTTON_LEFT as isize,
-    Middle = ll::SDL_BUTTON_MIDDLE as isize,
-    Right  = ll::SDL_BUTTON_RIGHT as isize,
-    X1     = ll::SDL_BUTTON_X1 as isize,
-    X2     = ll::SDL_BUTTON_X2 as isize,
-}
-
-impl ToPrimitive for MouseButton {
-    #[inline]
-    fn to_i64(&self) -> Option<i64> {
-        Some(*self as i64)
-    }
-
-    #[inline]
-    fn to_u64(&self) -> Option<u64> {
-        Some(*self as u64)
-    }
-
-    #[inline]
-    fn to_isize(&self) -> Option<isize> {
-        Some(*self as isize)
-    }
-}
-
-impl FromPrimitive for MouseButton {
-    #[inline]
-    fn from_i64(n: i64) -> Option<MouseButton> { MouseButton::from_ll(n as u8) }
-    #[inline]
-    fn from_u64(n: u64) -> Option<MouseButton> { MouseButton::from_ll(n as u8) }
+    Unknown = 0,
+    Left   = ll::SDL_BUTTON_LEFT as u8,
+    Middle = ll::SDL_BUTTON_MIDDLE as u8,
+    Right  = ll::SDL_BUTTON_RIGHT as u8,
+    X1     = ll::SDL_BUTTON_X1 as u8,
+    X2     = ll::SDL_BUTTON_X2 as u8,
 }
 
 impl MouseButton {
@@ -173,11 +150,6 @@ impl MouseButton {
             _ => return None,
         })
     }
-    #[inline]
-    pub fn to_ll(&self) -> Option<u8> {
-        Some(*self as u8)
-    }
-
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash)]
@@ -275,7 +247,7 @@ impl MouseState {
     /// ```
     pub fn mouse_buttons(&self) -> MouseButtonIterator {
         MouseButtonIterator {
-            index: 0,
+            cur_button: 1,
             mouse_state: &self.mouse_state
         }
     }
@@ -304,7 +276,7 @@ impl MouseState {
 }
 
 pub struct MouseButtonIterator<'a> {
-    index: usize,
+    cur_button: u8,
     mouse_state: &'a u32
 }
 
@@ -312,18 +284,12 @@ impl<'a> Iterator for MouseButtonIterator<'a> {
     type Item = (MouseButton, bool);
 
     fn next(&mut self) -> Option<(MouseButton, bool)> {
-        if self.index < MouseButton::X2 as usize +1 {
-            let index = self.index;
-            self.index += 1;
-
-            if let Some(mouse_button) = FromPrimitive::from_usize(index) {
-                let mask = 1 << ((mouse_button as u32)-1);
-                let pressed = self.mouse_state & mask != 0;
-
-                Some((mouse_button, pressed))
-            } else {
-                self.next()
-            }
+        if self.cur_button < MouseButton::X2 as u8 + 1 {
+            let mouse_button = self.cur_button;
+            let mask = 1 << ((self.cur_button as u32)-1);
+            let pressed = self.mouse_state & mask != 0;
+            self.cur_button += 1;
+            Some((MouseButton::from_ll(mouse_button).unwrap(), pressed))
         } else {
             None
         }

@@ -113,28 +113,29 @@ impl AudioSubsystem {
     }
 }
 
+#[repr(i32)]
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Hash)]
 pub enum AudioFormat {
     /// Unsigned 8-bit samples
-    U8 = ll::AUDIO_U8 as isize,
+    U8 = ll::AUDIO_U8 as i32,
     /// Signed 8-bit samples
-    S8 = ll::AUDIO_S8 as isize,
+    S8 = ll::AUDIO_S8 as i32,
     /// Unsigned 16-bit samples, little-endian
-    U16LSB = ll::AUDIO_U16LSB as isize,
+    U16LSB = ll::AUDIO_U16LSB as i32,
     /// Unsigned 16-bit samples, big-endian
-    U16MSB = ll::AUDIO_U16MSB as isize,
+    U16MSB = ll::AUDIO_U16MSB as i32,
     /// Signed 16-bit samples, little-endian
-    S16LSB = ll::AUDIO_S16LSB as isize,
+    S16LSB = ll::AUDIO_S16LSB as i32,
     /// Signed 16-bit samples, big-endian
-    S16MSB = ll::AUDIO_S16MSB as isize,
+    S16MSB = ll::AUDIO_S16MSB as i32,
     /// Signed 32-bit samples, little-endian
-    S32LSB = ll::AUDIO_S32LSB as isize,
+    S32LSB = ll::AUDIO_S32LSB as i32,
     /// Signed 32-bit samples, big-endian
-    S32MSB = ll::AUDIO_S32MSB as isize,
+    S32MSB = ll::AUDIO_S32MSB as i32,
     /// 32-bit floating point samples, little-endian
-    F32LSB = ll::AUDIO_F32LSB as isize,
+    F32LSB = ll::AUDIO_F32LSB as i32,
     /// 32-bit floating point samples, big-endian
-    F32MSB = ll::AUDIO_F32MSB as isize
+    F32MSB = ll::AUDIO_F32MSB as i32
 }
 
 impl AudioFormat {
@@ -184,12 +185,12 @@ impl AudioFormat {
     #[inline] pub fn f32_sys() -> AudioFormat { AudioFormat::F32MSB }
 }
 
-#[repr(C)]
+#[repr(i32)]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum AudioStatus {
-    Stopped = ll::SDL_AUDIO_STOPPED as isize,
-    Playing = ll::SDL_AUDIO_PLAYING as isize,
-    Paused  = ll::SDL_AUDIO_PAUSED  as isize,
+    Stopped = ll::SDL_AUDIO_STOPPED as i32,
+    Playing = ll::SDL_AUDIO_PLAYING as i32,
+    Paused  = ll::SDL_AUDIO_PAUSED  as i32,
 }
 
 impl FromPrimitive for AudioStatus {

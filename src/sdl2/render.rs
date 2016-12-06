@@ -51,10 +51,11 @@ use common::{validate_int, IntegerOrSdlError};
 use sys::render as ll;
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+#[repr(i32)]
 pub enum TextureAccess {
-    Static = ll::SDL_TEXTUREACCESS_STATIC as isize,
-    Streaming = ll::SDL_TEXTUREACCESS_STREAMING as isize,
-    Target = ll::SDL_TEXTUREACCESS_TARGET as isize
+    Static = ll::SDL_TEXTUREACCESS_STATIC as i32,
+    Streaming = ll::SDL_TEXTUREACCESS_STREAMING as i32,
+    Target = ll::SDL_TEXTUREACCESS_TARGET as i32
 }
 
 impl FromPrimitive for TextureAccess {
@@ -83,12 +84,13 @@ pub struct RendererInfo {
     pub max_texture_height: u32
 }
 
+#[repr(i32)]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum BlendMode {
-    None = ll::SDL_BLENDMODE_NONE as isize,
-    Blend = ll::SDL_BLENDMODE_BLEND as isize,
-    Add = ll::SDL_BLENDMODE_ADD as isize,
-    Mod = ll::SDL_BLENDMODE_MOD as isize
+    None = ll::SDL_BLENDMODE_NONE as i32,
+    Blend = ll::SDL_BLENDMODE_BLEND as i32,
+    Add = ll::SDL_BLENDMODE_ADD as i32,
+    Mod = ll::SDL_BLENDMODE_MOD as i32
 }
 
 impl FromPrimitive for BlendMode {

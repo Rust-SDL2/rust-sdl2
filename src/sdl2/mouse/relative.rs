@@ -100,7 +100,7 @@ impl RelativeMouseState {
     /// ```
     pub fn mouse_buttons(&self) -> MouseButtonIterator {
         MouseButtonIterator {
-            index: 0,
+            cur_button: 1,
             mouse_state: &self.mouse_state
         }
     }
