@@ -26,23 +26,24 @@ fn color_to_c_color(color: Color) -> SDL_Color {
 // Absolute paths are a workaround for https://github.com/rust-lang-nursery/bitflags/issues/39 .
 bitflags! {
     /// The styling of a font.
-    pub flags FontStyle: ::std::os::raw::c_int {
-        const STYLE_NORMAL        = ffi::TTF_STYLE_NORMAL,
-        const STYLE_BOLD          = ffi::TTF_STYLE_BOLD,
-        const STYLE_ITALIC        = ffi::TTF_STYLE_ITALIC,
-        const STYLE_UNDERLINE     = ffi::TTF_STYLE_UNDERLINE,
-        const STYLE_STRIKETHROUGH = ffi::TTF_STYLE_STRIKETHROUGH,
+    pub flags FontStyle: i32 {
+        const STYLE_NORMAL        = ffi::TTF_STYLE_NORMAL as i32,
+        const STYLE_BOLD          = ffi::TTF_STYLE_BOLD as i32,
+        const STYLE_ITALIC        = ffi::TTF_STYLE_ITALIC as i32,
+        const STYLE_UNDERLINE     = ffi::TTF_STYLE_UNDERLINE as i32,
+        const STYLE_STRIKETHROUGH = ffi::TTF_STYLE_STRIKETHROUGH as i32,
     }
 }
 
 /// Information about the hinting of a font.
 /// See [wikipedia](https://en.wikipedia.org/wiki/Font_hinting)
+#[repr(i32)]
 #[derive(Debug, PartialEq, Clone)]
 pub enum Hinting {
-    Normal = ffi::TTF_HINTING_NORMAL as isize,
-    Light  = ffi::TTF_HINTING_LIGHT  as isize,
-    Mono   = ffi::TTF_HINTING_MONO   as isize,
-    None   = ffi::TTF_HINTING_NONE   as isize
+    Normal = ffi::TTF_HINTING_NORMAL as i32,
+    Light  = ffi::TTF_HINTING_LIGHT  as i32,
+    Mono   = ffi::TTF_HINTING_MONO   as i32,
+    None   = ffi::TTF_HINTING_NONE   as i32,
 }
 
 /// Information about a specific glyph (character) in a font face.
@@ -385,14 +386,14 @@ impl<'a> Font<'a> {
     pub fn get_style(&self) -> FontStyle {
         unsafe {
             let raw = ffi::TTF_GetFontStyle(self.raw);
-            FontStyle::from_bits_truncate(raw)
+            FontStyle::from_bits_truncate(raw as i32)
         }
     }
 
     /// Sets the font's style flags.
     pub fn set_style(&mut self, styles: FontStyle) {
         unsafe {
-            ffi::TTF_SetFontStyle(self.raw, styles.bits())
+            ffi::TTF_SetFontStyle(self.raw, styles.bits() as c_int)
         }
     }
 
