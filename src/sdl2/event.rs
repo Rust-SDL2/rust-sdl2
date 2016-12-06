@@ -514,7 +514,7 @@ pub enum Event {
         timestamp: u32,
         window_id: u32,
         which: u32,
-        mouse_btn: Option<MouseButton>,
+        mouse_btn: MouseButton,
         x: i32,
         y: i32
     },
@@ -522,7 +522,7 @@ pub enum Event {
         timestamp: u32,
         window_id: u32,
         which: u32,
-        mouse_btn: Option<MouseButton>,
+        mouse_btn: MouseButton,
         x: i32,
         y: i32
     },
@@ -759,11 +759,6 @@ fn mk_keysym(scancode: Option<Scancode>,
     }
 }
 
-/// Helper function is only to unwrap a mouse_button to u8
-fn mk_mouse_button(mouse_button: Option<MouseButton>) -> u8 {
-    mouse_button.unwrap() as u8
-}
-
 // TODO: Remove this when from_utf8 is updated in Rust
 // This would honestly be nice if it took &self instead of self,
 // but Event::User's raw pointers kind of removes that possibility.
@@ -904,13 +899,12 @@ impl Event {
                 x,
                 y
             } => {
-                let button = mk_mouse_button(mouse_btn);
                 let event = ll::SDL_MouseButtonEvent {
                     type_: ll::SDL_MOUSEBUTTONDOWN,
                     timestamp: timestamp,
                     windowID: window_id,
                     which: which,
-                    button: button,
+                    button: mouse_btn as u8,
                     state: ll::SDL_PRESSED,
                     padding1: 0,
                     padding2: 0,
@@ -930,13 +924,12 @@ impl Event {
                 x,
                 y
             } => {
-                let button = mk_mouse_button(mouse_btn);
                 let event = ll::SDL_MouseButtonEvent {
                     type_: ll::SDL_MOUSEBUTTONUP,
                     timestamp: timestamp,
                     windowID: window_id,
                     which: which,
-                    button: button,
+                    button: mouse_btn as u8,
                     state: ll::SDL_RELEASED,
                     padding1: 0,
                     padding2: 0,

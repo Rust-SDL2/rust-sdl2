@@ -140,15 +140,15 @@ pub enum MouseButton {
 
 impl MouseButton {
     #[inline]
-    pub fn from_ll(button: u8) -> Option<MouseButton> {
-        Some(match button {
+    pub fn from_ll(button: u8) -> MouseButton {
+        match button {
             ll::SDL_BUTTON_LEFT   => MouseButton::Left,
             ll::SDL_BUTTON_MIDDLE => MouseButton::Middle,
             ll::SDL_BUTTON_RIGHT  => MouseButton::Right,
             ll::SDL_BUTTON_X1     => MouseButton::X1,
             ll::SDL_BUTTON_X2     => MouseButton::X2,
-            _ => return None,
-        })
+            _                     => MouseButton::Unknown,
+        }
     }
 }
 
@@ -289,7 +289,7 @@ impl<'a> Iterator for MouseButtonIterator<'a> {
             let mask = 1 << ((self.cur_button as u32)-1);
             let pressed = self.mouse_state & mask != 0;
             self.cur_button += 1;
-            Some((MouseButton::from_ll(mouse_button).unwrap(), pressed))
+            Some((MouseButton::from_ll(mouse_button), pressed))
         } else {
             None
         }
