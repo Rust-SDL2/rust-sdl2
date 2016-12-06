@@ -1901,7 +1901,7 @@ mod test {
                 timestamp: 5634,
                 window_id: 2,
                 which: 0,
-                mouse_btn: Some(MouseButton::Left),
+                mouse_btn: MouseButton::Left,
                 x: 543,
                 y: 345,
             };
@@ -1913,7 +1913,7 @@ mod test {
                 timestamp: 0,
                 window_id: 2,
                 which: 0,
-                mouse_btn: Some(MouseButton::Left),
+                mouse_btn: MouseButton::Left,
                 x: 543,
                 y: 345,
 
