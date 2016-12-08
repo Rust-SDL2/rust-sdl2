@@ -170,6 +170,7 @@ adding this instead:
 ```toml
     [dependencies.sdl2]
     version = "0.25"
+    default-features = false
     features = ["ttf","image","gfx","mixer"]
 ```
 

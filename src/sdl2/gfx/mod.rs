@@ -16,6 +16,7 @@
 //! ```toml
 //! [dependencies.sdl2]
 //! version = ...
+//! default-features = false
 //! features = ["gfx"]
 //! ```
 extern crate c_vec;
