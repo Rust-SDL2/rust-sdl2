@@ -1097,6 +1097,30 @@ pub enum UpdateTextureYUVError {
     SdlError(String),
 }
 
+impl fmt::Display for UpdateTextureYUVError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use self::UpdateTextureYUVError::*;
+
+        match *self {
+            PitchOverflows { plane, value } => write!(f,
+                "Pitch overflows on {} plane ({})", plane, value),
+            InvalidPlaneLength { plane, length, pitch, height } => write!(f,
+                "The {} plane is wrong length ({}, should be {} * {})",
+                plane, length, pitch, height),
+            XMustBeMultipleOfTwoForFormat(value) => write!(f,
+                "X must be multiple of two ({})", value),
+            YMustBeMultipleOfTwoForFormat(value) => write!(f,
+                "Y must be multiple of two ({})", value),
+            WidthMustBeMultipleOfTwoForFormat(value) => write!(f,
+                "Width must be multiple of two ({})", value),
+            HeightMustBeMultipleOfTwoForFormat(value) => write!(f,
+                "Height must be multiple of two ({})", value),
+            RectNotInsideTexture(_) => write!(f, "Rect must be inside texture"),
+            SdlError(ref e) => write!(f, "SDL error: {}", e)
+        }
+    }
+}
+
 impl Texture {
     #[inline]
     fn check_renderer(&self) {
