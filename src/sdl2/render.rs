@@ -1121,6 +1121,23 @@ impl fmt::Display for UpdateTextureYUVError {
     }
 }
 
+impl Error for UpdateTextureYUVError {
+    fn description(&self) -> &str {
+        use self::UpdateTextureYUVError::*;
+
+        match *self {
+            PitchOverflows {..} => "pitch overflow",
+            InvalidPlaneLength {..} => "invalid plane length",
+            XMustBeMultipleOfTwoForFormat(_) => "x must be multiple of two",
+            YMustBeMultipleOfTwoForFormat(_) => "y must be multiple of two",
+            WidthMustBeMultipleOfTwoForFormat(_) => "width must be multiple of two",
+            HeightMustBeMultipleOfTwoForFormat(_) => "height must be multiple of two",
+            RectNotInsideTexture(_) => "rect must be inside texture",
+            SdlError(ref e) => e,
+        }
+    }
+}
+
 impl Texture {
     #[inline]
     fn check_renderer(&self) {
