@@ -1,5 +1,6 @@
 use libc::c_char;
 use std::ffi::{CString, CStr, NulError};
+use std::fmt;
 use std::path::Path;
 use rwops::RWops;
 
@@ -16,6 +17,18 @@ pub enum AddMappingError {
     InvalidMapping(NulError),
     InvalidFilePath(String),
     SdlError(String),
+}
+
+impl fmt::Display for AddMappingError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use self::AddMappingError::*;
+
+        match *self {
+            InvalidMapping(ref e) => write!(f, "Null error: {}", e),
+            InvalidFilePath(ref value) => write!(f, "Invalid file path ({})", value),
+            SdlError(ref e) => write!(f, "SDL error: {}", e)
+        }
+    }
 }
 
 impl GameControllerSubsystem {
