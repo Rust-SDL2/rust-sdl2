@@ -1069,6 +1069,22 @@ impl fmt::Display for UpdateTextureError {
     }
 }
 
+impl Error for UpdateTextureError {
+    fn description(&self) -> &str {
+        use self::UpdateTextureError::*;
+
+        match *self {
+            PitchOverflows(_) => "pitch overflow",
+            PitchMustBeMultipleOfTwoForFormat(..) => "pitch must be multiple of two",
+            XMustBeMultipleOfTwoForFormat(..) => "x must be multiple of two",
+            YMustBeMultipleOfTwoForFormat(..) => "y must be multiple of two",
+            WidthMustBeMultipleOfTwoForFormat(..) => "width must be multiple of two",
+            HeightMustBeMultipleOfTwoForFormat(..) => "height must be multiple of two",
+            SdlError(ref e) => e,
+        }
+    }
+}
+
 #[derive(Debug)]
 pub enum UpdateTextureYUVError {
     PitchOverflows { plane: &'static str, value: usize },
