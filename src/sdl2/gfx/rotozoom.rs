@@ -46,9 +46,9 @@ pub trait RotozoomSurface {
     /// Zoom a surface by independent horizontal and vertical factors with optional smoothing.
     fn zoom(&self, zoomx: f64, zoomy: f64, smooth: bool) -> Result<Surface, String>;
     /// Shrink a surface by an integer ratio using averaging.
-    fn shrink(&self, factorx: isize, factory: isize) -> Result<Surface, String>;
+    fn shrink(&self, factorx: i32, factory: i32) -> Result<Surface, String>;
     /// Rotates a 8/16/24/32 bit surface in increments of 90 degrees.
-    fn rotate_90deg(&self, turns: isize) -> Result<Surface, String>;
+    fn rotate_90deg(&self, turns: i32) -> Result<Surface, String>;
 }
 
 impl<'a> RotozoomSurface for Surface<'a> {
@@ -82,7 +82,7 @@ impl<'a> RotozoomSurface for Surface<'a> {
             unsafe { Ok(Surface::from_ll(raw)) }
         }
     }
-    fn shrink(&self, factorx: isize, factory: isize) -> Result<Surface, String> {
+    fn shrink(&self, factorx: i32, factory: i32) -> Result<Surface, String> {
         let raw = unsafe {
             ll::shrinkSurface(self.raw(), factorx as c_int, factory as c_int)
         };
@@ -92,7 +92,7 @@ impl<'a> RotozoomSurface for Surface<'a> {
             unsafe { Ok(Surface::from_ll(raw)) }
         }
     }
-    fn rotate_90deg(&self, turns: isize) -> Result<Surface, String> {
+    fn rotate_90deg(&self, turns: i32) -> Result<Surface, String> {
         let raw = unsafe {
             ll::rotateSurface90Degrees(self.raw(), turns as c_int)
         };
@@ -104,23 +104,23 @@ impl<'a> RotozoomSurface for Surface<'a> {
     }
 }
 
-pub fn get_zoom_size(width: isize, height: isize, zoomx: f64, zoomy: f64) -> (isize, isize) {
+pub fn get_zoom_size(width: i32, height: i32, zoomx: f64, zoomy: f64) -> (i32, i32) {
     let mut w: c_int = 0;
     let mut h: c_int = 0;
     unsafe { ll::zoomSurfaceSize(width as c_int, height as c_int, zoomx, zoomy, &mut w, &mut h) }
-    (w as isize, h as isize)
+    (w as i32, h as i32)
 }
 
-pub fn get_rotozoom_size(width: isize, height: isize, angle: f64, zoom: f64) -> (isize, isize) {
+pub fn get_rotozoom_size(width: i32, height: i32, angle: f64, zoom: f64) -> (i32, i32) {
     let mut w: c_int = 0;
     let mut h: c_int = 0;
     unsafe { ll::rotozoomSurfaceSize(width as c_int, height as c_int, angle, zoom, &mut w, &mut h) }
-    (w as isize, h as isize)
+    (w as i32, h as i32)
 }
 
-pub fn get_rotozoom_xy_size(width: isize, height: isize, angle: f64, zoomx: f64, zoomy: f64) -> (isize, isize) {
+pub fn get_rotozoom_xy_size(width: i32, height: i32, angle: f64, zoomx: f64, zoomy: f64) -> (i32, i32) {
     let mut w: c_int = 0;
     let mut h: c_int = 0;
     unsafe { ll::rotozoomSurfaceSizeXY(width as c_int, height as c_int, angle, zoomx, zoomy, &mut w, &mut h) }
-    (w as isize, h as isize)
+    (w as i32, h as i32)
 }

@@ -6,13 +6,14 @@ use libc::c_char;
 
 use sys::sdl as ll;
 
+#[repr(i32)]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum Error {
-    NoMemError = ll::SDL_ENOMEM as isize,
-    ReadError = ll::SDL_EFREAD as isize,
-    WriteError = ll::SDL_EFWRITE as isize,
-    SeekError = ll::SDL_EFSEEK as isize,
-    UnsupportedError = ll::SDL_UNSUPPORTED as isize
+    NoMemError = ll::SDL_ENOMEM as i32,
+    ReadError = ll::SDL_EFREAD as i32,
+    WriteError = ll::SDL_EFWRITE as i32,
+    SeekError = ll::SDL_EFSEEK as i32,
+    UnsupportedError = ll::SDL_UNSUPPORTED as i32
 }
 
 impl fmt::Display for Error {

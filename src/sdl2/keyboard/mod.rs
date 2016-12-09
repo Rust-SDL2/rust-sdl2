@@ -1,4 +1,3 @@
-use num::{ToPrimitive, FromPrimitive};
 use std::ptr;
 
 use EventPump;
@@ -59,7 +58,7 @@ impl<'a> KeyboardState<'a> {
     /// }
     /// ```
     pub fn is_scancode_pressed(&self, scancode: Scancode) -> bool {
-        self.keyboard_state[ToPrimitive::to_isize(&scancode).unwrap() as usize] != 0
+        self.keyboard_state[scancode as i32 as usize] != 0
     }
 
     /// Returns an iterator all scancodes with a boolean indicating if the scancode is pressed.
@@ -101,7 +100,7 @@ impl<'a> KeyboardState<'a> {
 }
 
 pub struct ScancodeIterator<'a> {
-    index: usize,
+    index: i32,
     keyboard_state: &'a [u8]
 }
 
@@ -109,12 +108,12 @@ impl<'a> Iterator for ScancodeIterator<'a> {
     type Item = (Scancode, bool);
 
     fn next(&mut self) -> Option<(Scancode, bool)> {
-        if self.index < self.keyboard_state.len() {
+        if self.index < self.keyboard_state.len() as i32 {
             let index = self.index;
             self.index += 1;
 
-            if let Some(scancode) = FromPrimitive::from_usize(index) {
-                let pressed = self.keyboard_state[index] != 0;
+            if let Some(scancode) = Scancode::from_i32(index) {
+                let pressed = self.keyboard_state[index as usize] != 0;
 
                 Some((scancode, pressed))
             } else {

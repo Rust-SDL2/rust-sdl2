@@ -6,7 +6,6 @@ use std::ffi::CStr;
 use std::mem;
 use libc::{c_int, c_void, uint32_t};
 use num::FromPrimitive;
-use num::ToPrimitive;
 use std::ptr;
 use std::borrow::ToOwned;
 use std::iter::FromIterator;
@@ -267,56 +266,56 @@ impl ::EventSubsystem {
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(u32)]
 pub enum EventType {
-    First = ll::SDL_FIRSTEVENT,
+    First = ll::SDL_FIRSTEVENT as u32,
 
-    Quit = ll::SDL_QUIT,
-    AppTerminating = ll::SDL_APP_TERMINATING,
-    AppLowMemory = ll::SDL_APP_LOWMEMORY,
-    AppWillEnterBackground = ll::SDL_APP_WILLENTERBACKGROUND,
-    AppDidEnterBackground = ll::SDL_APP_DIDENTERBACKGROUND,
-    AppWillEnterForeground = ll::SDL_APP_WILLENTERFOREGROUND,
-    AppDidEnterForeground = ll::SDL_APP_DIDENTERFOREGROUND,
+    Quit = ll::SDL_QUIT as u32,
+    AppTerminating = ll::SDL_APP_TERMINATING as u32,
+    AppLowMemory = ll::SDL_APP_LOWMEMORY as u32,
+    AppWillEnterBackground = ll::SDL_APP_WILLENTERBACKGROUND as u32,
+    AppDidEnterBackground = ll::SDL_APP_DIDENTERBACKGROUND as u32,
+    AppWillEnterForeground = ll::SDL_APP_WILLENTERFOREGROUND as u32,
+    AppDidEnterForeground = ll::SDL_APP_DIDENTERFOREGROUND as u32,
 
-    Window = ll::SDL_WINDOWEVENT,
-    // TODO: SysWM = ll::SDL_SYSWMEVENT,
+    Window = ll::SDL_WINDOWEVENT as u32,
+    // TODO: SysWM = ll::SDL_SYSWMEVENT as u32,
 
-    KeyDown = ll::SDL_KEYDOWN,
-    KeyUp = ll::SDL_KEYUP,
-    TextEditing = ll::SDL_TEXTEDITING,
-    TextInput = ll::SDL_TEXTINPUT,
+    KeyDown = ll::SDL_KEYDOWN as u32,
+    KeyUp = ll::SDL_KEYUP as u32,
+    TextEditing = ll::SDL_TEXTEDITING as u32,
+    TextInput = ll::SDL_TEXTINPUT as u32,
 
-    MouseMotion = ll::SDL_MOUSEMOTION,
-    MouseButtonDown = ll::SDL_MOUSEBUTTONDOWN,
-    MouseButtonUp = ll::SDL_MOUSEBUTTONUP,
-    MouseWheel = ll::SDL_MOUSEWHEEL,
+    MouseMotion = ll::SDL_MOUSEMOTION as u32,
+    MouseButtonDown = ll::SDL_MOUSEBUTTONDOWN as u32,
+    MouseButtonUp = ll::SDL_MOUSEBUTTONUP as u32,
+    MouseWheel = ll::SDL_MOUSEWHEEL as u32,
 
-    JoyAxisMotion = ll::SDL_JOYAXISMOTION,
-    JoyBallMotion = ll::SDL_JOYBALLMOTION,
-    JoyHatMotion = ll::SDL_JOYHATMOTION,
-    JoyButtonDown = ll::SDL_JOYBUTTONDOWN,
-    JoyButtonUp = ll::SDL_JOYBUTTONUP,
-    JoyDeviceAdded = ll::SDL_JOYDEVICEADDED,
-    JoyDeviceRemoved = ll::SDL_JOYDEVICEREMOVED,
+    JoyAxisMotion = ll::SDL_JOYAXISMOTION as u32,
+    JoyBallMotion = ll::SDL_JOYBALLMOTION as u32,
+    JoyHatMotion = ll::SDL_JOYHATMOTION as u32,
+    JoyButtonDown = ll::SDL_JOYBUTTONDOWN as u32,
+    JoyButtonUp = ll::SDL_JOYBUTTONUP as u32,
+    JoyDeviceAdded = ll::SDL_JOYDEVICEADDED as u32,
+    JoyDeviceRemoved = ll::SDL_JOYDEVICEREMOVED as u32,
 
-    ControllerAxisMotion = ll::SDL_CONTROLLERAXISMOTION,
-    ControllerButtonDown = ll::SDL_CONTROLLERBUTTONDOWN,
-    ControllerButtonUp = ll::SDL_CONTROLLERBUTTONUP,
-    ControllerDeviceAdded = ll::SDL_CONTROLLERDEVICEADDED,
-    ControllerDeviceRemoved = ll::SDL_CONTROLLERDEVICEREMOVED,
-    ControllerDeviceRemapped = ll::SDL_CONTROLLERDEVICEREMAPPED,
+    ControllerAxisMotion = ll::SDL_CONTROLLERAXISMOTION as u32,
+    ControllerButtonDown = ll::SDL_CONTROLLERBUTTONDOWN as u32,
+    ControllerButtonUp = ll::SDL_CONTROLLERBUTTONUP as u32,
+    ControllerDeviceAdded = ll::SDL_CONTROLLERDEVICEADDED as u32,
+    ControllerDeviceRemoved = ll::SDL_CONTROLLERDEVICEREMOVED as u32,
+    ControllerDeviceRemapped = ll::SDL_CONTROLLERDEVICEREMAPPED as u32,
 
-    FingerDown = ll::SDL_FINGERDOWN,
-    FingerUp = ll::SDL_FINGERUP,
-    FingerMotion = ll::SDL_FINGERMOTION,
-    DollarGesture = ll::SDL_DOLLARGESTURE,
-    DollarRecord = ll::SDL_DOLLARRECORD,
-    MultiGesture = ll::SDL_MULTIGESTURE,
+    FingerDown = ll::SDL_FINGERDOWN as u32,
+    FingerUp = ll::SDL_FINGERUP as u32,
+    FingerMotion = ll::SDL_FINGERMOTION as u32,
+    DollarGesture = ll::SDL_DOLLARGESTURE as u32,
+    DollarRecord = ll::SDL_DOLLARRECORD as u32,
+    MultiGesture = ll::SDL_MULTIGESTURE as u32,
 
-    ClipboardUpdate = ll::SDL_CLIPBOARDUPDATE,
-    DropFile = ll::SDL_DROPFILE,
+    ClipboardUpdate = ll::SDL_CLIPBOARDUPDATE as u32,
+    DropFile = ll::SDL_DROPFILE as u32,
 
-    User = ll::SDL_USEREVENT,
-    Last = ll::SDL_LASTEVENT,
+    User = ll::SDL_USEREVENT as u32,
+    Last = ll::SDL_LASTEVENT as u32,
 }
 
 impl FromPrimitive for EventType {
@@ -515,7 +514,7 @@ pub enum Event {
         timestamp: u32,
         window_id: u32,
         which: u32,
-        mouse_btn: Option<MouseButton>,
+        mouse_btn: MouseButton,
         x: i32,
         y: i32
     },
@@ -523,7 +522,7 @@ pub enum Event {
         timestamp: u32,
         window_id: u32,
         which: u32,
-        mouse_btn: Option<MouseButton>,
+        mouse_btn: MouseButton,
         x: i32,
         y: i32
     },
@@ -746,10 +745,10 @@ fn mk_keysym(scancode: Option<Scancode>,
              keycode: Option<Keycode>,
              keymod: Mod) -> syskeyboard::SDL_Keysym {
     let scancode = scancode
-        .map(|sc| sc.to_u32().unwrap_or(0u32))
+        .map(|sc| sc as scancode::SDL_Scancode)
         .unwrap_or(scancode::SDL_SCANCODE_UNKNOWN);
     let keycode = keycode
-        .map(|kc| kc.to_i32().unwrap_or(0i32))
+        .map(|kc| kc as keycode::SDL_Keycode)
         .unwrap_or(keycode::SDLK_UNKNOWN);
     let keymod = keymod.bits() as u16;
     syskeyboard::SDL_Keysym {
@@ -758,11 +757,6 @@ fn mk_keysym(scancode: Option<Scancode>,
         _mod: keymod,
         unused: 0,
     }
-}
-
-/// Helper function is only to unwrap a mouse_button to u8
-fn mk_mouse_button(mouse_button: Option<MouseButton>) -> u8 {
-    mouse_button.unwrap().to_ll().unwrap()
 }
 
 // TODO: Remove this when from_utf8 is updated in Rust
@@ -905,13 +899,12 @@ impl Event {
                 x,
                 y
             } => {
-                let button = mk_mouse_button(mouse_btn);
                 let event = ll::SDL_MouseButtonEvent {
                     type_: ll::SDL_MOUSEBUTTONDOWN,
                     timestamp: timestamp,
                     windowID: window_id,
                     which: which,
-                    button: button,
+                    button: mouse_btn as u8,
                     state: ll::SDL_PRESSED,
                     padding1: 0,
                     padding2: 0,
@@ -931,13 +924,12 @@ impl Event {
                 x,
                 y
             } => {
-                let button = mk_mouse_button(mouse_btn);
                 let event = ll::SDL_MouseButtonEvent {
                     type_: ll::SDL_MOUSEBUTTONUP,
                     timestamp: timestamp,
                     windowID: window_id,
                     which: which,
-                    button: button,
+                    button: mouse_btn as u8,
                     state: ll::SDL_RELEASED,
                     padding1: 0,
                     padding2: 0,
@@ -1304,8 +1296,8 @@ impl Event {
                 Event::KeyDown {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
-                    keycode: FromPrimitive::from_i32(event.keysym.sym),
-                    scancode: FromPrimitive::from_u32(event.keysym.scancode),
+                    keycode: Keycode::from_i32(event.keysym.sym as i32),
+                    scancode: Scancode::from_i32(event.keysym.scancode as i32),
                     keymod: keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap(),
                     repeat: event.repeat != 0
                 }
@@ -1316,8 +1308,8 @@ impl Event {
                 Event::KeyUp {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
-                    keycode: FromPrimitive::from_i32(event.keysym.sym),
-                    scancode: FromPrimitive::from_u32(event.keysym.scancode),
+                    keycode: Keycode::from_i32(event.keysym.sym as i32),
+                    scancode: Scancode::from_i32(event.keysym.scancode as i32),
                     keymod: keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap(),
                     repeat: event.repeat != 0
                 }
@@ -1909,7 +1901,7 @@ mod test {
                 timestamp: 5634,
                 window_id: 2,
                 which: 0,
-                mouse_btn: Some(MouseButton::Left),
+                mouse_btn: MouseButton::Left,
                 x: 543,
                 y: 345,
             };
@@ -1921,7 +1913,7 @@ mod test {
                 timestamp: 0,
                 window_id: 2,
                 which: 0,
-                mouse_btn: Some(MouseButton::Left),
+                mouse_btn: MouseButton::Left,
                 x: 543,
                 y: 345,
 

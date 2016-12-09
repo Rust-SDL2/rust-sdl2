@@ -420,7 +420,7 @@ pub fn clip_to_range(src1: CVec<u8>, tmin: u8, tmax: u8) -> Result<CVec<u8>, Str
 }
 
 /// Filter using NormalizeLinear: D = saturation255((Nmax - Nmin)/(Cmax - Cmin)*(S - Cmin) + Nmin).
-pub fn normalize_linear(src1: CVec<u8>, cmin: isize, cmax: isize, nmin: isize, nmax: isize) -> Result<CVec<u8>, String> {
+pub fn normalize_linear(src1: CVec<u8>, cmin: i32, cmax: i32, nmin: i32, nmax: i32) -> Result<CVec<u8>, String> {
     let size = src1.len();
     let dest = cvec_with_size(size);
     let ret = unsafe { ll::SDL_imageFilterNormalizeLinear(mem::transmute(src1.get(0)),
