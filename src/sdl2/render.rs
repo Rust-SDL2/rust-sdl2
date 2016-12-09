@@ -1043,6 +1043,32 @@ pub enum UpdateTextureError {
     SdlError(String),
 }
 
+impl fmt::Display for UpdateTextureError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use self::UpdateTextureError::*;
+
+        match *self {
+            PitchOverflows(value) => write!(f, "Pitch overflows ({})", value),
+            PitchMustBeMultipleOfTwoForFormat(value, format) => write!(f,
+                "Pitch must be multiple of two for pixel format '{:?}' ({})",
+                format, value),
+            XMustBeMultipleOfTwoForFormat(value, format) => write!(f,
+                "X must be multiple of two for pixel format '{:?}' ({})",
+                format, value),
+            YMustBeMultipleOfTwoForFormat(value, format) => write!(f,
+                "Y must be multiple of two for pixel format '{:?}' ({})",
+                format, value),
+            WidthMustBeMultipleOfTwoForFormat(value, format) => write!(f,
+                "Width must be multiple of two for pixel format '{:?}' ({})",
+                format, value),
+            HeightMustBeMultipleOfTwoForFormat(value, format) => write!(f,
+                "Height must be multiple of two for pixel format '{:?}' ({})",
+                format, value),
+            SdlError(ref e) => write!(f, "SDL error: {}", e)
+        }
+    }
+}
+
 #[derive(Debug)]
 pub enum UpdateTextureYUVError {
     PitchOverflows { plane: &'static str, value: usize },
