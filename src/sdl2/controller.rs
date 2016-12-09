@@ -1,4 +1,5 @@
 use libc::c_char;
+use std::error;
 use std::ffi::{CString, CStr, NulError};
 use std::fmt;
 use std::path::Path;
@@ -27,6 +28,18 @@ impl fmt::Display for AddMappingError {
             InvalidMapping(ref e) => write!(f, "Null error: {}", e),
             InvalidFilePath(ref value) => write!(f, "Invalid file path ({})", value),
             SdlError(ref e) => write!(f, "SDL error: {}", e)
+        }
+    }
+}
+
+impl error::Error for AddMappingError {
+    fn description(&self) -> &str {
+        use self::AddMappingError::*;
+
+        match *self {
+            InvalidMapping(_) => "invalid mapping",
+            InvalidFilePath(_) => "invalid file path",
+            SdlError(ref e) => e,
         }
     }
 }
