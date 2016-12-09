@@ -1,4 +1,6 @@
+use std::error;
 use std::ffi::{CStr, CString, NulError};
+use std::fmt;
 use std::rc::Rc;
 use libc::c_char;
 
@@ -11,6 +13,34 @@ pub enum Error {
     WriteError = ll::SDL_EFWRITE as isize,
     SeekError = ll::SDL_EFSEEK as isize,
     UnsupportedError = ll::SDL_UNSUPPORTED as isize
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use self::Error::*;
+
+        match *self {
+            NoMemError => write!(f, "Out of memory"),
+            ReadError => write!(f, "Error reading from datastream"),
+            WriteError => write!(f, "Error writing to datastream"),
+            SeekError => write!(f, "Error seeking in datastream"),
+            UnsupportedError => write!(f, "Unknown SDL error")
+        }
+    }
+}
+
+impl error::Error for Error {
+    fn description(&self) -> &str {
+        use self::Error::*;
+
+        match *self {
+            NoMemError => "out of memory",
+            ReadError => "error reading from datastream",
+            WriteError => "error writing to datastream",
+            SeekError => "error seeking in datastream",
+            UnsupportedError => "unknown SDL error"
+        }
+    }
 }
 
 use std::sync::atomic::{AtomicBool, ATOMIC_BOOL_INIT};
