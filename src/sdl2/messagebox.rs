@@ -1,4 +1,5 @@
 use std::ffi::{CString, NulError};
+use std::fmt;
 use std::ptr;
 use std::os::raw::{c_char,c_int};
 
@@ -79,6 +80,20 @@ pub enum ShowMessageError {
     /// first button_id having an error
     InvalidButton(NulError,i32),
     SdlError(String),
+}
+
+impl fmt::Display for ShowMessageError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use self::ShowMessageError::*;
+
+        match *self {
+            InvalidTitle(ref e) => write!(f, "Invalid title: {}", e),
+            InvalidMessage(ref e) => write!(f, "Invalid message: {}", e),
+            InvalidButton(ref e, value) => write!(f,
+                "Invalid button ({}): {}", value, e),
+            SdlError(ref e) => write!(f, "SDL error: {}", e)
+        }
+    }
 }
 
 /// Show a simple message box, meant to be informative only.
