@@ -1,3 +1,4 @@
+use std::error;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt;
 use get_error;
@@ -33,6 +34,18 @@ impl fmt::Display for PrefPathError {
             InvalidOrganizationName(ref e) => write!(f, "Invalid organization name: {}", e),
             InvalidApplicationName(ref e) => write!(f, "Invalid application name: {}", e),
             SdlError(ref e) => write!(f, "SDL error: {}", e)
+        }
+    }
+}
+
+impl error::Error for PrefPathError {
+    fn description(&self) -> &str {
+        use self::PrefPathError::*;
+
+        match *self {
+            InvalidOrganizationName(_) => "invalid organization name",
+            InvalidApplicationName(_) => "invalid application name",
+            SdlError(ref e) => e,
         }
     }
 }
