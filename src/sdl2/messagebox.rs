@@ -1,3 +1,4 @@
+use std::error;
 use std::ffi::{CString, NulError};
 use std::fmt;
 use std::ptr;
@@ -92,6 +93,19 @@ impl fmt::Display for ShowMessageError {
             InvalidButton(ref e, value) => write!(f,
                 "Invalid button ({}): {}", value, e),
             SdlError(ref e) => write!(f, "SDL error: {}", e)
+        }
+    }
+}
+
+impl error::Error for ShowMessageError {
+    fn description(&self) -> &str {
+        use self::ShowMessageError::*;
+
+        match *self {
+            InvalidTitle(_) => "invalid title",
+            InvalidMessage(_) => "invalid message",
+            InvalidButton(..) => "invalid button",
+            SdlError(ref e) => e
         }
     }
 }
