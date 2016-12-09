@@ -1,3 +1,4 @@
+use std::error;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt;
 use std::rc::Rc;
@@ -24,6 +25,20 @@ impl fmt::Display for Error {
             WriteError => write!(f, "Error writing to datastream"),
             SeekError => write!(f, "Error seeking in datastream"),
             UnsupportedError => write!(f, "Unknown SDL error")
+        }
+    }
+}
+
+impl error::Error for Error {
+    fn description(&self) -> &str {
+        use self::Error::*;
+
+        match *self {
+            NoMemError => "out of memory",
+            ReadError => "error reading from datastream",
+            WriteError => "error writing to datastream",
+            SeekError => "error seeking in datastream",
+            UnsupportedError => "unknown SDL error"
         }
     }
 }
