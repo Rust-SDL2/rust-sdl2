@@ -797,7 +797,7 @@ impl Event {
                 window_id,
                 win_event
             } => {
-                let (win_event_id, data1, data2) = win_event.to_ll(); 
+                let (win_event_id, data1, data2) = win_event.to_ll();
                 let event = ll::SDL_WindowEvent {
                     type_: ll::SDL_WINDOWEVENT,
                     timestamp: timestamp,
@@ -1298,7 +1298,7 @@ impl Event {
                     window_id: event.windowID,
                     keycode: Keycode::from_i32(event.keysym.sym as i32),
                     scancode: Scancode::from_i32(event.keysym.scancode as i32),
-                    keymod: keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap(),
+                    keymod: keyboard::Mod::from_bits_truncate(event.keysym._mod as SDL_Keymod),
                     repeat: event.repeat != 0
                 }
             }
@@ -1310,7 +1310,7 @@ impl Event {
                     window_id: event.windowID,
                     keycode: Keycode::from_i32(event.keysym.sym as i32),
                     scancode: Scancode::from_i32(event.keysym.scancode as i32),
-                    keymod: keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap(),
+                    keymod: keyboard::Mod::from_bits_truncate(event.keysym._mod as SDL_Keymod),
                     repeat: event.repeat != 0
                 }
             }
