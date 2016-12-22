@@ -477,7 +477,8 @@ impl Drop for AudioDeviceID {
 pub struct AudioQueue<Channel: AudioFormatNum> {
     subsystem: AudioSubsystem,
     device_id: AudioDeviceID,
-    phantom: PhantomData<Channel>
+    phantom: PhantomData<Channel>,
+    spec: AudioSpec,
 }
 
 impl<Channel: AudioFormatNum> AudioQueue<Channel> {
@@ -495,7 +496,7 @@ impl<Channel: AudioFormatNum> AudioQueue<Channel> {
 
             let iscapture_flag = 0;
             let device_id = ll::SDL_OpenAudioDevice(
-                device_ptr as *const c_char, iscapture_flag, &desired, 
+                device_ptr as *const c_char, iscapture_flag, &desired,
                 &mut obtained, 0
             );
             match device_id {
@@ -504,11 +505,13 @@ impl<Channel: AudioFormatNum> AudioQueue<Channel> {
                 },
                 id => {
                     let device_id = AudioDeviceID::PlaybackDevice(id);
+                    let spec = AudioSpec::convert_from_ll(obtained);
 
                     Ok(AudioQueue {
                         subsystem: a.clone(),
                         device_id: device_id,
-                        phantom: PhantomData::default()
+                        phantom: PhantomData::default(),
+                        spec: spec,
                     })
                 }
             }
@@ -517,6 +520,9 @@ impl<Channel: AudioFormatNum> AudioQueue<Channel> {
 
     #[inline]
     pub fn subsystem(&self) -> &AudioSubsystem { &self.subsystem }
+
+    #[inline]
+    pub fn spec(&self) -> &AudioSpec { &self.spec }
 
     pub fn status(&self) -> AudioStatus {
         unsafe {
@@ -555,6 +561,7 @@ impl<Channel: AudioFormatNum> AudioQueue<Channel> {
 pub struct AudioDevice<CB: AudioCallback> {
     subsystem: AudioSubsystem,
     device_id: AudioDeviceID,
+    spec: AudioSpec,
     /// Store the callback to keep it alive for the entire duration of `AudioDevice`.
     userdata: Box<CB>
 }
@@ -584,7 +591,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
 
             let iscapture_flag = 0;
             let device_id = ll::SDL_OpenAudioDevice(
-                device_ptr as *const c_char, iscapture_flag, &desired, 
+                device_ptr as *const c_char, iscapture_flag, &desired,
                 &mut obtained, 0
             );
             match device_id {
@@ -602,7 +609,8 @@ impl<CB: AudioCallback> AudioDevice<CB> {
                     Ok(AudioDevice {
                         subsystem: a.clone(),
                         device_id: device_id,
-                        userdata: userdata
+                        userdata: userdata,
+                        spec: spec,
                     })
                 }
             }
@@ -611,6 +619,9 @@ impl<CB: AudioCallback> AudioDevice<CB> {
 
     #[inline]
     pub fn subsystem(&self) -> &AudioSubsystem { &self.subsystem }
+
+    #[inline]
+    pub fn spec(&self) -> &AudioSpec { &self.spec }
 
     pub fn status(&self) -> AudioStatus {
         unsafe {
