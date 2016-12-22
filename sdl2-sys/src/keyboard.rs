@@ -8,6 +8,7 @@ use sdl::SDL_bool;
 
 // SDL_keyboard.h
 #[derive(Copy, Clone)]
+#[repr(C)]
 pub struct SDL_Keysym {
     pub scancode: SDL_Scancode,
     pub sym: SDL_Keycode,
