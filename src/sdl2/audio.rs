@@ -561,6 +561,7 @@ impl<Channel: AudioFormatNum> AudioQueue<Channel> {
 pub struct AudioDevice<CB: AudioCallback> {
     subsystem: AudioSubsystem,
     device_id: AudioDeviceID,
+    spec: AudioSpec,
     /// Store the callback to keep it alive for the entire duration of `AudioDevice`.
     userdata: Box<CB>
 }
@@ -608,7 +609,8 @@ impl<CB: AudioCallback> AudioDevice<CB> {
                     Ok(AudioDevice {
                         subsystem: a.clone(),
                         device_id: device_id,
-                        userdata: userdata
+                        userdata: userdata,
+                        spec: spec,
                     })
                 }
             }
@@ -617,6 +619,9 @@ impl<CB: AudioCallback> AudioDevice<CB> {
 
     #[inline]
     pub fn subsystem(&self) -> &AudioSubsystem { &self.subsystem }
+
+    #[inline]
+    pub fn spec(&self) -> &AudioSpec { &self.spec }
 
     pub fn status(&self) -> AudioStatus {
         unsafe {
