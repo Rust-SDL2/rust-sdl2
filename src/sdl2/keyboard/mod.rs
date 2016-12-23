@@ -12,7 +12,7 @@ pub use self::keycode::Keycode;
 pub use self::scancode::Scancode;
 
 bitflags! {
-    pub flags Mod: u32 {
+    pub flags Mod: u16 {
         const NOMOD = 0x0000,
         const LSHIFTMOD = 0x0001,
         const RSHIFTMOD = 0x0002,
@@ -183,11 +183,11 @@ impl KeyboardUtil {
     }
 
     pub fn mod_state(&self) -> Mod {
-        unsafe { Mod::from_bits(ll::SDL_GetModState()).unwrap() }
+        unsafe { Mod::from_bits(ll::SDL_GetModState() as u16).unwrap() }
     }
 
     pub fn set_mod_state(&self, flags: Mod) {
-        unsafe { ll::SDL_SetModState(flags.bits()); }
+        unsafe { ll::SDL_SetModState(flags.bits() as u32); }
     }
 }
 

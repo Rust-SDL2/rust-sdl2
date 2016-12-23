@@ -1292,13 +1292,13 @@ impl Event {
 
             EventType::KeyDown => {
                 let ref event = *raw.key();
-
+                println!("{:?}",event.keysym._mod);
                 Event::KeyDown {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
                     keycode: Keycode::from_i32(event.keysym.sym as i32),
                     scancode: Scancode::from_i32(event.keysym.scancode as i32),
-                    keymod: keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap(),
+                    keymod: keyboard::Mod::from_bits(event.keysym._mod).unwrap(),
                     repeat: event.repeat != 0
                 }
             }
@@ -1310,7 +1310,7 @@ impl Event {
                     window_id: event.windowID,
                     keycode: Keycode::from_i32(event.keysym.sym as i32),
                     scancode: Scancode::from_i32(event.keysym.scancode as i32),
-                    keymod: keyboard::Mod::from_bits(event.keysym._mod as SDL_Keymod).unwrap(),
+                    keymod: keyboard::Mod::from_bits(event.keysym._mod).unwrap(),
                     repeat: event.repeat != 0
                 }
             }
