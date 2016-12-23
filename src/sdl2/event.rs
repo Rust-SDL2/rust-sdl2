@@ -1292,7 +1292,6 @@ impl Event {
 
             EventType::KeyDown => {
                 let ref event = *raw.key();
-                println!("{:?}",event.keysym._mod);
                 Event::KeyDown {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
