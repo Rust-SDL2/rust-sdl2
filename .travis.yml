@@ -11,7 +11,7 @@ install:
 - wget -q https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.14.tar.gz
 - wget -q https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.1.tar.gz
 - wget -q https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.1.tar.gz
-- wget -q https://internode.dl.sourceforge.net/project/sdl2gfx/SDL2_gfx-1.0.1.tar.gz
+- wget -q https://cytranet.dl.sourceforge.net/project/sdl2gfx/SDL2_gfx-1.0.1.tar.gz
 - tar xzf SDL2_ttf-*.tar.gz
 - tar xzf SDL2_image-*.tar.gz
 - tar xzf SDL2_mixer-*.tar.gz
