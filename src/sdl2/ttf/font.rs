@@ -271,9 +271,9 @@ impl<'a> Drop for Font<'a> {
 }
 
 /// Internally used to load a font (for internal visibility).
-pub fn internal_load_font(path: &Path, ptsize: u16) -> Result<Font, String> {
+pub fn internal_load_font<'a,P:AsRef<Path>>(path: P, ptsize: u16) -> Result<Font<'a>, String> {
     unsafe {
-        let cstring = CString::new(path.to_str().unwrap()).unwrap();
+        let cstring = CString::new(path.as_ref().to_str().unwrap()).unwrap();
         let raw = ffi::TTF_OpenFont(cstring.as_ptr(), ptsize as c_int);
         if raw.is_null() {
             Err(get_error())
@@ -290,10 +290,10 @@ pub fn internal_load_font_from_ll<'a>(raw: *const ffi::TTF_Font, rwops: Option<R
 }
 
 /// Internally used to load a font (for internal visibility).
-pub fn internal_load_font_at_index(path: &Path, index: u32, ptsize: u16)
-        -> Result<Font, String> {
+pub fn internal_load_font_at_index<'a,P: AsRef<Path>>(path: P, index: u32, ptsize: u16)
+        -> Result<Font<'a>, String> {
     unsafe {
-        let cstring = CString::new(path.to_str().unwrap().as_bytes())
+        let cstring = CString::new(path.as_ref().to_str().unwrap().as_bytes())
             .unwrap();
         let raw = ffi::TTF_OpenFontIndex(cstring.as_ptr(),
             ptsize as c_int, index as c_long);
