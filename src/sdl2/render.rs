@@ -196,30 +196,37 @@ impl RendererBuilder {
     }
 
     /// Sets the index of the rendering driver to initialize.
+    /// If you desire the first rendering driver to support the flags provided,
+    /// or if you're translating code from C which passes -1 for the index,
+    /// **do not** invoke the `index` method.
     pub fn index(mut self, index: u32) -> RendererBuilder {
         self.index = Some(index);
         self
     }
 
     /// Set the renderer to a software fallback.
+    /// This flag is accumulative, and may be specified with other flags.
     pub fn software(mut self) -> RendererBuilder {
         self.renderer_flags |= ll::SDL_RENDERER_SOFTWARE as u32;
         self
     }
 
     /// Set the renderer to use hardware acceleration.
+    /// This flag is accumulative, and may be specified with other flags.
     pub fn accelerated(mut self) -> RendererBuilder {
         self.renderer_flags |= ll::SDL_RENDERER_ACCELERATED as u32;
         self
     }
 
-    /// Synchronize renderer present with the refresh rate.
+    /// Synchronize renderer `present` method calls with the refresh rate.
+    /// This flag is accumulative, and may be specified with other flags.
     pub fn present_vsync(mut self) -> RendererBuilder {
         self.renderer_flags |= ll::SDL_RENDERER_PRESENTVSYNC as u32;
         self
     }
 
     /// Set the renderer to support rendering to a texture.
+    /// This flag is accumulative, and may be specified with other flags.
     pub fn target_texture(mut self) -> RendererBuilder {
         self.renderer_flags |= ll::SDL_RENDERER_TARGETTEXTURE as u32;
         self
