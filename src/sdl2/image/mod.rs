@@ -33,11 +33,11 @@ use sys;
 // Setup linking for all targets.
 #[cfg(target_os="macos")]
 mod mac {
-    #[cfg(mac_framework)]
+    #[cfg(any(mac_framework, feature="use_mac_framework"))]
     #[link(kind="framework", name="SDL2_image")]
     extern {}
 
-    #[cfg(not(mac_framework))]
+    #[cfg(not(any(mac_framework, feature="use_mac_framework")))]
     #[link(name="SDL2_image")]
     extern {}
 }
