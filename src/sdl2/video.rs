@@ -7,7 +7,7 @@ use std::error::Error;
 use rect::Rect;
 use render::RendererBuilder;
 use surface::SurfaceRef;
-use pixels;
+use pixels::PixelFormatEnum;
 use VideoSubsystem;
 use EventPump;
 use num::FromPrimitive;
@@ -355,14 +355,14 @@ pub mod gl_attr {
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub struct DisplayMode {
-    pub format: u32,
+    pub format: PixelFormatEnum,
     pub w: i32,
     pub h: i32,
     pub refresh_rate: i32
 }
 
 impl DisplayMode {
-    pub fn new(format: u32, w: i32, h: i32, refresh_rate: i32) -> DisplayMode {
+    pub fn new(format: PixelFormatEnum, w: i32, h: i32, refresh_rate: i32) -> DisplayMode {
         DisplayMode {
             format: format,
             w: w,
@@ -373,7 +373,7 @@ impl DisplayMode {
 
     pub fn from_ll(raw: &ll::SDL_DisplayMode) -> DisplayMode {
         DisplayMode::new(
-            raw.format as u32,
+            PixelFormatEnum::from_u32(raw.format as u32).unwrap_or(PixelFormatEnum::Unknown),
             raw.w as i32,
             raw.h as i32,
             raw.refresh_rate as i32
@@ -1019,7 +1019,7 @@ impl WindowRef {
         }
     }
 
-    pub fn window_pixel_format(&self) -> pixels::PixelFormatEnum {
+    pub fn window_pixel_format(&self) -> PixelFormatEnum {
         unsafe{ FromPrimitive::from_u64(ll::SDL_GetWindowPixelFormat(self.raw()) as u64).unwrap() }
     }
 
