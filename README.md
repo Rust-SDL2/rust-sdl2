@@ -16,7 +16,7 @@ If you want a library compatible with earlier versions of SDL, please see
 # Documentation
 
 * [master documentation](http://angrylawyer.github.io/rust-sdl2/sdl2/)
-* [crates.io documentation](https://docs.rs/sdl2/0.26.0/sdl2/)
+* [crates.io documentation](https://docs.rs/sdl2/)
 
 # Requirements
 
