@@ -20,6 +20,7 @@
 //! features = ["mixer"]
 //! ```
 
+use std::marker::PhantomData;
 use std::default;
 use std::fmt;
 use std::ffi::{CString, CStr};
@@ -278,14 +279,14 @@ impl Chunk {
 }
 
 /// Loader trait for `RWops`
-pub trait LoaderRWops {
+pub trait LoaderRWops<'a> {
     /// Load src for use as a sample.
     fn load_wav(&self) -> Result<Chunk, String>;
 
-    fn load_music(&self) -> Result<Music, String>;
+    fn load_music(&'a self) -> Result<Music<'a>, String>;
 }
 
-impl<'a> LoaderRWops for RWops<'a> {
+impl<'a> LoaderRWops<'a> for RWops<'a> {
     /// Load src for use as a sample.
     fn load_wav(&self) -> Result<Chunk, String> {
         let raw = unsafe { ffi::Mix_LoadWAV_RW(self.raw(), 0) };
@@ -300,7 +301,7 @@ impl<'a> LoaderRWops for RWops<'a> {
     }
 
     /// Load src for use as music.
-    fn load_music(&self) -> Result<Music, String> {
+    fn load_music(&self) -> Result<Music<'a>, String> {
         let raw = unsafe { ffi::Mix_LoadMUS_RW(self.raw(), 0) };
         if raw.is_null() {
             Err(get_error())
@@ -308,6 +309,7 @@ impl<'a> LoaderRWops for RWops<'a> {
             Ok(Music {
                 raw: raw,
                 owned: true,
+                _marker: PhantomData,
             })
         }
     }
@@ -743,12 +745,13 @@ extern "C" fn c_music_finished_hook() {
 
 /// This is an opaque data type used for Music data.
 #[derive(PartialEq)]
-pub struct Music {
+pub struct Music<'a> {
     pub raw: *mut ffi::Mix_Music,
     pub owned: bool,
+    _marker: PhantomData<&'a ()>
 }
 
-impl Drop for Music {
+impl<'a> Drop for Music<'a> {
     fn drop(&mut self) {
         if self.owned {
             unsafe { ffi::Mix_FreeMusic(self.raw) };
@@ -756,16 +759,16 @@ impl Drop for Music {
     }
 }
 
-impl fmt::Debug for Music {
+impl<'a> fmt::Debug for Music<'a> {
     /// Shows the original regular expression.
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "<Music>")
     }
 }
 
-impl Music {
+impl<'a> Music<'a> {
     /// Load music file to use.
-    pub fn from_file(path: &Path) -> Result<Music, String> {
+    pub fn from_file(path: &Path) -> Result<Music<'static>, String> {
         let raw = unsafe {
             let c_path = CString::new(path.to_str().unwrap()).unwrap();
             ffi::Mix_LoadMUS(c_path.as_ptr())
@@ -776,6 +779,7 @@ impl Music {
             Ok(Music {
                 raw: raw,
                 owned: true,
+                _marker: PhantomData,
             })
         }
     }
