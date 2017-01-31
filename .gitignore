@@ -19,5 +19,7 @@ src/demo/main
 doc/
 target/
 .DS_Store
+*.iml
+.idea/
 
 Cargo.lock
