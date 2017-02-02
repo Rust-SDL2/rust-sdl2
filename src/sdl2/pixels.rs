@@ -3,6 +3,7 @@ extern crate rand;
 use num::FromPrimitive;
 
 use sys::pixels as ll;
+use libc;
 
 use get_error;
 
@@ -334,6 +335,12 @@ impl PixelFormatEnum {
             PixelFormatEnum::Index4MSB
                 => panic!("not supported format: {:?}", *self),
         }
+    }
+}
+
+impl Into<ll::SDL_PixelFormatEnum> for PixelFormatEnum {
+    fn into(self) -> ll::SDL_PixelFormatEnum {
+        self as libc::uint32_t
     }
 }
 
