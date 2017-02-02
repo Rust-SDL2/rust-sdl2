@@ -136,6 +136,18 @@ impl Color {
     }
 }
 
+impl Into<ll::SDL_Color> for Color {
+    fn into(self) -> ll::SDL_Color {
+        unsafe { self.raw() }
+    }
+}
+
+impl From<ll::SDL_Color> for Color {
+    fn from(raw: ll::SDL_Color) -> Color {
+        Color::RGBA(raw.r, raw.g, raw.b, raw.a)
+    }
+}
+
 impl rand::Rand for Color {
     fn rand<R: rand::Rng>(rng: &mut R) -> Color {
         if rng.gen() { Color::RGBA(rng.gen(), rng.gen(), rng.gen(), rng.gen()) }
