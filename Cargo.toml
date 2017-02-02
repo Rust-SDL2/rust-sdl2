@@ -8,6 +8,7 @@ version = "0.28.0"
 license = "MIT"
 authors = [ "Tony Aldridge <tony@angry-lawyer.com>" ]
 keywords = ["SDL", "windowing", "graphics"]
+categories = ["rendering","games","game-engine","multimedia"]
 
 [lib]
 

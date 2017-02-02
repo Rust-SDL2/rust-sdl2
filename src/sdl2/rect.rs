@@ -5,6 +5,7 @@ use sys::rect as ll;
 use std::mem;
 use std::ptr;
 use std::ops::{Deref, DerefMut, Add, BitAnd, BitOr, Div, Mul, Neg, Sub};
+use std::convert::{AsRef, AsMut};
 
 /// The maximal integer value that can be used for rectangles.
 ///
@@ -461,6 +462,18 @@ impl Into<(i32, i32, u32, u32)> for Rect {
 impl From<(i32, i32, u32, u32)> for Rect {
     fn from((x, y, width, height): (i32, i32, u32, u32)) -> Rect {
         Rect::new(x, y, width, height)
+    }
+}
+
+impl AsRef<ll::SDL_Rect> for Rect {
+    fn as_ref(&self) -> &ll::SDL_Rect {
+        &self.raw
+    }
+}
+
+impl AsMut<ll::SDL_Rect> for Rect {
+    fn as_mut(&mut self) -> &mut ll::SDL_Rect {
+        &mut self.raw
     }
 }
 
