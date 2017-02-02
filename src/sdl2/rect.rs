@@ -507,9 +507,50 @@ pub struct Point {
     raw: ll::SDL_Point
 }
 
+impl Deref for Point {
+    type Target = ll::SDL_Point;
+
+    /// # Example
+    ///
+    /// ```rust
+    /// use sdl2::rect::Point;
+    /// let point = Point::new(2, 3);
+    /// assert_eq!(2, point.x);
+    /// ```
+    fn deref(&self) -> &ll::SDL_Point {
+        &self.raw
+    }
+}
+
+impl DerefMut for Point {
+    /// # Example
+    ///
+    /// ```rust
+    /// use sdl2::rect::Point;
+    /// let mut point = Point::new(2, 3);
+    /// point.x = 4;
+    /// assert_eq!(4, point.x);
+    /// ```
+    fn deref_mut(&mut self) -> &mut ll::SDL_Point {
+        &mut self.raw
+    }
+}
+
+impl From<ll::SDL_Point> for Point {
+    fn from(prim: ll::SDL_Point) -> Point {
+        Point { raw: prim }
+    }
+}
+
 impl From<(i32, i32)> for Point {
     fn from((x, y): (i32, i32)) -> Point {
         Point::new(x, y)
+    }
+}
+
+impl Into<ll::SDL_Point> for Point {
+    fn into(self) -> ll::SDL_Point {
+        self.raw
     }
 }
 
