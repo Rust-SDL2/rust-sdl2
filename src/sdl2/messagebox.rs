@@ -39,6 +39,18 @@ pub struct MessageBoxColorScheme {
     pub button_selected:(u8,u8,u8)
 }
 
+impl Into<ll::SDL_MessageBoxColorScheme> for MessageBoxColorScheme {
+    fn into(self) -> ll::SDL_MessageBoxColorScheme {
+        ll::SDL_MessageBoxColorScheme { colors: self.into() }
+    }
+}
+
+impl From<ll::SDL_MessageBoxColorScheme> for MessageBoxColorScheme {
+    fn from(prim: ll::SDL_MessageBoxColorScheme) -> MessageBoxColorScheme {
+        prim.colors.into()
+    }
+}
+
 /// button_id is the integer that will be returned
 /// by show_message_box. It is not sed by SDL2,
 /// and should only be used to know which button has been triggered
@@ -72,6 +84,20 @@ impl From<MessageBoxColorScheme> for [ll::SDL_MessageBoxColor ; 5] {
     }
 }
 
+impl Into<MessageBoxColorScheme> for [ll::SDL_MessageBoxColor ; 5] {
+    fn into(self) -> MessageBoxColorScheme {
+        fn from_message_box_color(prim_color: ll::SDL_MessageBoxColor) -> (u8, u8, u8) {
+            (prim_color.r, prim_color.g, prim_color.b)
+        };
+        MessageBoxColorScheme{
+            background: from_message_box_color(self[0]),
+            text: from_message_box_color(self[1]),
+            button_border: from_message_box_color(self[2]),
+            button_background: from_message_box_color(self[3]),
+            button_selected: from_message_box_color(self[4]),
+        }
+    }
+}
 
 #[derive(Debug)]
 pub enum ShowMessageError {
