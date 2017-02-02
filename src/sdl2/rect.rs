@@ -453,9 +453,21 @@ impl DerefMut for Rect {
     }
 }
 
+impl Into<ll::SDL_Rect> for Rect {
+    fn into(self) -> ll::SDL_Rect {
+        self.raw
+    }
+}
+
 impl Into<(i32, i32, u32, u32)> for Rect {
     fn into(self) -> (i32, i32, u32, u32) {
         (self.raw.x, self.raw.y, self.raw.w as u32, self.raw.h as u32)
+    }
+}
+
+impl From<ll::SDL_Rect> for Rect {
+    fn from(raw: ll::SDL_Rect) -> Rect {
+        Rect { raw: raw }
     }
 }
 
