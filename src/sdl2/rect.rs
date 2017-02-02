@@ -4,7 +4,7 @@
 use sys::rect as ll;
 use std::mem;
 use std::ptr;
-use std::ops::{Add, BitAnd, BitOr, Div, Mul, Neg, Sub};
+use std::ops::{Deref, Add, BitAnd, BitOr, Div, Mul, Neg, Sub};
 use std::convert::{AsRef, AsMut};
 
 /// The maximal integer value that can be used for rectangles.
@@ -421,6 +421,21 @@ impl Rect {
         } else {
             None
         }
+    }
+}
+
+impl Deref for Rect {
+    type Target = ll::SDL_Rect;
+
+    /// # Example
+    ///
+    /// ```rust
+    /// use sdl2::rect::Rect;
+    /// let rect = Rect::new(2, 3, 4, 5);
+    /// assert_eq!(2, rect.x);
+    /// ```
+    fn deref(&self) -> &ll::SDL_Rect {
+        &self.raw
     }
 }
 
