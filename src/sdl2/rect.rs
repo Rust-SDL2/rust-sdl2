@@ -536,6 +536,18 @@ impl DerefMut for Point {
     }
 }
 
+impl AsRef<ll::SDL_Point> for Point {
+    fn as_ref(&self) -> &ll::SDL_Point {
+        &self.raw
+    }
+}
+
+impl AsMut<ll::SDL_Point> for Point {
+    fn as_mut(&mut self) -> &mut ll::SDL_Point {
+        &mut self.raw
+    }
+}
+
 impl From<ll::SDL_Point> for Point {
     fn from(prim: ll::SDL_Point) -> Point {
         Point { raw: prim }
