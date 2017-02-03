@@ -255,7 +255,7 @@ impl Drop for Chunk {
 
 impl Chunk {
     /// Load file for use as a sample.
-    pub fn from_file(path: &Path) -> Result<Chunk, String> {
+    pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Chunk, String> {
         let raw = unsafe { ffi::Mix_LoadWAV_RW(try!(RWops::from_file(path, "rb")).raw(), 0) };
         if raw.is_null() {
             Err(get_error())
@@ -768,9 +768,9 @@ impl<'a> fmt::Debug for Music<'a> {
 
 impl<'a> Music<'a> {
     /// Load music file to use.
-    pub fn from_file(path: &Path) -> Result<Music<'static>, String> {
+    pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Music<'static>, String> {
         let raw = unsafe {
-            let c_path = CString::new(path.to_str().unwrap()).unwrap();
+            let c_path = CString::new(path.as_ref().to_str().unwrap()).unwrap();
             ffi::Mix_LoadMUS(c_path.as_ptr())
         };
         if raw.is_null() {
