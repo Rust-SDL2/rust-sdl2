@@ -88,21 +88,21 @@ pub trait LoadSurface: Sized {
     // Self is only returned here to type hint to the compiler.
     // The syntax for type hinting in this case is not yet defined.
     // The intended return value is Result<~Surface, String>.
-    fn from_file(filename: &Path) -> Result<Self, String>;
+    fn from_file<P: AsRef<Path>>(filename: P) -> Result<Self, String>;
     fn from_xpm_array(xpm: *const *const i8) -> Result<Self, String>;
 }
 
 /// Method extensions to Surface for saving to disk
 pub trait SaveSurface {
-    fn save(&self, filename: &Path) -> Result<(), String>;
+    fn save<P: AsRef<Path>>(&self, filename: P) -> Result<(), String>;
     fn save_rw(&self, dst: &mut RWops) -> Result<(), String>;
 }
 
 impl<'a> LoadSurface for Surface<'a> {
-    fn from_file(filename: &Path) -> Result<Surface<'a>, String> {
+    fn from_file<P: AsRef<Path>>(filename: P) -> Result<Surface<'a>, String> {
         //! Loads an SDL Surface from a file
         unsafe {
-            let c_filename = CString::new(filename.to_str().unwrap()).unwrap();
+            let c_filename = CString::new(filename.as_ref().to_str().unwrap()).unwrap();
             let raw = ffi::IMG_Load(c_filename.as_ptr() as *const _);
             if (raw as *mut ()).is_null() {
                 Err(get_error())
@@ -126,10 +126,10 @@ impl<'a> LoadSurface for Surface<'a> {
 }
 
 impl<'a> SaveSurface for Surface<'a> {
-    fn save(&self, filename: &Path) -> Result<(), String> {
+    fn save<P: AsRef<Path>>(&self, filename: P) -> Result<(), String> {
         //! Saves an SDL Surface to a file
         unsafe {
-            let c_filename = CString::new(filename.to_str().unwrap()).unwrap();
+            let c_filename = CString::new(filename.as_ref().to_str().unwrap()).unwrap();
             let status = ffi::IMG_SavePNG(self.raw(), c_filename.as_ptr() as *const _);
             if status != 0 {
                 Err(get_error())
@@ -155,14 +155,14 @@ impl<'a> SaveSurface for Surface<'a> {
 
 /// Method extensions for creating Textures from a Renderer
 pub trait LoadTexture {
-    fn load_texture(&self, filename: &Path) -> Result<Texture, String>;
+    fn load_texture<P: AsRef<Path>>(&self, filename: P) -> Result<Texture, String>;
 }
 
 impl<'a> LoadTexture for Renderer<'a> {
-    fn load_texture(&self, filename: &Path) -> Result<Texture, String> {
+    fn load_texture<P: AsRef<Path>>(&self, filename: P) -> Result<Texture, String> {
         //! Loads an SDL Texture from a file
         unsafe {
-            let c_filename = CString::new(filename.to_str().unwrap()).unwrap();
+            let c_filename = CString::new(filename.as_ref().to_str().unwrap()).unwrap();
             let raw = ffi::IMG_LoadTexture(self.raw(), c_filename.as_ptr() as *const _);
             if (raw as *mut ()).is_null() {
                 Err(get_error())
