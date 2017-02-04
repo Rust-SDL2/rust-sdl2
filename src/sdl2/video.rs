@@ -25,6 +25,9 @@ pub enum GLProfile {
     Compatibility,
     /// OpenGL ES profile - only a subset of the base OpenGL functionality is available
     GLES,
+    /// Unknown profile - SDL will tend to return 0 if you ask when no particular profile
+    /// has been defined or requested.
+    Unknown(i32)
 }
 
 trait GLAttrTypeUtil {
@@ -47,6 +50,7 @@ impl GLAttrTypeUtil for GLProfile {
         use self::GLProfile::*;
 
         match self {
+            Unknown(i) => i,
             Core => 1,
             Compatibility => 2,
             GLES => 4,
@@ -59,7 +63,7 @@ impl GLAttrTypeUtil for GLProfile {
             1 => Core,
             2 => Compatibility,
             4 => GLES,
-            _ => panic!("unknown SDL_GLProfile value: {}", value)
+            i => Unknown(i),
         }
     }
 }
