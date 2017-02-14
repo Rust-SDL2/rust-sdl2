@@ -148,7 +148,7 @@ download through Crates.io:
 
 ```toml
     [dependencies]
-    sdl2 = "0.28"
+    sdl2 = "0.29"
 ```
 
 Alternatively, pull it from GitHub to obtain the latest version from master
@@ -169,7 +169,7 @@ adding this instead:
 
 ```toml
     [dependencies.sdl2]
-    version = "0.28"
+    version = "0.29"
     default-features = false
     features = ["ttf","image","gfx","mixer"]
 ```
