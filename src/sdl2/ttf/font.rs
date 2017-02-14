@@ -5,6 +5,7 @@ use std::error;
 use std::error::Error;
 use std::ffi::NulError;
 use std::fmt;
+use std::marker::PhantomData;
 use ::surface::Surface;
 use ::sys::surface::SDL_Surface;
 use ::get_error;
@@ -138,9 +139,9 @@ impl<'a> RenderableText<'a> {
 
 /// A builder for a font rendering.
 #[must_use]
-pub struct PartialRendering<'a> {
-    text: RenderableText<'a>,
-    font: &'a Font<'a>,
+pub struct PartialRendering<'f, 'text> {
+    text: RenderableText<'text>,
+    font: &'f Font<'f, 'f>,
 }
 
 /// Converts the given raw pointer to a surface.
@@ -154,7 +155,7 @@ fn convert_to_surface<'a>(raw: *mut SDL_Surface) -> FontResult<Surface<'a>> {
     }
 }
 
-impl<'a> PartialRendering<'a> {
+impl<'f,'text> PartialRendering<'f,'text> {
     /// Renders the text in *solid* mode.
     /// See [the SDL2_TTF docs](https://www.libsdl.org/projects/SDL_ttf/docs/SDL_ttf.html#SEC42)
     /// for an explanation.
@@ -247,7 +248,7 @@ impl<'a> PartialRendering<'a> {
 }
 
 /// A loaded TTF font.
-pub struct Font<'a> {
+pub struct Font<'ttf_module,'rwops> {
     raw: *const ffi::TTF_Font,
     // RWops is only stored here because it must not outlive
     // the Font struct, and this RWops should not be used by
@@ -256,10 +257,14 @@ pub struct Font<'a> {
     // and Some(rwops) means that the RWops is handled by the Rust
     // side
     #[allow(dead_code)]
-    rwops:Option<RWops<'a>>
+    rwops: Option<RWops<'rwops>>,
+    #[allow(dead_code)]
+    _marker: PhantomData<&'ttf_module ()>,
 }
 
-impl<'a> Drop for Font<'a> {
+
+
+impl<'ttf,'r> Drop for Font<'ttf,'r> {
     fn drop(&mut self) {
         unsafe {
             // avoid close font after quit()
@@ -271,27 +276,27 @@ impl<'a> Drop for Font<'a> {
 }
 
 /// Internally used to load a font (for internal visibility).
-pub fn internal_load_font<'a,P:AsRef<Path>>(path: P, ptsize: u16) -> Result<Font<'a>, String> {
+pub fn internal_load_font<'ttf,P:AsRef<Path>>(path: P, ptsize: u16) -> Result<Font<'ttf,'static>, String> {
     unsafe {
         let cstring = CString::new(path.as_ref().to_str().unwrap()).unwrap();
         let raw = ffi::TTF_OpenFont(cstring.as_ptr(), ptsize as c_int);
         if raw.is_null() {
             Err(get_error())
         } else {
-            Ok(Font { raw: raw, rwops: None })
+            Ok(Font { raw: raw, rwops: None, _marker: PhantomData })
         }
     }
 }
 
 /// Internally used to load a font (for internal visibility).
-pub fn internal_load_font_from_ll<'a>(raw: *const ffi::TTF_Font, rwops: Option<RWops<'a>>)
-        -> Font<'a> {
-    Font { raw: raw, rwops: rwops }
+pub fn internal_load_font_from_ll<'ttf,'r>(raw: *const ffi::TTF_Font, rwops: Option<RWops<'r>>)
+        -> Font<'ttf,'r> {
+    Font { raw: raw, rwops: rwops, _marker: PhantomData }
 }
 
 /// Internally used to load a font (for internal visibility).
-pub fn internal_load_font_at_index<'a,P: AsRef<Path>>(path: P, index: u32, ptsize: u16)
-        -> Result<Font<'a>, String> {
+pub fn internal_load_font_at_index<'ttf,P: AsRef<Path>>(path: P, index: u32, ptsize: u16)
+        -> Result<Font<'ttf, 'static>, String> {
     unsafe {
         let cstring = CString::new(path.as_ref().to_str().unwrap().as_bytes())
             .unwrap();
@@ -300,19 +305,19 @@ pub fn internal_load_font_at_index<'a,P: AsRef<Path>>(path: P, index: u32, ptsiz
         if raw.is_null() {
             Err(get_error())
         } else {
-            Ok(Font { raw: raw, rwops: None })
+            Ok(Font { raw: raw, rwops: None, _marker: PhantomData})
         }
     }
 }
 
-impl<'a> Font<'a> {
+impl<'ttf,'r> Font<'ttf,'r> {
     /// Returns the underlying C font object.
     unsafe fn raw(&self) -> *const ffi::TTF_Font {
         self.raw
     }
 
     /// Starts specifying a rendering of the given UTF-8-encoded text.
-    pub fn render(&'a self, text: &'a str) -> PartialRendering<'a> {
+    pub fn render<'a, 'b>(&'a self, text: &'b str) -> PartialRendering<'a, 'b> {
         PartialRendering {
             text: RenderableText::Utf8(text),
             font: self,
@@ -320,7 +325,7 @@ impl<'a> Font<'a> {
     }
 
     /// Starts specifying a rendering of the given Latin-1-encoded text.
-    pub fn render_latin1(&'a self, text: &'a [u8]) -> PartialRendering<'a> {
+    pub fn render_latin1<'a, 'b>(&'a self, text: &'b [u8]) -> PartialRendering<'a, 'b> {
         PartialRendering {
             text: RenderableText::Latin1(text),
             font: self,
@@ -328,7 +333,7 @@ impl<'a> Font<'a> {
     }
 
     /// Starts specifying a rendering of the given UTF-8-encoded character.
-    pub fn render_char(&'a self, ch: char) -> PartialRendering<'a> {
+    pub fn render_char<'a>(&'a self, ch: char) -> PartialRendering<'a, 'static> {
         let mut s = String::new();
         s.push(ch);
         PartialRendering {
@@ -339,13 +344,12 @@ impl<'a> Font<'a> {
 
     /// Returns the width and height of the given text when rendered using this
     /// font.
-    #[allow(unused_mut)]
     pub fn size_of(&self, text: &str) -> FontResult<(u32, u32)> {
         let c_string = try!(RenderableText::Utf8(text).convert());
         let (res, size) = unsafe {
             let mut w = 0; // mutated by C code
             let mut h = 0; // mutated by C code
-            let ret = ffi::TTF_SizeUTF8(self.raw, c_string.as_ptr(), &w, &h);
+            let ret = ffi::TTF_SizeUTF8(self.raw, c_string.as_ptr(), &mut w, &mut h);
             (ret, (w as u32, h as u32))
         };
         if res == 0 {
