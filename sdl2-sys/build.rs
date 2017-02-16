@@ -3,7 +3,10 @@ extern crate pkg_config;
 
 fn main() {
     if !build_pkgconfig() {
-        if cfg!(feature="use_mac_framework") {
+        let target = ::std::env::var("TARGET").expect("Cargo build scripts always have TARGET");
+        let target_os = target.splitn(3, "-").nth(2).unwrap();
+
+        if cfg!(feature="use_mac_framework") && target_os == "darwin" {
             println!("cargo:rustc-flags=-l framework=SDL2");
         } else {
             println!("cargo:rustc-flags=-l SDL2");
