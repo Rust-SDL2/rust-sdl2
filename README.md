@@ -179,6 +179,10 @@ fn main() {
 }
 ```
 
+7. On build the build script will copy the needed DLLs into the same directory as your Cargo.toml, you probably don't want to commit these to any Git repositories though so add the following line to your .gitignore file
+
+`/*.dll`
+
 And now your project should build and run on any Windows computer!
 
 ### Windows (MinGW)
