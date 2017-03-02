@@ -88,6 +88,99 @@ default = []
 use_sdl2_mac_framework = ["sdl2/use_mac_framework"]
 ```
 
+### Windows with build script
+
+1. Download mingw and msvc development libraries from
+http://www.libsdl.org/ (SDL2-devel-2.0.x-mingw.tar.gz & SDL2-devel-2.0.x-VC.zip).
+2. Unpack to folders of your choosing (You can delete it afterwards).
+3. Create the following folder structure in the same folder as your Cargo.toml:
+
+```
+gnu-mingw\dll\32
+gnu-mingw\dll\64
+gnu-mingw\lib\32
+gnu-mingw\lib\64
+msvc\dll\32
+msvc\dll\64
+msvc\lib\32
+msvc\lib\64
+```
+
+4. Copy the lib and dll files from the source archive to the directories we created in step 3 like so:
+```
+SDL2-devel-2.0.x-mingw.tar.gz\SDL2-2.0.x\i686-w64-mingw32\bin 		-> 	gnu-mingw\dll\32
+SDL2-devel-2.0.x-mingw.tar.gz\SDL2-2.0.x\x86_64-w64-mingw32\bin 	-> 	gnu-mingw\dll\64
+SDL2-devel-2.0.x-mingw.tar.gz\SDL2-2.0.x\i686-w64-mingw32\lib 		-> 	gnu-mingw\lib\32
+SDL2-devel-2.0.x-mingw.tar.gz\SDL2-2.0.x\x86_64-w64-mingw32\lib 	-> 	gnu-mingw\lib\64
+SDL2-devel-2.0.5-VC.zip\SDL2-2.0.x\lib\x86\*.dll	 		-> 	msvc\dll\32
+SDL2-devel-2.0.5-VC.zip\SDL2-2.0.x\lib\x64\*.dll 			-> 	msvc\dll\64
+SDL2-devel-2.0.5-VC.zip\SDL2-2.0.x\lib\x86\*.lib	 		-> 	msvc\lib\32
+SDL2-devel-2.0.5-VC.zip\SDL2-2.0.x\lib\x64\*.lib	 		-> 	msvc\lib\64
+```
+
+5. Create a build script, if you don't already have one put this in your Cargo.toml under `[package]`:
+> build = "build.rs"
+
+6. Create a file in the same directory as Cargo.toml called build.rs (if you didn't already have a build script) and paste this into it:
+
+```Rust
+use std::env;
+use std::path::PathBuf;
+
+fn main() {
+    let target = env::var("TARGET").unwrap();
+    let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
+    let mut lib_dir = manifest_dir.clone();
+    let mut dll_dir = manifest_dir.clone();
+    if target == "x86_64-pc-windows-msvc" {
+        lib_dir.push("msvc");
+        lib_dir.push("lib");
+        lib_dir.push("64");
+        dll_dir.push("msvc");
+        dll_dir.push("dll");
+        dll_dir.push("64");
+    }
+    else if target == "x86_64-pc-windows-gnu" {
+        lib_dir.push("gnu-mingw");
+        lib_dir.push("lib");
+        lib_dir.push("64");
+        dll_dir.push("gnu-mingw");
+        dll_dir.push("dll");
+        dll_dir.push("64");
+    }
+    else if target == "i686-pc-windows-msvc" {
+        lib_dir.push("msvc");
+        lib_dir.push("lib");
+        lib_dir.push("32");
+        dll_dir.push("msvc");
+        dll_dir.push("dll");
+        dll_dir.push("32");
+    }
+    else if target == "i686-pc-windows-gnu" {
+        lib_dir.push("gnu-mingw");
+        lib_dir.push("lib");
+        lib_dir.push("32");
+        dll_dir.push("gnu-mingw");
+        dll_dir.push("dll");
+        dll_dir.push("32");
+    }
+    if target.contains("pc-windows") {
+        println!("cargo:rustc-link-search=all={}", lib_dir.display());
+        for entry in std::fs::read_dir(dll_dir).expect("Can't read DLL dir")  {
+            let entry_path = entry.expect("Invalid fs entry").path();
+            let file_name_result = entry_path.file_name();
+            let mut new_file_path = manifest_dir.clone();
+            if let Some(file_name) = file_name_result {
+                new_file_path.push(file_name.to_str().unwrap());
+                std::fs::copy(&entry_path, new_file_path.as_path()).expect("Can't copy from DLL dir");
+            }
+        }
+    }
+}
+```
+
+And now your project should build and run on any Windows computer!
+
 ### Windows (MinGW)
 
 1. Download mingw development libraries from
