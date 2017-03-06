@@ -1,5 +1,4 @@
 //! Haptic Functions
-#[allow(unused)]
 use sys::haptic as ll;
 use sys::joystick as sys_joystick;
 
@@ -29,26 +28,31 @@ impl HapticSubsystem {
     }
 }
 
-#[allow(unused)]
+/// Wrapper around the SDL_Haptic object
 pub struct Haptic {
     subsystem: HapticSubsystem,
     raw: *mut ll::SDL_Haptic,
 }
 
 
-impl Haptic{
-  pub fn play(&self, strenght: f32, duration: u32){
-   unsafe{ ll::SDL_HapticRumblePlay(self.raw, strenght, duration)};
-  }
+impl Haptic {
+    #[inline]
+    pub fn subsystem(&self) -> &HapticSubsystem { &self.subsystem }
 
-  pub fn stop(&self){
-    unsafe { ll::SDL_HapticRumbleStop(self.raw) };
-  }
+    /// Run a simple rumble effect on the haptic device.
+    pub fn rumble_play(&mut self, strength: f32, duration: u32) {
+        unsafe { ll::SDL_HapticRumblePlay(self.raw, strength, duration) };
+    }
+
+    /// Stop the simple rumble on the haptic device.
+    pub fn rumble_stop(&mut self) {
+        unsafe { ll::SDL_HapticRumbleStop(self.raw) };
+    }
 }
 
 
-impl Drop for Haptic{
-  fn drop(&mut self){
-    unsafe{ll::SDL_HapticClose(self.raw)}
-  }
+impl Drop for Haptic {
+    fn drop(&mut self) {
+        unsafe { ll::SDL_HapticClose(self.raw) }
+    }
 }

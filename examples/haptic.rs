@@ -34,7 +34,7 @@ fn main() {
 
     let joystick = joystick.unwrap();
 
-    let haptic = haptic_subsystem.open_from_joystick_id(joystick.instance_id()).unwrap();
+    let mut haptic = haptic_subsystem.open_from_joystick_id(joystick.instance_id()).unwrap();
 
     for event in sdl_context.event_pump().unwrap().wait_iter() {
         use sdl2::event::Event;
@@ -51,7 +51,7 @@ fn main() {
             }
             Event::JoyButtonDown{ button_idx, .. } =>{
                 println!("Button {} down", button_idx);
-                haptic.play(0.5, 500);
+                haptic.rumble_play(0.5, 500);
             },
             Event::JoyButtonUp{ button_idx, .. } =>
                 println!("Button {} up", button_idx),
