@@ -661,7 +661,8 @@ impl<'a> Renderer<'a> {
 
     /// Draws a point on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_point(&mut self, point: Point) -> Result<(), String> {
+    pub fn draw_point<P: Into<Point>>(&mut self, point: P) -> Result<(), String> {
+        let point = point.into();
         let result = unsafe {
             ll::SDL_RenderDrawPoint(self.raw, point.x(), point.y())
         };
@@ -674,7 +675,8 @@ impl<'a> Renderer<'a> {
 
     /// Draws multiple points on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_points(&mut self, points: &[Point]) -> Result<(), String> {
+    pub fn draw_points<P: Into<&'a [Point]>>(&mut self, points: P) -> Result<(), String> {
+        let points = points.into();
         let result = unsafe {
             ll::SDL_RenderDrawPoints(
                 self.raw, Point::raw_slice(points), points.len() as c_int
@@ -689,8 +691,10 @@ impl<'a> Renderer<'a> {
 
     /// Draws a line on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_line(&mut self, start: Point, end: Point)
+    pub fn draw_line<P: Into<Point>>(&mut self, start: P, end: P)
             -> Result<(), String> {
+        let start = start.into();
+        let end = end.into();
         let result = unsafe {
             ll::SDL_RenderDrawLine(
                 self.raw, start.x(), start.y(), end.x(), end.y()
@@ -705,7 +709,8 @@ impl<'a> Renderer<'a> {
 
     /// Draws a series of connected lines on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_lines(&mut self, points: &[Point]) -> Result<(), String> {
+    pub fn draw_lines<P: Into<&'a[Point]>>(&mut self, points: P) -> Result<(), String> {
+        let points = points.into();
         let result = unsafe {
             ll::SDL_RenderDrawLines(
                 self.raw, Point::raw_slice(points), points.len() as c_int
