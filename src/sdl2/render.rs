@@ -691,7 +691,7 @@ impl<'a> Renderer<'a> {
 
     /// Draws a line on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_line<P: Into<Point>>(&mut self, start: P, end: P)
+    pub fn draw_line<P1: Into<Point>, P2: Into<Point>>(&mut self, start: P1, end: P2)
             -> Result<(), String> {
         let start = start.into();
         let end = end.into();
