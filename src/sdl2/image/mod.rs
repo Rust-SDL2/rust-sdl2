@@ -63,22 +63,21 @@ bitflags! {
 }
 
 // This is used for error message for init
-impl ToString for InitFlag {
-    fn to_string(&self) -> String {
-        let mut string = "".to_string();
+impl ::std::fmt::Display for InitFlag {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         if self.contains(INIT_JPG) {
-            string = string + &"INIT_JPG ".to_string();
+            try!(f.write_str("INIT_JPG "));
         }
         if self.contains(INIT_PNG) {
-            string = string + &"INIT_PNG ".to_string();
+            try!(f.write_str("INIT_PNG "));
         }
         if self.contains(INIT_TIF) {
-            string = string + &"INIT_TIF ".to_string();
+            try!(f.write_str("INIT_TIF "));
         }
         if self.contains(INIT_WEBP) {
-            string = string + &"INIT_WEBP ".to_string();
+            try!(f.write_str("INIT_WEBP "));
         }
-        string
+        Ok(())
     }
 }
 
@@ -192,12 +191,13 @@ pub fn init(flags: InitFlag) -> Result<Sdl2ImageContext, String> {
     };
     if !flags.intersects(return_flags) {
         // According to docs, error message text is not always set
-        if get_error() == "" {
+        let mut error = get_error();
+        if error.is_empty() {
             let un_init_flags = return_flags ^ flags;
-            let error_str = &("Could not init: ".to_string() + &un_init_flags.to_string());
-            let _ = ::set_error(error_str);
+            error = format!("Could not init: {}", un_init_flags);
+            let _ = ::set_error(&error);
         }
-        Err(get_error())
+        Err(error)
     } else {
         Ok(Sdl2ImageContext)
     }
