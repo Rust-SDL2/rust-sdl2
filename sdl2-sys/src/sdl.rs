@@ -1,23 +1,5 @@
 use libc::{c_int, c_uint, c_char, uint32_t};
 
-// Setup linking for all targets.
-#[cfg(target_os="macos")]
-mod mac {
-    #[cfg(any(mac_framework, feature="use_mac_framework"))]
-    #[link(kind="framework", name="SDL2")]
-    extern {}
-
-    #[cfg(not(any(mac_framework, feature="use_mac_framework")))]
-    #[link(name="SDL2")]
-    extern {}
-}
-
-#[cfg(any(target_os="windows", target_os="linux", target_os="freebsd"))]
-mod others {
-    #[link(name="SDL2")]
-    extern {}
-}
-
 pub type SDL_bool = c_int;
 
 pub type SDL_errorcode = c_uint;
