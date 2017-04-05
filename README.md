@@ -202,7 +202,7 @@ http://www.libsdl.org/ (SDL2-devel-2.0.x-mingw.tar.gz).
     > SDL2-devel-2.0.x-mingw\SDL2-2.0.x\x86_64-w64-mingw32\bin
 
     into your cargo project, right next to your Cargo.toml.
-    
+
 5. When you're shipping your game make sure to copy SDL2.dll to the same directory that your compiled exe is in, otherwise the game won't launch.
 
 ### Windows (MSVC)
@@ -230,7 +230,7 @@ http://www.libsdl.org/ (SDL2-devel-2.0.x-mingw.tar.gz).
     > SDL2-devel-2.0.x-VC\SDL2-2.0.x\lib\x64\
 
     into your cargo project, right next to your Cargo.toml.
-    
+
  5. When you're shipping your game make sure to copy SDL2.dll to the same directory that your compiled exe is in, otherwise the game won't launch.
 
 # Installation
