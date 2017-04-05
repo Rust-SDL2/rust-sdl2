@@ -1,4 +1,4 @@
-# Rust-SDL2 [![Build Status][trav-ci-img]][trav-ci]
+# Rust-SDL2 [![Build Status][trav-ci-img]][trav-ci] [![crates.io badge][crates-io-badge]][crates-io-url]
 
 Bindings for SDL2 in Rust
 
@@ -324,6 +324,8 @@ the latest version of both Rust and Cargo, check that you've updated Rust-SDL2
 to the latest version, and run `cargo clean`. If that fails, please let us know
 on the issue tracker.
 
+[crates-io-badge]: https://img.shields.io/crates/v/sdl2.svg
+[crates-io-url]: https://crates.io/crates/sdl2
 [trav-ci-img]: https://travis-ci.org/AngryLawyer/rust-sdl2.png?branch=master
 [trav-ci]: https://travis-ci.org/AngryLawyer/rust-sdl2
 [early-sdl]: https://github.com/brson/rust-sdl
