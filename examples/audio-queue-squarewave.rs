@@ -36,7 +36,7 @@ fn main() {
         // default sample size 
         };
 
-    let device = audio_subsystem.open_queue::<i16>(None, &desired_spec).unwrap();
+    let device = audio_subsystem.open_queue::<i16, _>(None, &desired_spec).unwrap();
 
     let target_bytes = 48000 * 4;
     let wave = gen_wave(target_bytes);

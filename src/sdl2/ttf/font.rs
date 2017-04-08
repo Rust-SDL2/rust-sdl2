@@ -289,9 +289,10 @@ pub fn internal_load_font<'ttf,P:AsRef<Path>>(path: P, ptsize: u16) -> Result<Fo
 }
 
 /// Internally used to load a font (for internal visibility).
-pub fn internal_load_font_from_ll<'ttf,'r>(raw: *const ffi::TTF_Font, rwops: Option<RWops<'r>>)
-        -> Font<'ttf,'r> {
-    Font { raw: raw, rwops: rwops, _marker: PhantomData }
+pub fn internal_load_font_from_ll<'ttf,'r, R>(raw: *const ffi::TTF_Font, rwops: R)
+        -> Font<'ttf,'r>
+where R: Into<Option<RWops<'r>>> {
+    Font { raw: raw, rwops: rwops.into(), _marker: PhantomData }
 }
 
 /// Internally used to load a font (for internal visibility).

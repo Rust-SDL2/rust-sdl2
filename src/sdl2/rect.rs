@@ -328,8 +328,11 @@ impl Rect {
     /// Calculate a minimal rectangle enclosing a set of points.
     /// If a clipping rectangle is given, only points that are within it will be
     /// considered.
-    pub fn from_enclose_points(points: &[Point], clipping_rect: Option<Rect>)
-            -> Option<Rect> {
+    pub fn from_enclose_points<R: Into<Option<Rect>>>(points: &[Point], clipping_rect: R)
+            -> Option<Rect>
+    where R: Into<Option<Rect>>
+    {
+        let clipping_rect = clipping_rect.into();
 
         if points.len() == 0 {
             return None;

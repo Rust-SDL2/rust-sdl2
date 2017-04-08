@@ -989,11 +989,13 @@ impl WindowRef {
         }
     }
 
-    pub fn set_display_mode(&mut self, display_mode: Option<DisplayMode>) -> Result<(), String> {
+    pub fn set_display_mode<D>(&mut self, display_mode: D) -> Result<(), String>
+    where D: Into<Option<DisplayMode>>
+    {
         unsafe {
             let result = ll::SDL_SetWindowDisplayMode(
                 self.raw(),
-                match display_mode {
+                match display_mode.into() {
                     Some(ref mode) => &mode.to_ll(),
                     None => ptr::null()
                 }
@@ -1243,18 +1245,20 @@ impl WindowRef {
         unsafe { ll::SDL_GetWindowBrightness(self.raw()) as f64 }
     }
 
-    pub fn set_gamma_ramp(&mut self, red: Option<&[u16; 256]>,
-            green: Option<&[u16; 256]>, blue: Option<&[u16; 256]>)
-            -> Result<(), String> {
-        let unwrapped_red = match red {
+    pub fn set_gamma_ramp<'a, 'b, 'c, R, G, B>(&mut self, red: R, green: G, blue: B) -> Result<(), String> 
+    where R: Into<Option<&'a [u16; 256]>>,
+          G: Into<Option<&'b [u16; 256]>>,
+          B: Into<Option<&'c [u16; 256]>>,
+    {
+        let unwrapped_red = match red.into() {
             Some(values) => values.as_ptr(),
             None => ptr::null()
         };
-        let unwrapped_green = match green {
+        let unwrapped_green = match green.into() {
             Some(values) => values.as_ptr(),
             None => ptr::null()
         };
-        let unwrapped_blue = match blue {
+        let unwrapped_blue = match blue.into() {
             Some(values) => values.as_ptr(),
             None => ptr::null()
         };
