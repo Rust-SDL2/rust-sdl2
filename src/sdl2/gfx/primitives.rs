@@ -491,8 +491,10 @@ impl<'a> DrawRenderer for Renderer<'a> {
 }
 
 /// Sets or resets the current global font data.
-pub fn set_font(fontdata: Option<&[u8]>, cw: u32, ch: u32) {
-    let actual_fontdata = match fontdata {
+pub fn set_font<'b, F>(fontdata: F, cw: u32, ch: u32)
+where F: Into<Option<&'b [u8]>>
+{
+    let actual_fontdata = match fontdata.into() {
         None  => ptr::null(),
         Some(v) => v.as_ptr()
     };

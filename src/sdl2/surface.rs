@@ -402,9 +402,11 @@ impl SurfaceRef {
         }
     }
 
-    pub fn fill_rect(&mut self, rect: Option<Rect>, color: pixels::Color) -> Result<(), String> {
+    pub fn fill_rect<R>(&mut self, rect: R, color: pixels::Color) -> Result<(), String>
+    where R: Into<Option<Rect>>
+    {
         unsafe {
-            let rect_ptr = mem::transmute( rect.as_ref() );
+            let rect_ptr = mem::transmute( rect.into().as_ref() );
             let format = self.pixel_format();
             let result = ll::SDL_FillRect(self.raw(), rect_ptr, color.to_u32(&format) );
             match result {
@@ -414,7 +416,8 @@ impl SurfaceRef {
         }
     }
 
-    pub fn fill_rects(&mut self, rects: &[Option<Rect>], color: pixels::Color) -> Result<(), String> {
+    pub fn fill_rects(&mut self, rects: &[Rect], color: pixels::Color) -> Result<(), String>
+    {
         for rect in rects.iter() {
             let result = self.fill_rect(rect.clone(), color);
             match result {
@@ -478,7 +481,10 @@ impl SurfaceRef {
     /// Sets the clip rectangle for the surface.
     ///
     /// If the rectangle is `None`, clipping will be disabled.
-    pub fn set_clip_rect(&mut self, rect: Option<Rect>) -> bool {
+    pub fn set_clip_rect<R>(&mut self, rect: R) -> bool 
+    where R: Into<Option<Rect>>
+    {
+        let rect = rect.into();
         unsafe {
             ll::SDL_SetClipRect(self.raw(), match rect {
                 Some(rect) => rect.raw(),
@@ -514,16 +520,22 @@ impl SurfaceRef {
         }
     }
 
-    // Note: There's no need to implement SDL_ConvertSurfaceFormat, as it 
+    // Note: There's no need to implement SDL_ConvertSurfaceFormat, as it
     // does the same thing as SDL_ConvertSurface but with a slightly different
     // function signature.
 
     /// Performs surface blitting (surface copying).
     ///
     /// Returns the final blit rectangle, if a `dst_rect` was provided.
-    pub fn blit(&self, src_rect: Option<Rect>, 
-            dst: &mut SurfaceRef, dst_rect: Option<Rect>) 
-            -> Result<Option<Rect>, String> {
+    pub fn blit<R1, R2>(&self, src_rect: R1,
+            dst: &mut SurfaceRef, dst_rect: R2)
+            -> Result<Option<Rect>, String> 
+        where R1: Into<Option<Rect>>,
+              R2: Into<Option<Rect>>,
+    {
+        let src_rect = src_rect.into();
+        let dst_rect = dst_rect.into();
+
         unsafe {
             let src_rect_ptr = src_rect.as_ref().map(|r| r.raw()).unwrap_or(ptr::null());
 
@@ -548,8 +560,13 @@ impl SurfaceRef {
     ///
     /// Unless you know what you're doing, use `blit()` instead, which will clip the input rectangles.
     /// This function could crash if the rectangles aren't pre-clipped to the surface, and is therefore unsafe.
-    pub unsafe fn lower_blit(&self, src_rect: Option<Rect>,
-                      dst: &mut SurfaceRef, dst_rect: Option<Rect>) -> Result<(), String> {
+    pub unsafe fn lower_blit<R1, R2>(&self, src_rect: R1,
+                      dst: &mut SurfaceRef, dst_rect: R2) -> Result<(), String> 
+    where R1: Into<Option<Rect>>,
+          R2: Into<Option<Rect>>,
+    {
+        let src_rect = src_rect.into();
+        let dst_rect = dst_rect.into();
 
         match {
             // The rectangles don't change, but the function requires mutable pointers.
@@ -567,8 +584,13 @@ impl SurfaceRef {
     /// Performs scaled surface bliting (surface copying).
     ///
     /// Returns the final blit rectangle, if a `dst_rect` was provided.
-    pub fn blit_scaled(&self, src_rect: Option<Rect>,
-                             dst: &mut SurfaceRef, dst_rect: Option<Rect>) -> Result<Option<Rect>, String> {
+    pub fn blit_scaled<R1, R2>(&self, src_rect: R1,
+                             dst: &mut SurfaceRef, dst_rect: R2) -> Result<Option<Rect>, String> 
+    where R1: Into<Option<Rect>>,
+          R2: Into<Option<Rect>>,
+    {
+        let src_rect = src_rect.into();
+        let dst_rect = dst_rect.into();
 
         match unsafe {
             let src_rect_ptr = src_rect.as_ref().map(|r| r.raw()).unwrap_or(ptr::null());
@@ -589,14 +611,17 @@ impl SurfaceRef {
     ///
     /// Unless you know what you're doing, use `blit_scaled()` instead, which will clip the input rectangles.
     /// This function could crash if the rectangles aren't pre-clipped to the surface, and is therefore unsafe.
-    pub unsafe fn lower_blit_scaled(&self, src_rect: Option<Rect>,
-                             dst: &mut SurfaceRef, dst_rect: Option<Rect>) -> Result<(), String> {
+    pub unsafe fn lower_blit_scaled<R1, R2>(&self, src_rect: R1,
+                             dst: &mut SurfaceRef, dst_rect: R2) -> Result<(), String> 
+    where R1: Into<Option<Rect>>,
+          R2: Into<Option<Rect>>
+    {
 
         match {
             // The rectangles don't change, but the function requires mutable pointers.
-            let src_rect_ptr = src_rect.as_ref().map(|r| r.raw())
+            let src_rect_ptr = src_rect.into().as_ref().map(|r| r.raw())
                 .unwrap_or(ptr::null()) as *mut _;
-            let dst_rect_ptr = dst_rect.as_ref().map(|r| r.raw())
+            let dst_rect_ptr = dst_rect.into().as_ref().map(|r| r.raw())
                 .unwrap_or(ptr::null()) as *mut _;
             ll::SDL_LowerBlitScaled(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
         } {

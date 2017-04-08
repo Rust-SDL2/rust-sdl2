@@ -68,15 +68,16 @@ use sys::audio as ll;
 impl AudioSubsystem {
     /// Opens a new audio device given the desired parameters and callback.
     #[inline]
-    pub fn open_playback<CB, F>(&self, device: Option<&str>, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
-    where CB: AudioCallback, F: FnOnce(AudioSpec) -> CB
+    pub fn open_playback<'a, CB, F, D>(&self, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
+    where CB: AudioCallback, F: FnOnce(AudioSpec) -> CB, D: Into<Option<&'a str>>,
     {
         AudioDevice::open_playback(self, device, spec, get_callback)
     }
 
     /// Opens a new audio device which uses queueing rather than older callback method.
     #[inline]
-    pub fn open_queue<Channel>(&self, device: Option<&str>, spec: &AudioSpecDesired) -> Result<AudioQueue<Channel>, String> where Channel: AudioFormatNum
+    pub fn open_queue<'a, Channel, D>(&self, device: D, spec: &AudioSpecDesired) -> Result<AudioQueue<Channel>, String>
+    where Channel: AudioFormatNum, D: Into<Option<&'a str>>,
     {
         AudioQueue::open_queue(self, device, spec)
     }
@@ -381,8 +382,18 @@ pub struct AudioSpecDesired {
 }
 
 impl AudioSpecDesired {
-    fn convert_to_ll<CB: AudioCallback>(freq: Option<i32>, channels: Option<u8>, samples: Option<u16>, userdata: *mut CB) -> ll::SDL_AudioSpec {
+    fn convert_to_ll<CB, F, C, S>(freq: F, channels: C, samples: S, userdata: *mut CB) -> ll::SDL_AudioSpec 
+    where
+        CB: AudioCallback,
+        F: Into<Option<i32>>,
+        C: Into<Option<u8>>,
+        S: Into<Option<u16>>,
+    {
         use std::mem::transmute;
+
+        let freq = freq.into();
+        let channels = channels.into();
+        let samples = samples.into();
 
         if let Some(freq) = freq { assert!(freq > 0); }
         if let Some(channels) = channels { assert!(channels > 0); }
@@ -409,7 +420,17 @@ impl AudioSpecDesired {
         }
     }
 
-    fn convert_queue_to_ll<Channel: AudioFormatNum>(freq: Option<i32>, channels: Option<u8>, samples: Option<u16>) -> ll::SDL_AudioSpec {
+    fn convert_queue_to_ll<Channel, F, C, S>(freq: F, channels: C, samples: S) -> ll::SDL_AudioSpec 
+    where
+        Channel: AudioFormatNum,
+        F: Into<Option<i32>>,
+        C: Into<Option<u8>>,
+        S: Into<Option<u16>>
+    {
+        let freq = freq.into();
+        let channels = channels.into();
+        let samples = samples.into();
+
         if let Some(freq) = freq { assert!(freq > 0); }
         if let Some(channels) = channels { assert!(channels > 0); }
         if let Some(samples) = samples { assert!(samples > 0); }
@@ -481,14 +502,14 @@ pub struct AudioQueue<Channel: AudioFormatNum> {
     spec: AudioSpec,
 }
 
-impl<Channel: AudioFormatNum> AudioQueue<Channel> {
+impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
     /// Opens a new audio device given the desired parameters and callback.
-    pub fn open_queue(a: &AudioSubsystem, device: Option<&str>, spec: &AudioSpecDesired) -> Result<AudioQueue<Channel>, String> {
-        let desired = AudioSpecDesired::convert_queue_to_ll::<Channel>(spec.freq, spec.channels, spec.samples);
+    pub fn open_queue<D: Into<Option<&'a str>>>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired) -> Result<AudioQueue<Channel>, String> {
+        let desired = AudioSpecDesired::convert_queue_to_ll::<Channel, Option<i32>, Option<u8>, Option<u16>>(spec.freq, spec.channels, spec.samples);
 
         let mut obtained = unsafe { mem::uninitialized::<ll::SDL_AudioSpec>() };
         unsafe {
-            let device = match device {
+            let device = match device.into() {
                 Some(device) => Some(CString::new(device).unwrap()),
                 None => None
             };
@@ -568,8 +589,10 @@ pub struct AudioDevice<CB: AudioCallback> {
 
 impl<CB: AudioCallback> AudioDevice<CB> {
     /// Opens a new audio device given the desired parameters and callback.
-    pub fn open_playback<F>(a: &AudioSubsystem, device: Option<&str>, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
-    where F: FnOnce(AudioSpec) -> CB
+    pub fn open_playback<'a, F, D>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
+    where
+        F: FnOnce(AudioSpec) -> CB,
+        D: Into<Option<&'a str>>,
     {
 
         // SDL_OpenAudioDevice needs a userdata pointer, but we can't initialize the
@@ -583,7 +606,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
 
         let mut obtained = unsafe { mem::uninitialized::<ll::SDL_AudioSpec>() };
         unsafe {
-            let device = match device {
+            let device = match device.into() {
                 Some(device) => Some(CString::new(device).unwrap()),
                 None => None
             };

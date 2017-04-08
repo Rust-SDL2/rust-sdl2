@@ -740,13 +740,16 @@ impl ::std::fmt::Debug for Event {
 
 /// Helper function to make converting scancodes
 /// and keycodes to primitive SDL_Keysym types.
-fn mk_keysym(scancode: Option<Scancode>,
-             keycode: Option<Keycode>,
-             keymod: Mod) -> syskeyboard::SDL_Keysym {
-    let scancode = scancode
+fn mk_keysym<S, K>(scancode: S,
+             keycode: K,
+             keymod: Mod) -> syskeyboard::SDL_Keysym 
+where S: Into<Option<Scancode>>,
+      K: Into<Option<Keycode>>,
+{
+    let scancode = scancode.into()
         .map(|sc| sc as scancode::SDL_Scancode)
         .unwrap_or(scancode::SDL_SCANCODE_UNKNOWN);
-    let keycode = keycode
+    let keycode = keycode.into()
         .map(|kc| kc as keycode::SDL_Keycode)
         .unwrap_or(keycode::SDLK_UNKNOWN);
     let keymod = keymod.bits() as u16;

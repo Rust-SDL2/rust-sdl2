@@ -141,9 +141,11 @@ impl error::Error for ShowMessageError {
 /// There is no way to know if the user clicked "Ok" or closed the message box,
 /// If you want to retrieve which button was clicked and customize a bit more
 /// your message box, use `show_message_box` instead.
-pub fn show_simple_message_box(flags: MessageBoxFlag, title: &str,
-        message: &str, window: Option<&WindowRef>)
-        -> Result<(), ShowMessageError> {
+pub fn show_simple_message_box<'a, W>(flags: MessageBoxFlag, title: &str,
+        message: &str, window: W)
+        -> Result<(), ShowMessageError> 
+where W: Into<Option<&'a WindowRef>>
+{
     use self::ShowMessageError::*;
     let result = unsafe {
         let title = match CString::new(title) {
@@ -158,7 +160,7 @@ pub fn show_simple_message_box(flags: MessageBoxFlag, title: &str,
             flags.bits(),
             title.as_ptr() as *const c_char,
             message.as_ptr() as *const c_char,
-            window.map_or(ptr::null_mut(), |win| win.raw())
+            window.into().map_or(ptr::null_mut(), |win| win.raw())
         )
     } == 0;
 
@@ -178,9 +180,15 @@ pub fn show_simple_message_box(flags: MessageBoxFlag, title: &str,
 /// Note that the variant of the `ClickedButton` enum will also be returned if the message box
 /// has been forcefully closed (Alt-F4, ...)
 ///
-pub fn show_message_box<'a>(flags:MessageBoxFlag, buttons:&'a [ButtonData], title:&str,
-    message:&str, window:Option<&WindowRef>, scheme:Option<MessageBoxColorScheme>)
-    -> Result<ClickedButton<'a>,ShowMessageError> {
+pub fn show_message_box<'a, 'b, W, M>(flags:MessageBoxFlag, buttons:&'a [ButtonData], title:&str,
+    message:&str, window: W, scheme: M)
+    -> Result<ClickedButton<'a>,ShowMessageError> 
+where W: Into<Option<&'b WindowRef>>,
+      M: Into<Option<MessageBoxColorScheme>>,
+{
+    let window = window.into();
+    let scheme = scheme.into();
+
     use self::ShowMessageError::*;
     let mut button_id : c_int = 0;
     let title = match CString::new(title) {
