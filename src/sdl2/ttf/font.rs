@@ -17,10 +17,7 @@ use super::ffi;
 /// Converts a rust-SDL2 color to its C ffi representation.
 #[inline]
 fn color_to_c_color(color: Color) -> SDL_Color {
-    match color {
-        pixels::Color::RGB(r, g, b)     => SDL_Color { r: r, g: g, b: b, a: 255 },
-        pixels::Color::RGBA(r, g, b, a) => SDL_Color { r: r, g: g, b: b, a: a   }
-    }
+    SDL_Color { r: color.r, g: color.g, b: color.b, a: color.a }
 }
 
 

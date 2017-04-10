@@ -484,14 +484,8 @@ impl<'a> Renderer<'a> {
 impl<'a> Renderer<'a> {
     /// Sets the color used for drawing operations (Rect, Line and Clear).
     pub fn set_draw_color(&mut self, color: pixels::Color) {
-        let ret = match color {
-            pixels::Color::RGB(r, g, b) => {
-                unsafe { ll::SDL_SetRenderDrawColor(self.raw, r, g, b, 255) }
-            },
-            pixels::Color::RGBA(r, g, b, a) => {
-                unsafe { ll::SDL_SetRenderDrawColor(self.raw, r, g, b, a)  }
-            }
-        };
+        let (r, g, b, a) = color.rgba();
+        let ret = unsafe { ll::SDL_SetRenderDrawColor(self.raw, r, g, b, a) };
         // Should only fail on an invalid renderer
         if ret != 0 { panic!(get_error()) }
     }

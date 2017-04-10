@@ -370,11 +370,7 @@ impl SurfaceRef {
     }
 
     pub fn set_color_mod(&mut self, color: pixels::Color) {
-        let (r, g, b) = match color {
-            pixels::Color::RGB(r, g, b) => (r, g, b),
-            pixels::Color::RGBA(r, g, b, _) => (r, g, b)
-        };
-
+        let (r, g, b) = color.rgb();
         let result = unsafe { ll::SDL_SetSurfaceColorMod(self.raw(), r, g, b) };
 
         if result != 0 {
