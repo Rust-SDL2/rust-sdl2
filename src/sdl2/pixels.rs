@@ -90,21 +90,28 @@ fn create_palette() {
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
-pub enum Color {
-    RGB(u8, u8, u8),
-    RGBA(u8, u8, u8, u8)
+pub struct Color {
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
+    pub a: u8
 }
 
 impl Color {
+    #[inline]
+    #[allow(non_snake_case)]
+    pub fn RGB(r: u8, g: u8, b: u8) -> Color {
+        Color { r: r, g: g, b: b, a: 0xff }
+    }
+
+    #[inline]
+    #[allow(non_snake_case)]
+    pub fn RGBA(r: u8, g: u8, b: u8, a: u8) -> Color {
+        Color { r: r, g: g, b: b, a: a }
+    }
+
     pub fn to_u32(&self, format: &PixelFormat) -> u32 {
-        match self {
-            &Color::RGB(r, g, b) => {
-                unsafe { ll::SDL_MapRGB(format.raw, r, g, b) }
-            }
-            &Color::RGBA(r, g, b, a) => {
-                unsafe { ll::SDL_MapRGBA(format.raw, r, g, b, a) }
-            }
-        }
+        unsafe { ll::SDL_MapRGBA(format.raw, self.r, self.g, self.b, self.a) }
     }
 
     pub fn from_u32(format: &PixelFormat, pixel: u32) -> Color {
@@ -116,24 +123,20 @@ impl Color {
         Color::RGBA(r, g, b, a)
     }
 
+    #[inline]
     pub fn rgb(&self) -> (u8, u8, u8) {
-        match self {
-            &Color::RGB(r, g, b) => (r, g, b),
-            &Color::RGBA(r, g, b, _) => (r, g, b)
-        }
+        (self.r, self.g, self.b)
     }
 
+    #[inline]
     pub fn rgba(&self) -> (u8, u8, u8, u8) {
-        match self {
-            &Color::RGB(r, g, b) => (r, g, b, 0xff),
-            &Color::RGBA(r, g, b, a) => (r, g, b, a),
-        }
+        (self.r, self.g, self.b, self.a)
     }
 
     // Implemented manually and kept private, because reasons
+    #[inline]
     unsafe fn raw(&self) -> ll::SDL_Color {
-        let (r, g, b, a) = self.rgba();
-        ll::SDL_Color { r: r, g: g, b: b, a: a }
+        ll::SDL_Color { r: self.r, g: self.g, b: self.b, a: self.a }
     }
 }
 

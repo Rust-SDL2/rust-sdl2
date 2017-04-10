@@ -191,14 +191,7 @@ pub trait ToColor {
 impl ToColor for pixels::Color {
     #[inline]
     fn as_rgba(&self) -> (u8, u8, u8, u8) {
-        match *self {
-            pixels::Color::RGB(r, g, b) => {
-                (r, g, b, 255u8)
-            }
-            pixels::Color::RGBA(r, g, b, a) => {
-                (r, g, b, a)
-            }
-        }
+        self.rgba()
     }
 }
 
