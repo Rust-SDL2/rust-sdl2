@@ -275,10 +275,10 @@ is the same as SDL2)
 
 ## What about sdl2\_net ?
 
-As of now, sdl2\_net meaningless compared to what other crates
+As of now, sdl2\_net is meaningless compared to what other crates
 such as `serde` and `bincode` can offer.
 We highly recommend using those to develop anything UDP or TCP
-realted (along with futures or TCP/UDP from std).
+related (along with futures or TCP/UDP from the standard library).
 
 If you still want an implementation of sdl2\_net, you can try to
 add it in this repo as a feature via a Pull Request. A somewhat
@@ -324,6 +324,15 @@ the latest version of both Rust and Cargo, check that you've updated Rust-SDL2
 to the latest version, and run `cargo clean`. If that fails, please let us know
 on the issue tracker.
 
+# Contributing
+
+Any Pull Request is welcome, however small your contribution may be ! There are, however, conditions to contribute:
+
+* New features must be properly documented, be it via examples or inline documentation (via `cargo doc`). Documentation must be for the end user as well as your next fellow contributor.
+* Breaking changes must have a proper argumentation with it. While the pre-1.0 state of this crate allows us to be somewha unstable, **useless breaking changes will be denied**.
+* Minor changes, breaking changes and new features added via Pull Request must be added in the [changelog][changelog] file. It is now **mandatory** to log your changes in the changelog. A short description with a link to your commit/pull request within GitHub is fine. Internal, documentation or meta-changes (travis build change, README instructions updates, ...) don't have to be added in the changelog.
+
+[changelog]: ./changelog.md
 [crates-io-badge]: https://img.shields.io/crates/v/sdl2.svg
 [crates-io-url]: https://crates.io/crates/sdl2
 [trav-ci-img]: https://travis-ci.org/AngryLawyer/rust-sdl2.png?branch=master
