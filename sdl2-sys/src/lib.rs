@@ -32,6 +32,7 @@ pub mod sdl;
 pub mod timer;
 pub mod version;
 pub mod hint;
+pub mod log;
 
 pub use scancode::*;
 pub use keycode::*;
@@ -58,3 +59,4 @@ pub use sdl::*;
 pub use timer::*;
 pub use version::*;
 pub use hint::*;
+pub use log::*;
