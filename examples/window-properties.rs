@@ -8,7 +8,8 @@ pub fn main() {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
 
-    let window = video_subsystem.window("rust-sdl2 demo: Window", 800, 600)
+    let window = video_subsystem
+        .window("rust-sdl2 demo: Window", 800, 600)
         .resizable()
         .build()
         .unwrap();
@@ -22,10 +23,8 @@ pub fn main() {
     'running: loop {
         for event in event_pump.poll_iter() {
             match event {
-                Event::Quit {..}
-                | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
-                    break 'running
-                },
+                Event::Quit { .. } |
+                Event::KeyDown { keycode: Some(Keycode::Escape), .. } => break 'running,
                 _ => {}
             }
         }
@@ -36,7 +35,12 @@ pub fn main() {
 
             let position = window.position();
             let size = window.size();
-            let title = format!("Window - pos({}x{}), size({}x{}): {}", position.0, position.1, size.0, size.1, tick);
+            let title = format!("Window - pos({}x{}), size({}x{}): {}",
+                                position.0,
+                                position.1,
+                                size.0,
+                                size.1,
+                                tick);
             window.set_title(&title).unwrap();
 
             tick += 1;
