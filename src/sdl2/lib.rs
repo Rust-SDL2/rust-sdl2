@@ -35,6 +35,7 @@ pub mod video;
 pub mod timer;
 pub mod render;
 pub mod rwops;
+pub mod log;
 mod sdl;
 pub mod audio;
 pub mod version;
