@@ -1,7 +1,7 @@
 //!
 //! A binding for the library `SDL2_image`
 //!
-//! 
+//!
 //! Note that you need to build with the
 //! feature `image` for this module to be enabled,
 //! like so:
@@ -23,11 +23,11 @@
 use std::os::raw::{c_int, c_char};
 use std::ffi::CString;
 use std::path::Path;
-use ::surface::Surface;
-use ::render::{Renderer, Texture};
-use ::rwops::RWops;
-use ::version::Version;
-use ::get_error;
+use surface::Surface;
+use render::{Renderer, Texture};
+use rwops::RWops;
+use version::Version;
+use get_error;
 use sys;
 
 // Setup linking for all targets.
@@ -35,17 +35,17 @@ use sys;
 mod mac {
     #[cfg(any(mac_framework, feature="use_mac_framework"))]
     #[link(kind="framework", name="SDL2_image")]
-    extern {}
+    extern "C" {}
 
     #[cfg(not(any(mac_framework, feature="use_mac_framework")))]
     #[link(name="SDL2_image")]
-    extern {}
+    extern "C" {}
 }
 
 #[cfg(any(target_os="windows", target_os="linux", target_os="freebsd"))]
 mod others {
     #[link(name="SDL2_image")]
-    extern {}
+    extern "C" {}
 }
 
 #[allow(non_camel_case_types, dead_code)]
@@ -178,7 +178,9 @@ pub struct Sdl2ImageContext;
 
 impl Drop for Sdl2ImageContext {
     fn drop(&mut self) {
-        unsafe { ffi::IMG_Quit(); }
+        unsafe {
+            ffi::IMG_Quit();
+        }
     }
 }
 
@@ -205,9 +207,7 @@ pub fn init(flags: InitFlag) -> Result<Sdl2ImageContext, String> {
 
 /// Returns the version of the dynamically linked `SDL_image` library
 pub fn get_linked_version() -> Version {
-    unsafe {
-        Version::from_ll(*ffi::IMG_Linked_Version())
-    }
+    unsafe { Version::from_ll(*ffi::IMG_Linked_Version()) }
 }
 
 #[inline]
@@ -238,7 +238,7 @@ pub trait ImageRWops {
     fn load_png(&self) -> Result<Surface, String>;
     fn load_tga(&self) -> Result<Surface, String>;
     fn load_lbm(&self) -> Result<Surface, String>;
-    fn load_xv(&self)  -> Result<Surface, String>;
+    fn load_xv(&self) -> Result<Surface, String>;
     fn load_webp(&self) -> Result<Surface, String>;
 
     fn is_cur(&self) -> bool;
@@ -253,15 +253,13 @@ pub trait ImageRWops {
     fn is_tif(&self) -> bool;
     fn is_png(&self) -> bool;
     fn is_lbm(&self) -> bool;
-    fn is_xv(&self)  -> bool;
+    fn is_xv(&self) -> bool;
     fn is_webp(&self) -> bool;
 }
 
 impl<'a> ImageRWops for RWops<'a> {
     fn load(&self) -> Result<Surface, String> {
-        let raw = unsafe {
-            ffi::IMG_Load_RW(self.raw(), 0)
-        };
+        let raw = unsafe { ffi::IMG_Load_RW(self.raw(), 0) };
         to_surface_result(raw)
     }
     fn load_typed(&self, _type: &str) -> Result<Surface, String> {
@@ -324,11 +322,11 @@ impl<'a> ImageRWops for RWops<'a> {
         let raw = unsafe { ffi::IMG_LoadLBM_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_xv(&self)  -> Result<Surface, String> {
+    fn load_xv(&self) -> Result<Surface, String> {
         let raw = unsafe { ffi::IMG_LoadXV_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_webp(&self)  -> Result<Surface, String> {
+    fn load_webp(&self) -> Result<Surface, String> {
         let raw = unsafe { ffi::IMG_LoadWEBP_RW(self.raw()) };
         to_surface_result(raw)
     }
@@ -369,10 +367,10 @@ impl<'a> ImageRWops for RWops<'a> {
     fn is_lbm(&self) -> bool {
         unsafe { ffi::IMG_isLBM(self.raw()) == 1 }
     }
-    fn is_xv(&self)  -> bool {
-        unsafe { ffi::IMG_isXV(self.raw())  == 1 }
+    fn is_xv(&self) -> bool {
+        unsafe { ffi::IMG_isXV(self.raw()) == 1 }
     }
     fn is_webp(&self) -> bool {
-        unsafe { ffi::IMG_isWEBP(self.raw())  == 1 }
+        unsafe { ffi::IMG_isWEBP(self.raw()) == 1 }
     }
 }
