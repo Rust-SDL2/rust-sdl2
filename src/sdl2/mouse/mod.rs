@@ -344,7 +344,7 @@ impl MouseUtil {
         }
     }
 
-    pub fn warp_mouse_in_window(&self, window: &video::WindowRef, x: i32, y: i32) {
+    pub fn warp_mouse_in_window(&self, window: &video::Window, x: i32, y: i32) {
         unsafe { ll::SDL_WarpMouseInWindow(window.raw(), x, y); }
     }
 

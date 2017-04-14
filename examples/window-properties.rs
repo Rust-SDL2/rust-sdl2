@@ -14,7 +14,7 @@ pub fn main() {
         .build()
         .unwrap();
 
-    let mut renderer = window.renderer().present_vsync().build().unwrap();
+    let mut canvas = window.into_canvas().present_vsync().build().unwrap();
 
     let mut tick = 0;
 
@@ -31,7 +31,7 @@ pub fn main() {
 
         {
             // Update the window title.
-            let mut window = renderer.window_mut().unwrap();
+            let mut window = canvas.window_mut();
 
             let position = window.position();
             let size = window.size();
@@ -46,8 +46,8 @@ pub fn main() {
             tick += 1;
         }
 
-        renderer.set_draw_color(Color::RGB(0, 0, 0));
-        renderer.clear();
-        renderer.present();
+        canvas.set_draw_color(Color::RGB(0, 0, 0));
+        canvas.clear();
+        canvas.present();
     }
 }

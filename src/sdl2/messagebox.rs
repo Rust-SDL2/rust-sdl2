@@ -4,7 +4,7 @@ use std::fmt;
 use std::ptr;
 use std::os::raw::{c_char,c_int};
 
-use video::WindowRef;
+use video::Window;
 use get_error;
 
 use sys::messagebox as ll;
@@ -144,7 +144,7 @@ impl error::Error for ShowMessageError {
 pub fn show_simple_message_box<'a, W>(flags: MessageBoxFlag, title: &str,
         message: &str, window: W)
         -> Result<(), ShowMessageError> 
-where W: Into<Option<&'a WindowRef>>
+where W: Into<Option<&'a Window>>
 {
     use self::ShowMessageError::*;
     let result = unsafe {
@@ -183,7 +183,7 @@ where W: Into<Option<&'a WindowRef>>
 pub fn show_message_box<'a, 'b, W, M>(flags:MessageBoxFlag, buttons:&'a [ButtonData], title:&str,
     message:&str, window: W, scheme: M)
     -> Result<ClickedButton<'a>,ShowMessageError> 
-where W: Into<Option<&'b WindowRef>>,
+where W: Into<Option<&'b Window>>,
       M: Into<Option<MessageBoxColorScheme>>,
 {
     let window = window.into();

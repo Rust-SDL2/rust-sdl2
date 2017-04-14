@@ -6,7 +6,7 @@ use std::ptr;
 use std::ffi::CString;
 use num::traits::ToPrimitive;
 use libc::{c_void, c_int, c_char};
-use render::Renderer;
+use render::Canvas;
 use surface::Surface;
 use pixels;
 use get_error;
@@ -698,7 +698,7 @@ pub trait DrawRenderer {
     fn string<C: ToColor>(&self, x: i16, y: i16, s: &str, color: C) -> Result<(), String>;
 }
 
-impl<'a> DrawRenderer for Renderer<'a> {
+impl<T, TC> DrawRenderer for Canvas<T, TC> {
     fn pixel<C: ToColor>(&self, x: i16, y: i16, color: C) -> Result<(), String> {
         let ret = unsafe { ll::pixelColor(self.raw(), x, y, color.as_u32()) };
         if ret == 0 { Ok(()) } else { Err(get_error()) }

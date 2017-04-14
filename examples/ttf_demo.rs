@@ -54,19 +54,20 @@ fn run(font_path: &Path) {
         .build()
         .unwrap();
 
-    let mut renderer = window.renderer().build().unwrap();
+    let mut canvas = window.into_canvas().build().unwrap();
+    let texture_creator = canvas.texture_creator();
 
     // Load a font
     let mut font = ttf_context.load_font(font_path, 128).unwrap();
     font.set_style(sdl2::ttf::STYLE_BOLD);
     
-    // render a surface, and convert it to a texture bound to the renderer
+    // render a surface, and convert it to a texture bound to the canvas
     let surface = font.render("Hello Rust!")
         .blended(Color::RGBA(255, 0, 0, 255)).unwrap();
-    let mut texture = renderer.create_texture_from_surface(&surface).unwrap();
+    let mut texture = texture_creator.create_texture_from_surface(&surface).unwrap();
 
-    renderer.set_draw_color(Color::RGBA(195, 217, 255, 255));
-    renderer.clear();
+    canvas.set_draw_color(Color::RGBA(195, 217, 255, 255));
+    canvas.clear();
 
     let TextureQuery { width, height, .. } = texture.query();
 
@@ -74,8 +75,8 @@ fn run(font_path: &Path) {
     let padding = 64;
     let target = get_centered_rect(width, height, SCREEN_WIDTH - padding, SCREEN_HEIGHT - padding);
 
-    renderer.copy(&mut texture, None, Some(target)).unwrap();
-    renderer.present();
+    canvas.copy(&mut texture, None, Some(target)).unwrap();
+    canvas.present();
 
     'mainloop: loop {
         for event in sdl_context.event_pump().unwrap().poll_iter() {

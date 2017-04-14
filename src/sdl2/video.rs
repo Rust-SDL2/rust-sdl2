@@ -1,11 +1,11 @@
 use libc::{c_int, c_float, uint32_t, c_char};
 use std::ffi::{CStr, CString, NulError};
 use std::{mem, ptr, fmt};
-use std::ops::{Deref, DerefMut};
+use std::rc::Rc;
 use std::error::Error;
 
 use rect::Rect;
-use render::RendererBuilder;
+use render::CanvasBuilder;
 use surface::SurfaceRef;
 use pixels::PixelFormatEnum;
 use VideoSubsystem;
@@ -449,27 +449,50 @@ impl GLContext {
     }
 }
 
-pub struct Window {
+/// Holds a `SDL_Window`
+///
+/// When the `WindowContext` is dropped, it destroys the `SDL_Window`
+pub struct WindowContext {
     subsystem: VideoSubsystem,
     raw: *mut ll::SDL_Window,
 }
 
-/// An unsized Window reference.
-///
-/// This type is used whenever Windows need to be borrowed from the SDL library, without concern
-/// for freeing the Window.
-pub struct WindowRef {
-    // It's nothing! (it gets transmuted to SDL_Window later).
-    // The empty private field is need to a) make `std::mem::swap()` copy nothing instead of
-    // clobbering two windows (SDL_Window's size could change in the future),
-    // and b) prevent user initialization of this type.
-    _raw: ()
+impl Drop for WindowContext {
+    #[inline]
+    fn drop(&mut self) {
+        unsafe { ll::SDL_DestroyWindow(self.raw) };
+    }
 }
 
-#[test]
-fn test_window_ref_size() {
-    // `WindowRef` must be 0 bytes.
-    assert_eq!(::std::mem::size_of::<WindowRef>(), 0);
+impl WindowContext {
+    #[inline]
+    /// Unsafe if the `*mut SDL_Window` is used after the `WindowContext` is dropped
+    pub unsafe fn from_ll(subsystem: VideoSubsystem, raw: *mut ll::SDL_Window) -> WindowContext {
+        WindowContext {
+            subsystem: subsystem.clone(),
+            raw: raw,
+        }
+    }
+}
+
+/// Represents the "shell" of a `Window`.
+///
+/// You can set get and set many of the SDL_Window properties (i.e., border, size, `PixelFormat`, etc)
+///
+/// However, you cannot directly access the pixels of the `Window`.
+/// It needs to be converted to a `Canvas` to access the rendering functions.
+///
+/// Note: If a `Window` goes out of scope but it cloned its context,
+/// then the `SDL_Window` will not be destroyed until there are no more references to the `WindowContext`.
+/// This may happen when a `TextureCreator<Window>` outlives the `Canvas<Window>`
+pub struct Window {
+    context: Rc<WindowContext>,
+}
+
+impl From<WindowContext> for Window {
+    fn from(context: WindowContext) -> Window {
+        Window { context: Rc::new(context) }
+    }
 }
 
 impl_raw_accessors!(
@@ -692,13 +715,6 @@ impl VideoSubsystem {
     }
 }
 
-impl Drop for Window {
-    #[inline]
-    fn drop(&mut self) {
-        unsafe { ll::SDL_DestroyWindow(self.raw) };
-    }
-}
-
 #[derive(Debug)]
 pub enum WindowBuildError {
     HeightOverflows(u32),
@@ -790,10 +806,7 @@ impl WindowBuilder {
             if raw == ptr::null_mut() {
                 Err(SdlError(get_error()))
             } else {
-                Ok(Window {
-                    subsystem: self.subsystem.clone(),
-                    raw: raw,
-                })
+                Ok(Window::from_ll(self.subsystem.clone(), raw))
             }
         }
     }
@@ -883,65 +896,46 @@ impl WindowBuilder {
     }
 }
 
+impl From<Window> for CanvasBuilder {
+    fn from(window: Window) -> CanvasBuilder {
+        CanvasBuilder::new(window)
+    }
+}
+
 impl Window {
     #[inline]
-    pub fn raw(&self) -> *mut ll::SDL_Window { self.raw }
+    pub fn raw(&self) -> *mut ll::SDL_Window { self.context.raw }
 
     #[inline]
     pub unsafe fn from_ll(subsystem: VideoSubsystem, raw: *mut ll::SDL_Window) -> Window {
-        Window {
-            subsystem: subsystem,
-            raw: raw
-        }
+        let context = WindowContext::from_ll(subsystem, raw);
+        context.into()
     }
 
     #[inline]
-    pub fn subsystem(&self) -> &VideoSubsystem { &self.subsystem }
-
-    /// Initializes a new `RendererBuilder`; a convenience method that calls `RendererBuilder::new()`.
-    pub fn renderer(self) -> RendererBuilder {
-        RendererBuilder::new(self)
-    }
-}
-
-impl Deref for Window {
-    type Target = WindowRef;
-
-    #[inline]
-    fn deref(&self) -> &WindowRef {
-        unsafe { mem::transmute(self.raw) }
-    }
-}
-
-impl DerefMut for Window {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut WindowRef {
-        unsafe { mem::transmute(self.raw) }
-    }
-}
-
-impl WindowRef {
-    #[inline]
-    pub fn raw(&self) -> *mut ll::SDL_Window {
-        unsafe { mem::transmute(self) }
+    /// Create a new `Window` without taking ownership of the `WindowContext`
+    pub unsafe fn from_ref(context: Rc<WindowContext>) -> Window {
+        Window { context: context }
     }
 
     #[inline]
-    pub unsafe fn from_ll<'a>(raw: *mut ll::SDL_Window) -> &'a WindowRef {
-        mem::transmute(raw)
+    pub fn subsystem(&self) -> &VideoSubsystem { &self.context.subsystem }
+
+    /// Initializes a new `CanvasBuilder`; a convenience method that calls `CanvasBuilder::new()`.
+    pub fn into_canvas(self) -> CanvasBuilder {
+        self.into()
     }
 
-    #[inline]
-    pub unsafe fn from_ll_mut<'a>(raw: *mut ll::SDL_Window) -> &'a mut WindowRef {
-        mem::transmute(raw)
+    pub fn context(&self) -> Rc<WindowContext> {
+        self.context.clone()
     }
 
     pub fn id(&self) -> u32 {
-        unsafe { ll::SDL_GetWindowID(self.raw()) }
+        unsafe { ll::SDL_GetWindowID(self.context.raw) }
     }
 
     pub fn gl_create_context(&self) -> Result<GLContext, String> {
-        let result = unsafe { ll::SDL_GL_CreateContext(self.raw()) };
+        let result = unsafe { ll::SDL_GL_CreateContext(self.context.raw) };
         if result == ptr::null_mut() {
             Err(get_error())
         } else {
@@ -957,7 +951,7 @@ impl WindowRef {
             if context_raw.is_null() {
                 Err(get_error())
             } else {
-                if ll::SDL_GL_MakeCurrent(self.raw(), context_raw) == 0 {
+                if ll::SDL_GL_MakeCurrent(self.context.raw, context_raw) == 0 {
                     Ok(())
                 } else {
                     Err(get_error())
@@ -968,7 +962,7 @@ impl WindowRef {
 
     pub fn gl_make_current(&self, context: &GLContext) -> Result<(), String> {
         unsafe {
-            if ll::SDL_GL_MakeCurrent(self.raw(), context.raw) == 0 {
+            if ll::SDL_GL_MakeCurrent(self.context.raw, context.raw) == 0 {
                 Ok(())
             } else {
                 Err(get_error())
@@ -977,11 +971,11 @@ impl WindowRef {
     }
 
     pub fn gl_swap_window(&self) {
-        unsafe { ll::SDL_GL_SwapWindow(self.raw()) }
+        unsafe { ll::SDL_GL_SwapWindow(self.context.raw) }
     }
 
     pub fn display_index(&self) -> Result<i32, String> {
-        let result = unsafe { ll::SDL_GetWindowDisplayIndex(self.raw()) };
+        let result = unsafe { ll::SDL_GetWindowDisplayIndex(self.context.raw) };
         if result < 0 {
             return Err(get_error())
         } else {
@@ -994,7 +988,7 @@ impl WindowRef {
     {
         unsafe {
             let result = ll::SDL_SetWindowDisplayMode(
-                self.raw(),
+                self.context.raw,
                 match display_mode.into() {
                     Some(ref mode) => &mode.to_ll(),
                     None => ptr::null()
@@ -1013,7 +1007,7 @@ impl WindowRef {
 
         let result = unsafe {
             ll::SDL_GetWindowDisplayMode(
-                self.raw(),
+                self.context.raw,
                 &mut dm
             ) == 0
         };
@@ -1026,25 +1020,25 @@ impl WindowRef {
     }
 
     pub fn window_pixel_format(&self) -> PixelFormatEnum {
-        unsafe{ FromPrimitive::from_u64(ll::SDL_GetWindowPixelFormat(self.raw()) as u64).unwrap() }
+        unsafe{ FromPrimitive::from_u64(ll::SDL_GetWindowPixelFormat(self.context.raw) as u64).unwrap() }
     }
 
     pub fn window_flags(&self) -> u32 {
         unsafe {
-            ll::SDL_GetWindowFlags(self.raw())
+            ll::SDL_GetWindowFlags(self.context.raw)
         }
     }
 
     pub fn set_title(&mut self, title: &str) -> Result<(), NulError> {
         let title = try!(CString::new(title));
         Ok(unsafe {
-            ll::SDL_SetWindowTitle(self.raw(), title.as_ptr() as *const c_char);
+            ll::SDL_SetWindowTitle(self.context.raw, title.as_ptr() as *const c_char);
         })
     }
 
     pub fn title(&self) -> &str {
         unsafe {
-            let buf = ll::SDL_GetWindowTitle(self.raw());
+            let buf = ll::SDL_GetWindowTitle(self.context.raw);
 
             // The window title must be encoded in UTF-8.
             CStr::from_ptr(buf as *const _).to_str().unwrap()
@@ -1053,7 +1047,7 @@ impl WindowRef {
 
     pub fn set_icon<S: AsRef<SurfaceRef>>(&mut self, icon: S) {
         unsafe {
-            ll::SDL_SetWindowIcon(self.raw(), icon.as_ref().raw())
+            ll::SDL_SetWindowIcon(self.context.raw, icon.as_ref().raw())
         }
     }
 
@@ -1063,7 +1057,7 @@ impl WindowRef {
     pub fn set_position(&mut self, x: WindowPos, y: WindowPos) {
         unsafe {
             ll::SDL_SetWindowPosition(
-                self.raw(), to_ll_windowpos(x), to_ll_windowpos(y)
+                self.context.raw, to_ll_windowpos(x), to_ll_windowpos(y)
             )
         }
     }
@@ -1071,7 +1065,7 @@ impl WindowRef {
     pub fn position(&self) -> (i32, i32) {
         let mut x: c_int = 0;
         let mut y: c_int = 0;
-        unsafe { ll::SDL_GetWindowPosition(self.raw(), &mut x, &mut y) };
+        unsafe { ll::SDL_GetWindowPosition(self.context.raw, &mut x, &mut y) };
         (x as i32, y as i32)
     }
 
@@ -1080,21 +1074,21 @@ impl WindowRef {
         let w = try!(validate_int(width, "width"));
         let h = try!(validate_int(height, "height"));
         Ok(unsafe {
-            ll::SDL_SetWindowSize(self.raw(), w, h)
+            ll::SDL_SetWindowSize(self.context.raw, w, h)
         })
     }
 
     pub fn size(&self) -> (u32, u32) {
         let mut w: c_int = 0;
         let mut h: c_int = 0;
-        unsafe { ll::SDL_GetWindowSize(self.raw(), &mut w, &mut h) };
+        unsafe { ll::SDL_GetWindowSize(self.context.raw, &mut w, &mut h) };
         (w as u32, h as u32)
     }
 
     pub fn drawable_size(&self) -> (u32, u32) {
         let mut w: c_int = 0;
         let mut h: c_int = 0;
-        unsafe { ll::SDL_GL_GetDrawableSize(self.raw(), &mut w, &mut h) };
+        unsafe { ll::SDL_GL_GetDrawableSize(self.context.raw, &mut w, &mut h) };
         (w as u32, h as u32)
     }
 
@@ -1103,14 +1097,14 @@ impl WindowRef {
         let w = try!(validate_int(width, "width"));
         let h = try!(validate_int(height, "height"));
         Ok(unsafe {
-            ll::SDL_SetWindowMinimumSize(self.raw(), w, h)
+            ll::SDL_SetWindowMinimumSize(self.context.raw, w, h)
         })
     }
 
     pub fn minimum_size(&self) -> (u32, u32) {
         let mut w: c_int = 0;
         let mut h: c_int = 0;
-        unsafe { ll::SDL_GetWindowMinimumSize(self.raw(), &mut w, &mut h) };
+        unsafe { ll::SDL_GetWindowMinimumSize(self.context.raw, &mut w, &mut h) };
         (w as u32, h as u32)
     }
 
@@ -1119,7 +1113,7 @@ impl WindowRef {
         let w = try!(validate_int(width, "width"));
         let h = try!(validate_int(height, "height"));
         Ok(unsafe {
-            ll::SDL_SetWindowMaximumSize(self.raw(), w, h)
+            ll::SDL_SetWindowMaximumSize(self.context.raw, w, h)
         })
     }
 
@@ -1127,7 +1121,7 @@ impl WindowRef {
         let mut w: c_int = 0;
         let mut h: c_int = 0;
         unsafe {
-            ll::SDL_GetWindowMaximumSize(self.raw(), &mut w, &mut h)
+            ll::SDL_GetWindowMaximumSize(self.context.raw, &mut w, &mut h)
         };
         (w as u32, h as u32)
     }
@@ -1135,34 +1129,34 @@ impl WindowRef {
     pub fn set_bordered(&mut self, bordered: bool) {
         unsafe {
             ll::SDL_SetWindowBordered(
-                self.raw(),
+                self.context.raw,
                 if bordered { 1 } else { 0 }
             )
         }
     }
 
     pub fn show(&mut self) {
-        unsafe { ll::SDL_ShowWindow(self.raw()) }
+        unsafe { ll::SDL_ShowWindow(self.context.raw) }
     }
 
     pub fn hide(&mut self) {
-        unsafe { ll::SDL_HideWindow(self.raw()) }
+        unsafe { ll::SDL_HideWindow(self.context.raw) }
     }
 
     pub fn raise(&mut self) {
-        unsafe { ll::SDL_RaiseWindow(self.raw()) }
+        unsafe { ll::SDL_RaiseWindow(self.context.raw) }
     }
 
     pub fn maximize(&mut self) {
-        unsafe { ll::SDL_MaximizeWindow(self.raw()) }
+        unsafe { ll::SDL_MaximizeWindow(self.context.raw) }
     }
 
     pub fn minimize(&mut self) {
-        unsafe { ll::SDL_MinimizeWindow(self.raw()) }
+        unsafe { ll::SDL_MinimizeWindow(self.context.raw) }
     }
 
     pub fn restore(&mut self) {
-        unsafe { ll::SDL_RestoreWindow(self.raw()) }
+        unsafe { ll::SDL_RestoreWindow(self.context.raw) }
     }
 
     pub fn fullscreen_state(&self) -> FullscreenType {
@@ -1173,7 +1167,7 @@ impl WindowRef {
             -> Result<(), String> {
         unsafe {
             let result = ll::SDL_SetWindowFullscreen(
-                self.raw(), fullscreen_type as uint32_t
+                self.context.raw, fullscreen_type as uint32_t
             );
             if result == 0 {
                 Ok(())
@@ -1184,7 +1178,7 @@ impl WindowRef {
     }
 
     pub fn surface<'a>(&'a self, _e: &'a EventPump) -> Result<&'a SurfaceRef, String> {
-        let raw = unsafe { ll::SDL_GetWindowSurface(self.raw()) };
+        let raw = unsafe { ll::SDL_GetWindowSurface(self.context.raw) };
 
         if raw.is_null() {
             Err(get_error())
@@ -1194,7 +1188,7 @@ impl WindowRef {
     }
 
     pub fn surface_mut<'a>(&'a mut self, _e: &'a EventPump) -> Result<&'a mut SurfaceRef, String> {
-        let raw = unsafe { ll::SDL_GetWindowSurface(self.raw()) };
+        let raw = unsafe { ll::SDL_GetWindowSurface(self.context.raw) };
 
         if raw.is_null() {
             Err(get_error())
@@ -1205,7 +1199,7 @@ impl WindowRef {
 
     pub fn update_surface(&self) -> Result<(), String> {
         unsafe {
-            if ll::SDL_UpdateWindowSurface(self.raw()) == 0 {
+            if ll::SDL_UpdateWindowSurface(self.context.raw) == 0 {
                 Ok(())
             } else {
                 Err(get_error())
@@ -1215,7 +1209,7 @@ impl WindowRef {
 
     pub fn update_surface_rects(&self, rects: &[Rect]) -> Result<(), String> {
         unsafe {
-            if ll::SDL_UpdateWindowSurfaceRects(self.raw(), Rect::raw_slice(rects), rects.len() as c_int) == 0 {
+            if ll::SDL_UpdateWindowSurfaceRects(self.context.raw, Rect::raw_slice(rects), rects.len() as c_int) == 0 {
                 Ok(())
             } else {
                 Err(get_error())
@@ -1224,16 +1218,16 @@ impl WindowRef {
     }
 
     pub fn set_grab(&mut self, grabbed: bool) {
-        unsafe { ll::SDL_SetWindowGrab(self.raw(), if grabbed { 1 } else { 0 }) }
+        unsafe { ll::SDL_SetWindowGrab(self.context.raw, if grabbed { 1 } else { 0 }) }
     }
 
     pub fn grab(&self) -> bool {
-        unsafe { ll::SDL_GetWindowGrab(self.raw()) == 1 }
+        unsafe { ll::SDL_GetWindowGrab(self.context.raw) == 1 }
     }
 
     pub fn set_brightness(&mut self, brightness: f64) -> Result<(), String> {
         unsafe {
-            if ll::SDL_SetWindowBrightness(self.raw(), brightness as c_float) == 0 {
+            if ll::SDL_SetWindowBrightness(self.context.raw, brightness as c_float) == 0 {
                 Ok(())
             } else {
                 Err(get_error())
@@ -1242,7 +1236,7 @@ impl WindowRef {
     }
 
     pub fn brightness(&self) -> f64 {
-        unsafe { ll::SDL_GetWindowBrightness(self.raw()) as f64 }
+        unsafe { ll::SDL_GetWindowBrightness(self.context.raw) as f64 }
     }
 
     pub fn set_gamma_ramp<'a, 'b, 'c, R, G, B>(&mut self, red: R, green: G, blue: B) -> Result<(), String> 
@@ -1264,7 +1258,7 @@ impl WindowRef {
         };
         let result = unsafe {
             ll::SDL_SetWindowGammaRamp(
-                self.raw(), unwrapped_red, unwrapped_green, unwrapped_blue
+                self.context.raw, unwrapped_red, unwrapped_green, unwrapped_blue
             )
         };
         if result != 0 {
@@ -1280,7 +1274,7 @@ impl WindowRef {
         let mut blue: Vec<u16> = Vec::with_capacity(256);
         let result = unsafe {
             ll::SDL_GetWindowGammaRamp(
-                self.raw(), red.as_mut_ptr(), green.as_mut_ptr(),
+                self.context.raw, red.as_mut_ptr(), green.as_mut_ptr(),
                 blue.as_mut_ptr()
             )
         };
