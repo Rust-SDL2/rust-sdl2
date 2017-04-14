@@ -1,6 +1,6 @@
 use sys::{SDL_LogSetOutputFunction, SDL_LogPriority};
 use std::ptr::null_mut;
-use std::ffi::CStr;
+use std::ffi::{CStr, CString};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Category {
@@ -92,3 +92,14 @@ pub fn set_output_function(callback : fn(Priority, Category, &str)) {
         SDL_LogSetOutputFunction(Some(rust_sdl2_log_fn), null_mut());
     };
 }
+
+/// Standard log function which takes as priority INFO and
+/// as category APPLICATION
+pub fn log(message: &str) {
+    let message = message.replace('%', "%%");
+    let message = CString::new(message).unwrap();
+    unsafe {
+        ::sys::SDL_Log(message.into_raw());
+    }
+}
+
