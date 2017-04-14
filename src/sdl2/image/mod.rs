@@ -24,7 +24,7 @@ use std::os::raw::{c_int, c_char};
 use std::ffi::CString;
 use std::path::Path;
 use surface::Surface;
-use render::{Renderer, Texture};
+use render::{TextureCreator, Texture};
 use rwops::RWops;
 use version::Version;
 use get_error;
@@ -152,12 +152,12 @@ impl<'a> SaveSurface for Surface<'a> {
     }
 }
 
-/// Method extensions for creating Textures from a Renderer
+/// Method extensions for creating Textures from a TextureCreator
 pub trait LoadTexture {
     fn load_texture<P: AsRef<Path>>(&self, filename: P) -> Result<Texture, String>;
 }
 
-impl<'a> LoadTexture for Renderer<'a> {
+impl<T> LoadTexture for TextureCreator<T> {
     fn load_texture<P: AsRef<Path>>(&self, filename: P) -> Result<Texture, String> {
         //! Loads an SDL Texture from a file
         unsafe {
@@ -166,7 +166,7 @@ impl<'a> LoadTexture for Renderer<'a> {
             if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
-                Ok(Texture::from_ll(self, raw))
+                Ok(self.raw_create_texture(raw))
             }
         }
     }

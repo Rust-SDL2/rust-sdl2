@@ -17,7 +17,6 @@ macro_rules! rect(
 );
 
 fn main() {
-
     let sdl_context = sdl2::init().unwrap();
     let video_subsys = sdl_context.video().unwrap();
     let window = video_subsys.window("rust-sdl2_gfx: draw line & FPSManager", SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -26,11 +25,11 @@ fn main() {
         .build()
         .unwrap();
 
-    let mut renderer = window.renderer().build().unwrap();
+    let mut canvas = window.into_canvas().build().unwrap();
 
-    renderer.set_draw_color(pixels::Color::RGB(0, 0, 0));
-    renderer.clear();
-    renderer.present();
+    canvas.set_draw_color(pixels::Color::RGB(0, 0, 0));
+    canvas.clear();
+    canvas.present();
 
     let mut lastx = 0;
     let mut lasty = 0;
@@ -50,20 +49,20 @@ fn main() {
                     } else if keycode == Keycode::Space {
                         println!("space down");
                         for i in 0..400 {
-                            renderer.pixel(i as i16, i as i16, 0xFF000FFu32).unwrap();
+                            canvas.pixel(i as i16, i as i16, 0xFF000FFu32).unwrap();
                         }
-                        renderer.present();
+                        canvas.present();
 
                     }
                 }
 
                 Event::MouseButtonDown {x, y, ..} => {
                     let color = pixels::Color::RGB(x as u8, y as u8, 255);
-                    let _ = renderer.line(lastx, lasty, x as i16, y as i16, color);
+                    let _ = canvas.line(lastx, lasty, x as i16, y as i16, color);
                     lastx = x as i16;
                     lasty = y as i16;
                     println!("mouse btn down at ({},{})", x, y);
-                    renderer.present();
+                    canvas.present();
                 }
 
                 _ => {}

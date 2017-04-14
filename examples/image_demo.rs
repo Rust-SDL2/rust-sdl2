@@ -16,11 +16,12 @@ pub fn run(png: &Path) {
       .build()
       .unwrap();
 
-    let mut renderer = window.renderer().software().build().unwrap();
-    let texture = renderer.load_texture(png).unwrap();
+    let mut canvas = window.into_canvas().software().build().unwrap();
+    let texture_creator = canvas.texture_creator();
+    let texture = texture_creator.load_texture(png).unwrap();
 
-    renderer.copy(&texture, None, None).expect("Render failed");
-    renderer.present();
+    canvas.copy(&texture, None, None).expect("Render failed");
+    canvas.present();
 
     'mainloop: loop {
         for event in sdl_context.event_pump().unwrap().poll_iter() {

@@ -15,9 +15,10 @@ pub fn main() {
         .build()
         .unwrap();
 
-    let mut renderer = window.renderer().build().unwrap();
+    let mut canvas = window.into_canvas().build().unwrap();
+    let texture_creator = canvas.texture_creator();
 
-    let mut texture = renderer.create_texture_streaming(
+    let mut texture = texture_creator.create_texture_streaming(
         PixelFormatEnum::IYUV, 256, 256).unwrap();
     // Create a U-V gradient
     texture.with_lock(None, |buffer: &mut [u8], pitch: usize| {
@@ -48,9 +49,9 @@ pub fn main() {
         }
     }).unwrap();
 
-    renderer.clear();
-    renderer.copy(&texture, None, Some(Rect::new(100, 100, 256, 256))).unwrap();
-    renderer.present();
+    canvas.clear();
+    canvas.copy(&texture, None, Some(Rect::new(100, 100, 256, 256))).unwrap();
+    canvas.present();
 
     let mut event_pump = sdl_context.event_pump().unwrap();
 

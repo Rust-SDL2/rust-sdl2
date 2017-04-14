@@ -25,30 +25,76 @@
 //!
 //! ---
 //!
-//! None of the draw methods in `Renderer` are expected to fail.
+//! None of the draw methods in `Canvas` are expected to fail.
 //! If they do, a panic is raised and the program is aborted.
 
-use video::{Window, WindowRef};
+use video::{Window, WindowContext};
 use surface;
-use surface::{Surface, SurfaceRef};
+use surface::{Surface, SurfaceRef, SurfaceContext};
 use pixels;
 use pixels::PixelFormatEnum;
 use get_error;
 use std::fmt;
 use std::error::Error;
+use std::marker::PhantomData;
 use std::mem;
+use std::ops::Deref;
 use std::ptr;
+use std::rc::Rc;
 use libc::{c_int, uint32_t, c_double, c_void};
 use rect::Point;
 use rect::Rect;
-use std::cell::UnsafeCell;
 use std::ffi::CStr;
 use num::FromPrimitive;
 use std::vec::Vec;
-use std::rc::Rc;
 use common::{validate_int, IntegerOrSdlError};
 
 use sys::render as ll;
+
+/// Contains the description of an error returned by SDL
+#[derive(Debug)]
+pub struct SdlError(String);
+
+/// Possible errors returned by targetting a `Canvas` to render to a `Texture`
+#[derive(Debug)]
+pub enum TargetRenderError {
+    SdlError(SdlError),
+    NotSupported,
+}
+
+impl fmt::Display for SdlError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let &SdlError(ref e) = self;
+        write!(f, "SDL error: {}", e)
+    }
+}
+
+impl Error for SdlError {
+    fn description(&self) -> &str {
+        let &SdlError(ref e) = self;
+        e
+    }
+}
+
+impl fmt::Display for TargetRenderError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use self::TargetRenderError::*;
+        match *self {
+            SdlError(ref e) => e.fmt(f),
+            NotSupported => write!(f, "The renderer does not support the use of render targets"),
+        }
+    }
+}
+
+impl Error for TargetRenderError {
+    fn description(&self) -> &str {
+        use self::TargetRenderError::*;
+        match *self {
+            SdlError(ref e) => e.description(),
+            NotSupported => "The renderer does not support the use of render targets",
+        }
+    }
+}
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(i32)]
@@ -137,119 +183,23 @@ impl RendererInfo {
     }
 }
 
-pub enum RendererParent<'a> {
-    Surface(Surface<'a>),
-    Window(Window),
-}
-
-/// 2D rendering context
-pub struct Renderer<'a> {
+/// Manages what keeps a SDL_Renderer alive
+///
+/// When the `RendererContext` is dropped, it destroys the `SDL_Renderer`
+pub struct RendererContext<T> {
     raw: *mut ll::SDL_Renderer,
-    parent: Option<RendererParent<'a>>,
-    is_alive: Rc<UnsafeCell<bool>>,
+    _target: Rc<T>,
 }
 
-impl<'a> Drop for Renderer<'a> {
+impl<T> Drop for RendererContext<T> {
     fn drop(&mut self) {
         unsafe {
-            *self.is_alive.get() = false;
             ll::SDL_DestroyRenderer(self.raw);
         };
     }
 }
 
-/// The type that allows you to build Window-based renderers.
-///
-/// By default, the renderer builder will prioritize for a hardware-accelerated
-/// renderer.
-pub struct RendererBuilder {
-    window: Window,
-    index: Option<u32>,
-    renderer_flags: u32,
-}
-
-impl RendererBuilder {
-    /// Initializes a new `RendererBuilder`.
-    pub fn new(window: Window) -> RendererBuilder {
-        RendererBuilder {
-            window: window,
-            // -1 means to initialize the first rendering driver supporting the
-            // renderer flags
-            index: None,
-            // no flags gives priority to available SDL_RENDERER_ACCELERATED
-            // renderers
-            renderer_flags: 0,
-        }
-    }
-
-    /// Builds the renderer.
-    pub fn build(self) -> Result<Renderer<'static>, IntegerOrSdlError> {
-        use common::IntegerOrSdlError::*;
-        let index = match self.index {
-            None => -1,
-            Some(index) => try!(validate_int(index, "index")),
-        };
-        let raw = unsafe { ll::SDL_CreateRenderer(self.window.raw(), index, self.renderer_flags) };
-
-        if raw.is_null() {
-            Err(SdlError(get_error()))
-        } else {
-            unsafe { Ok(Renderer::from_ll(raw, RendererParent::Window(self.window))) }
-        }
-    }
-
-    /// Sets the index of the rendering driver to initialize.
-    /// If you desire the first rendering driver to support the flags provided,
-    /// or if you're translating code from C which passes -1 for the index,
-    /// **do not** invoke the `index` method.
-    pub fn index(mut self, index: u32) -> RendererBuilder {
-        self.index = Some(index);
-        self
-    }
-
-    /// Set the renderer to a software fallback.
-    /// This flag is accumulative, and may be specified with other flags.
-    pub fn software(mut self) -> RendererBuilder {
-        self.renderer_flags |= ll::SDL_RENDERER_SOFTWARE as u32;
-        self
-    }
-
-    /// Set the renderer to use hardware acceleration.
-    /// This flag is accumulative, and may be specified with other flags.
-    pub fn accelerated(mut self) -> RendererBuilder {
-        self.renderer_flags |= ll::SDL_RENDERER_ACCELERATED as u32;
-        self
-    }
-
-    /// Synchronize renderer `present` method calls with the refresh rate.
-    /// This flag is accumulative, and may be specified with other flags.
-    pub fn present_vsync(mut self) -> RendererBuilder {
-        self.renderer_flags |= ll::SDL_RENDERER_PRESENTVSYNC as u32;
-        self
-    }
-
-    /// Set the renderer to support rendering to a texture.
-    /// This flag is accumulative, and may be specified with other flags.
-    pub fn target_texture(mut self) -> RendererBuilder {
-        self.renderer_flags |= ll::SDL_RENDERER_TARGETTEXTURE as u32;
-        self
-    }
-}
-
-impl<'a> Renderer<'a> {
-    /// Creates a 2D software rendering context for a surface.
-    ///
-    /// This method should only fail if SDL2 is not built with rendering
-    /// support, or there's an out-of-memory error.
-    pub fn from_surface(surface: surface::Surface<'a>) -> Result<Renderer<'a>, String> {
-        let raw_renderer = unsafe { ll::SDL_CreateSoftwareRenderer(surface.raw()) };
-        if raw_renderer != ptr::null_mut() {
-            unsafe { Ok(Renderer::from_ll(raw_renderer, RendererParent::Surface(surface))) }
-        } else {
-            Err(get_error())
-        }
-    }
-
+impl<T> RendererContext<T> {
     /// Gets information about the rendering context.
     pub fn info(&self) -> RendererInfo {
         unsafe {
@@ -263,85 +213,278 @@ impl<'a> Renderer<'a> {
         }
     }
 
-    #[inline]
-    fn parent(&self) -> &RendererParent {
-        self.parent.as_ref().unwrap()
-    }
-
-    #[inline]
-    fn parent_mut(&mut self) -> &mut RendererParent<'a> {
-        self.parent.as_mut().unwrap()
-    }
-
-    /// Gets the associated window reference of the Renderer, if there is one.
-    #[inline]
-    pub fn window(&self) -> Option<&WindowRef> {
-        match self.parent() {
-            &RendererParent::Window(ref window) => Some(window),
-            _ => None,
-        }
-    }
-
-    /// Gets the associated window reference of the Renderer, if there is one.
-    #[inline]
-    pub fn window_mut(&mut self) -> Option<&mut WindowRef> {
-        match self.parent_mut() {
-            &mut RendererParent::Window(ref mut window) => Some(window),
-            _ => None,
-        }
-    }
-
-    /// Gets the associated surface reference of the Renderer, if there is one.
-    #[inline]
-    pub fn surface(&self) -> Option<&SurfaceRef> {
-        match self.parent() {
-            &RendererParent::Surface(ref surface) => Some(surface),
-            _ => None,
-        }
-    }
-
-    /// Gets the associated surface reference of the Renderer, if there is one.
-    #[inline]
-    pub fn surface_mut(&mut self) -> Option<&mut SurfaceRef> {
-        match self.parent_mut() {
-            &mut RendererParent::Surface(ref mut surface) => Some(surface),
-            _ => None,
-        }
-    }
-
-    #[inline]
-    fn unwrap_parent(mut self) -> RendererParent<'a> {
-        use std::mem;
-        mem::replace(&mut self.parent, None).unwrap()
-    }
-
-    #[inline]
-    pub fn into_window(self) -> Option<Window> {
-        match self.unwrap_parent() {
-            RendererParent::Window(window) => Some(window),
-            _ => None,
-        }
-    }
-
-    #[inline]
-    pub fn into_surface(self) -> Option<Surface<'a>> {
-        match self.unwrap_parent() {
-            RendererParent::Surface(surface) => Some(surface),
-            _ => None,
-        }
-    }
-
-    /// Unwraps the window or surface the rendering context was created from.
+    /// Gets the raw pointer to the SDL_Renderer
     pub unsafe fn raw(&self) -> *mut ll::SDL_Renderer {
         self.raw
     }
 
-    pub unsafe fn from_ll(raw: *mut ll::SDL_Renderer, parent: RendererParent) -> Renderer {
-        Renderer {
+    pub unsafe fn from_ll(raw: *mut ll::SDL_Renderer, target: Rc<T>) -> Self {
+        RendererContext {
             raw: raw,
-            parent: Some(parent),
-            is_alive: Rc::new(UnsafeCell::new(true)),
+            _target: target,
         }
+    }
+
+    unsafe fn set_raw_target(&self, raw_texture: *mut ll::SDL_Texture) -> Result<(), SdlError> {
+        if ll::SDL_SetRenderTarget(self.raw, raw_texture) == 0 {
+            Ok(())
+        } else {
+            Err(SdlError(get_error()))
+        }
+    }
+}
+
+impl<T, TC> Deref for Canvas<T, TC> {
+    type Target = RendererContext<TC>;
+
+    fn deref(&self) -> &RendererContext<TC> {
+        self.context.as_ref()
+    }
+}
+
+/// Manages and owns a target (`Surface`, `Window`, or `Texture`) and allows drawing in it.
+///
+/// If the `Window` manipulates the shell of the Window, `Canvas<Window>` allows you to
+/// manipulate both the shell and the inside of the window;
+/// you can manipulate pixel by pexel (*not recommended*), lines, colored rectangles, or paste
+/// `Texture`s to this `Canvas`.
+///
+/// Drawing to the `Canvas` does not take effect immediately, it draws to a buffer until you
+/// call `present()`, where all the operations you did until the last `present()`
+/// are updated to your target
+///
+/// Its context may be shared with the `TextureCreator`.
+///
+/// The context will not be dropped until all references of it are out of scope.
+pub struct Canvas<T, TC> {
+    target: T,
+    context: Rc<RendererContext<TC>>,
+}
+
+/// Alias for a `Canvas` that was created out of a `Surface`
+pub type SurfaceCanvas<'s> = Canvas<Surface<'s>, SurfaceContext<'s>>;
+
+/// Methods for the `SurfaceCanvas`.
+impl<'s> Canvas<Surface<'s>, SurfaceContext<'s>> {
+    /// Creates a 2D software rendering context for a surface.
+    ///
+    /// This method should only fail if SDL2 is not built with rendering
+    /// support, or there's an out-of-memory error.
+    pub fn from_surface(surface: surface::Surface<'s>) -> Result<Self, String> {
+        let raw_renderer = unsafe { ll::SDL_CreateSoftwareRenderer(surface.raw()) };
+        if raw_renderer != ptr::null_mut() {
+            let context =
+                Rc::new(unsafe { RendererContext::from_ll(raw_renderer, surface.context()) });
+            Ok(Canvas {
+                   target: surface,
+                   context: context,
+               })
+        } else {
+            Err(get_error())
+        }
+    }
+
+    /// Gets a reference to the associated surface of the Canvas
+    #[inline]
+    pub fn surface(&self) -> &SurfaceRef {
+        &self.target
+    }
+
+    /// Gets a mutable reference to the associated surface of the Canvas
+    #[inline]
+    pub fn surface_mut(&mut self) -> &mut SurfaceRef {
+        &mut self.target
+    }
+
+    /// Gets the associated surface of the Canvas and destroys the Canvas
+    #[inline]
+    pub fn into_surface(self) -> Surface<'s> {
+        self.target
+    }
+
+    /// Sets the render target to the provided texture
+    /// Returns a handle for rendering methods to the target
+    /// Returns `TargetRenderError::NotSupported`
+    /// if the renderer does not support the use of render targets,
+    /// Returns `TargetRenderError::SdlError` if SDL2 returned with an error code.
+    /// The texture must be created with the texture access: `sdl2::render::TextureAccess::Target`.
+    pub fn with_target<'r, 't, 'a>
+        (&'r mut self,
+         texture: &'t mut Texture<'a>)
+         -> Result<TextureCanvas<'r, 't, SurfaceContext<'s>>, TargetRenderError> {
+        self.internal_with_target(texture)
+    }
+
+    /// Returns a `TextureCreator` that can create Textures to be drawn on this `Canvas`
+    ///
+    /// This `TextureCreator` will share a reference to the renderer and target context.
+    ///
+    /// The target (i.e., `Window`) will not be destroyed and the SDL_Renderer will not be
+    /// destroyed if the `TextureCreator` is still in scope.
+    pub fn texture_creator(&self) -> TextureCreator<SurfaceContext<'s>> {
+        TextureCreator { context: self.context.clone() }
+    }
+}
+
+pub type WindowCanvas = Canvas<Window, WindowContext>;
+
+/// Methods for the `WindowCanvas`.
+impl Canvas<Window, WindowContext> {
+    /// Gets a reference to the associated window of the Canvas
+    #[inline]
+    pub fn window(&self) -> &Window {
+        &self.target
+    }
+
+    /// Gets a mutable reference to the associated window of the Canvas
+    #[inline]
+    pub fn window_mut(&mut self) -> &mut Window {
+        &mut self.target
+    }
+
+    /// Gets the associated window of the Canvas and destroys the Canvas
+    #[inline]
+    pub fn into_window(self) -> Window {
+        self.target
+    }
+
+    /// Sets the render target to the provided texture
+    /// Returns a handle for rendering methods to the target
+    /// Returns `TargetRenderError::NotSupported`
+    /// if the renderer does not support the use of render targets,
+    /// Returns `TargetRenderError::SdlError` if SDL2 returned with an error code.
+    /// The texture must be created with the texture access: `sdl2::render::TextureAccess::Target`.
+    pub fn with_target<'r, 't, 'a>
+        (&'r mut self,
+         texture: &'t mut Texture<'a>)
+         -> Result<TextureCanvas<'r, 't, WindowContext>, TargetRenderError> {
+        self.internal_with_target(texture)
+    }
+
+    /// Returns a `TextureCreator` that can create Textures to be drawn on this `Canvas`
+    ///
+    /// This `TextureCreator` will share a reference to the renderer and target context.
+    ///
+    /// The target (i.e., `Window`) will not be destroyed and the SDL_Renderer will not be
+    /// destroyed if the `TextureCreator` is still in scope.
+    pub fn texture_creator(&self) -> TextureCreator<WindowContext> {
+        TextureCreator { context: self.context.clone() }
+    }
+}
+
+impl<T, TC> Canvas<T, TC> {
+    /// Determine whether a window supports the use of render targets.
+    pub fn render_target_supported(&self) -> bool {
+        unsafe { ll::SDL_RenderTargetSupported(self.context.raw) == 1 }
+    }
+
+    fn internal_with_target<'r, 't, 'a>(&'r mut self,
+                                        texture: &'t mut Texture<'a>)
+                                        -> Result<TextureCanvas<'r, 't, TC>, TargetRenderError> {
+        if self.render_target_supported() {
+            unsafe { self.set_raw_target(texture.raw) }
+                .map_err(|e| TargetRenderError::SdlError(e))?;
+            Ok(TextureCanvas {
+                   context: self.context.clone(),
+                   target: TextureTarget {
+                       raw_renderer: &self.context.raw,
+                       _texture_marker: PhantomData,
+                   },
+               })
+        } else {
+            Err(TargetRenderError::NotSupported)
+        }
+    }
+}
+
+/// Creates Textures that cannot outlive the creator
+///
+/// The `TextureCreator` does not hold a lifetime to its Canvas by design choice.
+/// If a `Canvas` is dropped before its `TextureCreator`, it is still safe to use.
+/// It is, however, useless. Any `Texture` created here can only be drawn onto the original `Canvas`
+pub struct TextureCreator<T> {
+    context: Rc<RendererContext<T>>,
+}
+
+/// The type that allows you to build Window-based renderers.
+///
+/// By default, the renderer builder will prioritize for a hardware-accelerated
+/// renderer.
+pub struct CanvasBuilder {
+    window: Window,
+    index: Option<u32>,
+    renderer_flags: u32,
+}
+
+impl CanvasBuilder {
+    /// Initializes a new `CanvasBuilder`.
+    pub fn new(window: Window) -> CanvasBuilder {
+        CanvasBuilder {
+            window: window,
+            // -1 means to initialize the first rendering driver supporting the
+            // renderer flags
+            index: None,
+            // no flags gives priority to available SDL_RENDERER_ACCELERATED
+            // renderers
+            renderer_flags: 0,
+        }
+    }
+
+    /// Builds the renderer.
+    pub fn build(self) -> Result<WindowCanvas, IntegerOrSdlError> {
+        use common::IntegerOrSdlError::*;
+        let index = match self.index {
+            None => -1,
+            Some(index) => try!(validate_int(index, "index")),
+        };
+        let raw = unsafe { ll::SDL_CreateRenderer(self.window.raw(), index, self.renderer_flags) };
+
+        if raw.is_null() {
+            Err(SdlError(get_error()))
+        } else {
+            let context = Rc::new(unsafe { RendererContext::from_ll(raw, self.window.context()) });
+            Ok(Canvas {
+                   context: context,
+                   target: self.window,
+               })
+        }
+    }
+
+    /// Sets the index of the rendering driver to initialize.
+    /// If you desire the first rendering driver to support the flags provided,
+    /// or if you're translating code from C which passes -1 for the index,
+    /// **do not** invoke the `index` method.
+    pub fn index(mut self, index: u32) -> CanvasBuilder {
+        self.index = Some(index);
+        self
+    }
+
+    /// Set the renderer to a software fallback.
+    /// This flag is accumulative, and may be specified with other flags.
+    pub fn software(mut self) -> CanvasBuilder {
+        self.renderer_flags |= ll::SDL_RENDERER_SOFTWARE as u32;
+        self
+    }
+
+    /// Set the renderer to use hardware acceleration.
+    /// This flag is accumulative, and may be specified with other flags.
+    pub fn accelerated(mut self) -> CanvasBuilder {
+        self.renderer_flags |= ll::SDL_RENDERER_ACCELERATED as u32;
+        self
+    }
+
+    /// Synchronize renderer `present` method calls with the refresh rate.
+    /// This flag is accumulative, and may be specified with other flags.
+    pub fn present_vsync(mut self) -> CanvasBuilder {
+        self.renderer_flags |= ll::SDL_RENDERER_PRESENTVSYNC as u32;
+        self
+    }
+
+    /// Set the renderer to support rendering to a texture.
+    /// This flag is accumulative, and may be specified with other flags.
+    pub fn target_texture(mut self) -> CanvasBuilder {
+        self.renderer_flags |= ll::SDL_RENDERER_TARGETTEXTURE as u32;
+        self
     }
 }
 
@@ -385,10 +528,12 @@ impl Error for TextureValueError {
 }
 
 /// Texture-creating methods for the renderer
-impl<'a> Renderer<'a> {
+impl<T> TextureCreator<T> {
+    pub unsafe fn raw(&self) -> *mut ll::SDL_Renderer {
+        self.context.raw()
+    }
+
     /// Creates a texture for a rendering context.
-    ///
-    /// `size` is the width and height of the texture.
     pub fn create_texture(&self,
                           format: pixels::PixelFormatEnum,
                           access: TextureAccess,
@@ -417,16 +562,17 @@ impl<'a> Renderer<'a> {
             _ => (),
         }
 
-        let result =
-            unsafe { ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, w, h) };
+        let result = unsafe {
+            ll::SDL_CreateTexture(self.context.raw, format as uint32_t, access as c_int, w, h)
+        };
         if result == ptr::null_mut() {
             Err(SdlError(get_error()))
         } else {
-            unsafe { Ok(Texture::from_ll(self, result)) }
+            unsafe { Ok(self.raw_create_texture(result)) }
         }
     }
 
-    /// Shorthand for `create_texture(format, TextureAccess::Static, size)`
+    /// Shorthand for `create_texture(format, TextureAccess::Static, width, height)`
     pub fn create_texture_static(&self,
                                  format: pixels::PixelFormatEnum,
                                  width: u32,
@@ -435,7 +581,7 @@ impl<'a> Renderer<'a> {
         self.create_texture(format, TextureAccess::Static, width, height)
     }
 
-    /// Shorthand for `create_texture(format, TextureAccess::Streaming, size)`
+    /// Shorthand for `create_texture(format, TextureAccess::Streaming, width, height)`
     pub fn create_texture_streaming(&self,
                                     format: pixels::PixelFormatEnum,
                                     width: u32,
@@ -444,7 +590,7 @@ impl<'a> Renderer<'a> {
         self.create_texture(format, TextureAccess::Streaming, width, height)
     }
 
-    /// Shorthand for `create_texture(format, TextureAccess::Target, size)`
+    /// Shorthand for `create_texture(format, TextureAccess::Target, width, height)`
     pub fn create_texture_target(&self,
                                  format: pixels::PixelFormatEnum,
                                  width: u32,
@@ -461,39 +607,43 @@ impl<'a> Renderer<'a> {
          surface: S)
          -> Result<Texture, TextureValueError> {
         use self::TextureValueError::*;
-        let result = unsafe { ll::SDL_CreateTextureFromSurface(self.raw, surface.as_ref().raw()) };
+        let result =
+            unsafe { ll::SDL_CreateTextureFromSurface(self.context.raw, surface.as_ref().raw()) };
         if result == ptr::null_mut() {
             Err(SdlError(get_error()))
         } else {
-            unsafe { Ok(Texture::from_ll(self, result)) }
+            unsafe { Ok(self.raw_create_texture(result)) }
+        }
+    }
+
+    pub unsafe fn raw_create_texture(&self, raw: *mut ll::SDL_Texture) -> Texture {
+        Texture {
+            raw: raw,
+            _marker: PhantomData,
         }
     }
 }
 
-/// Render target methods
-impl<'a> Renderer<'a> {
-    /// Determine whether a window supports the use of render targets.
-    pub fn render_target_supported(&self) -> bool {
-        unsafe { ll::SDL_RenderTargetSupported(self.raw) == 1 }
-    }
+pub struct TextureTarget<'r, 't> {
+    raw_renderer: &'r *mut ll::SDL_Renderer,
+    _texture_marker: PhantomData<&'t ()>,
+}
 
-    /// Gets the render target handle.
-    ///
-    /// Returns `None` if the window does not support the use of render targets.
-    pub fn render_target(&mut self) -> Option<RenderTarget> {
-        if self.render_target_supported() {
-            Some(RenderTarget {
-                     raw: self.raw,
-                     is_renderer_alive: &self.is_alive,
-                 })
-        } else {
-            None
+impl<'r, 't> Drop for TextureTarget<'r, 't> {
+    // `Drop` cannot be specialized. Get around this through run-time check of Target Kind
+    fn drop(&mut self) {
+        unsafe {
+            ll::SDL_SetRenderTarget(*self.raw_renderer, ptr::null_mut());
         }
     }
 }
 
 /// Drawing methods
-impl<'a> Renderer<'a> {
+impl<T, TC> Canvas<T, TC> {
+    pub unsafe fn raw(&self) -> *mut ll::SDL_Renderer {
+        self.context.raw()
+    }
+
     /// Sets the color used for drawing operations (Rect, Line and Clear).
     pub fn set_draw_color(&mut self, color: pixels::Color) {
         let (r, g, b, a) = color.rgba();
@@ -507,7 +657,8 @@ impl<'a> Renderer<'a> {
     /// Gets the color used for drawing operations (Rect, Line and Clear).
     pub fn draw_color(&self) -> pixels::Color {
         let (mut r, mut g, mut b, mut a) = (0, 0, 0, 0);
-        let ret = unsafe { ll::SDL_GetRenderDrawColor(self.raw, &mut r, &mut g, &mut b, &mut a) };
+        let ret =
+            unsafe { ll::SDL_GetRenderDrawColor(self.context.raw, &mut r, &mut g, &mut b, &mut a) };
         // Should only fail on an invalid renderer
         if ret != 0 {
             panic!(get_error())
@@ -519,7 +670,8 @@ impl<'a> Renderer<'a> {
     /// Sets the blend mode used for drawing operations (Fill and Line).
     pub fn set_blend_mode(&mut self, blend: BlendMode) {
         let ret = unsafe {
-            ll::SDL_SetRenderDrawBlendMode(self.raw, FromPrimitive::from_i64(blend as i64).unwrap())
+            ll::SDL_SetRenderDrawBlendMode(self.context.raw,
+                                           FromPrimitive::from_i64(blend as i64).unwrap())
         };
         // Should only fail on an invalid renderer
         if ret != 0 {
@@ -530,7 +682,7 @@ impl<'a> Renderer<'a> {
     /// Gets the blend mode used for drawing operations.
     pub fn blend_mode(&self) -> BlendMode {
         let mut blend = 0;
-        let ret = unsafe { ll::SDL_GetRenderDrawBlendMode(self.raw, &mut blend) };
+        let ret = unsafe { ll::SDL_GetRenderDrawBlendMode(self.context.raw, &mut blend) };
         // Should only fail on an invalid renderer
         if ret != 0 {
             panic!(get_error())
@@ -541,7 +693,7 @@ impl<'a> Renderer<'a> {
 
     /// Clears the current rendering target with the drawing color.
     pub fn clear(&mut self) {
-        let ret = unsafe { ll::SDL_RenderClear(self.raw) };
+        let ret = unsafe { ll::SDL_RenderClear(self.context.raw) };
         if ret != 0 {
             panic!("Could not clear: {}", get_error())
         }
@@ -555,7 +707,7 @@ impl<'a> Renderer<'a> {
     /// As such, you compose your entire scene and present the composed
     /// backbuffer to the screen as a complete picture.
     pub fn present(&mut self) {
-        unsafe { ll::SDL_RenderPresent(self.raw) }
+        unsafe { ll::SDL_RenderPresent(self.context.raw) }
     }
 
     /// Gets the output size of a rendering context.
@@ -563,7 +715,8 @@ impl<'a> Renderer<'a> {
         let mut width = 0;
         let mut height = 0;
 
-        let result = unsafe { ll::SDL_GetRendererOutputSize(self.raw, &mut width, &mut height) };
+        let result =
+            unsafe { ll::SDL_GetRendererOutputSize(self.context.raw, &mut width, &mut height) };
 
         if result == 0 {
             Ok((width as u32, height as u32))
@@ -577,7 +730,7 @@ impl<'a> Renderer<'a> {
         use common::IntegerOrSdlError::*;
         let width = try!(validate_int(width, "width"));
         let height = try!(validate_int(height, "height"));
-        let result = unsafe { ll::SDL_RenderSetLogicalSize(self.raw, width, height) };
+        let result = unsafe { ll::SDL_RenderSetLogicalSize(self.context.raw, width, height) };
         match result {
             0 => Ok(()),
             _ => Err(SdlError(get_error())),
@@ -589,7 +742,7 @@ impl<'a> Renderer<'a> {
         let mut width = 0;
         let mut height = 0;
 
-        unsafe { ll::SDL_RenderGetLogicalSize(self.raw, &mut width, &mut height) };
+        unsafe { ll::SDL_RenderGetLogicalSize(self.context.raw, &mut width, &mut height) };
 
         (width as u32, height as u32)
     }
@@ -600,7 +753,7 @@ impl<'a> Renderer<'a> {
             Some(ref rect) => rect.raw(),
             None => ptr::null(),
         };
-        let ret = unsafe { ll::SDL_RenderSetViewport(self.raw, ptr) };
+        let ret = unsafe { ll::SDL_RenderSetViewport(self.context.raw, ptr) };
         if ret != 0 {
             panic!("Could not set viewport: {}", get_error())
         }
@@ -609,7 +762,7 @@ impl<'a> Renderer<'a> {
     /// Gets the drawing area for the current target.
     pub fn viewport(&self) -> Rect {
         let mut rect = unsafe { mem::uninitialized() };
-        unsafe { ll::SDL_RenderGetViewport(self.raw, &mut rect) };
+        unsafe { ll::SDL_RenderGetViewport(self.context.raw, &mut rect) };
         Rect::from_ll(rect)
     }
 
@@ -618,7 +771,7 @@ impl<'a> Renderer<'a> {
     /// If the rectangle is `None`, clipping will be disabled.
     pub fn set_clip_rect<R: Into<Option<Rect>>>(&mut self, rect: R) {
         let ret = unsafe {
-            ll::SDL_RenderSetClipRect(self.raw,
+            ll::SDL_RenderSetClipRect(self.context.raw,
                                       match rect.into() {
                                           Some(ref rect) => rect.raw(),
                                           None => ptr::null(),
@@ -634,7 +787,7 @@ impl<'a> Renderer<'a> {
     /// Returns `None` if clipping is disabled.
     pub fn clip_rect(&self) -> Option<Rect> {
         let mut raw = unsafe { mem::uninitialized() };
-        unsafe { ll::SDL_RenderGetClipRect(self.raw, &mut raw) };
+        unsafe { ll::SDL_RenderGetClipRect(self.context.raw, &mut raw) };
         if raw.w == 0 || raw.h == 0 {
             None
         } else {
@@ -644,7 +797,7 @@ impl<'a> Renderer<'a> {
 
     /// Sets the drawing scale for rendering on the current target.
     pub fn set_scale(&mut self, scale_x: f32, scale_y: f32) -> Result<(), String> {
-        let ret = unsafe { ll::SDL_RenderSetScale(self.raw, scale_x, scale_y) };
+        let ret = unsafe { ll::SDL_RenderSetScale(self.context.raw, scale_x, scale_y) };
         // Should only fail on an invalid renderer
         if ret != 0 { Err(get_error()) } else { Ok(()) }
     }
@@ -653,7 +806,7 @@ impl<'a> Renderer<'a> {
     pub fn scale(&self) -> (f32, f32) {
         let mut scale_x = 0.0;
         let mut scale_y = 0.0;
-        unsafe { ll::SDL_RenderGetScale(self.raw, &mut scale_x, &mut scale_y) };
+        unsafe { ll::SDL_RenderGetScale(self.context.raw, &mut scale_x, &mut scale_y) };
         (scale_x, scale_y)
     }
 
@@ -661,7 +814,7 @@ impl<'a> Renderer<'a> {
     /// Errors if drawing fails for any reason (e.g. driver failure)
     pub fn draw_point<P: Into<Point>>(&mut self, point: P) -> Result<(), String> {
         let point = point.into();
-        let result = unsafe { ll::SDL_RenderDrawPoint(self.raw, point.x(), point.y()) };
+        let result = unsafe { ll::SDL_RenderDrawPoint(self.context.raw, point.x(), point.y()) };
         if result != 0 {
             Err(get_error())
         } else {
@@ -671,10 +824,12 @@ impl<'a> Renderer<'a> {
 
     /// Draws multiple points on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_points<P: Into<&'a [Point]>>(&mut self, points: P) -> Result<(), String> {
+    pub fn draw_points<'a, P: Into<&'a [Point]>>(&mut self, points: P) -> Result<(), String> {
         let points = points.into();
         let result = unsafe {
-            ll::SDL_RenderDrawPoints(self.raw, Point::raw_slice(points), points.len() as c_int)
+            ll::SDL_RenderDrawPoints(self.context.raw,
+                                     Point::raw_slice(points),
+                                     points.len() as c_int)
         };
         if result != 0 {
             Err(get_error())
@@ -691,8 +846,9 @@ impl<'a> Renderer<'a> {
                                                        -> Result<(), String> {
         let start = start.into();
         let end = end.into();
-        let result =
-            unsafe { ll::SDL_RenderDrawLine(self.raw, start.x(), start.y(), end.x(), end.y()) };
+        let result = unsafe {
+            ll::SDL_RenderDrawLine(self.context.raw, start.x(), start.y(), end.x(), end.y())
+        };
         if result != 0 {
             Err(get_error())
         } else {
@@ -702,10 +858,12 @@ impl<'a> Renderer<'a> {
 
     /// Draws a series of connected lines on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_lines<P: Into<&'a [Point]>>(&mut self, points: P) -> Result<(), String> {
+    pub fn draw_lines<'a, P: Into<&'a [Point]>>(&mut self, points: P) -> Result<(), String> {
         let points = points.into();
         let result = unsafe {
-            ll::SDL_RenderDrawLines(self.raw, Point::raw_slice(points), points.len() as c_int)
+            ll::SDL_RenderDrawLines(self.context.raw,
+                                    Point::raw_slice(points),
+                                    points.len() as c_int)
         };
         if result != 0 {
             Err(get_error())
@@ -717,7 +875,7 @@ impl<'a> Renderer<'a> {
     /// Draws a rectangle on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
     pub fn draw_rect(&mut self, rect: Rect) -> Result<(), String> {
-        let result = unsafe { ll::SDL_RenderDrawRect(self.raw, rect.raw()) };
+        let result = unsafe { ll::SDL_RenderDrawRect(self.context.raw, rect.raw()) };
         if result != 0 {
             Err(get_error())
         } else {
@@ -729,7 +887,9 @@ impl<'a> Renderer<'a> {
     /// Errors if drawing fails for any reason (e.g. driver failure)
     pub fn draw_rects(&mut self, rects: &[Rect]) -> Result<(), String> {
         let result = unsafe {
-            ll::SDL_RenderDrawRects(self.raw, Rect::raw_slice(rects), rects.len() as c_int)
+            ll::SDL_RenderDrawRects(self.context.raw,
+                                    Rect::raw_slice(rects),
+                                    rects.len() as c_int)
         };
         if result != 0 {
             Err(get_error())
@@ -744,7 +904,7 @@ impl<'a> Renderer<'a> {
     /// Errors if drawing fails for any reason (e.g. driver failure)
     pub fn fill_rect<R: Into<Option<Rect>>>(&mut self, rect: R) -> Result<(), String> {
         let result = unsafe {
-            ll::SDL_RenderFillRect(self.raw,
+            ll::SDL_RenderFillRect(self.context.raw,
                                    rect.into()
                                        .as_ref()
                                        .map(|r| r.raw())
@@ -762,7 +922,9 @@ impl<'a> Renderer<'a> {
     /// Errors if drawing fails for any reason (e.g. driver failure)
     pub fn fill_rects(&mut self, rects: &[Rect]) -> Result<(), String> {
         let result = unsafe {
-            ll::SDL_RenderFillRects(self.raw, Rect::raw_slice(rects), rects.len() as c_int)
+            ll::SDL_RenderFillRects(self.context.raw,
+                                    Rect::raw_slice(rects),
+                                    rects.len() as c_int)
         };
         if result != 0 {
             Err(get_error())
@@ -783,10 +945,8 @@ impl<'a> Renderer<'a> {
         where R1: Into<Option<Rect>>,
               R2: Into<Option<Rect>>
     {
-        texture.check_renderer();
-
         let ret = unsafe {
-            ll::SDL_RenderCopy(self.raw,
+            ll::SDL_RenderCopy(self.context.raw,
                                texture.raw,
                                match src.into() {
                                    Some(ref rect) => rect.raw(),
@@ -827,8 +987,6 @@ impl<'a> Renderer<'a> {
               R2: Into<Option<Rect>>,
               P: Into<Option<Point>>
     {
-        texture.check_renderer();
-
         let flip = match (flip_horizontal, flip_vertical) {
             (false, false) => ll::SDL_FLIP_NONE,
             (true, false) => ll::SDL_FLIP_HORIZONTAL,
@@ -837,7 +995,7 @@ impl<'a> Renderer<'a> {
         };
 
         let ret = unsafe {
-            ll::SDL_RenderCopyEx(self.raw,
+            ll::SDL_RenderCopyEx(self.context.raw,
                                  texture.raw,
                                  match src.into() {
                                      Some(ref rect) => rect.raw(),
@@ -882,7 +1040,7 @@ impl<'a> Renderer<'a> {
 
             // Pass the interior of `pixels: Vec<u8>` to SDL
             let ret = {
-                ll::SDL_RenderReadPixels(self.raw,
+                ll::SDL_RenderReadPixels(self.context.raw,
                                          actual_rect,
                                          format as uint32_t,
                                          pixels.as_mut_ptr() as *mut c_void,
@@ -904,117 +1062,46 @@ impl<'a> Renderer<'a> {
 /// ```no_run
 /// use sdl2::pixels::{Color, PixelFormatEnum};
 /// use sdl2::rect::Rect;
-/// use sdl2::render::{Renderer, Texture};
+/// use sdl2::video::WindowContext;
+/// use sdl2::render::{Texture, TextureCreator, WindowCanvas};
 ///
 /// // Draw a red rectangle to a new texture
-/// fn draw_to_texture(r: &mut Renderer) -> Texture {
-///     r.render_target()
-///         .expect("This platform doesn't support render targets")
-///         .create_and_set(PixelFormatEnum::RGBA8888, 512, 512);
+/// fn draw_to_texture<'c>(t: &'c TextureCreator<WindowContext>, c: &mut WindowCanvas)
+///                        -> Texture<'c> {
+///     let mut texture = t.create_texture_target(PixelFormatEnum::RGBA8888, 512, 512)
+///                       .unwrap();
+///     {
+///         let mut target = c.with_target(&mut texture)
+///                           .expect("This platform doesn't support render targets");
 ///
-///     // Start drawing
-///     r.clear();
-///     r.set_draw_color(Color::RGB(255, 0, 0));
-///     r.fill_rect(Rect::new(100, 100, 256, 256));
-///
-///     let texture: Option<Texture> = r.render_target().unwrap().reset().unwrap();
-///     texture.unwrap()
+///         // Start drawing
+///         target.clear();
+///         target.set_draw_color(Color::RGB(255, 0, 0));
+///         target.fill_rect(Rect::new(100, 100, 256, 256));
+///    }
+///    texture
 /// }
 /// ```
-pub struct RenderTarget<'renderer> {
-    raw: *mut ll::SDL_Renderer,
-    is_renderer_alive: &'renderer Rc<UnsafeCell<bool>>,
-}
+pub type TextureCanvas<'r, 't, TC> = Canvas<TextureTarget<'r, 't>, TC>;
 
-impl<'renderer> RenderTarget<'renderer> {
-    /// Resets the render target to the default render target.
+impl<'r, 't, TC> Canvas<TextureTarget<'r, 't>, TC> {
+    /// Replace the target of the `TextureCanvas` with a different `Texture`
     ///
-    /// The old render target is returned if the function is successful.
-    pub fn reset(&mut self) -> Result<Option<Texture>, String> {
-        unsafe {
-            let old_texture_raw = ll::SDL_GetRenderTarget(self.raw);
-
-            if ll::SDL_SetRenderTarget(self.raw, ptr::null_mut()) == 0 {
-                Ok(match old_texture_raw.is_null() {
-                       true => None,
-                       false => {
-                           Some(Texture {
-                                    raw: old_texture_raw,
-                                    is_renderer_alive: self.is_renderer_alive.clone(),
-                                })
-                       }
-                   })
-            } else {
-                Err(get_error())
-            }
-        }
-    }
-
-    /// Sets the render target to the provided texture.
-    /// The texture must be created with the texture access: `sdl2::render::TextureAccess::Target`.
-    ///
-    /// The old render target is returned if the function is successful.
-    pub fn set(&mut self, texture: Texture) -> Result<Option<Texture>, String> {
-        texture.check_renderer();
-
-        unsafe {
-            let old_texture_raw = ll::SDL_GetRenderTarget(self.raw);
-
-            if ll::SDL_SetRenderTarget(self.raw, texture.raw) == 0 {
-                texture.forget();
-                Ok(match old_texture_raw.is_null() {
-                       true => None,
-                       false => {
-                           Some(Texture {
-                                    raw: old_texture_raw,
-                                    is_renderer_alive: self.is_renderer_alive.clone(),
-                                })
-                       }
-                   })
-            } else {
-                Err(get_error())
-            }
-        }
-    }
-
-    /// Creates a new texture and sets it as the render target.
-    ///
-    /// The old render target is returned if the function is successful.
-    pub fn create_and_set(&mut self,
-                          format: pixels::PixelFormatEnum,
-                          width: u32,
-                          height: u32)
-                          -> Result<Option<Texture>, IntegerOrSdlError> {
-        use common::IntegerOrSdlError::*;
-        let width = try!(validate_int(width, "width"));
-        let height = try!(validate_int(height, "height"));
-
-        let new_texture_raw = unsafe {
-            let access = ll::SDL_TEXTUREACCESS_TARGET;
-            ll::SDL_CreateTexture(self.raw, format as uint32_t, access as c_int, width, height)
-        };
-
-        if new_texture_raw == ptr::null_mut() {
-            Err(SdlError(get_error()))
-        } else {
-            unsafe {
-                let old_texture_raw = ll::SDL_GetRenderTarget(self.raw);
-
-                if ll::SDL_SetRenderTarget(self.raw, new_texture_raw) == 0 {
-                    Ok(match old_texture_raw.is_null() {
-                           true => None,
-                           false => {
-                               Some(Texture {
-                                        raw: old_texture_raw,
-                                        is_renderer_alive: self.is_renderer_alive.clone(),
-                                    })
-                           }
-                       })
-                } else {
-                    Err(SdlError(get_error()))
-                }
-            }
-        }
+    /// Returns the new `TextureCanvas` and releases the `&mut` borrow on the old `Texture`
+    pub fn with_target<'nt, 'a>(mut self,
+                                texture: &'nt mut Texture<'a>)
+                                -> Result<TextureCanvas<'r, 'nt, TC>, SdlError> {
+        unsafe { self.set_raw_target(texture.raw) }?;
+        let context = mem::replace(&mut self.context, unsafe { mem::zeroed() });
+        let raw_renderer = mem::replace(&mut self.target.raw_renderer, unsafe { mem::zeroed() });
+        mem::forget(self);
+        Ok(TextureCanvas {
+               context: context,
+               target: TextureTarget {
+                   raw_renderer: raw_renderer,
+                   _texture_marker: PhantomData,
+               },
+           })
     }
 }
 
@@ -1028,22 +1115,19 @@ pub struct TextureQuery {
 
 /// A texture for a rendering context.
 ///
-/// Every Texture is owned by a Renderer.
-/// If a Texture is accessed after the corresponding Renderer is dropped, then
-/// the program will panic (clarification: will not crash).
+/// Every Texture is owned by a `TextureCreator`.
+/// A `Texture` cannot outlive the `TextureCreator`
 ///
-/// A Texture can be safely dropped before or after the Renderer is dropped.
-pub struct Texture {
+/// A `Texture` can be safely accessed after the `Canvas` is dropped.
+pub struct Texture<'r> {
     raw: *mut ll::SDL_Texture,
-    is_renderer_alive: Rc<UnsafeCell<bool>>,
+    _marker: PhantomData<&'r ()>,
 }
 
-impl Drop for Texture {
+impl<'r> Drop for Texture<'r> {
     fn drop(&mut self) {
         unsafe {
-            if *self.is_renderer_alive.get() {
-                ll::SDL_DestroyTexture(self.raw);
-            }
+            ll::SDL_DestroyTexture(self.raw);
         }
     }
 }
@@ -1189,30 +1273,9 @@ impl Error for UpdateTextureYUVError {
     }
 }
 
-impl Texture {
-    #[inline]
-    fn check_renderer(&self) {
-        let alive = unsafe { *self.is_renderer_alive.get() };
-        if !alive {
-            panic!("renderer has been destroyed; cannot use Texture");
-        }
-    }
-
-    /// Doesn't free the Texture, but decrements its `is_renderer_alive` box.
-    fn forget(self) {
-        unsafe {
-            let _is_renderer_alive: Rc<UnsafeCell<bool>> =
-                mem::transmute_copy(&self.is_renderer_alive);
-            mem::forget(self);
-
-            // is_renderer_alive gets deref'd
-        }
-    }
-
+impl<'r> Texture<'r> {
     /// Queries the attributes of the texture.
     pub fn query(&self) -> TextureQuery {
-        self.check_renderer();
-
         let mut format = 0;
         let mut access = 0;
         let mut width = 0;
@@ -1236,8 +1299,6 @@ impl Texture {
 
     /// Sets an additional color value multiplied into render copy operations.
     pub fn set_color_mod(&mut self, red: u8, green: u8, blue: u8) {
-        self.check_renderer();
-
         let ret = unsafe { ll::SDL_SetTextureColorMod(self.raw, red, green, blue) };
 
         if ret != 0 {
@@ -1247,8 +1308,6 @@ impl Texture {
 
     /// Gets the additional color value multiplied into render copy operations.
     pub fn color_mod(&self) -> (u8, u8, u8) {
-        self.check_renderer();
-
         let (mut r, mut g, mut b) = (0, 0, 0);
         let ret = unsafe { ll::SDL_GetTextureColorMod(self.raw, &mut r, &mut g, &mut b) };
 
@@ -1262,8 +1321,6 @@ impl Texture {
 
     /// Sets an additional alpha value multiplied into render copy operations.
     pub fn set_alpha_mod(&mut self, alpha: u8) {
-        self.check_renderer();
-
         let ret = unsafe { ll::SDL_SetTextureAlphaMod(self.raw, alpha) };
 
         if ret != 0 {
@@ -1273,8 +1330,6 @@ impl Texture {
 
     /// Gets the additional alpha value multiplied into render copy operations.
     pub fn alpha_mod(&self) -> u8 {
-        self.check_renderer();
-
         let mut alpha = 0;
         let ret = unsafe { ll::SDL_GetTextureAlphaMod(self.raw, &mut alpha) };
 
@@ -1284,8 +1339,6 @@ impl Texture {
 
     /// Sets the blend mode for a texture, used by `Renderer::copy()`.
     pub fn set_blend_mode(&mut self, blend: BlendMode) {
-        self.check_renderer();
-
         let ret = unsafe {
             ll::SDL_SetTextureBlendMode(self.raw, FromPrimitive::from_i64(blend as i64).unwrap())
         };
@@ -1297,8 +1350,6 @@ impl Texture {
 
     /// Gets the blend mode used for texture copy operations.
     pub fn blend_mode(&self) -> BlendMode {
-        self.check_renderer();
-
         let mut blend = 0;
         let ret = unsafe { ll::SDL_GetTextureBlendMode(self.raw, &mut blend) };
 
@@ -1324,8 +1375,6 @@ impl Texture {
         where R: Into<Option<Rect>>
     {
         use self::UpdateTextureError::*;
-        self.check_renderer();
-
         let rect = rect.into();
         let rect_raw_ptr = match rect {
             Some(ref rect) => rect.raw(),
@@ -1392,7 +1441,6 @@ impl Texture {
         where R: Into<Option<Rect>>
     {
         use self::UpdateTextureYUVError::*;
-        self.check_renderer();
 
         let rect = rect.into();
 
@@ -1523,8 +1571,6 @@ impl Texture {
         where F: FnOnce(&mut [u8], usize) -> R,
               R2: Into<Option<Rect>>
     {
-        self.check_renderer();
-
         // Call to SDL to populate pixel data
         let loaded = unsafe {
             let q = self.query();
@@ -1562,8 +1608,6 @@ impl Texture {
     /// Binds an OpenGL/ES/ES2 texture to the current
     /// context for use with when rendering OpenGL primitives directly.
     pub unsafe fn gl_bind_texture(&mut self) -> (f32, f32) {
-        self.check_renderer();
-
         let mut texw = 0.0;
         let mut texh = 0.0;
 
@@ -1576,8 +1620,6 @@ impl Texture {
 
     /// Unbinds an OpenGL/ES/ES2 texture from the current context.
     pub unsafe fn gl_unbind_texture(&mut self) {
-        self.check_renderer();
-
         if ll::SDL_GL_UnbindTexture(self.raw) != 0 {
             panic!("OpenGL texture unbinding not supported");
         }
@@ -1585,8 +1627,6 @@ impl Texture {
 
     /// Binds and unbinds an OpenGL/ES/ES2 texture from the current context.
     pub fn gl_with_bind<R, F: FnOnce(f32, f32) -> R>(&mut self, f: F) -> R {
-        self.check_renderer();
-
         unsafe {
             let mut texw = 0.0;
             let mut texh = 0.0;
@@ -1603,13 +1643,6 @@ impl Texture {
             } else {
                 panic!("OpenGL texture binding not supported");
             }
-        }
-    }
-
-    pub unsafe fn from_ll(renderer: &Renderer, raw: *mut ll::SDL_Texture) -> Texture {
-        Texture {
-            raw: raw,
-            is_renderer_alive: renderer.is_alive.clone(),
         }
     }
 

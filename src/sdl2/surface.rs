@@ -2,6 +2,8 @@ use std::marker::PhantomData;
 use std::mem;
 use std::ops::{Deref, DerefMut};
 use std::path::Path;
+use std::rc::Rc;
+
 use rect::Rect;
 use get_error;
 use std::ptr;
@@ -13,16 +15,29 @@ use rwops::RWops;
 
 use sys::surface as ll;
 
-pub struct Surface<'a> {
+/// Holds a `SDL_Surface`
+///
+/// When the `SurfaceContext` is dropped, it frees the `SDL_Surface`
+///
+/// *INTERNAL USE ONLY*
+pub struct SurfaceContext<'a> {
     raw: *mut ll::SDL_Surface,
     _marker: PhantomData<&'a ()>
 }
 
-impl<'a> Drop for Surface<'a> {
+impl<'a> Drop for SurfaceContext<'a> {
     #[inline]
     fn drop(&mut self) {
         unsafe { ll::SDL_FreeSurface(self.raw); }
     }
+}
+
+/// Holds a `Rc<SurfaceContext>`.
+///
+/// Note: If a `Surface` goes out of scope but it cloned its context,
+/// then the `SDL_Surface` will not be free'd until there are no more references to the `SurfaceContext`.
+pub struct Surface<'a> {
+    context: Rc<SurfaceContext<'a>>,
 }
 
 /// An unsized Surface reference.
@@ -54,38 +69,39 @@ impl<'a> Deref for Surface<'a> {
 
     #[inline]
     fn deref(&self) -> &SurfaceRef {
-        unsafe { mem::transmute(self.raw) }
+        unsafe { mem::transmute(self.context.raw) }
     }
 }
 
 impl<'a> DerefMut for Surface<'a> {
     #[inline]
     fn deref_mut(&mut self) -> &mut SurfaceRef {
-        unsafe { mem::transmute(self.raw) }
+        unsafe { mem::transmute(self.context.raw) }
     }
 }
 
 impl<'a> AsRef<SurfaceRef> for Surface<'a> {
     #[inline]
     fn as_ref(&self) -> &SurfaceRef {
-        unsafe { mem::transmute(self.raw) }
+        unsafe { mem::transmute(self.context.raw) }
     }
 }
 
 impl<'a> AsMut<SurfaceRef> for Surface<'a> {
     #[inline]
     fn as_mut(&mut self) -> &mut SurfaceRef {
-        unsafe { mem::transmute(self.raw) }
+        unsafe { mem::transmute(self.context.raw) }
     }
 }
 
 
 impl<'a> Surface<'a> {
     pub unsafe fn from_ll<'b>(raw: *mut ll::SDL_Surface) -> Surface<'b> {
-        Surface {
+        let context = SurfaceContext {
             raw: raw,
-            _marker: PhantomData
-        }
+            _marker: PhantomData,
+        };
+        Surface { context: Rc::new(context) }
     }
 
     /// Creates a new surface using a pixel format.
@@ -123,10 +139,7 @@ impl<'a> Surface<'a> {
                 if raw.is_null() {
                     Err(get_error())
                 } else {
-                    Ok(Surface {
-                        raw: raw,
-                        _marker: PhantomData
-                    })
+                    Ok(Surface::from_ll(raw))
                 }
             }
         }
@@ -153,10 +166,7 @@ impl<'a> Surface<'a> {
                 if raw.is_null() {
                     Err(get_error())
                 } else {
-                    Ok(Surface {
-                        raw: raw,
-                        _marker: PhantomData
-                    })
+                    Ok(Surface::from_ll(raw))
                 }
             }
         }
@@ -170,16 +180,17 @@ impl<'a> Surface<'a> {
         if raw.is_null() {
             Err(get_error())
         } else {
-            Ok(Surface {
-                raw: raw,
-                _marker: PhantomData
-            })
+            Ok( unsafe{ Surface::from_ll(raw) } )
         }
     }
 
     pub fn load_bmp<P: AsRef<Path>>(path: P) -> Result<Surface<'static>, String> {
         let mut file = try!(RWops::from_file(path, "rb"));
         Surface::load_bmp_rw(&mut file)
+    }
+
+    pub fn context(&self) -> Rc<SurfaceContext<'a>> {
+        self.context.clone()
     }
 }
 
