@@ -315,11 +315,81 @@ impl Rect {
         self.raw.h = clamp_size(height) as i32;
     }
 
-    /// Checks whether this rect contains a given point.
+    /// Checks whether this rect contains a given point, or touches it on the
+    /// right and/or bottom edges.  This method is deprecated in favor of
+    /// [`Rect::contains_point`](#method.contains_point).
+    ///
+    /// For [historical
+    /// reasons](https://github.com/AngryLawyer/rust-sdl2/issues/569), this
+    /// method differs in behavior from
+    /// [`SDL_PointInRect`](https://wiki.libsdl.org/SDL_PointInRect) by
+    /// including points along the bottom and right edges of the rectangle, so
+    /// that a 1-by-1 rectangle actually covers an area of four points, not
+    /// one.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use sdl2::rect::{Rect, Point};
+    /// let rect = Rect::new(1, 2, 3, 4);
+    /// assert!(rect.contains(Point::new(1, 2)));
+    /// assert!(!rect.contains(Point::new(0, 1)));
+    /// assert!(rect.contains(Point::new(3, 5)));
+    /// assert!(rect.contains(Point::new(4, 6)));  // N.B.
+    /// assert!(!rect.contains(Point::new(5, 7)));
+    /// ```
+    #[deprecated(since = "0.30.0", note = "use `contains_point` instead")]
     pub fn contains<P>(&self, point: P) -> bool where P: Into<(i32, i32)> {
         let (x, y) = point.into();
         let inside_x = x >= self.left() && x <= self.right();
         inside_x && (y >= self.top() && y <= self.bottom())
+    }
+
+    /// Checks whether this rectangle contains a given point.
+    ///
+    /// Points along the right and bottom edges are not considered to be inside
+    /// the rectangle; this way, a 1-by-1 rectangle contains only a single
+    /// point.  Another way to look at it is that this method returns true if
+    /// and only if the given point would be painted by a call to
+    /// [`Renderer::fill_rect`](
+    /// ../render/struct.Renderer.html#method.fill_rect).
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use sdl2::rect::{Rect, Point};
+    /// let rect = Rect::new(1, 2, 3, 4);
+    /// assert!(rect.contains_point(Point::new(1, 2)));
+    /// assert!(!rect.contains_point(Point::new(0, 1)));
+    /// assert!(rect.contains_point(Point::new(3, 5)));
+    /// assert!(!rect.contains_point(Point::new(4, 6)));
+    /// ```
+    pub fn contains_point<P>(&self, point: P) -> bool
+            where P: Into<(i32, i32)> {
+        let (x, y) = point.into();
+        let inside_x = x >= self.left() && x < self.right();
+        inside_x && (y >= self.top() && y < self.bottom())
+    }
+
+    /// Checks whether this rectangle completely contains another rectangle.
+    ///
+    /// This method returns true if and only if every point contained by
+    /// `other` is also contained by `self`; in other words, if the
+    /// intersection of `self` and `other` is equal to `other`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use sdl2::rect::Rect;
+    /// let rect = Rect::new(1, 2, 3, 4);
+    /// assert!(rect.contains_rect(rect));
+    /// assert!(rect.contains_rect(Rect::new(3, 3, 1, 1)));
+    /// assert!(!rect.contains_rect(Rect::new(2, 1, 1, 1)));
+    /// assert!(!rect.contains_rect(Rect::new(3, 3, 2, 1)));
+    /// ```
+    pub fn contains_rect(&self, other: Rect) -> bool {
+        other.left() >= self.left() && other.right() <= self.right() &&
+            other.top() >= self.top() && other.bottom() <= self.bottom()
     }
 
     /// Returns the underlying C Rect.
@@ -380,15 +450,44 @@ impl Rect {
         }
     }
 
-    /// Determine whether two rectangles intersect.
+    /// Determines whether two rectangles intersect.
+    ///
+    /// Rectangles that share an edge but don't actually overlap are not
+    /// considered to intersect.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use sdl2::rect::Rect;
+    /// let rect = Rect::new(0, 0, 5, 5);
+    /// assert!(rect.has_intersection(rect));
+    /// assert!(rect.has_intersection(Rect::new(2, 2, 5, 5)));
+    /// assert!(!rect.has_intersection(Rect::new(5, 0, 5, 5)));
+    /// ```
     pub fn has_intersection(&self, other: Rect) -> bool {
         unsafe {
             ll::SDL_HasIntersection(self.raw(), other.raw()) != 0
         }
     }
 
-    /// Calculate the intersection of two rectangles.
+    /// Calculates the intersection of two rectangles.
+    ///
+    /// Returns `None` if the two rectangles don't intersect.  Rectangles that
+    /// share an edge but don't actually overlap are not considered to
+    /// intersect.
+    ///
     /// The bitwise AND operator `&` can also be used.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use sdl2::rect::Rect;
+    /// let rect = Rect::new(0, 0, 5, 5);
+    /// assert_eq!(rect.intersection(rect), Some(rect));
+    /// assert_eq!(rect.intersection(Rect::new(2, 2, 5, 5)),
+    ///            Some(Rect::new(2, 2, 3, 3)));
+    /// assert_eq!(rect.intersection(Rect::new(5, 0, 5, 5)), None);
+    /// ```
     pub fn intersection(&self, other: Rect) -> Option<Rect> {
         let mut out = unsafe { mem::uninitialized() };
 
@@ -403,8 +502,20 @@ impl Rect {
         }
     }
 
-    /// Calculate the union of two rectangles.
+    /// Calculates the union of two rectangles (i.e. the smallest rectangle
+    /// that contains both).
+    ///
     /// The bitwise OR operator `|` can also be used.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use sdl2::rect::Rect;
+    /// let rect = Rect::new(0, 0, 5, 5);
+    /// assert_eq!(rect.union(rect), rect);
+    /// assert_eq!(rect.union(Rect::new(2, 2, 5, 5)), Rect::new(0, 0, 7, 7));
+    /// assert_eq!(rect.union(Rect::new(5, 0, 5, 5)), Rect::new(0, 0, 10, 5));
+    /// ```
     pub fn union(&self, other: Rect) -> Rect {
         let mut out = unsafe {
             mem::uninitialized()
