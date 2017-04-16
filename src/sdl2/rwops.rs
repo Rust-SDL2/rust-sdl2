@@ -5,7 +5,7 @@ use std::marker::PhantomData;
 use libc::{c_void, c_int, size_t, c_char};
 use get_error;
 
-use sys::rwops as ll;
+pub use sys::rwops as ll;
 
 /// A structure that provides an abstract interface to stream I/O.
 pub struct RWops<'a> {
