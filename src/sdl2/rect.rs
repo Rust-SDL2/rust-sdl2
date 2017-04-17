@@ -57,7 +57,13 @@ fn clamped_mul(a: i32, b: i32) -> i32 {
     }
 }
 
-/// A rectangle.
+/// A (non-empty) rectangle.
+///
+/// The width and height of a `Rect` must always be strictly positive (never
+/// zero).  In cases where empty rects may need to represented, it is
+/// recommended to use `Option<Rect>`, with `None` representing an empty
+/// rectangle (see, for example, the output of the
+/// [`intersection`](#method.intersection) method).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Rect {
     raw: ll::SDL_Rect,
@@ -67,11 +73,13 @@ impl Rect {
     /// Creates a new rectangle from the given values.
     ///
     /// The width and height are clamped to ensure that the right and bottom
-    /// sides of the rectangle does not exceed i32::max_value().
-    /// (The value 2147483647, the maximal positive size of an i32)
+    /// sides of the rectangle does not exceed i32::max_value() (the value
+    /// 2147483647, the maximal positive size of an i32).  This means that the
+    /// rect size will behave oddly if you move it very far to the right or
+    /// downwards on the screen.
     ///
-    /// This means that the rect size will behave oddly if you move it very far
-    /// to the right or downwards on the screen.
+    /// `Rect`s must always be non-empty, so a `width` and/or `height` argument
+    /// of 0 will be replaced with 1.
     pub fn new(x: i32, y: i32, width: u32, height: u32) -> Rect {
         let raw = ll::SDL_Rect {
             x: clamp_position(x),
@@ -85,11 +93,13 @@ impl Rect {
     /// Creates a new rectangle centered on the given position.
     ///
     /// The width and height are clamped to ensure that the right and bottom
-    /// sides of the rectangle does not exceed i32::max_value().
-    /// (The value 2147483647, the maximal positive size of an i32)
+    /// sides of the rectangle does not exceed i32::max_value() (the value
+    /// 2147483647, the maximal positive size of an i32).  This means that the
+    /// rect size will behave oddly if you move it very far to the right or
+    /// downwards on the screen.
     ///
-    /// This means that the rect size will behave oddly if you move it very far
-    /// to the right or downwards on the screen.
+    /// `Rect`s must always be non-empty, so a `width` and/or `height` argument
+    /// of 0 will be replaced with 1.
     pub fn from_center<P>(center: P, width: u32, height: u32)
             -> Rect where P: Into<Point> {
         let raw = ll::SDL_Rect {
@@ -142,12 +152,18 @@ impl Rect {
 
     /// Sets the width of this rectangle to the given value,
     /// clamped to be less than or equal to i32::max_value() / 2.
+    ///
+    /// `Rect`s must always be non-empty, so a `width` argument of 0 will be
+    /// replaced with 1.
     pub fn set_width(&mut self, width: u32) {
         self.raw.w = clamp_size(width) as i32;
     }
 
     /// Sets the height of this rectangle to the given value,
     /// clamped to be less than or equal to i32::max_value() / 2.
+    ///
+    /// `Rect`s must always be non-empty, so a `height` argument of 0 will be
+    /// replaced with 1.
     pub fn set_height(&mut self, height: u32) {
         self.raw.h = clamp_size(height) as i32;
     }
