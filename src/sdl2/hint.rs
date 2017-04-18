@@ -3,10 +3,75 @@ use sys::hint as ll;
 use std::ptr;
 use libc::c_char;
 
+const VIDEO_MINIMIZE_ON_FOCUS_LOST: &'static str = "SDL_VIDEO_MINIMIZE_ON_FOCUS_LOST";
+
 pub enum Hint {
     Default,
     Normal,
     Override
+}
+
+/// A hint that specifies whether a fullscreen [Window](../video/Window.t.html) will be
+/// minimized if key focus is lost.
+///
+/// [Official SDL documentation](https://wiki.libsdl.org/SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS)
+///
+/// # Default
+/// This is enabled by default.
+///
+/// # Example
+/// ```rust,no_run
+/// sdl2::hint::set_video_minimize_on_focus_lost(false);
+/// ```
+///
+/// * `value`: `true` to enable minimizing of the Window if it loses key focus when in fullscreen mode,
+///            `false` to disable this feature.
+pub fn set_video_minimize_on_focus_lost(value: bool) -> bool {
+    set(VIDEO_MINIMIZE_ON_FOCUS_LOST, if value { "1" } else { "0" })
+}
+
+/// A hint that specifies whether a fullscreen [Window](../video/Window.t.html) will be
+/// minimized if key focus is lost.
+///
+/// [Official SDL documentation](https://wiki.libsdl.org/SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS)
+///
+/// # Example
+/// ```rust,no_run
+/// sdl2::hint::set_video_minimize_on_focus_lost_with_priority(false, sdl2::hint::Hint::Override);
+/// ```
+///
+/// * `value`: `true` to enable minimizing of the Window if it loses key focus when in fullscreen mode,
+///            `false` to disable this feature.
+/// * `priority`: The priority controls the behavior when setting a hint that already has a value.
+///               Hints will replace existing hints of their priority and lower.
+///               Environment variables are considered to have override priority. 
+pub fn set_video_minimize_on_focus_lost_with_priority(value: bool, priority: Hint) -> bool {
+    set_with_priority(VIDEO_MINIMIZE_ON_FOCUS_LOST, if value { "1" } else { "0" }, priority)
+}
+
+/// A hint that specifies whether a fullscreen [Window](../video/Window.t.html) will be
+/// minimized if key focus is lost.
+///
+/// [Official SDL documentation](https://wiki.libsdl.org/SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS)
+///
+/// # Default
+/// By default this will return `true`.
+///
+/// # Example
+/// ```rust,no_run
+/// assert_eq!(sdl2::hint::get_video_minimize_on_focus_lost(), true);
+///
+/// sdl2::hint::set_video_minimize_on_focus_lost(false);
+/// assert_eq!(sdl2::hint::get_video_minimize_on_focus_lost(), false);
+/// ```
+pub fn get_video_minimize_on_focus_lost() -> bool {
+    match get(VIDEO_MINIMIZE_ON_FOCUS_LOST) {
+        Some(value) => match &*value {
+            "1" => true,
+            _ => false,
+        },
+        _ => true
+    }
 }
 
 pub fn set(name: &str, value: &str) -> bool{
