@@ -1,5 +1,6 @@
 language: rust
 sudo: required
+os: linux
 rust:
 - beta
 - nightly
