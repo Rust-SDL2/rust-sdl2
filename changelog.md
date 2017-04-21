@@ -11,3 +11,13 @@ when upgrading from a version of rust-sdl2 to another.
 ```rust
 surface.blit(None,Rect::new(5,5,5,5)); // instead of surface.blit(None,Some(Rect::new(5,5,5,5)));
 ```
+
+[PR #639](https://github.com/AngryLawyer/rust-sdl2/pull/639)
+
+* Added hint-specific functions to `sdl2::hint`
+
+```rust
+sdl2::hint::set_video_minimize_on_focus_lost(bool) -> bool;
+sdl2::hint::set_video_minimize_on_focus_lost_with_priority(bool, sdl2::hint::Hint) -> bool;
+sdl2::hint::get_video_minimize_on_focus_lost() -> bool;
+```
