@@ -2,9 +2,11 @@ extern crate sdl2;
 
 use sdl2::audio::{AudioCallback, AudioSpecDesired,AudioSpecWAV,AudioCVT};
 use std::time::Duration;
+use std::borrow::Cow;
+use std::path::{PathBuf, Path};
 
-// NOTE: You probably want to investigate SDL_Mixer
-// (https://github.com/andelf/rust-sdl2_mixer) for real use cases.
+// NOTE: You probably want to investigate the 
+// mixer feature for real use cases.
 
 struct Sound {
     data: Vec<u8>,
@@ -24,6 +26,10 @@ impl AudioCallback for Sound {
 }
 
 fn main() {
+    let wav_file : Cow<'static, Path> = match std::env::args().nth(1) {
+        None => Cow::from(Path::new("./tests/sine.wav")),
+        Some(s) => Cow::from(PathBuf::from(s))
+    };
     let sdl_context = sdl2::init().unwrap();
     let audio_subsystem = sdl_context.audio().unwrap();
 
@@ -34,7 +40,7 @@ fn main() {
     };
 
     let device = audio_subsystem.open_playback(None, &desired_spec, |spec| {
-        let wav = AudioSpecWAV::load_wav("./tests/sine.wav")
+        let wav = AudioSpecWAV::load_wav(wav_file)
             .ok()
             .expect("Could not load test WAV file");
 
