@@ -9,17 +9,9 @@ use std::marker::PhantomData;
 use ::surface::Surface;
 use ::sys::surface::SDL_Surface;
 use ::get_error;
-use ::pixels::{self,Color};
-use ::sys::pixels::SDL_Color;
+use ::pixels::Color;
 use ::rwops::RWops;
 use super::ffi;
-
-/// Converts a rust-SDL2 color to its C ffi representation.
-#[inline]
-fn color_to_c_color(color: Color) -> SDL_Color {
-    SDL_Color { r: color.r, g: color.g, b: color.b, a: color.a }
-}
-
 
 // Absolute paths are a workaround for https://github.com/rust-lang-nursery/bitflags/issues/39 .
 bitflags! {
@@ -159,7 +151,7 @@ impl<'f,'text> PartialRendering<'f,'text> {
     pub fn solid<'b, T>(self, color: T )
             -> FontResult<Surface<'b>> where T: Into<Color> {
         let source = try!(self.text.convert());
-        let color = color_to_c_color(color.into());
+        let color = color.into().into();
         let raw = unsafe {
             match self.text {
                 RenderableText::Utf8(_) | RenderableText::Char(_) => {
@@ -181,8 +173,8 @@ impl<'f,'text> PartialRendering<'f,'text> {
     pub fn shaded<'b, T>(self, color: T, background: T)
             -> FontResult<Surface<'b>> where T: Into<Color> {
         let source = try!(self.text.convert());
-        let foreground = color_to_c_color(color.into());
-        let background = color_to_c_color(background.into());
+        let foreground = color.into().into();
+        let background = background.into().into();
         let raw = unsafe {
             match self.text {
                 RenderableText::Utf8(_) | RenderableText::Char(_) => {
@@ -204,7 +196,7 @@ impl<'f,'text> PartialRendering<'f,'text> {
     pub fn blended<'b, T>(self, color: T)
             -> FontResult<Surface<'b>> where T: Into<Color> {
         let source = try!(self.text.convert());
-        let color = color_to_c_color(color.into());
+        let color = color.into().into();
         let raw = unsafe {
             match self.text {
                 RenderableText::Utf8(_) | RenderableText::Char(_) => {
@@ -227,7 +219,7 @@ impl<'f,'text> PartialRendering<'f,'text> {
     pub fn blended_wrapped<'b, T>(self, color: T, wrap_max_width: u32)
             -> FontResult<Surface<'b>> where T: Into<Color> {
         let source = try!(self.text.convert());
-        let color = color_to_c_color(color.into());
+        let color = color.into().into();
         let raw = unsafe {
             match self.text {
                 RenderableText::Utf8(_) | RenderableText::Char(_) => {
