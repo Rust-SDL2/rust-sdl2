@@ -135,14 +135,14 @@ impl Color {
 
     // Implemented manually and kept private, because reasons
     #[inline]
-    unsafe fn raw(&self) -> ll::SDL_Color {
+    fn raw(&self) -> ll::SDL_Color {
         ll::SDL_Color { r: self.r, g: self.g, b: self.b, a: self.a }
     }
 }
 
 impl Into<ll::SDL_Color> for Color {
     fn into(self) -> ll::SDL_Color {
-        unsafe { self.raw() }
+        self.raw()
     }
 }
 
