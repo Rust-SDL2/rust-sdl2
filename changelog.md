@@ -21,3 +21,18 @@ sdl2::hint::set_video_minimize_on_focus_lost(bool) -> bool;
 sdl2::hint::set_video_minimize_on_focus_lost_with_priority(bool, sdl2::hint::Hint) -> bool;
 sdl2::hint::get_video_minimize_on_focus_lost() -> bool;
 ```
+
+[PR #629](https://github.com/AngryLawyer/rust-sdl2/pull/629)
+
+* Breaking: Changed Color to be a struct rather than an enum.
+* Takes less space, easier to use, old constructors are still available.
+* Matching is no longer necessary to read the component values.
+* Struct rather than variant construction is required in static initializers.
+
+```rust
+let color = Color { r: 255, g: 0, b: 0, a: 255 };
+let color = Color::RGBA(255, 0, 0, 255);
+let color = Color::RGB(255, 0, 0);
+let (r, g, b) = color.rgb();
+let (r, g, b, a) = color.rgba();
+```
