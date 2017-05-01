@@ -339,6 +339,17 @@ impl PixelFormatEnum {
                 => panic!("not supported format: {:?}", *self),
         }
     }
+
+    pub fn supports_alpha(&self) -> bool {
+        use ::pixels::PixelFormatEnum::*;
+        match *self {
+            ARGB4444 | ARGB1555 | ARGB8888 | ARGB2101010 |
+            ABGR4444 | ABGR1555 | ABGR8888 |
+            BGRA4444 | BGRA5551 | BGRA8888 |
+            RGBA4444 | RGBA5551 | RGBA8888 => true,
+            _ => false
+        }
+    }
 }
 
 impl Into<ll::SDL_PixelFormatEnum> for PixelFormatEnum {
