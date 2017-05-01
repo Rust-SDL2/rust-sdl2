@@ -698,7 +698,7 @@ pub trait DrawRenderer {
     fn string<C: ToColor>(&self, x: i16, y: i16, s: &str, color: C) -> Result<(), String>;
 }
 
-impl<T, TC> DrawRenderer for Canvas<T, TC> {
+impl<T> DrawRenderer for Canvas<T> where T: ::render::RenderTarget {
     fn pixel<C: ToColor>(&self, x: i16, y: i16, color: C) -> Result<(), String> {
         let ret = unsafe { ll::pixelColor(self.raw(), x, y, color.as_u32()) };
         if ret == 0 { Ok(()) } else { Err(get_error()) }
