@@ -254,7 +254,7 @@ impl<'s> RenderTarget for Surface<'s> {
     type Context = SurfaceContext<'s>;
 }
 
-impl<'r, 't, TC: TextureOwner> RenderTarget for TextureTarget<'r, 't, TC> {
+impl<'r, 't, TC> RenderTarget for TextureTarget<'r, 't, TC> {
     type Context = TC;
 }
 
@@ -440,9 +440,7 @@ impl Canvas<Window> {
     }
 }
 
-impl<T: RenderTarget> Canvas<T>
-    where T::Context: TextureOwner
-{
+impl<T: RenderTarget> Canvas<T> {
     /// Determine whether a window supports the use of render targets.
     pub fn render_target_supported(&self) -> bool {
         unsafe { ll::SDL_RenderTargetSupported(self.context.raw) == 1 }
@@ -720,7 +718,7 @@ impl<T> TextureCreator<T> {
     }
 }
 
-pub struct TextureTarget<'r, 't, TC: TextureOwner> {
+pub struct TextureTarget<'r, 't, TC> {
     raw_renderer: &'r *mut ll::SDL_Renderer,
     _texture_marker: PhantomData<&'t ()>,
     // unfortunately there is no way to know which kind of Renderer we have here at compile time,
@@ -728,16 +726,7 @@ pub struct TextureTarget<'r, 't, TC: TextureOwner> {
     _texture_target: PhantomData<TC>,
 }
 
-/// Represents structs that are the "source" of the Renderer.
-///
-/// You should *not* implement this trait outside of this crate.
-pub trait TextureOwner {}
-
-impl<'s> TextureOwner for SurfaceContext<'s> {}
-
-impl TextureOwner for WindowContext {}
-
-impl<'r, 't, TC: TextureOwner> Drop for TextureTarget<'r, 't, TC> {
+impl<'r, 't, TC> Drop for TextureTarget<'r, 't, TC> {
     // `Drop` cannot be specialized. Get around this through run-time check of Target Kind
     fn drop(&mut self) {
         unsafe {
@@ -1192,7 +1181,7 @@ impl<T: RenderTarget> Canvas<T> {
 /// ```
 pub type TextureCanvas<'r, 't, TC> = Canvas<TextureTarget<'r, 't, TC>>;
 
-impl<'r, 't, TC: TextureOwner> Canvas<TextureTarget<'r, 't, TC>> {
+impl<'r, 't, TC> Canvas<TextureTarget<'r, 't, TC>> {
     /// Replace the target of the `TextureCanvas` with a different `Texture`
     ///
     /// Returns the new `TextureCanvas` and releases the `&mut` borrow on the old `Texture`
