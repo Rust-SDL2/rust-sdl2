@@ -382,7 +382,7 @@ impl<'s> Canvas<Surface<'s>> {
     pub fn texture_creator(&self) -> TextureCreator<SurfaceContext<'s>> {
         TextureCreator {
             context: self.context.clone(),
-            default_pixel_format: self.surface().pixel_format_enum()
+            default_pixel_format: self.surface().pixel_format_enum(),
         }
     }
 }
@@ -435,20 +435,23 @@ impl Canvas<Window> {
     pub fn texture_creator(&self) -> TextureCreator<WindowContext> {
         TextureCreator {
             context: self.context.clone(),
-            default_pixel_format: self.window().window_pixel_format()
+            default_pixel_format: self.window().window_pixel_format(),
         }
     }
 }
 
-impl<T: RenderTarget> Canvas<T> where T::Context: TextureOwner {
+impl<T: RenderTarget> Canvas<T>
+    where T::Context: TextureOwner
+{
     /// Determine whether a window supports the use of render targets.
     pub fn render_target_supported(&self) -> bool {
         unsafe { ll::SDL_RenderTargetSupported(self.context.raw) == 1 }
     }
 
-    fn internal_with_target<'r, 't, 'a>(&'r mut self,
-                                        texture: &'t mut Texture<'a>)
-                                        -> Result<TextureCanvas<'r, 't, T::Context>, TargetRenderError> {
+    fn internal_with_target<'r, 't, 'a>
+        (&'r mut self,
+         texture: &'t mut Texture<'a>)
+         -> Result<TextureCanvas<'r, 't, T::Context>, TargetRenderError> {
         if self.render_target_supported() {
             unsafe { self.set_raw_target(texture.raw) }
                 .map_err(|e| TargetRenderError::SdlError(e))?;
@@ -619,12 +622,13 @@ impl<T> TextureCreator<T> {
     /// unsupported Pixel Formats that can cause errors. However, be careful with the default
     /// `PixelFormat` if you want to create transparent textures.
     pub fn create_texture<F>(&self,
-                          format: F,
-                          access: TextureAccess,
-                          width: u32,
-                          height: u32)
-                          -> Result<Texture, TextureValueError>
-                          where F: Into<Option<PixelFormatEnum>> {
+                             format: F,
+                             access: TextureAccess,
+                             width: u32,
+                             height: u32)
+                             -> Result<Texture, TextureValueError>
+        where F: Into<Option<PixelFormatEnum>>
+    {
         use self::TextureValueError::*;
         let w = match validate_int(width, "width") {
             Ok(w) => w,
@@ -634,7 +638,7 @@ impl<T> TextureCreator<T> {
             Ok(h) => h,
             Err(_) => return Err(HeightOverflows(height)),
         };
-        let format : PixelFormatEnum = format.into().unwrap_or(self.default_pixel_format);
+        let format: PixelFormatEnum = format.into().unwrap_or(self.default_pixel_format);
 
         // If the pixel format is YUV 4:2:0 and planar, the width and height must
         // be multiples-of-two. See issue #334 for details.
@@ -664,7 +668,8 @@ impl<T> TextureCreator<T> {
                                     width: u32,
                                     height: u32)
                                     -> Result<Texture, TextureValueError>
-                                    where F: Into<Option<PixelFormatEnum>> {
+        where F: Into<Option<PixelFormatEnum>>
+    {
         self.create_texture(format, TextureAccess::Static, width, height)
     }
 
@@ -674,7 +679,8 @@ impl<T> TextureCreator<T> {
                                        width: u32,
                                        height: u32)
                                        -> Result<Texture, TextureValueError>
-                                       where F: Into<Option<PixelFormatEnum>> {
+        where F: Into<Option<PixelFormatEnum>>
+    {
         self.create_texture(format, TextureAccess::Streaming, width, height)
     }
 
@@ -684,7 +690,8 @@ impl<T> TextureCreator<T> {
                                     width: u32,
                                     height: u32)
                                     -> Result<Texture, TextureValueError>
-                                    where F: Into<Option<PixelFormatEnum>> {
+        where F: Into<Option<PixelFormatEnum>>
+    {
         self.create_texture(format, TextureAccess::Target, width, height)
     }
 
@@ -726,11 +733,9 @@ pub struct TextureTarget<'r, 't, TC: TextureOwner> {
 /// You should *not* implement this trait outside of this crate.
 pub trait TextureOwner {}
 
-impl<'s> TextureOwner for SurfaceContext<'s> {
-}
+impl<'s> TextureOwner for SurfaceContext<'s> {}
 
-impl TextureOwner for WindowContext {
-}
+impl TextureOwner for WindowContext {}
 
 impl<'r, 't, TC: TextureOwner> Drop for TextureTarget<'r, 't, TC> {
     // `Drop` cannot be specialized. Get around this through run-time check of Target Kind
