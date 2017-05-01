@@ -276,7 +276,9 @@ impl<'r, 't, TC: TextureOwner> RenderTarget for TextureTarget<'r, 't, TC> {
 /// # Examples
 ///
 /// ```rust,no_run
-/// # use sdl2::window::Window;
+/// # use sdl2::render::Canvas;
+/// # use sdl2::video::Window;
+/// # use sdl2::pixels::Color;
 /// # use sdl2::rect::Rect;
 /// # let sdl_context = sdl2::init().unwrap();
 /// # let video_subsystem = sdl_context.video().unwrap();
