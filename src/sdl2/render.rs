@@ -127,7 +127,7 @@ impl FromPrimitive for TextureAccess {
 pub struct RendererInfo {
     pub name: &'static str,
     pub flags: u32,
-    pub texture_formats: Vec<pixels::PixelFormatEnum>,
+    pub texture_formats: Vec<PixelFormatEnum>,
     pub max_texture_width: u32,
     pub max_texture_height: u32,
 }
@@ -161,7 +161,7 @@ impl FromPrimitive for BlendMode {
 
 impl RendererInfo {
     pub unsafe fn from_ll(info: &ll::SDL_RendererInfo) -> RendererInfo {
-        let texture_formats: Vec<pixels::PixelFormatEnum> =
+        let texture_formats: Vec<PixelFormatEnum> =
             info.texture_formats[0..(info.num_texture_formats as usize)]
                 .iter()
                 .map(|&format| {
@@ -272,6 +272,46 @@ impl<'r, 't, TC: TextureOwner> RenderTarget for TextureTarget<'r, 't, TC> {
 /// Its context may be shared with the `TextureCreator`.
 ///
 /// The context will not be dropped until all references of it are out of scope.
+///
+/// # Examples
+///
+/// ```rust,no_run
+/// # use sdl2::window::Window;
+/// # use sdl2::rect::Rect;
+/// # let sdl_context = sdl2::init().unwrap();
+/// # let video_subsystem = sdl_context.video().unwrap();
+/// let window = video_subsystem.window("Example", 800, 600).build().unwrap();
+///
+/// // Let's create a Canvas which we will use to draw in our Window
+/// let mut canvas : Canvas<Window> = window.into_canvas()
+///     .present_vsync() //< this means the screen cannot
+///     // render faster than your display rate (usually 60Hz or 144Hz)
+///     .build().unwrap();
+///
+/// canvas.set_draw_color(Color::RGB(0, 0, 0));
+/// // fills the canvas with the color we set in `set_draw_color`.
+/// canvas.clear();
+///
+/// // change the color of our drawing with a gold-color ...
+/// canvas.set_draw_color(Color::RGB(255, 210, 0));
+/// // A draw a rectangle which almost fills our window with it !
+/// canvas.fill_rect(Rect::new(10, 10, 780, 580));
+///
+/// // However the canvas has not been updated to the window yet,
+/// // everything has been processed to an internal buffer,
+/// // but if we want our buffer to be displayed on the window,
+/// // we need to call `present`. We need to call this everytime
+/// // we want to render a new frame on the window.
+/// canvas.present();
+/// // present does not "clear" the buffer, that means that
+/// // you have to clear it yourself before rendering again,
+/// // otherwise leftovers of what you've renderer before might
+/// // show up on the window !
+/// //
+/// // A good rule of thumb is to `clear()`, draw every texture
+/// // needed, and then `present()`; repeat this every new frame.
+///
+/// ```
 pub struct Canvas<T: RenderTarget> {
     target: T,
     context: Rc<RendererContext<T::Context>>,
@@ -338,7 +378,10 @@ impl<'s> Canvas<Surface<'s>> {
     /// The target (i.e., `Window`) will not be destroyed and the SDL_Renderer will not be
     /// destroyed if the `TextureCreator` is still in scope.
     pub fn texture_creator(&self) -> TextureCreator<SurfaceContext<'s>> {
-        TextureCreator { context: self.context.clone() }
+        TextureCreator {
+            context: self.context.clone(),
+            default_pixel_format: self.surface().pixel_format_enum()
+        }
     }
 }
 
@@ -388,7 +431,10 @@ impl Canvas<Window> {
     /// The target (i.e., `Window`) will not be destroyed and the SDL_Renderer will not be
     /// destroyed if the `TextureCreator` is still in scope.
     pub fn texture_creator(&self) -> TextureCreator<WindowContext> {
-        TextureCreator { context: self.context.clone() }
+        TextureCreator {
+            context: self.context.clone(),
+            default_pixel_format: self.window().window_pixel_format()
+        }
     }
 }
 
@@ -425,6 +471,7 @@ impl<T: RenderTarget> Canvas<T> where T::Context: TextureOwner {
 /// It is, however, useless. Any `Texture` created here can only be drawn onto the original `Canvas`
 pub struct TextureCreator<T> {
     context: Rc<RendererContext<T>>,
+    default_pixel_format: PixelFormatEnum,
 }
 
 /// The type that allows you to build Window-based renderers.
@@ -554,13 +601,28 @@ impl<T> TextureCreator<T> {
         self.context.raw()
     }
 
+    pub fn default_pixel_format(&self) -> PixelFormatEnum {
+        self.default_pixel_format.clone()
+    }
+
     /// Creates a texture for a rendering context.
-    pub fn create_texture(&self,
-                          format: pixels::PixelFormatEnum,
+    ///
+    /// If format is `None`, the format will be the one the parent Window or Surface uses.
+    ///
+    /// If format is `Some(pixel_format)` the default will be overridden and the texture will be
+    /// created with the specified format if possible. If the PixelFormat is not supported, this
+    /// will return an error.
+    ///
+    /// You should prefer the default format if possible to have performance gains and to avoid
+    /// unsupported Pixel Formats that can cause errors. However, be careful with the default
+    /// `PixelFormat` if you want to create transparent textures.
+    pub fn create_texture<F>(&self,
+                          format: F,
                           access: TextureAccess,
                           width: u32,
                           height: u32)
-                          -> Result<Texture, TextureValueError> {
+                          -> Result<Texture, TextureValueError>
+                          where F: Into<Option<PixelFormatEnum>> {
         use self::TextureValueError::*;
         let w = match validate_int(width, "width") {
             Ok(w) => w,
@@ -570,6 +632,7 @@ impl<T> TextureCreator<T> {
             Ok(h) => h,
             Err(_) => return Err(HeightOverflows(height)),
         };
+        let format : PixelFormatEnum = format.into().unwrap_or(self.default_pixel_format);
 
         // If the pixel format is YUV 4:2:0 and planar, the width and height must
         // be multiples-of-two. See issue #334 for details.
@@ -594,29 +657,32 @@ impl<T> TextureCreator<T> {
     }
 
     /// Shorthand for `create_texture(format, TextureAccess::Static, width, height)`
-    pub fn create_texture_static(&self,
-                                 format: pixels::PixelFormatEnum,
-                                 width: u32,
-                                 height: u32)
-                                 -> Result<Texture, TextureValueError> {
+    pub fn create_texture_static<F>(&self,
+                                    format: F,
+                                    width: u32,
+                                    height: u32)
+                                    -> Result<Texture, TextureValueError>
+                                    where F: Into<Option<PixelFormatEnum>> {
         self.create_texture(format, TextureAccess::Static, width, height)
     }
 
     /// Shorthand for `create_texture(format, TextureAccess::Streaming, width, height)`
-    pub fn create_texture_streaming(&self,
-                                    format: pixels::PixelFormatEnum,
-                                    width: u32,
-                                    height: u32)
-                                    -> Result<Texture, TextureValueError> {
+    pub fn create_texture_streaming<F>(&self,
+                                       format: F,
+                                       width: u32,
+                                       height: u32)
+                                       -> Result<Texture, TextureValueError>
+                                       where F: Into<Option<PixelFormatEnum>> {
         self.create_texture(format, TextureAccess::Streaming, width, height)
     }
 
     /// Shorthand for `create_texture(format, TextureAccess::Target, width, height)`
-    pub fn create_texture_target(&self,
-                                 format: pixels::PixelFormatEnum,
-                                 width: u32,
-                                 height: u32)
-                                 -> Result<Texture, TextureValueError> {
+    pub fn create_texture_target<F>(&self,
+                                    format: F,
+                                    width: u32,
+                                    height: u32)
+                                    -> Result<Texture, TextureValueError>
+                                    where F: Into<Option<PixelFormatEnum>> {
         self.create_texture(format, TextureAccess::Target, width, height)
     }
 
@@ -1731,8 +1797,3 @@ pub fn drivers() -> DriverIterator {
         index: 0,
     }
 }
-
-/*
-    //TODO: Figure out how to support this with our current struct format
-    pub fn SDL_GetRenderer(window: *SDL_Window) -> *SDL_Renderer;
-*/
