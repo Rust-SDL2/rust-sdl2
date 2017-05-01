@@ -214,7 +214,7 @@ impl<T> RendererContext<T> {
     }
 
     /// Gets the raw pointer to the SDL_Renderer
-    pub unsafe fn raw(&self) -> *mut ll::SDL_Renderer {
+    pub fn raw(&self) -> *mut ll::SDL_Renderer {
         self.raw
     }
 
@@ -550,7 +550,7 @@ impl Error for TextureValueError {
 
 /// Texture-creating methods for the renderer
 impl<T> TextureCreator<T> {
-    pub unsafe fn raw(&self) -> *mut ll::SDL_Renderer {
+    pub fn raw(&self) -> *mut ll::SDL_Renderer {
         self.context.raw()
     }
 
@@ -675,7 +675,7 @@ impl<'r, 't, TC: TextureOwner> Drop for TextureTarget<'r, 't, TC> {
 
 /// Drawing methods
 impl<T: RenderTarget> Canvas<T> {
-    pub unsafe fn raw(&self) -> *mut ll::SDL_Renderer {
+    pub fn raw(&self) -> *mut ll::SDL_Renderer {
         self.context.raw()
     }
 
@@ -1682,7 +1682,7 @@ impl<'r> Texture<'r> {
         }
     }
 
-    pub unsafe fn raw(&self) -> *mut ll::SDL_Texture {
+    pub fn raw(&self) -> *mut ll::SDL_Texture {
         self.raw
     }
 }
