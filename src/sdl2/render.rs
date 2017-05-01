@@ -234,19 +234,35 @@ impl<T> RendererContext<T> {
     }
 }
 
-impl<T, TC> Deref for Canvas<T, TC> {
-    type Target = RendererContext<TC>;
+impl<T: RenderTarget> Deref for Canvas<T> {
+    type Target = RendererContext<T::Context>;
 
-    fn deref(&self) -> &RendererContext<TC> {
+    fn deref(&self) -> &RendererContext<T::Context> {
         self.context.as_ref()
     }
+}
+
+/// Represents structs which can be the target of a SDL_Renderer (or Canvas).
+///
+/// This is intended for internal use only. It should not be used outside of this crate,
+/// but is still visible for documentation reasons.
+pub trait RenderTarget {
+    type Context;
+}
+
+impl<'s> RenderTarget for Surface<'s> {
+    type Context = SurfaceContext<'s>;
+}
+
+impl<'r, 't, TC: TextureOwner> RenderTarget for TextureTarget<'r, 't, TC> {
+    type Context = TC;
 }
 
 /// Manages and owns a target (`Surface`, `Window`, or `Texture`) and allows drawing in it.
 ///
 /// If the `Window` manipulates the shell of the Window, `Canvas<Window>` allows you to
 /// manipulate both the shell and the inside of the window;
-/// you can manipulate pixel by pexel (*not recommended*), lines, colored rectangles, or paste
+/// you can manipulate pixel by pixel (*not recommended*), lines, colored rectangles, or paste
 /// `Texture`s to this `Canvas`.
 ///
 /// Drawing to the `Canvas` does not take effect immediately, it draws to a buffer until you
@@ -256,16 +272,16 @@ impl<T, TC> Deref for Canvas<T, TC> {
 /// Its context may be shared with the `TextureCreator`.
 ///
 /// The context will not be dropped until all references of it are out of scope.
-pub struct Canvas<T, TC> {
+pub struct Canvas<T: RenderTarget> {
     target: T,
-    context: Rc<RendererContext<TC>>,
+    context: Rc<RendererContext<T::Context>>,
 }
 
 /// Alias for a `Canvas` that was created out of a `Surface`
-pub type SurfaceCanvas<'s> = Canvas<Surface<'s>, SurfaceContext<'s>>;
+pub type SurfaceCanvas<'s> = Canvas<Surface<'s>>;
 
 /// Methods for the `SurfaceCanvas`.
-impl<'s> Canvas<Surface<'s>, SurfaceContext<'s>> {
+impl<'s> Canvas<Surface<'s>> {
     /// Creates a 2D software rendering context for a surface.
     ///
     /// This method should only fail if SDL2 is not built with rendering
@@ -326,10 +342,14 @@ impl<'s> Canvas<Surface<'s>, SurfaceContext<'s>> {
     }
 }
 
-pub type WindowCanvas = Canvas<Window, WindowContext>;
+pub type WindowCanvas = Canvas<Window>;
+
+impl RenderTarget for Window {
+    type Context = WindowContext;
+}
 
 /// Methods for the `WindowCanvas`.
-impl Canvas<Window, WindowContext> {
+impl Canvas<Window> {
     /// Gets a reference to the associated window of the Canvas
     #[inline]
     pub fn window(&self) -> &Window {
@@ -372,7 +392,7 @@ impl Canvas<Window, WindowContext> {
     }
 }
 
-impl<T, TC> Canvas<T, TC> {
+impl<T: RenderTarget> Canvas<T> where T::Context: TextureOwner {
     /// Determine whether a window supports the use of render targets.
     pub fn render_target_supported(&self) -> bool {
         unsafe { ll::SDL_RenderTargetSupported(self.context.raw) == 1 }
@@ -380,7 +400,7 @@ impl<T, TC> Canvas<T, TC> {
 
     fn internal_with_target<'r, 't, 'a>(&'r mut self,
                                         texture: &'t mut Texture<'a>)
-                                        -> Result<TextureCanvas<'r, 't, TC>, TargetRenderError> {
+                                        -> Result<TextureCanvas<'r, 't, T::Context>, TargetRenderError> {
         if self.render_target_supported() {
             unsafe { self.set_raw_target(texture.raw) }
                 .map_err(|e| TargetRenderError::SdlError(e))?;
@@ -389,6 +409,7 @@ impl<T, TC> Canvas<T, TC> {
                    target: TextureTarget {
                        raw_renderer: &self.context.raw,
                        _texture_marker: PhantomData,
+                       _texture_target: PhantomData,
                    },
                })
         } else {
@@ -624,12 +645,26 @@ impl<T> TextureCreator<T> {
     }
 }
 
-pub struct TextureTarget<'r, 't> {
+pub struct TextureTarget<'r, 't, TC: TextureOwner> {
     raw_renderer: &'r *mut ll::SDL_Renderer,
     _texture_marker: PhantomData<&'t ()>,
+    // unfortunately there is no way to know which kind of Renderer we have here at compile time,
+    // so this PhantomData is here to keep track of that.
+    _texture_target: PhantomData<TC>,
 }
 
-impl<'r, 't> Drop for TextureTarget<'r, 't> {
+/// Represents structs that are the "source" of the Renderer.
+///
+/// You should *not* implement this trait outside of this crate.
+pub trait TextureOwner {}
+
+impl<'s> TextureOwner for SurfaceContext<'s> {
+}
+
+impl TextureOwner for WindowContext {
+}
+
+impl<'r, 't, TC: TextureOwner> Drop for TextureTarget<'r, 't, TC> {
     // `Drop` cannot be specialized. Get around this through run-time check of Target Kind
     fn drop(&mut self) {
         unsafe {
@@ -639,7 +674,7 @@ impl<'r, 't> Drop for TextureTarget<'r, 't> {
 }
 
 /// Drawing methods
-impl<T, TC> Canvas<T, TC> {
+impl<T: RenderTarget> Canvas<T> {
     pub unsafe fn raw(&self) -> *mut ll::SDL_Renderer {
         self.context.raw()
     }
@@ -1082,9 +1117,9 @@ impl<T, TC> Canvas<T, TC> {
 ///    texture
 /// }
 /// ```
-pub type TextureCanvas<'r, 't, TC> = Canvas<TextureTarget<'r, 't>, TC>;
+pub type TextureCanvas<'r, 't, TC> = Canvas<TextureTarget<'r, 't, TC>>;
 
-impl<'r, 't, TC> Canvas<TextureTarget<'r, 't>, TC> {
+impl<'r, 't, TC: TextureOwner> Canvas<TextureTarget<'r, 't, TC>> {
     /// Replace the target of the `TextureCanvas` with a different `Texture`
     ///
     /// Returns the new `TextureCanvas` and releases the `&mut` borrow on the old `Texture`
@@ -1100,6 +1135,7 @@ impl<'r, 't, TC> Canvas<TextureTarget<'r, 't>, TC> {
                target: TextureTarget {
                    raw_renderer: raw_renderer,
                    _texture_marker: PhantomData,
+                   _texture_target: PhantomData,
                },
            })
     }
