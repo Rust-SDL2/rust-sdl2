@@ -2,7 +2,7 @@ extern crate sdl2;
 
 #[test]
 fn audio_spec_wav() {
-    let wav = sdl2::audio::AudioSpecWAV::load_wav("./tests/sine.wav").unwrap();
+    let wav = sdl2::audio::AudioSpecWAV::load_wav("./assets/sine.wav").unwrap();
 
     assert_eq!(wav.freq, 22050);
     assert_eq!(wav.format, sdl2::audio::AudioFormat::S16LSB);

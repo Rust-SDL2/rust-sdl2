@@ -27,7 +27,7 @@ impl AudioCallback for Sound {
 
 fn main() {
     let wav_file : Cow<'static, Path> = match std::env::args().nth(1) {
-        None => Cow::from(Path::new("./tests/sine.wav")),
+        None => Cow::from(Path::new("./assets/sine.wav")),
         Some(s) => Cow::from(PathBuf::from(s))
     };
     let sdl_context = sdl2::init().unwrap();
