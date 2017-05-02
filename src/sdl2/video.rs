@@ -525,10 +525,18 @@ impl VideoSubsystem {
         }
     }
 
-    pub fn display_name(&self, display_index: i32) -> String {
+    /// Get the name of the display at the index `display_name`.
+    ///
+    /// Will return an error if the index is out of bounds or if SDL experienced a failure; inspect
+    /// the returned string for further info.
+    pub fn display_name(&self, display_index: i32) -> Result<String, String> {
         unsafe {
             let display = ll::SDL_GetDisplayName(display_index as c_int);
-            CStr::from_ptr(display as *const _).to_str().unwrap().to_owned()
+            if display.is_null() {
+                Err(get_error())
+            } else {
+                Ok(CStr::from_ptr(display as *const _).to_str().unwrap().to_owned())
+            }
         }
     }
 
