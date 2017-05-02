@@ -36,3 +36,8 @@ let color = Color::RGB(255, 0, 0);
 let (r, g, b) = color.rgb();
 let (r, g, b, a) = color.rgba();
 ```
+
+[PR #651](https://github.com/AngryLawyer/rust-sdl2/pull/629)
+
+* **VideoSystem::display_name** now returns a `Result<String, String>` instead of a `String`.
+* This prevents a segfault when the requested display index is out of bounds
