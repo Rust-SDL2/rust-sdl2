@@ -34,6 +34,7 @@ after_success:
 - travis-cargo --only stable doc-upload
 env:
   global:
+  - RUST_TEST_THREADS=1
   - TRAVIS_CARGO_NIGHTLY_FEATURE=""
   - LD_LIBRARY_PATH: "/usr/local/lib"
   - secure: MJhmVnQ2IM7+sVmc3vU4ndKOcQgLLeHUPW3qaQBQHKQmvoswCwQK60N17uSgWn1Ln8teqvSRHq4KclIjdMHI+VuQXJHQKHDgjcYbHxwmc3AM1Whnp0XB44ksKUmD109BGWSfZQxzF+6dA+YNOQ+mti+bpydMu8n2FMVjA/SXwQ8=
