@@ -15,11 +15,6 @@ categories = ["rendering","games","game-engine","multimedia"]
 name       = "sdl2"
 path       = "src/sdl2/lib.rs"
 
-
-[[test]]
-name="events"
-harness=false
-
 [dependencies]
 bitflags = "0.7"
 libc = "0.2"

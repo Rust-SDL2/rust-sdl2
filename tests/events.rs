@@ -1,7 +1,8 @@
 extern crate sdl2;
 use sdl2::event;
 
-fn main() {
+#[test]
+fn test_events() {
     let sdl = sdl2::init().unwrap();
     let ev = sdl.event().unwrap();
     let mut ep = sdl.event_pump().unwrap();
