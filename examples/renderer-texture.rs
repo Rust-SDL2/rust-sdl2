@@ -25,7 +25,7 @@ pub fn main() {
         for y in 0..256 {
             for x in 0..256 {
                 let offset = y*pitch + x*3;
-                buffer[offset + 0] = x as u8;
+                buffer[offset] = x as u8;
                 buffer[offset + 1] = y as u8;
                 buffer[offset + 2] = 0;
             }

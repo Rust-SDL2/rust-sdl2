@@ -64,7 +64,7 @@ fn run(font_path: &Path) {
     // render a surface, and convert it to a texture bound to the canvas
     let surface = font.render("Hello Rust!")
         .blended(Color::RGBA(255, 0, 0, 255)).unwrap();
-    let mut texture = texture_creator.create_texture_from_surface(&surface).unwrap();
+    let texture = texture_creator.create_texture_from_surface(&surface).unwrap();
 
     canvas.set_draw_color(Color::RGBA(195, 217, 255, 255));
     canvas.clear();
@@ -75,14 +75,14 @@ fn run(font_path: &Path) {
     let padding = 64;
     let target = get_centered_rect(width, height, SCREEN_WIDTH - padding, SCREEN_HEIGHT - padding);
 
-    canvas.copy(&mut texture, None, Some(target)).unwrap();
+    canvas.copy(&texture, None, Some(target)).unwrap();
     canvas.present();
 
     'mainloop: loop {
         for event in sdl_context.event_pump().unwrap().poll_iter() {
             match event {
-                Event::Quit{..} => break 'mainloop,
-                Event::KeyDown {keycode: Some(Keycode::Escape), ..} => break 'mainloop,
+                Event::KeyDown {keycode: Some(Keycode::Escape), ..} |
+                Event::Quit {..} => break 'mainloop,
                 _ => {}
             }
         }

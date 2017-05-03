@@ -20,10 +20,9 @@ pub fn main() {
 
     'running: loop {
         for event in events.poll_iter() {
-            match event {
-                Event::Quit {..} => break 'running,
-                _ => ()
-            }
+            if let Event::Quit {..} = event {
+                break 'running;
+            };
         }
 
         // Create a set of pressed Keys.

@@ -41,13 +41,11 @@ fn main() {
 
     let device = audio_subsystem.open_playback(None, &desired_spec, |spec| {
         let wav = AudioSpecWAV::load_wav(wav_file)
-            .ok()
             .expect("Could not load test WAV file");
 
         let cvt = AudioCVT::new(
                 wav.format, wav.channels, wav.freq,
                 spec.format, spec.channels, spec.freq)
-            .ok()
             .expect("Could not convert WAV file");
 
         let data = cvt.convert(wav.buffer().to_vec());

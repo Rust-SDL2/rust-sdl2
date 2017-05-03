@@ -35,7 +35,7 @@ mod game_of_life {
                 playground[((PLAYGROUND_WIDTH-2) + i* PLAYGROUND_WIDTH) as usize] = true;
             }
             for j in 2..(PLAYGROUND_WIDTH-2) {
-                playground[(1*PLAYGROUND_WIDTH + j) as usize] = true;
+                playground[(PLAYGROUND_WIDTH + j) as usize] = true;
                 playground[((PLAYGROUND_HEIGHT-2)*PLAYGROUND_WIDTH + j) as usize] = true;
             }
 
@@ -54,7 +54,7 @@ mod game_of_life {
             }
         }
 
-        pub fn get_mut<'a>(&'a mut self, x: i32, y: i32) -> Option<&'a mut bool> {
+        pub fn get_mut(&mut self, x: i32, y: i32) -> Option<&mut bool> {
             if x >= 0 && y >= 0 &&
                (x as u32) < PLAYGROUND_WIDTH && (y as u32) < PLAYGROUND_HEIGHT {
                 Some(&mut self.playground[(x as u32 + (y as u32)* PLAYGROUND_WIDTH) as usize])
@@ -86,11 +86,8 @@ mod game_of_life {
                         if !(i == 0 && j == 0) {
                             let peek_x : i32 = (x as i32) + i;
                             let peek_y : i32 = (y as i32) + j;
-                            match self.get(peek_x, peek_y) {
-                                Some(true) => {
-                                    count += 1;
-                                },
-                                _ => {},
+                            if let Some(true) = self.get(peek_x, peek_y) {
+                                count += 1;
                             }
                         }
                     }
@@ -220,22 +217,18 @@ pub fn main() {
         canvas.clear();
         for (i, unit) in (&game).into_iter().enumerate() {
             let i = i as u32;
-            match *unit {
-                true => {
-                    canvas.copy(&square_texture,
-                                None,
-                                Rect::new(((i % PLAYGROUND_WIDTH) * SQUARE_SIZE) as i32,
-                                          ((i / PLAYGROUND_WIDTH) * SQUARE_SIZE) as i32,
-                                          SQUARE_SIZE,
-                                          SQUARE_SIZE)).unwrap();
-                },
-                false => {},
+            if *unit {
+                canvas.copy(&square_texture,
+                            None,
+                            Rect::new(((i % PLAYGROUND_WIDTH) * SQUARE_SIZE) as i32,
+                                      ((i / PLAYGROUND_WIDTH) * SQUARE_SIZE) as i32,
+                                      SQUARE_SIZE,
+                                      SQUARE_SIZE)).unwrap();
             }
         }
         canvas.present();
-        match game.state() {
-            game_of_life::State::Playing => { frame += 1; },
-            _ => {}
+        if let game_of_life::State::Playing = game.state() {
+            frame += 1;
         };
     }
 }

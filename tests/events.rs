@@ -17,7 +17,7 @@ fn test_events() {
 fn test1(ev: &sdl2::EventSubsystem) {
     let user_event1_id = unsafe { ev.register_event().unwrap() };
     let user_event2_id = unsafe { ev.register_event().unwrap() };
-    assert!(user_event1_id != user_event2_id);
+    assert_ne!(user_event1_id, user_event2_id);
 }
 
 fn test2(ev: &sdl2::EventSubsystem, ep: &mut sdl2::EventPump) {

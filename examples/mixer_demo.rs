@@ -32,7 +32,7 @@ fn demo(filename: &Path) {
     let format = AUDIO_S16LSB; // signed 16 bit samples, in little-endian byte order
     let channels = 2; // Stereo
     let chunk_size = 1024;
-    let _ = sdl2::mixer::open_audio(frequency, format, channels, chunk_size).unwrap();
+    sdl2::mixer::open_audio(frequency, format, channels, chunk_size).unwrap();
     sdl2::mixer::allocate_channels(0);
 
     {

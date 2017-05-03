@@ -2,6 +2,7 @@ extern crate sdl2;
 
 use sdl2::event::Event;
 use sdl2::mouse::MouseButton;
+use sdl2::keyboard::Keycode;
 use std::time::Duration;
 
 pub fn main() {
@@ -19,8 +20,9 @@ pub fn main() {
     'running: loop {
         for event in events.poll_iter() {
             match event {
-                Event::Quit {..} => break 'running,
-                _ => ()
+                Event::KeyDown { keycode: Some(Keycode::Escape), .. } |
+                Event::Quit { .. } => break 'running,
+                _ => {}
             }
         }
 
