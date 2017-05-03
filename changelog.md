@@ -68,3 +68,7 @@ let (r, g, b, a) = color.rgba();
 
 * **VideoSystem::display_name** now returns a `Result<String, String>` instead of a `String`.
 * This prevents a segfault when the requested display index is out of bounds
+
+[PR #635](https://github.com/AngryLawyer/rust-sdl2/pull/635)
+
+* **Depprecated `Rect::contains`**, added `Rect::contains_point` and `Rect::contains_rect`. **`contains` and `contains_point` are close but different ! See [here](https://github.com/AngryLawyer/rust-sdl2/issues/569)**
