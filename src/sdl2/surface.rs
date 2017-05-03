@@ -413,7 +413,9 @@ impl SurfaceRef {
     where R: Into<Option<Rect>>
     {
         unsafe {
-            let rect_ptr = mem::transmute( rect.into().as_ref() );
+            let rect = rect.into();
+            let rect_ptr = mem::transmute(rect.as_ref()); // TODO find a better way to transform
+            // Option<&...> into a *const _
             let format = self.pixel_format();
             let result = ll::SDL_FillRect(self.raw(), rect_ptr, color.to_u32(&format) );
             match result {

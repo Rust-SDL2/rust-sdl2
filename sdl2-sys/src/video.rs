@@ -172,7 +172,7 @@ extern "C" {
     pub fn SDL_SetWindowData(window: *mut SDL_Window, name: *const c_char, userdata: *const c_void) -> *const c_void;
     pub fn SDL_GetWindowData(window: *mut SDL_Window, name: *const c_char) -> *mut c_void;
     pub fn SDL_SetWindowPosition(window: *mut SDL_Window, x: c_int, y: c_int);
-    pub fn SDL_GetWindowPosition(window: *mut SDL_Window, x: *const c_int, y: *const c_int);
+    pub fn SDL_GetWindowPosition(window: *mut SDL_Window, x: *mut c_int, y: *mut c_int);
     pub fn SDL_SetWindowSize(window: *mut SDL_Window, w: c_int, h: c_int);
     pub fn SDL_GetWindowSize(window: *mut SDL_Window, w: *mut c_int, h: *mut c_int);
     pub fn SDL_SetWindowMinimumSize(window: *mut SDL_Window, min_w: c_int, min_h: c_int);

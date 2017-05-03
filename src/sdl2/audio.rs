@@ -359,9 +359,9 @@ impl AudioFormatNum for f32 {
 extern "C" fn audio_callback_marshall<CB: AudioCallback>
 (userdata: *mut c_void, stream: *mut uint8_t, len: c_int) {
     use std::slice::from_raw_parts_mut;
-    use std::mem::{size_of, transmute};
+    use std::mem::size_of;
     unsafe {
-        let mut cb_userdata: &mut CB = transmute(userdata);
+        let mut cb_userdata: &mut CB = &mut *(userdata as *mut CB);
         let buf: &mut [CB::Channel] = from_raw_parts_mut(
             stream as *mut CB::Channel,
             len as usize / size_of::<CB::Channel>()
@@ -446,7 +446,7 @@ impl AudioSpecDesired {
             padding: 0,
             size: 0,
             callback: None,
-            userdata: 0 as *mut c_void
+            userdata: ptr::null_mut(),
         }
     }
 }

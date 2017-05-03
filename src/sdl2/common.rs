@@ -8,7 +8,6 @@ pub enum IntegerOrSdlError {
     IntegerOverflows(&'static str, u32),
     SdlError(String)
 }
-
 /// Validates and converts the given u32 to a positive C integer.
 pub fn validate_int(value: u32, name: &'static str)
         -> Result<::libc::c_int, IntegerOrSdlError> {

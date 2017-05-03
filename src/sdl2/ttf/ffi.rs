@@ -50,10 +50,10 @@ extern "C" {
                             maxy: *const c_int, advance: *const c_int) -> c_int;
     pub fn TTF_SizeText(font: *const TTF_Font, text: *const c_char, w: *const c_int,
                         h: *const c_int) -> c_int;
-    pub fn TTF_SizeUTF8(font: *const TTF_Font, text: *const c_char, w: *const c_int,
-                        h: *const c_int) -> c_int;
-    pub fn TTF_SizeUNICODE(font: *const TTF_Font, text: *const u16, w: *const c_int,
-                           h: *const c_int) -> c_int;
+    pub fn TTF_SizeUTF8(font: *const TTF_Font, text: *const c_char, w: *mut c_int,
+                        h: *mut c_int) -> c_int;
+    pub fn TTF_SizeUNICODE(font: *const TTF_Font, text: *const u16, w: *mut c_int,
+                           h: *mut c_int) -> c_int;
     pub fn TTF_RenderText_Solid(font: *const TTF_Font, text: *const c_char,
                                 fg: SDL_Color) -> *mut SDL_Surface;
     pub fn TTF_RenderUTF8_Solid(font: *const TTF_Font, text: *const c_char,

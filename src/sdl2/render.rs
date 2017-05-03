@@ -330,7 +330,7 @@ impl<'s> Canvas<Surface<'s>> {
     /// support, or there's an out-of-memory error.
     pub fn from_surface(surface: surface::Surface<'s>) -> Result<Self, String> {
         let raw_renderer = unsafe { ll::SDL_CreateSoftwareRenderer(surface.raw()) };
-        if raw_renderer != ptr::null_mut() {
+        if !raw_renderer.is_null() {
             let context =
                 Rc::new(unsafe { RendererContext::from_ll(raw_renderer, surface.context()) });
             Ok(Canvas {
@@ -653,7 +653,7 @@ impl<T> TextureCreator<T> {
         let result = unsafe {
             ll::SDL_CreateTexture(self.context.raw, format as uint32_t, access as c_int, w, h)
         };
-        if result == ptr::null_mut() {
+        if result.is_null() {
             Err(SdlError(get_error()))
         } else {
             unsafe { Ok(self.raw_create_texture(result)) }
@@ -703,7 +703,7 @@ impl<T> TextureCreator<T> {
         use self::TextureValueError::*;
         let result =
             unsafe { ll::SDL_CreateTextureFromSurface(self.context.raw, surface.as_ref().raw()) };
-        if result == ptr::null_mut() {
+        if result.is_null() {
             Err(SdlError(get_error()))
         } else {
             unsafe { Ok(self.raw_create_texture(result)) }

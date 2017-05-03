@@ -1,6 +1,5 @@
 use std::ffi::{CString, CStr};
 use sys::hint as ll;
-use std::ptr;
 use libc::c_char;
 
 const VIDEO_MINIMIZE_ON_FOCUS_LOST: &'static str = "SDL_VIDEO_MINIMIZE_ON_FOCUS_LOST";
@@ -90,7 +89,7 @@ pub fn get(name: &str) -> Option<String> {
     unsafe {
         let res = ll::SDL_GetHint(name.as_ptr() as *const c_char);
 
-        if res == ptr::null_mut() {
+        if res.is_null() {
             None
         } else {
             Some(str::from_utf8(CStr::from_ptr(res as *const _).to_bytes()).unwrap().to_owned())

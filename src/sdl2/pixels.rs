@@ -270,7 +270,7 @@ impl PixelFormatEnum {
     pub fn byte_size_of_pixels(&self, num_of_pixels: usize) -> usize {
         match *self {
             PixelFormatEnum::RGB332
-                => num_of_pixels * 1,
+                => num_of_pixels,
             PixelFormatEnum::RGB444 | PixelFormatEnum::RGB555 |
             PixelFormatEnum::BGR555 | PixelFormatEnum::ARGB4444 |
             PixelFormatEnum::RGBA4444 | PixelFormatEnum::ABGR4444 |
@@ -296,7 +296,7 @@ impl PixelFormatEnum {
                 => num_of_pixels * 2,
             // Unsupported formats
             PixelFormatEnum::Index8
-                => num_of_pixels * 1,
+                => num_of_pixels,
             PixelFormatEnum::Unknown | PixelFormatEnum::Index1LSB |
             PixelFormatEnum::Index1MSB | PixelFormatEnum::Index4LSB |
             PixelFormatEnum::Index4MSB

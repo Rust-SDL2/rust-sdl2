@@ -599,7 +599,7 @@ impl VideoSubsystem {
 
         let result = unsafe { ll::SDL_GetClosestDisplayMode(display_index as c_int, &input, &mut dm) };
 
-        if result == ptr::null_mut() {
+        if result.is_null() {
             Err(get_error())
         } else {
             Ok(DisplayMode::from_ll(&dm))
@@ -695,7 +695,7 @@ impl VideoSubsystem {
 
     pub fn gl_get_current_window_id(&self) -> Result<u32, String> {
         let raw = unsafe { ll::SDL_GL_GetCurrentWindow() };
-        if raw == ptr::null_mut() {
+        if raw.is_null() {
             Err(get_error())
         } else {
             let id = unsafe { ll::SDL_GetWindowID(raw) };
@@ -811,7 +811,7 @@ impl WindowBuilder {
                 self.window_flags
             );
 
-            if raw == ptr::null_mut() {
+            if raw.is_null() {
                 Err(SdlError(get_error()))
             } else {
                 Ok(Window::from_ll(self.subsystem.clone(), raw))
@@ -944,7 +944,7 @@ impl Window {
 
     pub fn gl_create_context(&self) -> Result<GLContext, String> {
         let result = unsafe { ll::SDL_GL_CreateContext(self.context.raw) };
-        if result == ptr::null_mut() {
+        if result.is_null() {
             Err(get_error())
         } else {
             Ok(GLContext{ raw: result })
