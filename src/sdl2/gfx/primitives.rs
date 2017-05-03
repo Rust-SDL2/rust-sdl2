@@ -943,8 +943,9 @@ impl<T> DrawRenderer for Canvas<T> where T: ::render::RenderTarget {
 
     fn string<C: ToColor>(&self, x: i16, y: i16, s: &str, color: C) -> Result<(), String> {
         let ret = unsafe {
-            let buf = CString::new(s).unwrap().as_bytes().as_ptr();
-            ll::stringColor(self.raw(), x, y, buf as *mut i8, color.as_u32())
+            let cstring = CString::new(s).unwrap();
+            let buf = cstring.as_bytes().as_ptr();
+            ll::stringColor(self.raw(), x, y, buf as *mut c_char, color.as_u32())
         };
         if ret == 0 { Ok(()) } else { Err(get_error()) }
     }
