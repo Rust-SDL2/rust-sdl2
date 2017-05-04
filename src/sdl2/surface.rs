@@ -196,23 +196,27 @@ impl<'a> Surface<'a> {
 
 impl SurfaceRef {
     #[inline]
-    pub unsafe fn from_ll<'a>(raw: *mut ll::SDL_Surface) -> &'a SurfaceRef {
-        mem::transmute(raw)
+    pub unsafe fn from_ll<'a>(raw: *const ll::SDL_Surface) -> &'a SurfaceRef {
+        &*(raw as *const () as *const SurfaceRef)
     }
 
     #[inline]
     pub unsafe fn from_ll_mut<'a>(raw: *mut ll::SDL_Surface) -> &'a mut SurfaceRef {
-        mem::transmute(raw)
+        &mut *(raw as *mut () as *mut SurfaceRef)
     }
 
     #[inline]
     pub fn raw(&self) -> *mut ll::SDL_Surface {
-        unsafe { mem::transmute(self) }
+        unsafe {
+            self as *const SurfaceRef as *mut SurfaceRef as *mut () as *mut ll::SDL_Surface
+        }
     }
 
     #[inline]
     fn raw_ref(&self) -> &ll::SDL_Surface {
-        unsafe { mem::transmute(self) }
+        unsafe {
+            &*(self as *const _ as *const () as *const ll::SDL_Surface)
+        }
     }
 
     pub fn width(&self) -> u32 {
