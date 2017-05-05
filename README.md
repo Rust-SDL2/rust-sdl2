@@ -240,7 +240,8 @@ download through Crates.io:
 
 ```toml
     [dependencies]
-    sdl2 = "0.29"
+    sdl2 = "0.29" 
+    sdl2 = "0.30.0-beta" # beta version
 ```
 
 Alternatively, pull it from GitHub to obtain the latest version from master
@@ -261,7 +262,7 @@ adding this instead:
 
 ```toml
     [dependencies.sdl2]
-    version = "0.29"
+    version = "0.29" # or "0.30.0-beta" for the beta version
     default-features = false
     features = ["ttf","image","gfx","mixer"]
 ```
