@@ -3,6 +3,7 @@ extern crate sdl2;
 use sdl2::pixels::Color;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
+use std::time::Duration;
 
 pub fn main() {
     let sdl_context = sdl2::init().unwrap();
@@ -30,6 +31,7 @@ pub fn main() {
                 _ => {}
             }
         }
+        ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
         // The rest of the game loop goes here...
     }
 }
