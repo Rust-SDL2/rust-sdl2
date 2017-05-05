@@ -207,9 +207,7 @@ impl SurfaceRef {
 
     #[inline]
     pub fn raw(&self) -> *mut ll::SDL_Surface {
-        unsafe {
-            self as *const SurfaceRef as *mut SurfaceRef as *mut () as *mut ll::SDL_Surface
-        }
+        self as *const SurfaceRef as *mut SurfaceRef as *mut () as *mut ll::SDL_Surface
     }
 
     #[inline]

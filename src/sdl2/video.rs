@@ -3,6 +3,7 @@ use std::ffi::{CStr, CString, NulError};
 use std::{mem, ptr, fmt};
 use std::rc::Rc;
 use std::error::Error;
+use std::ops::{Deref, DerefMut};
 
 use rect::Rect;
 use render::CanvasBuilder;
@@ -16,6 +17,62 @@ use common::{validate_int, IntegerOrSdlError};
 use get_error;
 
 use sys::video as ll;
+
+
+pub struct WindowSurfaceRef<'a>(&'a mut SurfaceRef, &'a Window);
+
+impl<'a> Deref for WindowSurfaceRef<'a> {
+    type Target = SurfaceRef;
+
+    #[inline]
+    fn deref(&self) -> &SurfaceRef {
+        &self.0
+    }
+}
+
+impl<'a> DerefMut for WindowSurfaceRef<'a> {
+    #[inline]
+    fn deref_mut(&mut self) -> &mut SurfaceRef {
+        &mut self.0
+    }
+}
+
+impl<'a> WindowSurfaceRef<'a> {
+    /// Updates the change made to the inner Surface to the Window it was created from.
+    ///
+    /// This would effectively be the theorical equivalent of `present` from a Canvas.
+    pub fn update_window(&self) -> Result<(), String> {
+        unsafe {
+            if ll::SDL_UpdateWindowSurface(self.1.context.raw) == 0 {
+                Ok(())
+            } else {
+                Err(get_error())
+            }
+        }
+    }
+
+    /// Same as `update_window`, but only update the parts included in `rects` to the Window it was
+    /// created from.
+    pub fn update_window_rects(&self, rects: &[Rect]) -> Result<(), String> {
+        unsafe {
+            if ll::SDL_UpdateWindowSurfaceRects(self.1.context.raw, Rect::raw_slice(rects), rects.len() as c_int) == 0 {
+                Ok(())
+            } else {
+                Err(get_error())
+            }
+        }
+    }
+
+    /// Gives up this WindowSurfaceRef, allowing to use the window freely again. Before being
+    /// destroyed, calls `update_window` one last time.
+    ///
+    /// If you don't want to `update_window` one last time, simply Drop this struct. However
+    /// beware, since the Surface will still be in the state you left it the next time you will
+    /// call `window.surface()` again.
+    pub fn finish(self) -> Result<(), String> {
+        self.update_window()
+    }
+}
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum GLProfile {
@@ -1185,43 +1242,26 @@ impl Window {
         }
     }
 
-    pub fn surface<'a>(&'a self, _e: &'a EventPump) -> Result<&'a SurfaceRef, String> {
+    /// Returns a WindowSurfaceRef, which can be used like a regular Surface. This is an
+    /// alternative way to the Renderer (Canvas) way to modify pixels directly in the Window.
+    /// 
+    /// For this to happen, simply create a `WindowSurfaceRef` via this method, use the underlying
+    /// Surface however you like, and when the changes of the Surface must be applied to the
+    /// screen, call `update_window` if you intend to keep using the WindowSurfaceRef afterwards,
+    /// or `finish` if you don't intend to use it afterwards.
+    ///
+    /// The Renderer way is of course much more flexible and recommended; even though you only want
+    /// to support Software Rendering (which is what using Surface is), you can still create a
+    /// Renderer which renders in a Software-based manner, so try to rely on a Renderer as much as
+    /// possible !
+    pub fn surface<'a>(&'a self, _e: &'a EventPump) -> Result<WindowSurfaceRef<'a>, String> {
         let raw = unsafe { ll::SDL_GetWindowSurface(self.context.raw) };
 
         if raw.is_null() {
             Err(get_error())
         } else {
-            unsafe { Ok(SurfaceRef::from_ll(raw)) }
-        }
-    }
-
-    pub fn surface_mut<'a>(&'a mut self, _e: &'a EventPump) -> Result<&'a mut SurfaceRef, String> {
-        let raw = unsafe { ll::SDL_GetWindowSurface(self.context.raw) };
-
-        if raw.is_null() {
-            Err(get_error())
-        } else {
-            unsafe { Ok(SurfaceRef::from_ll_mut(raw)) }
-        }
-    }
-
-    pub fn update_surface(&self) -> Result<(), String> {
-        unsafe {
-            if ll::SDL_UpdateWindowSurface(self.context.raw) == 0 {
-                Ok(())
-            } else {
-                Err(get_error())
-            }
-        }
-    }
-
-    pub fn update_surface_rects(&self, rects: &[Rect]) -> Result<(), String> {
-        unsafe {
-            if ll::SDL_UpdateWindowSurfaceRects(self.context.raw, Rect::raw_slice(rects), rects.len() as c_int) == 0 {
-                Ok(())
-            } else {
-                Err(get_error())
-            }
+            let surface_ref = unsafe { SurfaceRef::from_ll_mut(raw) };
+            Ok(WindowSurfaceRef(surface_ref, self))
         }
     }
 
