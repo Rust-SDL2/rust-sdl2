@@ -2,6 +2,8 @@
 
 Bindings for SDL2 in Rust
 
+### [Changelog for 0.30-beta](changelog.md#v030)
+
 # Overview
 
 Rust-SDL2 is a library for talking to the new SDL2.0 libraries from Rust.
