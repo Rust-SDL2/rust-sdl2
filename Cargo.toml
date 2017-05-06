@@ -7,8 +7,8 @@ documentation = "http://angrylawyer.github.io/rust-sdl2/sdl2/"
 version = "0.30.0-beta"
 license = "MIT"
 authors = [ "Tony Aldridge <tony@angry-lawyer.com>", "Cobrand <cobrandw@gmail.com>"]
-keywords = ["SDL", "windowing", "graphics"]
-categories = ["rendering","games","game-engine","multimedia"]
+keywords = ["SDL", "windowing", "graphics", "api"]
+categories = ["rendering","games","api-bindings","game-engines","multimedia"]
 
 [lib]
 
