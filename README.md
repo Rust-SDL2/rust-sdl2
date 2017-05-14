@@ -293,7 +293,11 @@ We have several simple example projects included:
 
 > cargo run --example demo
 
-You can see the full list in the `examples/` folder
+You can see the full list in the `examples/` folder. Some examples require some features, you can enable them like so:
+
+> cargo run --example gfx-demo --features "gfx"
+
+Replace "gfx" by the feature(s) needed for the example you want.
 
 # OpenGL
 
