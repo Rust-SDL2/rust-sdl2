@@ -3,6 +3,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### v0.30
 
+Re-exported sdl2\_sys as sdl2::sys
+
 [PR #632](https://github.com/AngryLawyer/rust-sdl2/pull/632)
 
 The path of soundness isn't an easy one; sometimes ease of use has to be sacrificed
@@ -17,7 +19,8 @@ pay for soundness and runtime safety.
 * `Canvas` can store a `Surface` or a `Window`, and can be used to render into these as well.
 `TextureCreator` creates `Texture`s and is used by Texture to make sure they don't live
 longer than expected.
-* `set_render_target` has been removed and has been replaced with `Canvas::with_target`.
+* `set_render_target` has been removed and has been replaced with `Canvas::with_texture_canvas`
+and `Canvas::with_multiple_texture_canvas`
 * Deleted `WindowRef`, it wasn't useful anymore.
 
 Other Changes:
@@ -76,4 +79,4 @@ let (r, g, b, a) = color.rgba();
 
 [PR #635](https://github.com/AngryLawyer/rust-sdl2/pull/635)
 
-* **Depprecated `Rect::contains`**, added `Rect::contains_point` and `Rect::contains_rect`. **`contains` and `contains_point` are close but different ! See [here](https://github.com/AngryLawyer/rust-sdl2/issues/569)**
+* **Deprecated `Rect::contains`**, added `Rect::contains_point` and `Rect::contains_rect`. **`contains` and `contains_point` are close but different ! See [here](https://github.com/AngryLawyer/rust-sdl2/issues/569)**

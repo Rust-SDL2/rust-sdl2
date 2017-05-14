@@ -2,7 +2,7 @@
 
 Bindings for SDL2 in Rust
 
-### [Changelog for 0.30-beta](changelog.md#v030)
+### [Changelog for 0.30](changelog.md#v030)
 
 # Overview
 
@@ -242,8 +242,7 @@ download through Crates.io:
 
 ```toml
     [dependencies]
-    sdl2 = "0.29" 
-    sdl2 = "0.30.0-beta" # beta version
+    sdl2 = "0.30"
 ```
 
 Alternatively, pull it from GitHub to obtain the latest version from master
@@ -264,7 +263,7 @@ adding this instead:
 
 ```toml
     [dependencies.sdl2]
-    version = "0.29" # or "0.30.0-beta" for the beta version
+    version = "0.30"
     default-features = false
     features = ["ttf","image","gfx","mixer"]
 ```
