@@ -9,7 +9,7 @@ extern crate lazy_static;
 
 #[macro_use]
 extern crate bitflags;
-extern crate sdl2_sys as sys;
+pub extern crate sdl2_sys as sys;
 
 #[cfg(feature = "gfx")]
 extern crate c_vec;
