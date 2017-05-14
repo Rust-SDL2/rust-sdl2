@@ -10,7 +10,7 @@ use std::ptr;
 use libc::c_int;
 use num::FromPrimitive;
 use pixels;
-use render::BlendMode;
+use render::{BlendMode, Canvas};
 use rwops::RWops;
 
 use sys::surface as ll;
@@ -187,6 +187,17 @@ impl<'a> Surface<'a> {
     pub fn load_bmp<P: AsRef<Path>>(path: P) -> Result<Surface<'static>, String> {
         let mut file = try!(RWops::from_file(path, "rb"));
         Surface::load_bmp_rw(&mut file)
+    }
+
+    /// Creates a Software Canvas to allow rendering in the Surface itself. This `Canvas` will
+    /// never be accelerated materially, so there is no performance change between `Surface` and
+    /// `Canvas` coming from a `Surface`.
+    ///
+    /// The only change is this case is that `Canvas` has a
+    /// better API to draw stuff in the `Surface` in that case, but don't expect any performance
+    /// changes, there will be none.
+    pub fn into_canvas(self) -> Result<Canvas<Surface<'a>>, String> {
+        Canvas::from_surface(self)
     }
 
     pub fn context(&self) -> Rc<SurfaceContext<'a>> {
