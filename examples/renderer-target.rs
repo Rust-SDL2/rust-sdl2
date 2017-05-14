@@ -30,12 +30,11 @@ fn main() {
             }
         }
         angle = (angle + 0.5) % 360.;
-        {
-            let mut target = canvas.with_target(&mut texture).unwrap();
-            target.clear();
-            target.set_draw_color(Color::RGBA(255, 0, 0, 255));
-            target.fill_rect(Rect::new(0, 0, 400, 300)).unwrap();
-        } // <- drops the `target` so that the `canvas` can be used again
+        canvas.with_texture_canvas(&mut texture, |texture_canvas| {
+            texture_canvas.clear();
+            texture_canvas.set_draw_color(Color::RGBA(255, 0, 0, 255));
+            texture_canvas.fill_rect(Rect::new(0, 0, 400, 300)).unwrap();
+        }).unwrap();
         canvas.set_draw_color(Color::RGBA(0, 0, 0, 255));
         let dst = Some(Rect::new(0, 0, 400, 300));
         canvas.clear();

@@ -115,32 +115,77 @@ mod game_of_life {
     }
 }
 
-fn dummy_texture<'a>(canvas: &mut Canvas<Window>, texture_creator: &'a TextureCreator<WindowContext>) -> Texture<'a>{
-    let mut square_texture : Texture =
+fn dummy_texture<'a>(canvas: &mut Canvas<Window>, texture_creator: &'a TextureCreator<WindowContext>) -> (Texture<'a>, Texture<'a>) {
+    enum TextureColor {
+        Yellow,
+        White,
+    };
+    let mut square_texture1 : Texture =
         texture_creator.create_texture_target(None, SQUARE_SIZE, SQUARE_SIZE).unwrap();
+    let mut square_texture2 : Texture =
+        texture_creator.create_texture_target(None, SQUARE_SIZE, SQUARE_SIZE).unwrap();
+        // let's change the textures we just created
     {
-        // let's change the texture we just created
-        let mut texture_canvas = canvas.with_target(&mut square_texture).unwrap();
-        texture_canvas.set_draw_color(Color::RGB(0, 0, 0));
-        texture_canvas.clear();
-        for i in 0..SQUARE_SIZE {
-            for j in 0..SQUARE_SIZE {
-                // drawing pixel by pixel isn't very effective, but we only do it once and store
-                // the texture afterwards so it's still alright!
-                if (i+j) % 7 == 0 {
-                    // this doesn't mean anything, there was some trial and serror to find
-                    // something that wasn't too ugly
-                    texture_canvas.set_draw_color(Color::RGB(192, 192, 192));
-                    texture_canvas.draw_point(Point::new(i as i32, j as i32)).unwrap();
+        let textures = vec![
+            (&mut square_texture1, TextureColor::Yellow),
+            (&mut square_texture2, TextureColor::White)
+        ];
+        canvas.with_multiple_texture_canvas(textures.iter(), |texture_canvas, user_context| {
+            texture_canvas.set_draw_color(Color::RGB(0, 0, 0));
+            texture_canvas.clear();
+            match *user_context {
+                TextureColor::Yellow => {
+                    for i in 0..SQUARE_SIZE {
+                        for j in 0..SQUARE_SIZE {
+                            if (i+j) % 4 == 0 {
+                                texture_canvas.set_draw_color(Color::RGB(255, 255, 0));
+                                texture_canvas.draw_point(Point::new(i as i32, j as i32)).unwrap();
+                            }
+                            if (i+j*2) % 9 == 0 {
+                                texture_canvas.set_draw_color(Color::RGB(200, 200, 0));
+                                texture_canvas.draw_point(Point::new(i as i32, j as i32)).unwrap();
+                            }
+                        }
+                    }
+                },
+                TextureColor::White => {
+                    for i in 0..SQUARE_SIZE {
+                        for j in 0..SQUARE_SIZE {
+                            // drawing pixel by pixel isn't very effective, but we only do it once and store
+                            // the texture afterwards so it's still alright!
+                            if (i+j) % 7 == 0 {
+                                // this doesn't mean anything, there was some trial and error to find
+                                // something that wasn't too ugly
+                                texture_canvas.set_draw_color(Color::RGB(192, 192, 192));
+                                texture_canvas.draw_point(Point::new(i as i32, j as i32)).unwrap();
+                            }
+                            if (i+j*2) % 5 == 0 {
+                                texture_canvas.set_draw_color(Color::RGB(64, 64, 64));
+                                texture_canvas.draw_point(Point::new(i as i32, j as i32)).unwrap();
+                            }
+                        }
+                    }
                 }
-                if (i+j*2) % 5 == 0 {
-                    texture_canvas.set_draw_color(Color::RGB(64, 64, 64));
-                    texture_canvas.draw_point(Point::new(i as i32, j as i32)).unwrap();
+            };
+            for i in 0..SQUARE_SIZE {
+                for j in 0..SQUARE_SIZE {
+                    // drawing pixel by pixel isn't very effective, but we only do it once and store
+                    // the texture afterwards so it's still alright!
+                    if (i+j) % 7 == 0 {
+                        // this doesn't mean anything, there was some trial and serror to find
+                        // something that wasn't too ugly
+                        texture_canvas.set_draw_color(Color::RGB(192, 192, 192));
+                        texture_canvas.draw_point(Point::new(i as i32, j as i32)).unwrap();
+                    }
+                    if (i+j*2) % 5 == 0 {
+                        texture_canvas.set_draw_color(Color::RGB(64, 64, 64));
+                        texture_canvas.draw_point(Point::new(i as i32, j as i32)).unwrap();
+                    }
                 }
             }
-        }
+        }).unwrap();
     }
-    square_texture
+    (square_texture1, square_texture2)
 }
 
 pub fn main() {
@@ -180,7 +225,7 @@ pub fn main() {
     let texture_creator : TextureCreator<_> = canvas.texture_creator();
 
     // Create a "target" texture so that we can use our Renderer with it later
-    let square_texture = dummy_texture(&mut canvas, &texture_creator);
+    let (square_texture1, square_texture2) = dummy_texture(&mut canvas, &texture_creator);
     let mut game = game_of_life::GameOfLife::new();
 
     let mut event_pump = sdl_context.event_pump().unwrap();
@@ -208,7 +253,7 @@ pub fn main() {
         }
 
         // update the game loop here
-        if frame >= 29 {
+        if frame >= 30 {
             game.update();
             frame = 0;
         }
@@ -217,6 +262,11 @@ pub fn main() {
         canvas.clear();
         for (i, unit) in (&game).into_iter().enumerate() {
             let i = i as u32;
+            let square_texture = if frame >= 15 {
+                &square_texture1
+            } else {
+                &square_texture2
+            };
             if *unit {
                 canvas.copy(&square_texture,
                             None,

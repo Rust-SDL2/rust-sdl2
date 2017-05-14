@@ -254,11 +254,7 @@ impl<'s> RenderTarget for Surface<'s> {
     type Context = SurfaceContext<'s>;
 }
 
-impl<'r, 't, TC> RenderTarget for TextureTarget<'r, 't, TC> {
-    type Context = TC;
-}
-
-/// Manages and owns a target (`Surface`, `Window`, or `Texture`) and allows drawing in it.
+/// Manages and owns a target (`Surface` or `Window`) and allows drawing in it.
 ///
 /// If the `Window` manipulates the shell of the Window, `Canvas<Window>` allows you to
 /// manipulate both the shell and the inside of the window;
@@ -360,19 +356,6 @@ impl<'s> Canvas<Surface<'s>> {
         self.target
     }
 
-    /// Sets the render target to the provided texture
-    /// Returns a handle for rendering methods to the target
-    /// Returns `TargetRenderError::NotSupported`
-    /// if the renderer does not support the use of render targets,
-    /// Returns `TargetRenderError::SdlError` if SDL2 returned with an error code.
-    /// The texture must be created with the texture access: `sdl2::render::TextureAccess::Target`.
-    pub fn with_target<'r, 't, 'a>
-        (&'r mut self,
-         texture: &'t mut Texture<'a>)
-         -> Result<TextureCanvas<'r, 't, SurfaceContext<'s>>, TargetRenderError> {
-        self.internal_with_target(texture)
-    }
-
     /// Returns a `TextureCreator` that can create Textures to be drawn on this `Canvas`
     ///
     /// This `TextureCreator` will share a reference to the renderer and target context.
@@ -413,19 +396,6 @@ impl Canvas<Window> {
         self.target
     }
 
-    /// Sets the render target to the provided texture
-    /// Returns a handle for rendering methods to the target
-    /// Returns `TargetRenderError::NotSupported`
-    /// if the renderer does not support the use of render targets,
-    /// Returns `TargetRenderError::SdlError` if SDL2 returned with an error code.
-    /// The texture must be created with the texture access: `sdl2::render::TextureAccess::Target`.
-    pub fn with_target<'r, 't, 'a>
-        (&'r mut self,
-         texture: &'t mut Texture<'a>)
-         -> Result<TextureCanvas<'r, 't, WindowContext>, TargetRenderError> {
-        self.internal_with_target(texture)
-    }
-
     /// Returns a `TextureCreator` that can create Textures to be drawn on this `Canvas`
     ///
     /// This `TextureCreator` will share a reference to the renderer and target context.
@@ -446,21 +416,154 @@ impl<T: RenderTarget> Canvas<T> {
         unsafe { ll::SDL_RenderTargetSupported(self.context.raw) == 1 }
     }
 
-    fn internal_with_target<'r, 't, 'a>
-        (&'r mut self,
-         texture: &'t mut Texture<'a>)
-         -> Result<TextureCanvas<'r, 't, T::Context>, TargetRenderError> {
+    /// Temporarily sets the target of `Canvas` to a `Texture`. This effectively allows rendering
+    /// to a `Texture` in any way you want: you can make a `Texture` a combination of other
+    /// `Texture`s, be a complex geometry form with the `gfx` module, ... You can draw pixel by
+    /// pixel in it if you want, so you can do basically anything with that `Texture`.
+    ///
+    /// If you want to set the content of multiple `Texture` at once the most efficient way
+    /// possible, *don't* make a loop and call this function everytime and use
+    /// `with_multiple_texture_canvas` instead. Using `with_texture_canvas` is actually
+    /// inefficient because the target is reset to the source (the `Window` or the `Surface`)
+    /// at the end of this function, but using it in a loop would make this reset useless.
+    /// Plus, the check that render_target is actually supported on that `Canvas` is also
+    /// done every time, leading to useless checks.
+    ///
+    /// # Notes
+    ///
+    /// Note that the `Canvas` in the closure is exactly the same as the one you call this
+    /// function with, meaning that you can call every function of your original `Canvas`.
+    /// 
+    /// That means you can also call `with_texture_canvas` and `with_multiple_texture_canvas` from
+    /// the inside of the closure. Even though this is useless and inefficient, this is totally
+    /// safe to do and allowed.
+    ///
+    /// Since the render target is now a Texture, some calls of Canvas might return another result
+    /// than if the target was to be the original source. For instance `output_size` will return
+    /// this size of the current `Texture` in the closure, but the size of the `Window` or
+    /// `Surface` outside of the closure.
+    ///
+    /// You do not need to call `present` after drawing in the Canvas in the closure, the changes
+    /// are appleid directly to the `Texture` instead of a hidden buffer.
+    ///
+    /// # Errors
+    ///
+    /// * returns `TargetRenderError::NotSupported`
+    /// if the renderer does not support the use of render targets
+    /// * returns `TargetRenderError::SdlError` if SDL2 returned with an error code.
+    ///
+    /// The texture *must* be created with the texture access:
+    /// `sdl2::render::TextureAccess::Target`.
+    /// Using a texture which was not created with the texture access `Target` is undefined
+    /// behavior.
+    ///
+    /// # Examples
+    ///
+    /// The example below changes a newly created `Texture` to be a 150-by-150 black texture with a
+    /// 50-by-50 red square in the middle.
+    ///
+    /// ```rust,no_run
+    /// # use sdl2::render::{Canvas, Texture};
+    /// # use sdl2::video::Window;
+    /// # use sdl2::pixels::Color;
+    /// # use sdl2::rect::Rect;
+    /// # let mut canvas : Canvas<Window> = unimplemented!();
+    /// let texture_creator = canvas.texture_creator();
+    /// let mut texture = texture_creator
+    ///     .create_texture_target(texture_creator.default_pixel_format(), 150, 150)
+    ///     .unwrap();
+    /// let result = canvas.with_texture_canvas(&mut texture, |texture_canvas| {
+    ///     texture_canvas.set_draw_color(Color::RGBA(0, 0, 0, 255));
+    ///     texture_canvas.clear();
+    ///     texture_canvas.set_draw_color(Color::RGBA(255, 0, 0, 255));
+    ///     texture_canvas.fill_rect(Rect::new(50, 50, 50, 50)).unwrap();
+    /// });
+    /// ```
+    ///
+    
+    pub fn with_texture_canvas<F>(&mut self, texture: &mut Texture, mut f: F)
+        -> Result<(), TargetRenderError> where for<'r> F: FnMut(&'r mut Canvas<T>,) {
         if self.render_target_supported() {
             unsafe { self.set_raw_target(texture.raw) }
                 .map_err(|e| TargetRenderError::SdlError(e))?;
-            Ok(TextureCanvas {
-                   context: self.context.clone(),
-                   target: TextureTarget {
-                       raw_renderer: &self.context.raw,
-                       _texture_marker: PhantomData,
-                       _texture_target: PhantomData,
-                   },
-               })
+            f(self);
+            unsafe { self.set_raw_target(ptr::null_mut()) }
+                .map_err(|e| TargetRenderError::SdlError(e))?;
+            Ok(())
+        } else {
+            Err(TargetRenderError::NotSupported)
+        }
+    }
+
+    /// Same as `with_texture_canvas`, but allows to change multiple `Texture`s at once with the
+    /// least amount of overhead. It means that between every iteration the Target is not reset to
+    /// the source, and that the fact that the Canvas supports render target isn't checked every
+    /// iteration either; the check is actually only done once, at the beginning, avoiding useless
+    /// checks.
+    ///
+    /// The closure is run once for every `Texture` sent as parameter.
+    ///
+    /// The main changes from `with_texture_canvas` is that is takes an `Iterator` of `(&mut
+    /// Texture, U)`, where U is a type defined by the user. The closure takes a `&mut Canvas`, and
+    /// `&U` as arguments instead of a simple `&mut Canvas`. This user-defined type allows you to
+    /// keep track of what to do with the Canvas you have received in the closure.
+    ///
+    /// You will usually want to keep track of the number, a property, or anything that will allow
+    /// you to uniquely track this `Texture`, but it can also be an empty struct or `()` as well!
+    ///
+    /// # Examples
+    ///
+    /// Let's create two textures, one which will be yellow, and the other will be white
+    ///
+    /// ```rust,no_run
+    /// # use sdl2::pixels::Color;
+    /// # use sdl2::rect::Rect;
+    /// # use sdl2::video::Window;
+    /// # use sdl2::render::{Canvas, Texture};
+    /// # let mut canvas : Canvas<Window> = unimplemented!();
+    /// let texture_creator = canvas.texture_creator();
+    /// enum TextureColor {
+    ///     Yellow,
+    ///     White,
+    /// };
+    ///
+    /// let mut square_texture1 : Texture =
+    ///     texture_creator.create_texture_target(None, 100, 100).unwrap();
+    /// let mut square_texture2 : Texture =
+    ///     texture_creator.create_texture_target(None, 100, 100).unwrap();
+    /// let textures : Vec<(&mut Texture, TextureColor)> = vec![
+    ///     (&mut square_texture1, TextureColor::Yellow),
+    ///     (&mut square_texture2, TextureColor::White)
+    /// ];
+    /// let result : Result<(), _> =
+    ///     canvas.with_multiple_texture_canvas(textures.iter(), |texture_canvas, user_context| {
+    ///     match *user_context {
+    ///         TextureColor::White => {
+    ///             texture_canvas.set_draw_color(Color::RGB(255, 255, 255));
+    ///         },
+    ///         TextureColor::Yellow => {
+    ///             texture_canvas.set_draw_color(Color::RGB(255, 255, 0));
+    ///         }
+    ///     };
+    ///     texture_canvas.clear();
+    /// });
+    /// // square_texture1 is now Yellow and square_texture2 is now White!
+    /// ```
+    ///
+    ///
+    pub fn with_multiple_texture_canvas<'t : 'a, 'a : 's, 's, I, F, U: 's>(&mut self, textures: I, mut f: F)
+        -> Result<(), TargetRenderError>
+        where for<'r> F: FnMut(&'r mut Canvas<T>, &U), I: Iterator<Item=&'s (&'a mut Texture<'t>, U)> {
+        if self.render_target_supported() {
+            for &(ref texture, ref user_context) in textures {
+                unsafe { self.set_raw_target(texture.raw) }
+                    .map_err(|e| TargetRenderError::SdlError(e))?;
+                f(self, &user_context);
+            }
+            // reset the target to its source
+            unsafe { self.set_raw_target(ptr::null_mut()) }
+                .map_err(|e| TargetRenderError::SdlError(e))?;
+            Ok(())
         } else {
             Err(TargetRenderError::NotSupported)
         }
@@ -470,8 +573,15 @@ impl<T: RenderTarget> Canvas<T> {
 /// Creates Textures that cannot outlive the creator
 ///
 /// The `TextureCreator` does not hold a lifetime to its Canvas by design choice.
+///
 /// If a `Canvas` is dropped before its `TextureCreator`, it is still safe to use.
-/// It is, however, useless. Any `Texture` created here can only be drawn onto the original `Canvas`
+/// 
+/// It is, however, useless.
+///
+/// Any `Texture` created here can only be drawn onto the original `Canvas`. A `Texture` used in a
+/// `Canvas` must come from a `TextureCreator` coming from that same `Canvas`. Using a `Texture` to
+/// render to a `Canvas` not being the parent of the `Texture`'s `TextureCreator` is undefined
+/// behavior. 
 pub struct TextureCreator<T> {
     context: Rc<RendererContext<T>>,
     default_pixel_format: PixelFormatEnum,
@@ -480,7 +590,7 @@ pub struct TextureCreator<T> {
 /// The type that allows you to build Window-based renderers.
 ///
 /// By default, the renderer builder will prioritize for a hardware-accelerated
-/// renderer.
+/// renderer, which is porbably what you want.
 pub struct CanvasBuilder {
     window: Window,
     index: Option<u32>,
@@ -718,22 +828,13 @@ impl<T> TextureCreator<T> {
     }
 }
 
-pub struct TextureTarget<'r, 't, TC> {
-    raw_renderer: &'r *mut ll::SDL_Renderer,
-    _texture_marker: PhantomData<&'t ()>,
-    // unfortunately there is no way to know which kind of Renderer we have here at compile time,
-    // so this PhantomData is here to keep track of that.
-    _texture_target: PhantomData<TC>,
-}
-
-impl<'r, 't, TC> Drop for TextureTarget<'r, 't, TC> {
-    // `Drop` cannot be specialized. Get around this through run-time check of Target Kind
-    fn drop(&mut self) {
-        unsafe {
-            ll::SDL_SetRenderTarget(*self.raw_renderer, ptr::null_mut());
-        }
-    }
-}
+// pub struct TextureTarget<'r, 't, TC> {
+//     raw_renderer: &'r *mut ll::SDL_Renderer,
+//     _texture_marker: PhantomData<&'t ()>,
+//     // unfortunately there is no way to know which kind of Renderer we have here at compile time,
+//     // so this PhantomData is here to keep track of that.
+//     _texture_target: PhantomData<TC>,
+// }
 
 /// Drawing methods
 impl<T: RenderTarget> Canvas<T> {
@@ -1150,56 +1251,6 @@ impl<T: RenderTarget> Canvas<T> {
                 Err(get_error())
             }
         }
-    }
-}
-
-/// A handle for getting/setting the render target of the render context.
-///
-/// # Example
-/// ```no_run
-/// use sdl2::pixels::{Color, PixelFormatEnum};
-/// use sdl2::rect::Rect;
-/// use sdl2::video::WindowContext;
-/// use sdl2::render::{Texture, TextureCreator, WindowCanvas};
-///
-/// // Draw a red rectangle to a new texture
-/// fn draw_to_texture<'c>(t: &'c TextureCreator<WindowContext>, c: &mut WindowCanvas)
-///                        -> Texture<'c> {
-///     let mut texture = t.create_texture_target(PixelFormatEnum::RGBA8888, 512, 512)
-///                       .unwrap();
-///     {
-///         let mut target = c.with_target(&mut texture)
-///                           .expect("This platform doesn't support render targets");
-///
-///         // Start drawing
-///         target.clear();
-///         target.set_draw_color(Color::RGB(255, 0, 0));
-///         target.fill_rect(Rect::new(100, 100, 256, 256));
-///    }
-///    texture
-/// }
-/// ```
-pub type TextureCanvas<'r, 't, TC> = Canvas<TextureTarget<'r, 't, TC>>;
-
-impl<'r, 't, TC> Canvas<TextureTarget<'r, 't, TC>> {
-    /// Replace the target of the `TextureCanvas` with a different `Texture`
-    ///
-    /// Returns the new `TextureCanvas` and releases the `&mut` borrow on the old `Texture`
-    pub fn with_target<'nt, 'a>(mut self,
-                                texture: &'nt mut Texture<'a>)
-                                -> Result<TextureCanvas<'r, 'nt, TC>, SdlError> {
-        unsafe { self.set_raw_target(texture.raw) }?;
-        let context = mem::replace(&mut self.context, unsafe { mem::zeroed() });
-        let raw_renderer = mem::replace(&mut self.target.raw_renderer, unsafe { mem::zeroed() });
-        mem::forget(self);
-        Ok(TextureCanvas {
-               context: context,
-               target: TextureTarget {
-                   raw_renderer: raw_renderer,
-                   _texture_marker: PhantomData,
-                   _texture_target: PhantomData,
-               },
-           })
     }
 }
 
