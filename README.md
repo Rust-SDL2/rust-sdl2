@@ -316,8 +316,15 @@ bindings:
 ```rust
 let sdl_context = sdl2::init().unwrap();
 let video_subsystem = sdl_context.video().unwrap();
+let window = video_subsystem.window("Window", 800, 600)
+    .opengl()
+    .build()
+    .unwrap();
+let renderer = window.into_canvas().build();
 
 gl::load_with(|name| video_subsystem.gl_get_proc_address(name) as *const _);
+
+// opengl code here
 ```
 
 Note that these bindings are very raw, and many of the calls will require
