@@ -310,14 +310,39 @@ If you want to use OpenGL, you also need the
     git = "https://github.com/bjz/gl-rs"
 ```
 
-Then you need to add this initialization code to establish the
-bindings:
+Then you need to add some initialization code to establish the bindings.
+
+First, find the OpenGL driver from SDL:
+
+```
+fn find_sdl_gl_driver() -> Option<u32> {
+    for (index, item) in sdl2::render::drivers().enumerate() {
+        if item.name == "opengl" {
+            return Some(index as u32);
+        }
+    }
+    None
+}
+```
+
+Next, initialize the SDL2 subsystems, and create your window with the OpenGL canvas:
 
 ```rust
+
 let sdl_context = sdl2::init().unwrap();
 let video_subsystem = sdl_context.video().unwrap();
+let window = video_subsystem.window("Window", 800, 600)
+    .opengl()
+    .build()
+    .unwrap();
+let canvas = window.into_canvas()
+    .index(find_sdl_gl_driver().unwrap())
+    .build();
 
 gl::load_with(|name| video_subsystem.gl_get_proc_address(name) as *const _);
+canvas.window().gl_set_context_to_current();
+
+// opengl code here
 ```
 
 Note that these bindings are very raw, and many of the calls will require
