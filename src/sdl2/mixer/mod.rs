@@ -342,11 +342,11 @@ pub fn allocate_channels(numchans: i32) -> i32 {
     unsafe { ffi::Mix_AllocateChannels(numchans as c_int) as i32 }
 }
 
-static mut channel_finished_callback: Option<fn(Channel)> = None;
+static mut CHANNEL_FINISHED_CALLBACK: Option<fn(Channel)> = None;
 
 extern "C" fn c_channel_finished_callback(ch: c_int) {
     unsafe {
-        match channel_finished_callback {
+        match CHANNEL_FINISHED_CALLBACK {
             None => (),
             Some(cb) => cb(Channel(ch as i32)),
         }
@@ -356,7 +356,7 @@ extern "C" fn c_channel_finished_callback(ch: c_int) {
 /// When channel playback is halted, then the specified `channel_finished` function is called.
 pub fn set_channel_finished(f: fn(Channel)) {
     unsafe {
-        channel_finished_callback = Some(f);
+        CHANNEL_FINISHED_CALLBACK = Some(f);
         ffi::Mix_ChannelFinished(Some(c_channel_finished_callback as extern "C" fn(ch: c_int)));
     }
 }
@@ -366,7 +366,7 @@ pub fn set_channel_finished(f: fn(Channel)) {
 pub fn unset_channel_finished() {
     unsafe {
         ffi::Mix_ChannelFinished(None);
-        channel_finished_callback = None;
+        CHANNEL_FINISHED_CALLBACK = None;
     }
 }
 
@@ -732,11 +732,11 @@ pub enum MusicType {
 }
 
 // hooks
-static mut music_finished_hook: Option<fn()> = None;
+static mut MUSIC_FINISHED_HOOK: Option<fn()> = None;
 
 extern "C" fn c_music_finished_hook() {
     unsafe {
-        match music_finished_hook {
+        match MUSIC_FINISHED_HOOK {
             None => (),
             Some(f) => f(),
         }
@@ -924,7 +924,7 @@ impl<'a> Music<'a> {
     /// ```
     pub fn hook_finished(f: fn()) {
         unsafe {
-            music_finished_hook = Some(f);
+            MUSIC_FINISHED_HOOK = Some(f);
             ffi::Mix_HookMusicFinished(Some(c_music_finished_hook as extern "C" fn()));
         }
     }
@@ -934,7 +934,7 @@ impl<'a> Music<'a> {
         unsafe {
             ffi::Mix_HookMusicFinished(None);
             // unset from c, then rust, to avoid race condiction
-            music_finished_hook = None;
+            MUSIC_FINISHED_HOOK = None;
         }
     }
 
