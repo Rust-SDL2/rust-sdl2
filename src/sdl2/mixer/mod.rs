@@ -104,7 +104,7 @@ pub const AUDIO_F32SYS: AudioFormat = ll::AUDIO_F32SYS;
 
 /// The suggested default is signed 16bit samples in host byte order.
 pub const DEFAULT_FORMAT: AudioFormat = ll::AUDIO_S16SYS;
-/// Defualt channels: Stereo.
+/// Default channels: Stereo.
 pub const DEFAULT_CHANNELS: i32 = 2;
 /// Good default sample rate in Hz (samples per second) for PC sound cards.
 pub const DEFAULT_FREQUENCY: i32 = 22050;
