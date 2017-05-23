@@ -187,6 +187,12 @@ pub fn init(flags: InitFlag) -> Result<Sdl2MixerContext, String> {
 
 
 /// Open the mixer with a certain audio format.
+///
+/// * `chunksize`: It is recommended to choose values between 256 and 1024, depending on whether
+///                you prefer latency or compatibility. Small values reduce latency but may not
+///                work very well on older systems. For instance, a chunk size of 256 will give
+///                you a latency of 6ms, while a chunk size of 1024 will give you a latency of 23ms
+///                for a frequency of 44100kHz.
 pub fn open_audio(frequency: i32,
                   format: AudioFormat,
                   channels: i32,
