@@ -11,16 +11,24 @@ fn main() {
 
     let args: Vec<_> = env::args().collect();
 
-    if args.len() == 2 {
-        demo(Path::new(&args[1]), Path::new(""));
-    } else if args.len() == 3 {
-        demo(Path::new(&args[1]), Path::new(&args[2]));
+    if args.len() > 2 {
+        let sound_file_path;
+        match args.get(2) {
+            Some(sound_file) => {
+                sound_file_path = Some(Path::new(sound_file));
+            }
+            None => {
+                sound_file_path = None;
+            }
+        }
+
+        demo(Path::new(&args[1]), sound_file_path);
     } else {
         println!("Usage: ./demo music.[mp3|wav|ogg] [sound-effect.[mp3|wav|ogg]]")
     }
 }
 
-fn demo(music_file: &Path, sound_file: &Path) {
+fn demo(music_file: &Path, sound_file: Option<&Path>) {
 
     println!("linked version: {}", sdl2::mixer::get_linked_version());
 
@@ -28,9 +36,8 @@ fn demo(music_file: &Path, sound_file: &Path) {
     let _audio = sdl.audio().unwrap();
     let mut timer = sdl.timer().unwrap();
     let _mixer_context = sdl2::mixer::init(INIT_MP3 | INIT_FLAC | INIT_MOD | INIT_FLUIDSYNTH |
-                                          INIT_MODPLUG |
-                                          INIT_OGG)
-                            .unwrap();
+                                           INIT_MODPLUG | INIT_OGG)
+            .unwrap();
 
     let frequency = 44100;
     let format = AUDIO_S16LSB; // signed 16 bit samples, in little-endian byte order
@@ -73,22 +80,30 @@ fn demo(music_file: &Path, sound_file: &Path) {
     println!("music volume => {:?}", sdl2::mixer::Music::get_volume());
     println!("play => {:?}", music.play(1));
 
-    let sound_chunk_res = sdl2::mixer::Chunk::from_file(sound_file);
+    match sound_file {
+        Some(sound_file_path) => {
+            let sound_chunk_res = sdl2::mixer::Chunk::from_file(sound_file_path);
 
-    match sound_chunk_res {
-        Ok(sound_chunk) => {
-            println!("chunk volume => {:?}", sound_chunk.get_volume());
-            println!("playing sound twice");
-            let play_res = sdl2::mixer::Channel::all().play(&sound_chunk, 1);
+            match sound_chunk_res {
+                Ok(sound_chunk) => {
+                    println!("chunk volume => {:?}", sound_chunk.get_volume());
+                    println!("playing sound twice");
+                    let play_res = sdl2::mixer::Channel::all().play(&sound_chunk, 1);
 
-            timer.delay(5000);
+                    // This delay is needed because when the `Chunk` goes out of scope,
+                    // the sound effect stops playing. Delay long enough to hear the
+                    // sound.
+                    timer.delay(5000);
 
-            match play_res {
-                Ok(_) => { println!("played sound")},
-                Err(e) => { println!("{:?}", e) },
+                    match play_res {
+                        Ok(_) => println!("played sound"),
+                        Err(e) => println!("{:?}", e),
+                    }
+                }
+                Err(e) => println!("Cannot load sound file: {:?}", e),
             }
         }
-        Err(e) => { println!("Cannot load sound file: {:?}", e) },
+        None => {}
     }
 
     timer.delay(10000);
