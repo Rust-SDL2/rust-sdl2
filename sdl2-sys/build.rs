@@ -11,6 +11,10 @@ fn main() {
         } else {
             println!("cargo:rustc-flags=-l SDL2");
         }
+
+        if target_os == "darwin" {
+            println!("cargo:rustc-link-search=/usr/local/lib");
+        }
     }
 }
 
