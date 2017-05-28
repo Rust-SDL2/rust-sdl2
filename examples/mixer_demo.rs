@@ -11,20 +11,11 @@ fn main() {
 
     let args: Vec<_> = env::args().collect();
 
-    if args.len() > 2 {
-        let sound_file_path;
-        match args.get(2) {
-            Some(sound_file) => {
-                sound_file_path = Some(Path::new(sound_file));
-            }
-            None => {
-                sound_file_path = None;
-            }
-        }
-
-        demo(Path::new(&args[1]), sound_file_path);
-    } else {
+    if args.len() < 2 {
         println!("Usage: ./demo music.[mp3|wav|ogg] [sound-effect.[mp3|wav|ogg]]")
+    } else {
+        let sound_file = args.get(2).map(|sound_file| Path::new(sound_file));
+        demo(Path::new(&args[1]), sound_file);
     }
 }
 
@@ -80,30 +71,27 @@ fn demo(music_file: &Path, sound_file: Option<&Path>) {
     println!("music volume => {:?}", sdl2::mixer::Music::get_volume());
     println!("play => {:?}", music.play(1));
 
-    match sound_file {
-        Some(sound_file_path) => {
-            let sound_chunk_res = sdl2::mixer::Chunk::from_file(sound_file_path);
+    if let Some(sound_file_path) = sound_file {
+        let sound_chunk_res = sdl2::mixer::Chunk::from_file(sound_file_path);
 
-            match sound_chunk_res {
-                Ok(sound_chunk) => {
-                    println!("chunk volume => {:?}", sound_chunk.get_volume());
-                    println!("playing sound twice");
-                    let play_res = sdl2::mixer::Channel::all().play(&sound_chunk, 1);
+        match sound_chunk_res {
+            Ok(sound_chunk) => {
+                println!("chunk volume => {:?}", sound_chunk.get_volume());
+                println!("playing sound twice");
+                let play_res = sdl2::mixer::Channel::all().play(&sound_chunk, 1);
 
-                    // This delay is needed because when the `Chunk` goes out of scope,
-                    // the sound effect stops playing. Delay long enough to hear the
-                    // sound.
-                    timer.delay(5000);
+                // This delay is needed because when the `Chunk` goes out of scope,
+                // the sound effect stops playing. Delay long enough to hear the
+                // sound.
+                timer.delay(5000);
 
-                    match play_res {
-                        Ok(_) => println!("played sound"),
-                        Err(e) => println!("{:?}", e),
-                    }
+                match play_res {
+                    Ok(_) => println!("played sound"),
+                    Err(e) => println!("{:?}", e),
                 }
-                Err(e) => println!("Cannot load sound file: {:?}", e),
             }
+            Err(e) => println!("Cannot load sound file: {:?}", e),
         }
-        None => {}
     }
 
     timer.delay(10000);
