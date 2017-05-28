@@ -11,10 +11,12 @@ fn main() {
 
     let args: Vec<_> = env::args().collect();
 
-    if args.len() < 3 {
-        println!("Usage: ./demo music.[mp3|wav|ogg] sound-effect.[mp3|wav|ogg]")
-    } else {
+    if args.len() == 2 {
+        demo(Path::new(&args[1]), Path::new(""));
+    } else if args.len() == 3 {
         demo(Path::new(&args[1]), Path::new(&args[2]));
+    } else {
+        println!("Usage: ./demo music.[mp3|wav|ogg] [sound-effect.[mp3|wav|ogg]]")
     }
 }
 
@@ -64,18 +66,30 @@ fn demo(music_file: &Path, sound_file: &Path) {
         println!("play ends! from rust cb");
     }
 
-    let sound_chunk = sdl2::mixer::Chunk::from_file(sound_file).unwrap();
-
-    println!("chunk volume => {:?}", sound_chunk.get_volume());
-    println!("playing sound twice");
-    sdl2::mixer::Channel::all().play(&sound_chunk, 1);
-
     sdl2::mixer::Music::hook_finished(hook_finished);
 
     println!("music => {:?}", music);
     println!("music type => {:?}", music.get_type());
     println!("music volume => {:?}", sdl2::mixer::Music::get_volume());
     println!("play => {:?}", music.play(1));
+
+    let sound_chunk_res = sdl2::mixer::Chunk::from_file(sound_file);
+
+    match sound_chunk_res {
+        Ok(sound_chunk) => {
+            println!("chunk volume => {:?}", sound_chunk.get_volume());
+            println!("playing sound twice");
+            let play_res = sdl2::mixer::Channel::all().play(&sound_chunk, 1);
+
+            timer.delay(5000);
+
+            match play_res {
+                Ok(_) => { println!("played sound")},
+                Err(e) => { println!("{:?}", e) },
+            }
+        }
+        Err(e) => { println!("Cannot load sound file: {:?}", e) },
+    }
 
     timer.delay(10000);
 
