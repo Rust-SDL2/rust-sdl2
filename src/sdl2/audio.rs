@@ -74,6 +74,14 @@ impl AudioSubsystem {
         AudioDevice::open_playback(self, device, spec, get_callback)
     }
 
+    /// Opens a new audio device for capture (given the desired parameters and callback).
+    /// Supported since SDL 2.0.5
+    pub fn open_capture<'a, CB, F, D>(&self, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
+        where CB: AudioCallback, F: FnOnce(AudioSpec) -> CB, D: Into<Option<&'a str>>,
+    {
+        AudioDevice::open_capture(self, device, spec, get_callback)
+    }
+
     /// Opens a new audio device which uses queueing rather than older callback method.
     #[inline]
     pub fn open_queue<'a, Channel, D>(&self, device: D, spec: &AudioSpecDesired) -> Result<AudioQueue<Channel>, String>
@@ -588,8 +596,8 @@ pub struct AudioDevice<CB: AudioCallback> {
 }
 
 impl<CB: AudioCallback> AudioDevice<CB> {
-    /// Opens a new audio device given the desired parameters and callback.
-    pub fn open_playback<'a, F, D>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
+    /// Opens a new audio device for playback or capture (given the desired parameters and callback).
+    fn open<'a, F, D>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired, get_callback: F, capture: bool) -> Result<AudioDevice <CB>, String>
     where
         F: FnOnce(AudioSpec) -> CB,
         D: Into<Option<&'a str>>,
@@ -612,7 +620,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
             };
             let device_ptr = device.map_or(ptr::null(), |s| s.as_ptr());
 
-            let iscapture_flag = 0;
+            let iscapture_flag = if capture { 1 } else { 0 };
             let device_id = ll::SDL_OpenAudioDevice(
                 device_ptr as *const c_char, iscapture_flag, &desired,
                 &mut obtained, 0
@@ -638,6 +646,25 @@ impl<CB: AudioCallback> AudioDevice<CB> {
                 }
             }
         }
+    }
+
+    /// Opens a new audio device for playback (given the desired parameters and callback).
+    pub fn open_playback<'a, F, D>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
+        where
+            F: FnOnce(AudioSpec) -> CB,
+            D: Into<Option<&'a str>>,
+    {
+        AudioDevice::open(a, device, spec, get_callback, false)
+    }
+
+    /// Opens a new audio device for capture (given the desired parameters and callback).
+    /// Supported since SDL 2.0.5
+    pub fn open_capture<'a, F, D>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
+        where
+            F: FnOnce(AudioSpec) -> CB,
+            D: Into<Option<&'a str>>,
+    {
+        AudioDevice::open(a, device, spec, get_callback, true)
     }
 
     #[inline]
