@@ -43,7 +43,7 @@ fn record(audio_subsystem: &AudioSubsystem, desired_spec: &AudioSpecDesired) -> 
 
     let (done_sender, done_receiver) = mpsc::channel();
 
-    let capture_device = audio_subsystem.open_capture(None, &desired_spec, |spec| {
+    let capture_device = audio_subsystem.open_capture(None, desired_spec, |spec| {
         println!("Capture Spec = {:?}", spec);
         Recording {
             record_buffer: vec![0; spec.freq as usize * RECORDING_LENGTH_SECONDS * spec.channels as usize],
@@ -101,7 +101,7 @@ impl AudioCallback for SoundPlayback {
 fn replay_recorded_vec(audio_subsystem: &AudioSubsystem, desired_spec: &AudioSpecDesired, recorded_vec: Vec<i16>) {
     println!("Playing...");
 
-    let playback_device = audio_subsystem.open_playback(None, &desired_spec, |spec| {
+    let playback_device = audio_subsystem.open_playback(None, desired_spec, |spec| {
         println!("Playback Spec = {:?}", spec);
         SoundPlayback {
             data: recorded_vec,
