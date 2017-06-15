@@ -122,7 +122,7 @@ fn main() {
     let audio_subsystem = sdl_context.audio().unwrap();
 
     let desired_spec = AudioSpecDesired {
-        freq: Some(44100),
+        freq: None,
         channels: None,
         samples: None
     };
