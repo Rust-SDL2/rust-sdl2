@@ -42,6 +42,7 @@ extern "C" {
     pub fn SDL_WarpMouseInWindow(window: *mut SDL_Window, x: c_int, y: c_int);
     pub fn SDL_SetRelativeMouseMode(enabled: SDL_bool) -> c_int;
     pub fn SDL_GetRelativeMouseMode() -> SDL_bool;
+    pub fn SDL_CaptureMouse(enabled: SDL_bool) -> c_int;
     pub fn SDL_CreateCursor(data: *const uint8_t, mask: *const uint8_t, w: c_int,
                                   h: c_int, hot_x: c_int, hot_y: c_int) ->
               *mut SDL_Cursor;

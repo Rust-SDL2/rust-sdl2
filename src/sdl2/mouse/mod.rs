@@ -363,4 +363,8 @@ impl MouseUtil {
     pub fn show_cursor(&self, show: bool) {
         unsafe { ll::SDL_ShowCursor(show as i32); }
     }
+
+    pub fn capture(&self, enable: bool) {
+        unsafe { ll::SDL_CaptureMouse(enable as i32); }
+    }
 }
