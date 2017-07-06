@@ -360,7 +360,7 @@ on the issue tracker.
 Any Pull Request is welcome, however small your contribution may be ! There are, however, conditions to contribute:
 
 * New features must be properly documented, be it via examples or inline documentation (via `cargo doc`). Documentation must be for the end user as well as your next fellow contributor.
-* Breaking changes must have a proper argumentation with it. While the pre-1.0 state of this crate allows us to be somewha unstable, **useless breaking changes will be denied**.
+* Breaking changes must have a proper argumentation with it. While the pre-1.0 state of this crate allows us to be somewhat unstable, **useless breaking changes will be denied**.
 * Minor changes, breaking changes and new features added via Pull Request must be added in the [changelog][changelog] file. It is now **mandatory** to log your changes in the changelog. A short description with a link to your commit/pull request within GitHub is fine. Internal, documentation or meta-changes (travis build change, README instructions updates, ...) don't have to be added in the changelog.
 
 [changelog]: ./changelog.md
