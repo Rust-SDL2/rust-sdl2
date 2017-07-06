@@ -482,7 +482,7 @@ impl<T: RenderTarget> Canvas<T> {
     ///
     
     pub fn with_texture_canvas<F>(&mut self, texture: &mut Texture, mut f: F)
-        -> Result<(), TargetRenderError> where for<'r> F: FnMut(&'r mut Canvas<T>,) {
+        -> Result<(), TargetRenderError> where for<'r> F: FnOnce(&'r mut Canvas<T>,) {
         if self.render_target_supported() {
             unsafe { self.set_raw_target(texture.raw) }
                 .map_err(|e| TargetRenderError::SdlError(e))?;
