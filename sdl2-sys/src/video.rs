@@ -142,6 +142,32 @@ pub enum SDL_GLprofile {
     SDL_GL_CONTEXT_PROFILE_ES = 0x0004
 }
 
+#[repr(u32)]
+pub enum SDL_SYSWM_TYPE {
+    SDL_SYSWM_UNKNOWN,
+    SDL_SYSWM_WINDOWS,
+    SDL_SYSWM_X11,
+    SDL_SYSWM_DIRECTFB,
+    SDL_SYSWM_COCOA,
+    SDL_SYSWM_UIKIT,
+    SDL_SYSWM_WAYLAND,
+    SDL_SYSWM_MIR,
+    SDL_SYSWM_WINRT,
+    SDL_SYSWM_ANDROID,
+    SDL_SYSWM_VIVANTE
+}
+
+#[repr(C)]
+pub struct SDL_SysWMinfo {
+    pub version: ::version::SDL_version,
+    pub subsystem: SDL_SYSWM_TYPE,
+    // info should be an untagged union, but it has not it stable yet. Waiting for
+    // https://github.com/rust-lang/rust/issues/32836 to be closed.
+    //
+    // According to http://hg.libsdl.org/SDL/rev/69452f9839d5, this can at most be 64bytes.
+    pub info: [u8; 64],
+}
+
 //SDL_video.h
 extern "C" {
     pub fn SDL_GetNumVideoDrivers() -> c_int;
@@ -195,6 +221,7 @@ extern "C" {
     pub fn SDL_GetWindowGrab(window: *mut SDL_Window) -> SDL_bool;
     pub fn SDL_SetWindowBrightness(window: *mut SDL_Window, brightness: c_float) -> c_int;
     pub fn SDL_GetWindowBrightness(window: *mut SDL_Window) -> c_float;
+    pub fn SDL_GetWindowWMInfo(window: *mut SDL_Window, info: *mut SDL_SysWMinfo) -> SDL_bool;
     pub fn SDL_SetWindowGammaRamp(window: *mut SDL_Window, red: *const uint16_t, green: *const uint16_t, blue: *const uint16_t) -> c_int;
     pub fn SDL_GetWindowGammaRamp(window: *mut SDL_Window, red: *mut uint16_t, green: *mut uint16_t, blue: *mut uint16_t) -> c_int;
     pub fn SDL_DestroyWindow(window: *mut SDL_Window);
