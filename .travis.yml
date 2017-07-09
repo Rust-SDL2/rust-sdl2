@@ -27,8 +27,8 @@ before_script:
   export PATH=$HOME/.local/bin:$PATH
 script:
 - |
-  travis-cargo build -- --all-features &&
-  travis-cargo test -- --all-features &&
+  travis-cargo build -- --features "gfx image ttf mixer" &&
+  travis-cargo test -- --features "gfx image ttf mixer" &&
   travis-cargo --only stable doc -- --all-features
 after_success:
 - travis-cargo --only stable doc-upload
