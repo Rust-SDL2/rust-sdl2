@@ -35,6 +35,7 @@ optional = true
 
 [features]
 
+unsafe_textures = []
 default = []
 ttf = []
 image = []
