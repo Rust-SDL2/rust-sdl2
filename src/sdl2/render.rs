@@ -36,6 +36,7 @@ use pixels::PixelFormatEnum;
 use get_error;
 use std::fmt;
 use std::error::Error;
+#[cfg(not(feature = "unsafe_textures"))]
 use std::marker::PhantomData;
 use std::mem;
 use std::ops::Deref;
@@ -313,6 +314,7 @@ impl<'s> RenderTarget for Surface<'s> {
 pub struct Canvas<T: RenderTarget> {
     target: T,
     context: Rc<RendererContext<T::Context>>,
+    default_pixel_format: PixelFormatEnum,
 }
 
 /// Alias for a `Canvas` that was created out of a `Surface`
@@ -329,9 +331,11 @@ impl<'s> Canvas<Surface<'s>> {
         if !raw_renderer.is_null() {
             let context =
                 Rc::new(unsafe { RendererContext::from_ll(raw_renderer, surface.context()) });
+            let default_pixel_format = surface.pixel_format_enum();
             Ok(Canvas {
                    target: surface,
                    context: context,
+                   default_pixel_format: default_pixel_format,
                })
         } else {
             Err(get_error())
@@ -365,7 +369,7 @@ impl<'s> Canvas<Surface<'s>> {
     pub fn texture_creator(&self) -> TextureCreator<SurfaceContext<'s>> {
         TextureCreator {
             context: self.context.clone(),
-            default_pixel_format: self.surface().pixel_format_enum(),
+            default_pixel_format: self.default_pixel_format,
         }
     }
 }
@@ -395,6 +399,11 @@ impl Canvas<Window> {
     pub fn into_window(self) -> Window {
         self.target
     }
+    
+    #[inline]
+    pub fn default_pixel_format(&self) -> PixelFormatEnum {
+        self.window().window_pixel_format()
+    }
 
     /// Returns a `TextureCreator` that can create Textures to be drawn on this `Canvas`
     ///
@@ -405,7 +414,7 @@ impl Canvas<Window> {
     pub fn texture_creator(&self) -> TextureCreator<WindowContext> {
         TextureCreator {
             context: self.context.clone(),
-            default_pixel_format: self.window().window_pixel_format(),
+            default_pixel_format: self.default_pixel_format(),
         }
     }
 }
@@ -551,9 +560,29 @@ impl<T: RenderTarget> Canvas<T> {
     /// ```
     ///
     ///
+    #[cfg(not(feature = "unsafe_textures"))]
     pub fn with_multiple_texture_canvas<'t : 'a, 'a : 's, 's, I, F, U: 's>(&mut self, textures: I, mut f: F)
         -> Result<(), TargetRenderError>
         where for<'r> F: FnMut(&'r mut Canvas<T>, &U), I: Iterator<Item=&'s (&'a mut Texture<'t>, U)> {
+        if self.render_target_supported() {
+            for &(ref texture, ref user_context) in textures {
+                unsafe { self.set_raw_target(texture.raw) }
+                    .map_err(|e| TargetRenderError::SdlError(e))?;
+                f(self, &user_context);
+            }
+            // reset the target to its source
+            unsafe { self.set_raw_target(ptr::null_mut()) }
+                .map_err(|e| TargetRenderError::SdlError(e))?;
+            Ok(())
+        } else {
+            Err(TargetRenderError::NotSupported)
+        }
+    }
+    
+    #[cfg(feature = "unsafe_textures")]
+    pub fn with_multiple_texture_canvas<'a : 's, 's, I, F, U: 's>(&mut self, textures: I, mut f: F)
+        -> Result<(), TargetRenderError>
+        where for<'r> F: FnMut(&'r mut Canvas<T>, &U), I: Iterator<Item=&'s (&'a mut Texture, U)> {
         if self.render_target_supported() {
             for &(ref texture, ref user_context) in textures {
                 unsafe { self.set_raw_target(texture.raw) }
@@ -624,9 +653,11 @@ impl CanvasBuilder {
             Err(SdlError(get_error()))
         } else {
             let context = Rc::new(unsafe { RendererContext::from_ll(raw, self.window.context()) });
+            let default_pixel_format = self.window.window_pixel_format();
             Ok(Canvas {
                    context: context,
                    target: self.window,
+                   default_pixel_format: default_pixel_format,
                })
         }
     }
@@ -708,6 +739,39 @@ impl Error for TextureValueError {
     }
 }
 
+fn ll_create_texture(context: *mut ll::SDL_Renderer,
+                     pixel_format: PixelFormatEnum,
+                     access: TextureAccess,
+                     width: u32,
+                     height: u32)
+                     -> Result<*mut ll::SDL_Texture, TextureValueError> {
+    use self::TextureValueError::*;
+    let w = match validate_int(width, "width") {
+        Ok(w) => w,
+        Err(_) => return Err(WidthOverflows(width)),
+    };
+    let h = match validate_int(height, "height") {
+        Ok(h) => h,
+        Err(_) => return Err(HeightOverflows(height)),
+    };
+
+    // If the pixel format is YUV 4:2:0 and planar, the width and height must
+    // be multiples-of-two. See issue #334 for details.
+    match pixel_format {
+        PixelFormatEnum::YV12 |
+        PixelFormatEnum::IYUV => {
+            if w % 2 != 0 || h % 2 != 0 {
+                return Err(WidthMustBeMultipleOfTwoForFormat(width, pixel_format));
+            }
+        }
+        _ => (),
+    };
+
+    Ok(unsafe {
+        ll::SDL_CreateTexture(context, pixel_format as uint32_t, access as c_int, w, h)
+    })
+}
+
 /// Texture-creating methods for the renderer
 impl<T> TextureCreator<T> {
     pub fn raw(&self) -> *mut ll::SDL_Renderer {
@@ -722,7 +786,7 @@ impl<T> TextureCreator<T> {
     ///
     /// If format is `None`, the format will be the one the parent Window or Surface uses.
     ///
-    /// If format is `Some(pixel_format)` the default will be overridden and the texture will be
+    /// If format is `Some(pixel_format)`
     /// created with the specified format if possible. If the PixelFormat is not supported, this
     /// will return an error.
     ///
@@ -738,31 +802,8 @@ impl<T> TextureCreator<T> {
         where F: Into<Option<PixelFormatEnum>>
     {
         use self::TextureValueError::*;
-        let w = match validate_int(width, "width") {
-            Ok(w) => w,
-            Err(_) => return Err(WidthOverflows(width)),
-        };
-        let h = match validate_int(height, "height") {
-            Ok(h) => h,
-            Err(_) => return Err(HeightOverflows(height)),
-        };
         let format: PixelFormatEnum = format.into().unwrap_or(self.default_pixel_format);
-
-        // If the pixel format is YUV 4:2:0 and planar, the width and height must
-        // be multiples-of-two. See issue #334 for details.
-        match format {
-            PixelFormatEnum::YV12 |
-            PixelFormatEnum::IYUV => {
-                if w % 2 != 0 || h % 2 != 0 {
-                    return Err(WidthMustBeMultipleOfTwoForFormat(width, format));
-                }
-            }
-            _ => (),
-        }
-
-        let result = unsafe {
-            ll::SDL_CreateTexture(self.context.raw, format as uint32_t, access as c_int, w, h)
-        };
+        let result = ll_create_texture(self.context.raw(), format, access, width, height)?;
         if result.is_null() {
             Err(SdlError(get_error()))
         } else {
@@ -770,6 +811,7 @@ impl<T> TextureCreator<T> {
         }
     }
 
+    #[inline]
     /// Shorthand for `create_texture(format, TextureAccess::Static, width, height)`
     pub fn create_texture_static<F>(&self,
                                     format: F,
@@ -781,6 +823,7 @@ impl<T> TextureCreator<T> {
         self.create_texture(format, TextureAccess::Static, width, height)
     }
 
+    #[inline]
     /// Shorthand for `create_texture(format, TextureAccess::Streaming, width, height)`
     pub fn create_texture_streaming<F>(&self,
                                        format: F,
@@ -792,6 +835,7 @@ impl<T> TextureCreator<T> {
         self.create_texture(format, TextureAccess::Streaming, width, height)
     }
 
+    #[inline]
     /// Shorthand for `create_texture(format, TextureAccess::Target, width, height)`
     pub fn create_texture_target<F>(&self,
                                     format: F,
@@ -804,7 +848,9 @@ impl<T> TextureCreator<T> {
     }
 
     /// Creates a texture from an existing surface.
+    ///
     /// # Remarks
+    ///
     /// The access hint for the created texture is `TextureAccess::Static`.
     pub fn create_texture_from_surface<S: AsRef<SurfaceRef>>
         (&self,
@@ -820,21 +866,23 @@ impl<T> TextureCreator<T> {
         }
     }
 
+
+    #[cfg(not(feature = "unsafe_textures"))]
+    #[inline]
     pub unsafe fn raw_create_texture(&self, raw: *mut ll::SDL_Texture) -> Texture {
         Texture {
             raw: raw,
             _marker: PhantomData,
         }
     }
+    
+    #[cfg(feature = "unsafe_textures")]
+    pub unsafe fn raw_create_texture(&self, raw: *mut ll::SDL_Texture) -> Texture {
+        Texture {
+            raw: raw,
+        }
+    }
 }
-
-// pub struct TextureTarget<'r, 't, TC> {
-//     raw_renderer: &'r *mut ll::SDL_Renderer,
-//     _texture_marker: PhantomData<&'t ()>,
-//     // unfortunately there is no way to know which kind of Renderer we have here at compile time,
-//     // so this PhantomData is here to keep track of that.
-//     _texture_target: PhantomData<TC>,
-// }
 
 /// Drawing methods
 impl<T: RenderTarget> Canvas<T> {
@@ -1252,6 +1300,102 @@ impl<T: RenderTarget> Canvas<T> {
             }
         }
     }
+
+    /// Creates a texture for a rendering context.
+    ///
+    /// If format is `None`, the format will be the one the parent Window or Surface uses.
+    ///
+    /// If format is `Some(pixel_format)`
+    /// created with the specified format if possible. If the PixelFormat is not supported, this
+    /// will return an error.
+    ///
+    /// You should prefer the default format if possible to have performance gains and to avoid
+    /// unsupported Pixel Formats that can cause errors. However, be careful with the default
+    /// `PixelFormat` if you want to create transparent textures.
+    #[cfg(feature = "unsafe_textures")]
+    pub fn create_texture<F>(&self,
+                             format: F,
+                             access: TextureAccess,
+                             width: u32,
+                             height: u32)
+                             -> Result<Texture, TextureValueError>
+        where F: Into<Option<PixelFormatEnum>>
+    {
+        use self::TextureValueError::*;
+        let format: PixelFormatEnum = format.into().unwrap_or(self.default_pixel_format);
+        let result = ll_create_texture(self.context.raw(), format, access, width, height)?;
+        if result.is_null() {
+            Err(SdlError(get_error()))
+        } else {
+            unsafe { Ok(self.raw_create_texture(result)) }
+        }
+    }
+
+    /// Shorthand for `create_texture(format, TextureAccess::Static, width, height)`
+    #[cfg(feature = "unsafe_textures")]
+    #[inline]
+    pub fn create_texture_static<F>(&self,
+                                    format: F,
+                                    width: u32,
+                                    height: u32)
+                                    -> Result<Texture, TextureValueError>
+        where F: Into<Option<PixelFormatEnum>>
+    {
+        self.create_texture(format, TextureAccess::Static, width, height)
+    }
+
+    /// Shorthand for `create_texture(format, TextureAccess::Streaming, width, height)`
+    #[cfg(feature = "unsafe_textures")]
+    #[inline]
+    pub fn create_texture_streaming<F>(&self,
+                                       format: F,
+                                       width: u32,
+                                       height: u32)
+                                       -> Result<Texture, TextureValueError>
+        where F: Into<Option<PixelFormatEnum>>
+    {
+        self.create_texture(format, TextureAccess::Streaming, width, height)
+    }
+
+    /// Shorthand for `create_texture(format, TextureAccess::Target, width, height)`
+    #[cfg(feature = "unsafe_textures")]
+    #[inline]
+    pub fn create_texture_target<F>(&self,
+                                    format: F,
+                                    width: u32,
+                                    height: u32)
+                                    -> Result<Texture, TextureValueError>
+        where F: Into<Option<PixelFormatEnum>>
+    {
+        self.create_texture(format, TextureAccess::Target, width, height)
+    }
+
+    /// Creates a texture from an existing surface.
+    ///
+    /// # Remarks
+    ///
+    /// The access hint for the created texture is `TextureAccess::Static`.
+    #[cfg(feature = "unsafe_textures")]
+    pub fn create_texture_from_surface<S: AsRef<SurfaceRef>>
+        (&self,
+         surface: S)
+         -> Result<Texture, TextureValueError> {
+        use self::TextureValueError::*;
+        let result =
+            unsafe { ll::SDL_CreateTextureFromSurface(self.context.raw, surface.as_ref().raw()) };
+        if result.is_null() {
+            Err(SdlError(get_error()))
+        } else {
+            unsafe { Ok(self.raw_create_texture(result)) }
+        }
+    }
+    
+    #[cfg(feature = "unsafe_textures")]
+    pub unsafe fn raw_create_texture(&self, raw: *mut ll::SDL_Texture) -> Texture {
+        Texture {
+            raw: raw,
+        }
+    }
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
@@ -1268,16 +1412,44 @@ pub struct TextureQuery {
 /// A `Texture` cannot outlive the `TextureCreator`
 ///
 /// A `Texture` can be safely accessed after the `Canvas` is dropped.
+#[cfg(feature = "unsafe_textures")]
+pub struct Texture {
+    raw: *mut ll::SDL_Texture,
+}
+
+#[cfg(not(feature = "unsafe_textures"))]
 pub struct Texture<'r> {
     raw: *mut ll::SDL_Texture,
     _marker: PhantomData<&'r ()>,
 }
 
+#[cfg(not(feature = "unsafe_textures"))]
 impl<'r> Drop for Texture<'r> {
     fn drop(&mut self) {
         unsafe {
             ll::SDL_DestroyTexture(self.raw);
         }
+    }
+}
+
+#[cfg(feature = "unsafe_textures")]
+impl Texture {
+    /// Destroy the Texture and its representation
+    /// in the Renderer. This will most likely
+    /// mean that the renderer engine will free video
+    /// memory that was allocated for this texture.
+    ///
+    /// This method is unsafe because since Texture does not have
+    /// a lifetime, it is legal in Rust to make this texture live
+    /// longer than the Renderer. It is however illegal to destroy a SDL_Texture
+    /// after its SDL_Renderer, therefore this function is unsafe because
+    /// of this.
+    ///
+    /// Note however that you don't *have* to destroy a Texture before its Canvas,
+    /// since whenever Canvas is destroyed, the SDL implementation will automatically
+    /// destroy all the children Textures of that Canvas.
+    pub unsafe fn destroy(self) {
+        ll::SDL_DestroyTexture(self.raw)
     }
 }
 
@@ -1422,8 +1594,11 @@ impl Error for UpdateTextureYUVError {
     }
 }
 
-impl<'r> Texture<'r> {
-    /// Queries the attributes of the texture.
+struct InternalTexture {
+    raw: *mut ll::SDL_Texture,
+}
+
+impl InternalTexture {
     pub fn query(&self) -> TextureQuery {
         let mut format = 0;
         let mut access = 0;
@@ -1446,7 +1621,6 @@ impl<'r> Texture<'r> {
         }
     }
 
-    /// Sets an additional color value multiplied into render copy operations.
     pub fn set_color_mod(&mut self, red: u8, green: u8, blue: u8) {
         let ret = unsafe { ll::SDL_SetTextureColorMod(self.raw, red, green, blue) };
 
@@ -1455,7 +1629,6 @@ impl<'r> Texture<'r> {
         }
     }
 
-    /// Gets the additional color value multiplied into render copy operations.
     pub fn color_mod(&self) -> (u8, u8, u8) {
         let (mut r, mut g, mut b) = (0, 0, 0);
         let ret = unsafe { ll::SDL_GetTextureColorMod(self.raw, &mut r, &mut g, &mut b) };
@@ -1468,7 +1641,6 @@ impl<'r> Texture<'r> {
         }
     }
 
-    /// Sets an additional alpha value multiplied into render copy operations.
     pub fn set_alpha_mod(&mut self, alpha: u8) {
         let ret = unsafe { ll::SDL_SetTextureAlphaMod(self.raw, alpha) };
 
@@ -1477,7 +1649,6 @@ impl<'r> Texture<'r> {
         }
     }
 
-    /// Gets the additional alpha value multiplied into render copy operations.
     pub fn alpha_mod(&self) -> u8 {
         let mut alpha = 0;
         let ret = unsafe { ll::SDL_GetTextureAlphaMod(self.raw, &mut alpha) };
@@ -1486,7 +1657,6 @@ impl<'r> Texture<'r> {
         if ret != 0 { panic!(get_error()) } else { alpha }
     }
 
-    /// Sets the blend mode for a texture, used by `Renderer::copy()`.
     pub fn set_blend_mode(&mut self, blend: BlendMode) {
         let ret = unsafe {
             ll::SDL_SetTextureBlendMode(self.raw, FromPrimitive::from_i64(blend as i64).unwrap())
@@ -1497,7 +1667,6 @@ impl<'r> Texture<'r> {
         }
     }
 
-    /// Gets the blend mode used for texture copy operations.
     pub fn blend_mode(&self) -> BlendMode {
         let mut blend = 0;
         let ret = unsafe { ll::SDL_GetTextureBlendMode(self.raw, &mut blend) };
@@ -1510,12 +1679,6 @@ impl<'r> Texture<'r> {
         }
     }
 
-    /// Updates the given texture rectangle with new pixel data.
-    ///
-    /// `pitch` is the number of bytes in a row of pixel data, including padding
-    /// between lines
-    ///
-    /// * If `rect` is `None`, the entire texture is updated.
     pub fn update<R>(&mut self,
                      rect: R,
                      pixel_data: &[u8],
@@ -1577,7 +1740,6 @@ impl<'r> Texture<'r> {
         }
     }
 
-    /// Updates a rectangle within a planar YV12 or IYUV texture with new pixel data.
     pub fn update_yuv<R>(&mut self,
                          rect: R,
                          y_plane: &[u8],
@@ -1706,16 +1868,6 @@ impl<'r> Texture<'r> {
         }
     }
 
-    /// Locks the texture for **write-only** pixel access.
-    /// The texture must have been created with streaming access.
-    ///
-    /// `F` is a function that is passed the write-only texture buffer,
-    /// and the pitch of the texture (size of a row in bytes).
-    /// # Remarks
-    /// As an optimization, the pixels made available for editing don't
-    /// necessarily contain the old texture data.
-    /// This is a write-only operation, and if you need to keep a copy of the
-    /// texture data you should do that at the application level.
     pub fn with_lock<F, R, R2>(&mut self, rect: R2, func: F) -> Result<R, String>
         where F: FnOnce(&mut [u8], usize) -> R,
               R2: Into<Option<Rect>>
@@ -1754,8 +1906,6 @@ impl<'r> Texture<'r> {
         }
     }
 
-    /// Binds an OpenGL/ES/ES2 texture to the current
-    /// context for use with when rendering OpenGL primitives directly.
     pub unsafe fn gl_bind_texture(&mut self) -> (f32, f32) {
         let mut texw = 0.0;
         let mut texh = 0.0;
@@ -1767,14 +1917,12 @@ impl<'r> Texture<'r> {
         }
     }
 
-    /// Unbinds an OpenGL/ES/ES2 texture from the current context.
     pub unsafe fn gl_unbind_texture(&mut self) {
         if ll::SDL_GL_UnbindTexture(self.raw) != 0 {
             panic!("OpenGL texture unbinding not supported");
         }
     }
 
-    /// Binds and unbinds an OpenGL/ES/ES2 texture from the current context.
     pub fn gl_with_bind<R, F: FnOnce(f32, f32) -> R>(&mut self, f: F) -> R {
         unsafe {
             let mut texw = 0.0;
@@ -1794,7 +1942,239 @@ impl<'r> Texture<'r> {
             }
         }
     }
+}
 
+#[cfg(not(feature = "unsafe_textures"))]
+impl<'r> Texture<'r> {
+    /// Queries the attributes of the texture.
+    #[inline]
+    pub fn query(&self) -> TextureQuery {
+        InternalTexture{ raw: self.raw }.query()
+    }
+
+    /// Sets an additional color value multiplied into render copy operations.
+    #[inline]
+    pub fn set_color_mod(&mut self, red: u8, green: u8, blue: u8) {
+        InternalTexture{ raw: self.raw }.set_color_mod(red, green, blue)
+    }
+
+    /// Gets the additional color value multiplied into render copy operations.
+    #[inline]
+    pub fn color_mod(&self) -> (u8, u8, u8) {
+        InternalTexture{ raw: self.raw }.color_mod()
+    }
+
+    /// Sets an additional alpha value multiplied into render copy operations.
+    #[inline]
+    pub fn set_alpha_mod(&mut self, alpha: u8) {
+        InternalTexture{ raw: self.raw }.set_alpha_mod(alpha)
+    }
+
+    /// Gets the additional alpha value multiplied into render copy operations.
+    #[inline]
+    pub fn alpha_mod(&self) -> u8 {
+        InternalTexture{ raw: self.raw }.alpha_mod()
+    }
+
+    /// Sets the blend mode used for drawing operations (Fill and Line).
+    #[inline]
+    pub fn set_blend_mode(&mut self, blend: BlendMode) {
+        InternalTexture{ raw: self.raw }.set_blend_mode(blend)
+    }
+
+    /// Gets the blend mode used for texture copy operations.
+    #[inline]
+    pub fn blend_mode(&self) -> BlendMode {
+        InternalTexture{ raw: self.raw }.blend_mode()
+    }
+
+    /// Updates the given texture rectangle with new pixel data.
+    ///
+    /// `pitch` is the number of bytes in a row of pixel data, including padding
+    /// between lines
+    ///
+    /// * If `rect` is `None`, the entire texture is updated.
+    #[inline]
+    pub fn update<R>(&mut self,
+                     rect: R,
+                     pixel_data: &[u8],
+                     pitch: usize)
+                     -> Result<(), UpdateTextureError>
+        where R: Into<Option<Rect>> {
+        InternalTexture { raw: self.raw }.update(rect, pixel_data, pitch)
+    }
+
+    /// Updates a rectangle within a planar YV12 or IYUV texture with new pixel data.
+    #[inline]
+    pub fn update_yuv<R>(&mut self,
+                         rect: R,
+                         y_plane: &[u8],
+                         y_pitch: usize,
+                         u_plane: &[u8],
+                         u_pitch: usize,
+                         v_plane: &[u8],
+                         v_pitch: usize)
+                         -> Result<(), UpdateTextureYUVError>
+        where R: Into<Option<Rect>> {
+        InternalTexture { raw: self.raw }.update_yuv(rect, y_plane, y_pitch, u_plane, u_pitch, v_plane, v_pitch)
+    }
+
+    /// Locks the texture for **write-only** pixel access.
+    /// The texture must have been created with streaming access.
+    ///
+    /// `F` is a function that is passed the write-only texture buffer,
+    /// and the pitch of the texture (size of a row in bytes).
+    /// # Remarks
+    /// As an optimization, the pixels made available for editing don't
+    /// necessarily contain the old texture data.
+    /// This is a write-only operation, and if you need to keep a copy of the
+    /// texture data you should do that at the application level.
+    #[inline]
+    pub fn with_lock<F, R, R2>(&mut self, rect: R2, func: F) -> Result<R, String>
+        where F: FnOnce(&mut [u8], usize) -> R,
+              R2: Into<Option<Rect>>
+    {
+        InternalTexture { raw: self.raw }.with_lock(rect, func)
+    }
+    
+    /// Binds an OpenGL/ES/ES2 texture to the current
+    /// context for use with when rendering OpenGL primitives directly.
+    #[inline]
+    pub unsafe fn gl_bind_texture(&mut self) -> (f32, f32) {
+        InternalTexture { raw: self.raw }.gl_bind_texture()
+    }
+
+    /// Unbinds an OpenGL/ES/ES2 texture from the current context.
+    #[inline]
+    pub unsafe fn gl_unbind_texture(&mut self) {
+        InternalTexture { raw: self.raw }.gl_unbind_texture()
+    }
+
+    /// Binds and unbinds an OpenGL/ES/ES2 texture from the current context.
+    #[inline]
+    pub fn gl_with_bind<R, F: FnOnce(f32, f32) -> R>(&mut self, f: F) -> R {
+        InternalTexture { raw: self.raw }.gl_with_bind(f)
+    }
+
+    #[inline]
+    pub fn raw(&self) -> *mut ll::SDL_Texture {
+        self.raw
+    }
+}
+
+#[cfg(feature = "unsafe_textures")]
+impl<> Texture<> {
+    /// Queries the attributes of the texture.
+    #[inline]
+    pub fn query(&self) -> TextureQuery {
+        InternalTexture{ raw: self.raw }.query()
+    }
+
+    /// Sets an additional color value multiplied into render copy operations.
+    #[inline]
+    pub fn set_color_mod(&mut self, red: u8, green: u8, blue: u8) {
+        InternalTexture{ raw: self.raw }.set_color_mod(red, green, blue)
+    }
+
+    /// Gets the additional color value multiplied into render copy operations.
+    #[inline]
+    pub fn color_mod(&self) -> (u8, u8, u8) {
+        InternalTexture{ raw: self.raw }.color_mod()
+    }
+
+    /// Sets an additional alpha value multiplied into render copy operations.
+    #[inline]
+    pub fn set_alpha_mod(&mut self, alpha: u8) {
+        InternalTexture{ raw: self.raw }.set_alpha_mod(alpha)
+    }
+
+    /// Gets the additional alpha value multiplied into render copy operations.
+    #[inline]
+    pub fn alpha_mod(&self) -> u8 {
+        InternalTexture{ raw: self.raw }.alpha_mod()
+    }
+
+    /// Sets the blend mode used for drawing operations (Fill and Line).
+    #[inline]
+    pub fn set_blend_mode(&mut self, blend: BlendMode) {
+        InternalTexture{ raw: self.raw }.set_blend_mode(blend)
+    }
+
+    /// Gets the blend mode used for texture copy operations.
+    #[inline]
+    pub fn blend_mode(&self) -> BlendMode {
+        InternalTexture{ raw: self.raw }.blend_mode()
+    }
+
+    /// Updates the given texture rectangle with new pixel data.
+    ///
+    /// `pitch` is the number of bytes in a row of pixel data, including padding
+    /// between lines
+    ///
+    /// * If `rect` is `None`, the entire texture is updated.
+    #[inline]
+    pub fn update<R>(&mut self,
+                     rect: R,
+                     pixel_data: &[u8],
+                     pitch: usize)
+                     -> Result<(), UpdateTextureError>
+        where R: Into<Option<Rect>> {
+        InternalTexture { raw: self.raw }.update(rect, pixel_data, pitch)
+    }
+
+    /// Updates a rectangle within a planar YV12 or IYUV texture with new pixel data.
+    #[inline]
+    pub fn update_yuv<R>(&mut self,
+                         rect: R,
+                         y_plane: &[u8],
+                         y_pitch: usize,
+                         u_plane: &[u8],
+                         u_pitch: usize,
+                         v_plane: &[u8],
+                         v_pitch: usize)
+                         -> Result<(), UpdateTextureYUVError>
+        where R: Into<Option<Rect>> {
+        InternalTexture { raw: self.raw }.update_yuv(rect, y_plane, y_pitch, u_plane, u_pitch, v_plane, v_pitch)
+    }
+
+    /// Locks the texture for **write-only** pixel access.
+    /// The texture must have been created with streaming access.
+    ///
+    /// `F` is a function that is passed the write-only texture buffer,
+    /// and the pitch of the texture (size of a row in bytes).
+    /// # Remarks
+    /// As an optimization, the pixels made available for editing don't
+    /// necessarily contain the old texture data.
+    /// This is a write-only operation, and if you need to keep a copy of the
+    /// texture data you should do that at the application level.
+    #[inline]
+    pub fn with_lock<F, R, R2>(&mut self, rect: R2, func: F) -> Result<R, String>
+        where F: FnOnce(&mut [u8], usize) -> R,
+              R2: Into<Option<Rect>>
+    {
+        InternalTexture { raw: self.raw }.with_lock(rect, func)
+    }
+    
+    /// Binds an OpenGL/ES/ES2 texture to the current
+    /// context for use with when rendering OpenGL primitives directly.
+    #[inline]
+    pub unsafe fn gl_bind_texture(&mut self) -> (f32, f32) {
+        InternalTexture { raw: self.raw }.gl_bind_texture()
+    }
+
+    /// Unbinds an OpenGL/ES/ES2 texture from the current context.
+    #[inline]
+    pub unsafe fn gl_unbind_texture(&mut self) {
+        InternalTexture { raw: self.raw }.gl_unbind_texture()
+    }
+
+    /// Binds and unbinds an OpenGL/ES/ES2 texture from the current context.
+    #[inline]
+    pub fn gl_with_bind<R, F: FnOnce(f32, f32) -> R>(&mut self, f: F) -> R {
+        InternalTexture { raw: self.raw }.gl_with_bind(f)
+    }
+
+    #[inline]
     pub fn raw(&self) -> *mut ll::SDL_Texture {
         self.raw
     }
