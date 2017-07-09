@@ -17,8 +17,13 @@ If you want a library compatible with earlier versions of SDL, please see
 
 # Documentation
 
-* [master documentation](http://angrylawyer.github.io/rust-sdl2/sdl2/)
-* [crates.io documentation](https://docs.rs/sdl2/)
+* [crates.io documentation](https://docs.rs/sdl2/), witn no features at all.
+* [master documentation](http://angrylawyer.github.io/rust-sdl2/sdl2/) with the following features:
+  * gfx
+  * image
+  * mixer
+  * ttf
+  * unsafe\_textures (to get rid of the lifetime on `Texture`, at the cost of potential unsafety)
 
 # Requirements
 
