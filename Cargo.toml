@@ -44,3 +44,80 @@ mixer = []
 
 use-pkgconfig = [ "sdl2-sys/use-pkgconfig" ]
 use_mac_framework = ["sdl2-sys/use_mac_framework"]
+
+[[example]]
+name = "animation"
+
+[[example]]
+name = "audio-queue-squarewave"
+
+[[example]]
+name = "audio-wav"
+
+[[example]]
+name = "audio-whitenoise"
+
+[[example]]
+name = "demo"
+
+[[example]]
+name = "game-controller"
+
+[[example]]
+required-features = ["unsafe_textures"]
+name = "game-of-life-unsafe-textures"
+
+[[example]]
+name = "game-of-life"
+
+[[example]]
+required-features = ["gfx"]
+name = "gfx-demo"
+
+[[example]]
+name = "haptic"
+
+[[example]]
+required-features = ["image"]
+name = "image-demo"
+
+[[example]]
+name = "joystick"
+
+[[example]]
+name = "keyboard-state"
+
+[[example]]
+name = "message-box"
+
+[[example]]
+required-features = ["mixer"]
+name = "mixer-demo"
+
+[[example]]
+name = "mouse-state"
+
+[[example]]
+name = "no-renderer"
+
+[[example]]
+name = "relative-mouse-state"
+
+[[example]]
+name = "renderer-target"
+
+[[example]]
+name = "renderer-texture"
+
+[[example]]
+name = "renderer-yuv"
+
+[[example]]
+name = "resource-manager"
+
+[[example]]
+required-features = ["ttf"]
+name = "ttf-demo"
+
+[[example]]
+name = "window-properties"
