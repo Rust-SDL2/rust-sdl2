@@ -532,6 +532,15 @@ impl WindowContext {
     }
 }
 
+/// Represents a setting for vsync/swap interval.
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
+#[repr(i32)]
+pub enum SwapInterval {
+    Immediate = 0,
+    VSync = 1,
+    LateSwapTearing = -1,
+}
+
 /// Represents the "shell" of a `Window`.
 ///
 /// You can set get and set many of the SDL_Window properties (i.e., border, size, `PixelFormat`, etc)
@@ -771,12 +780,16 @@ impl VideoSubsystem {
         }
     }
 
-    pub fn gl_set_swap_interval(&self, interval: i32) -> bool {
+    pub fn gl_set_swap_interval(&self, interval: SwapInterval) -> bool {
         unsafe { ll::SDL_GL_SetSwapInterval(interval as c_int) == 0 }
     }
 
-    pub fn gl_get_swap_interval(&self) -> i32 {
-        unsafe { ll::SDL_GL_GetSwapInterval() as i32 }
+    pub fn gl_get_swap_interval(&self) -> SwapInterval {
+        unsafe {
+            let interval = ll::SDL_GL_GetSwapInterval() as i32;
+            assert!(interval == -1 || interval == 0 || interval == 1);
+            mem::transmute(interval)
+        }
     }
 }
 
