@@ -541,6 +541,17 @@ pub enum SwapInterval {
     LateSwapTearing = -1,
 }
 
+impl From<i32> for SwapInterval {
+    fn from(i: i32) -> Self {
+        match i {
+            -1 => SwapInterval::LateSwapTearing,
+            0  => SwapInterval::Immediate,
+            1  => SwapInterval::VSync,
+            other => panic!("Invalid value for SwapInterval: {}; valid values are -1, 0, 1", other),
+        }
+    }
+}
+
 /// Represents the "shell" of a `Window`.
 ///
 /// You can set get and set many of the SDL_Window properties (i.e., border, size, `PixelFormat`, etc)
@@ -780,8 +791,8 @@ impl VideoSubsystem {
         }
     }
 
-    pub fn gl_set_swap_interval(&self, interval: SwapInterval) -> bool {
-        unsafe { ll::SDL_GL_SetSwapInterval(interval as c_int) == 0 }
+    pub fn gl_set_swap_interval<S: Into<SwapInterval>>(&self, interval: S) -> bool {
+        unsafe { ll::SDL_GL_SetSwapInterval(interval.into() as c_int) == 0 }
     }
 
     pub fn gl_get_swap_interval(&self) -> SwapInterval {
