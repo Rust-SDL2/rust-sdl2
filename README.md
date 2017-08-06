@@ -366,8 +366,8 @@ Any Pull Request is welcome, however small your contribution may be ! There are,
 [changelog]: ./changelog.md
 [crates-io-badge]: https://img.shields.io/crates/v/sdl2.svg
 [crates-io-url]: https://crates.io/crates/sdl2
-[trav-ci-img]: https://travis-ci.org/AngryLawyer/rust-sdl2.png?branch=master
-[trav-ci]: https://travis-ci.org/AngryLawyer/rust-sdl2
+[trav-ci-img]: https://travis-ci.org/Rust-SDL2/rust-sdl2.png?branch=master
+[trav-ci]: https://travis-ci.org/Rust-SDL2/rust-sdl2
 [early-sdl]: https://github.com/brson/rust-sdl
 [homebrew]: http://brew.sh/
 [crates]: http://crates.io/
