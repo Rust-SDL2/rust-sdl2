@@ -77,6 +77,7 @@ fn main() {
     let install_path = cmake::Config::new(sdl2_build_path)
         .define("SDL_SHARED", "OFF")
         .define("SDL_STATIC", "ON")
+        .define("SNDIO", "OFF")
         .build();
 
     println!("cargo:rustc-link-search={}", install_path.join("lib").display());
@@ -95,8 +96,6 @@ fn main() {
         println!("cargo:rustc-link-lib=uuid");
         println!("cargo:rustc-link-lib=dinput8");
         println!("cargo:rustc-link-lib=dxguid");
-    } else if target_info.os.contains("linux") {
-        println!("cargo:rustc-link-lib=sndio");
     } else {
         // TODO: Add other platform linker options here.
     }
