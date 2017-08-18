@@ -95,6 +95,8 @@ fn main() {
         println!("cargo:rustc-link-lib=uuid");
         println!("cargo:rustc-link-lib=dinput8");
         println!("cargo:rustc-link-lib=dxguid");
+    } else if target_info.os.contains("linux") {
+        println!("cargo:rustc-link-lib=sndio");
     } else {
         // TODO: Add other platform linker options here.
     }
