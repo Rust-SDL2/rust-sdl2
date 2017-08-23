@@ -35,11 +35,11 @@ optional = true
 
 [features]
 
-default = []
+default = ["use-pkgconfig"]
 ttf = []
 image = []
 gfx = ["c_vec"]
 mixer = []
 
-use-pkgconfig = [ "sdl2-sys/use-pkgconfig" ]
+use-pkgconfig = ["sdl2-sys/use-pkgconfig"]
 use_mac_framework = ["sdl2-sys/use_mac_framework"]

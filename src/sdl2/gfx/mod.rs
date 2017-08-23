@@ -1,7 +1,7 @@
 //!
 //! A binding for the library `SDL2_gfx`
 //!
-//! 
+//!
 //! Note that you need to build with the
 //! feature `gfx` for this module to be enabled,
 //! like so:
@@ -19,7 +19,6 @@
 //! default-features = false
 //! features = ["gfx"]
 //! ```
-extern crate c_vec;
 
 // Setup linking for all targets.
 #[link(name="SDL2_gfx")]

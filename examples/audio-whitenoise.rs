@@ -26,7 +26,7 @@ fn main() {
     let audio_subsystem = sdl_context.audio().unwrap();
 
     let desired_spec = AudioSpecDesired {
-        freq: Some(44100),
+        freq: Some(44_100),
         channels: Some(1),  // mono
         samples: None,      // default sample size
     };
@@ -43,7 +43,7 @@ fn main() {
     device.resume();
 
     // Play for 1 second
-    std::thread::sleep(Duration::from_millis(1000));
+    std::thread::sleep(Duration::from_millis(1_000));
 
     {
         // Acquire a lock. This lets us read and modify callback data.
@@ -53,7 +53,7 @@ fn main() {
     }
 
     // Play for another second
-    std::thread::sleep(Duration::from_millis(1000));
+    std::thread::sleep(Duration::from_millis(1_000));
 
     // Device is automatically closed when dropped
 }

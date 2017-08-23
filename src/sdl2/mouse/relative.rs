@@ -1,6 +1,6 @@
 use EventPump;
 
-use sys::mouse as ll;
+use sys;
 
 use super::{MouseButton, MouseButtonIterator, PressedMouseButtonIterator};
 
@@ -17,7 +17,7 @@ impl RelativeMouseState {
         let mut y = 0;
         let mouse_state = unsafe {
             // This call is the only difference between MouseState
-            ll::SDL_GetRelativeMouseState(&mut x, &mut y)
+            sys::SDL_GetRelativeMouseState(&mut x, &mut y)
         };
 
         RelativeMouseState {
@@ -34,6 +34,10 @@ impl RelativeMouseState {
         self.mouse_state
     }
 
+    fn button_mask(&self, button: u32) -> u32 {
+        1 << (button - 1)
+    }
+
     /// Returns true if the left mouse button is pressed.
     ///
     /// # Example
@@ -44,19 +48,19 @@ impl RelativeMouseState {
     ///     e.mouse_state().left()
     /// }
     /// ```
-    pub fn left(&self) -> bool { (self.mouse_state & ll::SDL_BUTTON_LMASK) != 0 }
+    pub fn left(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_LEFT)) != 0 }
 
     /// Tests if the middle mouse button was pressed.
-    pub fn middle(&self) -> bool { (self.mouse_state & ll::SDL_BUTTON_MMASK) != 0 }
+    pub fn middle(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_MIDDLE)) != 0 }
 
     /// Tests if the right mouse button was pressed.
-    pub fn right(&self) -> bool { (self.mouse_state & ll::SDL_BUTTON_RMASK) != 0 }
+    pub fn right(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_RIGHT)) != 0 }
 
     /// Tests if the X1 mouse button was pressed.
-    pub fn x1(&self) -> bool { (self.mouse_state & ll::SDL_BUTTON_X1MASK) != 0 }
+    pub fn x1(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_X1)) != 0 }
 
     /// Tests if the X2 mouse button was pressed.
-    pub fn x2(&self) -> bool { (self.mouse_state & ll::SDL_BUTTON_X2MASK) != 0 }
+    pub fn x2(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_X2)) != 0 }
 
     /// Returns the x coordinate of the state
     pub fn x(&self) -> i32 { self.x }

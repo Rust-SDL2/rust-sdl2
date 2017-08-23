@@ -1,10 +1,9 @@
-use std::ptr;
-
 use EventPump;
 use rect::Rect;
 use video::Window;
+use std::mem::transmute;
 
-use sys::keyboard as ll;
+use sys;
 
 mod keycode;
 mod scancode;
@@ -37,7 +36,7 @@ impl<'a> KeyboardState<'a> {
     pub fn new(_e: &'a EventPump) -> KeyboardState<'a> {
         let keyboard_state = unsafe {
             let mut count = 0;
-            let state_ptr = ll::SDL_GetKeyboardState(&mut count);
+            let state_ptr = sys::SDL_GetKeyboardState(&mut count);
 
             ::std::slice::from_raw_parts(state_ptr, count as usize)
         };
@@ -173,21 +172,21 @@ pub struct KeyboardUtil {
 impl KeyboardUtil {
     /// Gets the id of the window which currently has keyboard focus.
     pub fn focused_window_id(&self) -> Option<u32> {
-        let raw = unsafe { ll::SDL_GetKeyboardFocus() };
-        if raw == ptr::null_mut() {
+        let raw = unsafe { sys::SDL_GetKeyboardFocus() };
+        if raw.is_null() {
             None
         } else {
-            let id = unsafe { ::sys::video::SDL_GetWindowID(raw) };
+            let id = unsafe { sys::SDL_GetWindowID(raw) };
             Some(id)
         }
     }
 
     pub fn mod_state(&self) -> Mod {
-        unsafe { Mod::from_bits(ll::SDL_GetModState() as u16).unwrap() }
+        unsafe { Mod::from_bits(sys::SDL_GetModState() as u16).unwrap() }
     }
 
     pub fn set_mod_state(&self, flags: Mod) {
-        unsafe { ll::SDL_SetModState(flags.bits() as u32); }
+        unsafe { sys::SDL_SetModState(transmute::<u32, sys::SDL_Keymod>(flags.bits() as u32)); }
     }
 }
 
@@ -208,26 +207,26 @@ pub struct TextInputUtil {
 
 impl TextInputUtil {
     pub fn start(&self) {
-        unsafe { ll::SDL_StartTextInput(); }
+        unsafe { sys::SDL_StartTextInput(); }
     }
 
     pub fn is_active(&self, ) -> bool {
-        unsafe { ll::SDL_IsTextInputActive() == 1 }
+        unsafe { sys::SDL_IsTextInputActive() == sys::SDL_bool::SDL_TRUE }
     }
 
     pub fn stop(&self) {
-        unsafe { ll::SDL_StopTextInput(); }
+        unsafe { sys::SDL_StopTextInput(); }
     }
 
     pub fn set_rect(&self, rect: Rect) {
-        unsafe { ll::SDL_SetTextInputRect(rect.raw()); }
+        unsafe { sys::SDL_SetTextInputRect(rect.raw() as *mut sys::SDL_Rect); }
     }
 
     pub fn has_screen_keyboard_support(&self) -> bool {
-        unsafe { ll::SDL_HasScreenKeyboardSupport() == 1 }
+        unsafe { sys::SDL_HasScreenKeyboardSupport() == sys::SDL_bool::SDL_TRUE }
     }
 
     pub fn is_screen_keyboard_shown(&self, window: &Window) -> bool {
-        unsafe { ll::SDL_IsScreenKeyboardShown(window.raw()) == 1 }
+        unsafe { sys::SDL_IsScreenKeyboardShown(window.raw()) == sys::SDL_bool::SDL_TRUE }
     }
 }

@@ -1,7 +1,7 @@
 //!
 //! A binding for the library `SDL2_mixer`
 //!
-//! 
+//!
 //! Note that you need to build with the
 //! feature `mixer` for this module to be enabled,
 //! like so:
@@ -107,7 +107,7 @@ pub const DEFAULT_FORMAT: AudioFormat = ll::AUDIO_S16SYS;
 /// Default channels: Stereo.
 pub const DEFAULT_CHANNELS: i32 = 2;
 /// Good default sample rate in Hz (samples per second) for PC sound cards.
-pub const DEFAULT_FREQUENCY: i32 = 22050;
+pub const DEFAULT_FREQUENCY: i32 = 22_050;
 /// Maximum value for any volume setting.
 pub const MAX_VOLUME: i32 = 128;
 

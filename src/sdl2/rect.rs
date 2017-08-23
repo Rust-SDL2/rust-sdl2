@@ -1,7 +1,7 @@
 //! Rectangles and points.
 #![allow(const_err)]
 
-use sys::rect as ll;
+use sys;
 use std::mem;
 use std::ptr;
 use std::ops::{Deref, DerefMut, Add, BitAnd, BitOr, Div, Mul, Neg, Sub};
@@ -64,10 +64,21 @@ fn clamped_mul(a: i32, b: i32) -> i32 {
 /// recommended to use `Option<Rect>`, with `None` representing an empty
 /// rectangle (see, for example, the output of the
 /// [`intersection`](#method.intersection) method).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy)]
 pub struct Rect {
-    raw: ll::SDL_Rect,
+    raw: sys::SDL_Rect,
 }
+
+impl PartialEq for Rect {
+    fn eq(&self, other: &Rect) -> bool {
+        self.raw.x == other.raw.x &&
+        self.raw.y == other.raw.y &&
+        self.raw.w == other.raw.w &&
+        self.raw.h == other.raw.h
+    }
+}
+
+impl Eq for Rect {}
 
 impl Rect {
     /// Creates a new rectangle from the given values.
@@ -81,7 +92,7 @@ impl Rect {
     /// `Rect`s must always be non-empty, so a `width` and/or `height` argument
     /// of 0 will be replaced with 1.
     pub fn new(x: i32, y: i32, width: u32, height: u32) -> Rect {
-        let raw = ll::SDL_Rect {
+        let raw = sys::SDL_Rect {
             x: clamp_position(x),
             y: clamp_position(y),
             w: clamp_size(width) as i32,
@@ -102,7 +113,7 @@ impl Rect {
     /// of 0 will be replaced with 1.
     pub fn from_center<P>(center: P, width: u32, height: u32)
             -> Rect where P: Into<Point> {
-        let raw = ll::SDL_Rect {
+        let raw = sys::SDL_Rect {
             x: 0,
             y: 0,
             w: clamp_size(width) as i32,
@@ -393,21 +404,21 @@ impl Rect {
     }
 
     /// Returns the underlying C Rect.
-    pub fn raw(&self) -> *const ll::SDL_Rect {
+    pub fn raw(&self) -> *const sys::SDL_Rect {
         &self.raw
     }
 
-    pub fn raw_mut(&mut self) -> *mut ll::SDL_Rect {
+    pub fn raw_mut(&mut self) -> *mut sys::SDL_Rect {
         self.raw() as *mut _
     }
 
-    pub fn raw_slice(slice: &[Rect]) -> *const ll::SDL_Rect {
+    pub fn raw_slice(slice: &[Rect]) -> *const sys::SDL_Rect {
         unsafe {
             mem::transmute(slice.as_ptr())
         }
     }
 
-    pub fn from_ll(raw: ll::SDL_Rect) -> Rect {
+    pub fn from_ll(raw: sys::SDL_Rect) -> Rect {
         Rect::new(raw.x, raw.y, raw.w as u32, raw.h as u32)
     }
 
@@ -420,7 +431,7 @@ impl Rect {
     {
         let clipping_rect = clipping_rect.into();
 
-        if points.len() == 0 {
+        if points.is_empty() {
             return None;
         }
 
@@ -434,12 +445,12 @@ impl Rect {
         };
 
         let result = unsafe {
-            ll::SDL_EnclosePoints(
+            sys::SDL_EnclosePoints(
                 Point::raw_slice(points),
                 points.len() as i32,
                 clip_ptr,
                 &mut out
-            ) != 0
+            ) != sys::SDL_bool::SDL_FALSE
         };
 
         if result {
@@ -466,7 +477,7 @@ impl Rect {
     /// ```
     pub fn has_intersection(&self, other: Rect) -> bool {
         unsafe {
-            ll::SDL_HasIntersection(self.raw(), other.raw()) != 0
+            sys::SDL_HasIntersection(self.raw(), other.raw()) != sys::SDL_bool::SDL_FALSE
         }
     }
 
@@ -492,7 +503,7 @@ impl Rect {
         let mut out = unsafe { mem::uninitialized() };
 
         let success = unsafe {
-            ll::SDL_IntersectRect(self.raw(), other.raw(), &mut out) != 0
+            sys::SDL_IntersectRect(self.raw(), other.raw(), &mut out) != sys::SDL_bool::SDL_FALSE
         };
 
         if success {
@@ -524,7 +535,7 @@ impl Rect {
         unsafe {
             // If `self` and `other` are both empty, `out` remains uninitialized.
             // Because empty rectangles aren't allowed in Rect, we don't need to worry about this.
-            ll::SDL_UnionRect(self.raw(), other.raw(), &mut out)
+            sys::SDL_UnionRect(self.raw(), other.raw(), &mut out)
         };
 
         Rect::from_ll(out)
@@ -539,11 +550,11 @@ impl Rect {
         let (mut end_x, mut end_y) = (end.x(), end.y());
 
         let intersected = unsafe {
-            ll::SDL_IntersectRectAndLine(
+            sys::SDL_IntersectRectAndLine(
                 self.raw(),
                 &mut start_x, &mut start_y,
                 &mut end_x, &mut end_y
-            ) != 0
+            ) != sys::SDL_bool::SDL_FALSE
         };
 
         if intersected {
@@ -555,7 +566,7 @@ impl Rect {
 }
 
 impl Deref for Rect {
-    type Target = ll::SDL_Rect;
+    type Target = sys::SDL_Rect;
 
     /// # Example
     ///
@@ -564,7 +575,7 @@ impl Deref for Rect {
     /// let rect = Rect::new(2, 3, 4, 5);
     /// assert_eq!(2, rect.x);
     /// ```
-    fn deref(&self) -> &ll::SDL_Rect {
+    fn deref(&self) -> &sys::SDL_Rect {
         &self.raw
     }
 }
@@ -578,13 +589,13 @@ impl DerefMut for Rect {
     /// rect.x = 60;
     /// assert_eq!(60, rect.x);
     /// ```
-    fn deref_mut(&mut self) -> &mut ll::SDL_Rect {
+    fn deref_mut(&mut self) -> &mut sys::SDL_Rect {
         &mut self.raw
     }
 }
 
-impl Into<ll::SDL_Rect> for Rect {
-    fn into(self) -> ll::SDL_Rect {
+impl Into<sys::SDL_Rect> for Rect {
+    fn into(self) -> sys::SDL_Rect {
         self.raw
     }
 }
@@ -595,8 +606,8 @@ impl Into<(i32, i32, u32, u32)> for Rect {
     }
 }
 
-impl From<ll::SDL_Rect> for Rect {
-    fn from(raw: ll::SDL_Rect) -> Rect {
+impl From<sys::SDL_Rect> for Rect {
+    fn from(raw: sys::SDL_Rect) -> Rect {
         Rect { raw: raw }
     }
 }
@@ -607,14 +618,14 @@ impl From<(i32, i32, u32, u32)> for Rect {
     }
 }
 
-impl AsRef<ll::SDL_Rect> for Rect {
-    fn as_ref(&self) -> &ll::SDL_Rect {
+impl AsRef<sys::SDL_Rect> for Rect {
+    fn as_ref(&self) -> &sys::SDL_Rect {
         &self.raw
     }
 }
 
-impl AsMut<ll::SDL_Rect> for Rect {
-    fn as_mut(&mut self) -> &mut ll::SDL_Rect {
+impl AsMut<sys::SDL_Rect> for Rect {
+    fn as_mut(&mut self) -> &mut sys::SDL_Rect {
         &mut self.raw
     }
 }
@@ -632,13 +643,21 @@ impl BitOr<Rect> for Rect {
 }
 
 /// Immutable point type, consisting of x and y.
-#[derive(Copy, Clone, Eq, PartialEq, Debug, Hash)]
+#[derive(Copy, Clone, Debug)]
 pub struct Point {
-    raw: ll::SDL_Point
+    raw: sys::SDL_Point
 }
 
+impl PartialEq for Point {
+    fn eq(&self, other: &Point) -> bool {
+        self.raw.x == other.raw.x && self.raw.y == other.raw.y
+    }
+}
+
+impl Eq for Point {}
+
 impl Deref for Point {
-    type Target = ll::SDL_Point;
+    type Target = sys::SDL_Point;
 
     /// # Example
     ///
@@ -647,7 +666,7 @@ impl Deref for Point {
     /// let point = Point::new(2, 3);
     /// assert_eq!(2, point.x);
     /// ```
-    fn deref(&self) -> &ll::SDL_Point {
+    fn deref(&self) -> &sys::SDL_Point {
         &self.raw
     }
 }
@@ -661,25 +680,25 @@ impl DerefMut for Point {
     /// point.x = 4;
     /// assert_eq!(4, point.x);
     /// ```
-    fn deref_mut(&mut self) -> &mut ll::SDL_Point {
+    fn deref_mut(&mut self) -> &mut sys::SDL_Point {
         &mut self.raw
     }
 }
 
-impl AsRef<ll::SDL_Point> for Point {
-    fn as_ref(&self) -> &ll::SDL_Point {
+impl AsRef<sys::SDL_Point> for Point {
+    fn as_ref(&self) -> &sys::SDL_Point {
         &self.raw
     }
 }
 
-impl AsMut<ll::SDL_Point> for Point {
-    fn as_mut(&mut self) -> &mut ll::SDL_Point {
+impl AsMut<sys::SDL_Point> for Point {
+    fn as_mut(&mut self) -> &mut sys::SDL_Point {
         &mut self.raw
     }
 }
 
-impl From<ll::SDL_Point> for Point {
-    fn from(prim: ll::SDL_Point) -> Point {
+impl From<sys::SDL_Point> for Point {
+    fn from(prim: sys::SDL_Point) -> Point {
         Point { raw: prim }
     }
 }
@@ -690,8 +709,8 @@ impl From<(i32, i32)> for Point {
     }
 }
 
-impl Into<ll::SDL_Point> for Point {
-    fn into(self) -> ll::SDL_Point {
+impl Into<sys::SDL_Point> for Point {
+    fn into(self) -> sys::SDL_Point {
         self.raw
     }
 }
@@ -706,24 +725,24 @@ impl Point {
     /// Creates a new point from the given coordinates.
     pub fn new(x: i32, y: i32) -> Point {
         Point {
-            raw: ll::SDL_Point {
+            raw: sys::SDL_Point {
                 x: clamp_position(x),
                 y: clamp_position(y),
             }
         }
     }
 
-    pub fn from_ll(raw: ll::SDL_Point) -> Point {
+    pub fn from_ll(raw: sys::SDL_Point) -> Point {
         Point::new(raw.x, raw.y)
     }
 
-    pub fn raw_slice(slice: &[Point]) -> *const ll::SDL_Point {
+    pub fn raw_slice(slice: &[Point]) -> *const sys::SDL_Point {
         unsafe {
             mem::transmute(slice.as_ptr())
         }
     }
 
-    pub fn raw(&self) -> *const ll::SDL_Point {
+    pub fn raw(&self) -> *const sys::SDL_Point {
         &self.raw
     }
 

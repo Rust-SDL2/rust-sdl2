@@ -2,7 +2,7 @@ use std::ffi::{CString, CStr};
 use libc::c_char;
 use get_error;
 
-use sys::clipboard as ll;
+use sys;
 
 /// Clipboard utility functions. Access with `VideoSubsystem::clipboard()`.
 ///
@@ -31,7 +31,7 @@ impl ClipboardUtil {
     pub fn set_clipboard_text(&self, text: &str) -> Result<(), String> {
         unsafe {
             let text = CString::new(text).unwrap();
-            let result = ll::SDL_SetClipboardText(text.as_ptr() as *const c_char);
+            let result = sys::SDL_SetClipboardText(text.as_ptr() as *const c_char);
 
             if result == 0 {
                 Err(get_error())
@@ -43,7 +43,7 @@ impl ClipboardUtil {
 
     pub fn clipboard_text(&self) -> Result<String, String> {
         unsafe {
-            let buf = ll::SDL_GetClipboardText();
+            let buf = sys::SDL_GetClipboardText();
 
             if buf.is_null() {
                 Err(get_error())
@@ -54,6 +54,6 @@ impl ClipboardUtil {
     }
 
     pub fn has_clipboard_text(&self) -> bool {
-        unsafe { ll::SDL_HasClipboardText() == 1 }
+        unsafe { sys::SDL_HasClipboardText() == sys::SDL_bool::SDL_TRUE }
     }
 }

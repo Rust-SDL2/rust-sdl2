@@ -1,8 +1,6 @@
 use std::os::raw::{c_int, c_char, c_long, c_void};
-use ::sys::surface::SDL_Surface;
-use ::sys::pixels::SDL_Color;
-use ::sys::rwops::SDL_RWops;
-use ::sys::version::SDL_version;
+use sys;
+use sys::{SDL_Surface, SDL_Color, SDL_RWops};
 
 
 pub const TTF_STYLE_NORMAL        : c_int = 0x00;
@@ -18,7 +16,7 @@ pub const TTF_HINTING_NONE      : c_int = 3;
 
 pub type TTF_Font = c_void;
 extern "C" {
-    pub fn TTF_Linked_Version() -> *const SDL_version;
+    pub fn TTF_Linked_Version() -> *const sys::SDL_version;
     pub fn TTF_ByteSwappedUNICODE(swapped: c_int);
     pub fn TTF_Init() -> c_int;
     pub fn TTF_OpenFont(file: *const c_char, ptsize: c_int) -> *const TTF_Font;

@@ -76,7 +76,7 @@ mod game_of_life {
 
         pub fn update(&mut self) {
             let mut new_playground = self.playground;
-            for (u, mut square) in new_playground.iter_mut().enumerate() {
+            for (u, square) in new_playground.iter_mut().enumerate() {
                 let u = u as u32;
                 let x = u % PLAYGROUND_WIDTH;
                 let y = u / PLAYGROUND_WIDTH;
@@ -191,7 +191,7 @@ fn dummy_texture<'a>(canvas: &mut Canvas<Window>, texture_creator: &'a TextureCr
 pub fn main() {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
-    
+
     // the window is the representation of a window in your operating system,
     // however you can only manipulate properties of that window, like its size, whether it's
     // fullscreen, ... but you cannot change its content without using a Canvas or using the
@@ -244,7 +244,7 @@ pub fn main() {
                     let x = (x as u32) / SQUARE_SIZE;
                     let y = (y as u32) / SQUARE_SIZE;
                     match game.get_mut(x as i32, y as i32) {
-                        Some(mut square) => {*square = !(*square);},
+                        Some(square) => {*square = !(*square);},
                         None => {panic!()}
                     };
                 },
@@ -268,7 +268,7 @@ pub fn main() {
                 &square_texture2
             };
             if *unit {
-                canvas.copy(&square_texture,
+                canvas.copy(square_texture,
                             None,
                             Rect::new(((i % PLAYGROUND_WIDTH) * SQUARE_SIZE) as i32,
                                       ((i / PLAYGROUND_WIDTH) * SQUARE_SIZE) as i32,

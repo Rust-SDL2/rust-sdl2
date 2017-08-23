@@ -12,8 +12,9 @@ use num::FromPrimitive;
 use pixels;
 use render::{BlendMode, Canvas};
 use rwops::RWops;
+use std::mem::transmute;
 
-use sys::surface as ll;
+use sys;
 
 /// Holds a `SDL_Surface`
 ///
@@ -21,14 +22,14 @@ use sys::surface as ll;
 ///
 /// *INTERNAL USE ONLY*
 pub struct SurfaceContext<'a> {
-    raw: *mut ll::SDL_Surface,
+    raw: *mut sys::SDL_Surface,
     _marker: PhantomData<&'a ()>
 }
 
 impl<'a> Drop for SurfaceContext<'a> {
     #[inline]
     fn drop(&mut self) {
-        unsafe { ll::SDL_FreeSurface(self.raw); }
+        unsafe { sys::SDL_FreeSurface(self.raw); }
     }
 }
 
@@ -96,7 +97,7 @@ impl<'a> AsMut<SurfaceRef> for Surface<'a> {
 
 
 impl<'a> Surface<'a> {
-    pub unsafe fn from_ll<'b>(raw: *mut ll::SDL_Surface) -> Surface<'b> {
+    pub unsafe fn from_ll<'b>(raw: *mut sys::SDL_Surface) -> Surface<'b> {
         let context = SurfaceContext {
             raw: raw,
             _marker: PhantomData,
@@ -133,7 +134,7 @@ impl<'a> Surface<'a> {
             if width >= (1<<31) || height >= (1<<31) {
                 Err("Image is too large.".to_owned())
             } else {
-                let raw = ll::SDL_CreateRGBSurface(0, width as c_int, height as c_int,
+                let raw = sys::SDL_CreateRGBSurface(0, width as c_int, height as c_int,
                     masks.bpp as c_int, masks.rmask, masks.gmask, masks.bmask, masks.amask);
 
                 if raw.is_null() {
@@ -159,7 +160,7 @@ impl<'a> Surface<'a> {
             } else if pitch >= (1<<31) {
                 Err("Pitch is too large.".to_owned())
             } else {
-                let raw = ll::SDL_CreateRGBSurfaceFrom(
+                let raw = sys::SDL_CreateRGBSurfaceFrom(
                     data.as_mut_ptr() as *mut _, width as c_int, height as c_int,
                     masks.bpp as c_int, pitch as c_int, masks.rmask, masks.gmask, masks.bmask, masks.amask);
 
@@ -174,7 +175,7 @@ impl<'a> Surface<'a> {
 
     pub fn load_bmp_rw(rwops: &mut RWops) -> Result<Surface<'static>, String> {
         let raw = unsafe {
-            ll::SDL_LoadBMP_RW(rwops.raw(), 0)
+            sys::SDL_LoadBMP_RW(rwops.raw(), 0)
         };
 
         if raw.is_null() {
@@ -207,24 +208,24 @@ impl<'a> Surface<'a> {
 
 impl SurfaceRef {
     #[inline]
-    pub unsafe fn from_ll<'a>(raw: *const ll::SDL_Surface) -> &'a SurfaceRef {
+    pub unsafe fn from_ll<'a>(raw: *const sys::SDL_Surface) -> &'a SurfaceRef {
         &*(raw as *const () as *const SurfaceRef)
     }
 
     #[inline]
-    pub unsafe fn from_ll_mut<'a>(raw: *mut ll::SDL_Surface) -> &'a mut SurfaceRef {
+    pub unsafe fn from_ll_mut<'a>(raw: *mut sys::SDL_Surface) -> &'a mut SurfaceRef {
         &mut *(raw as *mut () as *mut SurfaceRef)
     }
 
     #[inline]
-    pub fn raw(&self) -> *mut ll::SDL_Surface {
-        self as *const SurfaceRef as *mut SurfaceRef as *mut () as *mut ll::SDL_Surface
+    pub fn raw(&self) -> *mut sys::SDL_Surface {
+        self as *const SurfaceRef as *mut SurfaceRef as *mut () as *mut sys::SDL_Surface
     }
 
     #[inline]
-    fn raw_ref(&self) -> &ll::SDL_Surface {
+    fn raw_ref(&self) -> &sys::SDL_Surface {
         unsafe {
-            &*(self as *const _ as *const () as *const ll::SDL_Surface)
+            &*(self as *const _ as *const () as *const sys::SDL_Surface)
         }
     }
 
@@ -261,13 +262,13 @@ impl SurfaceRef {
     /// Locks a surface so that the pixels can be directly accessed safely.
     pub fn with_lock<R, F: FnOnce(&[u8]) -> R>(&self, f: F) -> R {
         unsafe {
-            if ll::SDL_LockSurface(self.raw()) != 0 { panic!("could not lock surface"); }
+            if sys::SDL_LockSurface(self.raw()) != 0 { panic!("could not lock surface"); }
 
             let raw_pixels = self.raw_ref().pixels as *const _;
             let len = self.raw_ref().pitch as usize * (self.raw_ref().h as usize);
             let pixels = ::std::slice::from_raw_parts(raw_pixels, len);
             let rv = f(pixels);
-            ll::SDL_UnlockSurface(self.raw());
+            sys::SDL_UnlockSurface(self.raw());
             rv
         }
     }
@@ -275,13 +276,13 @@ impl SurfaceRef {
     /// Locks a surface so that the pixels can be directly accessed safely.
     pub fn with_lock_mut<R, F: FnOnce(&mut [u8]) -> R>(&mut self, f: F) -> R {
         unsafe {
-            if ll::SDL_LockSurface(self.raw()) != 0 { panic!("could not lock surface"); }
+            if sys::SDL_LockSurface(self.raw()) != 0 { panic!("could not lock surface"); }
 
             let raw_pixels = self.raw_ref().pixels as *mut _;
             let len = self.raw_ref().pitch as usize * (self.raw_ref().h as usize);
             let pixels = ::std::slice::from_raw_parts_mut(raw_pixels, len);
             let rv = f(pixels);
-            ll::SDL_UnlockSurface(self.raw());
+            sys::SDL_UnlockSurface(self.raw());
             rv
         }
     }
@@ -319,12 +320,12 @@ impl SurfaceRef {
     /// Returns true if the Surface needs to be locked before accessing the Surface pixels.
     pub fn must_lock(&self) -> bool {
         // Implements the SDL_MUSTLOCK macro.
-        (self.raw_ref().flags & ll::SDL_RLEACCEL) != 0
+        (self.raw_ref().flags & sys::SDL_RLEACCEL) != 0
     }
 
     pub fn save_bmp_rw(&self, rwops: &mut RWops) -> Result<(), String> {
         let ret = unsafe {
-            ll::SDL_SaveBMP_RW(self.raw(), rwops.raw(), 0)
+            sys::SDL_SaveBMP_RW(self.raw(), rwops.raw(), 0)
         };
         if ret == 0 { Ok(()) }
         else { Err(get_error()) }
@@ -336,7 +337,7 @@ impl SurfaceRef {
     }
 
     pub fn set_palette(&mut self, palette: &pixels::Palette) -> Result<(), String> {
-        let result = unsafe { ll::SDL_SetSurfacePalette(self.raw(), palette.raw()) };
+        let result = unsafe { sys::SDL_SetSurfacePalette(self.raw(), palette.raw()) };
 
         match result {
             0 => Ok(()),
@@ -346,7 +347,7 @@ impl SurfaceRef {
 
     #[allow(non_snake_case)]
     pub fn enable_RLE(&mut self) {
-        let result = unsafe { ll::SDL_SetSurfaceRLE(self.raw(), 1) };
+        let result = unsafe { sys::SDL_SetSurfaceRLE(self.raw(), 1) };
 
         if result != 0 {
             // Should only panic on a null Surface
@@ -356,7 +357,7 @@ impl SurfaceRef {
 
     #[allow(non_snake_case)]
     pub fn disable_RLE(&mut self) {
-        let result = unsafe { ll::SDL_SetSurfaceRLE(self.raw(), 0) };
+        let result = unsafe { sys::SDL_SetSurfaceRLE(self.raw(), 0) };
 
         if result != 0 {
             // Should only panic on a null Surface
@@ -367,7 +368,7 @@ impl SurfaceRef {
     pub fn set_color_key(&mut self, enable: bool, color: pixels::Color) -> Result<(), String> {
         let key = color.to_u32(&self.pixel_format());
         let result = unsafe {
-            ll::SDL_SetColorKey(self.raw(), if enable { 1 } else { 0 }, key)
+            sys::SDL_SetColorKey(self.raw(), if enable { 1 } else { 0 }, key)
         };
         if result == 0 {
             Ok(())
@@ -383,7 +384,7 @@ impl SurfaceRef {
         // SDL_GetColorKey does not mutate, but requires a non-const pointer anyway.
 
         let result = unsafe {
-            ll::SDL_GetColorKey(self.raw(), &mut key)
+            sys::SDL_GetColorKey(self.raw(), &mut key)
         };
 
         if result == 0 {
@@ -395,7 +396,7 @@ impl SurfaceRef {
 
     pub fn set_color_mod(&mut self, color: pixels::Color) {
         let (r, g, b) = color.rgb();
-        let result = unsafe { ll::SDL_SetSurfaceColorMod(self.raw(), r, g, b) };
+        let result = unsafe { sys::SDL_SetSurfaceColorMod(self.raw(), r, g, b) };
 
         if result != 0 {
             // Should only fail on a null Surface
@@ -411,7 +412,7 @@ impl SurfaceRef {
         // SDL_GetSurfaceColorMod does not mutate, but requires a non-const pointer anyway.
 
         let result = unsafe {
-            ll::SDL_GetSurfaceColorMod(self.raw(), &mut r, &mut g, &mut b) == 0
+            sys::SDL_GetSurfaceColorMod(self.raw(), &mut r, &mut g, &mut b) == 0
         };
 
         if result {
@@ -430,7 +431,7 @@ impl SurfaceRef {
             let rect_ptr = mem::transmute(rect.as_ref()); // TODO find a better way to transform
             // Option<&...> into a *const _
             let format = self.pixel_format();
-            let result = ll::SDL_FillRect(self.raw(), rect_ptr, color.to_u32(&format) );
+            let result = sys::SDL_FillRect(self.raw(), rect_ptr, color.to_u32(&format) );
             match result {
                 0 => Ok(()),
                 _ => Err(get_error())
@@ -438,14 +439,14 @@ impl SurfaceRef {
         }
     }
 
+    #[cfg_attr(feature = "cargo-clippy", allow(clone_on_copy))]
     pub fn fill_rects(&mut self, rects: &[Rect], color: pixels::Color) -> Result<(), String>
     {
         for rect in rects.iter() {
-            let result = self.fill_rect(rect.clone(), color);
-            match result {
-                Err(e) => return Err(e),
-                _ => ()
-            };
+            if let Err(e) = self.fill_rect(rect.clone(), color)
+            {
+                return Err(e);
+            }
         }
 
         Ok(())
@@ -453,7 +454,7 @@ impl SurfaceRef {
 
     pub fn set_alpha_mod(&mut self, alpha: u8) {
         let result = unsafe {
-            ll::SDL_SetSurfaceAlphaMod(self.raw(), alpha)
+            sys::SDL_SetSurfaceAlphaMod(self.raw(), alpha)
         };
 
         if result != 0 {
@@ -465,7 +466,7 @@ impl SurfaceRef {
     pub fn alpha_mod(&self) -> u8 {
         let mut alpha = 0;
         let result = unsafe {
-            ll::SDL_GetSurfaceAlphaMod(self.raw(), &mut alpha)
+            sys::SDL_GetSurfaceAlphaMod(self.raw(), &mut alpha)
         };
 
         match result {
@@ -478,7 +479,7 @@ impl SurfaceRef {
     /// The function will fail if the blend mode is not supported by SDL.
     pub fn set_blend_mode(&mut self, mode: BlendMode) -> Result<(), String> {
         let result = unsafe {
-            ll::SDL_SetSurfaceBlendMode(self.raw(), mode as c_int)
+            sys::SDL_SetSurfaceBlendMode(self.raw(), transmute(mode))
         };
 
         match result {
@@ -488,9 +489,9 @@ impl SurfaceRef {
     }
 
     pub fn blend_mode(&self) -> BlendMode {
-        let mut mode: ::sys::SDL_BlendMode = 0;
+        let mut mode = sys::SDL_BlendMode::SDL_BLENDMODE_NONE;
         let result = unsafe {
-            ll::SDL_GetSurfaceBlendMode(self.raw(), &mut mode)
+            sys::SDL_GetSurfaceBlendMode(self.raw(), &mut mode)
         };
 
         match result {
@@ -503,15 +504,15 @@ impl SurfaceRef {
     /// Sets the clip rectangle for the surface.
     ///
     /// If the rectangle is `None`, clipping will be disabled.
-    pub fn set_clip_rect<R>(&mut self, rect: R) -> bool 
+    pub fn set_clip_rect<R>(&mut self, rect: R) -> bool
     where R: Into<Option<Rect>>
     {
         let rect = rect.into();
         unsafe {
-            ll::SDL_SetClipRect(self.raw(), match rect {
+            sys::SDL_SetClipRect(self.raw(), match rect {
                 Some(rect) => rect.raw(),
                 None => ptr::null()
-            }) == 1
+            }) == sys::SDL_bool::SDL_TRUE
         }
     }
 
@@ -521,7 +522,7 @@ impl SurfaceRef {
     pub fn clip_rect(&self) -> Option<Rect> {
         let mut raw = unsafe { mem::uninitialized() };
         unsafe {
-            ll::SDL_GetClipRect(self.raw(), &mut raw)
+            sys::SDL_GetClipRect(self.raw(), &mut raw)
         };
         if raw.w == 0 || raw.h == 0 {
             None
@@ -533,7 +534,7 @@ impl SurfaceRef {
     /// Copies the surface into a new one that is optimized for blitting to a surface of a specified pixel format.
     pub fn convert(&self, format: &pixels::PixelFormat) -> Result<Surface<'static>, String> {
         // SDL_ConvertSurface takes a flag as the last parameter, which should be 0 by the docs.
-        let surface_ptr = unsafe { ll::SDL_ConvertSurface(self.raw(), format.raw(), 0u32) };
+        let surface_ptr = unsafe { sys::SDL_ConvertSurface(self.raw(), format.raw(), 0u32) };
 
         if surface_ptr.is_null() {
             Err(get_error())
@@ -551,7 +552,7 @@ impl SurfaceRef {
     /// Returns the final blit rectangle, if a `dst_rect` was provided.
     pub fn blit<R1, R2>(&self, src_rect: R1,
             dst: &mut SurfaceRef, dst_rect: R2)
-            -> Result<Option<Rect>, String> 
+            -> Result<Option<Rect>, String>
         where R1: Into<Option<Rect>>,
               R2: Into<Option<Rect>>,
     {
@@ -564,9 +565,9 @@ impl SurfaceRef {
             // Copy the rect here to make a mutable copy without requiring
             // a mutable argument
             let mut dst_rect = dst_rect;
-            let dst_rect_ptr = dst_rect.as_mut().map(|mut r| r.raw_mut())
+            let dst_rect_ptr = dst_rect.as_mut().map(|r| r.raw_mut())
                 .unwrap_or(ptr::null_mut());
-            let result = ll::SDL_UpperBlit(
+            let result = sys::SDL_UpperBlit(
                 self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr
             );
 
@@ -583,7 +584,7 @@ impl SurfaceRef {
     /// Unless you know what you're doing, use `blit()` instead, which will clip the input rectangles.
     /// This function could crash if the rectangles aren't pre-clipped to the surface, and is therefore unsafe.
     pub unsafe fn lower_blit<R1, R2>(&self, src_rect: R1,
-                      dst: &mut SurfaceRef, dst_rect: R2) -> Result<(), String> 
+                      dst: &mut SurfaceRef, dst_rect: R2) -> Result<(), String>
     where R1: Into<Option<Rect>>,
           R2: Into<Option<Rect>>,
     {
@@ -596,7 +597,7 @@ impl SurfaceRef {
                 .unwrap_or(ptr::null()) as *mut _;
             let dst_rect_ptr = dst_rect.as_ref().map(|r| r.raw())
                 .unwrap_or(ptr::null()) as *mut _;
-            ll::SDL_LowerBlit(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
+            sys::SDL_LowerBlit(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
         } {
             0 => Ok(()),
             _ => Err(get_error())
@@ -607,7 +608,7 @@ impl SurfaceRef {
     ///
     /// Returns the final blit rectangle, if a `dst_rect` was provided.
     pub fn blit_scaled<R1, R2>(&self, src_rect: R1,
-                             dst: &mut SurfaceRef, dst_rect: R2) -> Result<Option<Rect>, String> 
+                             dst: &mut SurfaceRef, dst_rect: R2) -> Result<Option<Rect>, String>
     where R1: Into<Option<Rect>>,
           R2: Into<Option<Rect>>,
     {
@@ -620,9 +621,9 @@ impl SurfaceRef {
             // Copy the rect here to make a mutable copy without requiring
             // a mutable argument
             let mut dst_rect = dst_rect;
-            let dst_rect_ptr = dst_rect.as_mut().map(|mut r| r.raw_mut())
+            let dst_rect_ptr = dst_rect.as_mut().map(|r| r.raw_mut())
                 .unwrap_or(ptr::null_mut());
-            ll::SDL_UpperBlitScaled(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
+            sys::SDL_UpperBlitScaled(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
         } {
             0 => Ok(dst_rect),
             _ => Err(get_error())
@@ -634,7 +635,7 @@ impl SurfaceRef {
     /// Unless you know what you're doing, use `blit_scaled()` instead, which will clip the input rectangles.
     /// This function could crash if the rectangles aren't pre-clipped to the surface, and is therefore unsafe.
     pub unsafe fn lower_blit_scaled<R1, R2>(&self, src_rect: R1,
-                             dst: &mut SurfaceRef, dst_rect: R2) -> Result<(), String> 
+                             dst: &mut SurfaceRef, dst_rect: R2) -> Result<(), String>
     where R1: Into<Option<Rect>>,
           R2: Into<Option<Rect>>
     {
@@ -645,7 +646,7 @@ impl SurfaceRef {
                 .unwrap_or(ptr::null()) as *mut _;
             let dst_rect_ptr = dst_rect.into().as_ref().map(|r| r.raw())
                 .unwrap_or(ptr::null()) as *mut _;
-            ll::SDL_LowerBlitScaled(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
+            sys::SDL_LowerBlitScaled(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
         } {
             0 => Ok(()),
             _ => Err(get_error())

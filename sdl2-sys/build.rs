@@ -1,16 +1,40 @@
-#[cfg(feature="pkg-config")]
+#[cfg(feature = "pkg-config")]
 extern crate pkg_config;
+extern crate bindgen;
+
+use std::path::PathBuf;
+use std::env;
+
+const SDL2_BUNDLED_VERSION: &str = "2.0.5";
 
 fn main() {
-    let target = ::std::env::var("TARGET").expect("Cargo build scripts always have TARGET");
-    let target_os = target.splitn(3, "-").nth(2).unwrap();
+    let target = env::var("TARGET").expect("Cargo build scripts always have TARGET");
+    let host = env::var("HOST").expect("Cargo build scripts always have HOST");
+    let target_os = target.split("-").nth(2).unwrap();
+    let mut bindings = bindgen::Builder::default();
 
-    if !build_pkgconfig() {
-        if cfg!(feature="use_mac_framework") && target_os == "darwin" {
-            println!("cargo:rustc-flags=-l framework=SDL2");
-        } else {
-            println!("cargo:rustc-flags=-l SDL2");
+    // Set correct target triple when cross-compiling
+    if target != host {
+        bindings = bindings.clang_arg("-target");
+        bindings = bindings.clang_arg(target.clone());
+    }
+
+    if let Ok(include_path) = env::var("SDL2_INCLUDE_PATH") {
+        bindings = bindings.clang_arg(String::from("-I") + &include_path);
+        add_explicit_linker_flags(target_os);
+    } else if build_pkgconfig() {
+        #[cfg(feature = "pkg-config")]
+        for path in &pkg_config::find_library("sdl2").unwrap().include_paths {
+            bindings = bindings.clang_arg(String::from("-I") +
+                                          &path.clone().into_os_string().into_string().unwrap());
         }
+    } else {
+        let mut include_path: PathBuf = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
+        include_path.push(String::from("SDL2-") + SDL2_BUNDLED_VERSION);
+        include_path.push("include");
+        bindings = bindings.clang_arg(String::from("-I") +
+                                      &include_path.into_os_string().into_string().unwrap());
+        add_explicit_linker_flags(target_os);
     }
 
     if target_os == "ios" {
@@ -25,17 +49,40 @@ fn main() {
         println!("cargo:rustc-flags=-l framework=QuartzCore");
         println!("cargo:rustc-flags=-l framework=UIKit");
     }
+
+    let bindings = bindings
+        .header("wrapper.h")
+        .hide_type("_")
+        .hide_type("FP_NAN")
+        .hide_type("FP_INFINITE")
+        .hide_type("FP_ZERO")
+        .hide_type("FP_SUBNORMAL")
+        .hide_type("FP_NORMAL") // Until https://github.com/rust-lang-nursery/rust-bindgen/issues/687 gets fixed
+        .hide_type("max_align_t") // Until https://github.com/rust-lang-nursery/rust-bindgen/issues/550 gets fixed
+        .generate()
+        .expect("Unable to generate bindings!");
+
+    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+
+    bindings
+        .write_to_file(out_path.join("bindings.rs"))
+        .expect("Couldn't write bindings!");
 }
 
-#[cfg(not(feature="pkg-config"))]
+#[cfg(not(feature = "pkg-config"))]
 fn build_pkgconfig() -> bool {
     false
 }
 
-#[cfg(feature="pkg-config")]
+#[cfg(feature = "pkg-config")]
 fn build_pkgconfig() -> bool {
-    if pkg_config::find_library("sdl2").is_err() {
-        panic!("Could not find SDL2 via pkgconfig");
+    pkg_config::probe_library("sdl2").is_ok()
+}
+
+fn add_explicit_linker_flags(target_os: &str) {
+    if cfg!(feature = "use_mac_framework") && target_os == "darwin" {
+        println!("cargo:rustc-flags=-l framework=SDL2");
+    } else {
+        println!("cargo:rustc-flags=-l SDL2");
     }
-    true
 }

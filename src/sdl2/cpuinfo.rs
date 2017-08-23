@@ -1,55 +1,55 @@
-use sys::cpuinfo as ll;
+use sys;
 
 pub const CACHELINESIZE: u8 = 128;
 
 pub fn cpu_count() -> i32 {
-    unsafe { ll::SDL_GetCPUCount() }
+    unsafe { sys::SDL_GetCPUCount() }
 }
 
 pub fn cpu_cache_line_size() -> i32 {
-    unsafe { ll::SDL_GetCPUCacheLineSize() }
+    unsafe { sys::SDL_GetCPUCacheLineSize() }
 }
 
 pub fn has_rdtsc() -> bool {
-    unsafe { ll::SDL_HasRDTSC() == 1 }
+    unsafe { sys::SDL_HasRDTSC() == sys::SDL_bool::SDL_TRUE }
 }
 
 pub fn has_alti_vec() -> bool {
-    unsafe { ll::SDL_HasAltiVec() == 1 }
+    unsafe { sys::SDL_HasAltiVec() == sys::SDL_bool::SDL_TRUE }
 }
 
 pub fn has_mmx() -> bool {
-    unsafe { ll::SDL_HasMMX() == 1 }
+    unsafe { sys::SDL_HasMMX() == sys::SDL_bool::SDL_TRUE }
 }
 
 pub fn has_3d_now() -> bool {
-    unsafe { ll::SDL_Has3DNow() == 1 }
+    unsafe { sys::SDL_Has3DNow() == sys::SDL_bool::SDL_TRUE }
 }
 
 pub fn has_sse() -> bool {
-    unsafe { ll::SDL_HasSSE() == 1 }
+    unsafe { sys::SDL_HasSSE() == sys::SDL_bool::SDL_TRUE }
 }
 
 pub fn has_sse2() -> bool {
-    unsafe { ll::SDL_HasSSE2() == 1 }
+    unsafe { sys::SDL_HasSSE2() == sys::SDL_bool::SDL_TRUE }
 }
 
 pub fn has_sse3() -> bool {
-    unsafe { ll::SDL_HasSSE3() == 1 }
+    unsafe { sys::SDL_HasSSE3() == sys::SDL_bool::SDL_TRUE }
 }
 
 pub fn has_sse41() -> bool {
-    unsafe { ll::SDL_HasSSE41() == 1 }
+    unsafe { sys::SDL_HasSSE41() == sys::SDL_bool::SDL_TRUE }
 }
 
 pub fn has_sse42() -> bool {
-    unsafe { ll::SDL_HasSSE42() == 1 }
+    unsafe { sys::SDL_HasSSE42() == sys::SDL_bool::SDL_TRUE }
 }
 
 pub fn has_avx() -> bool {
-    unsafe { ll::SDL_HasAVX() == 1 }
+    unsafe { sys::SDL_HasAVX() == sys::SDL_bool::SDL_TRUE }
 }
 
 pub fn system_ram() -> i32 {
-    unsafe { ll::SDL_GetSystemRAM() }
+    unsafe { sys::SDL_GetSystemRAM() }
 }

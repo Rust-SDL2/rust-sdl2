@@ -1,5 +1,5 @@
 use std::ffi::{CString, CStr};
-use sys::hint as ll;
+use sys;
 use libc::c_char;
 
 const VIDEO_MINIMIZE_ON_FOCUS_LOST: &'static str = "SDL_VIDEO_MINIMIZE_ON_FOCUS_LOST";
@@ -36,15 +36,15 @@ pub fn set_video_minimize_on_focus_lost(value: bool) -> bool {
 ///
 /// # Example
 /// ```rust,no_run
-/// sdl2::hint::set_video_minimize_on_focus_lost_with_priority(false, sdl2::hint::Hint::Override);
+/// sdl2::hint::set_video_minimize_on_focus_lost_with_priority(false, &sdl2::hint::Hint::Override);
 /// ```
 ///
 /// * `value`: `true` to enable minimizing of the Window if it loses key focus when in fullscreen mode,
 ///            `false` to disable this feature.
 /// * `priority`: The priority controls the behavior when setting a hint that already has a value.
 ///               Hints will replace existing hints of their priority and lower.
-///               Environment variables are considered to have override priority. 
-pub fn set_video_minimize_on_focus_lost_with_priority(value: bool, priority: Hint) -> bool {
+///               Environment variables are considered to have override priority.
+pub fn set_video_minimize_on_focus_lost_with_priority(value: bool, priority: &Hint) -> bool {
     set_with_priority(VIDEO_MINIMIZE_ON_FOCUS_LOST, if value { "1" } else { "0" }, priority)
 }
 
@@ -77,7 +77,7 @@ pub fn set(name: &str, value: &str) -> bool{
     let name = CString::new(name).unwrap();
     let value = CString::new(value).unwrap();
     unsafe {
-        ll::SDL_SetHint(name.as_ptr() as *const c_char, value.as_ptr() as *const c_char) == 1
+        sys::SDL_SetHint(name.as_ptr() as *const c_char, value.as_ptr() as *const c_char) == sys::SDL_bool::SDL_TRUE
     }
 }
 
@@ -87,7 +87,7 @@ pub fn get(name: &str) -> Option<String> {
     let name = CString::new(name).unwrap();
 
     unsafe {
-        let res = ll::SDL_GetHint(name.as_ptr() as *const c_char);
+        let res = sys::SDL_GetHint(name.as_ptr() as *const c_char);
 
         if res.is_null() {
             None
@@ -97,17 +97,17 @@ pub fn get(name: &str) -> Option<String> {
     }
 }
 
-pub fn set_with_priority(name: &str, value: &str, priority: Hint) -> bool {
+pub fn set_with_priority(name: &str, value: &str, priority: &Hint) -> bool {
     let name = CString::new(name).unwrap();
     let value = CString::new(value).unwrap();
 
-    let priority_val = match priority {
-        Hint::Normal => ll::SDL_HintPriority::SDL_HINT_NORMAL,
-        Hint::Override => ll::SDL_HintPriority::SDL_HINT_OVERRIDE,
-        Hint::Default => ll::SDL_HintPriority::SDL_HINT_DEFAULT
+    let priority_val = match *priority {
+        Hint::Normal => sys::SDL_HintPriority::SDL_HINT_NORMAL,
+        Hint::Override => sys::SDL_HintPriority::SDL_HINT_OVERRIDE,
+        Hint::Default => sys::SDL_HintPriority::SDL_HINT_DEFAULT
     };
 
     unsafe {
-        ll::SDL_SetHintWithPriority(name.as_ptr() as *const c_char, value.as_ptr() as *const c_char, priority_val) == 1
+        sys::SDL_SetHintWithPriority(name.as_ptr() as *const c_char, value.as_ptr() as *const c_char, priority_val) == sys::SDL_bool::SDL_TRUE
     }
 }

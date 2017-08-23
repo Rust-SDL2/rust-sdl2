@@ -4,15 +4,15 @@ use std::fmt;
 use get_error;
 use libc::c_char;
 
-use sys::filesystem as ll;
+use sys;
 
 pub fn base_path() -> Result<String, String> {
     let result = unsafe {
-        let buf = ll::SDL_GetBasePath();
+        let buf = sys::SDL_GetBasePath();
         CStr::from_ptr(buf as *const _).to_str().unwrap().to_owned()
     };
 
-    if result.len() == 0 {
+    if result.is_empty() {
         Err(get_error())
     } else {
         Ok(result)
@@ -65,11 +65,11 @@ pub fn pref_path(org_name: &str, app_name: &str)
             Ok(s) =>s,
             Err(err) => return Err(InvalidApplicationName(err)),
         };
-        let buf = ll::SDL_GetPrefPath(org.as_ptr() as *const c_char, app.as_ptr() as *const c_char);
+        let buf = sys::SDL_GetPrefPath(org.as_ptr() as *const c_char, app.as_ptr() as *const c_char);
         CStr::from_ptr(buf as *const _).to_str().unwrap().to_owned()
     };
 
-    if result.len() == 0 {
+    if result.is_empty() {
         Err(SdlError(get_error()))
     } else {
         Ok(result)
