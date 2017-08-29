@@ -232,6 +232,10 @@ impl<T> RendererContext<T> {
             Err(SdlError(get_error()))
         }
     }
+
+    unsafe fn get_raw_target(&self) -> *mut ll::SDL_Texture {
+        ll::SDL_GetRenderTarget(self.raw)
+    }
 }
 
 impl<T: RenderTarget> Deref for Canvas<T> {
@@ -484,10 +488,11 @@ impl<T: RenderTarget> Canvas<T> {
     pub fn with_texture_canvas<F>(&mut self, texture: &mut Texture, f: F)
         -> Result<(), TargetRenderError> where for<'r> F: FnOnce(&'r mut Canvas<T>,) {
         if self.render_target_supported() {
+            let target = unsafe { self.get_raw_target() };
             unsafe { self.set_raw_target(texture.raw) }
                 .map_err(|e| TargetRenderError::SdlError(e))?;
             f(self);
-            unsafe { self.set_raw_target(ptr::null_mut()) }
+            unsafe { self.set_raw_target(target) }
                 .map_err(|e| TargetRenderError::SdlError(e))?;
             Ok(())
         } else {
@@ -555,13 +560,14 @@ impl<T: RenderTarget> Canvas<T> {
         -> Result<(), TargetRenderError>
         where for<'r> F: FnMut(&'r mut Canvas<T>, &U), I: Iterator<Item=&'s (&'a mut Texture<'t>, U)> {
         if self.render_target_supported() {
+            let target = unsafe { self.get_raw_target() };
             for &(ref texture, ref user_context) in textures {
                 unsafe { self.set_raw_target(texture.raw) }
                     .map_err(|e| TargetRenderError::SdlError(e))?;
                 f(self, &user_context);
             }
             // reset the target to its source
-            unsafe { self.set_raw_target(ptr::null_mut()) }
+            unsafe { self.set_raw_target(target) }
                 .map_err(|e| TargetRenderError::SdlError(e))?;
             Ok(())
         } else {
