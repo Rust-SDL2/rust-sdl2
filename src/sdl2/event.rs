@@ -1248,42 +1248,42 @@ impl Event {
     }
 
     fn from_ll(raw: sys::SDL_Event) -> Event {
-        let raw_type = *unsafe { raw.type_.as_ref() };
+        let raw_type = unsafe { raw.type_ };
 
         // if event type has not been defined, treat it as a UserEvent
         let event_type: EventType = FromPrimitive::from_usize(raw_type as usize).unwrap_or(EventType::User);
         unsafe { match event_type {
             EventType::Quit => {
-                let event = raw.quit.as_ref();
+                let event = raw.quit;
                 Event::Quit { timestamp: event.timestamp }
             }
             EventType::AppTerminating => {
-                let event = raw.common.as_ref();
+                let event = raw.common;
                 Event::AppTerminating { timestamp: event.timestamp }
             }
             EventType::AppLowMemory => {
-                let event = raw.common.as_ref();
+                let event = raw.common;
                 Event::AppLowMemory { timestamp: event.timestamp }
             }
             EventType::AppWillEnterBackground => {
-                let event = raw.common.as_ref();
+                let event = raw.common;
                 Event::AppWillEnterBackground { timestamp: event.timestamp }
             }
             EventType::AppDidEnterBackground => {
-                let event = raw.common.as_ref();
+                let event = raw.common;
                 Event::AppDidEnterBackground { timestamp: event.timestamp }
             }
             EventType::AppWillEnterForeground => {
-                let event = raw.common.as_ref();
+                let event = raw.common;
                 Event::AppWillEnterForeground { timestamp: event.timestamp }
             }
             EventType::AppDidEnterForeground => {
-                let event = raw.common.as_ref();
+                let event = raw.common;
                 Event::AppDidEnterForeground { timestamp: event.timestamp }
             }
 
             EventType::Window => {
-                let event = raw.window.as_ref();
+                let event = raw.window;
 
                 Event::Window {
                     timestamp: event.timestamp,
@@ -1294,7 +1294,7 @@ impl Event {
             // TODO: SysWMEventType
 
             EventType::KeyDown => {
-                let event = raw.key.as_ref();
+                let event = raw.key;
                 Event::KeyDown {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
@@ -1305,7 +1305,7 @@ impl Event {
                 }
             }
             EventType::KeyUp => {
-                let event = raw.key.as_ref();
+                let event = raw.key;
 
                 Event::KeyUp {
                     timestamp: event.timestamp,
@@ -1317,7 +1317,7 @@ impl Event {
                 }
             }
             EventType::TextEditing => {
-                let event = raw.edit.as_ref();
+                let event = raw.edit;
 
                 let text = String::from_utf8(
                     event.text.iter()
@@ -1334,7 +1334,7 @@ impl Event {
                 }
             }
             EventType::TextInput => {
-                let event = raw.text.as_ref();
+                let event = raw.text;
 
                 let text = String::from_utf8(
                         event.text.iter()
@@ -1350,7 +1350,7 @@ impl Event {
             }
 
             EventType::MouseMotion => {
-                let event = raw.motion.as_ref();
+                let event = raw.motion;
 
                 Event::MouseMotion {
                     timestamp: event.timestamp,
@@ -1364,7 +1364,7 @@ impl Event {
                 }
             }
             EventType::MouseButtonDown => {
-                let event = raw.button.as_ref();
+                let event = raw.button;
 
                 Event::MouseButtonDown {
                     timestamp: event.timestamp,
@@ -1377,7 +1377,7 @@ impl Event {
                 }
             }
             EventType::MouseButtonUp => {
-                let event = raw.button.as_ref();
+                let event = raw.button;
 
                 Event::MouseButtonUp {
                     timestamp: event.timestamp,
@@ -1390,7 +1390,7 @@ impl Event {
                 }
             }
             EventType::MouseWheel => {
-                let event = raw.wheel.as_ref();
+                let event = raw.wheel;
 
                 Event::MouseWheel {
                     timestamp: event.timestamp,
@@ -1403,7 +1403,7 @@ impl Event {
             }
 
             EventType::JoyAxisMotion => {
-                let event = raw.jaxis.as_ref();
+                let event = raw.jaxis;
                 Event::JoyAxisMotion {
                     timestamp: event.timestamp,
                     which: event.which,
@@ -1412,7 +1412,7 @@ impl Event {
                 }
             }
             EventType::JoyBallMotion => {
-                let event = raw.jball.as_ref();
+                let event = raw.jball;
                 Event::JoyBallMotion {
                     timestamp: event.timestamp,
                     which: event.which,
@@ -1422,7 +1422,7 @@ impl Event {
                 }
             }
             EventType::JoyHatMotion => {
-                let event = raw.jhat.as_ref();
+                let event = raw.jhat;
                 Event::JoyHatMotion {
                     timestamp: event.timestamp,
                     which: event.which,
@@ -1431,7 +1431,7 @@ impl Event {
                 }
             }
             EventType::JoyButtonDown => {
-                let event = raw.jbutton.as_ref();
+                let event = raw.jbutton;
                 Event::JoyButtonDown {
                     timestamp: event.timestamp,
                     which: event.which,
@@ -1439,7 +1439,7 @@ impl Event {
                 }
             }
             EventType::JoyButtonUp => {
-                let event = raw.jbutton.as_ref();
+                let event = raw.jbutton;
                 Event::JoyButtonUp {
                     timestamp: event.timestamp,
                     which: event.which,
@@ -1447,14 +1447,14 @@ impl Event {
                 }
             }
             EventType::JoyDeviceAdded => {
-                let event = raw.jdevice.as_ref();
+                let event = raw.jdevice;
                 Event::JoyDeviceAdded {
                     timestamp: event.timestamp,
                     which: event.which
                 }
             }
             EventType::JoyDeviceRemoved => {
-                let event = raw.jdevice.as_ref();
+                let event = raw.jdevice;
                 Event::JoyDeviceRemoved {
                     timestamp: event.timestamp,
                     which: event.which
@@ -1462,7 +1462,7 @@ impl Event {
             }
 
             EventType::ControllerAxisMotion => {
-                let event = raw.caxis.as_ref();
+                let event = raw.caxis;
                 let axis = controller::Axis::from_ll(transmute(event.axis as i32)).unwrap();
 
                 Event::ControllerAxisMotion {
@@ -1473,7 +1473,7 @@ impl Event {
                 }
             }
             EventType::ControllerButtonDown => {
-                let event = raw.cbutton.as_ref();
+                let event = raw.cbutton;
                 let button = controller::Button::from_ll(transmute(event.button as i32)).unwrap();
 
                 Event::ControllerButtonDown {
@@ -1483,7 +1483,7 @@ impl Event {
                 }
             }
             EventType::ControllerButtonUp => {
-                let event = raw.cbutton.as_ref();
+                let event = raw.cbutton;
                 let button = controller::Button::from_ll(transmute(event.button as i32)).unwrap();
 
                 Event::ControllerButtonUp {
@@ -1493,21 +1493,21 @@ impl Event {
                 }
             }
             EventType::ControllerDeviceAdded => {
-                let event = raw.cdevice.as_ref();
+                let event = raw.cdevice;
                 Event::ControllerDeviceAdded {
                     timestamp: event.timestamp,
                     which: event.which
                 }
             }
             EventType::ControllerDeviceRemoved => {
-                let event = raw.cdevice.as_ref();
+                let event = raw.cdevice;
                 Event::ControllerDeviceRemoved {
                     timestamp: event.timestamp,
                     which: event.which
                 }
             }
             EventType::ControllerDeviceRemapped => {
-                let event = raw.cdevice.as_ref();
+                let event = raw.cdevice;
                 Event::ControllerDeviceRemapped {
                     timestamp: event.timestamp,
                     which: event.which
@@ -1515,7 +1515,7 @@ impl Event {
             }
 
             EventType::FingerDown => {
-                let event = raw.tfinger.as_ref();
+                let event = raw.tfinger;
                 Event::FingerDown {
                     timestamp: event.timestamp,
                     touch_id: event.touchId,
@@ -1528,7 +1528,7 @@ impl Event {
                 }
             }
             EventType::FingerUp => {
-                let event = raw.tfinger.as_ref();
+                let event = raw.tfinger;
                 Event::FingerUp {
                     timestamp: event.timestamp,
                     touch_id: event.touchId,
@@ -1541,7 +1541,7 @@ impl Event {
                 }
             }
             EventType::FingerMotion => {
-                let event = raw.tfinger.as_ref();
+                let event = raw.tfinger;
                 Event::FingerMotion {
                     timestamp: event.timestamp,
                     touch_id: event.touchId,
@@ -1554,7 +1554,7 @@ impl Event {
                 }
             }
             EventType::DollarGesture => {
-                let event = raw.dgesture.as_ref();
+                let event = raw.dgesture;
                 Event::DollarGesture {
                     timestamp: event.timestamp,
                     touch_id: event.touchId,
@@ -1566,7 +1566,7 @@ impl Event {
                 }
             }
             EventType::DollarRecord => {
-                let event = raw.dgesture.as_ref();
+                let event = raw.dgesture;
                 Event::DollarRecord {
                     timestamp: event.timestamp,
                     touch_id: event.touchId,
@@ -1578,7 +1578,7 @@ impl Event {
                 }
             }
             EventType::MultiGesture => {
-                let event = raw.mgesture.as_ref();
+                let event = raw.mgesture;
                 Event::MultiGesture {
                     timestamp: event.timestamp,
                     touch_id: event.touchId,
@@ -1591,13 +1591,13 @@ impl Event {
             }
 
             EventType::ClipboardUpdate => {
-                let event = raw.common.as_ref();
+                let event = raw.common;
                 Event::ClipboardUpdate {
                     timestamp: event.timestamp
                 }
             }
             EventType::DropFile => {
-                let event = raw.drop.as_ref();
+                let event = raw.drop;
 
                 let buf = CStr::from_ptr(event.file as *const _).to_bytes();
                 let text = String::from_utf8_lossy(buf).to_string();
@@ -1618,14 +1618,14 @@ impl Event {
                 if raw_type < 32_768 {
                     // The type is unknown to us.
                     // It's a newer SDL2 type.
-                    let event = *raw.common.as_ref();
+                    let event = raw.common;
 
                     Event::Unknown {
                         timestamp: event.timestamp,
                         type_: event.type_
                     }
                 } else {
-                    let event = *raw.user.as_ref();
+                    let event = raw.user;
 
                     Event::User {
                         timestamp: event.timestamp,
