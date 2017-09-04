@@ -346,7 +346,7 @@ impl GameController {
     }
 
     /// Return the joystick id of this controller
-    pub fn instance_id(&self) -> i32 {
+    pub fn instance_id(&self) -> Result<i32, String> {
         let result = unsafe {
           let joystick = ll::SDL_GameControllerGetJoystick(self.raw);
           ::sys::joystick::SDL_JoystickInstanceID(joystick)
@@ -354,9 +354,9 @@ impl GameController {
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
-            panic!(get_error())
+            bail!(get_error())
         } else {
-            result
+            Ok(result)
         }
     }
 
