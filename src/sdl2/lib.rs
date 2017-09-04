@@ -11,6 +11,9 @@ extern crate lazy_static;
 extern crate bitflags;
 pub extern crate sdl2_sys as sys;
 
+#[macro_use]
+extern crate error_chain;
+
 #[cfg(feature = "gfx")]
 extern crate c_vec;
 
