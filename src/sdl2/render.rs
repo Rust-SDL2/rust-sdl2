@@ -366,11 +366,11 @@ impl<'s> Canvas<Surface<'s>> {
     ///
     /// The target (i.e., `Window`) will not be destroyed and the SDL_Renderer will not be
     /// destroyed if the `TextureCreator` is still in scope.
-    pub fn texture_creator(&self) -> TextureCreator<SurfaceContext<'s>> {
-        TextureCreator {
+    pub fn texture_creator(&self) -> Result<TextureCreator<SurfaceContext<'s>>, String> {
+        Ok(TextureCreator {
             context: self.context.clone(),
-            default_pixel_format: self.surface().pixel_format_enum(),
-        }
+            default_pixel_format: self.surface().pixel_format_enum()?,
+        })
     }
 }
 

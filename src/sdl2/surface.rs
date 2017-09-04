@@ -254,8 +254,8 @@ impl SurfaceRef {
         }
     }
 
-    pub fn pixel_format_enum(&self) -> pixels::PixelFormatEnum {
-        pixels::PixelFormatEnum::from(self.pixel_format())
+    pub fn pixel_format_enum(&self) -> Result<pixels::PixelFormatEnum, String> {
+        pixels::PixelFormatEnum::try_from(self.pixel_format())
     }
 
     /// Locks a surface so that the pixels can be directly accessed safely.

@@ -350,23 +350,22 @@ impl PixelFormatEnum {
             _ => false
         }
     }
+
+    pub fn try_from(pf: PixelFormat) -> Result<Self, String> {
+        unsafe {
+            let ref sdl_pf = *pf.raw;
+            match PixelFormatEnum::from_u64(sdl_pf.format as u64) {
+                Some(pfe) => Ok(pfe),
+                None => bail!("Unknown pixel format: {:?}", sdl_pf.format)
+            }
+        }
+    }
+
 }
 
 impl Into<ll::SDL_PixelFormatEnum> for PixelFormatEnum {
     fn into(self) -> ll::SDL_PixelFormatEnum {
         self as libc::uint32_t
-    }
-}
-
-impl From<PixelFormat> for PixelFormatEnum {
-    fn from(pf: PixelFormat) -> PixelFormatEnum {
-        unsafe {
-            let ref sdl_pf = *pf.raw;
-            match PixelFormatEnum::from_u64(sdl_pf.format as u64) {
-                Some(pfe) => pfe,
-                None => panic!("Unknown pixel format: {:?}", sdl_pf.format)
-            }
-        }
     }
 }
 
