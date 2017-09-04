@@ -201,14 +201,14 @@ impl<T> Drop for RendererContext<T> {
 
 impl<T> RendererContext<T> {
     /// Gets information about the rendering context.
-    pub fn info(&self) -> RendererInfo {
+    pub fn info(&self) -> Result<RendererInfo, String> {
         unsafe {
             let mut renderer_info_raw = mem::uninitialized();
             if ll::SDL_GetRendererInfo(self.raw, &mut renderer_info_raw) != 0 {
                 // Should only fail on an invalid renderer
-                panic!();
+                bail!("Invalid renderer");
             } else {
-                RendererInfo::from_ll(&renderer_info_raw)
+                Ok(RendererInfo::from_ll(&renderer_info_raw))
             }
         }
     }
@@ -849,58 +849,61 @@ impl<T: RenderTarget> Canvas<T> {
     }
 
     /// Sets the color used for drawing operations (Rect, Line and Clear).
-    pub fn set_draw_color(&mut self, color: pixels::Color) {
+    pub fn set_draw_color(&mut self, color: pixels::Color) -> Result<(), String> {
         let (r, g, b, a) = color.rgba();
         let ret = unsafe { ll::SDL_SetRenderDrawColor(self.raw, r, g, b, a) };
         // Should only fail on an invalid renderer
         if ret != 0 {
-            panic!(get_error())
+            bail!(get_error())
         }
+        Ok(())
     }
 
     /// Gets the color used for drawing operations (Rect, Line and Clear).
-    pub fn draw_color(&self) -> pixels::Color {
+    pub fn draw_color(&self) -> Result<pixels::Color, String> {
         let (mut r, mut g, mut b, mut a) = (0, 0, 0, 0);
         let ret =
             unsafe { ll::SDL_GetRenderDrawColor(self.context.raw, &mut r, &mut g, &mut b, &mut a) };
         // Should only fail on an invalid renderer
         if ret != 0 {
-            panic!(get_error())
+            bail!(get_error())
         } else {
-            pixels::Color::RGBA(r, g, b, a)
+            Ok(pixels::Color::RGBA(r, g, b, a))
         }
     }
 
     /// Sets the blend mode used for drawing operations (Fill and Line).
-    pub fn set_blend_mode(&mut self, blend: BlendMode) {
+    pub fn set_blend_mode(&mut self, blend: BlendMode) -> Result<(), String> {
         let ret = unsafe {
             ll::SDL_SetRenderDrawBlendMode(self.context.raw,
                                            FromPrimitive::from_i64(blend as i64).unwrap())
         };
         // Should only fail on an invalid renderer
         if ret != 0 {
-            panic!(get_error())
+            bail!(get_error())
         }
+        Ok(())
     }
 
     /// Gets the blend mode used for drawing operations.
-    pub fn blend_mode(&self) -> BlendMode {
+    pub fn blend_mode(&self) -> Result<BlendMode, String> {
         let mut blend = 0;
         let ret = unsafe { ll::SDL_GetRenderDrawBlendMode(self.context.raw, &mut blend) };
         // Should only fail on an invalid renderer
         if ret != 0 {
-            panic!(get_error())
+            bail!(get_error())
         } else {
-            FromPrimitive::from_i64(blend as i64).unwrap()
+            FromPrimitive::from_i64(blend as i64).ok_or_else(||"blend mode".to_string())
         }
     }
 
     /// Clears the current rendering target with the drawing color.
-    pub fn clear(&mut self) {
+    pub fn clear(&mut self) -> Result<(), String> {
         let ret = unsafe { ll::SDL_RenderClear(self.context.raw) };
         if ret != 0 {
-            panic!("Could not clear: {}", get_error())
+            bail!("Could not clear: {}", get_error())
         }
+        Ok(())
     }
 
     /// Updates the screen with any rendering performed since the previous call.
@@ -952,15 +955,16 @@ impl<T: RenderTarget> Canvas<T> {
     }
 
     /// Sets the drawing area for rendering on the current target.
-    pub fn set_viewport<R: Into<Option<Rect>>>(&mut self, rect: R) {
+    pub fn set_viewport<R: Into<Option<Rect>>>(&mut self, rect: R) -> Result<(), String> {
         let ptr = match rect.into() {
             Some(ref rect) => rect.raw(),
             None => ptr::null(),
         };
         let ret = unsafe { ll::SDL_RenderSetViewport(self.context.raw, ptr) };
         if ret != 0 {
-            panic!("Could not set viewport: {}", get_error())
+            bail!("Could not set viewport: {}", get_error())
         }
+        Ok(())
     }
 
     /// Gets the drawing area for the current target.
@@ -973,7 +977,7 @@ impl<T: RenderTarget> Canvas<T> {
     /// Sets the clip rectangle for rendering on the specified target.
     ///
     /// If the rectangle is `None`, clipping will be disabled.
-    pub fn set_clip_rect<R: Into<Option<Rect>>>(&mut self, rect: R) {
+    pub fn set_clip_rect<R: Into<Option<Rect>>>(&mut self, rect: R) -> Result<(), String> {
         let ret = unsafe {
             ll::SDL_RenderSetClipRect(self.context.raw,
                                       match rect.into() {
@@ -982,8 +986,9 @@ impl<T: RenderTarget> Canvas<T> {
                                       })
         };
         if ret != 0 {
-            panic!("Could not set clip rect: {}", get_error())
+            bail!("Could not set clip rect: {}", get_error())
         }
+        Ok(())
     }
 
     /// Gets the clip rectangle for the current target.
@@ -1430,7 +1435,7 @@ impl Error for UpdateTextureYUVError {
 
 impl<'r> Texture<'r> {
     /// Queries the attributes of the texture.
-    pub fn query(&self) -> TextureQuery {
+    pub fn query(&self) -> Result<TextureQuery, String> {
         let mut format = 0;
         let mut access = 0;
         let mut width = 0;
@@ -1441,78 +1446,81 @@ impl<'r> Texture<'r> {
         };
         // Should only fail on an invalid texture
         if ret != 0 {
-            panic!(get_error())
+            bail!(get_error())
         } else {
-            TextureQuery {
+            Ok(TextureQuery {
                 format: FromPrimitive::from_i64(format as i64).unwrap(),
                 access: FromPrimitive::from_i64(access as i64).unwrap(),
                 width: width as u32,
                 height: height as u32,
-            }
+            })
         }
     }
 
     /// Sets an additional color value multiplied into render copy operations.
-    pub fn set_color_mod(&mut self, red: u8, green: u8, blue: u8) {
+    pub fn set_color_mod(&mut self, red: u8, green: u8, blue: u8) -> Result<(), String> {
         let ret = unsafe { ll::SDL_SetTextureColorMod(self.raw, red, green, blue) };
 
         if ret != 0 {
-            panic!("Error setting color mod: {}", get_error())
+            bail!("Error setting color mod: {}", get_error())
         }
+        Ok(())
     }
 
     /// Gets the additional color value multiplied into render copy operations.
-    pub fn color_mod(&self) -> (u8, u8, u8) {
+    pub fn color_mod(&self) -> Result<(u8, u8, u8), String> {
         let (mut r, mut g, mut b) = (0, 0, 0);
         let ret = unsafe { ll::SDL_GetTextureColorMod(self.raw, &mut r, &mut g, &mut b) };
 
         // Should only fail on an invalid texture
         if ret != 0 {
-            panic!(get_error())
+            bail!(get_error())
         } else {
-            (r, g, b)
+            Ok((r, g, b))
         }
     }
 
     /// Sets an additional alpha value multiplied into render copy operations.
-    pub fn set_alpha_mod(&mut self, alpha: u8) {
+    pub fn set_alpha_mod(&mut self, alpha: u8) -> Result<(), String>{
         let ret = unsafe { ll::SDL_SetTextureAlphaMod(self.raw, alpha) };
 
         if ret != 0 {
-            panic!("Error setting alpha mod: {}", get_error())
+            bail!("Error setting alpha mod: {}", get_error())
         }
+        Ok(())
     }
 
     /// Gets the additional alpha value multiplied into render copy operations.
-    pub fn alpha_mod(&self) -> u8 {
+    pub fn alpha_mod(&self) -> Result<u8, String> {
         let mut alpha = 0;
         let ret = unsafe { ll::SDL_GetTextureAlphaMod(self.raw, &mut alpha) };
 
         // Should only fail on an invalid texture
-        if ret != 0 { panic!(get_error()) } else { alpha }
+        if ret != 0 { bail!(get_error()) } else { Ok(alpha) }
     }
 
     /// Sets the blend mode for a texture, used by `Renderer::copy()`.
-    pub fn set_blend_mode(&mut self, blend: BlendMode) {
+    pub fn set_blend_mode(&mut self, blend: BlendMode) -> Result<(), String> {
         let ret = unsafe {
             ll::SDL_SetTextureBlendMode(self.raw, FromPrimitive::from_i64(blend as i64).unwrap())
         };
 
         if ret != 0 {
-            panic!("Error setting blend: {}", get_error())
+            bail!("Error setting blend: {}", get_error())
         }
+        Ok(())
     }
 
     /// Gets the blend mode used for texture copy operations.
-    pub fn blend_mode(&self) -> BlendMode {
+    pub fn blend_mode(&self) -> Result<BlendMode, String> {
         let mut blend = 0;
         let ret = unsafe { ll::SDL_GetTextureBlendMode(self.raw, &mut blend) };
 
         // Should only fail on an invalid texture
         if ret != 0 {
-            panic!(get_error())
+            bail!(get_error())
         } else {
-            FromPrimitive::from_i64(blend as i64).unwrap()
+            FromPrimitive::from_i64(blend as i64).ok_or_else(||"blend mode".to_string())
         }
     }
 
@@ -1539,7 +1547,7 @@ impl<'r> Texture<'r> {
         // Check if the rectangle's position or size is odd, and if the pitch is odd.
         // This needs to be done in case the texture's pixel format is planar YUV.
         // See issue #334 for details.
-        let TextureQuery { format, .. } = self.query();
+        let TextureQuery { format, .. } = self.query().unwrap();
         match format {
             PixelFormatEnum::YV12 |
             PixelFormatEnum::IYUV => {
@@ -1621,7 +1629,7 @@ impl<'r> Texture<'r> {
 
         // If the destination rectangle lies outside the texture boundaries,
         // SDL_UpdateYUVTexture will write outside allocated texture memory.
-        let tex_info = self.query();
+        let tex_info = self.query().unwrap();
         if let Some(ref r) = rect {
             let tex_rect = Rect::new(0, 0, tex_info.width, tex_info.height);
             let inside = match r.intersection(tex_rect) {
@@ -1728,7 +1736,7 @@ impl<'r> Texture<'r> {
     {
         // Call to SDL to populate pixel data
         let loaded = unsafe {
-            let q = self.query();
+            let q = self.query()?;
             let mut pixels = ptr::null_mut();
             let mut pitch = 0;
 
@@ -1762,26 +1770,27 @@ impl<'r> Texture<'r> {
 
     /// Binds an OpenGL/ES/ES2 texture to the current
     /// context for use with when rendering OpenGL primitives directly.
-    pub unsafe fn gl_bind_texture(&mut self) -> (f32, f32) {
+    pub unsafe fn gl_bind_texture(&mut self) -> Result<(f32, f32), String> {
         let mut texw = 0.0;
         let mut texh = 0.0;
 
         if ll::SDL_GL_BindTexture(self.raw, &mut texw, &mut texh) == 0 {
-            (texw, texh)
+            Ok((texw, texh))
         } else {
-            panic!("OpenGL texture binding not supported");
+            bail!("OpenGL texture binding not supported");
         }
     }
 
     /// Unbinds an OpenGL/ES/ES2 texture from the current context.
-    pub unsafe fn gl_unbind_texture(&mut self) {
+    pub unsafe fn gl_unbind_texture(&mut self) -> Result<(), String> {
         if ll::SDL_GL_UnbindTexture(self.raw) != 0 {
-            panic!("OpenGL texture unbinding not supported");
+            bail!("OpenGL texture unbinding not supported");
         }
+        Ok(())
     }
 
     /// Binds and unbinds an OpenGL/ES/ES2 texture from the current context.
-    pub fn gl_with_bind<R, F: FnOnce(f32, f32) -> R>(&mut self, f: F) -> R {
+    pub fn gl_with_bind<R, F: FnOnce(f32, f32) -> R>(&mut self, f: F) -> Result<R, String> {
         unsafe {
             let mut texw = 0.0;
             let mut texh = 0.0;
@@ -1790,13 +1799,13 @@ impl<'r> Texture<'r> {
                 let return_value = f(texw, texh);
 
                 if ll::SDL_GL_UnbindTexture(self.raw) == 0 {
-                    return_value
+                    Ok(return_value)
                 } else {
                     // This should never happen...
-                    panic!();
+                    bail!("gl_with_bind: the impossible happened");
                 }
             } else {
-                panic!("OpenGL texture binding not supported");
+                bail!("OpenGL texture binding not supported");
             }
         }
     }
