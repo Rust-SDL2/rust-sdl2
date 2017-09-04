@@ -131,13 +131,13 @@ impl<'a> Surface<'a> {
     pub fn from_pixelmasks(width: u32, height: u32, masks: pixels::PixelMasks) -> Result<Surface<'static>, String> {
         unsafe {
             if width >= (1<<31) || height >= (1<<31) {
-                Err("Image is too large.".to_owned())
+                bail!("Image is too large.".to_owned())
             } else {
                 let raw = ll::SDL_CreateRGBSurface(0, width as c_int, height as c_int,
                     masks.bpp as c_int, masks.rmask, masks.gmask, masks.bmask, masks.amask);
 
                 if raw.is_null() {
-                    Err(get_error())
+                    bail!(get_error())
                 } else {
                     Ok(Surface::from_ll(raw))
                 }
@@ -155,16 +155,16 @@ impl<'a> Surface<'a> {
     pub fn from_data_pixelmasks(data: &'a mut [u8], width: u32, height: u32, pitch: u32, masks: pixels::PixelMasks) -> Result<Surface<'a>, String> {
         unsafe {
             if width >= (1<<31) || height >= (1<<31) {
-                Err("Image is too large.".to_owned())
+                bail!("Image is too large.".to_owned())
             } else if pitch >= (1<<31) {
-                Err("Pitch is too large.".to_owned())
+                bail!("Pitch is too large.".to_owned())
             } else {
                 let raw = ll::SDL_CreateRGBSurfaceFrom(
                     data.as_mut_ptr() as *mut _, width as c_int, height as c_int,
                     masks.bpp as c_int, pitch as c_int, masks.rmask, masks.gmask, masks.bmask, masks.amask);
 
                 if raw.is_null() {
-                    Err(get_error())
+                    bail!(get_error())
                 } else {
                     Ok(Surface::from_ll(raw))
                 }
@@ -178,7 +178,7 @@ impl<'a> Surface<'a> {
         };
 
         if raw.is_null() {
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok( unsafe{ Surface::from_ll(raw) } )
         }
@@ -327,7 +327,7 @@ impl SurfaceRef {
             ll::SDL_SaveBMP_RW(self.raw(), rwops.raw(), 0)
         };
         if ret == 0 { Ok(()) }
-        else { Err(get_error()) }
+        else { bail!(get_error()) }
     }
 
     pub fn save_bmp<P: AsRef<Path>>(&self, path: P) -> Result<(), String> {
@@ -340,7 +340,7 @@ impl SurfaceRef {
 
         match result {
             0 => Ok(()),
-            _ => Err(get_error())
+            _ => bail!(get_error())
         }
     }
 
@@ -389,7 +389,7 @@ impl SurfaceRef {
         if result == 0 {
             Ok(pixels::Color::from_u32(&self.pixel_format(), key))
         } else {
-            Err(get_error())
+            bail!(get_error())
         }
     }
 

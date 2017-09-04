@@ -26,14 +26,14 @@ impl Palette {
 
             match validate_int(capacity as u32, "capacity") {
                 Ok(len) => len,
-                Err(e) => return Err(format!("{}", e)),
+                Err(e) => bail!("{}", e),
             }
         };
 
         let raw = unsafe { ll::SDL_AllocPalette(ncolors) };
 
         if raw.is_null() {
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok(Palette {
                 raw: raw,
@@ -59,7 +59,7 @@ impl Palette {
         };
 
         if result < 0 {
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok(pal)
         }
@@ -240,7 +240,7 @@ impl PixelFormatEnum {
         };
         if result == 0 {
             // SDL_FALSE
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok(PixelMasks {
                 bpp: bpp as u8,
@@ -267,10 +267,10 @@ impl PixelFormatEnum {
         }
     }
 
-    pub fn byte_size_of_pixels(&self, num_of_pixels: usize) -> usize {
+    pub fn byte_size_of_pixels(&self, num_of_pixels: usize) -> Result<usize, String> {
         match *self {
             PixelFormatEnum::RGB332
-                => num_of_pixels,
+                => Ok(num_of_pixels),
             PixelFormatEnum::RGB444 | PixelFormatEnum::RGB555 |
             PixelFormatEnum::BGR555 | PixelFormatEnum::ARGB4444 |
             PixelFormatEnum::RGBA4444 | PixelFormatEnum::ABGR4444 |
@@ -278,36 +278,36 @@ impl PixelFormatEnum {
             PixelFormatEnum::RGBA5551 | PixelFormatEnum::ABGR1555 |
             PixelFormatEnum::BGRA5551 | PixelFormatEnum::RGB565 |
             PixelFormatEnum::BGR565
-                => num_of_pixels * 2,
+                => Ok(num_of_pixels * 2),
             PixelFormatEnum::RGB24 | PixelFormatEnum::BGR24
-                => num_of_pixels * 3,
+                => Ok(num_of_pixels * 3),
             PixelFormatEnum::RGB888 | PixelFormatEnum::RGBX8888 |
             PixelFormatEnum::BGR888 | PixelFormatEnum::BGRX8888 |
             PixelFormatEnum::ARGB8888 | PixelFormatEnum::RGBA8888 |
             PixelFormatEnum::ABGR8888 | PixelFormatEnum::BGRA8888 |
             PixelFormatEnum::ARGB2101010
-                => num_of_pixels * 4,
+                => Ok(num_of_pixels * 4),
             // YUV formats
             // FIXME: rounding error here?
             PixelFormatEnum::YV12 | PixelFormatEnum::IYUV
-                => num_of_pixels / 2 * 3,
+                => Ok(num_of_pixels / 2 * 3),
             PixelFormatEnum::YUY2 | PixelFormatEnum::UYVY |
             PixelFormatEnum::YVYU
-                => num_of_pixels * 2,
+                => Ok(num_of_pixels * 2),
             // Unsupported formats
             PixelFormatEnum::Index8
-                => num_of_pixels,
+                => Ok(num_of_pixels),
             PixelFormatEnum::Unknown | PixelFormatEnum::Index1LSB |
             PixelFormatEnum::Index1MSB | PixelFormatEnum::Index4LSB |
             PixelFormatEnum::Index4MSB
-                => panic!("not supported format: {:?}", *self),
+                => bail!("not supported format: {:?}", *self),
         }
     }
 
-    pub fn byte_size_per_pixel(&self) -> usize {
+    pub fn byte_size_per_pixel(&self) -> Result<usize, String> {
         match *self {
             PixelFormatEnum::RGB332
-                => 1,
+                => Ok(1),
             PixelFormatEnum::RGB444 | PixelFormatEnum::RGB555 |
             PixelFormatEnum::BGR555 | PixelFormatEnum::ARGB4444 |
             PixelFormatEnum::RGBA4444 | PixelFormatEnum::ABGR4444 |
@@ -315,28 +315,28 @@ impl PixelFormatEnum {
             PixelFormatEnum::RGBA5551 | PixelFormatEnum::ABGR1555 |
             PixelFormatEnum::BGRA5551 | PixelFormatEnum::RGB565 |
             PixelFormatEnum::BGR565
-                => 2,
+                => Ok(2),
             PixelFormatEnum::RGB24 | PixelFormatEnum::BGR24
-                => 3,
+                => Ok(3),
             PixelFormatEnum::RGB888 | PixelFormatEnum::RGBX8888 |
             PixelFormatEnum::BGR888 | PixelFormatEnum::BGRX8888 |
             PixelFormatEnum::ARGB8888 | PixelFormatEnum::RGBA8888 |
             PixelFormatEnum::ABGR8888 | PixelFormatEnum::BGRA8888 |
             PixelFormatEnum::ARGB2101010
-                => 4,
+                => Ok(4),
             // YUV formats
             PixelFormatEnum::YV12 | PixelFormatEnum::IYUV
-                => 2,
+                => Ok(2),
             PixelFormatEnum::YUY2 | PixelFormatEnum::UYVY |
             PixelFormatEnum::YVYU
-                => 2,
+                => Ok(2),
             // Unsupported formats
             PixelFormatEnum::Index8
-                => 1,
+                => Ok(1),
             PixelFormatEnum::Unknown | PixelFormatEnum::Index1LSB |
             PixelFormatEnum::Index1MSB | PixelFormatEnum::Index4LSB |
             PixelFormatEnum::Index4MSB
-                => panic!("not supported format: {:?}", *self),
+                => bail!("not supported format: {:?}", *self),
         }
     }
 

@@ -229,7 +229,7 @@ impl<T> RendererContext<T> {
         if ll::SDL_SetRenderTarget(self.raw, raw_texture) == 0 {
             Ok(())
         } else {
-            Err(SdlError(get_error()))
+            bail!(SdlError(get_error()))
         }
     }
 
@@ -338,7 +338,7 @@ impl<'s> Canvas<Surface<'s>> {
                    context: context,
                })
         } else {
-            Err(get_error())
+            bail!(get_error())
         }
     }
 
@@ -496,7 +496,7 @@ impl<T: RenderTarget> Canvas<T> {
                 .map_err(|e| TargetRenderError::SdlError(e))?;
             Ok(())
         } else {
-            Err(TargetRenderError::NotSupported)
+            bail!(TargetRenderError::NotSupported)
         }
     }
 
@@ -571,7 +571,7 @@ impl<T: RenderTarget> Canvas<T> {
                 .map_err(|e| TargetRenderError::SdlError(e))?;
             Ok(())
         } else {
-            Err(TargetRenderError::NotSupported)
+            bail!(TargetRenderError::NotSupported)
         }
     }
 }
@@ -627,7 +627,7 @@ impl CanvasBuilder {
         let raw = unsafe { ll::SDL_CreateRenderer(self.window.raw(), index, self.renderer_flags) };
 
         if raw.is_null() {
-            Err(SdlError(get_error()))
+            bail!(SdlError(get_error()))
         } else {
             let context = Rc::new(unsafe { RendererContext::from_ll(raw, self.window.context()) });
             Ok(Canvas {
@@ -746,11 +746,11 @@ impl<T> TextureCreator<T> {
         use self::TextureValueError::*;
         let w = match validate_int(width, "width") {
             Ok(w) => w,
-            Err(_) => return Err(WidthOverflows(width)),
+            Err(_) => bail!(WidthOverflows(width)),
         };
         let h = match validate_int(height, "height") {
             Ok(h) => h,
-            Err(_) => return Err(HeightOverflows(height)),
+            Err(_) => bail!(HeightOverflows(height)),
         };
         let format: PixelFormatEnum = format.into().unwrap_or(self.default_pixel_format);
 
@@ -760,7 +760,7 @@ impl<T> TextureCreator<T> {
             PixelFormatEnum::YV12 |
             PixelFormatEnum::IYUV => {
                 if w % 2 != 0 || h % 2 != 0 {
-                    return Err(WidthMustBeMultipleOfTwoForFormat(width, format));
+                    bail!(WidthMustBeMultipleOfTwoForFormat(width, format));
                 }
             }
             _ => (),
@@ -770,7 +770,7 @@ impl<T> TextureCreator<T> {
             ll::SDL_CreateTexture(self.context.raw, format as uint32_t, access as c_int, w, h)
         };
         if result.is_null() {
-            Err(SdlError(get_error()))
+            bail!(SdlError(get_error()))
         } else {
             unsafe { Ok(self.raw_create_texture(result)) }
         }
@@ -820,7 +820,7 @@ impl<T> TextureCreator<T> {
         let result =
             unsafe { ll::SDL_CreateTextureFromSurface(self.context.raw, surface.as_ref().raw()) };
         if result.is_null() {
-            Err(SdlError(get_error()))
+            bail!(SdlError(get_error()))
         } else {
             unsafe { Ok(self.raw_create_texture(result)) }
         }
@@ -925,7 +925,7 @@ impl<T: RenderTarget> Canvas<T> {
         if result == 0 {
             Ok((width as u32, height as u32))
         } else {
-            Err(get_error())
+            bail!(get_error())
         }
     }
 
@@ -937,7 +937,7 @@ impl<T: RenderTarget> Canvas<T> {
         let result = unsafe { ll::SDL_RenderSetLogicalSize(self.context.raw, width, height) };
         match result {
             0 => Ok(()),
-            _ => Err(SdlError(get_error())),
+            _ => bail!(SdlError(get_error())),
         }
     }
 
@@ -1003,7 +1003,7 @@ impl<T: RenderTarget> Canvas<T> {
     pub fn set_scale(&mut self, scale_x: f32, scale_y: f32) -> Result<(), String> {
         let ret = unsafe { ll::SDL_RenderSetScale(self.context.raw, scale_x, scale_y) };
         // Should only fail on an invalid renderer
-        if ret != 0 { Err(get_error()) } else { Ok(()) }
+        if ret != 0 { bail!(get_error()) } else { Ok(()) }
     }
 
     /// Gets the drawing scale for the current target.
@@ -1020,7 +1020,7 @@ impl<T: RenderTarget> Canvas<T> {
         let point = point.into();
         let result = unsafe { ll::SDL_RenderDrawPoint(self.context.raw, point.x(), point.y()) };
         if result != 0 {
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok(())
         }
@@ -1036,7 +1036,7 @@ impl<T: RenderTarget> Canvas<T> {
                                      points.len() as c_int)
         };
         if result != 0 {
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok(())
         }
@@ -1054,7 +1054,7 @@ impl<T: RenderTarget> Canvas<T> {
             ll::SDL_RenderDrawLine(self.context.raw, start.x(), start.y(), end.x(), end.y())
         };
         if result != 0 {
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok(())
         }
@@ -1070,7 +1070,7 @@ impl<T: RenderTarget> Canvas<T> {
                                     points.len() as c_int)
         };
         if result != 0 {
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok(())
         }
@@ -1081,7 +1081,7 @@ impl<T: RenderTarget> Canvas<T> {
     pub fn draw_rect(&mut self, rect: Rect) -> Result<(), String> {
         let result = unsafe { ll::SDL_RenderDrawRect(self.context.raw, rect.raw()) };
         if result != 0 {
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok(())
         }
@@ -1096,7 +1096,7 @@ impl<T: RenderTarget> Canvas<T> {
                                     rects.len() as c_int)
         };
         if result != 0 {
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok(())
         }
@@ -1115,7 +1115,7 @@ impl<T: RenderTarget> Canvas<T> {
                                        .unwrap_or(ptr::null()))
         };
         if result != 0 {
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok(())
         }
@@ -1131,7 +1131,7 @@ impl<T: RenderTarget> Canvas<T> {
                                     rects.len() as c_int)
         };
         if result != 0 {
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok(())
         }
@@ -1162,7 +1162,7 @@ impl<T: RenderTarget> Canvas<T> {
                                })
         };
 
-        if ret != 0 { Err(get_error()) } else { Ok(()) }
+        if ret != 0 { bail!(get_error()) } else { Ok(()) }
     }
 
     /// Copies a portion of the texture to the current rendering target,
@@ -1217,7 +1217,7 @@ impl<T: RenderTarget> Canvas<T> {
                                  flip)
         };
 
-        if ret != 0 { Err(get_error()) } else { Ok(()) }
+        if ret != 0 { bail!(get_error()) } else { Ok(()) }
     }
 
     /// Reads pixels from the current rendering target.
@@ -1237,8 +1237,8 @@ impl<T: RenderTarget> Canvas<T> {
                 }
             };
 
-            let pitch = w * format.byte_size_per_pixel(); // calculated pitch
-            let size = format.byte_size_of_pixels(w * h);
+            let pitch = w * format.byte_size_per_pixel()?; // calculated pitch
+            let size = format.byte_size_of_pixels(w * h)?;
             let mut pixels = Vec::with_capacity(size);
             pixels.set_len(size);
 
@@ -1254,7 +1254,7 @@ impl<T: RenderTarget> Canvas<T> {
             if ret == 0 {
                 Ok(pixels)
             } else {
-                Err(get_error())
+                bail!(get_error())
             }
         }
     }
@@ -1546,19 +1546,19 @@ impl<'r> Texture<'r> {
                 match rect {
                     Some(r) => {
                         if r.x() % 2 != 0 {
-                            return Err(XMustBeMultipleOfTwoForFormat(r.x(), format));
+                            bail!(XMustBeMultipleOfTwoForFormat(r.x(), format));
                         } else if r.y() % 2 != 0 {
-                            return Err(YMustBeMultipleOfTwoForFormat(r.y(), format));
+                            bail!(YMustBeMultipleOfTwoForFormat(r.y(), format));
                         } else if r.width() % 2 != 0 {
-                            return Err(WidthMustBeMultipleOfTwoForFormat(r.width(), format));
+                            bail!(WidthMustBeMultipleOfTwoForFormat(r.width(), format));
                         } else if r.height() % 2 != 0 {
-                            return Err(HeightMustBeMultipleOfTwoForFormat(r.height(), format));
+                            bail!(HeightMustBeMultipleOfTwoForFormat(r.height(), format));
                         }
                     }
                     _ => {}
                 };
                 if pitch % 2 != 0 {
-                    return Err(PitchMustBeMultipleOfTwoForFormat(pitch, format));
+                    bail!(PitchMustBeMultipleOfTwoForFormat(pitch, format));
                 }
             }
             _ => {}
@@ -1566,7 +1566,7 @@ impl<'r> Texture<'r> {
 
         let pitch = match validate_int(pitch as u32, "pitch") {
             Ok(p) => p,
-            Err(_) => return Err(PitchOverflows(pitch)),
+            Err(_) => bail!(PitchOverflows(pitch)),
         };
 
         let result = unsafe {
@@ -1577,7 +1577,7 @@ impl<'r> Texture<'r> {
         };
 
         if result != 0 {
-            Err(SdlError(get_error()))
+            bail!(SdlError(get_error()))
         } else {
             Ok(())
         }
@@ -1607,13 +1607,13 @@ impl<'r> Texture<'r> {
         match rect {
             Some(ref r) => {
                 if r.x() % 2 != 0 {
-                    return Err(XMustBeMultipleOfTwoForFormat(r.x()));
+                    bail!(XMustBeMultipleOfTwoForFormat(r.x()));
                 } else if r.y() % 2 != 0 {
-                    return Err(YMustBeMultipleOfTwoForFormat(r.y()));
+                    bail!(YMustBeMultipleOfTwoForFormat(r.y()));
                 } else if r.width() % 2 != 0 {
-                    return Err(WidthMustBeMultipleOfTwoForFormat(r.width()));
+                    bail!(WidthMustBeMultipleOfTwoForFormat(r.width()));
                 } else if r.height() % 2 != 0 {
-                    return Err(HeightMustBeMultipleOfTwoForFormat(r.height()));
+                    bail!(HeightMustBeMultipleOfTwoForFormat(r.height()));
                 }
             }
             _ => {}
@@ -1630,7 +1630,7 @@ impl<'r> Texture<'r> {
             };
             // The destination rectangle cannot lie outside the texture boundaries
             if !inside {
-                return Err(RectNotInsideTexture(r.clone()));
+                bail!(RectNotInsideTexture(r.clone()));
             }
         }
 
@@ -1643,55 +1643,55 @@ impl<'r> Texture<'r> {
 
         //let wrong_length =
         if y_plane.len() != (y_pitch * height) {
-            return Err(InvalidPlaneLength {
-                           plane: "y",
-                           length: y_plane.len(),
-                           pitch: y_pitch,
-                           height: height,
-                       });
+            bail!(InvalidPlaneLength {
+                     plane: "y",
+                     length: y_plane.len(),
+                     pitch: y_pitch,
+                     height: height,
+                  });
         }
         if u_plane.len() != (u_pitch * height / 2) {
-            return Err(InvalidPlaneLength {
-                           plane: "u",
-                           length: u_plane.len(),
-                           pitch: u_pitch,
-                           height: height / 2,
-                       });
+            bail!(InvalidPlaneLength {
+                     plane: "u",
+                     length: u_plane.len(),
+                     pitch: u_pitch,
+                     height: height / 2,
+                  });
         }
         if v_plane.len() != (v_pitch * height / 2) {
-            return Err(InvalidPlaneLength {
-                           plane: "v",
-                           length: v_plane.len(),
-                           pitch: v_pitch,
-                           height: height / 2,
-                       });
+            bail!(InvalidPlaneLength {
+                      plane: "v",
+                      length: v_plane.len(),
+                      pitch: v_pitch,
+                      height: height / 2,
+                  });
         }
 
         let y_pitch = match validate_int(y_pitch as u32, "y_pitch") {
             Ok(p) => p,
             Err(_) => {
-                return Err(PitchOverflows {
+                bail!(PitchOverflows {
                                plane: "y",
                                value: y_pitch,
-                           })
+                      })
             }
         };
         let u_pitch = match validate_int(u_pitch as u32, "u_pitch") {
             Ok(p) => p,
             Err(_) => {
-                return Err(PitchOverflows {
-                               plane: "u",
-                               value: u_pitch,
-                           })
+                bail!(PitchOverflows {
+                          plane: "u",
+                          value: u_pitch,
+                      })
             }
         };
         let v_pitch = match validate_int(v_pitch as u32, "v_pitch") {
             Ok(p) => p,
             Err(_) => {
-                return Err(PitchOverflows {
-                               plane: "v",
-                               value: v_pitch,
-                           })
+                bail!(PitchOverflows {
+                          plane: "v",
+                          value: v_pitch,
+                      })
             }
         };
 
@@ -1706,7 +1706,7 @@ impl<'r> Texture<'r> {
                                      v_pitch)
         };
         if result != 0 {
-            Err(SdlError(get_error()))
+            bail!(SdlError(get_error()))
         } else {
             Ok(())
         }
@@ -1743,7 +1743,7 @@ impl<'r> Texture<'r> {
                     .byte_size_from_pitch_and_height(pitch as usize, height);
                 Ok((::std::slice::from_raw_parts_mut(pixels as *mut u8, size), pitch))
             } else {
-                Err(get_error())
+                bail!(get_error())
             }
         };
 
