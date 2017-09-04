@@ -134,16 +134,17 @@ macro_rules! attrs {
         #[doc = "**Sets** the attribute: "]
         #[doc = $doc]
         #[inline]
-        pub fn $set_property(&self, value: $t) {
+        pub fn $set_property(&self, value: $t) -> Result<(), String> {
             gl_set_attribute!($attr_name, value.to_gl_value());
+            Ok(())
         }
 
         #[doc = "**Gets** the attribute: "]
         #[doc = $doc]
         #[inline]
-        pub fn $get_property(&self) -> $t {
+        pub fn $get_property(&self) -> Result<$t, String> {
             let value = gl_get_attribute!($attr_name);
-            GLAttrTypeUtil::from_gl_value(value)
+            Ok(GLAttrTypeUtil::from_gl_value(value))
         }
         )*
     );
@@ -207,7 +208,7 @@ pub mod gl_attr {
 
             if result != 0 {
                 // Panic and print the attribute that failed.
-                panic!("couldn't set attribute {}: {}", stringify!($attr), get_error());
+                bail!("couldn't set attribute {}: {}", stringify!($attr), get_error())
             }
         })
     }
@@ -220,7 +221,7 @@ pub mod gl_attr {
             };
             if result != 0 {
                 // Panic and print the attribute that failed.
-                panic!("couldn't get attribute {}: {}", stringify!($attr), get_error());
+                bail!("couldn't get attribute {}: {}", stringify!($attr), get_error());
             }
             value
         })
@@ -297,15 +298,18 @@ pub mod gl_attr {
 
     /// **Sets** the OpenGL context major and minor versions.
     #[inline]
-    pub fn set_context_version(&self, major: u8, minor: u8) {
-        self.set_context_major_version(major);
-        self.set_context_minor_version(minor);
+    pub fn set_context_version(&self, major: u8, minor: u8) -> Result<(), String> {
+        self.set_context_major_version(major)?;
+        self.set_context_minor_version(minor)?;
+        Ok(())
     }
 
     /// **Gets** the OpenGL context major and minor versions as a tuple.
     #[inline]
-    pub fn context_version(&self) -> (u8, u8) {
-        (self.context_major_version(), self.context_minor_version())
+    pub fn context_version(&self) -> Result<(u8, u8), String> {
+        let major = self.context_major_version()?;
+        let minor = self.context_minor_version()?;
+        Ok((major, minor))
     }
 
     }
@@ -319,8 +323,9 @@ pub mod gl_attr {
     impl<'a> ContextFlagsBuilder<'a> {
         /// Finishes the builder and applies the GL context flags to the GL context.
         #[inline]
-        pub fn set(&self) {
+        pub fn set(&self) -> Result<(), String> {
             gl_set_attribute!(SDL_GL_CONTEXT_FLAGS, self.flags);
+            Ok(())
         }
 
         /// Sets the context into "debug" mode.
@@ -403,12 +408,12 @@ pub mod gl_attr {
     ///     println!("Debug mode");
     /// }
     /// ```
-    pub fn context_flags(&self) -> ContextFlags {
+    pub fn context_flags(&self) -> Result<ContextFlags, String> {
         let flags = gl_get_attribute!(SDL_GL_CONTEXT_FLAGS);
 
-        ContextFlags {
+        Ok(ContextFlags {
             flags: flags
-        }
+        })
     }
 
     }
