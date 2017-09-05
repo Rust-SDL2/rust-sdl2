@@ -79,7 +79,7 @@ impl ::EventSubsystem {
     ///     println!("{:?}", event);
     /// }
     /// ```
-    pub fn peek_events<B>(&self, max_amount: u32) -> B
+    pub fn peek_events<B>(&self, max_amount: u32) -> Result<B, String>
     where B: FromIterator<Event>
     {
         unsafe {
@@ -99,13 +99,13 @@ impl ::EventSubsystem {
 
             if result < 0 {
                 // The only error possible is "Couldn't lock event queue"
-                panic!(get_error());
+                bail!(get_error());
             } else {
                 events.set_len(result as usize);
 
-                events.into_iter().map(|event_raw| {
+                Ok(events.into_iter().map(|event_raw| {
                     Event::from_ll(event_raw)
-                }).collect()
+                }).collect())
             }
         }
     }
@@ -1678,12 +1678,12 @@ unsafe fn poll_event() -> Option<Event> {
     else { None }
 }
 
-unsafe fn wait_event() -> Event {
+unsafe fn wait_event() -> Result<Event, String> {
     let mut raw = mem::uninitialized();
     let success = ll::SDL_WaitEvent(&mut raw) == 1;
 
-    if success { Event::from_ll(raw) }
-    else { panic!(get_error()) }
+    if success { Ok(Event::from_ll(raw)) }
+    else { bail!(get_error()) }
 }
 
 unsafe fn wait_event_timeout(timeout: u32) -> Option<Event> {
@@ -1751,7 +1751,7 @@ impl ::EventPump {
     }
 
     /// Waits indefinitely for the next available event.
-    pub fn wait_event(&mut self) -> Event {
+    pub fn wait_event(&mut self) -> Result<Event, String> {
         unsafe { wait_event() }
     }
 
@@ -1815,8 +1815,8 @@ pub struct EventWaitIterator<'a> {
 }
 
 impl<'a> Iterator for EventWaitIterator<'a> {
-    type Item = Event;
-    fn next(&mut self) -> Option<Event> { unsafe { Some(wait_event()) } }
+    type Item = Result<Event, String>;
+    fn next(&mut self) -> Option<Result<Event,String>> { unsafe { Some(wait_event()) } }
 }
 
 /// An iterator that calls `EventPump::wait_event_timeout()`.

@@ -115,40 +115,40 @@ impl Joystick {
         unsafe { ll::SDL_JoystickGetAttached(self.raw) != 0 }
     }
 
-    pub fn instance_id(&self) -> i32 {
+    pub fn instance_id(&self) -> Result<i32, String> {
         let result = unsafe { ll::SDL_JoystickInstanceID(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
-            panic!(get_error())
+            bail!(get_error())
         } else {
-            result
+            Ok(result)
         }
     }
 
     /// Retreive the joystick's GUID
-    pub fn guid(&self) -> Guid {
+    pub fn guid(&self) -> Result<Guid, String> {
         let raw = unsafe { ll::SDL_JoystickGetGUID(self.raw) };
 
         let guid = Guid { raw: raw };
 
         if guid.is_zero() {
             // Should only fail if the joystick is NULL.
-            panic!(get_error())
+            bail!(get_error())
         } else {
-            guid
+            Ok(guid)
         }
     }
 
     /// Retreive the number of axes for this joystick
-    pub fn num_axes(&self) -> u32 {
+    pub fn num_axes(&self) -> Result<u32, String> {
         let result = unsafe { ll::SDL_JoystickNumAxes(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
-            panic!(get_error())
+            bail!(get_error())
         } else {
-            result as u32
+            Ok(result as u32)
         }
     }
 
@@ -180,14 +180,14 @@ impl Joystick {
     }
 
     /// Retreive the number of buttons for this joystick
-    pub fn num_buttons(&self) -> u32 {
+    pub fn num_buttons(&self) -> Result<u32, String> {
         let result = unsafe { ll::SDL_JoystickNumButtons(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
-            panic!(get_error())
+            bail!(get_error())
         } else {
-            result as u32
+            Ok(result as u32)
         }
     }
 
@@ -221,14 +221,14 @@ impl Joystick {
     }
 
     /// Retreive the number of balls for this joystick
-    pub fn num_balls(&self) -> u32 {
+    pub fn num_balls(&self) -> Result<u32, String> {
         let result = unsafe { ll::SDL_JoystickNumBalls(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
-            panic!(get_error())
+            bail!(get_error())
         } else {
-            result as u32
+            Ok(result as u32)
         }
     }
 
@@ -250,14 +250,14 @@ impl Joystick {
     }
 
     /// Retreive the number of balls for this joystick
-    pub fn num_hats(&self) -> u32 {
+    pub fn num_hats(&self) -> Result<u32, String> {
         let result = unsafe { ll::SDL_JoystickNumHats(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
-            panic!(get_error())
+            bail!(get_error())
         } else {
-            result as u32
+            Ok(result as u32)
         }
     }
 
@@ -365,18 +365,21 @@ impl Display for Guid {
 /// This is represented in SDL2 as a bitfield but obviously not all
 /// combinations make sense: 5 for instance would mean up and down at
 /// the same time... To simplify things I turn it into an enum which
-/// is how the SDL2 docs present it anyway (using macros).
+/// is how the SDL2 docs present it anyway (using macros). The remaining
+/// (unlikely) cases are encoded with the special constructor Unknown
+/// which just holds the u8.
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum HatState {
-    Centered  = 0,
-    Up        = 0x01,
-    Right     = 0x02,
-    Down      = 0x04,
-    Left      = 0x08,
-    RightUp   = 0x02 | 0x01,
-    RightDown = 0x02 | 0x04,
-    LeftUp    = 0x08 | 0x01,
-    Leftdown  = 0x08 | 0x04,
+    Centered,
+    Up,
+    Right,
+    Down,
+    Left,
+    RightUp,
+    RightDown,
+    LeftUp,
+    Leftdown,
+    Unknown(u8),
 }
 
 impl HatState {
@@ -391,7 +394,7 @@ impl HatState {
             6  => HatState::RightDown,
             9  => HatState::LeftUp,
             12 => HatState::Leftdown,
-            _  => panic!("Unexpected hat position: {}", raw),
+            n  => HatState::Unknown(n),
         }
     }
 
@@ -406,6 +409,7 @@ impl HatState {
             HatState::RightDown => 6,
             HatState::LeftUp => 9,
             HatState::Leftdown => 12,
+            HatState::Unknown(n) => n,
         }
 
     }

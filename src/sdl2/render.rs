@@ -201,14 +201,14 @@ impl<T> Drop for RendererContext<T> {
 
 impl<T> RendererContext<T> {
     /// Gets information about the rendering context.
-    pub fn info(&self) -> RendererInfo {
+    pub fn info(&self) -> Result<RendererInfo, String> {
         unsafe {
             let mut renderer_info_raw = mem::uninitialized();
             if ll::SDL_GetRendererInfo(self.raw, &mut renderer_info_raw) != 0 {
                 // Should only fail on an invalid renderer
-                panic!();
+                bail!("Invalid renderer");
             } else {
-                RendererInfo::from_ll(&renderer_info_raw)
+                Ok(RendererInfo::from_ll(&renderer_info_raw))
             }
         }
     }
@@ -229,7 +229,7 @@ impl<T> RendererContext<T> {
         if ll::SDL_SetRenderTarget(self.raw, raw_texture) == 0 {
             Ok(())
         } else {
-            Err(SdlError(get_error()))
+            bail!(SdlError(get_error()))
         }
     }
 
@@ -338,7 +338,7 @@ impl<'s> Canvas<Surface<'s>> {
                    context: context,
                })
         } else {
-            Err(get_error())
+            bail!(get_error())
         }
     }
 
@@ -366,11 +366,11 @@ impl<'s> Canvas<Surface<'s>> {
     ///
     /// The target (i.e., `Window`) will not be destroyed and the SDL_Renderer will not be
     /// destroyed if the `TextureCreator` is still in scope.
-    pub fn texture_creator(&self) -> TextureCreator<SurfaceContext<'s>> {
-        TextureCreator {
+    pub fn texture_creator(&self) -> Result<TextureCreator<SurfaceContext<'s>>, String> {
+        Ok(TextureCreator {
             context: self.context.clone(),
-            default_pixel_format: self.surface().pixel_format_enum(),
-        }
+            default_pixel_format: self.surface().pixel_format_enum()?,
+        })
     }
 }
 
@@ -496,7 +496,7 @@ impl<T: RenderTarget> Canvas<T> {
                 .map_err(|e| TargetRenderError::SdlError(e))?;
             Ok(())
         } else {
-            Err(TargetRenderError::NotSupported)
+            bail!(TargetRenderError::NotSupported)
         }
     }
 
@@ -571,7 +571,7 @@ impl<T: RenderTarget> Canvas<T> {
                 .map_err(|e| TargetRenderError::SdlError(e))?;
             Ok(())
         } else {
-            Err(TargetRenderError::NotSupported)
+            bail!(TargetRenderError::NotSupported)
         }
     }
 }
@@ -627,7 +627,7 @@ impl CanvasBuilder {
         let raw = unsafe { ll::SDL_CreateRenderer(self.window.raw(), index, self.renderer_flags) };
 
         if raw.is_null() {
-            Err(SdlError(get_error()))
+            bail!(SdlError(get_error()))
         } else {
             let context = Rc::new(unsafe { RendererContext::from_ll(raw, self.window.context()) });
             Ok(Canvas {
@@ -746,11 +746,11 @@ impl<T> TextureCreator<T> {
         use self::TextureValueError::*;
         let w = match validate_int(width, "width") {
             Ok(w) => w,
-            Err(_) => return Err(WidthOverflows(width)),
+            Err(_) => bail!(WidthOverflows(width)),
         };
         let h = match validate_int(height, "height") {
             Ok(h) => h,
-            Err(_) => return Err(HeightOverflows(height)),
+            Err(_) => bail!(HeightOverflows(height)),
         };
         let format: PixelFormatEnum = format.into().unwrap_or(self.default_pixel_format);
 
@@ -760,7 +760,7 @@ impl<T> TextureCreator<T> {
             PixelFormatEnum::YV12 |
             PixelFormatEnum::IYUV => {
                 if w % 2 != 0 || h % 2 != 0 {
-                    return Err(WidthMustBeMultipleOfTwoForFormat(width, format));
+                    bail!(WidthMustBeMultipleOfTwoForFormat(width, format));
                 }
             }
             _ => (),
@@ -770,7 +770,7 @@ impl<T> TextureCreator<T> {
             ll::SDL_CreateTexture(self.context.raw, format as uint32_t, access as c_int, w, h)
         };
         if result.is_null() {
-            Err(SdlError(get_error()))
+            bail!(SdlError(get_error()))
         } else {
             unsafe { Ok(self.raw_create_texture(result)) }
         }
@@ -820,7 +820,7 @@ impl<T> TextureCreator<T> {
         let result =
             unsafe { ll::SDL_CreateTextureFromSurface(self.context.raw, surface.as_ref().raw()) };
         if result.is_null() {
-            Err(SdlError(get_error()))
+            bail!(SdlError(get_error()))
         } else {
             unsafe { Ok(self.raw_create_texture(result)) }
         }
@@ -849,58 +849,61 @@ impl<T: RenderTarget> Canvas<T> {
     }
 
     /// Sets the color used for drawing operations (Rect, Line and Clear).
-    pub fn set_draw_color(&mut self, color: pixels::Color) {
+    pub fn set_draw_color(&mut self, color: pixels::Color) -> Result<(), String> {
         let (r, g, b, a) = color.rgba();
         let ret = unsafe { ll::SDL_SetRenderDrawColor(self.raw, r, g, b, a) };
         // Should only fail on an invalid renderer
         if ret != 0 {
-            panic!(get_error())
+            bail!(get_error())
         }
+        Ok(())
     }
 
     /// Gets the color used for drawing operations (Rect, Line and Clear).
-    pub fn draw_color(&self) -> pixels::Color {
+    pub fn draw_color(&self) -> Result<pixels::Color, String> {
         let (mut r, mut g, mut b, mut a) = (0, 0, 0, 0);
         let ret =
             unsafe { ll::SDL_GetRenderDrawColor(self.context.raw, &mut r, &mut g, &mut b, &mut a) };
         // Should only fail on an invalid renderer
         if ret != 0 {
-            panic!(get_error())
+            bail!(get_error())
         } else {
-            pixels::Color::RGBA(r, g, b, a)
+            Ok(pixels::Color::RGBA(r, g, b, a))
         }
     }
 
     /// Sets the blend mode used for drawing operations (Fill and Line).
-    pub fn set_blend_mode(&mut self, blend: BlendMode) {
+    pub fn set_blend_mode(&mut self, blend: BlendMode) -> Result<(), String> {
         let ret = unsafe {
             ll::SDL_SetRenderDrawBlendMode(self.context.raw,
                                            FromPrimitive::from_i64(blend as i64).unwrap())
         };
         // Should only fail on an invalid renderer
         if ret != 0 {
-            panic!(get_error())
+            bail!(get_error())
         }
+        Ok(())
     }
 
     /// Gets the blend mode used for drawing operations.
-    pub fn blend_mode(&self) -> BlendMode {
+    pub fn blend_mode(&self) -> Result<BlendMode, String> {
         let mut blend = 0;
         let ret = unsafe { ll::SDL_GetRenderDrawBlendMode(self.context.raw, &mut blend) };
         // Should only fail on an invalid renderer
         if ret != 0 {
-            panic!(get_error())
+            bail!(get_error())
         } else {
-            FromPrimitive::from_i64(blend as i64).unwrap()
+            FromPrimitive::from_i64(blend as i64).ok_or_else(||"blend mode".to_string())
         }
     }
 
     /// Clears the current rendering target with the drawing color.
-    pub fn clear(&mut self) {
+    pub fn clear(&mut self) -> Result<(), String> {
         let ret = unsafe { ll::SDL_RenderClear(self.context.raw) };
         if ret != 0 {
-            panic!("Could not clear: {}", get_error())
+            bail!("Could not clear: {}", get_error())
         }
+        Ok(())
     }
 
     /// Updates the screen with any rendering performed since the previous call.
@@ -925,7 +928,7 @@ impl<T: RenderTarget> Canvas<T> {
         if result == 0 {
             Ok((width as u32, height as u32))
         } else {
-            Err(get_error())
+            bail!(get_error())
         }
     }
 
@@ -937,7 +940,7 @@ impl<T: RenderTarget> Canvas<T> {
         let result = unsafe { ll::SDL_RenderSetLogicalSize(self.context.raw, width, height) };
         match result {
             0 => Ok(()),
-            _ => Err(SdlError(get_error())),
+            _ => bail!(SdlError(get_error())),
         }
     }
 
@@ -952,15 +955,16 @@ impl<T: RenderTarget> Canvas<T> {
     }
 
     /// Sets the drawing area for rendering on the current target.
-    pub fn set_viewport<R: Into<Option<Rect>>>(&mut self, rect: R) {
+    pub fn set_viewport<R: Into<Option<Rect>>>(&mut self, rect: R) -> Result<(), String> {
         let ptr = match rect.into() {
             Some(ref rect) => rect.raw(),
             None => ptr::null(),
         };
         let ret = unsafe { ll::SDL_RenderSetViewport(self.context.raw, ptr) };
         if ret != 0 {
-            panic!("Could not set viewport: {}", get_error())
+            bail!("Could not set viewport: {}", get_error())
         }
+        Ok(())
     }
 
     /// Gets the drawing area for the current target.
@@ -973,7 +977,7 @@ impl<T: RenderTarget> Canvas<T> {
     /// Sets the clip rectangle for rendering on the specified target.
     ///
     /// If the rectangle is `None`, clipping will be disabled.
-    pub fn set_clip_rect<R: Into<Option<Rect>>>(&mut self, rect: R) {
+    pub fn set_clip_rect<R: Into<Option<Rect>>>(&mut self, rect: R) -> Result<(), String> {
         let ret = unsafe {
             ll::SDL_RenderSetClipRect(self.context.raw,
                                       match rect.into() {
@@ -982,8 +986,9 @@ impl<T: RenderTarget> Canvas<T> {
                                       })
         };
         if ret != 0 {
-            panic!("Could not set clip rect: {}", get_error())
+            bail!("Could not set clip rect: {}", get_error())
         }
+        Ok(())
     }
 
     /// Gets the clip rectangle for the current target.
@@ -1003,7 +1008,7 @@ impl<T: RenderTarget> Canvas<T> {
     pub fn set_scale(&mut self, scale_x: f32, scale_y: f32) -> Result<(), String> {
         let ret = unsafe { ll::SDL_RenderSetScale(self.context.raw, scale_x, scale_y) };
         // Should only fail on an invalid renderer
-        if ret != 0 { Err(get_error()) } else { Ok(()) }
+        if ret != 0 { bail!(get_error()) } else { Ok(()) }
     }
 
     /// Gets the drawing scale for the current target.
@@ -1020,7 +1025,7 @@ impl<T: RenderTarget> Canvas<T> {
         let point = point.into();
         let result = unsafe { ll::SDL_RenderDrawPoint(self.context.raw, point.x(), point.y()) };
         if result != 0 {
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok(())
         }
@@ -1036,7 +1041,7 @@ impl<T: RenderTarget> Canvas<T> {
                                      points.len() as c_int)
         };
         if result != 0 {
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok(())
         }
@@ -1054,7 +1059,7 @@ impl<T: RenderTarget> Canvas<T> {
             ll::SDL_RenderDrawLine(self.context.raw, start.x(), start.y(), end.x(), end.y())
         };
         if result != 0 {
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok(())
         }
@@ -1070,7 +1075,7 @@ impl<T: RenderTarget> Canvas<T> {
                                     points.len() as c_int)
         };
         if result != 0 {
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok(())
         }
@@ -1081,7 +1086,7 @@ impl<T: RenderTarget> Canvas<T> {
     pub fn draw_rect(&mut self, rect: Rect) -> Result<(), String> {
         let result = unsafe { ll::SDL_RenderDrawRect(self.context.raw, rect.raw()) };
         if result != 0 {
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok(())
         }
@@ -1096,7 +1101,7 @@ impl<T: RenderTarget> Canvas<T> {
                                     rects.len() as c_int)
         };
         if result != 0 {
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok(())
         }
@@ -1115,7 +1120,7 @@ impl<T: RenderTarget> Canvas<T> {
                                        .unwrap_or(ptr::null()))
         };
         if result != 0 {
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok(())
         }
@@ -1131,7 +1136,7 @@ impl<T: RenderTarget> Canvas<T> {
                                     rects.len() as c_int)
         };
         if result != 0 {
-            Err(get_error())
+            bail!(get_error())
         } else {
             Ok(())
         }
@@ -1162,7 +1167,7 @@ impl<T: RenderTarget> Canvas<T> {
                                })
         };
 
-        if ret != 0 { Err(get_error()) } else { Ok(()) }
+        if ret != 0 { bail!(get_error()) } else { Ok(()) }
     }
 
     /// Copies a portion of the texture to the current rendering target,
@@ -1217,7 +1222,7 @@ impl<T: RenderTarget> Canvas<T> {
                                  flip)
         };
 
-        if ret != 0 { Err(get_error()) } else { Ok(()) }
+        if ret != 0 { bail!(get_error()) } else { Ok(()) }
     }
 
     /// Reads pixels from the current rendering target.
@@ -1237,8 +1242,8 @@ impl<T: RenderTarget> Canvas<T> {
                 }
             };
 
-            let pitch = w * format.byte_size_per_pixel(); // calculated pitch
-            let size = format.byte_size_of_pixels(w * h);
+            let pitch = w * format.byte_size_per_pixel()?; // calculated pitch
+            let size = format.byte_size_of_pixels(w * h)?;
             let mut pixels = Vec::with_capacity(size);
             pixels.set_len(size);
 
@@ -1254,7 +1259,7 @@ impl<T: RenderTarget> Canvas<T> {
             if ret == 0 {
                 Ok(pixels)
             } else {
-                Err(get_error())
+                bail!(get_error())
             }
         }
     }
@@ -1430,7 +1435,7 @@ impl Error for UpdateTextureYUVError {
 
 impl<'r> Texture<'r> {
     /// Queries the attributes of the texture.
-    pub fn query(&self) -> TextureQuery {
+    pub fn query(&self) -> Result<TextureQuery, String> {
         let mut format = 0;
         let mut access = 0;
         let mut width = 0;
@@ -1441,78 +1446,81 @@ impl<'r> Texture<'r> {
         };
         // Should only fail on an invalid texture
         if ret != 0 {
-            panic!(get_error())
+            bail!(get_error())
         } else {
-            TextureQuery {
+            Ok(TextureQuery {
                 format: FromPrimitive::from_i64(format as i64).unwrap(),
                 access: FromPrimitive::from_i64(access as i64).unwrap(),
                 width: width as u32,
                 height: height as u32,
-            }
+            })
         }
     }
 
     /// Sets an additional color value multiplied into render copy operations.
-    pub fn set_color_mod(&mut self, red: u8, green: u8, blue: u8) {
+    pub fn set_color_mod(&mut self, red: u8, green: u8, blue: u8) -> Result<(), String> {
         let ret = unsafe { ll::SDL_SetTextureColorMod(self.raw, red, green, blue) };
 
         if ret != 0 {
-            panic!("Error setting color mod: {}", get_error())
+            bail!("Error setting color mod: {}", get_error())
         }
+        Ok(())
     }
 
     /// Gets the additional color value multiplied into render copy operations.
-    pub fn color_mod(&self) -> (u8, u8, u8) {
+    pub fn color_mod(&self) -> Result<(u8, u8, u8), String> {
         let (mut r, mut g, mut b) = (0, 0, 0);
         let ret = unsafe { ll::SDL_GetTextureColorMod(self.raw, &mut r, &mut g, &mut b) };
 
         // Should only fail on an invalid texture
         if ret != 0 {
-            panic!(get_error())
+            bail!(get_error())
         } else {
-            (r, g, b)
+            Ok((r, g, b))
         }
     }
 
     /// Sets an additional alpha value multiplied into render copy operations.
-    pub fn set_alpha_mod(&mut self, alpha: u8) {
+    pub fn set_alpha_mod(&mut self, alpha: u8) -> Result<(), String>{
         let ret = unsafe { ll::SDL_SetTextureAlphaMod(self.raw, alpha) };
 
         if ret != 0 {
-            panic!("Error setting alpha mod: {}", get_error())
+            bail!("Error setting alpha mod: {}", get_error())
         }
+        Ok(())
     }
 
     /// Gets the additional alpha value multiplied into render copy operations.
-    pub fn alpha_mod(&self) -> u8 {
+    pub fn alpha_mod(&self) -> Result<u8, String> {
         let mut alpha = 0;
         let ret = unsafe { ll::SDL_GetTextureAlphaMod(self.raw, &mut alpha) };
 
         // Should only fail on an invalid texture
-        if ret != 0 { panic!(get_error()) } else { alpha }
+        if ret != 0 { bail!(get_error()) } else { Ok(alpha) }
     }
 
     /// Sets the blend mode for a texture, used by `Renderer::copy()`.
-    pub fn set_blend_mode(&mut self, blend: BlendMode) {
+    pub fn set_blend_mode(&mut self, blend: BlendMode) -> Result<(), String> {
         let ret = unsafe {
             ll::SDL_SetTextureBlendMode(self.raw, FromPrimitive::from_i64(blend as i64).unwrap())
         };
 
         if ret != 0 {
-            panic!("Error setting blend: {}", get_error())
+            bail!("Error setting blend: {}", get_error())
         }
+        Ok(())
     }
 
     /// Gets the blend mode used for texture copy operations.
-    pub fn blend_mode(&self) -> BlendMode {
+    pub fn blend_mode(&self) -> Result<BlendMode, String> {
         let mut blend = 0;
         let ret = unsafe { ll::SDL_GetTextureBlendMode(self.raw, &mut blend) };
 
         // Should only fail on an invalid texture
         if ret != 0 {
-            panic!(get_error())
+            bail!(get_error())
         } else {
-            FromPrimitive::from_i64(blend as i64).unwrap()
+            FromPrimitive::from_i64(blend as i64).ok_or_else(||"blend mode".to_string())
         }
     }
 
@@ -1539,26 +1547,26 @@ impl<'r> Texture<'r> {
         // Check if the rectangle's position or size is odd, and if the pitch is odd.
         // This needs to be done in case the texture's pixel format is planar YUV.
         // See issue #334 for details.
-        let TextureQuery { format, .. } = self.query();
+        let TextureQuery { format, .. } = self.query().unwrap();
         match format {
             PixelFormatEnum::YV12 |
             PixelFormatEnum::IYUV => {
                 match rect {
                     Some(r) => {
                         if r.x() % 2 != 0 {
-                            return Err(XMustBeMultipleOfTwoForFormat(r.x(), format));
+                            bail!(XMustBeMultipleOfTwoForFormat(r.x(), format));
                         } else if r.y() % 2 != 0 {
-                            return Err(YMustBeMultipleOfTwoForFormat(r.y(), format));
+                            bail!(YMustBeMultipleOfTwoForFormat(r.y(), format));
                         } else if r.width() % 2 != 0 {
-                            return Err(WidthMustBeMultipleOfTwoForFormat(r.width(), format));
+                            bail!(WidthMustBeMultipleOfTwoForFormat(r.width(), format));
                         } else if r.height() % 2 != 0 {
-                            return Err(HeightMustBeMultipleOfTwoForFormat(r.height(), format));
+                            bail!(HeightMustBeMultipleOfTwoForFormat(r.height(), format));
                         }
                     }
                     _ => {}
                 };
                 if pitch % 2 != 0 {
-                    return Err(PitchMustBeMultipleOfTwoForFormat(pitch, format));
+                    bail!(PitchMustBeMultipleOfTwoForFormat(pitch, format));
                 }
             }
             _ => {}
@@ -1566,7 +1574,7 @@ impl<'r> Texture<'r> {
 
         let pitch = match validate_int(pitch as u32, "pitch") {
             Ok(p) => p,
-            Err(_) => return Err(PitchOverflows(pitch)),
+            Err(_) => bail!(PitchOverflows(pitch)),
         };
 
         let result = unsafe {
@@ -1577,7 +1585,7 @@ impl<'r> Texture<'r> {
         };
 
         if result != 0 {
-            Err(SdlError(get_error()))
+            bail!(SdlError(get_error()))
         } else {
             Ok(())
         }
@@ -1607,13 +1615,13 @@ impl<'r> Texture<'r> {
         match rect {
             Some(ref r) => {
                 if r.x() % 2 != 0 {
-                    return Err(XMustBeMultipleOfTwoForFormat(r.x()));
+                    bail!(XMustBeMultipleOfTwoForFormat(r.x()));
                 } else if r.y() % 2 != 0 {
-                    return Err(YMustBeMultipleOfTwoForFormat(r.y()));
+                    bail!(YMustBeMultipleOfTwoForFormat(r.y()));
                 } else if r.width() % 2 != 0 {
-                    return Err(WidthMustBeMultipleOfTwoForFormat(r.width()));
+                    bail!(WidthMustBeMultipleOfTwoForFormat(r.width()));
                 } else if r.height() % 2 != 0 {
-                    return Err(HeightMustBeMultipleOfTwoForFormat(r.height()));
+                    bail!(HeightMustBeMultipleOfTwoForFormat(r.height()));
                 }
             }
             _ => {}
@@ -1621,7 +1629,7 @@ impl<'r> Texture<'r> {
 
         // If the destination rectangle lies outside the texture boundaries,
         // SDL_UpdateYUVTexture will write outside allocated texture memory.
-        let tex_info = self.query();
+        let tex_info = self.query().unwrap();
         if let Some(ref r) = rect {
             let tex_rect = Rect::new(0, 0, tex_info.width, tex_info.height);
             let inside = match r.intersection(tex_rect) {
@@ -1630,7 +1638,7 @@ impl<'r> Texture<'r> {
             };
             // The destination rectangle cannot lie outside the texture boundaries
             if !inside {
-                return Err(RectNotInsideTexture(r.clone()));
+                bail!(RectNotInsideTexture(r.clone()));
             }
         }
 
@@ -1643,55 +1651,55 @@ impl<'r> Texture<'r> {
 
         //let wrong_length =
         if y_plane.len() != (y_pitch * height) {
-            return Err(InvalidPlaneLength {
-                           plane: "y",
-                           length: y_plane.len(),
-                           pitch: y_pitch,
-                           height: height,
-                       });
+            bail!(InvalidPlaneLength {
+                     plane: "y",
+                     length: y_plane.len(),
+                     pitch: y_pitch,
+                     height: height,
+                  });
         }
         if u_plane.len() != (u_pitch * height / 2) {
-            return Err(InvalidPlaneLength {
-                           plane: "u",
-                           length: u_plane.len(),
-                           pitch: u_pitch,
-                           height: height / 2,
-                       });
+            bail!(InvalidPlaneLength {
+                     plane: "u",
+                     length: u_plane.len(),
+                     pitch: u_pitch,
+                     height: height / 2,
+                  });
         }
         if v_plane.len() != (v_pitch * height / 2) {
-            return Err(InvalidPlaneLength {
-                           plane: "v",
-                           length: v_plane.len(),
-                           pitch: v_pitch,
-                           height: height / 2,
-                       });
+            bail!(InvalidPlaneLength {
+                      plane: "v",
+                      length: v_plane.len(),
+                      pitch: v_pitch,
+                      height: height / 2,
+                  });
         }
 
         let y_pitch = match validate_int(y_pitch as u32, "y_pitch") {
             Ok(p) => p,
             Err(_) => {
-                return Err(PitchOverflows {
+                bail!(PitchOverflows {
                                plane: "y",
                                value: y_pitch,
-                           })
+                      })
             }
         };
         let u_pitch = match validate_int(u_pitch as u32, "u_pitch") {
             Ok(p) => p,
             Err(_) => {
-                return Err(PitchOverflows {
-                               plane: "u",
-                               value: u_pitch,
-                           })
+                bail!(PitchOverflows {
+                          plane: "u",
+                          value: u_pitch,
+                      })
             }
         };
         let v_pitch = match validate_int(v_pitch as u32, "v_pitch") {
             Ok(p) => p,
             Err(_) => {
-                return Err(PitchOverflows {
-                               plane: "v",
-                               value: v_pitch,
-                           })
+                bail!(PitchOverflows {
+                          plane: "v",
+                          value: v_pitch,
+                      })
             }
         };
 
@@ -1706,7 +1714,7 @@ impl<'r> Texture<'r> {
                                      v_pitch)
         };
         if result != 0 {
-            Err(SdlError(get_error()))
+            bail!(SdlError(get_error()))
         } else {
             Ok(())
         }
@@ -1728,7 +1736,7 @@ impl<'r> Texture<'r> {
     {
         // Call to SDL to populate pixel data
         let loaded = unsafe {
-            let q = self.query();
+            let q = self.query()?;
             let mut pixels = ptr::null_mut();
             let mut pitch = 0;
 
@@ -1743,7 +1751,7 @@ impl<'r> Texture<'r> {
                     .byte_size_from_pitch_and_height(pitch as usize, height);
                 Ok((::std::slice::from_raw_parts_mut(pixels as *mut u8, size), pitch))
             } else {
-                Err(get_error())
+                bail!(get_error())
             }
         };
 
@@ -1762,26 +1770,27 @@ impl<'r> Texture<'r> {
 
     /// Binds an OpenGL/ES/ES2 texture to the current
     /// context for use with when rendering OpenGL primitives directly.
-    pub unsafe fn gl_bind_texture(&mut self) -> (f32, f32) {
+    pub unsafe fn gl_bind_texture(&mut self) -> Result<(f32, f32), String> {
         let mut texw = 0.0;
         let mut texh = 0.0;
 
         if ll::SDL_GL_BindTexture(self.raw, &mut texw, &mut texh) == 0 {
-            (texw, texh)
+            Ok((texw, texh))
         } else {
-            panic!("OpenGL texture binding not supported");
+            bail!("OpenGL texture binding not supported");
         }
     }
 
     /// Unbinds an OpenGL/ES/ES2 texture from the current context.
-    pub unsafe fn gl_unbind_texture(&mut self) {
+    pub unsafe fn gl_unbind_texture(&mut self) -> Result<(), String> {
         if ll::SDL_GL_UnbindTexture(self.raw) != 0 {
-            panic!("OpenGL texture unbinding not supported");
+            bail!("OpenGL texture unbinding not supported");
         }
+        Ok(())
     }
 
     /// Binds and unbinds an OpenGL/ES/ES2 texture from the current context.
-    pub fn gl_with_bind<R, F: FnOnce(f32, f32) -> R>(&mut self, f: F) -> R {
+    pub fn gl_with_bind<R, F: FnOnce(f32, f32) -> R>(&mut self, f: F) -> Result<R, String> {
         unsafe {
             let mut texw = 0.0;
             let mut texh = 0.0;
@@ -1790,13 +1799,13 @@ impl<'r> Texture<'r> {
                 let return_value = f(texw, texh);
 
                 if ll::SDL_GL_UnbindTexture(self.raw) == 0 {
-                    return_value
+                    Ok(return_value)
                 } else {
                     // This should never happen...
-                    panic!();
+                    bail!("gl_with_bind: the impossible happened");
                 }
             } else {
-                panic!("OpenGL texture binding not supported");
+                bail!("OpenGL texture binding not supported");
             }
         }
     }
