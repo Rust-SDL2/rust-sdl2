@@ -1,6 +1,23 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
+### v0.31
+
+[PR #673](https://github.com/Rust-sdl2/rust-sdl2/pull/673)
+
+* Support Audio Capture in AudioCallbacks.
+
+[PR #684](https://github.com/Rust-sdl2/rust-sdl2/pull/684)
+
+* **Breaking change** Make get\_swap\_interval return an enum instead of i32
+* The signature of set\_swap\_interval has been changed as well, but it shouldn't
+breaking exisitng code too much.
+
+[PR #683](https://github.com/Rust-sdl2/rust-sdl2/pull/684)
+
+* Adds the `unsafe_textures` feature to this crate, allowing to get rid of the lifetimes
+in `Texture`s in the `render` module.
+
 ### v0.30
 
 Re-exported sdl2\_sys as sdl2::sys

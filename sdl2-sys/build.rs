@@ -1,4 +1,4 @@
-#![allow(unused_imports, dead_code)]
+#![allow(unused_imports, dead_code, unused_variables)]
 
 #[cfg(feature = "pkg-config")]
 extern crate pkg_config;
