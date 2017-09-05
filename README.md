@@ -23,7 +23,6 @@ If you want a library compatible with earlier versions of SDL, please see
   * image
   * mixer
   * ttf
-  * unsafe\_textures (to get rid of the lifetime on `Texture`, at the cost of potential unsafety)
 
 # Requirements
 
@@ -303,6 +302,19 @@ You can see the full list in the `examples/` folder. Some examples require some 
 > cargo run --example gfx-demo --features "gfx"
 
 Replace "gfx" by the feature(s) needed for the example you want.
+
+# About the `unsafe_textures` feature
+
+In the `sdl2::render` module, `Texture` has by default lifetimes to prevent it from out-living its parent `TextureCreator`.
+These lifetimes are sometimes too hard to deal with in Rust, and so you have the option to enable the `unsafe_textures` feature.
+
+This removes the lifetimes on the `Texture`s, at the cost of optional manual memory management. If you want to manually destroy
+the `Texture`s you use, you can call the `destroy` method of your `Texture`s, but beware that *it should not* be called if none of
+the parents (`Canvas` or `TextureCreator`) are alive. If you do not call this method, the memory will simply be freed when
+the last `Canvas` or the last `TextureCreator` will be freed.
+
+There is no online documentation for this feature, however you can build it yourself in your project by enabling the feature in your
+Cargo.toml, running `cargo doc` and accessing `target/doc/sdl2/index.html` via a browser.
 
 # OpenGL
 
