@@ -792,7 +792,7 @@ impl<T> TextureCreator<T> {
     ///
     /// If format is `None`, the format will be the one the parent Window or Surface uses.
     ///
-    /// If format is `Some(pixel_format)`
+    /// If format is `Some(pixel_format)`, the default will be overridden, and the texture will be
     /// created with the specified format if possible. If the PixelFormat is not supported, this
     /// will return an error.
     ///
@@ -873,6 +873,7 @@ impl<T> TextureCreator<T> {
     }
 
 
+    /// Create a texture from its raw `SDL_Texture`.
     #[cfg(not(feature = "unsafe_textures"))]
     #[inline]
     pub unsafe fn raw_create_texture(&self, raw: *mut ll::SDL_Texture) -> Texture {
@@ -882,6 +883,7 @@ impl<T> TextureCreator<T> {
         }
     }
     
+    /// Create a texture from its raw `SDL_Texture`. Should be used with care.
     #[cfg(feature = "unsafe_textures")]
     pub unsafe fn raw_create_texture(&self, raw: *mut ll::SDL_Texture) -> Texture {
         Texture {
@@ -1318,6 +1320,12 @@ impl<T: RenderTarget> Canvas<T> {
     /// You should prefer the default format if possible to have performance gains and to avoid
     /// unsupported Pixel Formats that can cause errors. However, be careful with the default
     /// `PixelFormat` if you want to create transparent textures.
+    ///
+    /// # Notes
+    ///
+    /// Note that this method is only accessible in Canvas with the `unsafe_textures` feature,
+    /// because lifetimes otherwise prevent `Canvas` from creating and accessing `Texture`s at the
+    /// same time.
     #[cfg(feature = "unsafe_textures")]
     pub fn create_texture<F>(&self,
                              format: F,
@@ -1338,6 +1346,10 @@ impl<T: RenderTarget> Canvas<T> {
     }
 
     /// Shorthand for `create_texture(format, TextureAccess::Static, width, height)`
+    ///
+    /// # Notes
+    ///
+    /// Note that this method is only accessible in Canvas with the `unsafe_textures` feature.
     #[cfg(feature = "unsafe_textures")]
     #[inline]
     pub fn create_texture_static<F>(&self,
@@ -1351,6 +1363,10 @@ impl<T: RenderTarget> Canvas<T> {
     }
 
     /// Shorthand for `create_texture(format, TextureAccess::Streaming, width, height)`
+    ///
+    /// # Notes
+    ///
+    /// Note that this method is only accessible in Canvas with the `unsafe_textures` feature.
     #[cfg(feature = "unsafe_textures")]
     #[inline]
     pub fn create_texture_streaming<F>(&self,
@@ -1364,6 +1380,10 @@ impl<T: RenderTarget> Canvas<T> {
     }
 
     /// Shorthand for `create_texture(format, TextureAccess::Target, width, height)`
+    ///
+    /// # Notes
+    ///
+    /// Note that this method is only accessible in Canvas with the `unsafe_textures` feature.
     #[cfg(feature = "unsafe_textures")]
     #[inline]
     pub fn create_texture_target<F>(&self,
@@ -1381,6 +1401,10 @@ impl<T: RenderTarget> Canvas<T> {
     /// # Remarks
     ///
     /// The access hint for the created texture is `TextureAccess::Static`.
+    ///
+    /// # Notes
+    ///
+    /// Note that this method is only accessible in Canvas with the `unsafe_textures` feature.
     #[cfg(feature = "unsafe_textures")]
     pub fn create_texture_from_surface<S: AsRef<SurfaceRef>>
         (&self,
@@ -1397,6 +1421,11 @@ impl<T: RenderTarget> Canvas<T> {
     }
     
     #[cfg(feature = "unsafe_textures")]
+    /// Create a texture from its raw `SDL_Texture`. Should be used with care.
+    ///
+    /// # Notes
+    ///
+    /// Note that this method is only accessible in Canvas with the `unsafe_textures` feature.
     pub unsafe fn raw_create_texture(&self, raw: *mut ll::SDL_Texture) -> Texture {
         Texture {
             raw: raw,
@@ -1414,15 +1443,40 @@ pub struct TextureQuery {
 
 /// A texture for a rendering context.
 ///
-/// Every Texture is owned by a `TextureCreator`.
-/// A `Texture` cannot outlive the `TextureCreator`
+/// Every Texture is owned by a `TextureCreator` or `Canvas` (the latter is only possible with the
+/// `unsafe_textures` feature).
 ///
-/// A `Texture` can be safely accessed after the `Canvas` is dropped.
+/// # Diffences between with and without `unsafe_textures` feature
+///
+/// Without the `unsafe_textures`, a texture is owned by a `TextureCreator` and a `Texture` cannot
+/// outlive its parent `TextureCreator` thanks to lifetimes. A texture is destroyed via its `Drop`
+/// implementation. While this is the most "Rust"-y way of doing things currently, it is pretty
+/// cumbersome to use in some cases.
+///
+/// That is why the feature `unsafe_textures` was brought to life: the lifetimes are gone, meaning
+/// that `Texture`s *can* outlive their parents. That means that the `Texture`s are not destroyed
+/// on `Drop`, but destroyed when their parents are. That means if you create 10 000 textures with
+/// this feature, they will only be destroyed after you drop the `Canvas` and every
+/// `TextureCreator` linked to it. While this feature is enabled, this is the safest way to free
+/// the memory taken by the `Texture`s, but there is still another, unsafe way to destroy the
+/// `Texture` before its `Canvas`: the method `destroy`. This method is unsafe because *you* have
+/// to make sure the parent `Canvas` or `TextureCreator` is still alive while calling this method.
+///
+/// **Calling the `destroy` method while no parent is alive is undefined behavior**
+///
+/// With the `unsafe_textures` feature, a `Texture` can be safely accessed (but not destroyed) after
+/// the `Canvas` is dropped, but since any access (except `destroy`) requires the original `Canvas`,
+/// it is not possible to access a `Texture` while the `Canvas` is dropped.
 #[cfg(feature = "unsafe_textures")]
 pub struct Texture {
     raw: *mut ll::SDL_Texture,
 }
 
+/// A texture for a rendering context.
+///
+/// Every Texture is owned by a `TextureCreator`. Internally, a texture is destroyed via its `Drop`
+/// implementation. A texture can only be used by the `Canvas` it was originally created from, it
+/// is undefined behavior otherwise.
 #[cfg(not(feature = "unsafe_textures"))]
 pub struct Texture<'r> {
     raw: *mut ll::SDL_Texture,
@@ -1454,6 +1508,8 @@ impl Texture {
     /// Note however that you don't *have* to destroy a Texture before its Canvas,
     /// since whenever Canvas is destroyed, the SDL implementation will automatically
     /// destroy all the children Textures of that Canvas.
+    ///
+    /// **Calling this method while no parent is alive is undefined behavior**
     pub unsafe fn destroy(self) {
         ll::SDL_DestroyTexture(self.raw)
     }
