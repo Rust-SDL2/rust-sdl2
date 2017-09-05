@@ -3,7 +3,7 @@
 name = "sdl2-sys"
 description = "Raw SDL2 bindings for Rust, used internally rust-sdl2"
 repository = "https://github.com/AngryLawyer/rust-sdl2"
-version = "0.30.0"
+version = "0.31.0"
 authors = ["Tony Aldridge <tony@angry-lawyer.com>"]
 keywords = ["SDL", "windowing", "graphics", "ffi"]
 categories = ["rendering","games","external-ffi-bindings","game-engines","multimedia"]
@@ -22,9 +22,26 @@ libc = "0.2"
 version = "0.3"
 optional = true
 
+[build-dependencies.cmake]
+version = "0.1"
+optional = true
+
+[build-dependencies.reqwest]
+version = "0.7"
+optional = true
+
+[build-dependencies.tar]
+version = "0.4"
+optional = true
+
+[build-dependencies.flate2]
+version = "0.2"
+optional = true
+
 [features]
 
 default = []
 use-pkgconfig = ["pkg-config"]
 no_std = []
 use_mac_framework = []
+bundled = ["cmake", "reqwest", "tar", "flate2"]
