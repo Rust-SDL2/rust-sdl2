@@ -4,6 +4,9 @@ rust:
 - beta
 - nightly
 - stable
+os:
+- linux
+- osx
 install:
 - wget https://www.libsdl.org/release/SDL2-2.0.5.tar.gz -O sdl2.tar.gz
 - tar xzf sdl2.tar.gz
@@ -24,7 +27,8 @@ install:
 before_script:
 - |
   pip install 'travis-cargo<0.2' --user &&
-  export PATH=$HOME/.local/bin:$PATH
+  export PATH=$HOME/.local/bin:$PATH &&
+  export PATH=~/Library/Python/2.7/bin:$PATH
 script:
 - |
   travis-cargo build -- --features "gfx image ttf mixer" &&
