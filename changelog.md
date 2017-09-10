@@ -18,6 +18,11 @@ breaking exisitng code too much.
 * Adds the `unsafe_textures` feature to this crate, allowing to get rid of the lifetimes
 in `Texture`s in the `render` module.
 
+[PR #704](https://github.com/Rust-SDL2/rust-sdl2/pull/704)
+
+* Adds the `Music::from_static_bytes` function, which creates a Music instance with the
+static lifetime from a buffer that also has a static lifetime.
+
 ### v0.30
 
 Re-exported sdl2\_sys as sdl2::sys

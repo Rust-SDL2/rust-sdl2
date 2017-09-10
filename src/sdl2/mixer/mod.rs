@@ -1,7 +1,7 @@
 //!
 //! A binding for the library `SDL2_mixer`
 //!
-//! 
+//!
 //! Note that you need to build with the
 //! feature `mixer` for this module to be enabled,
 //! like so:
@@ -27,7 +27,7 @@ use std::ffi::{CString, CStr};
 use std::str::from_utf8;
 use std::borrow::ToOwned;
 use std::path::Path;
-use libc::{c_int, uint16_t, c_double, c_uint};
+use libc::{c_int, uint16_t, c_double, c_uint, c_void};
 use ::get_error;
 use ::rwops::RWops;
 use ::version::Version;
@@ -779,6 +779,28 @@ impl<'a> Music<'a> {
             let c_path = CString::new(path.as_ref().to_str().unwrap()).unwrap();
             ffi::Mix_LoadMUS(c_path.as_ptr())
         };
+        if raw.is_null() {
+            Err(get_error())
+        } else {
+            Ok(Music {
+                raw: raw,
+                owned: true,
+                _marker: PhantomData,
+            })
+        }
+    }
+
+    /// Load music from a static byte buffer.
+    pub fn from_static_bytes(buf: &'static [u8]) -> Result<Music<'static>, String> {
+        let rw = unsafe {
+            ::sys::rwops::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int)
+        };
+
+        if rw.is_null() {
+            return Err(get_error());
+        }
+
+        let raw = unsafe { ffi::Mix_LoadMUS_RW(rw, 0) };
         if raw.is_null() {
             Err(get_error())
         } else {
