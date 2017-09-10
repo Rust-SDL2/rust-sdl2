@@ -790,8 +790,8 @@ impl<'a> Music<'a> {
         }
     }
 
-    /// Load music from a byte buffer.
-    pub fn from_bytes(buf: &[u8]) -> Result<Music<'static>, String> {
+    /// Load music from a static byte buffer.
+    pub fn from_static_bytes(buf: &'static [u8]) -> Result<Music<'static>, String> {
         let rw = unsafe {
             ::sys::rwops::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int)
         };
@@ -800,7 +800,7 @@ impl<'a> Music<'a> {
             return Err(get_error());
         }
 
-        let raw = unsafe { ffi::Mix_LoadMUS_RW(rw, 1) };
+        let raw = unsafe { ffi::Mix_LoadMUS_RW(rw, 0) };
         if raw.is_null() {
             Err(get_error())
         } else {
