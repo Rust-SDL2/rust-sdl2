@@ -75,6 +75,11 @@ fn prepare_bindings(target: &str, host: &str) {
         include_path.push("include");
         bindings = bindings.clang_arg(String::from("-I") +
                                       &include_path.into_os_string().into_string().unwrap());
+        // SDL2 hasn't a default configuration for Linux
+        if get_os_from_triple(target).unwrap() == "linux" {
+            bindings = bindings.clang_arg("-DSDL_VIDEO_DRIVER_X11");
+            bindings = bindings.clang_arg("-DSDL_VIDEO_DRIVER_WAYLAND");
+        }
         add_explicit_linker_flags(get_os_from_triple(target).unwrap());
     }
 
