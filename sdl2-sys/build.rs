@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use std::env;
 use std::fs;
 
-const SDL2_BUNDLED_VERSION: &str = "2.0.5";
+const SDL2_BUNDLED_VERSION: &str = "2.0.6";
 
 fn main() {
     let target = env::var("TARGET").expect("Cargo build scripts always have TARGET");

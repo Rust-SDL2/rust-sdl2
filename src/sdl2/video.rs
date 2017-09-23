@@ -942,6 +942,12 @@ impl WindowBuilder {
         self
     }
 
+    /// Sets the window to be usable with a Vulkan instance
+    pub fn vulkan(&mut self) -> & mut WindowBuilder {
+        self.window_flags |= sys::SDL_WindowFlags::SDL_WINDOW_VULKAN as u32;
+        self
+    }
+
     /// Hides the window.
     pub fn hidden(&mut self) -> &mut WindowBuilder {
         self.window_flags |= sys::SDL_WindowFlags::SDL_WINDOW_HIDDEN as u32;

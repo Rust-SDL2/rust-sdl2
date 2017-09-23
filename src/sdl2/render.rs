@@ -142,6 +142,7 @@ pub enum BlendMode {
     Blend = sys::SDL_BlendMode::SDL_BLENDMODE_BLEND as i32,
     Add = sys::SDL_BlendMode::SDL_BLENDMODE_ADD as i32,
     Mod = sys::SDL_BlendMode::SDL_BLENDMODE_MOD as i32,
+    Invalid = sys::SDL_BlendMode::SDL_BLENDMODE_INVALID as i32,
 }
 
 impl FromPrimitive for BlendMode {
@@ -154,6 +155,7 @@ impl FromPrimitive for BlendMode {
                  sys::SDL_BlendMode::SDL_BLENDMODE_BLEND => Blend,
                  sys::SDL_BlendMode::SDL_BLENDMODE_ADD => Add,
                  sys::SDL_BlendMode::SDL_BLENDMODE_MOD => Mod,
+                 sys::SDL_BlendMode::SDL_BLENDMODE_INVALID => Invalid,
              })
     }
 
