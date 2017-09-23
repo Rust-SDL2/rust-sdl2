@@ -86,7 +86,7 @@ mod game_of_life {
 
         pub fn update(&mut self) {
             let mut new_playground = self.playground;
-            for (u, mut square) in new_playground.iter_mut().enumerate() {
+            for (u, square) in new_playground.iter_mut().enumerate() {
                 let u = u as u32;
                 let x = u % PLAYGROUND_WIDTH;
                 let y = u / PLAYGROUND_WIDTH;
@@ -252,7 +252,7 @@ pub fn main() {
                     let x = (x as u32) / SQUARE_SIZE;
                     let y = (y as u32) / SQUARE_SIZE;
                     match game.get_mut(x as i32, y as i32) {
-                        Some(mut square) => {*square = !(*square);},
+                        Some(square) => {*square = !(*square);},
                         None => {panic!()}
                     };
                 },

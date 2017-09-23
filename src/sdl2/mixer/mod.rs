@@ -27,10 +27,12 @@ use std::ffi::{CString, CStr};
 use std::str::from_utf8;
 use std::borrow::ToOwned;
 use std::path::Path;
-use libc::{c_int, uint16_t, c_double, c_uint, c_void};
+use std::os::raw::c_void;
+use libc::{c_int, uint16_t, c_double, c_uint};
 use ::get_error;
 use ::rwops::RWops;
 use ::version::Version;
+use sys;
 
 // Setup linking for all targets.
 #[cfg(target_os="macos")]
@@ -793,7 +795,7 @@ impl<'a> Music<'a> {
     /// Load music from a static byte buffer.
     pub fn from_static_bytes(buf: &'static [u8]) -> Result<Music<'static>, String> {
         let rw = unsafe {
-            ::sys::rwops::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int)
+            sys::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int)
         };
 
         if rw.is_null() {

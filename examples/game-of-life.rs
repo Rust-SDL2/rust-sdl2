@@ -115,7 +115,7 @@ mod game_of_life {
     }
 }
 
-fn dummy_texture<'a>(canvas: &mut Canvas<Window>, texture_creator: &'a TextureCreator<WindowContext>) -> (Texture<'a>, Texture<'a>) {
+fn dummy_texture<'a>(canvas: &mut Canvas<Window>, texture_creator: &'a TextureCreator<WindowContext>) -> (Texture, Texture) {
     enum TextureColor {
         Yellow,
         White,

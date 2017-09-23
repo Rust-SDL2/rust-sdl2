@@ -70,7 +70,7 @@ fn main() {
     }
 }
 
-type TextureManager<'l, T> = ResourceManager<'l, String, Texture<'l>, TextureCreator<T>>;
+type TextureManager<'l, T> = ResourceManager<'l, String, Texture, TextureCreator<T>>;
 type FontManager<'l> = ResourceManager<'l, FontDetails, Font<'l, 'static>, Sdl2TtfContext>;
 
 // Generic struct to cache any resource loaded by a ResourceLoader
@@ -113,7 +113,7 @@ impl<'l, K, R, L> ResourceManager<'l, K, R, L>
 }
 
 // TextureCreator knows how to load Textures
-impl<'l, T> ResourceLoader<'l, Texture<'l>> for TextureCreator<T> {
+impl<'l, T> ResourceLoader<'l, Texture> for TextureCreator<T> {
     type Args = str;
     fn load(&'l self, path: &str) -> Result<Texture, String> {
         println!("LOADED A TEXTURE");
