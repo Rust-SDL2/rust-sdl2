@@ -631,6 +631,11 @@ pub fn reserve_channels(num: i32) -> i32 {
 #[derive(Copy, Clone)]
 pub struct Group(i32);
 
+/// Return a group object.
+pub fn group(group: i32) -> Group {
+    Group(group)
+}
+
 impl default::Default for Group {
     fn default() -> Group {
         Group(-1)
