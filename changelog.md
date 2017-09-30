@@ -23,6 +23,10 @@ in `Texture`s in the `render` module.
 * Adds the `Music::from_static_bytes` function, which creates a Music instance with the
 static lifetime from a buffer that also has a static lifetime.
 
+[PR #708](https://github.com/Rust-SDL2/rust-sdl2/pull/708)
+
+* Makes the fields of the `sdl2::mixer::Channel(i32)` and `sdl::mixer::Group(i32)` structs
+
 ### v0.30
 
 Re-exported sdl2\_sys as sdl2::sys
