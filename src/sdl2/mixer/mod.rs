@@ -336,9 +336,10 @@ pub enum Fading {
 
 /// Sound effect channel.
 #[derive(Debug, Copy, Clone, PartialEq)]
-pub struct Channel(i32);
+pub struct Channel(pub i32);
 
 /// Return a channel object.
+#[deprecated(since = "0.31.0", note = "use `Channel(i32)` instead")]
 pub fn channel(chan: i32) -> Channel {
     Channel(chan)
 }
@@ -629,7 +630,7 @@ pub fn reserve_channels(num: i32) -> i32 {
 
 /// Sound effect channel grouping.
 #[derive(Copy, Clone)]
-pub struct Group(i32);
+pub struct Group(pub i32);
 
 impl default::Default for Group {
     fn default() -> Group {
