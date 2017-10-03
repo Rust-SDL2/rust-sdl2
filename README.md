@@ -354,7 +354,8 @@ let window = video_subsystem.window("Window", 800, 600)
     .unwrap();
 let canvas = window.into_canvas()
     .index(find_sdl_gl_driver().unwrap())
-    .build();
+    .build()
+    .unwrap();
 
 gl::load_with(|name| video_subsystem.gl_get_proc_address(name) as *const _);
 canvas.window().gl_set_context_to_current();
