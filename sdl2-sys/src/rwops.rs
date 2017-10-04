@@ -4,7 +4,7 @@ use sdl::SDL_bool;
 
 #[allow(dead_code)]
 #[repr(C)]
-struct SDL_RWops_Anon {
+pub struct SDL_RWops_Anon {
     data: [c_uchar; 24],
 }
 
@@ -23,7 +23,7 @@ pub struct SDL_RWops {
                              size: size_t, maxnum: size_t) -> size_t,
     pub close: extern "C" fn(context: *mut SDL_RWops) -> c_int,
     pub type_: uint32_t,
-    hidden: SDL_RWops_Anon
+    pub hidden: SDL_RWops_Anon,
 }
 
 extern "C" {
