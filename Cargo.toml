@@ -30,7 +30,7 @@ path = "sdl2-sys"
 version = "0.30.0"
 
 [dependencies.c_vec]
-version = "1.0.*"
+version = ">= 1.0, <= 1.3"
 optional = true
 
 [features]
