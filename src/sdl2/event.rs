@@ -570,7 +570,7 @@ pub enum Event {
 
     JoyDeviceAdded {
         timestamp: u32,
-        which: i32
+        which: u32
     },
     JoyDeviceRemoved {
         timestamp: u32,
@@ -1084,7 +1084,7 @@ impl Event {
                 let event = ll::SDL_JoyDeviceEvent {
                     type_: ll::SDL_JOYDEVICEADDED,
                     timestamp: timestamp,
-                    which: which,
+                    which: which as i32,
                 };
                 unsafe {
                     ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_JoyDeviceEvent, 1);
@@ -1447,7 +1447,7 @@ impl Event {
                 let ref event = *raw.jdevice();
                 Event::JoyDeviceAdded {
                     timestamp: event.timestamp,
-                    which: event.which
+                    which: event.which as u32
                 }
             }
             EventType::JoyDeviceRemoved => {
