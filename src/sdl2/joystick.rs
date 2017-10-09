@@ -21,7 +21,7 @@ impl JoystickSubsystem {
         }
     }
 
-    /// Attempt to open the joystick at number `id` and return it.
+    /// Attempt to open the joystick at index `joystick_index` and return it.
     pub fn open(&self, joystick_index: u32) 
             -> Result<Joystick, IntegerOrSdlError> {
         use common::IntegerOrSdlError::*;
@@ -39,7 +39,7 @@ impl JoystickSubsystem {
         }
     }
 
-    /// Return the name of the joystick at index `id`
+    /// Return the name of the joystick at index `joystick_index`.
     pub fn name_for_index(&self, joystick_index: u32) -> Result<String, IntegerOrSdlError> {
         use common::IntegerOrSdlError::*;
         let joystick_index = try!(validate_int(joystick_index, "joystick_index"));
@@ -55,7 +55,7 @@ impl JoystickSubsystem {
         }
     }
 
-    /// Get the GUID for the joystick number `id`
+    /// Get the GUID for the joystick at index `joystick_index`
     pub fn device_guid(&self, joystick_index: u32) -> Result<Guid, IntegerOrSdlError> {
         use common::IntegerOrSdlError::*;
         let joystick_index = try!(validate_int(joystick_index, "joystick_index"));
