@@ -537,6 +537,7 @@ pub enum Event {
 
     JoyAxisMotion {
         timestamp: u32,
+        /// The joystick's `id`
         which: i32,
         axis_idx: u8,
         value: i16
@@ -544,6 +545,7 @@ pub enum Event {
 
     JoyBallMotion {
         timestamp: u32,
+        /// The joystick's `id`
         which: i32,
         ball_idx: u8,
         xrel: i16,
@@ -552,6 +554,7 @@ pub enum Event {
 
     JoyHatMotion {
         timestamp: u32,
+        /// The joystick's `id`
         which: i32,
         hat_idx: u8,
         state: HatState
@@ -559,26 +562,31 @@ pub enum Event {
 
     JoyButtonDown {
         timestamp: u32,
+        /// The joystick's `id`
         which: i32,
         button_idx: u8
     },
     JoyButtonUp {
         timestamp: u32,
+        /// The joystick's `id`
         which: i32,
         button_idx: u8
     },
 
     JoyDeviceAdded {
         timestamp: u32,
+        /// The newly added joystick's `joystick_index`
         which: u32
     },
     JoyDeviceRemoved {
         timestamp: u32,
+        /// The joystick's `id`
         which: i32
     },
 
     ControllerAxisMotion {
         timestamp: u32,
+        /// The controller's joystick `id`
         which: i32,
         axis: Axis,
         value: i16
@@ -586,25 +594,30 @@ pub enum Event {
 
     ControllerButtonDown {
         timestamp: u32,
+        /// The controller's joystick `id`
         which: i32,
         button: Button
     },
     ControllerButtonUp {
         timestamp: u32,
+        /// The controller's joystick `id`
         which: i32,
         button: Button
     },
 
     ControllerDeviceAdded {
         timestamp: u32,
+        /// The newly added controller's `joystick_index`
         which: u32
     },
     ControllerDeviceRemoved {
         timestamp: u32,
+        /// The controller's joystick `id`
         which: i32
     },
     ControllerDeviceRemapped {
         timestamp: u32,
+        /// The controller's joystick `id`
         which: i32
     },
 
