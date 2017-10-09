@@ -376,7 +376,7 @@ pub enum HatState {
     RightUp   = 0x02 | 0x01,
     RightDown = 0x02 | 0x04,
     LeftUp    = 0x08 | 0x01,
-    Leftdown  = 0x08 | 0x04,
+    LeftDown  = 0x08 | 0x04,
 }
 
 impl HatState {
