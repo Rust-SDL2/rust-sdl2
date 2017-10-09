@@ -597,7 +597,7 @@ pub enum Event {
 
     ControllerDeviceAdded {
         timestamp: u32,
-        which: i32
+        which: u32
     },
     ControllerDeviceRemoved {
         timestamp: u32,
@@ -1181,7 +1181,7 @@ impl Event {
                 let event = ll::SDL_ControllerDeviceEvent {
                     type_: ll::SDL_CONTROLLERDEVICEADDED,
                     timestamp: timestamp,
-                    which: which,
+                    which: which as i32,
                 };
                 unsafe {
                     ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_ControllerDeviceEvent, 1);
@@ -1493,7 +1493,7 @@ impl Event {
                 let ref event = *raw.cdevice();
                 Event::ControllerDeviceAdded {
                     timestamp: event.timestamp,
-                    which: event.which
+                    which: event.which as u32
                 }
             }
             EventType::ControllerDeviceRemoved => {
