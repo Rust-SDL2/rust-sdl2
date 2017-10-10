@@ -13,7 +13,7 @@ fn main() {
 
     println!("{} joysticks available", available);
 
-    let mut joystick = None;
+    let mut joystick_index = None;
 
     // Iterate over all available joysticks and stop once we manage to
     // open one.
@@ -21,20 +21,18 @@ fn main() {
         match joystick_subsystem.open(id) {
             Ok(c) => {
                 println!("Success: opened \"{}\"", c.name());
-                joystick = Some(c);
+                joystick_index = Some(id);
                 break;
             },
             Err(e) => println!("failed: {:?}", e),
         }
     }
 
-    if joystick.is_none() {
+    if joystick_index.is_none() {
         panic!("Couldn't open any joystick");
     };
 
-    let joystick = joystick.unwrap();
-
-    let mut haptic = haptic_subsystem.open_from_joystick_id(joystick.instance_id()).unwrap();
+    let mut haptic = haptic_subsystem.open_from_joystick_id(joystick_index.unwrap()).unwrap();
 
     for event in sdl_context.event_pump().unwrap().wait_iter() {
         use sdl2::event::Event;
