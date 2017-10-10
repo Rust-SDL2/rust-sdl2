@@ -31,6 +31,7 @@ public so they can be instantiated directly, and deprecates `sdl2::mixer::channe
 [PR #714](https://github.com/Rust-SDL2/rust-sdl2/pull/714)
 
 * **Breaking change** Updates the `which` fields of `sdl2::Event::ControllerDeviceAdded` and `sdl2::Event::JoyDeviceAdded` to be `u32`s so they can be used with `sdl2::GameControllerSubsystem` and `sdl::JoystickSubsystem` methods directly.
+* **Breaking change** Updates `sdl2::HapticSubsystem::open_from_joystick_id` to correctly advertise `joystick_index` as being a `u32`.
 * This should only mean removing type conversions which were previously needed to use these values, or changing incorrect assumptions in existing code.
 
 ### v0.30
