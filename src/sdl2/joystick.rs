@@ -390,7 +390,7 @@ impl HatState {
             3  => HatState::RightUp,
             6  => HatState::RightDown,
             9  => HatState::LeftUp,
-            12 => HatState::Leftdown,
+            12 => HatState::LeftDown,
             _  => panic!("Unexpected hat position: {}", raw),
         }
     }
@@ -405,7 +405,7 @@ impl HatState {
             HatState::RightUp => 3,
             HatState::RightDown => 6,
             HatState::LeftUp => 9,
-            HatState::Leftdown => 12,
+            HatState::LeftDown => 12,
         }
 
     }
