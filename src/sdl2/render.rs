@@ -56,7 +56,7 @@ use sys::render as ll;
 #[derive(Debug)]
 pub struct SdlError(String);
 
-/// Possible errors returned by targetting a `Canvas` to render to a `Texture`
+/// Possible errors returned by targeting a `Canvas` to render to a `Texture`
 #[derive(Debug)]
 pub enum TargetRenderError {
     SdlError(SdlError),
@@ -303,7 +303,7 @@ impl<'s> RenderTarget for Surface<'s> {
 /// // However the canvas has not been updated to the window yet,
 /// // everything has been processed to an internal buffer,
 /// // but if we want our buffer to be displayed on the window,
-/// // we need to call `present`. We need to call this everytime
+/// // we need to call `present`. We need to call this every time
 /// // we want to render a new frame on the window.
 /// canvas.present();
 /// // present does not "clear" the buffer, that means that
@@ -435,7 +435,7 @@ impl<T: RenderTarget> Canvas<T> {
     /// pixel in it if you want, so you can do basically anything with that `Texture`.
     ///
     /// If you want to set the content of multiple `Texture` at once the most efficient way
-    /// possible, *don't* make a loop and call this function everytime and use
+    /// possible, *don't* make a loop and call this function every time and use
     /// `with_multiple_texture_canvas` instead. Using `with_texture_canvas` is actually
     /// inefficient because the target is reset to the source (the `Window` or the `Surface`)
     /// at the end of this function, but using it in a loop would make this reset useless.
@@ -457,7 +457,7 @@ impl<T: RenderTarget> Canvas<T> {
     /// `Surface` outside of the closure.
     ///
     /// You do not need to call `present` after drawing in the Canvas in the closure, the changes
-    /// are appleid directly to the `Texture` instead of a hidden buffer.
+    /// are applied directly to the `Texture` instead of a hidden buffer.
     ///
     /// # Errors
     ///
@@ -625,7 +625,7 @@ pub struct TextureCreator<T> {
 /// The type that allows you to build Window-based renderers.
 ///
 /// By default, the renderer builder will prioritize for a hardware-accelerated
-/// renderer, which is porbably what you want.
+/// renderer, which is probably what you want.
 pub struct CanvasBuilder {
     window: Window,
     index: Option<u32>,
@@ -1446,7 +1446,7 @@ pub struct TextureQuery {
 /// Every Texture is owned by a `TextureCreator` or `Canvas` (the latter is only possible with the
 /// `unsafe_textures` feature).
 ///
-/// # Diffences between with and without `unsafe_textures` feature
+/// # Differences between with and without `unsafe_textures` feature
 ///
 /// Without the `unsafe_textures`, a texture is owned by a `TextureCreator` and a `Texture` cannot
 /// outlive its parent `TextureCreator` thanks to lifetimes. A texture is destroyed via its `Drop`
