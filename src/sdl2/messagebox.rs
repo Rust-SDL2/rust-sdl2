@@ -7,25 +7,25 @@ use std::os::raw::{c_char,c_int};
 use video::Window;
 use get_error;
 
-use sys::messagebox as ll;
+use sys;
 
 bitflags! {
     pub flags MessageBoxFlag: u32 {
         const MESSAGEBOX_ERROR =
-            ::sys::messagebox::SDL_MessageBoxFlags::SDL_MESSAGEBOX_ERROR as u32,
+            sys::SDL_MessageBoxFlags::SDL_MESSAGEBOX_ERROR as u32,
         const MESSAGEBOX_WARNING =
-            ::sys::messagebox::SDL_MessageBoxFlags::SDL_MESSAGEBOX_WARNING as u32,
+            sys::SDL_MessageBoxFlags::SDL_MESSAGEBOX_WARNING as u32,
         const MESSAGEBOX_INFORMATION =
-            ::sys::messagebox::SDL_MessageBoxFlags::SDL_MESSAGEBOX_INFORMATION as u32
+            sys::SDL_MessageBoxFlags::SDL_MESSAGEBOX_INFORMATION as u32
     }
 }
 
 bitflags! {
     pub flags MessageBoxButtonFlag: u32 {
         const MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT =
-            ::sys::messagebox::SDL_MessageBoxButtonFlags::SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT as u32,
+            sys::SDL_MessageBoxButtonFlags::SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT as u32,
         const MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT =
-            ::sys::messagebox::SDL_MessageBoxButtonFlags::SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT as u32,
+            sys::SDL_MessageBoxButtonFlags::SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT as u32,
         const MESSAGEBOX_BUTTON_NOTHING = 0
     }
 }
@@ -39,20 +39,20 @@ pub struct MessageBoxColorScheme {
     pub button_selected:(u8,u8,u8)
 }
 
-impl Into<ll::SDL_MessageBoxColorScheme> for MessageBoxColorScheme {
-    fn into(self) -> ll::SDL_MessageBoxColorScheme {
-        ll::SDL_MessageBoxColorScheme { colors: self.into() }
+impl Into<sys::SDL_MessageBoxColorScheme> for MessageBoxColorScheme {
+    fn into(self) -> sys::SDL_MessageBoxColorScheme {
+        sys::SDL_MessageBoxColorScheme { colors: self.into() }
     }
 }
 
-impl From<ll::SDL_MessageBoxColorScheme> for MessageBoxColorScheme {
-    fn from(prim: ll::SDL_MessageBoxColorScheme) -> MessageBoxColorScheme {
+impl From<sys::SDL_MessageBoxColorScheme> for MessageBoxColorScheme {
+    fn from(prim: sys::SDL_MessageBoxColorScheme) -> MessageBoxColorScheme {
         prim.colors.into()
     }
 }
 
-/// button_id is the integer that will be returned
-/// by show_message_box. It is not sed by SDL2,
+/// `button_id` is the integer that will be returned
+/// by `show_message_box`. It is not sed by SDL2,
 /// and should only be used to know which button has been triggered
 #[derive(Debug)]
 pub struct ButtonData<'a> {
@@ -67,10 +67,10 @@ pub enum ClickedButton<'a> {
     CustomButton(&'a ButtonData<'a>)
 }
 
-impl From<MessageBoxColorScheme> for [ll::SDL_MessageBoxColor ; 5] {
-    fn from(scheme:MessageBoxColorScheme) -> [ll::SDL_MessageBoxColor ; 5] {
-        fn to_message_box_color(t:(u8,u8,u8)) -> ll::SDL_MessageBoxColor {
-            ll::SDL_MessageBoxColor {
+impl From<MessageBoxColorScheme> for [sys::SDL_MessageBoxColor ; 5] {
+    fn from(scheme:MessageBoxColorScheme) -> [sys::SDL_MessageBoxColor ; 5] {
+        fn to_message_box_color(t:(u8,u8,u8)) -> sys::SDL_MessageBoxColor {
+            sys::SDL_MessageBoxColor {
                 r:t.0,
                 g:t.1,
                 b:t.2
@@ -84,9 +84,9 @@ impl From<MessageBoxColorScheme> for [ll::SDL_MessageBoxColor ; 5] {
     }
 }
 
-impl Into<MessageBoxColorScheme> for [ll::SDL_MessageBoxColor ; 5] {
+impl Into<MessageBoxColorScheme> for [sys::SDL_MessageBoxColor ; 5] {
     fn into(self) -> MessageBoxColorScheme {
-        fn from_message_box_color(prim_color: ll::SDL_MessageBoxColor) -> (u8, u8, u8) {
+        fn from_message_box_color(prim_color: sys::SDL_MessageBoxColor) -> (u8, u8, u8) {
             (prim_color.r, prim_color.g, prim_color.b)
         };
         MessageBoxColorScheme{
@@ -143,7 +143,7 @@ impl error::Error for ShowMessageError {
 /// your message box, use `show_message_box` instead.
 pub fn show_simple_message_box<'a, W>(flags: MessageBoxFlag, title: &str,
         message: &str, window: W)
-        -> Result<(), ShowMessageError> 
+        -> Result<(), ShowMessageError>
 where W: Into<Option<&'a Window>>
 {
     use self::ShowMessageError::*;
@@ -156,7 +156,7 @@ where W: Into<Option<&'a Window>>
             Ok(s) => s,
             Err(err) => return Err(InvalidMessage(err)),
         };
-        ll::SDL_ShowSimpleMessageBox(
+        sys::SDL_ShowSimpleMessageBox(
             flags.bits(),
             title.as_ptr() as *const c_char,
             message.as_ptr() as *const c_char,
@@ -182,7 +182,7 @@ where W: Into<Option<&'a Window>>
 ///
 pub fn show_message_box<'a, 'b, W, M>(flags:MessageBoxFlag, buttons:&'a [ButtonData], title:&str,
     message:&str, window: W, scheme: M)
-    -> Result<ClickedButton<'a>,ShowMessageError> 
+    -> Result<ClickedButton<'a>,ShowMessageError>
 where W: Into<Option<&'b Window>>,
       M: Into<Option<MessageBoxColorScheme>>,
 {
@@ -206,31 +206,31 @@ where W: Into<Option<&'b Window>>,
         Ok(b) => b,
         Err(e) => return Err(InvalidButton(e.0,e.1))
     };
-    let raw_buttons : Vec<ll::SDL_MessageBoxButtonData> = 
+    let raw_buttons : Vec<sys::SDL_MessageBoxButtonData> =
         buttons.iter().zip(button_texts.iter()).map(|(b,b_text)|{
-        ll::SDL_MessageBoxButtonData {
+        sys::SDL_MessageBoxButtonData {
             flags:b.flags.bits(),
             buttonid:b.button_id as c_int,
             text:b_text.as_ptr()
         }
     }).collect();
     let result = unsafe {
-        let msg_box_data = ll::SDL_MessageBoxData {
+        let msg_box_data = sys::SDL_MessageBoxData {
             flags:flags.bits(),
             window:window.map_or(ptr::null_mut(), |win| win.raw()),
             title: title.as_ptr() as *const c_char,
             message: message.as_ptr() as *const c_char,
             numbuttons: raw_buttons.len() as c_int,
             buttons: raw_buttons.as_ptr(),
-            color_scheme: if let Some(scheme) = scheme {
-                &ll::SDL_MessageBoxColorScheme {
+            colorScheme: if let Some(scheme) = scheme {
+                &sys::SDL_MessageBoxColorScheme {
                     colors:From::from(scheme)
                 } as *const _
             } else {
                 ptr::null()
             }
         };
-        ll::SDL_ShowMessageBox(
+        sys::SDL_ShowMessageBox(
             &msg_box_data as *const _,
             &mut button_id as &mut _
         )

@@ -27,10 +27,12 @@ use std::ffi::{CString, CStr};
 use std::str::from_utf8;
 use std::borrow::ToOwned;
 use std::path::Path;
-use libc::{c_int, uint16_t, c_double, c_uint, c_void};
+use std::os::raw::c_void;
+use libc::{c_int, uint16_t, c_double, c_uint};
 use ::get_error;
 use ::rwops::RWops;
 use ::version::Version;
+use sys;
 
 // Setup linking for all targets.
 #[cfg(target_os="macos")]
@@ -107,7 +109,7 @@ pub const DEFAULT_FORMAT: AudioFormat = ll::AUDIO_S16SYS;
 /// Default channels: Stereo.
 pub const DEFAULT_CHANNELS: i32 = 2;
 /// Good default sample rate in Hz (samples per second) for PC sound cards.
-pub const DEFAULT_FREQUENCY: i32 = 22050;
+pub const DEFAULT_FREQUENCY: i32 = 22_050;
 /// Maximum value for any volume setting.
 pub const MAX_VOLUME: i32 = 128;
 
@@ -794,7 +796,7 @@ impl<'a> Music<'a> {
     /// Load music from a static byte buffer.
     pub fn from_static_bytes(buf: &'static [u8]) -> Result<Music<'static>, String> {
         let rw = unsafe {
-            ::sys::rwops::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int)
+            sys::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int)
         };
 
         if rw.is_null() {

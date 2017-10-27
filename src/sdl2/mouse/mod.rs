@@ -1,11 +1,10 @@
-use std::ptr;
-
 use get_error;
 use surface::SurfaceRef;
 use video;
 use EventPump;
+use std::mem::transmute;
 
-use sys::mouse as ll;
+use sys;
 
 mod relative;
 pub use self::relative::RelativeMouseState;
@@ -13,40 +12,40 @@ pub use self::relative::RelativeMouseState;
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(u32)]
 pub enum SystemCursor {
-    Arrow = ll::SDL_SYSTEM_CURSOR_ARROW as u32,
-    IBeam = ll::SDL_SYSTEM_CURSOR_IBEAM as u32,
-    Wait = ll::SDL_SYSTEM_CURSOR_WAIT as u32,
-    Crosshair = ll::SDL_SYSTEM_CURSOR_CROSSHAIR as u32,
-    WaitArrow = ll::SDL_SYSTEM_CURSOR_WAITARROW as u32,
-    SizeNWSE = ll::SDL_SYSTEM_CURSOR_SIZENWSE as u32,
-    SizeNESW = ll::SDL_SYSTEM_CURSOR_SIZENESW as u32,
-    SizeWE = ll::SDL_SYSTEM_CURSOR_SIZEWE as u32,
-    SizeNS = ll::SDL_SYSTEM_CURSOR_SIZENS as u32,
-    SizeAll = ll::SDL_SYSTEM_CURSOR_SIZEALL as u32,
-    No = ll::SDL_SYSTEM_CURSOR_NO as u32,
-    Hand = ll::SDL_SYSTEM_CURSOR_HAND as u32,
+    Arrow = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_ARROW as u32,
+    IBeam = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_IBEAM as u32,
+    Wait = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_WAIT as u32,
+    Crosshair = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_CROSSHAIR as u32,
+    WaitArrow = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_WAITARROW as u32,
+    SizeNWSE = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_SIZENWSE as u32,
+    SizeNESW = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_SIZENESW as u32,
+    SizeWE = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_SIZEWE as u32,
+    SizeNS = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_SIZENS as u32,
+    SizeAll = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_SIZEALL as u32,
+    No = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_NO as u32,
+    Hand = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_HAND as u32,
 }
 
 pub struct Cursor {
-    raw: *mut ll::SDL_Cursor
+    raw: *mut sys::SDL_Cursor
 }
 
 impl Drop for Cursor {
     #[inline]
     fn drop(&mut self) {
-        unsafe { ll::SDL_FreeCursor(self.raw) };
+        unsafe { sys::SDL_FreeCursor(self.raw) };
     }
 }
 
 impl Cursor {
     pub fn new(data: &[u8], mask: &[u8], width: i32, height: i32, hot_x: i32, hot_y: i32) -> Result<Cursor, String> {
         unsafe {
-            let raw = ll::SDL_CreateCursor(data.as_ptr(),
+            let raw = sys::SDL_CreateCursor(data.as_ptr(),
                                            mask.as_ptr(),
                                            width as i32, height as i32,
                                            hot_x as i32, hot_y as i32);
 
-            if raw == ptr::null_mut() {
+            if raw.is_null() {
                 Err(get_error())
             } else {
                 Ok(Cursor{ raw: raw })
@@ -57,9 +56,9 @@ impl Cursor {
     // TODO: figure out how to pass Surface in here correctly
     pub fn from_surface<S: AsRef<SurfaceRef>>(surface: S, hot_x: i32, hot_y: i32) -> Result<Cursor, String> {
         unsafe {
-            let raw = ll::SDL_CreateColorCursor(surface.as_ref().raw(), hot_x, hot_y);
+            let raw = sys::SDL_CreateColorCursor(surface.as_ref().raw(), hot_x, hot_y);
 
-            if raw == ptr::null_mut() {
+            if raw.is_null() {
                 Err(get_error())
             } else {
                 Ok(Cursor{ raw: raw })
@@ -69,9 +68,9 @@ impl Cursor {
 
     pub fn from_system(cursor: SystemCursor) -> Result<Cursor, String> {
         unsafe {
-            let raw = ll::SDL_CreateSystemCursor(cursor as u32);
+            let raw = sys::SDL_CreateSystemCursor(transmute(cursor as u32));
 
-            if raw == ptr::null_mut() {
+            if raw.is_null() {
                 Err(get_error())
             } else {
                 Ok(Cursor{ raw: raw })
@@ -80,7 +79,7 @@ impl Cursor {
     }
 
     pub fn set(&self) {
-        unsafe { ll::SDL_SetCursor(self.raw); }
+        unsafe { sys::SDL_SetCursor(self.raw); }
     }
 }
 
@@ -131,23 +130,23 @@ impl MouseWheelDirection {
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum MouseButton {
     Unknown = 0,
-    Left   = ll::SDL_BUTTON_LEFT as u8,
-    Middle = ll::SDL_BUTTON_MIDDLE as u8,
-    Right  = ll::SDL_BUTTON_RIGHT as u8,
-    X1     = ll::SDL_BUTTON_X1 as u8,
-    X2     = ll::SDL_BUTTON_X2 as u8,
+    Left   = sys::SDL_BUTTON_LEFT as u8,
+    Middle = sys::SDL_BUTTON_MIDDLE as u8,
+    Right  = sys::SDL_BUTTON_RIGHT as u8,
+    X1     = sys::SDL_BUTTON_X1 as u8,
+    X2     = sys::SDL_BUTTON_X2 as u8,
 }
 
 impl MouseButton {
     #[inline]
     pub fn from_ll(button: u8) -> MouseButton {
-        match button {
-            ll::SDL_BUTTON_LEFT   => MouseButton::Left,
-            ll::SDL_BUTTON_MIDDLE => MouseButton::Middle,
-            ll::SDL_BUTTON_RIGHT  => MouseButton::Right,
-            ll::SDL_BUTTON_X1     => MouseButton::X1,
-            ll::SDL_BUTTON_X2     => MouseButton::X2,
-            _                     => MouseButton::Unknown,
+        match button as u32 {
+            sys::SDL_BUTTON_LEFT   => MouseButton::Left,
+            sys::SDL_BUTTON_MIDDLE => MouseButton::Middle,
+            sys::SDL_BUTTON_RIGHT  => MouseButton::Right,
+            sys::SDL_BUTTON_X1     => MouseButton::X1,
+            sys::SDL_BUTTON_X2     => MouseButton::X2,
+            _                      => MouseButton::Unknown,
         }
     }
 }
@@ -164,7 +163,7 @@ impl MouseState {
         let mut x = 0;
         let mut y = 0;
         let mouse_state: u32 = unsafe {
-            ll::SDL_GetMouseState(&mut x, &mut y)
+            sys::SDL_GetMouseState(&mut x, &mut y)
         };
 
         MouseState {
@@ -181,6 +180,10 @@ impl MouseState {
         self.mouse_state
     }
 
+    fn button_mask(&self, button: u32) -> u32 {
+        1 << (button - 1)
+    }
+
     /// Returns true if the left mouse button is pressed.
     ///
     /// # Example
@@ -191,19 +194,19 @@ impl MouseState {
     ///     e.mouse_state().left()
     /// }
     /// ```
-    pub fn left(&self) -> bool { (self.mouse_state & ll::SDL_BUTTON_LMASK) != 0 }
+    pub fn left(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_LEFT)) != 0 }
 
     /// Tests if the middle mouse button was pressed.
-    pub fn middle(&self) -> bool { (self.mouse_state & ll::SDL_BUTTON_MMASK) != 0 }
+    pub fn middle(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_MIDDLE)) != 0 }
 
     /// Tests if the right mouse button was pressed.
-    pub fn right(&self) -> bool { (self.mouse_state & ll::SDL_BUTTON_RMASK) != 0 }
+    pub fn right(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_RIGHT)) != 0 }
 
     /// Tests if the X1 mouse button was pressed.
-    pub fn x1(&self) -> bool { (self.mouse_state & ll::SDL_BUTTON_X1MASK) != 0 }
+    pub fn x1(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_X1)) != 0 }
 
     /// Tests if the X2 mouse button was pressed.
-    pub fn x2(&self) -> bool { (self.mouse_state & ll::SDL_BUTTON_X2MASK) != 0 }
+    pub fn x2(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_X2)) != 0 }
 
     /// Returns the x coordinate of the state
     pub fn x(&self) -> i32 { self.x }
@@ -335,36 +338,38 @@ pub struct MouseUtil {
 impl MouseUtil {
     /// Gets the id of the window which currently has mouse focus.
     pub fn focused_window_id(&self) -> Option<u32> {
-        let raw = unsafe { ll::SDL_GetMouseFocus() };
-        if raw == ptr::null_mut() {
+        let raw = unsafe { sys::SDL_GetMouseFocus() };
+        if raw.is_null() {
             None
         } else {
-            let id = unsafe { ::sys::video::SDL_GetWindowID(raw) };
+            let id = unsafe { sys::SDL_GetWindowID(raw) };
             Some(id)
         }
     }
 
     pub fn warp_mouse_in_window(&self, window: &video::Window, x: i32, y: i32) {
-        unsafe { ll::SDL_WarpMouseInWindow(window.raw(), x, y); }
+        unsafe { sys::SDL_WarpMouseInWindow(window.raw(), x, y); }
     }
 
     pub fn set_relative_mouse_mode(&self, on: bool) {
-        unsafe { ll::SDL_SetRelativeMouseMode(on as i32); }
+        let on = if on { sys::SDL_bool::SDL_TRUE } else { sys::SDL_bool::SDL_FALSE };
+        unsafe { sys::SDL_SetRelativeMouseMode(on); }
     }
 
     pub fn relative_mouse_mode(&self) -> bool {
-        unsafe { ll::SDL_GetRelativeMouseMode() == 1 }
+        unsafe { sys::SDL_GetRelativeMouseMode() == sys::SDL_bool::SDL_TRUE }
     }
 
     pub fn is_cursor_showing(&self) -> bool {
-        unsafe { ll::SDL_ShowCursor(::sys::SDL_QUERY) == 1 }
+        unsafe { sys::SDL_ShowCursor(::sys::SDL_QUERY) == 1 }
     }
 
     pub fn show_cursor(&self, show: bool) {
-        unsafe { ll::SDL_ShowCursor(show as i32); }
+        unsafe { sys::SDL_ShowCursor(show as i32); }
     }
 
     pub fn capture(&self, enable: bool) {
-        unsafe { ll::SDL_CaptureMouse(enable as i32); }
+        let enable = if enable { sys::SDL_bool::SDL_TRUE } else { sys::SDL_bool::SDL_FALSE };
+        unsafe { sys::SDL_CaptureMouse(enable); }
     }
 }

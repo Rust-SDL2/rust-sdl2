@@ -2,18 +2,19 @@ use std::error;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt;
 use std::rc::Rc;
-use libc::c_char;
+use libc::{c_char, uint32_t};
+use std::mem::transmute;
 
-use sys::sdl as ll;
+use sys;
 
 #[repr(i32)]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum Error {
-    NoMemError = ll::SDL_ENOMEM as i32,
-    ReadError = ll::SDL_EFREAD as i32,
-    WriteError = ll::SDL_EFWRITE as i32,
-    SeekError = ll::SDL_EFSEEK as i32,
-    UnsupportedError = ll::SDL_UNSUPPORTED as i32
+    NoMemError = sys::SDL_errorcode::SDL_ENOMEM as i32,
+    ReadError = sys::SDL_errorcode::SDL_EFREAD as i32,
+    WriteError = sys::SDL_errorcode::SDL_EFWRITE as i32,
+    SeekError = sys::SDL_errorcode::SDL_EFSEEK as i32,
+    UnsupportedError = sys::SDL_errorcode::SDL_UNSUPPORTED as i32
 }
 
 impl fmt::Display for Error {
@@ -77,16 +78,14 @@ impl Sdl {
 
             if was_alive {
                 Err("Cannot initialize `Sdl` more than once at a time.".to_owned())
-            } else {
+            } else if sys::SDL_Init(0) == 0 {
                 // Initialize SDL without any explicit subsystems (flags = 0).
-                if ll::SDL_Init(0) == 0 {
-                    Ok(Sdl {
-                        sdldrop: Rc::new(SdlDrop)
-                    })
-                } else {
-                    IS_SDL_CONTEXT_ALIVE.swap(false, Ordering::Relaxed);
-                    Err(get_error())
-                }
+                Ok(Sdl {
+                    sdldrop: Rc::new(SdlDrop)
+                })
+            } else {
+                IS_SDL_CONTEXT_ALIVE.swap(false, Ordering::Relaxed);
+                Err(get_error())
             }
         }
     }
@@ -149,7 +148,7 @@ impl Drop for SdlDrop {
         let was_alive = IS_SDL_CONTEXT_ALIVE.swap(false, Ordering::Relaxed);
         assert!(was_alive);
 
-        unsafe { ll::SDL_Quit(); }
+        unsafe { sys::SDL_Quit(); }
     }
 }
 
@@ -163,7 +162,7 @@ macro_rules! subsystem {
         impl $name {
             #[inline]
             fn new(sdl: &Sdl) -> Result<$name, String> {
-                let result = unsafe { ll::SDL_InitSubSystem($flag) };
+                let result = unsafe { sys::SDL_InitSubSystem($flag) };
 
                 if result == 0 {
                     Ok($name {
@@ -228,25 +227,25 @@ macro_rules! subsystem {
 #[derive(Debug, Clone)]
 struct SubsystemDrop {
     _sdldrop: Rc<SdlDrop>,
-    flag: ll::SDL_InitFlag
+    flag: uint32_t
 }
 
 impl Drop for SubsystemDrop {
     #[inline]
     fn drop(&mut self) {
-        unsafe { ll::SDL_QuitSubSystem(self.flag); }
+        unsafe { sys::SDL_QuitSubSystem(self.flag); }
     }
 }
 
-subsystem!(AudioSubsystem, ll::SDL_INIT_AUDIO, nosync);
-subsystem!(GameControllerSubsystem, ll::SDL_INIT_GAMECONTROLLER, nosync);
-subsystem!(HapticSubsystem, ll::SDL_INIT_HAPTIC, nosync);
-subsystem!(JoystickSubsystem, ll::SDL_INIT_JOYSTICK, nosync);
-subsystem!(VideoSubsystem, ll::SDL_INIT_VIDEO, nosync);
+subsystem!(AudioSubsystem, sys::SDL_INIT_AUDIO, nosync);
+subsystem!(GameControllerSubsystem, sys::SDL_INIT_GAMECONTROLLER, nosync);
+subsystem!(HapticSubsystem, sys::SDL_INIT_HAPTIC, nosync);
+subsystem!(JoystickSubsystem, sys::SDL_INIT_JOYSTICK, nosync);
+subsystem!(VideoSubsystem, sys::SDL_INIT_VIDEO, nosync);
 // Timers can be added on other threads.
-subsystem!(TimerSubsystem, ll::SDL_INIT_TIMER, sync);
+subsystem!(TimerSubsystem, sys::SDL_INIT_TIMER, sync);
 // The event queue can be read from other threads.
-subsystem!(EventSubsystem, ll::SDL_INIT_EVENTS, sync);
+subsystem!(EventSubsystem, sys::SDL_INIT_EVENTS, sync);
 
 static mut IS_EVENT_PUMP_ALIVE: bool = false;
 
@@ -266,7 +265,7 @@ impl EventPump {
                 Err("an `EventPump` instance is already alive - there can only be one `EventPump` in use at a time.".to_owned())
             } else {
                 // Initialize the events subsystem, just in case none of the other subsystems have done it yet.
-                let result = ll::SDL_InitSubSystem(ll::SDL_INIT_EVENTS);
+                let result = sys::SDL_InitSubSystem(sys::SDL_INIT_EVENTS);
 
                 if result == 0 {
                     IS_EVENT_PUMP_ALIVE = true;
@@ -289,7 +288,7 @@ impl Drop for EventPump {
 
         unsafe {
             assert!(IS_EVENT_PUMP_ALIVE);
-            ll::SDL_QuitSubSystem(ll::SDL_INIT_EVENTS);
+            sys::SDL_QuitSubSystem(sys::SDL_INIT_EVENTS);
             IS_EVENT_PUMP_ALIVE = false;
         }
     }
@@ -314,7 +313,7 @@ pub fn init() -> Result<Sdl, String> { Sdl::new() }
 
 pub fn get_error() -> String {
     unsafe {
-        let err = ll::SDL_GetError();
+        let err = sys::SDL_GetError();
         CStr::from_ptr(err as *const _).to_str().unwrap().to_owned()
     }
 }
@@ -322,14 +321,14 @@ pub fn get_error() -> String {
 pub fn set_error(err: &str) -> Result<(), NulError> {
     let c_string = try!(CString::new(err));
     Ok(unsafe {
-        ll::SDL_SetError(c_string.as_ptr() as *const c_char);
+        sys::SDL_SetError(c_string.as_ptr() as *const c_char);
     })
 }
 
 pub fn set_error_from_code(err: Error) {
-    unsafe { ll::SDL_Error(err as ll::SDL_errorcode); }
+    unsafe { sys::SDL_Error(transmute(err)); }
 }
 
 pub fn clear_error() {
-    unsafe { ll::SDL_ClearError(); }
+    unsafe { sys::SDL_ClearError(); }
 }

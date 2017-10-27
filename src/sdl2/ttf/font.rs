@@ -7,7 +7,7 @@ use std::ffi::NulError;
 use std::fmt;
 use std::marker::PhantomData;
 use ::surface::Surface;
-use ::sys::surface::SDL_Surface;
+use sys::SDL_Surface;
 use ::get_error;
 use ::pixels::Color;
 use ::rwops::RWops;

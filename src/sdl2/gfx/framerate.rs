@@ -1,5 +1,4 @@
 //! Framerate control
-extern crate c_vec;
 
 use libc;
 use libc::{c_void, uint32_t, size_t};

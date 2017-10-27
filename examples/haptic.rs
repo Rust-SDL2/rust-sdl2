@@ -42,7 +42,7 @@ fn main() {
                 // Axis motion is an absolute value in the range
                 // [-32768, 32767]. Let's simulate a very rough dead
                 // zone to ignore spurious events.
-                let dead_zone = 10000;
+                let dead_zone = 10_000;
                 if val > dead_zone || val < -dead_zone {
                     println!("Axis {} moved to {}", axis_idx, val);
                 }

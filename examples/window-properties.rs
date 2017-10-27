@@ -31,7 +31,7 @@ pub fn main() {
 
         {
             // Update the window title.
-            let mut window = canvas.window_mut();
+            let window = canvas.window_mut();
 
             let position = window.position();
             let size = window.size();

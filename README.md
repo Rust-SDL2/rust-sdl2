@@ -316,6 +316,18 @@ the last `Canvas` or the last `TextureCreator` will be freed.
 There is no online documentation for this feature, however you can build it yourself in your project by enabling the feature in your
 Cargo.toml, running `cargo doc` and accessing `target/doc/sdl2/index.html` via a browser.
 
+# Generating sdl2-sys with bindgen
+
+The sdl2-sys that was generated for this crate is very generic and can be used on a lot of platforms with very few limitations. However,
+you may sometimes face trouble when using platform-specific features of SDL2, for instance the WindowManager category.
+
+The feature "use-bindgen" allows you to avoid this limitation by generating the proper bindings depending on your target. It will take
+the headers based on what `pkg-config` outputs (if you enabled the feature "use-pkg-config") and generate bindings based on them.
+If you don't have pkg-config or disabled the feature, it will try to get the headers in `SDL-2.0.6/include` of this crate instead.
+
+If somehow you have your own headers that you want to use (use a beta version, an older version, ...),
+you can set the environment variable "SDL2_INCLUDE_PATH" and those headers will be used by bindgen instead.
+
 # OpenGL
 
 If you want to use OpenGL, you also need the

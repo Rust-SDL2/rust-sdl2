@@ -1,9 +1,8 @@
-use sys::joystick as ll;
+use sys;
 
 use JoystickSubsystem;
 use get_error;
 use clear_error;
-use sys::event::{SDL_QUERY, SDL_ENABLE};
 use std::ffi::{CString, CStr, NulError};
 use std::fmt::{Display, Formatter, Error};
 use libc::c_char;
@@ -12,7 +11,7 @@ use common::{validate_int, IntegerOrSdlError};
 impl JoystickSubsystem {
     /// Retreive the total number of attached joysticks *and* controllers identified by SDL.
     pub fn num_joysticks(&self) -> Result<u32, String> {
-        let result = unsafe { ll::SDL_NumJoysticks() };
+        let result = unsafe { sys::SDL_NumJoysticks() };
 
         if result >= 0 {
             Ok(result as u32)
@@ -27,7 +26,7 @@ impl JoystickSubsystem {
         use common::IntegerOrSdlError::*;
         let joystick_index = try!(validate_int(joystick_index, "joystick_index"));
 
-        let joystick = unsafe { ll::SDL_JoystickOpen(joystick_index) };
+        let joystick = unsafe { sys::SDL_JoystickOpen(joystick_index) };
 
         if joystick.is_null() {
             Err(SdlError(get_error()))
@@ -43,9 +42,9 @@ impl JoystickSubsystem {
     pub fn name_for_index(&self, joystick_index: u32) -> Result<String, IntegerOrSdlError> {
         use common::IntegerOrSdlError::*;
         let joystick_index = try!(validate_int(joystick_index, "joystick_index"));
-        
-        let c_str = unsafe { ll::SDL_JoystickNameForIndex(joystick_index) };
-        
+
+        let c_str = unsafe { sys::SDL_JoystickNameForIndex(joystick_index) };
+
         if c_str.is_null() {
             Err(SdlError(get_error()))
         } else {
@@ -60,7 +59,7 @@ impl JoystickSubsystem {
         use common::IntegerOrSdlError::*;
         let joystick_index = try!(validate_int(joystick_index, "joystick_index"));
 
-        let raw = unsafe { ll::SDL_JoystickGetDeviceGUID(joystick_index) };
+        let raw = unsafe { sys::SDL_JoystickGetDeviceGUID(joystick_index) };
 
         let guid = Guid { raw: raw };
 
@@ -74,27 +73,27 @@ impl JoystickSubsystem {
     /// If state is `true` joystick events are processed, otherwise
     /// they're ignored.
     pub fn set_event_state(&self, state: bool) {
-        unsafe { ll::SDL_JoystickEventState(state as i32) };
+        unsafe { sys::SDL_JoystickEventState(state as i32) };
     }
 
     /// Return `true` if joystick events are processed.
     pub fn event_state(&self) -> bool {
-        unsafe { ll::SDL_JoystickEventState(SDL_QUERY as i32)
-                 == SDL_ENABLE as i32 }
+        unsafe { sys::SDL_JoystickEventState(sys::SDL_QUERY as i32)
+                 == sys::SDL_ENABLE as i32 }
     }
 
     /// Force joystick update when not using the event loop
     #[inline]
     pub fn update(&self) {
-        unsafe { ll::SDL_JoystickUpdate() };
+        unsafe { sys::SDL_JoystickUpdate() };
     }
 
 }
 
-/// Wrapper around the SDL_Joystick object
+/// Wrapper around the `SDL_Joystick` object
 pub struct Joystick {
     subsystem: JoystickSubsystem,
-    raw: *mut ll::SDL_Joystick
+    raw: *mut sys::SDL_Joystick
 }
 
 impl Joystick {
@@ -104,7 +103,7 @@ impl Joystick {
     /// Return the name of the joystick or an empty string if no name
     /// is found.
     pub fn name(&self) -> String {
-        let name = unsafe { ll::SDL_JoystickName(self.raw) };
+        let name = unsafe { sys::SDL_JoystickName(self.raw) };
 
         c_str_to_string(name)
     }
@@ -112,11 +111,11 @@ impl Joystick {
     /// Return true if the joystick has been opened and currently
     /// connected.
     pub fn attached(&self) -> bool {
-        unsafe { ll::SDL_JoystickGetAttached(self.raw) != 0 }
+        unsafe { sys::SDL_JoystickGetAttached(self.raw) != sys::SDL_bool::SDL_FALSE }
     }
 
     pub fn instance_id(&self) -> i32 {
-        let result = unsafe { ll::SDL_JoystickInstanceID(self.raw) };
+        let result = unsafe { sys::SDL_JoystickInstanceID(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
@@ -128,7 +127,7 @@ impl Joystick {
 
     /// Retreive the joystick's GUID
     pub fn guid(&self) -> Guid {
-        let raw = unsafe { ll::SDL_JoystickGetGUID(self.raw) };
+        let raw = unsafe { sys::SDL_JoystickGetGUID(self.raw) };
 
         let guid = Guid { raw: raw };
 
@@ -142,7 +141,7 @@ impl Joystick {
 
     /// Retreive the number of axes for this joystick
     pub fn num_axes(&self) -> u32 {
-        let result = unsafe { ll::SDL_JoystickNumAxes(self.raw) };
+        let result = unsafe { sys::SDL_JoystickNumAxes(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
@@ -164,7 +163,7 @@ impl Joystick {
         clear_error();
 
         let axis = try!(validate_int(axis, "axis"));
-        let pos = unsafe { ll::SDL_JoystickGetAxis(self.raw, axis) };
+        let pos = unsafe { sys::SDL_JoystickGetAxis(self.raw, axis) };
 
         if pos != 0 {
             Ok(pos)
@@ -181,7 +180,7 @@ impl Joystick {
 
     /// Retreive the number of buttons for this joystick
     pub fn num_buttons(&self) -> u32 {
-        let result = unsafe { ll::SDL_JoystickNumButtons(self.raw) };
+        let result = unsafe { sys::SDL_JoystickNumButtons(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
@@ -201,7 +200,7 @@ impl Joystick {
         clear_error();
 
         let button = try!(validate_int(button, "button"));
-        let pressed = unsafe { ll::SDL_JoystickGetButton(self.raw, button) };
+        let pressed = unsafe { sys::SDL_JoystickGetButton(self.raw, button) };
 
         match pressed {
             1 => Ok(true),
@@ -222,7 +221,7 @@ impl Joystick {
 
     /// Retreive the number of balls for this joystick
     pub fn num_balls(&self) -> u32 {
-        let result = unsafe { ll::SDL_JoystickNumBalls(self.raw) };
+        let result = unsafe { sys::SDL_JoystickNumBalls(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
@@ -240,7 +239,7 @@ impl Joystick {
         let mut dy = 0;
 
         let ball = try!(validate_int(ball, "ball"));
-        let result = unsafe { ll::SDL_JoystickGetBall(self.raw, ball, &mut dx, &mut dy) };
+        let result = unsafe { sys::SDL_JoystickGetBall(self.raw, ball, &mut dx, &mut dy) };
 
         if result == 0 {
             Ok((dx, dy))
@@ -251,7 +250,7 @@ impl Joystick {
 
     /// Retreive the number of balls for this joystick
     pub fn num_hats(&self) -> u32 {
-        let result = unsafe { ll::SDL_JoystickNumHats(self.raw) };
+        let result = unsafe { sys::SDL_JoystickNumHats(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
@@ -270,7 +269,7 @@ impl Joystick {
         clear_error();
 
         let hat = try!(validate_int(hat, "hat"));
-        let result = unsafe { ll::SDL_JoystickGetHat(self.raw, hat) };
+        let result = unsafe { sys::SDL_JoystickGetHat(self.raw, hat) };
 
         let state = HatState::from_raw(result as u8);
 
@@ -291,37 +290,45 @@ impl Joystick {
 impl Drop for Joystick {
     fn drop(&mut self) {
         if self.attached() {
-            unsafe { ll::SDL_JoystickClose(self.raw) }
+            unsafe { sys::SDL_JoystickClose(self.raw) }
         }
     }
 }
 
-/// Wrapper around a SDL_JoystickGUID, a globally unique identifier
+/// Wrapper around a `SDL_JoystickGUID`, a globally unique identifier
 /// for a joystick.
-#[derive(Copy, Clone, Eq, PartialEq, Hash)]
+#[derive(Copy, Clone)]
 pub struct Guid {
-    raw: ll::SDL_JoystickGUID,
+    raw: sys::SDL_JoystickGUID,
 }
+
+impl PartialEq for Guid {
+    fn eq(&self, other: &Guid) -> bool {
+        self.raw.data == other.raw.data
+    }
+}
+
+impl Eq for Guid {}
 
 impl Guid {
     /// Create a GUID from a string representation.
     pub fn from_string(guid: &str) -> Result<Guid, NulError> {
         let guid = try!(CString::new(guid));
 
-        let raw = unsafe { ll::SDL_JoystickGetGUIDFromString(guid.as_ptr() as *const c_char) };
+        let raw = unsafe { sys::SDL_JoystickGetGUIDFromString(guid.as_ptr() as *const c_char) };
 
         Ok(Guid { raw: raw })
     }
 
     /// Return `true` if GUID is full 0s
     pub fn is_zero(&self) -> bool {
-        for &i in self.raw.data.iter() {
+        for &i in &self.raw.data {
             if i != 0 {
                 return false;
             }
         }
 
-        return true;
+        true
     }
 
     /// Return a String representation of GUID
@@ -335,7 +342,7 @@ impl Guid {
         let c_str = buf.as_mut_ptr();
 
         unsafe {
-            ll::SDL_JoystickGetGUIDString(self.raw, c_str, len);
+            sys::SDL_JoystickGetGUIDString(self.raw, c_str, len);
         }
 
         // The buffer should always be NUL terminated (the
@@ -344,14 +351,14 @@ impl Guid {
         if c_str.is_null() {
             String::new()
         } else {
-            unsafe { 
+            unsafe {
                 CStr::from_ptr(c_str as *const _).to_str().unwrap().to_string()
             }
         }
     }
 
     /// Return a copy of the internal SDL_JoystickGUID
-    pub fn raw(self) -> ll::SDL_JoystickGUID {
+    pub fn raw(self) -> sys::SDL_JoystickGUID {
         self.raw
     }
 }
@@ -412,7 +419,7 @@ impl HatState {
 }
 
 /// Convert C string `c_str` to a String. Return an empty string if
-/// c_str is NULL.
+/// `c_str` is NULL.
 fn c_str_to_string(c_str: *const c_char) -> String {
     if c_str.is_null() {
         String::new()

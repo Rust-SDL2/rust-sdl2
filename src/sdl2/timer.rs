@@ -1,7 +1,8 @@
-use libc::{uint32_t, c_void};
+use libc::uint32_t;
+use std::os::raw::c_void;
 use std::marker::PhantomData;
 use std::mem;
-use sys::timer as ll;
+use sys;
 
 use TimerSubsystem;
 
@@ -15,7 +16,7 @@ impl TimerSubsystem {
     pub fn add_timer<'b, 'c>(&'b self, delay: u32, callback: TimerCallback<'c>) -> Timer<'b, 'c> {
         unsafe {
             let callback = Box::new(callback);
-            let timer_id = ll::SDL_AddTimer(delay,
+            let timer_id = sys::SDL_AddTimer(delay,
                                             Some(c_timer_callback),
                                             mem::transmute_copy(&callback));
 
@@ -32,7 +33,7 @@ impl TimerSubsystem {
     /// It's recommended that you use another library for timekeeping, such as `time`.
     pub fn ticks(&mut self) -> u32 {
         // Google says this is probably not thread-safe (TODO: prove/disprove this).
-        unsafe { ll::SDL_GetTicks() }
+        unsafe { sys::SDL_GetTicks() }
     }
 
     /// Sleeps the current thread for the specified amount of milliseconds.
@@ -40,15 +41,15 @@ impl TimerSubsystem {
     /// It's recommended that you use `std::thread::sleep()` instead.
     pub fn delay(&mut self, ms: u32) {
         // Google says this is probably not thread-safe (TODO: prove/disprove this).
-        unsafe { ll::SDL_Delay(ms) }
+        unsafe { sys::SDL_Delay(ms) }
     }
 
     pub fn performance_counter(&self) -> u64 {
-        unsafe { ll::SDL_GetPerformanceCounter() }
+        unsafe { sys::SDL_GetPerformanceCounter() }
     }
 
     pub fn performance_frequency(&self) -> u64 {
-        unsafe { ll::SDL_GetPerformanceFrequency() }
+        unsafe { sys::SDL_GetPerformanceFrequency() }
     }
 }
 
@@ -56,7 +57,7 @@ pub type TimerCallback<'a> = Box<FnMut() -> u32+'a+Sync>;
 
 pub struct Timer<'b, 'a> {
     callback: Option<Box<TimerCallback<'a>>>,
-    raw: ll::SDL_TimerID,
+    raw: sys::SDL_TimerID,
     _marker: PhantomData<&'b ()>
 }
 
@@ -74,7 +75,7 @@ impl<'b, 'a> Drop for Timer<'b, 'a> {
         // SDL_RemoveTimer returns SDL_FALSE if the timer wasn't found (impossible),
         // or the timer has been cancelled via the callback (possible).
         // The timer being cancelled isn't an issue, so we ignore the result.
-        unsafe { ll::SDL_RemoveTimer(self.raw) };
+        unsafe { sys::SDL_RemoveTimer(self.raw) };
     }
 }
 
@@ -90,7 +91,7 @@ extern "C" fn c_timer_callback(_interval: u32, param: *mut c_void) -> uint32_t {
 fn test_timer_runs_multiple_times() {
     use std::sync::{Arc, Mutex};
     use std::time::Duration;
-    
+
     let sdl_context = ::sdl::init().unwrap();
     let timer_subsystem = sdl_context.timer().unwrap();
 
@@ -117,7 +118,7 @@ fn test_timer_runs_multiple_times() {
 fn test_timer_runs_at_least_once() {
     use std::sync::{Arc, Mutex};
     use std::time::Duration;
-    
+
     let sdl_context = ::sdl::init().unwrap();
     let timer_subsystem = sdl_context.timer().unwrap();
 
@@ -138,7 +139,7 @@ fn test_timer_runs_at_least_once() {
 fn test_timer_can_be_recreated() {
     use std::time::Duration;
     use std::sync::{Arc, Mutex};
-    
+
     let sdl_context = ::sdl::init().unwrap();
     let timer_subsystem = sdl_context.timer().unwrap();
 

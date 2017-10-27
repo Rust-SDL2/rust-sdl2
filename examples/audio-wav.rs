@@ -5,7 +5,7 @@ use std::time::Duration;
 use std::borrow::Cow;
 use std::path::{PathBuf, Path};
 
-// NOTE: You probably want to investigate the 
+// NOTE: You probably want to investigate the
 // mixer feature for real use cases.
 
 struct Sound {
@@ -34,7 +34,7 @@ fn main() {
     let audio_subsystem = sdl_context.audio().unwrap();
 
     let desired_spec = AudioSpecDesired {
-        freq: Some(44100),
+        freq: Some(44_100),
         channels: Some(1), // mono
         samples: None      // default
     };
@@ -62,7 +62,7 @@ fn main() {
     device.resume();
 
     // Play for a second
-    std::thread::sleep(Duration::from_millis(1000));
+    std::thread::sleep(Duration::from_millis(1_000));
 
     // Device is automatically closed when dropped
 }

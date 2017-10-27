@@ -152,7 +152,7 @@ impl<'a> SaveSurface for Surface<'a> {
     }
 }
 
-/// Method extensions for creating Textures from a TextureCreator
+/// Method extensions for creating Textures from a `TextureCreator`
 pub trait LoadTexture {
     fn load_texture<P: AsRef<Path>>(&self, filename: P) -> Result<Texture, String>;
 }
@@ -211,7 +211,7 @@ pub fn get_linked_version() -> Version {
 }
 
 #[inline]
-fn to_surface_result<'a>(raw: *mut sys::surface::SDL_Surface) -> Result<Surface<'a>, String> {
+fn to_surface_result<'a>(raw: *mut sys::SDL_Surface) -> Result<Surface<'a>, String> {
     if (raw as *mut ()).is_null() {
         Err(get_error())
     } else {
