@@ -3,6 +3,10 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### v0.31
 
+[PR #711](https://github.com/Rust-SDL2/rust-sdl2/pull/711)
+
+* **Breaking change** Change HatState::Leftdown casing into HatState::LeftDown to be consistent with naming.
+
 [PR #673](https://github.com/Rust-sdl2/rust-sdl2/pull/673)
 
 * Support Audio Capture in AudioCallbacks.
@@ -11,7 +15,7 @@ when upgrading from a version of rust-sdl2 to another.
 
 * **Breaking change** Make get\_swap\_interval return an enum instead of i32
 * The signature of set\_swap\_interval has been changed as well, but it shouldn't
-breaking exisitng code too much.
+breaking existing code too much.
 
 [PR #683](https://github.com/Rust-sdl2/rust-sdl2/pull/684)
 
