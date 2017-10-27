@@ -56,23 +56,22 @@ impl GameControllerSubsystem {
         }
     }
 
-    /// Return true if the joystick at index `id` is a game controller.
+    /// Return true if the joystick at index `joystick_index` is a game controller.
     #[inline]
-    pub fn is_game_controller(&self, id: u32) -> bool {
-        match validate_int(id, "id") {
-            Ok(id) => unsafe { ll::SDL_IsGameController(id) != 0 },
+    pub fn is_game_controller(&self, joystick_index: u32) -> bool {
+        match validate_int(joystick_index, "joystick_index") {
+            Ok(joystick_index) => unsafe { ll::SDL_IsGameController(joystick_index) != 0 },
             Err(_) => false
         }
     }
 
-    /// Attempt to open the controller number `id` and return
-    /// it. Controller IDs are the same as joystick IDs and the
-    /// maximum number can be retreived using the `SDL_NumJoysticks`
-    /// function.
-    pub fn open(&self, id: u32) -> Result<GameController, IntegerOrSdlError> {
+    /// Attempt to open the controller ad index `joystick_index` and return it.
+    /// Controller IDs are the same as joystick IDs and the maximum number can
+    /// be retreived using the `SDL_NumJoysticks` function.
+    pub fn open(&self, joystick_index: u32) -> Result<GameController, IntegerOrSdlError> {
         use common::IntegerOrSdlError::*;
-        let id = try!(validate_int(id, "id"));
-        let controller = unsafe { ll::SDL_GameControllerOpen(id) };
+        let joystick_index = try!(validate_int(joystick_index, "joystick_index"));
+        let controller = unsafe { ll::SDL_GameControllerOpen(joystick_index) };
 
         if controller.is_null() {
             Err(SdlError(get_error()))
@@ -84,11 +83,11 @@ impl GameControllerSubsystem {
         }
     }
 
-    /// Return the name of the controller at the given index.
-    pub fn name_for_index(&self, index: u32) -> Result<String, IntegerOrSdlError> {
+    /// Return the name of the controller at index `joystick_index`.
+    pub fn name_for_index(&self, joystick_index: u32) -> Result<String, IntegerOrSdlError> {
         use common::IntegerOrSdlError::*;
-        let index = try!(validate_int(index, "index"));
-        let c_str = unsafe { ll::SDL_GameControllerNameForIndex(index) };
+        let joystick_index = try!(validate_int(joystick_index, "joystick_index"));
+        let c_str = unsafe { ll::SDL_GameControllerNameForIndex(joystick_index) };
 
         if c_str.is_null() {
             Err(SdlError(get_error()))
@@ -345,7 +344,7 @@ impl GameController {
         unsafe { ll::SDL_GameControllerGetAttached(self.raw) != 0 }
     }
 
-    /// Return the joystick id of this controller
+    /// Return the joystick instance id of this controller
     pub fn instance_id(&self) -> i32 {
         let result = unsafe {
           let joystick = ll::SDL_GameControllerGetJoystick(self.raw);

@@ -3,13 +3,14 @@ use sys::haptic as ll;
 use sys::joystick as sys_joystick;
 
 use HapticSubsystem;
-use common::IntegerOrSdlError;
+use common::{validate_int, IntegerOrSdlError};
 use get_error;
 
 impl HapticSubsystem {
-    /// Attempt to open the joystick at number `id` and return it.
-    pub fn open_from_joystick_id(&self, joystick_index: i32) -> Result<Haptic, IntegerOrSdlError> {
+    /// Attempt to open the joystick at index `joystick_index` and return its haptic device.
+    pub fn open_from_joystick_id(&self, joystick_index: u32) -> Result<Haptic, IntegerOrSdlError> {
         use common::IntegerOrSdlError::*;
+        let joystick_index = try!(validate_int(joystick_index, "joystick_index"));
 
         let haptic = unsafe {
             let joystick = sys_joystick::SDL_JoystickOpen(joystick_index);

@@ -537,6 +537,7 @@ pub enum Event {
 
     JoyAxisMotion {
         timestamp: u32,
+        /// The joystick's `id`
         which: i32,
         axis_idx: u8,
         value: i16
@@ -544,6 +545,7 @@ pub enum Event {
 
     JoyBallMotion {
         timestamp: u32,
+        /// The joystick's `id`
         which: i32,
         ball_idx: u8,
         xrel: i16,
@@ -552,6 +554,7 @@ pub enum Event {
 
     JoyHatMotion {
         timestamp: u32,
+        /// The joystick's `id`
         which: i32,
         hat_idx: u8,
         state: HatState
@@ -559,26 +562,31 @@ pub enum Event {
 
     JoyButtonDown {
         timestamp: u32,
+        /// The joystick's `id`
         which: i32,
         button_idx: u8
     },
     JoyButtonUp {
         timestamp: u32,
+        /// The joystick's `id`
         which: i32,
         button_idx: u8
     },
 
     JoyDeviceAdded {
         timestamp: u32,
-        which: i32
+        /// The newly added joystick's `joystick_index`
+        which: u32
     },
     JoyDeviceRemoved {
         timestamp: u32,
+        /// The joystick's `id`
         which: i32
     },
 
     ControllerAxisMotion {
         timestamp: u32,
+        /// The controller's joystick `id`
         which: i32,
         axis: Axis,
         value: i16
@@ -586,25 +594,30 @@ pub enum Event {
 
     ControllerButtonDown {
         timestamp: u32,
+        /// The controller's joystick `id`
         which: i32,
         button: Button
     },
     ControllerButtonUp {
         timestamp: u32,
+        /// The controller's joystick `id`
         which: i32,
         button: Button
     },
 
     ControllerDeviceAdded {
         timestamp: u32,
-        which: i32
+        /// The newly added controller's `joystick_index`
+        which: u32
     },
     ControllerDeviceRemoved {
         timestamp: u32,
+        /// The controller's joystick `id`
         which: i32
     },
     ControllerDeviceRemapped {
         timestamp: u32,
+        /// The controller's joystick `id`
         which: i32
     },
 
@@ -1084,7 +1097,7 @@ impl Event {
                 let event = ll::SDL_JoyDeviceEvent {
                     type_: ll::SDL_JOYDEVICEADDED,
                     timestamp: timestamp,
-                    which: which,
+                    which: which as i32,
                 };
                 unsafe {
                     ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_JoyDeviceEvent, 1);
@@ -1181,7 +1194,7 @@ impl Event {
                 let event = ll::SDL_ControllerDeviceEvent {
                     type_: ll::SDL_CONTROLLERDEVICEADDED,
                     timestamp: timestamp,
-                    which: which,
+                    which: which as i32,
                 };
                 unsafe {
                     ptr::copy(&event, &mut ret as *mut ll::SDL_Event as *mut ll::SDL_ControllerDeviceEvent, 1);
@@ -1447,7 +1460,7 @@ impl Event {
                 let ref event = *raw.jdevice();
                 Event::JoyDeviceAdded {
                     timestamp: event.timestamp,
-                    which: event.which
+                    which: event.which as u32
                 }
             }
             EventType::JoyDeviceRemoved => {
@@ -1493,7 +1506,7 @@ impl Event {
                 let ref event = *raw.cdevice();
                 Event::ControllerDeviceAdded {
                     timestamp: event.timestamp,
-                    which: event.which
+                    which: event.which as u32
                 }
             }
             EventType::ControllerDeviceRemoved => {
