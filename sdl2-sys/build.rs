@@ -81,7 +81,8 @@ fn main() {
     println!("cargo:rustc-link-lib=static=SDL2");
 
     // Also linked to any required libraries for each supported platform
-    if target_os == "windows-msvc" {
+    if t
+        arget_os == "windows-msvc" {
         println!("cargo:rustc-link-lib=user32");
         println!("cargo:rustc-link-lib=gdi32");
         println!("cargo:rustc-link-lib=winmm");
@@ -94,6 +95,15 @@ fn main() {
         println!("cargo:rustc-link-lib=dxguid");
     } else if target_os.contains("linux") {
         println!("cargo:rustc-link-lib=sndio");
+    } else if target_os == "darwin" {
+        println!("cargo:rustc-link-lib=framework=Cocoa");
+        println!("cargo:rustc-link-lib=framework=IOKit");
+        println!("cargo:rustc-link-lib=framework=Carbon");
+        println!("cargo:rustc-link-lib=framework=ForceFeedback");
+        println!("cargo:rustc-link-lib=framework=CoreVideo");
+        println!("cargo:rustc-link-lib=framework=CoreAudio");
+        println!("cargo:rustc-link-lib=framework=AudioToolbox");
+        println!("cargo:rustc-link-lib=iconv");
     } else {
         // TODO: Add other platform linker options here.
     }
