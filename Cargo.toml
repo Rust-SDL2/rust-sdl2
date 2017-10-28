@@ -27,7 +27,7 @@ default-features = false
 
 [dependencies.sdl2-sys]
 path = "sdl2-sys"
-version = "0.30.0"
+version = "0.31.0"
 
 [dependencies.c_vec]
 version = ">= 1.0, <= 1.3"
