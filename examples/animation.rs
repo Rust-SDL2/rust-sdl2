@@ -24,13 +24,28 @@ fn main() {
 
     let mut event_pump = sdl_context.event_pump().unwrap();
 
-    let temp_surface = sdl2::surface::Surface::load_bmp(Path::new("assets/animate.bmp")).unwrap();
+    // animation sheet and extras are available from
+    // https://opengameart.org/content/a-platformer-in-the-forest
+    let temp_surface = sdl2::surface::Surface::load_bmp(Path::new("assets/characters.bmp")).unwrap();
     let texture = texture_creator.create_texture_from_surface(&temp_surface).unwrap();
-    
-    let center = Point::new(320,240);
-    let mut source_rect = Rect::new(0, 0, 128, 82);
-    let mut dest_rect = Rect::new(0,0, 128, 82);
-    dest_rect.center_on(center);
+
+    let frames_per_anim = 4;
+    let sprite_tile_size = (32,32);
+
+    // Baby - walk animation
+    let mut source_rect_0 = Rect::new(0, 0, sprite_tile_size.0, sprite_tile_size.0);
+    let mut dest_rect_0 = Rect::new(0, 0, sprite_tile_size.0*4, sprite_tile_size.0*4);
+    dest_rect_0.center_on(Point::new(-64,120));
+
+    // King - walk animation
+    let mut source_rect_1 = Rect::new(0, 32, sprite_tile_size.0, sprite_tile_size.0);
+    let mut dest_rect_1 = Rect::new(0, 32, sprite_tile_size.0*4, sprite_tile_size.0*4);
+    dest_rect_1.center_on(Point::new(0,240));
+
+    // Soldier - walk animation
+    let mut source_rect_2 = Rect::new(0, 64, sprite_tile_size.0, sprite_tile_size.0);
+    let mut dest_rect_2 = Rect::new(0, 64, sprite_tile_size.0*4, sprite_tile_size.0*4);
+    dest_rect_2.center_on(Point::new(440,360));
 
     let mut running = true;
     while running {
@@ -43,11 +58,23 @@ fn main() {
             }
         }
 
-        let ticks = timer.ticks();
+        let ticks = timer.ticks() as i32;
 
-        source_rect.set_x((128 * ((ticks / 100) % 6) ) as i32);
+        // set the current frame for time
+        source_rect_0.set_x(32 * ((ticks / 100) % frames_per_anim));
+        dest_rect_0.set_x(1 * ((ticks / 14) % 768) - 128);
+
+        source_rect_1.set_x(32 * ((ticks / 100) % frames_per_anim));
+        dest_rect_1.set_x((1 * ((ticks / 12) % 768) - 672) * -1);
+
+        source_rect_2.set_x(32 * ((ticks / 100) % frames_per_anim));
+        dest_rect_2.set_x(1 * ((ticks / 10) % 768) - 128);
+
         canvas.clear();
-        canvas.copy_ex(&texture, Some(source_rect), Some(dest_rect), 10.0, None, true, false).unwrap();
+        // copy the frame to the canvas
+        canvas.copy_ex(&texture, Some(source_rect_0), Some(dest_rect_0), 0.0, None, false, false).unwrap();
+        canvas.copy_ex(&texture, Some(source_rect_1), Some(dest_rect_1), 0.0, None, true, false).unwrap();
+        canvas.copy_ex(&texture, Some(source_rect_2), Some(dest_rect_2), 0.0, None, false, false).unwrap();
         canvas.present();
 
         std::thread::sleep(Duration::from_millis(100));
