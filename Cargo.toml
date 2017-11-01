@@ -120,6 +120,7 @@ name = "renderer-texture"
 name = "renderer-yuv"
 
 [[example]]
+required-features = ["ttf", "image"]
 name = "resource-manager"
 
 [[example]]
