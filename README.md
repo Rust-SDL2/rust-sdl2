@@ -339,11 +339,18 @@ If you want to use OpenGL, you also need the
     git = "https://github.com/bjz/gl-rs"
 ```
 
+You have two options to use OpenGL with sdl2:
+
+* Use OpenGL with Canvas and use sdl2::render 
+* Use OpenGL directly on the Window "shell" and use manual OpenGL calls to render something
+
+## Use sdl2::render
+
 Then you need to add some initialization code to establish the bindings.
 
 First, find the OpenGL driver from SDL:
 
-```
+```rust
 fn find_sdl_gl_driver() -> Option<u32> {
     for (index, item) in sdl2::render::drivers().enumerate() {
         if item.name == "opengl" {
@@ -372,11 +379,74 @@ let canvas = window.into_canvas()
 gl::load_with(|name| video_subsystem.gl_get_proc_address(name) as *const _);
 canvas.window().gl_set_context_to_current();
 
+unsafe {
+    gl::ClearColor(0.6, 0.0, 0.8, 1.0);
+    gl::Clear(gl::COLOR_BUFFER_BIT);
+}
+
+canvas.present();
+
 // opengl code here
 ```
 
-Note that these bindings are very raw, and many of the calls will require
-unsafe blocks.
+Be wary though, sdl2 has its own internal state which you should avoid messing with.
+Avoid using manual OpenGL in the middle of SDL2 calls, or change the state in between.
+
+**You cannot override the OpenGL version with this method unless via changing the gl state**
+
+## Use OpenGL calls manually
+
+```rust
+extern crate sdl2;
+extern crate gl;
+
+use sdl2::event::Event;
+use sdl2::keyboard::Keycode;
+use sdl2::video::GLProfile;
+
+fn main() {
+    let sdl_context = sdl2::init().unwrap();
+    let video_subsystem = sdl_context.video().unwrap();
+    
+    let gl_attr = video_subsystem.gl_attr();
+    gl_attr.set_context_profile(GLProfile::Core);
+    gl_attr.set_context_version(3, 3);
+
+    let window = video_subsystem.window("Window", 800, 600)
+        .opengl()
+        .build()
+        .unwrap();
+
+    let ctx = window.gl_create_context().unwrap();
+    gl::load_with(|name| video_subsystem.gl_get_proc_address(name) as *const _);
+    
+    debug_assert_eq!(gl_attr.context_profile(), GLProfile::Core);
+    debug_assert_eq!(gl_attr.context_version(), (3, 3));
+
+    let mut event_pump = sdl_context.event_pump().unwrap();
+
+    'running: loop {
+        unsafe {
+            gl::ClearColor(0.6, 0.0, 0.8, 1.0);
+            gl::Clear(gl::COLOR_BUFFER_BIT);
+        }
+
+        window.gl_swap_window();
+        for event in event_pump.poll_iter() {
+            match event {
+                Event::Quit {..} | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
+                    break 'running
+                },
+                _ => {}
+            }
+        }
+        ::std::thread::sleep(::std::time::Duration::new(0, 1_000_000_000u32 / 60));
+    }
+}
+```
+
+This method is useful when you don't care about sdl2's render capabilities, but you do care about
+its audio, controller and other neat features that sdl2 has.
 
 # When things go wrong
 Rust, and Rust-SDL2, are both still heavily in development, and you may run
