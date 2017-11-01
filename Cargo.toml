@@ -50,7 +50,13 @@ use_mac_framework = ["sdl2-sys/use_mac_framework"]
 name = "animation"
 
 [[example]]
+name = "audio-capture-and-replay"
+
+[[example]]
 name = "audio-queue-squarewave"
+
+[[example]]
+name = "audio-squarewave"
 
 [[example]]
 name = "audio-wav"
