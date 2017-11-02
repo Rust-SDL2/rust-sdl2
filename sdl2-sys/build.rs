@@ -289,5 +289,5 @@ fn generate_bindings<S: AsRef<str> + ::std::fmt::Debug>(target: &str, host: &str
 
 fn get_os_from_triple(triple: &str) -> Option<&str>
 {
-    triple.split("-").nth(2)
+    triple.splitn(3, "-").nth(2)
 }
