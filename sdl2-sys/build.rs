@@ -53,7 +53,7 @@ fn download_to<T: io::Write>(url: &str, mut dest: T) {
 #[cfg(feature = "static-link")]
 fn get_pkg_config() -> pkg_config::Library {
     pkg_config::Config::new()
-        .statik(false)
+        .statik(true)
         .probe("sdl2").unwrap()
 }
 
@@ -61,7 +61,7 @@ fn get_pkg_config() -> pkg_config::Library {
 #[cfg(not(feature = "static-link"))]
 fn get_pkg_config() -> pkg_config::Library {
     pkg_config::Config::new()
-        .statik(true)
+        .statik(false)
         .probe("sdl2").unwrap()
 }
 
