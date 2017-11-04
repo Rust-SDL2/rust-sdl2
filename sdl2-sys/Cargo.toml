@@ -16,7 +16,7 @@ name = "sdl2_sys"
 path = "src/lib.rs"
 
 [build-dependencies.bindgen]
-version = "0.30"
+version = "0.31"
 optional = true
 
 [build-dependencies.pkg-config]

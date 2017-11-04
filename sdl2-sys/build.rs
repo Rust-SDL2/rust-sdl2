@@ -262,6 +262,14 @@ fn generate_bindings<S: AsRef<str> + ::std::fmt::Debug>(target: &str, host: &str
         }
     }
 
+    if target_os == "windows-msvc" {
+        bindings = bindings.clang_arg(format!("-IC:/Program Files (x86)/Windows Kits/8.1/Include/shared"));
+        bindings = bindings.clang_arg(format!("-IC:/Program Files/LLVM/lib/clang/5.0.0/include"));
+        bindings = bindings.clang_arg(format!("-IC:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt"));
+        bindings = bindings.clang_arg(format!("-IC:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include"));
+        bindings = bindings.clang_arg(format!("-IC:/Program Files (x86)/Windows Kits/8.1/Include/um"));
+    };
+
     // SDL2 hasn't a default configuration for Linux
     if target_os == "linux" {
         bindings = bindings.clang_arg("-DSDL_VIDEO_DRIVER_X11");
