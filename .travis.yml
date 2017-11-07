@@ -32,6 +32,7 @@ before_script:
 script:
 - |
   travis-cargo build -- --features "gfx image ttf mixer" &&
+  travis-cargo build -- --examples --features "gfx image ttf mixer" &&
   travis-cargo test -- --features "gfx image ttf mixer" &&
   travis-cargo --only stable doc -- --features "gfx image ttf mixer"
 after_success:
