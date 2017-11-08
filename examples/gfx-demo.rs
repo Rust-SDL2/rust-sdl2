@@ -9,13 +9,6 @@ use sdl2::gfx::primitives::DrawRenderer;
 const SCREEN_WIDTH: u32 = 800;
 const SCREEN_HEIGHT: u32 = 600;
 
-// hadle the annoying Rect i32
-macro_rules! rect(
-    ($x:expr, $y:expr, $w:expr, $h:expr) => (
-        sdl2::rect::Rect::new($x as i32, $y as i32, $w as i32, $h as i32)
-    )
-);
-
 fn main() {
     let sdl_context = sdl2::init().unwrap();
     let video_subsys = sdl_context.video().unwrap();
