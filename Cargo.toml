@@ -2,8 +2,8 @@
 
 name    = "sdl2"
 description = "SDL2 bindings for Rust"
-repository = "https://github.com/AngryLawyer/rust-sdl2"
-documentation = "http://angrylawyer.github.io/rust-sdl2/sdl2/"
+repository = "https://github.com/Rust-SDL2/rust-sdl2"
+documentation = "https://rust-sdl2.github.io/rust-sdl2/sdl2/"
 version = "0.30.0"
 license = "MIT"
 authors = [ "Tony Aldridge <tony@angry-lawyer.com>", "Cobrand <cobrandw@gmail.com>"]
