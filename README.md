@@ -2,7 +2,7 @@
 
 Bindings for SDL2 in Rust
 
-### [Changelog for 0.30](changelog.md#v030)
+### [Changelog for 0.31](changelog.md#v031)
 
 # Overview
 
