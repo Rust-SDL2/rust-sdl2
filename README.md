@@ -31,6 +31,11 @@ If you want a library compatible with earlier versions of SDL, please see
 We currently target the latest stable release of Rust.
 
 ## *SDL2.0 development libraries*
+
+### "Bundled"
+
+Since 0.31, this crate supports a feature named "bundled" which downloads SDL2 from source, compiles it and links it automatically. While this should work for any architecture, you **will** need a C compiler (like `gcc`, `clang`, or MS's own compiler) to use this feature properly.
+
 ### Linux
 Install these through your favourite package management tool, or via
 http://www.libsdl.org/
