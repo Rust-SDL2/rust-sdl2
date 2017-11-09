@@ -3,6 +3,10 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### v0.31
 
+[PR #693](https://github.com/Rust-SDL2/rust-sdl2/pull/693), [PR #720](https://github.com/Rust-SDL2/rust-sdl2/pull/720)
+
+* Adds feature "bundled" as well as "static-link". Entirely compatible wit hthe "use-bindgen" feature. Windows-gnu is not supported yet, any help is needed on that side, but every other major platform should be supported.
+
 [PR #711](https://github.com/Rust-SDL2/rust-sdl2/pull/711)
 
 * **Breaking change** Change HatState::Leftdown casing into HatState::LeftDown to be consistent with naming.
