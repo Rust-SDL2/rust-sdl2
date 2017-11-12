@@ -351,8 +351,6 @@ You have two options to use OpenGL with sdl2:
 
 ## Use sdl2::render
 
-Then you need to add some initialization code to establish the bindings.
-
 First, find the OpenGL driver from SDL:
 
 ```rust
@@ -365,6 +363,8 @@ fn find_sdl_gl_driver() -> Option<u32> {
     None
 }
 ```
+
+This is especially relevant on non-linux systems where the default render engine will something else (for instance DirectX on Windows).
 
 Next, initialize the SDL2 subsystems, and create your window with the OpenGL canvas:
 
