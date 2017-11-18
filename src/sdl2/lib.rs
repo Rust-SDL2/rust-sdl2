@@ -1,6 +1,6 @@
 //! # Getting started
 //!
-//! ```rust
+//! ```rust,no_run
 //! use sdl2::pixels::Color;
 //! use sdl2::event::Event;
 //! use sdl2::keyboard::Keycode;
@@ -24,7 +24,7 @@
 //!     let mut i = 0;
 //!     'running: loop {
 //!         i = (i + 1) % 255;
-//!         canvas.set_draw_color(Color::RGB(i, 64, 255 - i))
+//!         canvas.set_draw_color(Color::RGB(i, 64, 255 - i));
 //!         canvas.clear();
 //!         for event in event_pump.poll_iter() {
 //!             match event {
