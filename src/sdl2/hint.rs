@@ -2,7 +2,7 @@ use std::ffi::{CString, CStr};
 use sys;
 use libc::c_char;
 
-const VIDEO_MINIMIZE_ON_FOCUS_LOST: &'static str = "SDL_VIDEO_MINIMIZE_ON_FOCUS_LOST";
+const VIDEO_MINIMIZE_ON_FOCUS_LOSS: &'static str = "SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS";
 
 pub enum Hint {
     Default,
@@ -20,13 +20,13 @@ pub enum Hint {
 ///
 /// # Example
 /// ```rust,no_run
-/// sdl2::hint::set_video_minimize_on_focus_lost(false);
+/// sdl2::hint::set_video_minimize_on_focus_loss(false);
 /// ```
 ///
 /// * `value`: `true` to enable minimizing of the Window if it loses key focus when in fullscreen mode,
 ///            `false` to disable this feature.
-pub fn set_video_minimize_on_focus_lost(value: bool) -> bool {
-    set(VIDEO_MINIMIZE_ON_FOCUS_LOST, if value { "1" } else { "0" })
+pub fn set_video_minimize_on_focus_loss(value: bool) -> bool {
+    set(VIDEO_MINIMIZE_ON_FOCUS_LOSS, if value { "1" } else { "0" })
 }
 
 /// A hint that specifies whether a fullscreen [Window](../video/Window.t.html) will be
@@ -36,7 +36,7 @@ pub fn set_video_minimize_on_focus_lost(value: bool) -> bool {
 ///
 /// # Example
 /// ```rust,no_run
-/// sdl2::hint::set_video_minimize_on_focus_lost_with_priority(false, &sdl2::hint::Hint::Override);
+/// sdl2::hint::set_video_minimize_on_focus_loss_with_priority(false, &sdl2::hint::Hint::Override);
 /// ```
 ///
 /// * `value`: `true` to enable minimizing of the Window if it loses key focus when in fullscreen mode,
@@ -44,8 +44,8 @@ pub fn set_video_minimize_on_focus_lost(value: bool) -> bool {
 /// * `priority`: The priority controls the behavior when setting a hint that already has a value.
 ///               Hints will replace existing hints of their priority and lower.
 ///               Environment variables are considered to have override priority.
-pub fn set_video_minimize_on_focus_lost_with_priority(value: bool, priority: &Hint) -> bool {
-    set_with_priority(VIDEO_MINIMIZE_ON_FOCUS_LOST, if value { "1" } else { "0" }, priority)
+pub fn set_video_minimize_on_focus_loss_with_priority(value: bool, priority: &Hint) -> bool {
+    set_with_priority(VIDEO_MINIMIZE_ON_FOCUS_LOSS, if value { "1" } else { "0" }, priority)
 }
 
 /// A hint that specifies whether a fullscreen [Window](../video/Window.t.html) will be
@@ -58,13 +58,13 @@ pub fn set_video_minimize_on_focus_lost_with_priority(value: bool, priority: &Hi
 ///
 /// # Example
 /// ```rust,no_run
-/// assert_eq!(sdl2::hint::get_video_minimize_on_focus_lost(), true);
+/// assert_eq!(sdl2::hint::get_video_minimize_on_focus_loss(), true);
 ///
-/// sdl2::hint::set_video_minimize_on_focus_lost(false);
-/// assert_eq!(sdl2::hint::get_video_minimize_on_focus_lost(), false);
+/// sdl2::hint::set_video_minimize_on_focus_loss(false);
+/// assert_eq!(sdl2::hint::get_video_minimize_on_focus_loss(), false);
 /// ```
-pub fn get_video_minimize_on_focus_lost() -> bool {
-    match get(VIDEO_MINIMIZE_ON_FOCUS_LOST) {
+pub fn get_video_minimize_on_focus_loss() -> bool {
+    match get(VIDEO_MINIMIZE_ON_FOCUS_LOSS) {
         Some(value) => match &*value {
             "1" => true,
             _ => false,
