@@ -3,6 +3,10 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### v0.32
 
+[PR #732](https://github.com/Rust-SDL2/rust-sdl2/pull/732)
+* Implemented `From<(u8, u8, u8)>` and `From<(u8, u8, u8, u8)>` for `pixels::Color`. 
+  `Canvas.set_draw_color` can now be called with tuples or other types which implements `Into<pixels::Color>`
+
 [PR #279](https://github.com/Rust-SDL2/rust-sdl2/pull/729)
 
 * **Breaking change** set\_video\_minimize\_on\_focus\_lost was renamed to …minimize\_on\_focus\_loss, as it should be. As a bonus, it works now.
