@@ -902,8 +902,8 @@ impl<T: RenderTarget> Canvas<T> {
     }
 
     /// Sets the color used for drawing operations (Rect, Line and Clear).
-    pub fn set_draw_color(&mut self, color: pixels::Color) {
-        let (r, g, b, a) = color.rgba();
+    pub fn set_draw_color<C: Into<pixels::Color>>(&mut self, color: C) {
+        let (r, g, b, a) = color.into().rgba();
         let ret = unsafe { sys::SDL_SetRenderDrawColor(self.raw, r, g, b, a) };
         // Should only fail on an invalid renderer
         if ret != 0 {
