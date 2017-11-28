@@ -157,6 +157,19 @@ impl From<sys::SDL_Color> for Color {
     }
 }
 
+
+impl From<(u8, u8, u8)> for Color {
+    fn from((r, g, b): (u8, u8, u8)) -> Color {
+        Color::RGB(r, g, b)
+    }
+}
+
+impl From<(u8, u8, u8, u8)> for Color {
+    fn from((r, g, b, a): (u8, u8, u8, u8)) -> Color {
+        Color::RGBA(r, g, b, a)
+    }
+}
+
 impl rand::Rand for Color {
     fn rand<R: rand::Rng>(rng: &mut R) -> Color {
         if rng.gen() { Color::RGBA(rng.gen(), rng.gen(), rng.gen(), rng.gen()) }
