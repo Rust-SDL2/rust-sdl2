@@ -1159,6 +1159,16 @@ impl Window {
         unsafe { sys::SDL_GetWindowPosition(self.context.raw, &mut x, &mut y) };
         (x as i32, y as i32)
     }
+    
+    /// Use this function to get the size of a window's borders (decorations) around the client area.
+    pub fn border_size(&self) -> (i32, i32, i32, i32) {
+        let mut top: c_int = 0;
+        let mut left: c_int = 0;
+        let mut bottom: c_int = 0;
+        let mut right: c_int = 0;
+        unsafe { sys::SDL_GetWindowBordersSize(self.context.raw, &mut top, &mut left, &mut bottom, &mut right) };
+        (top as i32, left as i32, bottom as i32, right as i32)
+    }
 
     pub fn set_size(&mut self, width: u32, height: u32)
             -> Result<(), IntegerOrSdlError> {
