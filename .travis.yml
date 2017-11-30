@@ -25,6 +25,8 @@ install:
 - pushd SDL2_gfx-* && ./autogen.sh && ./configure && make && sudo make install && popd
 
 before_script:
+- shopt -s expand_aliases
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then alias pip=pip2; fi
 - |
   pip install 'travis-cargo<0.2' --user &&
   export PATH=$HOME/.local/bin:$PATH &&
