@@ -1161,6 +1161,13 @@ impl Window {
     }
     
     /// Use this function to get the size of a window's borders (decorations) around the client area.
+    ///
+    /// # Remarks
+    /// This function is only supported on X11.
+    ///
+    /// #Notes
+    ///
+    /// If this function fails, (0, 0, 0, 0) will be returned
     pub fn border_size(&self) -> (u16, u16, u16, u16) {
         let mut top: c_int = 0;
         let mut left: c_int = 0;
