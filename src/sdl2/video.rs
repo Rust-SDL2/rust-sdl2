@@ -1167,13 +1167,17 @@ impl Window {
     ///
     /// #Notes
     /// If this function fails, (0, 0, 0, 0) will be returned
-    pub fn border_size(&self) -> (u16, u16, u16, u16) {
+    pub fn border_size(&self) -> Result<(u16, u16, u16, u16), String> {
         let mut top: c_int = 0;
         let mut left: c_int = 0;
         let mut bottom: c_int = 0;
         let mut right: c_int = 0;
-        unsafe { sys::SDL_GetWindowBordersSize(self.context.raw, &mut top, &mut left, &mut bottom, &mut right) };
-        (top as u16, left as u16, bottom as u16, right as u16)
+        let result = unsafe { sys::SDL_GetWindowBordersSize(self.context.raw, &mut top, &mut left, &mut bottom, &mut right) };
+        if result < 0 {
+            Err(get_error())
+        } else {
+            Ok((top as u16, left as u16, bottom as u16, right as u16))
+        }
     }
 
     pub fn set_size(&mut self, width: u32, height: u32)
