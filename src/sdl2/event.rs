@@ -1160,7 +1160,7 @@ impl Event {
                     timestamp: timestamp,
                     which: which,
                     // This conversion turns an i32 into a u8; signed-to-unsigned conversions
-                    // are a bit of a code smellx, but that appears to be how SDL defines it.
+                    // are a bit of a code smell, but that appears to be how SDL defines it.
                     button: buttonval as u8,
                     state: sys::SDL_PRESSED as u8,
                     padding1: 0,

@@ -172,7 +172,7 @@ impl<T> LoadTexture for TextureCreator<T> {
     }
 }
 
-/// Context manager for `sdl2_image` to manage quiting. Can't do much with it but
+/// Context manager for `sdl2_image` to manage quitting. Can't do much with it but
 /// keep it alive while you are using it.
 pub struct Sdl2ImageContext;
 

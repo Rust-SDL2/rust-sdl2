@@ -9,7 +9,7 @@ use libc::c_char;
 use common::{validate_int, IntegerOrSdlError};
 
 impl JoystickSubsystem {
-    /// Retreive the total number of attached joysticks *and* controllers identified by SDL.
+    /// Retrieve the total number of attached joysticks *and* controllers identified by SDL.
     pub fn num_joysticks(&self) -> Result<u32, String> {
         let result = unsafe { sys::SDL_NumJoysticks() };
 
@@ -125,7 +125,7 @@ impl Joystick {
         }
     }
 
-    /// Retreive the joystick's GUID
+    /// Retrieve the joystick's GUID
     pub fn guid(&self) -> Guid {
         let raw = unsafe { sys::SDL_JoystickGetGUID(self.raw) };
 
@@ -139,7 +139,7 @@ impl Joystick {
         }
     }
 
-    /// Retreive the number of axes for this joystick
+    /// Retrieve the number of axes for this joystick
     pub fn num_axes(&self) -> u32 {
         let result = unsafe { sys::SDL_JoystickNumAxes(self.raw) };
 
@@ -178,7 +178,7 @@ impl Joystick {
         }
     }
 
-    /// Retreive the number of buttons for this joystick
+    /// Retrieve the number of buttons for this joystick
     pub fn num_buttons(&self) -> u32 {
         let result = unsafe { sys::SDL_JoystickNumButtons(self.raw) };
 
@@ -219,7 +219,7 @@ impl Joystick {
         }
     }
 
-    /// Retreive the number of balls for this joystick
+    /// Retrieve the number of balls for this joystick
     pub fn num_balls(&self) -> u32 {
         let result = unsafe { sys::SDL_JoystickNumBalls(self.raw) };
 
@@ -248,7 +248,7 @@ impl Joystick {
         }
     }
 
-    /// Retreive the number of balls for this joystick
+    /// Retrieve the number of balls for this joystick
     pub fn num_hats(&self) -> u32 {
         let result = unsafe { sys::SDL_JoystickNumHats(self.raw) };
 
@@ -346,7 +346,7 @@ impl Guid {
         }
 
         // The buffer should always be NUL terminated (the
-        // documentation doesn't explicitely say it but I checked the
+        // documentation doesn't explicitly say it but I checked the
         // code)
         if c_str.is_null() {
             String::new()

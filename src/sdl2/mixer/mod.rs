@@ -964,7 +964,7 @@ impl<'a> Music<'a> {
     pub fn unhook_finished() {
         unsafe {
             ffi::Mix_HookMusicFinished(None);
-            // unset from c, then rust, to avoid race condiction
+            // unset from c, then rust, to avoid race condition
             MUSIC_FINISHED_HOOK = None;
         }
     }

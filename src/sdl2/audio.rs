@@ -106,7 +106,7 @@ impl AudioSubsystem {
     pub fn num_audio_playback_devices(&self) -> Option<u32> {
         let result = unsafe { sys::SDL_GetNumAudioDevices(0) };
         if result < 0 {
-            // SDL cannot retreive a list of audio devices. This is not necessarily an error (see the SDL2 docs).
+            // SDL cannot retrieve a list of audio devices. This is not necessarily an error (see the SDL2 docs).
             None
         } else {
             Some(result as u32)
@@ -330,7 +330,7 @@ where Self::Channel: AudioFormatNum + 'static
     fn callback(&mut self, &mut [Self::Channel]);
 }
 
-/// A phantom type for retreiving the `SDL_AudioFormat` of a given generic type.
+/// A phantom type for retrieving the `SDL_AudioFormat` of a given generic type.
 /// All format types are returned as native-endian.
 pub trait AudioFormatNum {
     fn audio_format() -> AudioFormat;
