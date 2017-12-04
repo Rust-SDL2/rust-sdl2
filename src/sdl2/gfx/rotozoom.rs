@@ -40,7 +40,7 @@ mod ll {
 pub trait RotozoomSurface {
     /// Rotates and zooms a surface and optional anti-aliasing.
     fn rotozoom(&self, angle: f64, zoom: f64, smooth: bool) -> Result<Surface, String>;
-    /// Rotates and zooms a surface with different horizontal and vertival scaling factors and optional anti-aliasing.
+    /// Rotates and zooms a surface with different horizontal and vertical scaling factors and optional anti-aliasing.
     fn rotozoom_xy(&self, angle: f64, zoomx: f64, zoomy: f64, smooth: bool) -> Result<Surface, String>;
     /// Zoom a surface by independent horizontal and vertical factors with optional smoothing.
     fn zoom(&self, zoomx: f64, zoomy: f64, smooth: bool) -> Result<Surface, String>;

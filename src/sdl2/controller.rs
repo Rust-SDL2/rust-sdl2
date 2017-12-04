@@ -45,7 +45,7 @@ impl error::Error for AddMappingError {
 }
 
 impl GameControllerSubsystem {
-    /// Retreive the total number of attached joysticks *and* controllers identified by SDL.
+    /// Retrieve the total number of attached joysticks *and* controllers identified by SDL.
     pub fn num_joysticks(&self) -> Result<u32, String> {
         let result = unsafe { sys::SDL_NumJoysticks() };
 
@@ -67,7 +67,7 @@ impl GameControllerSubsystem {
 
     /// Attempt to open the controller ad index `joystick_index` and return it.
     /// Controller IDs are the same as joystick IDs and the maximum number can
-    /// be retreived using the `SDL_NumJoysticks` function.
+    /// be retrieved using the `SDL_NumJoysticks` function.
     pub fn open(&self, joystick_index: u32) -> Result<GameController, IntegerOrSdlError> {
         use common::IntegerOrSdlError::*;
         let joystick_index = try!(validate_int(joystick_index, "joystick_index"));

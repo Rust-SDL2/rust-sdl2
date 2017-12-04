@@ -40,7 +40,7 @@ impl<'a> DerefMut for WindowSurfaceRef<'a> {
 impl<'a> WindowSurfaceRef<'a> {
     /// Updates the change made to the inner Surface to the Window it was created from.
     ///
-    /// This would effectively be the theorical equivalent of `present` from a Canvas.
+    /// This would effectively be the theoretical equivalent of `present` from a Canvas.
     pub fn update_window(&self) -> Result<(), String> {
         unsafe {
             if sys::SDL_UpdateWindowSurface(self.1.context.raw) == 0 {
