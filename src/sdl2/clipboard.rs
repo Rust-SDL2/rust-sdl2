@@ -33,7 +33,7 @@ impl ClipboardUtil {
             let text = CString::new(text).unwrap();
             let result = sys::SDL_SetClipboardText(text.as_ptr() as *const c_char);
 
-            if result == 0 {
+            if result != 0 {
                 Err(get_error())
             } else {
                 Ok(())
