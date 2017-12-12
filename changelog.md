@@ -1,7 +1,13 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
-### v0.32
+### v0.31.1
+
+[PR #737](https://github.com/Rust-SDL2/rust-sdl2/pull/737)
+* Fix `ClipboardUtil::set_clipboard_text` to return an Ok when it went well.
+
+[PR #733](https://github.com/Rust-SDL2/rust-sdl2/pull/733)
+* Add `video::border_size -> Result<(u16, u16, u16, u16), String>` equivalent of `SDL_GetWindowBorderSize()`
 
 [PR #732](https://github.com/Rust-SDL2/rust-sdl2/pull/732)
 * Implemented `From<(u8, u8, u8)>` and `From<(u8, u8, u8, u8)>` for `pixels::Color`. 
@@ -10,6 +16,7 @@ when upgrading from a version of rust-sdl2 to another.
 [PR #279](https://github.com/Rust-SDL2/rust-sdl2/pull/729)
 
 * **Breaking change** set\_video\_minimize\_on\_focus\_lost was renamed to …minimize\_on\_focus\_loss, as it should be. As a bonus, it works now.
+* Although this is a breaking change, this function was not working in the first place, so this is hardly a true breaking change
 
 ### v0.31
 
