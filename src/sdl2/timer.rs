@@ -167,6 +167,7 @@ fn test_timer_can_be_recreated() {
 }
 
 #[test]
+#[cfg(not(target_os = "macos"))]
 fn test_timer() {
     test_timer_runs_multiple_times();
     test_timer_runs_at_least_once();
