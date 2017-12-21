@@ -67,6 +67,10 @@ name = "audio-wav"
 name = "audio-whitenoise"
 
 [[example]]
+required-features = ["image", "gfx"]
+name = "cursor"
+
+[[example]]
 name = "demo"
 
 [[example]]
