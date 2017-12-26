@@ -7,7 +7,7 @@ use sdl2::image::{LoadSurface, INIT_PNG, INIT_JPG};
 use sdl2::keyboard::Keycode;
 use sdl2::mouse::Cursor;
 use sdl2::pixels::Color;
-use sdl2::gfx::primitives::DrawRenderer;
+use sdl2::rect::Rect;
 use sdl2::surface::Surface;
 
 pub fn run(png: &Path) {
@@ -35,6 +35,8 @@ pub fn run(png: &Path) {
     canvas.clear();
     canvas.present();
 
+    canvas.set_draw_color(Color::RGBA(255, 255, 255, 255));
+
     let mut events = sdl_context.event_pump().unwrap();
 
     'mainloop: loop {
@@ -44,8 +46,7 @@ pub fn run(png: &Path) {
                 Event::KeyDown {keycode: Option::Some(Keycode::Escape), ..} =>
                     break 'mainloop,
                  Event::MouseButtonDown {x, y, ..} => {
-                    let color = Color::RGB(255, 255, 255);
-                    canvas.pixel(x as i16, y as i16, color).unwrap();
+                    canvas.fill_rect(Rect::new(x, y, 1, 1)).unwrap();
                     canvas.present();
                 }
                 _ => {}
