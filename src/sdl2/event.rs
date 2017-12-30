@@ -451,7 +451,7 @@ impl WindowEvent {
 
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Debug)]
 /// Different event types.
 pub enum Event {
     Quit { timestamp: u32 },
@@ -706,52 +706,6 @@ pub enum Event {
     Unknown {
         timestamp: u32,
         type_: u32
-    }
-}
-
-impl ::std::fmt::Debug for Event {
-    fn fmt(&self, out: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        out.write_str(match *self {
-            Event::Quit{..} => "Event::Quit",
-            Event::AppTerminating{..} => "Event::AppTerminating",
-            Event::AppLowMemory{..} => "Event::AppLowMemory",
-            Event::AppWillEnterBackground{..} => "Event::AppWillEnterBackground",
-            Event::AppDidEnterBackground{..} => "Event::AppDidEnterBackground",
-            Event::AppWillEnterForeground{..} => "Event::AppWillEnterForeground",
-            Event::AppDidEnterForeground{..} => "Event::AppDidEnterForeground",
-            Event::Window{..} => "Event::Window",
-            Event::KeyDown{..} => "Event::KeyDown",
-            Event::KeyUp{..} => "Event::KeyUp",
-            Event::TextEditing{..} => "Event::TextEditing",
-            Event::TextInput{..} => "Event::TextInput",
-            Event::MouseMotion{..} => "Event::MouseMotion",
-            Event::MouseButtonDown{..} => "Event::MouseButtonDown",
-            Event::MouseButtonUp{..} => "Event::MouseButtonUp",
-            Event::MouseWheel{..} => "Event::MouseWheel",
-            Event::JoyAxisMotion{..} => "Event::JoyAxisMotion",
-            Event::JoyBallMotion{..} => "Event::JoyBallMotion",
-            Event::JoyHatMotion{..} => "Event::JoyHatMotion",
-            Event::JoyButtonDown{..} => "Event::JoyButtonDown",
-            Event::JoyButtonUp{..} => "Event::JoyButtonUp",
-            Event::JoyDeviceAdded{..} => "Event::JoyDeviceAdded",
-            Event::JoyDeviceRemoved{..} => "Event::JoyDeviceRemoved",
-            Event::ControllerAxisMotion{..} => "Event::ControllerAxisMotion",
-            Event::ControllerButtonDown{..} => "Event::ControllerButtonDown",
-            Event::ControllerButtonUp{..} => "Event::ControllerButtonUp",
-            Event::ControllerDeviceAdded{..} => "Event::ControllerDeviceAdded",
-            Event::ControllerDeviceRemoved{..} => "Event::ControllerDeviceRemoved",
-            Event::ControllerDeviceRemapped{..} => "Event::ControllerDeviceRemapped",
-            Event::FingerDown{..} => "Event::FingerDown",
-            Event::FingerUp{..} => "Event::FingerUp",
-            Event::FingerMotion{..} => "Event::FingerMotion",
-            Event::DollarGesture{..} => "Event::DollarGesture",
-            Event::DollarRecord{..} => "Event::DollarRecord",
-            Event::MultiGesture{..} => "Event::MultiGesture",
-            Event::ClipboardUpdate{..} => "Event::ClipboardUpdate",
-            Event::DropFile{..} => "Event::DropFile",
-            Event::User{..} => "Event::User",
-            Event::Unknown{..} => "Event::Unknown",
-        })
     }
 }
 
