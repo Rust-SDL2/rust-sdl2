@@ -151,7 +151,7 @@ impl MouseButton {
     }
 }
 
-#[derive(Copy, Clone, Eq, PartialEq, Hash)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub struct MouseState {
     mouse_state: u32,
     x: i32,
