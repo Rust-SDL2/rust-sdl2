@@ -56,7 +56,7 @@ mod others {
 }
 
 #[allow(non_camel_case_types, dead_code)]
-mod ffi;
+pub mod ffi;
 
 // This comes from SDL_audio.h
 #[allow(non_camel_case_types)]

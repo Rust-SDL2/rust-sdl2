@@ -21,7 +21,7 @@
 //! ```
 
 #[allow(non_camel_case_types, dead_code)]
-mod ffi;
+pub mod ffi;
 mod font;
 mod context;
 

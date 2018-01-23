@@ -49,7 +49,7 @@ mod others {
 }
 
 #[allow(non_camel_case_types, dead_code)]
-mod ffi;
+pub mod ffi;
 
 /// InitFlags are passed to init() to control which subsystem
 /// functionality to load.
