@@ -1,4 +1,5 @@
 extern crate sdl2;
+
 use sdl2::event;
 
 #[test]
@@ -97,4 +98,26 @@ fn test4(ev: &sdl2::EventSubsystem, ep: &mut sdl2::EventPump) {
         let e2 = received.as_user_event_type::<SomeEventTypeTest4>().unwrap();
         assert_eq!(e2.a, 42);
     }
+}
+
+#[test]
+fn test_event_sender_no_subsystem() {
+    let sdl = sdl2::init().unwrap();
+    let ev = sdl.event().unwrap();
+    let tx = ev.event_sender();
+
+    assert!(tx.push_event(sdl2::event::Event::Window {
+        timestamp: 0,
+        window_id: 0,
+        win_event: sdl2::event::WindowEvent::Shown,
+    }).is_ok());
+
+    drop(ev);
+
+    // Should return an error now the evet subsystem has been shut down
+    assert!(tx.push_event(sdl2::event::Event::Window {
+        timestamp: 0,
+        window_id: 0,
+        win_event: sdl2::event::WindowEvent::Hidden,
+    }).is_err());
 }

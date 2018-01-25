@@ -2098,7 +2098,7 @@ impl EventSender {
            data2: ::std::ptr::null_mut()
         };
 
-        try!(self.push_event(event));
+        r#try!(self.push_event(event));
 
         Ok(())
     }
