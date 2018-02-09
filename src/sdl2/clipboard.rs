@@ -1,4 +1,5 @@
 use std::ffi::{CString, CStr};
+use std::os::raw::c_void;
 use libc::c_char;
 use get_error;
 
@@ -48,7 +49,9 @@ impl ClipboardUtil {
             if buf.is_null() {
                 Err(get_error())
             } else {
-                Ok(CStr::from_ptr(buf as *const _).to_str().unwrap().to_owned())
+                let s = CStr::from_ptr(buf as *const _).to_str().unwrap().to_owned();
+                sys::SDL_free(buf as *mut c_void);
+                Ok(s)
             }
         }
     }

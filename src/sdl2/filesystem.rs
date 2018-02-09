@@ -1,6 +1,7 @@
 use std::error;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt;
+use std::os::raw::c_void;
 use get_error;
 use libc::c_char;
 
@@ -9,7 +10,9 @@ use sys;
 pub fn base_path() -> Result<String, String> {
     let result = unsafe {
         let buf = sys::SDL_GetBasePath();
-        CStr::from_ptr(buf as *const _).to_str().unwrap().to_owned()
+        let s = CStr::from_ptr(buf as *const _).to_str().unwrap().to_owned();
+        sys::SDL_free(buf as *mut c_void);
+        s
     };
 
     if result.is_empty() {
