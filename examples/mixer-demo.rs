@@ -26,15 +26,15 @@ fn demo(music_file: &Path, sound_file: Option<&Path>) {
     let sdl = sdl2::init().unwrap();
     let _audio = sdl.audio().unwrap();
     let mut timer = sdl.timer().unwrap();
-    let _mixer_context = sdl2::mixer::init(INIT_MP3 | INIT_FLAC | INIT_MOD | INIT_FLUIDSYNTH |
-                                           INIT_MODPLUG | INIT_OGG)
-            .unwrap();
 
     let frequency = 44_100;
     let format = AUDIO_S16LSB; // signed 16 bit samples, in little-endian byte order
     let channels = DEFAULT_CHANNELS; // Stereo
     let chunk_size = 1_024;
     sdl2::mixer::open_audio(frequency, format, channels, chunk_size).unwrap();
+    let _mixer_context = sdl2::mixer::init(
+        INIT_MP3 | INIT_FLAC | INIT_MOD | INIT_FLUIDSYNTH | INIT_MODPLUG | INIT_OGG
+    ).unwrap();
 
     // Number of mixing channels available for sound effect `Chunk`s to play
     // simultaneously.
