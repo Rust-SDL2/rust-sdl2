@@ -27,9 +27,13 @@ fn main() {
         }
     }
 
-    if joystick.is_none() {
-        panic!("Couldn't open any joystick");
-    };
+    // Print the joystick's power level, if a joystick was found.
+    match joystick {
+        Some(j) => {
+            println!("\"{}\" power level: {:?}", j.name(), j.power_level().unwrap());
+        },
+        None => panic!("Couldn't open any joystick"),
+    }
 
     for event in sdl_context.event_pump().unwrap().wait_iter() {
         use sdl2::event::Event;
