@@ -48,6 +48,10 @@ Ubuntu example:
 Fedora example:
 > sudo dnf install SDL2-devel
 
+Arch example:  
+(Arch doesn't have separate regular and development packages, everything goes together.)  
+> sudo pacman -S sdl2
+
 You might also need a C compiler (`gcc`).
 
 ### Mac OS X
