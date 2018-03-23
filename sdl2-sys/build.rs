@@ -93,20 +93,22 @@ fn download_sdl2() -> PathBuf {
 
 // compile a shared or static lib depending on the feature 
 #[cfg(feature = "bundled")]
-fn compile_sdl2(sdl2_build_path: &Path) -> PathBuf {
-    let install_path = if cfg!(feature = "static-link") {
-        cmake::Config::new(sdl2_build_path)
-            .define("SDL_SHARED", "OFF")
-            .define("SDL_STATIC", "ON")
-            .build()
-    } else {
-        cmake::Config::new(sdl2_build_path)
-            .define("SDL_SHARED", "ON")
-            .define("SDL_STATIC", "OFF")
-            .build()
-    };
+fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
+    let mut cfg = cmake::Config::new(sdl2_build_path);
 
-    install_path
+    if target_os == "windows-gnu" {
+        cfg.define("VIDEO_OPENGLES", "OFF");
+    }
+
+    if cfg!(feature = "static-link") {
+        cfg.define("SDL_SHARED", "OFF");
+        cfg.define("SDL_STATIC", "ON");
+    } else {
+        cfg.define("SDL_SHARED", "ON");
+        cfg.define("SDL_STATIC", "OFF");
+    }
+
+    cfg.build()
 }
 
 #[cfg(not(feature = "bundled"))]
@@ -168,7 +170,7 @@ fn link_sdl2(target_os: &str) {
         }
 
         // Also linked to any required libraries for each supported platform
-        if target_os == "windows-msvc" {
+        if target_os.contains("windows") {
             println!("cargo:rustc-link-lib=user32");
             println!("cargo:rustc-link-lib=gdi32");
             println!("cargo:rustc-link-lib=winmm");
@@ -203,7 +205,7 @@ fn main() {
 
     #[cfg(feature = "bundled")] {
         let sdl2_source_path = download_sdl2();
-        let sdl2_compiled_path = compile_sdl2(sdl2_source_path.as_path());
+        let sdl2_compiled_path = compile_sdl2(sdl2_source_path.as_path(), target_os);
 
         let sdl2_downloaded_include_path = sdl2_source_path.join("include");
         let sdl2_compiled_lib_path = sdl2_compiled_path.join("lib");
