@@ -6,6 +6,7 @@ use std::mem;
 use std::ptr;
 use std::ops::{Deref, DerefMut, Add, BitAnd, BitOr, Div, Mul, Neg, Sub};
 use std::convert::{AsRef, AsMut};
+use std::hash::{Hash, Hasher};
 
 /// The maximal integer value that can be used for rectangles.
 ///
@@ -79,6 +80,15 @@ impl PartialEq for Rect {
 }
 
 impl Eq for Rect {}
+
+impl Hash for Rect {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.raw.x.hash(state);
+        self.raw.y.hash(state);
+        self.raw.w.hash(state);
+        self.raw.h.hash(state);
+    }
+}
 
 impl Rect {
     /// Creates a new rectangle from the given values.
@@ -656,6 +666,13 @@ impl PartialEq for Point {
 
 impl Eq for Point {}
 
+impl Hash for Point {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.raw.x.hash(state);
+        self.raw.y.hash(state);
+    }
+}
+
 impl Deref for Point {
     type Target = sys::SDL_Point;
 
@@ -1034,4 +1051,4 @@ mod test {
             Point::new(-11, 5) / 3
         );
     }
- }
+}
