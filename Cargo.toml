@@ -40,7 +40,7 @@ default = []
 ttf = []
 image = []
 gfx = ["c_vec"]
-mixer = []
+mixer = ["sdl2-sys/mixer"]
 
 use-bindgen = ["sdl2-sys/use-bindgen"]
 use-pkgconfig = ["sdl2-sys/use-pkgconfig"]

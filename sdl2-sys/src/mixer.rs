@@ -1,5 +1,4 @@
 use std::os::raw::{c_uint, c_int, c_char, c_double, c_void};
-use sys;
 
 pub type MIX_InitFlags = c_uint;
 pub const MIX_INIT_FLAC: c_uint = 1;
@@ -42,7 +41,7 @@ pub type Mix_EffectDone_t = ::std::option::Option<extern "C" fn(arg1: c_int,
                                                                   arg2: *const c_void)
                                                                  >;
 extern "C" {
-    pub fn Mix_Linked_Version() -> *const sys::SDL_version;
+    pub fn Mix_Linked_Version() -> *const ::SDL_version;
     pub fn Mix_Init(flags: c_int) -> c_int;
     pub fn Mix_Quit();
     pub fn Mix_OpenAudio(frequency: c_int,
@@ -55,10 +54,10 @@ extern "C" {
                          format: *mut u16,
                          channels: *mut c_int)
                          -> c_int;
-    pub fn Mix_LoadWAV_RW(src: *mut sys::SDL_RWops, freesrc: c_int) -> *mut Mix_Chunk;
+    pub fn Mix_LoadWAV_RW(src: *mut ::SDL_RWops, freesrc: c_int) -> *mut Mix_Chunk;
     pub fn Mix_LoadMUS(file: *const c_char) -> *mut Mix_Music;
-    pub fn Mix_LoadMUS_RW(src: *mut sys::SDL_RWops, freesrc: c_int) -> *mut Mix_Music;
-    pub fn Mix_LoadMUSType_RW(src: *mut sys::SDL_RWops,
+    pub fn Mix_LoadMUS_RW(src: *mut ::SDL_RWops, freesrc: c_int) -> *mut Mix_Music;
+    pub fn Mix_LoadMUSType_RW(src: *mut ::SDL_RWops,
                               type_: Mix_MusicType,
                               freesrc: c_int)
                               -> *mut Mix_Music;
