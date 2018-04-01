@@ -273,20 +273,15 @@ fn generate_bindings<S: AsRef<str> + ::std::fmt::Debug>(target: &str, host: &str
     };
 
     // SDL2 hasn't a default configuration for Linux
-    if target_os == "linux" {
+    if target_os == "linux-gnu" {
         bindings = bindings.clang_arg("-DSDL_VIDEO_DRIVER_X11");
         bindings = bindings.clang_arg("-DSDL_VIDEO_DRIVER_WAYLAND");
     }
 
     let bindings = bindings
         .header("wrapper.h")
-        .hide_type("_")
-        .hide_type("FP_NAN")
-        .hide_type("FP_INFINITE")
-        .hide_type("FP_ZERO")
-        .hide_type("FP_SUBNORMAL")
-        .hide_type("FP_NORMAL") // Until https://github.com/rust-lang-nursery/rust-bindgen/issues/687 gets fixed
-        .hide_type("max_align_t") // Until https://github.com/rust-lang-nursery/rust-bindgen/issues/550 gets fixed
+        .rustified_enum(".*")
+        .blacklist_type("max_align_t") // Until https://github.com/rust-lang-nursery/rust-bindgen/issues/550 gets fixed
         .generate()
         .expect("Unable to generate bindings!");
 
