@@ -34,10 +34,10 @@ use sys;
 /// functionality to load.
 bitflags! {
     pub flags InitFlag : u32 {
-        const INIT_JPG  = sys::image::IMG_INIT_JPG as u32,
-        const INIT_PNG  = sys::image::IMG_INIT_PNG as u32,
-        const INIT_TIF  = sys::image::IMG_INIT_TIF as u32,
-        const INIT_WEBP = sys::image::IMG_INIT_WEBP as u32
+        const INIT_JPG  = sys::image::IMG_InitFlags_IMG_INIT_JPG as u32,
+        const INIT_PNG  = sys::image::IMG_InitFlags_IMG_INIT_PNG as u32,
+        const INIT_TIF  = sys::image::IMG_InitFlags_IMG_INIT_TIF as u32,
+        const INIT_WEBP = sys::image::IMG_InitFlags_IMG_INIT_WEBP as u32
     }
 }
 
@@ -93,7 +93,7 @@ impl<'a> LoadSurface for Surface<'a> {
     fn from_xpm_array(xpm: *const *const i8) -> Result<Surface<'a>, String> {
         //! Loads an SDL Surface from XPM data
         unsafe {
-            let raw = sys::image::IMG_ReadXPMFromArray(xpm as *const *const c_char);
+            let raw = sys::image::IMG_ReadXPMFromArray(xpm as *mut *mut c_char);
             if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {

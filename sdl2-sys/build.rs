@@ -281,6 +281,9 @@ fn copy_pregenerated_bindings() {
     let crate_path = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
     fs::copy(crate_path.join("pregenerated_bindings.rs"), out_path.join("bindings.rs"))
         .expect("Couldn't find pregenerated bindings!");
+
+    fs::copy(crate_path.join("sdl_image_bindings.rs"), out_path.join("image_bindings.rs"))
+        .expect("Couldn't find pregenerated SDL_image bindings!");
 }
 
 #[cfg(feature = "bindgen")]
@@ -289,11 +292,15 @@ fn copy_pregenerated_bindings() {
 fn generate_bindings<S: AsRef<str> + ::std::fmt::Debug>(target: &str, host: &str, headers_paths: &[S]) {
     let target_os = get_os_from_triple(target).unwrap();
     let mut bindings = bindgen::Builder::default();
+    let mut image_bindings = bindgen::Builder::default();
 
     // Set correct target triple for bindgen when cross-compiling
     if target != host {
         bindings = bindings.clang_arg("-target");
         bindings = bindings.clang_arg(target.clone());
+
+        image_bindings = image_bindings.clang_arg("-target");
+        image_bindings = image_bindings.clang_arg(target.clone());
     }
 
     if headers_paths.len() == 0 {
@@ -302,10 +309,12 @@ fn generate_bindings<S: AsRef<str> + ::std::fmt::Debug>(target: &str, host: &str
         include_path.push(format!("SDL2-{}", SDL2_HEADERS_BUNDLED_VERSION));
         include_path.push("include");
         bindings = bindings.clang_arg(format!("-I{}", include_path.display()));
+        image_bindings = image_bindings.clang_arg(format!("-I{}", include_path.display()));
     } else {
         // if paths are included, use them for bindgen. Bindgen should use the first one.
         for headers_path in headers_paths {
-            bindings = bindings.clang_arg(format!("-I{}", headers_path.as_ref()))
+            bindings = bindings.clang_arg(format!("-I{}", headers_path.as_ref()));
+            image_bindings = image_bindings.clang_arg(format!("-I{}", headers_path.as_ref()));
         }
     }
 
@@ -315,12 +324,20 @@ fn generate_bindings<S: AsRef<str> + ::std::fmt::Debug>(target: &str, host: &str
         bindings = bindings.clang_arg(format!("-IC:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt"));
         bindings = bindings.clang_arg(format!("-IC:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include"));
         bindings = bindings.clang_arg(format!("-IC:/Program Files (x86)/Windows Kits/8.1/Include/um"));
+
+        image_bindings = image_bindings.clang_arg(format!("-IC:/Program Files (x86)/Windows Kits/8.1/Include/shared"));
+        image_bindings = image_bindings.clang_arg(format!("-IC:/Program Files/LLVM/lib/clang/5.0.0/include"));
+        image_bindings = image_bindings.clang_arg(format!("-IC:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt"));
+        image_bindings = image_bindings.clang_arg(format!("-IC:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include"));
+        image_bindings = image_bindings.clang_arg(format!("-IC:/Program Files (x86)/Windows Kits/8.1/Include/um"));
     };
 
     // SDL2 hasn't a default configuration for Linux
     if target_os == "linux-gnu" {
         bindings = bindings.clang_arg("-DSDL_VIDEO_DRIVER_X11");
         bindings = bindings.clang_arg("-DSDL_VIDEO_DRIVER_WAYLAND");
+        image_bindings = image_bindings.clang_arg("-DSDL_VIDEO_DRIVER_X11");
+        image_bindings = image_bindings.clang_arg("-DSDL_VIDEO_DRIVER_WAYLAND");
     }
 
     let bindings = bindings
@@ -335,6 +352,24 @@ fn generate_bindings<S: AsRef<str> + ::std::fmt::Debug>(target: &str, host: &str
     bindings
         .write_to_file(out_path.join("bindings.rs"))
         .expect("Couldn't write bindings!");
+
+    let image_bindings = image_bindings
+        .header("wrapper_image.h")
+        .blacklist_type("max_align_t") // Until https://github.com/rust-lang-nursery/rust-bindgen/issues/550 gets fixed
+        .whitelist_type("IMG.*")
+        .whitelist_function("IMG.*")
+        .whitelist_var("IMG.*")
+        .blacklist_type("SDL_.*")
+        .blacklist_type("_IO.*|FILE")
+        .generate()
+        .expect("Unable to generate image_bindings!");
+
+    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+
+    image_bindings
+        .write_to_file(out_path.join("image_bindings.rs"))
+        .expect("Couldn't write image_bindings!");
+
 }
 
 fn get_os_from_triple(triple: &str) -> Option<&str>
