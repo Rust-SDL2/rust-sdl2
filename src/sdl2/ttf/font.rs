@@ -1,5 +1,5 @@
 use std::ffi::{CString, CStr};
-use std::os::raw::{c_int, c_long};
+use std::os::raw::{c_uint, c_int, c_long};
 use std::path::Path;
 use std::error;
 use std::error::Error;
@@ -238,7 +238,7 @@ impl<'f,'text> PartialRendering<'f,'text> {
 
 /// A loaded TTF font.
 pub struct Font<'ttf_module,'rwops> {
-    raw: *const sys::ttf::TTF_Font,
+    raw: *mut sys::ttf::TTF_Font,
     // RWops is only stored here because it must not outlive
     // the Font struct, and this RWops should not be used by
     // anything else
@@ -278,7 +278,7 @@ pub fn internal_load_font<'ttf,P:AsRef<Path>>(path: P, ptsize: u16) -> Result<Fo
 }
 
 /// Internally used to load a font (for internal visibility).
-pub fn internal_load_font_from_ll<'ttf,'r, R>(raw: *const sys::ttf::TTF_Font, rwops: R)
+pub fn internal_load_font_from_ll<'ttf,'r, R>(raw: *mut sys::ttf::TTF_Font, rwops: R)
         -> Font<'ttf,'r>
 where R: Into<Option<RWops<'r>>> {
     Font { raw: raw, rwops: rwops.into(), _marker: PhantomData }
@@ -302,7 +302,7 @@ pub fn internal_load_font_at_index<'ttf,P: AsRef<Path>>(path: P, index: u32, pts
 
 impl<'ttf,'r> Font<'ttf,'r> {
     /// Returns the underlying C font object.
-    unsafe fn raw(&self) -> *const sys::ttf::TTF_Font {
+    unsafe fn raw(&self) -> *mut sys::ttf::TTF_Font {
         self.raw
     }
 
@@ -356,9 +356,9 @@ impl<'ttf,'r> Font<'ttf,'r> {
         -> FontResult<(u32, u32)> {
         let c_string = try!(RenderableText::Latin1(text).convert());
         let (res, size) = unsafe {
-            let mut w = 0; // mutated by C code
-            let mut h = 0; // mutated by C code
-            let ret = sys::ttf::TTF_SizeText(self.raw, c_string.as_ptr(), &w, &h);
+            let mut w : i32 = 0; // mutated by C code
+            let mut h : i32 = 0; // mutated by C code
+            let ret = sys::ttf::TTF_SizeText(self.raw, c_string.as_ptr(), &w as *const _ as *mut i32, &h as *const _ as *mut i32);
             (ret, (w as u32, h as u32))
         };
         if res == 0 {
@@ -408,7 +408,7 @@ impl<'ttf,'r> Font<'ttf,'r> {
     /// Returns the font's freetype hints.
     pub fn get_hinting(&self) -> Hinting {
         unsafe {
-            match sys::ttf::TTF_GetFontHinting(self.raw) as c_int {
+            match sys::ttf::TTF_GetFontHinting(self.raw) as c_uint {
                 sys::ttf::TTF_HINTING_NORMAL   => Hinting::Normal,
                 sys::ttf::TTF_HINTING_LIGHT    => Hinting::Light,
                 sys::ttf::TTF_HINTING_MONO     => Hinting::Mono,
@@ -527,7 +527,13 @@ impl<'ttf,'r> Font<'ttf,'r> {
         let advance = 0;
         let ret = unsafe {
             sys::ttf::TTF_GlyphMetrics(
-                self.raw, ch as u16, &minx, &maxx, &miny, &maxy, &advance
+                self.raw,
+                ch as u16,
+                &minx as *const _ as *mut _,
+                &maxx as *const _ as *mut _,
+                &miny as *const _ as *mut _,
+                &maxy as *const _ as *mut _,
+                &advance as *const _ as *mut _
             )
         };
         if ret == 0 {
