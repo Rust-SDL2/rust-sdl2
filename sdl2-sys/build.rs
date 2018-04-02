@@ -222,6 +222,15 @@ fn link_sdl2(target_os: &str) {
                 println!("cargo:rustc-flags=-l framework=SDL2_image");
             }
         }
+        if cfg!(feature = "ttf") {
+            if cfg!(any(target_os="linux", target_os="freebsd")) {
+                println!("cargo:rustc-flags=-l SDL2_ttf");
+            } else if cfg!(target_os="windows") {
+                println!("cargo:rustc-flags=-l SDL2_ttf");
+            } else if cfg!(any(target_os="macos", feature="use_mac_framework")) {
+                println!("cargo:rustc-flags=-l framework=SDL2_ttf");
+            }
+        }
     }
 }
 

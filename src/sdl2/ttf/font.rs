@@ -7,21 +7,21 @@ use std::ffi::NulError;
 use std::fmt;
 use std::marker::PhantomData;
 use ::surface::Surface;
+use sys;
 use sys::SDL_Surface;
 use ::get_error;
 use ::pixels::Color;
 use ::rwops::RWops;
-use super::ffi;
 
 // Absolute paths are a workaround for https://github.com/rust-lang-nursery/bitflags/issues/39 .
 bitflags! {
     /// The styling of a font.
     pub flags FontStyle: i32 {
-        const STYLE_NORMAL        = ffi::TTF_STYLE_NORMAL as i32,
-        const STYLE_BOLD          = ffi::TTF_STYLE_BOLD as i32,
-        const STYLE_ITALIC        = ffi::TTF_STYLE_ITALIC as i32,
-        const STYLE_UNDERLINE     = ffi::TTF_STYLE_UNDERLINE as i32,
-        const STYLE_STRIKETHROUGH = ffi::TTF_STYLE_STRIKETHROUGH as i32,
+        const STYLE_NORMAL        = sys::ttf::TTF_STYLE_NORMAL as i32,
+        const STYLE_BOLD          = sys::ttf::TTF_STYLE_BOLD as i32,
+        const STYLE_ITALIC        = sys::ttf::TTF_STYLE_ITALIC as i32,
+        const STYLE_UNDERLINE     = sys::ttf::TTF_STYLE_UNDERLINE as i32,
+        const STYLE_STRIKETHROUGH = sys::ttf::TTF_STYLE_STRIKETHROUGH as i32,
     }
 }
 
@@ -30,10 +30,10 @@ bitflags! {
 #[repr(i32)]
 #[derive(Debug, PartialEq, Clone)]
 pub enum Hinting {
-    Normal = ffi::TTF_HINTING_NORMAL as i32,
-    Light  = ffi::TTF_HINTING_LIGHT  as i32,
-    Mono   = ffi::TTF_HINTING_MONO   as i32,
-    None   = ffi::TTF_HINTING_NONE   as i32,
+    Normal = sys::ttf::TTF_HINTING_NORMAL as i32,
+    Light  = sys::ttf::TTF_HINTING_LIGHT  as i32,
+    Mono   = sys::ttf::TTF_HINTING_MONO   as i32,
+    None   = sys::ttf::TTF_HINTING_NONE   as i32,
 }
 
 /// Information about a specific glyph (character) in a font face.
@@ -155,11 +155,11 @@ impl<'f,'text> PartialRendering<'f,'text> {
         let raw = unsafe {
             match self.text {
                 RenderableText::Utf8(_) | RenderableText::Char(_) => {
-                    ffi::TTF_RenderUTF8_Solid(self.font.raw(),
+                    sys::ttf::TTF_RenderUTF8_Solid(self.font.raw(),
                         source.as_ptr(), color)
                 },
                 RenderableText::Latin1(_) => {
-                    ffi::TTF_RenderText_Solid(self.font.raw(),
+                    sys::ttf::TTF_RenderText_Solid(self.font.raw(),
                         source.as_ptr(), color)
                 },
             }
@@ -178,11 +178,11 @@ impl<'f,'text> PartialRendering<'f,'text> {
         let raw = unsafe {
             match self.text {
                 RenderableText::Utf8(_) | RenderableText::Char(_) => {
-                    ffi::TTF_RenderUTF8_Shaded(self.font.raw(),
+                    sys::ttf::TTF_RenderUTF8_Shaded(self.font.raw(),
                         source.as_ptr(), foreground, background)
                 },
                 RenderableText::Latin1(_) => {
-                    ffi::TTF_RenderText_Shaded(self.font.raw(),
+                    sys::ttf::TTF_RenderText_Shaded(self.font.raw(),
                         source.as_ptr(), foreground, background)
                 },
             }
@@ -200,11 +200,11 @@ impl<'f,'text> PartialRendering<'f,'text> {
         let raw = unsafe {
             match self.text {
                 RenderableText::Utf8(_) | RenderableText::Char(_) => {
-                    ffi::TTF_RenderUTF8_Blended(self.font.raw(),
+                    sys::ttf::TTF_RenderUTF8_Blended(self.font.raw(),
                         source.as_ptr(), color)
                 },
                 RenderableText::Latin1(_) => {
-                    ffi::TTF_RenderText_Blended(self.font.raw(),
+                    sys::ttf::TTF_RenderText_Blended(self.font.raw(),
                         source.as_ptr(), color)
                 },
             }
@@ -223,11 +223,11 @@ impl<'f,'text> PartialRendering<'f,'text> {
         let raw = unsafe {
             match self.text {
                 RenderableText::Utf8(_) | RenderableText::Char(_) => {
-                    ffi::TTF_RenderUTF8_Blended_Wrapped(self.font.raw(),
+                    sys::ttf::TTF_RenderUTF8_Blended_Wrapped(self.font.raw(),
                         source.as_ptr(), color, wrap_max_width)
                 },
                 RenderableText::Latin1(_) => {
-                    ffi::TTF_RenderText_Blended_Wrapped(self.font.raw(),
+                    sys::ttf::TTF_RenderText_Blended_Wrapped(self.font.raw(),
                         source.as_ptr(), color, wrap_max_width)
                 },
             }
@@ -238,7 +238,7 @@ impl<'f,'text> PartialRendering<'f,'text> {
 
 /// A loaded TTF font.
 pub struct Font<'ttf_module,'rwops> {
-    raw: *const ffi::TTF_Font,
+    raw: *const sys::ttf::TTF_Font,
     // RWops is only stored here because it must not outlive
     // the Font struct, and this RWops should not be used by
     // anything else
@@ -257,8 +257,8 @@ impl<'ttf,'r> Drop for Font<'ttf,'r> {
     fn drop(&mut self) {
         unsafe {
             // avoid close font after quit()
-            if ffi::TTF_WasInit() == 1 {
-                ffi::TTF_CloseFont(self.raw);
+            if sys::ttf::TTF_WasInit() == 1 {
+                sys::ttf::TTF_CloseFont(self.raw);
             }
         }
     }
@@ -268,7 +268,7 @@ impl<'ttf,'r> Drop for Font<'ttf,'r> {
 pub fn internal_load_font<'ttf,P:AsRef<Path>>(path: P, ptsize: u16) -> Result<Font<'ttf,'static>, String> {
     unsafe {
         let cstring = CString::new(path.as_ref().to_str().unwrap()).unwrap();
-        let raw = ffi::TTF_OpenFont(cstring.as_ptr(), ptsize as c_int);
+        let raw = sys::ttf::TTF_OpenFont(cstring.as_ptr(), ptsize as c_int);
         if raw.is_null() {
             Err(get_error())
         } else {
@@ -278,7 +278,7 @@ pub fn internal_load_font<'ttf,P:AsRef<Path>>(path: P, ptsize: u16) -> Result<Fo
 }
 
 /// Internally used to load a font (for internal visibility).
-pub fn internal_load_font_from_ll<'ttf,'r, R>(raw: *const ffi::TTF_Font, rwops: R)
+pub fn internal_load_font_from_ll<'ttf,'r, R>(raw: *const sys::ttf::TTF_Font, rwops: R)
         -> Font<'ttf,'r>
 where R: Into<Option<RWops<'r>>> {
     Font { raw: raw, rwops: rwops.into(), _marker: PhantomData }
@@ -290,7 +290,7 @@ pub fn internal_load_font_at_index<'ttf,P: AsRef<Path>>(path: P, index: u32, pts
     unsafe {
         let cstring = CString::new(path.as_ref().to_str().unwrap().as_bytes())
             .unwrap();
-        let raw = ffi::TTF_OpenFontIndex(cstring.as_ptr(),
+        let raw = sys::ttf::TTF_OpenFontIndex(cstring.as_ptr(),
             ptsize as c_int, index as c_long);
         if raw.is_null() {
             Err(get_error())
@@ -302,7 +302,7 @@ pub fn internal_load_font_at_index<'ttf,P: AsRef<Path>>(path: P, index: u32, pts
 
 impl<'ttf,'r> Font<'ttf,'r> {
     /// Returns the underlying C font object.
-    unsafe fn raw(&self) -> *const ffi::TTF_Font {
+    unsafe fn raw(&self) -> *const sys::ttf::TTF_Font {
         self.raw
     }
 
@@ -339,7 +339,7 @@ impl<'ttf,'r> Font<'ttf,'r> {
         let (res, size) = unsafe {
             let mut w = 0; // mutated by C code
             let mut h = 0; // mutated by C code
-            let ret = ffi::TTF_SizeUTF8(self.raw, c_string.as_ptr(), &mut w, &mut h);
+            let ret = sys::ttf::TTF_SizeUTF8(self.raw, c_string.as_ptr(), &mut w, &mut h);
             (ret, (w as u32, h as u32))
         };
         if res == 0 {
@@ -358,7 +358,7 @@ impl<'ttf,'r> Font<'ttf,'r> {
         let (res, size) = unsafe {
             let mut w = 0; // mutated by C code
             let mut h = 0; // mutated by C code
-            let ret = ffi::TTF_SizeText(self.raw, c_string.as_ptr(), &w, &h);
+            let ret = sys::ttf::TTF_SizeText(self.raw, c_string.as_ptr(), &w, &h);
             (ret, (w as u32, h as u32))
         };
         if res == 0 {
@@ -379,7 +379,7 @@ impl<'ttf,'r> Font<'ttf,'r> {
     /// Returns the font's style flags.
     pub fn get_style(&self) -> FontStyle {
         unsafe {
-            let raw = ffi::TTF_GetFontStyle(self.raw);
+            let raw = sys::ttf::TTF_GetFontStyle(self.raw);
             FontStyle::from_bits_truncate(raw as i32)
         }
     }
@@ -387,32 +387,32 @@ impl<'ttf,'r> Font<'ttf,'r> {
     /// Sets the font's style flags.
     pub fn set_style(&mut self, styles: FontStyle) {
         unsafe {
-            ffi::TTF_SetFontStyle(self.raw, styles.bits() as c_int)
+            sys::ttf::TTF_SetFontStyle(self.raw, styles.bits() as c_int)
         }
     }
 
     /// Returns the width of the font's outline.
     pub fn get_outline_width(&self) -> u16 {
         unsafe {
-            ffi::TTF_GetFontOutline(self.raw) as u16
+            sys::ttf::TTF_GetFontOutline(self.raw) as u16
         }
     }
 
     /// Sets the width of the font's outline.
     pub fn set_outline_width(&mut self, width: u16) {
         unsafe {
-            ffi::TTF_SetFontOutline(self.raw, width as c_int)
+            sys::ttf::TTF_SetFontOutline(self.raw, width as c_int)
         }
     }
 
     /// Returns the font's freetype hints.
     pub fn get_hinting(&self) -> Hinting {
         unsafe {
-            match ffi::TTF_GetFontHinting(self.raw) as c_int {
-                ffi::TTF_HINTING_NORMAL   => Hinting::Normal,
-                ffi::TTF_HINTING_LIGHT    => Hinting::Light,
-                ffi::TTF_HINTING_MONO     => Hinting::Mono,
-                ffi::TTF_HINTING_NONE | _ => Hinting::None
+            match sys::ttf::TTF_GetFontHinting(self.raw) as c_int {
+                sys::ttf::TTF_HINTING_NORMAL   => Hinting::Normal,
+                sys::ttf::TTF_HINTING_LIGHT    => Hinting::Light,
+                sys::ttf::TTF_HINTING_MONO     => Hinting::Mono,
+                sys::ttf::TTF_HINTING_NONE | _ => Hinting::None
             }
         }
     }
@@ -420,35 +420,35 @@ impl<'ttf,'r> Font<'ttf,'r> {
     /// Sets the font's freetype hints.
     pub fn set_hinting(&mut self, hinting: Hinting) {
         unsafe {
-            ffi::TTF_SetFontHinting(self.raw, hinting as c_int)
+            sys::ttf::TTF_SetFontHinting(self.raw, hinting as c_int)
         }
     }
 
     /// Returns whether the font is kerning.
     pub fn get_kerning(&self) -> bool {
         unsafe {
-            ffi::TTF_GetFontKerning(self.raw) != 0
+            sys::ttf::TTF_GetFontKerning(self.raw) != 0
         }
     }
 
     /// Sets whether the font should use kerning.
     pub fn set_kerning(&mut self, kerning: bool) {
         unsafe {
-            ffi::TTF_SetFontKerning(self.raw, kerning as c_int)
+            sys::ttf::TTF_SetFontKerning(self.raw, kerning as c_int)
         }
     }
 
     pub fn height(&self) -> i32 {
         //! Get font maximum total height.
         unsafe {
-            ffi::TTF_FontHeight(self.raw) as i32
+            sys::ttf::TTF_FontHeight(self.raw) as i32
         }
     }
 
     /// Returns the font's highest ascent (height above base).
     pub fn ascent(&self) -> i32 {
         unsafe {
-            ffi::TTF_FontAscent(self.raw) as i32
+            sys::ttf::TTF_FontAscent(self.raw) as i32
         }
     }
 
@@ -456,28 +456,28 @@ impl<'ttf,'r> Font<'ttf,'r> {
     /// This is a negative number.
     pub fn descent(&self) -> i32 {
         unsafe {
-            ffi::TTF_FontDescent(self.raw) as i32
+            sys::ttf::TTF_FontDescent(self.raw) as i32
         }
     }
 
     /// Returns the recommended line spacing for text rendered with this font.
     pub fn recommended_line_spacing(&self) -> i32 {
         unsafe {
-            ffi::TTF_FontLineSkip(self.raw) as i32
+            sys::ttf::TTF_FontLineSkip(self.raw) as i32
         }
     }
 
     /// Returns the number of faces in this font.
     pub fn face_count(&self) -> u16 {
         unsafe {
-            ffi::TTF_FontFaces(self.raw) as u16
+            sys::ttf::TTF_FontFaces(self.raw) as u16
         }
     }
 
     /// Returns whether the font is monospaced.
     pub fn face_is_fixed_width(&self) -> bool {
         unsafe {
-            ffi::TTF_FontFaceIsFixedWidth(self.raw) != 0
+            sys::ttf::TTF_FontFaceIsFixedWidth(self.raw) != 0
         }
     }
 
@@ -485,7 +485,7 @@ impl<'ttf,'r> Font<'ttf,'r> {
     pub fn face_family_name(&self) -> Option<String> {
         unsafe {
             // not owns buffer
-            let cname = ffi::TTF_FontFaceFamilyName(self.raw);
+            let cname = sys::ttf::TTF_FontFaceFamilyName(self.raw);
             if cname.is_null() {
                 None
             } else {
@@ -497,7 +497,7 @@ impl<'ttf,'r> Font<'ttf,'r> {
     /// Returns the name of the current font face.
     pub fn face_style_name(&self) -> Option<String> {
         unsafe {
-            let cname = ffi::TTF_FontFaceStyleName(self.raw);
+            let cname = sys::ttf::TTF_FontFaceStyleName(self.raw);
             if cname.is_null() {
                 None
             } else {
@@ -509,7 +509,7 @@ impl<'ttf,'r> Font<'ttf,'r> {
     /// Returns the index of the given character in this font face.
     pub fn find_glyph(&self, ch: char) -> Option<u16> {
         unsafe {
-            let ret = ffi::TTF_GlyphIsProvided(self.raw, ch as u16);
+            let ret = sys::ttf::TTF_GlyphIsProvided(self.raw, ch as u16);
             if ret == 0 {
                 None
             } else {
@@ -526,7 +526,7 @@ impl<'ttf,'r> Font<'ttf,'r> {
         let maxy = 0;
         let advance = 0;
         let ret = unsafe {
-            ffi::TTF_GlyphMetrics(
+            sys::ttf::TTF_GlyphMetrics(
                 self.raw, ch as u16, &minx, &maxx, &miny, &maxy, &advance
             )
         };

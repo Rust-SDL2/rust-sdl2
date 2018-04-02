@@ -15,3 +15,6 @@ pub mod mixer;
 
 #[cfg(feature = "image")]
 pub mod image;
+
+#[cfg(feature = "ttf")]
+pub mod ttf;
