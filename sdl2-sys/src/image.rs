@@ -1,6 +1,5 @@
 use std::os::raw::{c_int, c_char};
-use sys;
-use sys::{SDL_RWops, SDL_Surface, SDL_Renderer, SDL_Texture};
+use ::{SDL_RWops, SDL_Surface, SDL_Renderer, SDL_Texture};
 
 pub type IMG_InitFlags = c_int;
 pub const IMG_INIT_JPG: IMG_InitFlags = 0x00_00_00_01;
@@ -11,7 +10,7 @@ pub const IMG_INIT_WEBP: IMG_InitFlags = 0x00_00_00_08;
 extern "C" {
 
 // This function gets the version of the dynamically linked SDL_image library.
-pub fn IMG_Linked_Version() -> *const sys::SDL_version;
+pub fn IMG_Linked_Version() -> *const ::SDL_version;
 
 // Loads dynamic libraries and prepares them for use.  Flags should be
 // one or more flags from IMG_InitFlags OR'd together.

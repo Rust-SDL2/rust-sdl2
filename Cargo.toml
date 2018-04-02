@@ -38,9 +38,9 @@ optional = true
 unsafe_textures = []
 default = []
 ttf = []
-image = []
 gfx = ["c_vec"]
 mixer = ["sdl2-sys/mixer"]
+image = ["sdl2-sys/image"]
 
 use-bindgen = ["sdl2-sys/use-bindgen"]
 use-pkgconfig = ["sdl2-sys/use-pkgconfig"]

@@ -12,3 +12,6 @@ include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
 #[cfg(feature = "mixer")]
 pub mod mixer;
+
+#[cfg(feature = "image")]
+pub mod image;

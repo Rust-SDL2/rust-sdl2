@@ -204,12 +204,23 @@ fn link_sdl2(target_os: &str) {
     // leaves it up to the user to make a symlink to the shared object so
     // -lSDL2_mixer can find it.
     #[cfg(all(not(feature = "use-pkgconfig"), not(feature = "static-link")))] {
-        if cfg!(all(any(target_os="linux", target_os="freebsd"), feature = "mixer")) {
-            println!("cargo:rustc-flags=-l SDL2_mixer");
-        } else if cfg!(all(target_os="windows", feature = "mixer")) {
-            println!("cargo:rustc-flags=-l SDL2_mixer");
-        } else if cfg!(all(any(target_os="macos", feature="use_mac_framework"), feature = "mixer")) {
-            println!("cargo:rustc-flags=-l framework=SDL2_mixer");
+        if cfg!(feature = "mixer") {
+            if cfg!(any(target_os="linux", target_os="freebsd")) {
+                println!("cargo:rustc-flags=-l SDL2_mixer");
+            } else if cfg!(target_os="windows") {
+                println!("cargo:rustc-flags=-l SDL2_mixer");
+            } else if cfg!(any(target_os="macos", feature="use_mac_framework")) {
+                println!("cargo:rustc-flags=-l framework=SDL2_mixer");
+            }
+        }
+        if cfg!(feature = "image") {
+            if cfg!(any(target_os="linux", target_os="freebsd")) {
+                println!("cargo:rustc-flags=-l SDL2_image");
+            } else if cfg!(target_os="windows") {
+                println!("cargo:rustc-flags=-l SDL2_image");
+            } else if cfg!(any(target_os="macos", feature="use_mac_framework")) {
+                println!("cargo:rustc-flags=-l framework=SDL2_image");
+            }
         }
     }
 }
