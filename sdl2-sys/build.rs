@@ -287,6 +287,9 @@ fn copy_pregenerated_bindings() {
 
     fs::copy(crate_path.join("sdl_ttf_bindings.rs"), out_path.join("ttf_bindings.rs"))
         .expect("Couldn't find pregenerated SDL_ttf bindings!");
+
+    fs::copy(crate_path.join("sdl_mixer_bindings.rs"), out_path.join("mixer_bindings.rs"))
+        .expect("Couldn't find pregenerated SDL_mixer bindings!");
 }
 
 #[cfg(feature = "bindgen")]
@@ -297,6 +300,7 @@ fn generate_bindings<S: AsRef<str> + ::std::fmt::Debug>(target: &str, host: &str
     let mut bindings = bindgen::Builder::default();
     let mut image_bindings = bindgen::Builder::default();
     let mut ttf_bindings = bindgen::Builder::default();
+    let mut mixer_bindings = bindgen::Builder::default();
 
     // Set correct target triple for bindgen when cross-compiling
     if target != host {
@@ -308,6 +312,9 @@ fn generate_bindings<S: AsRef<str> + ::std::fmt::Debug>(target: &str, host: &str
 
         ttf_bindings = ttf_bindings.clang_arg("-target");
         ttf_bindings = ttf_bindings.clang_arg(target.clone());
+
+        mixer_bindings = mixer_bindings.clang_arg("-target");
+        mixer_bindings = mixer_bindings.clang_arg(target.clone());
     }
 
     if headers_paths.len() == 0 {
@@ -318,12 +325,14 @@ fn generate_bindings<S: AsRef<str> + ::std::fmt::Debug>(target: &str, host: &str
         bindings = bindings.clang_arg(format!("-I{}", include_path.display()));
         image_bindings = image_bindings.clang_arg(format!("-I{}", include_path.display()));
         ttf_bindings = ttf_bindings.clang_arg(format!("-I{}", include_path.display()));
+        mixer_bindings = mixer_bindings.clang_arg(format!("-I{}", include_path.display()));
     } else {
         // if paths are included, use them for bindgen. Bindgen should use the first one.
         for headers_path in headers_paths {
             bindings = bindings.clang_arg(format!("-I{}", headers_path.as_ref()));
             image_bindings = image_bindings.clang_arg(format!("-I{}", headers_path.as_ref()));
             ttf_bindings = ttf_bindings.clang_arg(format!("-I{}", headers_path.as_ref()));
+            mixer_bindings = mixer_bindings.clang_arg(format!("-I{}", headers_path.as_ref()));
         }
     }
 
@@ -345,6 +354,12 @@ fn generate_bindings<S: AsRef<str> + ::std::fmt::Debug>(target: &str, host: &str
         ttf_bindings = ttf_bindings.clang_arg(format!("-IC:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt"));
         ttf_bindings = ttf_bindings.clang_arg(format!("-IC:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include"));
         ttf_bindings = ttf_bindings.clang_arg(format!("-IC:/Program Files (x86)/Windows Kits/8.1/Include/um"));
+
+        mixer_bindings = mixer_bindings.clang_arg(format!("-IC:/Program Files (x86)/Windows Kits/8.1/Include/shared"));
+        mixer_bindings = mixer_bindings.clang_arg(format!("-IC:/Program Files/LLVM/lib/clang/5.0.0/include"));
+        mixer_bindings = mixer_bindings.clang_arg(format!("-IC:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt"));
+        mixer_bindings = mixer_bindings.clang_arg(format!("-IC:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include"));
+        mixer_bindings = mixer_bindings.clang_arg(format!("-IC:/Program Files (x86)/Windows Kits/8.1/Include/um"));
     };
 
     // SDL2 hasn't a default configuration for Linux
@@ -355,6 +370,8 @@ fn generate_bindings<S: AsRef<str> + ::std::fmt::Debug>(target: &str, host: &str
         image_bindings = image_bindings.clang_arg("-DSDL_VIDEO_DRIVER_WAYLAND");
         ttf_bindings = ttf_bindings.clang_arg("-DSDL_VIDEO_DRIVER_X11");
         ttf_bindings = ttf_bindings.clang_arg("-DSDL_VIDEO_DRIVER_WAYLAND");
+        mixer_bindings = mixer_bindings.clang_arg("-DSDL_VIDEO_DRIVER_X11");
+        mixer_bindings = mixer_bindings.clang_arg("-DSDL_VIDEO_DRIVER_WAYLAND");
     }
 
     let bindings = bindings
@@ -403,6 +420,24 @@ fn generate_bindings<S: AsRef<str> + ::std::fmt::Debug>(target: &str, host: &str
         .write_to_file(out_path.join("ttf_bindings.rs"))
         .expect("Couldn't write ttf_bindings!");
 
+    let mixer_bindings = mixer_bindings
+        .header("wrapper_mixer.h")
+        .whitelist_type("MIX.*")
+        .whitelist_type("Mix.*")
+        .whitelist_type("MUS.*")
+        .whitelist_function("Mix.*")
+        .whitelist_var("MIX.*")
+        .whitelist_var("MUS.*")
+        .blacklist_type("SDL_.*")
+        .blacklist_type("_IO.*|FILE")
+        .generate()
+        .expect("Unable to generate mixer_bindings!");
+
+    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+
+    mixer_bindings
+        .write_to_file(out_path.join("mixer_bindings.rs"))
+        .expect("Couldn't write mixer_bindings!");
 }
 
 fn get_os_from_triple(triple: &str) -> Option<&str>

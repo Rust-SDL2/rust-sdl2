@@ -96,12 +96,11 @@ pub fn get_linked_version() -> Version {
 }
 
 bitflags!(pub flags InitFlag : u32 {
-    const INIT_FLAC       = sys::mixer::MIX_INIT_FLAC as u32,
-    const INIT_MOD        = sys::mixer::MIX_INIT_MOD as u32,
-    const INIT_MODPLUG    = sys::mixer::MIX_INIT_MODPLUG as u32,
-    const INIT_MP3        = sys::mixer::MIX_INIT_MP3 as u32,
-    const INIT_OGG        = sys::mixer::MIX_INIT_OGG as u32,
-    const INIT_FLUIDSYNTH = sys::mixer::MIX_INIT_FLUIDSYNTH as u32
+    const INIT_FLAC       = sys::mixer::MIX_InitFlags_MIX_INIT_FLAC as u32,
+    const INIT_MOD        = sys::mixer::MIX_InitFlags_MIX_INIT_MOD as u32,
+    const INIT_MP3        = sys::mixer::MIX_InitFlags_MIX_INIT_MP3 as u32,
+    const INIT_OGG        = sys::mixer::MIX_InitFlags_MIX_INIT_OGG as u32,
+    const INIT_MID        = sys::mixer::MIX_InitFlags_MIX_INIT_MID as u32
 });
 
 impl ToString for InitFlag {
@@ -113,17 +112,14 @@ impl ToString for InitFlag {
         if self.contains(INIT_MOD) {
             string = string + &"INIT_MOD ".to_string();
         }
-        if self.contains(INIT_MODPLUG) {
-            string = string + &"INIT_MODPLUG ".to_string();
-        }
         if self.contains(INIT_MP3) {
             string = string + &"INIT_MP3 ".to_string();
         }
         if self.contains(INIT_OGG) {
             string = string + &"INIT_OGG ".to_string();
         }
-        if self.contains(INIT_FLUIDSYNTH) {
-            string = string + &"INIT_FLUIDSYNTH ".to_string();
+        if self.contains(INIT_MID) {
+            string = string + &"INIT_MID ".to_string();
         }
         string
     }
@@ -307,9 +303,9 @@ impl<'a> LoaderRWops<'a> for RWops<'a> {
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Hash)]
 pub enum Fading {
-    NoFading = sys::mixer::MIX_NO_FADING as i32,
-    FadingOut = sys::mixer::MIX_FADING_OUT as i32,
-    FadingIn = sys::mixer::MIX_FADING_IN as i32,
+    NoFading = sys::mixer::Mix_Fading_MIX_NO_FADING as i32,
+    FadingOut = sys::mixer::Mix_Fading_MIX_FADING_OUT as i32,
+    FadingIn = sys::mixer::Mix_Fading_MIX_FADING_IN as i32,
 }
 
 /// Sound effect channel.
@@ -474,9 +470,9 @@ impl Channel {
         let Channel(ch) = self;
         let ret = unsafe { sys::mixer::Mix_FadingChannel(ch as c_int) as c_uint };
         match ret {
-            sys::mixer::MIX_FADING_OUT    => Fading::FadingOut,
-            sys::mixer::MIX_FADING_IN     => Fading::FadingIn,
-            sys::mixer::MIX_NO_FADING | _ => Fading::NoFading
+            sys::mixer::Mix_Fading_MIX_FADING_OUT    => Fading::FadingOut,
+            sys::mixer::Mix_Fading_MIX_FADING_IN     => Fading::FadingIn,
+            sys::mixer::Mix_Fading_MIX_NO_FADING | _ => Fading::NoFading
         }
     }
 
@@ -704,16 +700,16 @@ pub fn get_music_decoder(index: i32) -> String {
 #[repr(i32)]
 #[derive(Copy, Clone, PartialEq, Hash, Debug)]
 pub enum MusicType {
-    MusicNone = sys::mixer::MUS_NONE as i32,
-    MusicCmd = sys::mixer::MUS_CMD as i32,
-    MusicWav = sys::mixer::MUS_WAV as i32,
-    MusicMod = sys::mixer::MUS_MOD as i32,
-    MusicMid = sys::mixer::MUS_MID as i32,
-    MusicOgg = sys::mixer::MUS_OGG as i32,
-    MusicMp3 = sys::mixer::MUS_MP3 as i32,
-    MusicMp3Mad = sys::mixer::MUS_MP3_MAD as i32,
-    MusicFlac = sys::mixer::MUS_FLAC as i32,
-    MusicModPlug = sys::mixer::MUS_MODPLUG as i32,
+    MusicNone = sys::mixer::Mix_MusicType_MUS_NONE as i32,
+    MusicCmd = sys::mixer::Mix_MusicType_MUS_CMD as i32,
+    MusicWav = sys::mixer::Mix_MusicType_MUS_WAV as i32,
+    MusicMod = sys::mixer::Mix_MusicType_MUS_MOD as i32,
+    MusicMid = sys::mixer::Mix_MusicType_MUS_MID as i32,
+    MusicOgg = sys::mixer::Mix_MusicType_MUS_OGG as i32,
+    MusicMp3 = sys::mixer::Mix_MusicType_MUS_MP3 as i32,
+    MusicMp3Mad = sys::mixer::Mix_MusicType_MUS_MP3_MAD_UNUSED as i32,
+    MusicFlac = sys::mixer::Mix_MusicType_MUS_FLAC as i32,
+    MusicModPlug = sys::mixer::Mix_MusicType_MUS_MODPLUG_UNUSED as i32,
 }
 
 // hooks
@@ -795,16 +791,16 @@ impl<'a> Music<'a> {
     pub fn get_type(&self) -> MusicType {
         let ret = unsafe { sys::mixer::Mix_GetMusicType(self.raw) as i32 } as c_uint;
         match ret {
-            sys::mixer::MUS_CMD      => MusicType::MusicCmd,
-            sys::mixer::MUS_WAV      => MusicType::MusicWav,
-            sys::mixer::MUS_MOD      => MusicType::MusicMod,
-            sys::mixer::MUS_MID      => MusicType::MusicMid,
-            sys::mixer::MUS_OGG      => MusicType::MusicOgg,
-            sys::mixer::MUS_MP3      => MusicType::MusicMp3,
-            sys::mixer::MUS_MP3_MAD  => MusicType::MusicMp3Mad,
-            sys::mixer::MUS_FLAC     => MusicType::MusicFlac,
-            sys::mixer::MUS_MODPLUG  => MusicType::MusicModPlug,
-            sys::mixer::MUS_NONE | _ => MusicType::MusicNone
+            sys::mixer::Mix_MusicType_MUS_CMD      => MusicType::MusicCmd,
+            sys::mixer::Mix_MusicType_MUS_WAV      => MusicType::MusicWav,
+            sys::mixer::Mix_MusicType_MUS_MOD      => MusicType::MusicMod,
+            sys::mixer::Mix_MusicType_MUS_MID      => MusicType::MusicMid,
+            sys::mixer::Mix_MusicType_MUS_OGG      => MusicType::MusicOgg,
+            sys::mixer::Mix_MusicType_MUS_MP3      => MusicType::MusicMp3,
+            sys::mixer::Mix_MusicType_MUS_MP3_MAD_UNUSED  => MusicType::MusicMp3Mad,
+            sys::mixer::Mix_MusicType_MUS_FLAC     => MusicType::MusicFlac,
+            sys::mixer::Mix_MusicType_MUS_MODPLUG_UNUSED  => MusicType::MusicModPlug,
+            sys::mixer::Mix_MusicType_MUS_NONE | _ => MusicType::MusicNone
         }
     }
 
@@ -959,9 +955,9 @@ impl<'a> Music<'a> {
     pub fn get_fading() -> Fading {
         let ret = unsafe { sys::mixer::Mix_FadingMusic() as i32 } as c_uint;
         match ret {
-            sys::mixer::MIX_FADING_OUT    => Fading::FadingOut,
-            sys::mixer::MIX_FADING_IN     => Fading::FadingIn,
-            sys::mixer::MIX_NO_FADING | _ => Fading::NoFading
+            sys::mixer::Mix_Fading_MIX_FADING_OUT    => Fading::FadingOut,
+            sys::mixer::Mix_Fading_MIX_FADING_IN     => Fading::FadingIn,
+            sys::mixer::Mix_Fading_MIX_NO_FADING | _ => Fading::NoFading
         }
     }
 }
