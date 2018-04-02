@@ -34,27 +34,6 @@ use ::rwops::RWops;
 use ::version::Version;
 use sys;
 
-// Setup linking for all targets.
-#[cfg(target_os="macos")]
-mod mac {
-    #[cfg(any(mac_framework, feature="use_mac_framework"))]
-    #[link(kind="framework", name="SDL2_mixer")]
-    extern "C" {
-    }
-
-    #[cfg(not(any(mac_framework, feature="use_mac_framework")))]
-    #[link(name="SDL2_mixer")]
-    extern "C" {
-    }
-}
-
-#[cfg(any(target_os="windows", target_os="linux", target_os="freebsd"))]
-mod others {
-    #[link(name="SDL2_mixer")]
-    extern "C" {
-    }
-}
-
 // This comes from SDL_audio.h
 #[allow(non_camel_case_types)]
 mod ll {

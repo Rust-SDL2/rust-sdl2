@@ -196,6 +196,22 @@ fn link_sdl2(target_os: &str) {
             // TODO: Add other platform linker options here.
         }
     }
+    // SDL libraries seem to not be packed with pkgconfig file on all distros,
+    // and in the same distros (fedora at least) a symlink is also missing.
+    // 
+    // Linking directly with file is not possible with cargo since the
+    // ':filename' syntax is used for renaming of libraries, which basically
+    // leaves it up to the user to make a symlink to the shared object so
+    // -lSDL2_mixer can find it.
+    #[cfg(all(not(feature = "use-pkgconfig"), not(feature = "static-link")))] {
+        if cfg!(all(any(target_os="linux", target_os="freebsd"), feature = "mixer")) {
+            println!("cargo:rustc-flags=-l SDL2_mixer");
+        } else if cfg!(all(target_os="windows", feature = "mixer")) {
+            println!("cargo:rustc-flags=-l SDL2_mixer");
+        } else if cfg!(all(any(target_os="macos", feature="use_mac_framework"), feature = "mixer")) {
+            println!("cargo:rustc-flags=-l framework=SDL2_mixer");
+        }
+    }
 }
 
 fn main() {
