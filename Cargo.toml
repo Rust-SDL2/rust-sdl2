@@ -37,7 +37,7 @@ optional = true
 
 unsafe_textures = []
 default = []
-gfx = ["c_vec"]
+gfx = ["c_vec", "sdl2-sys/gfx"]
 mixer = ["sdl2-sys/mixer"]
 image = ["sdl2-sys/image"]
 ttf = ["sdl2-sys/ttf"]

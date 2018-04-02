@@ -18,3 +18,6 @@ pub mod image;
 
 #[cfg(feature = "ttf")]
 pub mod ttf;
+
+#[cfg(feature = "gfx")]
+pub mod gfx;
