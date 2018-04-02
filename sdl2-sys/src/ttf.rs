@@ -1,2 +1,2 @@
 use ::*;
-include!(concat!(env!("OUT_DIR"), "/ttf_bindings.rs"));
+include!(concat!(env!("OUT_DIR"), "/sdl_ttf_bindings.rs"));

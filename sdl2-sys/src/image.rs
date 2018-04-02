@@ -1,2 +1,2 @@
 use ::*;
-include!(concat!(env!("OUT_DIR"), "/image_bindings.rs"));
+include!(concat!(env!("OUT_DIR"), "/sdl_image_bindings.rs"));

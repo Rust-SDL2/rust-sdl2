@@ -1,2 +1,2 @@
 use ::*;
-include!(concat!(env!("OUT_DIR"), "/mixer_bindings.rs"));
+include!(concat!(env!("OUT_DIR"), "/sdl_mixer_bindings.rs"));
