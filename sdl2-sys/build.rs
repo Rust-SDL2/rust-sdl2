@@ -198,7 +198,7 @@ fn link_sdl2(target_os: &str) {
     }
     // SDL libraries seem to not be packed with pkgconfig file on all distros,
     // and in the same distros (fedora at least) a symlink is also missing.
-    // 
+    //
     // Linking directly with file is not possible with cargo since the
     // ':filename' syntax is used for renaming of libraries, which basically
     // leaves it up to the user to make a symlink to the shared object so
@@ -209,8 +209,12 @@ fn link_sdl2(target_os: &str) {
                 println!("cargo:rustc-flags=-l SDL2_mixer");
             } else if cfg!(target_os="windows") {
                 println!("cargo:rustc-flags=-l SDL2_mixer");
-            } else if cfg!(any(target_os="macos", feature="use_mac_framework")) {
-                println!("cargo:rustc-flags=-l framework=SDL2_mixer");
+            } else if cfg!(target_os="macos") {
+                if cfg!(any(mac_framework, feature="use_mac_framework")) {
+                    println!("cargo:rustc-flags=-l framework=SDL2_mixer");
+                } else {
+                    println!("cargo:rustc-flags=-l SDL2_mixer");
+                }
             }
         }
         if cfg!(feature = "image") {
@@ -218,8 +222,12 @@ fn link_sdl2(target_os: &str) {
                 println!("cargo:rustc-flags=-l SDL2_image");
             } else if cfg!(target_os="windows") {
                 println!("cargo:rustc-flags=-l SDL2_image");
-            } else if cfg!(any(target_os="macos", feature="use_mac_framework")) {
-                println!("cargo:rustc-flags=-l framework=SDL2_image");
+            } else if cfg!(target_os="macos") {
+                if cfg!(any(mac_framework, feature="use_mac_framework")) {
+                    println!("cargo:rustc-flags=-l framework=SDL2_image");
+                } else {
+                    println!("cargo:rustc-flags=-l SDL2_image");
+                }
             }
         }
         if cfg!(feature = "ttf") {
@@ -227,8 +235,12 @@ fn link_sdl2(target_os: &str) {
                 println!("cargo:rustc-flags=-l SDL2_ttf");
             } else if cfg!(target_os="windows") {
                 println!("cargo:rustc-flags=-l SDL2_ttf");
-            } else if cfg!(any(target_os="macos", feature="use_mac_framework")) {
-                println!("cargo:rustc-flags=-l framework=SDL2_ttf");
+            } else if cfg!(target_os="macos") {
+                if cfg!(any(mac_framework, feature="use_mac_framework")) {
+                    println!("cargo:rustc-flags=-l framework=SDL2_ttf");
+                } else {
+                    println!("cargo:rustc-flags=-l SDL2_ttf");
+                }
             }
         }
         if cfg!(feature = "gfx") {
@@ -236,8 +248,12 @@ fn link_sdl2(target_os: &str) {
                 println!("cargo:rustc-flags=-l SDL2_gfx");
             } else if cfg!(target_os="windows") {
                 println!("cargo:rustc-flags=-l SDL2_gfx");
-            } else if cfg!(any(target_os="macos", feature="use_mac_framework")) {
-                println!("cargo:rustc-flags=-l framework=SDL2_gfx");
+            } else if cfg!(target_os="macos") {
+                if cfg!(any(mac_framework, feature="use_mac_framework")) {
+                    println!("cargo:rustc-flags=-l framework=SDL2_gfx");
+                } else {
+                    println!("cargo:rustc-flags=-l SDL2_gfx");
+                }
             }
         }
     }
