@@ -60,7 +60,7 @@ fn run(font_path: &Path) {
     // Load a font
     let mut font = ttf_context.load_font(font_path, 128).unwrap();
     font.set_style(sdl2::ttf::STYLE_BOLD);
-    
+
     // render a surface, and convert it to a texture bound to the canvas
     let surface = font.render("Hello Rust!")
         .blended(Color::RGBA(255, 0, 0, 255)).unwrap();

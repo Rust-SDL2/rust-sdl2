@@ -1,7 +1,7 @@
 //!
 //! A binding for the library `SDL2_ttf`
 //!
-//! 
+//!
 //! Note that you need to build with the
 //! feature `ttf` for this module to be enabled,
 //! like so:
@@ -48,5 +48,5 @@ pub use self::context::{
 };
 pub use self::font::{
     Font, FontStyle, Hinting, GlyphMetrics, PartialRendering, FontError,
-    FontResult, STYLE_NORMAL, STYLE_BOLD, STYLE_ITALIC, STYLE_UNDERLINE, STYLE_STRIKETHROUGH
+    FontResult
 };

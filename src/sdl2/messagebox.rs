@@ -10,23 +10,23 @@ use get_error;
 use sys;
 
 bitflags! {
-    pub flags MessageBoxFlag: u32 {
+    pub struct MessageBoxFlag: u32 {
         const MESSAGEBOX_ERROR =
-            sys::SDL_MessageBoxFlags::SDL_MESSAGEBOX_ERROR as u32,
+            sys::SDL_MessageBoxFlags::SDL_MESSAGEBOX_ERROR as u32;
         const MESSAGEBOX_WARNING =
-            sys::SDL_MessageBoxFlags::SDL_MESSAGEBOX_WARNING as u32,
+            sys::SDL_MessageBoxFlags::SDL_MESSAGEBOX_WARNING as u32;
         const MESSAGEBOX_INFORMATION =
-            sys::SDL_MessageBoxFlags::SDL_MESSAGEBOX_INFORMATION as u32
+            sys::SDL_MessageBoxFlags::SDL_MESSAGEBOX_INFORMATION as u32;
     }
 }
 
 bitflags! {
-    pub flags MessageBoxButtonFlag: u32 {
+    pub struct MessageBoxButtonFlag: u32 {
         const MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT =
-            sys::SDL_MessageBoxButtonFlags::SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT as u32,
+            sys::SDL_MessageBoxButtonFlags::SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT as u32;
         const MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT =
-            sys::SDL_MessageBoxButtonFlags::SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT as u32,
-        const MESSAGEBOX_BUTTON_NOTHING = 0
+            sys::SDL_MessageBoxButtonFlags::SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT as u32;
+        const MESSAGEBOX_BUTTON_NOTHING = 0;
     }
 }
 

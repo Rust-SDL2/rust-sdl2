@@ -27,7 +27,7 @@ pub fn main() {
             match event {
                 Event::Quit {..} | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
                     let res =
-                        show_simple_message_box(MESSAGEBOX_ERROR,
+                        show_simple_message_box(MessageBoxFlag::MESSAGEBOX_ERROR,
                                                 "Some title",
                                                 "Some information inside the window",
                                                 canvas.window());
@@ -47,22 +47,22 @@ pub fn main() {
     }
     let buttons : Vec<_> = vec![
         ButtonData {
-            flags:MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT,
+            flags:MessageBoxButtonFlag::MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT,
             button_id:1,
             text:"Ok"
         },
         ButtonData {
-            flags:MESSAGEBOX_BUTTON_NOTHING,
+            flags:MessageBoxButtonFlag::MESSAGEBOX_BUTTON_NOTHING,
             button_id:2,
             text:"No"
         },
         ButtonData {
-            flags:MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT,
+            flags:MessageBoxButtonFlag::MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT,
             button_id:3,
             text:"Cancel"
         },
     ];
-    let res = show_message_box(MESSAGEBOX_WARNING,
+    let res = show_message_box(MessageBoxFlag::MESSAGEBOX_WARNING,
                                buttons.as_slice(),
                                "Some warning",
                                "You forget to do something, do it anyway ?",

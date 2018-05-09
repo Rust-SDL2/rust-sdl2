@@ -11,20 +11,20 @@ pub use self::keycode::Keycode;
 pub use self::scancode::Scancode;
 
 bitflags! {
-    pub flags Mod: u16 {
-        const NOMOD = 0x0000,
-        const LSHIFTMOD = 0x0001,
-        const RSHIFTMOD = 0x0002,
-        const LCTRLMOD = 0x0040,
-        const RCTRLMOD = 0x0080,
-        const LALTMOD = 0x0100,
-        const RALTMOD = 0x0200,
-        const LGUIMOD = 0x0400,
-        const RGUIMOD = 0x0800,
-        const NUMMOD = 0x1000,
-        const CAPSMOD = 0x2000,
-        const MODEMOD = 0x4000,
-        const RESERVEDMOD = 0x8000
+    pub struct Mod: u16 {
+        const NOMOD = 0x0000;
+        const LSHIFTMOD = 0x0001;
+        const RSHIFTMOD = 0x0002;
+        const LCTRLMOD = 0x0040;
+        const RCTRLMOD = 0x0080;
+        const LALTMOD = 0x0100;
+        const RALTMOD = 0x0200;
+        const LGUIMOD = 0x0400;
+        const RGUIMOD = 0x0800;
+        const NUMMOD = 0x1000;
+        const CAPSMOD = 0x2000;
+        const MODEMOD = 0x4000;
+        const RESERVEDMOD = 0x8000;
     }
 }
 

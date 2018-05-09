@@ -54,27 +54,27 @@ mod ffi;
 /// InitFlags are passed to init() to control which subsystem
 /// functionality to load.
 bitflags! {
-    pub flags InitFlag : u32 {
-        const INIT_JPG  = ffi::IMG_INIT_JPG as u32,
-        const INIT_PNG  = ffi::IMG_INIT_PNG as u32,
-        const INIT_TIF  = ffi::IMG_INIT_TIF as u32,
-        const INIT_WEBP = ffi::IMG_INIT_WEBP as u32
+    pub struct InitFlag : u32 {
+        const INIT_JPG  = ffi::IMG_INIT_JPG as u32;
+        const INIT_PNG  = ffi::IMG_INIT_PNG as u32;
+        const INIT_TIF  = ffi::IMG_INIT_TIF as u32;
+        const INIT_WEBP = ffi::IMG_INIT_WEBP as u32;
     }
 }
 
 // This is used for error message for init
 impl ::std::fmt::Display for InitFlag {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        if self.contains(INIT_JPG) {
+        if self.contains(InitFlag::INIT_JPG) {
             try!(f.write_str("INIT_JPG "));
         }
-        if self.contains(INIT_PNG) {
+        if self.contains(InitFlag::INIT_PNG) {
             try!(f.write_str("INIT_PNG "));
         }
-        if self.contains(INIT_TIF) {
+        if self.contains(InitFlag::INIT_TIF) {
             try!(f.write_str("INIT_TIF "));
         }
-        if self.contains(INIT_WEBP) {
+        if self.contains(InitFlag::INIT_WEBP) {
             try!(f.write_str("INIT_WEBP "));
         }
         Ok(())
