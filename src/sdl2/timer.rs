@@ -13,6 +13,7 @@ impl TimerSubsystem {
     ///
     /// * when the timer is dropped
     /// * or when the callback returns a non-positive continuation interval
+    #[must_use = "if unused the Timer will be dropped immediately"]
     pub fn add_timer<'b, 'c>(&'b self, delay: u32, callback: TimerCallback<'c>) -> Timer<'b, 'c> {
         unsafe {
             let callback = Box::new(callback);
