@@ -294,6 +294,14 @@ impl Drop for EventPump {
     }
 }
 
+/// Get platform name
+#[inline]
+pub fn get_platform() -> &'static str {
+  unsafe {
+    CStr::from_ptr(sys::SDL_GetPlatform()).to_str().unwrap()
+  }
+}
+
 /// Initializes the SDL library.
 /// This must be called before using any other SDL function.
 ///
