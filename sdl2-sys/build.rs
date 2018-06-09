@@ -20,10 +20,10 @@ use std::path::{Path, PathBuf};
 use std::{io, fs, env};
 
 // corresponds to the headers that we have in sdl2-sys/SDL2-{version}
-const SDL2_HEADERS_BUNDLED_VERSION: &str = "2.0.6";
+const SDL2_HEADERS_BUNDLED_VERSION: &str = "2.0.8";
 
 // means the lastest stable version that can be downloaded from SDL2's source
-const LASTEST_SDL2_VERSION: &str = "2.0.5";
+const LASTEST_SDL2_VERSION: &str = "2.0.8";
 
 #[cfg(feature="bundled")]
 fn download_to<T: io::Write>(url: &str, mut dest: T) {
