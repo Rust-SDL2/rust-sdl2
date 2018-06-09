@@ -165,8 +165,8 @@ fn link_sdl2(target_os: &str) {
 
     #[cfg(feature = "static-link")] {
         if cfg!(feature = "bundled") || cfg!(feature = "use-pkgconfig") == false { 
-            println!("cargo:rustc-link-lib=static=SDL2main");
-            println!("cargo:rustc-link-lib=static=SDL2");
+            println!("cargo:rustc-link-lib=static=SDL2maind");
+            println!("cargo:rustc-link-lib=static=SDL2d");
         }
 
         // Also linked to any required libraries for each supported platform
