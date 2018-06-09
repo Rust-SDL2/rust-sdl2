@@ -4,7 +4,7 @@ extern crate sdl2;
 
 use std::env;
 use std::path::Path;
-use sdl2::mixer::{DEFAULT_CHANNELS, INIT_MP3, INIT_FLAC, INIT_MOD, INIT_FLUIDSYNTH, INIT_MODPLUG,
+use sdl2::mixer::{DEFAULT_CHANNELS, INIT_MP3, INIT_FLAC, INIT_MOD,
                   INIT_OGG, AUDIO_S16LSB};
 
 fn main() {
@@ -33,7 +33,7 @@ fn demo(music_file: &Path, sound_file: Option<&Path>) {
     let chunk_size = 1_024;
     sdl2::mixer::open_audio(frequency, format, channels, chunk_size).unwrap();
     let _mixer_context = sdl2::mixer::init(
-        INIT_MP3 | INIT_FLAC | INIT_MOD | INIT_FLUIDSYNTH | INIT_MODPLUG | INIT_OGG
+        INIT_MP3 | INIT_FLAC | INIT_MOD | INIT_OGG
     ).unwrap();
 
     // Number of mixing channels available for sound effect `Chunk`s to play
