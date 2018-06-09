@@ -8,4 +8,16 @@
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 
-include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+include!(concat!(env!("OUT_DIR"), "/sdl_bindings.rs"));
+
+#[cfg(feature = "mixer")]
+pub mod mixer;
+
+#[cfg(feature = "image")]
+pub mod image;
+
+#[cfg(feature = "ttf")]
+pub mod ttf;
+
+#[cfg(feature = "gfx")]
+pub mod gfx;

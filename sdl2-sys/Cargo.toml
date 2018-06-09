@@ -16,7 +16,7 @@ name = "sdl2_sys"
 path = "src/lib.rs"
 
 [build-dependencies.bindgen]
-version = "0.31"
+version = "0.35"
 optional = true
 
 [build-dependencies.pkg-config]
@@ -50,3 +50,7 @@ use-bindgen = ["bindgen"]
 static-link = []
 use_mac_framework = []
 bundled = ["cmake", "reqwest", "tar", "flate2"]
+mixer = []
+image = []
+ttf = []
+gfx = []
