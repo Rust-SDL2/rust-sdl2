@@ -1262,12 +1262,13 @@ impl Event {
 
             EventType::KeyDown => {
                 let event = raw.key;
+
                 Event::KeyDown {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
                     keycode: Keycode::from_i32(event.keysym.sym as i32),
                     scancode: Scancode::from_i32(event.keysym.scancode as i32),
-                    keymod: keyboard::Mod::from_bits(event.keysym.mod_).unwrap(),
+                    keymod: Event::unwrap_keymod(keyboard::Mod::from_bits(event.keysym.mod_)),
                     repeat: event.repeat != 0
                 }
             }
@@ -1605,6 +1606,13 @@ impl Event {
                 }
             }
         }}                      // close unsafe & match
+    }
+
+    pub fn unwrap_keymod(keymod_option: Option<keyboard::Mod>) -> keyboard::Mod {
+        match keymod_option {
+            None => keyboard::Mod::empty(),
+            Some(x) => x,
+        }
     }
 
     pub fn is_user_event(&self) -> bool {
