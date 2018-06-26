@@ -1,6 +1,9 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
+[PR #746](https://github.com/Rust-SDL2/rust-sdl2/pull/746)
+* Make `{ttf, image, mixer, gfx}::ffi` public.
+
 ### v0.31.1
 
 [PR #737](https://github.com/Rust-SDL2/rust-sdl2/pull/737)

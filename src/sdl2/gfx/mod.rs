@@ -24,6 +24,9 @@
 #[link(name="SDL2_gfx")]
 extern {}
 
+#[allow(non_camel_case_types, dead_code)]
+pub mod ffi;
+
 pub mod primitives;
 pub mod rotozoom;
 pub mod framerate;
