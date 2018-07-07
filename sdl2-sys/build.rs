@@ -115,6 +115,7 @@ fn download_sdl2() -> PathBuf {
 #[cfg(feature = "bundled")]
 fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
     let mut cfg = cmake::Config::new(sdl2_build_path);
+    cfg.define("CMAKE_BUILD_TYPE", "RELEASE");
 
     if target_os == "windows-gnu" {
         cfg.define("VIDEO_OPENGLES", "OFF");
@@ -185,8 +186,8 @@ fn link_sdl2(target_os: &str) {
 
     #[cfg(feature = "static-link")] {
         if cfg!(feature = "bundled") || cfg!(feature = "use-pkgconfig") == false { 
-            println!("cargo:rustc-link-lib=static=SDL2maind");
-            println!("cargo:rustc-link-lib=static=SDL2d");
+            println!("cargo:rustc-link-lib=static=SDL2main");
+            println!("cargo:rustc-link-lib=static=SDL2");
         }
 
         // Also linked to any required libraries for each supported platform
