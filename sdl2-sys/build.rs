@@ -24,7 +24,8 @@ const SDL2_HEADERS_BUNDLED_VERSION: &str = "2.0.8";
 
 // means the lastest stable version that can be downloaded from SDL2's source
 const LASTEST_SDL2_VERSION: &str = "2.0.8";
-        
+
+#[cfg(feature = "bindgen")]
 macro_rules! add_msvc_includes_to_bindings {
     ($bindings:expr) => {
         $bindings = $bindings.clang_arg(format!("-IC:/Program Files (x86)/Windows Kits/8.1/Include/shared"));
