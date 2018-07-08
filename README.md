@@ -32,7 +32,7 @@ We currently target the latest stable release of Rust.
 
 ## *SDL2.0 development libraries*
 
-SDL2 >= 2.0.5 is recommended to use these bindings, but note that SDL2 >= 2.0.4 is also supported. Below 2.0.4, you may experience link-time errors as some functions are used here but are not defined in SDL2. If you experience this issue because you are on a LTS machine (for instance, Ubuntu 12.04 or Ubuntu 14.04), we definitely recommend you to use the feature "bundled" which will compile the lastest stable version of SDL2 for your project.
+SDL2 >= 2.0.8 is recommended to use these bindings, but note that SDL2 >= 2.0.4 is also supported. Below 2.0.4, you may experience link-time errors as some functions are used here but are not defined in SDL2. If you experience this issue because you are on a LTS machine (for instance, Ubuntu 12.04 or Ubuntu 14.04), we definitely recommend you to use the feature "bundled" which will compile the lastest stable version of SDL2 for your project.
 
 ### "Bundled" Feature
 
@@ -129,10 +129,10 @@ SDL2-devel-2.0.x-mingw.tar.gz\SDL2-2.0.x\i686-w64-mingw32\bin 		-> 	gnu-mingw\dl
 SDL2-devel-2.0.x-mingw.tar.gz\SDL2-2.0.x\x86_64-w64-mingw32\bin 	-> 	gnu-mingw\dll\64
 SDL2-devel-2.0.x-mingw.tar.gz\SDL2-2.0.x\i686-w64-mingw32\lib 		-> 	gnu-mingw\lib\32
 SDL2-devel-2.0.x-mingw.tar.gz\SDL2-2.0.x\x86_64-w64-mingw32\lib 	-> 	gnu-mingw\lib\64
-SDL2-devel-2.0.5-VC.zip\SDL2-2.0.x\lib\x86\*.dll	 		-> 	msvc\dll\32
-SDL2-devel-2.0.5-VC.zip\SDL2-2.0.x\lib\x64\*.dll 			-> 	msvc\dll\64
-SDL2-devel-2.0.5-VC.zip\SDL2-2.0.x\lib\x86\*.lib	 		-> 	msvc\lib\32
-SDL2-devel-2.0.5-VC.zip\SDL2-2.0.x\lib\x64\*.lib	 		-> 	msvc\lib\64
+SDL2-devel-2.0.8-VC.zip\SDL2-2.0.x\lib\x86\*.dll	 		-> 	msvc\dll\32
+SDL2-devel-2.0.8-VC.zip\SDL2-2.0.x\lib\x64\*.dll 			-> 	msvc\dll\64
+SDL2-devel-2.0.8-VC.zip\SDL2-2.0.x\lib\x86\*.lib	 		-> 	msvc\lib\32
+SDL2-devel-2.0.8-VC.zip\SDL2-2.0.x\lib\x64\*.lib	 		-> 	msvc\lib\64
 ```
 
 5. Create a build script, if you don't already have one put this in your Cargo.toml under `[package]`:
@@ -334,7 +334,7 @@ you may sometimes face trouble when using platform-specific features of SDL2, fo
 
 The feature "use-bindgen" allows you to avoid this limitation by generating the proper bindings depending on your target. It will take
 the headers based on what `pkg-config` outputs (if you enabled the feature "use-pkg-config") and generate bindings based on them.
-If you don't have pkg-config or disabled the feature, it will try to get the headers in `SDL-2.0.6/include` of this crate instead.
+If you don't have pkg-config or disabled the feature, it will try to get the headers in `SDL-2.0.8/include` of this crate instead.
 
 If somehow you have your own headers that you want to use (use a beta version, an older version, ...),
 you can set the environment variable "SDL2_INCLUDE_PATH" and those headers will be used by bindgen instead.
