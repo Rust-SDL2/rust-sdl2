@@ -116,7 +116,7 @@ fn download_sdl2() -> PathBuf {
 #[cfg(feature = "bundled")]
 fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
     let mut cfg = cmake::Config::new(sdl2_build_path);
-    cfg.define("CMAKE_BUILD_TYPE", "RELEASE");
+    cfg.profile("release");
 
     if target_os == "windows-gnu" {
         cfg.define("VIDEO_OPENGLES", "OFF");
