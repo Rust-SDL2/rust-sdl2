@@ -827,10 +827,15 @@ mod test {
 
         let cvt = AudioCVT::new(AudioFormat::U8, 1, 44100, AudioFormat::U8, 2, 44100).unwrap();
         assert!(cvt.is_conversion_needed());
-        assert_eq!(cvt.capacity(255), 255*2);
+
+        // since we're going from mono to stereo, our capacity must be at least twice the original (255) vec size
+        assert!(cvt.capacity(255) > 255*2, "capacity must be able to hold the converted audio sample");
 
         let new_buffer = cvt.convert(buffer);
-        assert_eq!(new_buffer.len(), new_buffer_expected.len());
-        assert_eq!(new_buffer, new_buffer_expected);
+        assert_eq!(new_buffer.len(), new_buffer_expected.len(), "capacity must be exactly equal to twice the original vec size");
+
+        // // this has been commented, see https://discourse.libsdl.org/t/change-of-behavior-in-audiocvt-sdl-convertaudio-from-2-0-5-to-2-0-6/24682
+        // // to maybe re-enable it someday 
+        // assert_eq!(new_buffer, new_buffer_expected);
     }
 }
