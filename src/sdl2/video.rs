@@ -1143,7 +1143,9 @@ impl Window {
 
     /// Create a Vulkan rendering surface for a window.
     ///
-    /// The `VkInstance` must be created using a prior call to the `vkCreateInstance` function in the Vulkan library.
+    /// The `VkInstance` must be created using a prior call to the
+    /// [`vkCreateInstance`](https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/vkCreateInstance.html)
+    /// function in the Vulkan library.
     pub fn vulkan_create_surface(&self, instance: VkInstance) -> Result<VkSurfaceKHR, String> {
         let mut surface: sys::VkSurfaceKHR = ptr::null_mut();
         if unsafe { sys::SDL_Vulkan_CreateSurface(self.context.raw, instance as *mut _, &mut surface) } == sys::SDL_bool::SDL_FALSE {
