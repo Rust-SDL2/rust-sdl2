@@ -18,9 +18,8 @@ use get_error;
 
 use sys;
 
+pub use sys::{VkInstance, VkSurfaceKHR};
 
-type VkInstance = usize;
-type VkSurfaceKHR = u64;
 
 pub struct WindowSurfaceRef<'a>(&'a mut SurfaceRef, &'a Window);
 
@@ -1147,11 +1146,11 @@ impl Window {
     /// [`vkCreateInstance`](https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/vkCreateInstance.html)
     /// function in the Vulkan library.
     pub fn vulkan_create_surface(&self, instance: VkInstance) -> Result<VkSurfaceKHR, String> {
-        let mut surface: sys::VkSurfaceKHR = ptr::null_mut();
-        if unsafe { sys::SDL_Vulkan_CreateSurface(self.context.raw, instance as *mut _, &mut surface) } == sys::SDL_bool::SDL_FALSE {
+        let mut surface: VkSurfaceKHR = 0;
+        if unsafe { sys::SDL_Vulkan_CreateSurface(self.context.raw, instance, &mut surface) } == sys::SDL_bool::SDL_FALSE {
             Err(get_error())
         } else {
-            Ok(surface as VkSurfaceKHR)
+            Ok(surface)
         }
     }
 

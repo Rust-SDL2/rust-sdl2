@@ -29283,13 +29283,11 @@ extern "C" {
 pub struct VkInstance_T {
     _unused: [u8; 0],
 }
-pub type VkInstance = *mut VkInstance_T;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct VkSurfaceKHR_T {
     _unused: [u8; 0],
 }
-pub type VkSurfaceKHR = *mut VkSurfaceKHR_T;
 pub type SDL_vulkanInstance = VkInstance;
 pub type SDL_vulkanSurface = VkSurfaceKHR;
 extern "C" {
@@ -29488,6 +29486,10 @@ extern "C" {
         h: *mut ::std::os::raw::c_int,
     );
 }
+/// <div rustbindgen replaces="VkInstance"></div>
+pub type VkInstance = usize;
+/// <div rustbindgen replaces="VkSurfaceKHR"></div>
+pub type VkSurfaceKHR = u64;
 pub type __builtin_va_list = [__va_list_tag; 1usize];
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
