@@ -461,9 +461,10 @@ its audio, controller and other neat features that sdl2 has.
 
 # Vulkan
 
-To use Vulkan, you need a Vulkan library for Rust. This example uses the [Vulkano][vulkano]
-library. Other libraries may use different data types for raw Vulkan object handles. The
-procedure to interface SDL2's Vulkan functions with these will be different for each one.
+To use Vulkan, you need a Vulkan library for Rust. This example uses the
+[Vulkano](https://github.com/vulkano-rs/vulkano) library. Other libraries may use different data
+types for raw Vulkan object handles. The procedure to interface SDL2's Vulkan functions with these
+will be different for each one.
 
 ```rust
 extern crate sdl2;
@@ -486,7 +487,9 @@ fn main() {
         .unwrap();
 
     let instance_extensions = window.vulkan_instance_extensions().unwrap();
-    let raw_instance_extensions = RawInstanceExtensions::new(instance_extensions.iter().map(|&v| CString::new(v).unwrap()));
+    let raw_instance_extensions = RawInstanceExtensions::new(instance_extensions.iter().map(
+        |&v| CString::new(v).unwrap()
+        ));
     let instance = Instance::new(None, raw_instance_extensions, None).unwrap();
     let surface_handle = window.vulkan_create_surface(instance.internal_object()).unwrap();
     let surface = unsafe { Surface::from_raw_surface(instance, surface_handle, window.context()) };
