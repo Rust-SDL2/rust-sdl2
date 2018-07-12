@@ -1,4 +1,4 @@
-use libc::{c_int, c_float, uint32_t, c_char};
+use libc::{c_int, c_uint, c_float, uint32_t, c_char};
 use std::ffi::{CStr, CString, NulError};
 use std::{mem, ptr, fmt};
 use std::rc::Rc;
@@ -18,6 +18,9 @@ use get_error;
 
 use sys;
 
+
+type VkInstance = usize;
+type VkSurfaceKHR = u64;
 
 pub struct WindowSurfaceRef<'a>(&'a mut SurfaceRef, &'a Window);
 
@@ -807,6 +810,61 @@ impl VideoSubsystem {
             mem::transmute(interval)
         }
     }
+
+    /// Loads the default Vulkan library.
+    ///
+    /// This should be done after initializing the video driver, but before creating any Vulkan windows.
+    /// If no Vulkan library is loaded, the default library will be loaded upon creation of the first Vulkan window.
+    ///
+    /// If a different library is already loaded, this function will return an error.
+    pub fn vulkan_load_library_default(&self) -> Result<(), String> {
+        unsafe {
+            if sys::SDL_Vulkan_LoadLibrary(ptr::null()) == 0 {
+                Ok(())
+            } else {
+                Err(get_error())
+            }
+        }
+    }
+
+    /// Loads the Vulkan library using a platform-dependent Vulkan library name (usually a file path).
+    ///
+    /// This should be done after initializing the video driver, but before creating any Vulkan windows.
+    /// If no Vulkan library is loaded, the default library will be loaded upon creation of the first Vulkan window.
+    ///
+    /// If a different library is already loaded, this function will return an error.
+    pub fn vulkan_load_library<P: AsRef<::std::path::Path>>(&self, path: P) -> Result<(), String> {
+        unsafe {
+            // TODO: use OsStr::to_cstring() once it's stable
+            let path = CString::new(path.as_ref().to_str().unwrap()).unwrap();
+            if sys::SDL_Vulkan_LoadLibrary(path.as_ptr() as *const c_char) == 0 {
+                Ok(())
+            } else {
+                Err(get_error())
+            }
+        }
+    }
+
+    /// Unloads the current Vulkan library.
+    ///
+    /// To completely unload the library, this should be called for every successful load of the
+    /// Vulkan library.
+    pub fn vulkan_unload_library(&self) {
+        unsafe { sys::SDL_Vulkan_UnloadLibrary(); }
+    }
+
+    /// Gets the pointer to the
+    /// [`vkGetInstanceProcAddr`](https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/vkGetInstanceProcAddr.html)
+    /// Vulkan function. This function can be called to retrieve the address of other Vulkan
+    /// functions.
+    pub fn vulkan_get_proc_address_function(&self) -> Result<*const (), String> {
+        let result = unsafe { sys::SDL_Vulkan_GetVkGetInstanceProcAddr() as *const () };
+        if result.is_null() {
+            Err(get_error())
+        } else {
+            Ok(result)
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -1070,6 +1128,31 @@ impl Window {
         unsafe { sys::SDL_GL_SwapWindow(self.context.raw) }
     }
 
+    /// Get the names of the Vulkan instance extensions needed to create a surface with `vulkan_create_surface`.
+    pub fn vulkan_instance_extensions(&self) -> Result<Vec<&'static str>, String> {
+        let mut count: c_uint = 0;
+        if unsafe { sys::SDL_Vulkan_GetInstanceExtensions(self.context.raw, &mut count, ptr::null_mut()) } == sys::SDL_bool::SDL_FALSE {
+            return Err(get_error());
+        }
+        let mut names: Vec<*const c_char> = vec![ptr::null(); count as usize];
+        if unsafe { sys::SDL_Vulkan_GetInstanceExtensions(self.context.raw, &mut count, names.as_mut_ptr()) } == sys::SDL_bool::SDL_FALSE {
+            return Err(get_error());
+        }
+        Ok(names.iter().map(|&val| unsafe { CStr::from_ptr(val) }.to_str().unwrap()).collect())
+    }
+
+    /// Create a Vulkan rendering surface for a window.
+    ///
+    /// The `VkInstance` must be created using a prior call to the `vkCreateInstance` function in the Vulkan library.
+    pub fn vulkan_create_surface(&self, instance: VkInstance) -> Result<VkSurfaceKHR, String> {
+        let mut surface: sys::VkSurfaceKHR = ptr::null_mut();
+        if unsafe { sys::SDL_Vulkan_CreateSurface(self.context.raw, instance as *mut _, &mut surface) } == sys::SDL_bool::SDL_FALSE {
+            Err(get_error())
+        } else {
+            Ok(surface as VkSurfaceKHR)
+        }
+    }
+
     pub fn display_index(&self) -> Result<i32, String> {
         let result = unsafe { sys::SDL_GetWindowDisplayIndex(self.context.raw) };
         if result < 0 {
@@ -1202,6 +1285,13 @@ impl Window {
         let mut w: c_int = 0;
         let mut h: c_int = 0;
         unsafe { sys::SDL_GL_GetDrawableSize(self.context.raw, &mut w, &mut h) };
+        (w as u32, h as u32)
+    }
+
+    pub fn vulkan_drawable_size(&self) -> (u32, u32) {
+        let mut w: c_int = 0;
+        let mut h: c_int = 0;
+        unsafe { sys::SDL_Vulkan_GetDrawableSize(self.context.raw, &mut w, &mut h) };
         (w as u32, h as u32)
     }
 

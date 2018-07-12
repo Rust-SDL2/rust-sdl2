@@ -41,7 +41,7 @@ pub const __STDC_ISO_10646__: u32 = 201706;
 pub const __STDC_NO_THREADS__: u32 = 1;
 pub const __GNU_LIBRARY__: u32 = 6;
 pub const __GLIBC__: u32 = 2;
-pub const __GLIBC_MINOR__: u32 = 26;
+pub const __GLIBC_MINOR__: u32 = 27;
 pub const _SYS_CDEFS_H: u32 = 1;
 pub const __glibc_c99_flexarr_available: u32 = 1;
 pub const __WORDSIZE: u32 = 64;
@@ -168,10 +168,25 @@ pub const WNOWAIT: u32 = 16777216;
 pub const __WNOTHREAD: u32 = 536870912;
 pub const __WALL: u32 = 1073741824;
 pub const __WCLONE: u32 = 2147483648;
+pub const __ENUM_IDTYPE_T: u32 = 1;
 pub const __W_CONTINUED: u32 = 65535;
 pub const __WCOREFLAG: u32 = 128;
 pub const __HAVE_FLOAT128: u32 = 0;
 pub const __HAVE_DISTINCT_FLOAT128: u32 = 0;
+pub const __HAVE_FLOAT64X: u32 = 1;
+pub const __HAVE_FLOAT64X_LONG_DOUBLE: u32 = 1;
+pub const __HAVE_FLOAT16: u32 = 0;
+pub const __HAVE_FLOAT32: u32 = 1;
+pub const __HAVE_FLOAT64: u32 = 1;
+pub const __HAVE_FLOAT32X: u32 = 1;
+pub const __HAVE_FLOAT128X: u32 = 0;
+pub const __HAVE_DISTINCT_FLOAT16: u32 = 0;
+pub const __HAVE_DISTINCT_FLOAT32: u32 = 0;
+pub const __HAVE_DISTINCT_FLOAT64: u32 = 0;
+pub const __HAVE_DISTINCT_FLOAT32X: u32 = 0;
+pub const __HAVE_DISTINCT_FLOAT64X: u32 = 0;
+pub const __HAVE_DISTINCT_FLOAT128X: u32 = 0;
+pub const __HAVE_FLOATN_NOT_TYPEDEF: u32 = 0;
 pub const __ldiv_t_defined: u32 = 1;
 pub const __lldiv_t_defined: u32 = 1;
 pub const RAND_MAX: u32 = 2147483647;
@@ -210,6 +225,8 @@ pub const __PTHREAD_RWLOCK_INT_FLAGS_SHARED: u32 = 1;
 pub const __PTHREAD_MUTEX_HAVE_PREV: u32 = 1;
 pub const __have_pthread_attr_t: u32 = 1;
 pub const _ALLOCA_H: u32 = 1;
+pub const _MM_HINT_ET0: u32 = 7;
+pub const _MM_HINT_ET1: u32 = 6;
 pub const _MM_HINT_T0: u32 = 3;
 pub const _MM_HINT_T1: u32 = 2;
 pub const _MM_HINT_T2: u32 = 1;
@@ -311,6 +328,8 @@ pub const SDL_HINT_VIDEO_X11_XVIDMODE: &'static [u8; 23usize] = b"SDL_VIDEO_X11_
 pub const SDL_HINT_VIDEO_X11_XINERAMA: &'static [u8; 23usize] = b"SDL_VIDEO_X11_XINERAMA\0";
 pub const SDL_HINT_VIDEO_X11_XRANDR: &'static [u8; 21usize] = b"SDL_VIDEO_X11_XRANDR\0";
 pub const SDL_HINT_VIDEO_X11_NET_WM_PING: &'static [u8; 26usize] = b"SDL_VIDEO_X11_NET_WM_PING\0";
+pub const SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR: &'static [u8; 39usize] =
+    b"SDL_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR\0";
 pub const SDL_HINT_WINDOW_FRAME_USABLE_WHILE_CURSOR_HIDDEN: &'static [u8; 44usize] =
     b"SDL_WINDOW_FRAME_USABLE_WHILE_CURSOR_HIDDEN\0";
 pub const SDL_HINT_WINDOWS_INTRESOURCE_ICON: &'static [u8; 29usize] =
@@ -337,8 +356,11 @@ pub const SDL_HINT_APPLE_TV_CONTROLLER_UI_EVENTS: &'static [u8; 34usize] =
     b"SDL_APPLE_TV_CONTROLLER_UI_EVENTS\0";
 pub const SDL_HINT_APPLE_TV_REMOTE_ALLOW_ROTATION: &'static [u8; 35usize] =
     b"SDL_APPLE_TV_REMOTE_ALLOW_ROTATION\0";
+pub const SDL_HINT_IOS_HIDE_HOME_INDICATOR: &'static [u8; 28usize] =
+    b"SDL_IOS_HIDE_HOME_INDICATOR\0";
 pub const SDL_HINT_ACCELEROMETER_AS_JOYSTICK: &'static [u8; 30usize] =
     b"SDL_ACCELEROMETER_AS_JOYSTICK\0";
+pub const SDL_HINT_TV_REMOTE_AS_JOYSTICK: &'static [u8; 26usize] = b"SDL_TV_REMOTE_AS_JOYSTICK\0";
 pub const SDL_HINT_XINPUT_ENABLED: &'static [u8; 19usize] = b"SDL_XINPUT_ENABLED\0";
 pub const SDL_HINT_XINPUT_USE_OLD_JOYSTICK_MAPPING: &'static [u8; 36usize] =
     b"SDL_XINPUT_USE_OLD_JOYSTICK_MAPPING\0";
@@ -377,6 +399,7 @@ pub const SDL_HINT_ANDROID_APK_EXPANSION_PATCH_FILE_VERSION: &'static [u8; 45usi
 pub const SDL_HINT_IME_INTERNAL_EDITING: &'static [u8; 25usize] = b"SDL_IME_INTERNAL_EDITING\0";
 pub const SDL_HINT_ANDROID_SEPARATE_MOUSE_AND_TOUCH: &'static [u8; 37usize] =
     b"SDL_ANDROID_SEPARATE_MOUSE_AND_TOUCH\0";
+pub const SDL_HINT_RETURN_KEY_HIDES_IME: &'static [u8; 25usize] = b"SDL_RETURN_KEY_HIDES_IME\0";
 pub const SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT: &'static [u8; 32usize] =
     b"SDL_EMSCRIPTEN_KEYBOARD_ELEMENT\0";
 pub const SDL_HINT_NO_SIGNAL_HANDLERS: &'static [u8; 23usize] = b"SDL_NO_SIGNAL_HANDLERS\0";
@@ -386,6 +409,7 @@ pub const SDL_HINT_BMP_SAVE_LEGACY_FORMAT: &'static [u8; 27usize] = b"SDL_BMP_SA
 pub const SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING: &'static [u8; 34usize] =
     b"SDL_WINDOWS_DISABLE_THREAD_NAMING\0";
 pub const SDL_HINT_RPI_VIDEO_LAYER: &'static [u8; 20usize] = b"SDL_RPI_VIDEO_LAYER\0";
+pub const SDL_HINT_VIDEO_DOUBLE_BUFFER: &'static [u8; 24usize] = b"SDL_VIDEO_DOUBLE_BUFFER\0";
 pub const SDL_HINT_OPENGL_ES_DRIVER: &'static [u8; 21usize] = b"SDL_OPENGL_ES_DRIVER\0";
 pub const SDL_HINT_AUDIO_RESAMPLING_MODE: &'static [u8; 26usize] = b"SDL_AUDIO_RESAMPLING_MODE\0";
 pub const SDL_HINT_AUDIO_CATEGORY: &'static [u8; 19usize] = b"SDL_AUDIO_CATEGORY\0";
@@ -395,7 +419,7 @@ pub const SDL_INVALID_SHAPE_ARGUMENT: i32 = -2;
 pub const SDL_WINDOW_LACKS_SHAPE: i32 = -3;
 pub const SDL_MAJOR_VERSION: u32 = 2;
 pub const SDL_MINOR_VERSION: u32 = 0;
-pub const SDL_PATCHLEVEL: u32 = 6;
+pub const SDL_PATCHLEVEL: u32 = 8;
 pub const SDL_INIT_TIMER: u32 = 1;
 pub const SDL_INIT_AUDIO: u32 = 16;
 pub const SDL_INIT_VIDEO: u32 = 32;
@@ -942,7 +966,6 @@ pub type __ssize_t = ::std::os::raw::c_long;
 pub type __syscall_slong_t = ::std::os::raw::c_long;
 pub type __syscall_ulong_t = ::std::os::raw::c_ulong;
 pub type __loff_t = __off64_t;
-pub type __qaddr_t = *mut __quad_t;
 pub type __caddr_t = *mut ::std::os::raw::c_char;
 pub type __intptr_t = ::std::os::raw::c_long;
 pub type __socklen_t = ::std::os::raw::c_uint;
@@ -971,21 +994,13 @@ pub enum SDL_bool {
     SDL_FALSE = 0,
     SDL_TRUE = 1,
 }
-/// \brief A signed 8-bit integer type.
 pub type Sint8 = i8;
-/// \brief An unsigned 8-bit integer type.
 pub type Uint8 = u8;
-/// \brief A signed 16-bit integer type.
 pub type Sint16 = i16;
-/// \brief An unsigned 16-bit integer type.
 pub type Uint16 = u16;
-/// \brief A signed 32-bit integer type.
 pub type Sint32 = i32;
-/// \brief An unsigned 32-bit integer type.
 pub type Uint32 = u32;
-/// \brief A signed 64-bit integer type.
 pub type Sint64 = i64;
-/// \brief An unsigned 64-bit integer type.
 pub type Uint64 = u64;
 pub type SDL_compile_time_assert_uint8 = [::std::os::raw::c_int; 1usize];
 pub type SDL_compile_time_assert_sint8 = [::std::os::raw::c_int; 1usize];
@@ -1015,6 +1030,44 @@ extern "C" {
 }
 extern "C" {
     pub fn SDL_free(mem: *mut ::std::os::raw::c_void);
+}
+pub type SDL_malloc_func =
+    ::std::option::Option<unsafe extern "C" fn(size: usize) -> *mut ::std::os::raw::c_void>;
+pub type SDL_calloc_func = ::std::option::Option<
+    unsafe extern "C" fn(nmemb: usize, size: usize) -> *mut ::std::os::raw::c_void,
+>;
+pub type SDL_realloc_func = ::std::option::Option<
+    unsafe extern "C" fn(mem: *mut ::std::os::raw::c_void, size: usize)
+        -> *mut ::std::os::raw::c_void,
+>;
+pub type SDL_free_func =
+    ::std::option::Option<unsafe extern "C" fn(mem: *mut ::std::os::raw::c_void)>;
+extern "C" {
+    /// \brief Get the current set of SDL memory functions
+    pub fn SDL_GetMemoryFunctions(
+        malloc_func: *mut SDL_malloc_func,
+        calloc_func: *mut SDL_calloc_func,
+        realloc_func: *mut SDL_realloc_func,
+        free_func: *mut SDL_free_func,
+    );
+}
+extern "C" {
+    /// \brief Replace SDL's memory allocation functions with a custom set
+    ///
+    /// \note If you are replacing SDL's memory functions, you should call
+    /// SDL_GetNumAllocations() and be very careful if it returns non-zero.
+    /// That means that your free function will be called with memory
+    /// allocated by the previous memory allocation functions.
+    pub fn SDL_SetMemoryFunctions(
+        malloc_func: SDL_malloc_func,
+        calloc_func: SDL_calloc_func,
+        realloc_func: SDL_realloc_func,
+        free_func: SDL_free_func,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    /// \brief Get the number of outstanding (unfreed) allocations
+    pub fn SDL_GetNumAllocations() -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn SDL_getenv(name: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
@@ -1293,19 +1346,37 @@ extern "C" {
     pub fn SDL_acos(x: f64) -> f64;
 }
 extern "C" {
+    pub fn SDL_acosf(x: f32) -> f32;
+}
+extern "C" {
     pub fn SDL_asin(x: f64) -> f64;
+}
+extern "C" {
+    pub fn SDL_asinf(x: f32) -> f32;
 }
 extern "C" {
     pub fn SDL_atan(x: f64) -> f64;
 }
 extern "C" {
+    pub fn SDL_atanf(x: f32) -> f32;
+}
+extern "C" {
     pub fn SDL_atan2(x: f64, y: f64) -> f64;
+}
+extern "C" {
+    pub fn SDL_atan2f(x: f32, y: f32) -> f32;
 }
 extern "C" {
     pub fn SDL_ceil(x: f64) -> f64;
 }
 extern "C" {
+    pub fn SDL_ceilf(x: f32) -> f32;
+}
+extern "C" {
     pub fn SDL_copysign(x: f64, y: f64) -> f64;
+}
+extern "C" {
+    pub fn SDL_copysignf(x: f32, y: f32) -> f32;
 }
 extern "C" {
     pub fn SDL_cos(x: f64) -> f64;
@@ -1317,16 +1388,43 @@ extern "C" {
     pub fn SDL_fabs(x: f64) -> f64;
 }
 extern "C" {
+    pub fn SDL_fabsf(x: f32) -> f32;
+}
+extern "C" {
     pub fn SDL_floor(x: f64) -> f64;
+}
+extern "C" {
+    pub fn SDL_floorf(x: f32) -> f32;
+}
+extern "C" {
+    pub fn SDL_fmod(x: f64, y: f64) -> f64;
+}
+extern "C" {
+    pub fn SDL_fmodf(x: f32, y: f32) -> f32;
 }
 extern "C" {
     pub fn SDL_log(x: f64) -> f64;
 }
 extern "C" {
+    pub fn SDL_logf(x: f32) -> f32;
+}
+extern "C" {
+    pub fn SDL_log10(x: f64) -> f64;
+}
+extern "C" {
+    pub fn SDL_log10f(x: f32) -> f32;
+}
+extern "C" {
     pub fn SDL_pow(x: f64, y: f64) -> f64;
 }
 extern "C" {
+    pub fn SDL_powf(x: f32, y: f32) -> f32;
+}
+extern "C" {
     pub fn SDL_scalbn(x: f64, n: ::std::os::raw::c_int) -> f64;
+}
+extern "C" {
+    pub fn SDL_scalbnf(x: f32, n: ::std::os::raw::c_int) -> f32;
 }
 extern "C" {
     pub fn SDL_sin(x: f64) -> f64;
@@ -2482,6 +2580,15 @@ pub type SDL_AudioCallback = ::std::option::Option<
     ),
 >;
 /// The calculated values in this structure are calculated by SDL_OpenAudio().
+///
+/// For multi-channel audio, the default SDL channel mapping is:
+/// 2:  FL FR                       (stereo)
+/// 3:  FL FR LFE                   (2.1 surround)
+/// 4:  FL FR BL BR                 (quad)
+/// 5:  FL FR FC BL BR              (quad + center)
+/// 6:  FL FR FC LFE SL SR          (5.1 surround - last two can also be BL BR)
+/// 7:  FL FR FC LFE BC SL SR       (6.1 surround)
+/// 8:  FL FR FC LFE BL BR SL SR    (7.1 surround)
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct SDL_AudioSpec {
@@ -2962,6 +3069,130 @@ extern "C" {
     /// \return 0 on success or -1 if \c cvt->buf is NULL.
     pub fn SDL_ConvertAudio(cvt: *mut SDL_AudioCVT) -> ::std::os::raw::c_int;
 }
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct _SDL_AudioStream {
+    _unused: [u8; 0],
+}
+pub type SDL_AudioStream = _SDL_AudioStream;
+extern "C" {
+    /// Create a new audio stream
+    ///
+    /// \param src_format The format of the source audio
+    /// \param src_channels The number of channels of the source audio
+    /// \param src_rate The sampling rate of the source audio
+    /// \param dst_format The format of the desired audio output
+    /// \param dst_channels The number of channels of the desired audio output
+    /// \param dst_rate The sampling rate of the desired audio output
+    /// \return 0 on success, or -1 on error.
+    ///
+    /// \sa SDL_AudioStreamPut
+    /// \sa SDL_AudioStreamGet
+    /// \sa SDL_AudioStreamAvailable
+    /// \sa SDL_AudioStreamFlush
+    /// \sa SDL_AudioStreamClear
+    /// \sa SDL_FreeAudioStream
+    pub fn SDL_NewAudioStream(
+        src_format: SDL_AudioFormat,
+        src_channels: Uint8,
+        src_rate: ::std::os::raw::c_int,
+        dst_format: SDL_AudioFormat,
+        dst_channels: Uint8,
+        dst_rate: ::std::os::raw::c_int,
+    ) -> *mut SDL_AudioStream;
+}
+extern "C" {
+    /// Add data to be converted/resampled to the stream
+    ///
+    /// \param stream The stream the audio data is being added to
+    /// \param buf A pointer to the audio data to add
+    /// \param len The number of bytes to write to the stream
+    /// \return 0 on success, or -1 on error.
+    ///
+    /// \sa SDL_NewAudioStream
+    /// \sa SDL_AudioStreamGet
+    /// \sa SDL_AudioStreamAvailable
+    /// \sa SDL_AudioStreamFlush
+    /// \sa SDL_AudioStreamClear
+    /// \sa SDL_FreeAudioStream
+    pub fn SDL_AudioStreamPut(
+        stream: *mut SDL_AudioStream,
+        buf: *const ::std::os::raw::c_void,
+        len: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    /// Get converted/resampled data from the stream
+    ///
+    /// \param stream The stream the audio is being requested from
+    /// \param buf A buffer to fill with audio data
+    /// \param len The maximum number of bytes to fill
+    /// \return The number of bytes read from the stream, or -1 on error
+    ///
+    /// \sa SDL_NewAudioStream
+    /// \sa SDL_AudioStreamPut
+    /// \sa SDL_AudioStreamAvailable
+    /// \sa SDL_AudioStreamFlush
+    /// \sa SDL_AudioStreamClear
+    /// \sa SDL_FreeAudioStream
+    pub fn SDL_AudioStreamGet(
+        stream: *mut SDL_AudioStream,
+        buf: *mut ::std::os::raw::c_void,
+        len: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    /// Get the number of converted/resampled bytes available. The stream may be
+    /// buffering data behind the scenes until it has enough to resample
+    /// correctly, so this number might be lower than what you expect, or even
+    /// be zero. Add more data or flush the stream if you need the data now.
+    ///
+    /// \sa SDL_NewAudioStream
+    /// \sa SDL_AudioStreamPut
+    /// \sa SDL_AudioStreamGet
+    /// \sa SDL_AudioStreamFlush
+    /// \sa SDL_AudioStreamClear
+    /// \sa SDL_FreeAudioStream
+    pub fn SDL_AudioStreamAvailable(stream: *mut SDL_AudioStream) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    /// Tell the stream that you're done sending data, and anything being buffered
+    /// should be converted/resampled and made available immediately.
+    ///
+    /// It is legal to add more data to a stream after flushing, but there will
+    /// be audio gaps in the output. Generally this is intended to signal the
+    /// end of input, so the complete output becomes available.
+    ///
+    /// \sa SDL_NewAudioStream
+    /// \sa SDL_AudioStreamPut
+    /// \sa SDL_AudioStreamGet
+    /// \sa SDL_AudioStreamAvailable
+    /// \sa SDL_AudioStreamClear
+    /// \sa SDL_FreeAudioStream
+    pub fn SDL_AudioStreamFlush(stream: *mut SDL_AudioStream) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    /// Clear any pending data in the stream without converting it
+    ///
+    /// \sa SDL_NewAudioStream
+    /// \sa SDL_AudioStreamPut
+    /// \sa SDL_AudioStreamGet
+    /// \sa SDL_AudioStreamAvailable
+    /// \sa SDL_AudioStreamFlush
+    /// \sa SDL_FreeAudioStream
+    pub fn SDL_AudioStreamClear(stream: *mut SDL_AudioStream);
+}
+extern "C" {
+    /// Free an audio stream
+    ///
+    /// \sa SDL_NewAudioStream
+    /// \sa SDL_AudioStreamPut
+    /// \sa SDL_AudioStreamGet
+    /// \sa SDL_AudioStreamAvailable
+    /// \sa SDL_AudioStreamFlush
+    /// \sa SDL_AudioStreamClear
+    pub fn SDL_FreeAudioStream(stream: *mut SDL_AudioStream);
+}
 extern "C" {
     /// This takes two audio buffers of the playing audio format and mixes
     /// them, performing addition, volume adjustment, and overflow clipping.
@@ -3021,7 +3252,7 @@ extern "C" {
     /// \param dev The device ID to which we will queue audio.
     /// \param data The data to queue to the device for later playback.
     /// \param len The number of bytes (not samples!) to which (data) points.
-    /// \return zero on success, -1 on error.
+    /// \return 0 on success, or -1 on error.
     ///
     /// \sa SDL_GetQueuedAudioSize
     /// \sa SDL_ClearQueuedAudio
@@ -3196,6 +3427,17 @@ pub type __v4si = [::std::os::raw::c_int; 4usize];
 pub type __v4sf = [f32; 4usize];
 pub type __m128 = [f32; 4usize];
 pub type __v4su = [::std::os::raw::c_uint; 4usize];
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum idtype_t {
+    P_ALL = 0,
+    P_PID = 1,
+    P_PGID = 2,
+}
+pub type _Float32 = f32;
+pub type _Float64 = f64;
+pub type _Float32x = f64;
+pub type _Float64x = f64;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct div_t {
@@ -5372,6 +5614,7 @@ pub const SDL_PIXELFORMAT_UYVY: _bindgen_ty_6 = _bindgen_ty_6::SDL_PIXELFORMAT_U
 pub const SDL_PIXELFORMAT_YVYU: _bindgen_ty_6 = _bindgen_ty_6::SDL_PIXELFORMAT_YVYU;
 pub const SDL_PIXELFORMAT_NV12: _bindgen_ty_6 = _bindgen_ty_6::SDL_PIXELFORMAT_NV12;
 pub const SDL_PIXELFORMAT_NV21: _bindgen_ty_6 = _bindgen_ty_6::SDL_PIXELFORMAT_NV21;
+pub const SDL_PIXELFORMAT_EXTERNAL_OES: _bindgen_ty_6 = _bindgen_ty_6::SDL_PIXELFORMAT_EXTERNAL_OES;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum _bindgen_ty_6 {
@@ -5420,6 +5663,8 @@ pub enum _bindgen_ty_6 {
     SDL_PIXELFORMAT_NV12 = 842094158,
     /// < Planar mode: Y + V/U interleaved  (2 planes)
     SDL_PIXELFORMAT_NV21 = 825382478,
+    /// < Android video texture format
+    SDL_PIXELFORMAT_EXTERNAL_OES = 542328143,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -6312,6 +6557,19 @@ pub type SDL_blit = ::std::option::Option<
         dstrect: *mut SDL_Rect,
     ) -> ::std::os::raw::c_int,
 >;
+#[repr(u32)]
+/// \brief The formula used for converting between YUV and RGB
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum SDL_YUV_CONVERSION_MODE {
+    /// < Full range JPEG
+    SDL_YUV_CONVERSION_JPEG = 0,
+    /// < BT.601 (the default)
+    SDL_YUV_CONVERSION_BT601 = 1,
+    /// < BT.709
+    SDL_YUV_CONVERSION_BT709 = 2,
+    /// < BT.601 for SD content, BT.709 for HD content
+    SDL_YUV_CONVERSION_AUTOMATIC = 3,
+}
 extern "C" {
     /// Allocate and free an RGB surface.
     ///
@@ -6703,6 +6961,21 @@ extern "C" {
         dstrect: *mut SDL_Rect,
     ) -> ::std::os::raw::c_int;
 }
+extern "C" {
+    /// \brief Set the YUV conversion mode
+    pub fn SDL_SetYUVConversionMode(mode: SDL_YUV_CONVERSION_MODE);
+}
+extern "C" {
+    /// \brief Get the YUV conversion mode
+    pub fn SDL_GetYUVConversionMode() -> SDL_YUV_CONVERSION_MODE;
+}
+extern "C" {
+    /// \brief Get the YUV conversion mode, returning the correct mode for the resolution when the current conversion mode is SDL_YUV_CONVERSION_AUTOMATIC
+    pub fn SDL_GetYUVConversionModeForResolution(
+        width: ::std::os::raw::c_int,
+        height: ::std::os::raw::c_int,
+    ) -> SDL_YUV_CONVERSION_MODE;
+}
 /// \brief  The structure that defines a display mode
 ///
 /// \sa SDL_GetNumDisplayModes()
@@ -6825,7 +7098,9 @@ pub enum SDL_WindowFlags {
     SDL_WINDOW_FULLSCREEN_DESKTOP = 4097,
     /// < window not created by SDL
     SDL_WINDOW_FOREIGN = 2048,
-    /// < window should be created in high-DPI mode if supported
+    /// < window should be created in high-DPI mode if supported.
+    /// On macOS NSHighResolutionCapable must be set true in the
+    /// application's Info.plist for this to have any effect.
     SDL_WINDOW_ALLOW_HIGHDPI = 8192,
     /// < window has mouse captured (unrelated to INPUT_GRABBED)
     SDL_WINDOW_MOUSE_CAPTURE = 16384,
@@ -7190,7 +7465,7 @@ extern "C" {
     /// If the window is created with any of the SDL_WINDOW_OPENGL or
     /// SDL_WINDOW_VULKAN flags, then the corresponding LoadLibrary function
     /// (SDL_GL_LoadLibrary or SDL_Vulkan_LoadLibrary) is called and the
-    /// corrensponding UnloadLibrary function is called by SDL_DestroyWindow().
+    /// corresponding UnloadLibrary function is called by SDL_DestroyWindow().
     ///
     /// If SDL_WINDOW_VULKAN is specified and there isn't a working Vulkan driver,
     /// SDL_CreateWindow() will fail because SDL_Vulkan_LoadLibrary() will fail.
@@ -9311,6 +9586,20 @@ pub enum SDL_JoystickPowerLevel {
     SDL_JOYSTICK_POWER_FULL = 3,
     SDL_JOYSTICK_POWER_WIRED = 4,
     SDL_JOYSTICK_POWER_MAX = 5,
+}
+extern "C" {
+    /// Locking for multi-threaded access to the joystick API
+    ///
+    /// If you are using the joystick API or handling events from multiple threads
+    /// you should use these locking functions to protect access to the joysticks.
+    ///
+    /// In particular, you are guaranteed that the joystick list won't change, so
+    /// the API functions that take a joystick index will be valid, and joystick
+    /// and game controller events will not be delivered.
+    pub fn SDL_LockJoysticks();
+}
+extern "C" {
+    pub fn SDL_UnlockJoysticks();
 }
 extern "C" {
     /// Count the number of joysticks attached to the system right now
@@ -16422,6 +16711,28 @@ extern "C" {
     ///
     /// \return 0 on success, or -1 if the operation is not supported
     pub fn SDL_GL_UnbindTexture(texture: *mut SDL_Texture) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    /// \brief Get the CAMetalLayer associated with the given Metal renderer
+    ///
+    /// \param renderer The renderer to query
+    ///
+    /// \return CAMetalLayer* on success, or NULL if the renderer isn't a Metal renderer
+    ///
+    /// \sa SDL_RenderGetMetalCommandEncoder()
+    pub fn SDL_RenderGetMetalLayer(renderer: *mut SDL_Renderer) -> *mut ::std::os::raw::c_void;
+}
+extern "C" {
+    /// \brief Get the Metal command encoder for the current frame
+    ///
+    /// \param renderer The renderer to query
+    ///
+    /// \return id<MTLRenderCommandEncoder> on success, or NULL if the renderer isn't a Metal renderer
+    ///
+    /// \sa SDL_RenderGetMetalLayer()
+    pub fn SDL_RenderGetMetalCommandEncoder(
+        renderer: *mut SDL_Renderer,
+    ) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
     /// \brief Create a window that can be shaped with the specified position, dimensions, and flags.
@@ -28966,6 +29277,216 @@ extern "C" {
     /// if ( SDL_GetWindowWMInfo(window, &info) ) { ... }
     /// \endcode
     pub fn SDL_GetWindowWMInfo(window: *mut SDL_Window, info: *mut SDL_SysWMinfo) -> SDL_bool;
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct VkInstance_T {
+    _unused: [u8; 0],
+}
+pub type VkInstance = *mut VkInstance_T;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct VkSurfaceKHR_T {
+    _unused: [u8; 0],
+}
+pub type VkSurfaceKHR = *mut VkSurfaceKHR_T;
+pub type SDL_vulkanInstance = VkInstance;
+pub type SDL_vulkanSurface = VkSurfaceKHR;
+extern "C" {
+    /// \brief Dynamically load a Vulkan loader library.
+    ///
+    /// \param [in] path The platform dependent Vulkan loader library name, or
+    /// \c NULL.
+    ///
+    /// \return \c 0 on success, or \c -1 if the library couldn't be loaded.
+    ///
+    /// If \a path is NULL SDL will use the value of the environment variable
+    /// \c SDL_VULKAN_LIBRARY, if set, otherwise it loads the default Vulkan
+    /// loader library.
+    ///
+    /// This should be called after initializing the video driver, but before
+    /// creating any Vulkan windows. If no Vulkan loader library is loaded, the
+    /// default library will be loaded upon creation of the first Vulkan window.
+    ///
+    /// \note It is fairly common for Vulkan applications to link with \a libvulkan
+    /// instead of explicitly loading it at run time. This will work with
+    /// SDL provided the application links to a dynamic library and both it
+    /// and SDL use the same search path.
+    ///
+    /// \note If you specify a non-NULL \c path, an application should retrieve all
+    /// of the Vulkan functions it uses from the dynamic library using
+    /// \c SDL_Vulkan_GetVkGetInstanceProcAddr() unless you can guarantee
+    /// \c path points to the same vulkan loader library the application
+    /// linked to.
+    ///
+    /// \note On Apple devices, if \a path is NULL, SDL will attempt to find
+    /// the vkGetInstanceProcAddr address within all the mach-o images of
+    /// the current process. This is because it is fairly common for Vulkan
+    /// applications to link with libvulkan (and historically MoltenVK was
+    /// provided as a static library). If it is not found then, on macOS, SDL
+    /// will attempt to load \c vulkan.framework/vulkan, \c libvulkan.1.dylib,
+    /// \c MoltenVK.framework/MoltenVK and \c libMoltenVK.dylib in that order.
+    /// On iOS SDL will attempt to load \c libMoltenVK.dylib. Applications
+    /// using a dynamic framework or .dylib must ensure it is included in its
+    /// application bundle.
+    ///
+    /// \note On non-Apple devices, application linking with a static libvulkan is
+    /// not supported. Either do not link to the Vulkan loader or link to a
+    /// dynamic library version.
+    ///
+    /// \note This function will fail if there are no working Vulkan drivers
+    /// installed.
+    ///
+    /// \sa SDL_Vulkan_GetVkGetInstanceProcAddr()
+    /// \sa SDL_Vulkan_UnloadLibrary()
+    pub fn SDL_Vulkan_LoadLibrary(path: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    /// \brief Get the address of the \c vkGetInstanceProcAddr function.
+    ///
+    /// \note This should be called after either calling SDL_Vulkan_LoadLibrary
+    /// or creating an SDL_Window with the SDL_WINDOW_VULKAN flag.
+    pub fn SDL_Vulkan_GetVkGetInstanceProcAddr() -> *mut ::std::os::raw::c_void;
+}
+extern "C" {
+    /// \brief Unload the Vulkan loader library previously loaded by
+    /// \c SDL_Vulkan_LoadLibrary().
+    ///
+    /// \sa SDL_Vulkan_LoadLibrary()
+    pub fn SDL_Vulkan_UnloadLibrary();
+}
+extern "C" {
+    /// \brief Get the names of the Vulkan instance extensions needed to create
+    /// a surface with \c SDL_Vulkan_CreateSurface().
+    ///
+    /// \param [in]     window Window for which the required Vulkan instance
+    /// extensions should be retrieved
+    /// \param [in,out] count pointer to an \c unsigned related to the number of
+    /// required Vulkan instance extensions
+    /// \param [out]    names \c NULL or a pointer to an array to be filled with the
+    /// required Vulkan instance extensions
+    ///
+    /// \return \c SDL_TRUE on success, \c SDL_FALSE on error.
+    ///
+    /// If \a pNames is \c NULL, then the number of required Vulkan instance
+    /// extensions is returned in pCount. Otherwise, \a pCount must point to a
+    /// variable set to the number of elements in the \a pNames array, and on
+    /// return the variable is overwritten with the number of names actually
+    /// written to \a pNames. If \a pCount is less than the number of required
+    /// extensions, at most \a pCount structures will be written. If \a pCount
+    /// is smaller than the number of required extensions, \c SDL_FALSE will be
+    /// returned instead of \c SDL_TRUE, to indicate that not all the required
+    /// extensions were returned.
+    ///
+    /// \note The returned list of extensions will contain \c VK_KHR_surface
+    /// and zero or more platform specific extensions
+    ///
+    /// \note The extension names queried here must be enabled when calling
+    /// VkCreateInstance, otherwise surface creation will fail.
+    ///
+    /// \note \c window should have been created with the \c SDL_WINDOW_VULKAN flag.
+    ///
+    /// \code
+    /// unsigned int count;
+    /// // get count of required extensions
+    /// if(!SDL_Vulkan_GetInstanceExtensions(window, &count, NULL))
+    /// handle_error();
+    ///
+    /// static const char *const additionalExtensions[] =
+    /// {
+    /// VK_EXT_DEBUG_REPORT_EXTENSION_NAME, // example additional extension
+    /// };
+    /// size_t additionalExtensionsCount = sizeof(additionalExtensions) / sizeof(additionalExtensions[0]);
+    /// size_t extensionCount = count + additionalExtensionsCount;
+    /// const char **names = malloc(sizeof(const char *) * extensionCount);
+    /// if(!names)
+    /// handle_error();
+    ///
+    /// // get names of required extensions
+    /// if(!SDL_Vulkan_GetInstanceExtensions(window, &count, names))
+    /// handle_error();
+    ///
+    /// // copy additional extensions after required extensions
+    /// for(size_t i = 0; i < additionalExtensionsCount; i++)
+    /// names[i + count] = additionalExtensions[i];
+    ///
+    /// VkInstanceCreateInfo instanceCreateInfo = {};
+    /// instanceCreateInfo.enabledExtensionCount = extensionCount;
+    /// instanceCreateInfo.ppEnabledExtensionNames = names;
+    /// // fill in rest of instanceCreateInfo
+    ///
+    /// VkInstance instance;
+    /// // create the Vulkan instance
+    /// VkResult result = vkCreateInstance(&instanceCreateInfo, NULL, &instance);
+    /// free(names);
+    /// \endcode
+    ///
+    /// \sa SDL_Vulkan_CreateSurface()
+    pub fn SDL_Vulkan_GetInstanceExtensions(
+        window: *mut SDL_Window,
+        pCount: *mut ::std::os::raw::c_uint,
+        pNames: *mut *const ::std::os::raw::c_char,
+    ) -> SDL_bool;
+}
+extern "C" {
+    /// \brief Create a Vulkan rendering surface for a window.
+    ///
+    /// \param [in]  window   SDL_Window to which to attach the rendering surface.
+    /// \param [in]  instance handle to the Vulkan instance to use.
+    /// \param [out] surface  pointer to a VkSurfaceKHR handle to receive the
+    /// handle of the newly created surface.
+    ///
+    /// \return \c SDL_TRUE on success, \c SDL_FALSE on error.
+    ///
+    /// \code
+    /// VkInstance instance;
+    /// SDL_Window *window;
+    ///
+    /// // create instance and window
+    ///
+    /// // create the Vulkan surface
+    /// VkSurfaceKHR surface;
+    /// if(!SDL_Vulkan_CreateSurface(window, instance, &surface))
+    /// handle_error();
+    /// \endcode
+    ///
+    /// \note \a window should have been created with the \c SDL_WINDOW_VULKAN flag.
+    ///
+    /// \note \a instance should have been created with the extensions returned
+    /// by \c SDL_Vulkan_CreateSurface() enabled.
+    ///
+    /// \sa SDL_Vulkan_GetInstanceExtensions()
+    pub fn SDL_Vulkan_CreateSurface(
+        window: *mut SDL_Window,
+        instance: VkInstance,
+        surface: *mut VkSurfaceKHR,
+    ) -> SDL_bool;
+}
+extern "C" {
+    /// \brief Get the size of a window's underlying drawable in pixels (for use
+    /// with setting viewport, scissor & etc).
+    ///
+    /// \param window   SDL_Window from which the drawable size should be queried
+    /// \param w        Pointer to variable for storing the width in pixels,
+    /// may be NULL
+    /// \param h        Pointer to variable for storing the height in pixels,
+    /// may be NULL
+    ///
+    /// This may differ from SDL_GetWindowSize() if we're rendering to a high-DPI
+    /// drawable, i.e. the window was created with SDL_WINDOW_ALLOW_HIGHDPI on a
+    /// platform with high-DPI support (Apple calls this "Retina"), and not disabled
+    /// by the \c SDL_HINT_VIDEO_HIGHDPI_DISABLED hint.
+    ///
+    /// \note On macOS high-DPI support must be enabled for an application by
+    /// setting NSHighResolutionCapable to true in its Info.plist.
+    ///
+    /// \sa SDL_GetWindowSize()
+    /// \sa SDL_CreateWindow()
+    pub fn SDL_Vulkan_GetDrawableSize(
+        window: *mut SDL_Window,
+        w: *mut ::std::os::raw::c_int,
+        h: *mut ::std::os::raw::c_int,
+    );
 }
 pub type __builtin_va_list = [__va_list_tag; 1usize];
 #[repr(C)]
