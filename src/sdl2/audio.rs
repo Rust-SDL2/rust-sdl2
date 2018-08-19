@@ -60,7 +60,6 @@ use std::ops::{Deref, DerefMut};
 use std::path::Path;
 use std::marker::PhantomData;
 use std::mem;
-use std::mem::transmute;
 use std::ptr;
 
 use AudioSubsystem;
@@ -209,12 +208,16 @@ pub enum AudioStatus {
 impl FromPrimitive for AudioStatus {
     fn from_i64(n: i64) -> Option<AudioStatus> {
         use self::AudioStatus::*;
-        let n = n as u32;
 
-        Some( match unsafe { transmute::<u32, sys::SDL_AudioStatus>(n) } {
-            sys::SDL_AudioStatus::SDL_AUDIO_STOPPED => Stopped,
-            sys::SDL_AudioStatus::SDL_AUDIO_PLAYING => Playing,
-            sys::SDL_AudioStatus::SDL_AUDIO_PAUSED  => Paused,
+        const STOPPED: i64 = sys::SDL_AudioStatus::SDL_AUDIO_STOPPED as i64;
+        const PLAYING: i64 = sys::SDL_AudioStatus::SDL_AUDIO_PLAYING as i64;
+        const PAUSED: i64 = sys::SDL_AudioStatus::SDL_AUDIO_PAUSED as i64;
+
+        Some(match n {
+            STOPPED => Stopped,
+            PLAYING => Playing,
+            PAUSED  => Paused,
+            _ => return None,
         })
     }
 
