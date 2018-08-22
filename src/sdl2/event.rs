@@ -691,6 +691,7 @@ pub enum Event {
 
     DropFile {
         timestamp: u32,
+        window_id: u32,
         filename: String
     },
 
@@ -1573,6 +1574,7 @@ impl Event {
 
                 Event::DropFile {
                     timestamp: event.timestamp,
+                    window_id: event.windowID,
                     filename: text
                 }
             }
