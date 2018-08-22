@@ -3,7 +3,7 @@ use std::fmt;
 
 /// A given integer was so big that its representation as a C integer would be
 /// negative.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum IntegerOrSdlError {
     IntegerOverflows(&'static str, u32),
     SdlError(String)
