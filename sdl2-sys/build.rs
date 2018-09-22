@@ -281,14 +281,59 @@ fn link_sdl2(target_os: &str) {
     }
 }
 
+fn find_cargo_target_dir() -> PathBuf {
+    // Infer the top level cargo target dir from the OUT_DIR by searching
+    // upwards until we get to $CARGO_TARGET_DIR/build/ (which is always one
+    // level up from the deepest directory containing our package name)
+    let pkg_name = env::var("CARGO_PKG_NAME").unwrap();
+    let mut out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
+    loop {
+        {
+            let final_path_segment = out_dir.file_name().unwrap();
+            if final_path_segment.to_string_lossy().contains(&pkg_name) {
+                break;
+            }
+        }
+        if !out_dir.pop() {
+            panic!("Malformed build path: {}", out_dir.to_string_lossy());
+        }
+    }
+    out_dir.pop();
+    out_dir.pop();
+    out_dir
+}
+
+fn copy_dynamic_libraries(sdl2_compiled_path: &PathBuf, target_os: &str) {
+    // Windows binaries do not embed library search paths, so successfully
+    // linking the DLL isn't sufficient to find it at runtime -- it must be
+    // either on PATH or in the current working directory when we run binaries
+    // linked against it. In other words, to run the test suite we need to
+    // copy sdl2.dll out of its build tree and down to the top level cargo
+    // binary output directory.
+    if target_os.contains("windows") {
+        let sdl2_dll_name = "sdl2.dll";
+        let sdl2_bin_path = sdl2_compiled_path.join("bin");
+        let target_path = find_cargo_target_dir();
+
+        let src_dll_path = sdl2_bin_path.join(sdl2_dll_name);
+        let dst_dll_path = target_path.join(sdl2_dll_name);
+
+        fs::copy(&src_dll_path, &dst_dll_path)
+            .expect(&format!("Failed to copy SDL2 dynamic library from {} to {}",
+                             src_dll_path.to_string_lossy(),
+                             dst_dll_path.to_string_lossy()));
+    }
+}
+
 fn main() {
     let target = env::var("TARGET").expect("Cargo build scripts always have TARGET");
     let host = env::var("HOST").expect("Cargo build scripts always have HOST");
     let target_os = get_os_from_triple(target.as_str()).unwrap();
 
+    let sdl2_compiled_path;
     #[cfg(feature = "bundled")] {
         let sdl2_source_path = download_sdl2();
-        let sdl2_compiled_path = compile_sdl2(sdl2_source_path.as_path(), target_os);
+        sdl2_compiled_path = compile_sdl2(sdl2_source_path.as_path(), target_os);
 
         let sdl2_downloaded_include_path = sdl2_source_path.join("include");
         let sdl2_compiled_lib_path = sdl2_compiled_path.join("lib");
@@ -311,6 +356,10 @@ fn main() {
     }
 
     link_sdl2(target_os);
+
+    #[cfg(all(feature = "bundled", not(feature = "static-link")))] {
+        copy_dynamic_libraries(&sdl2_compiled_path, target_os);
+    }
 }
 
 #[cfg(not(feature = "bindgen"))]
