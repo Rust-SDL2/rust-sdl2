@@ -330,7 +330,7 @@ fn main() {
     let host = env::var("HOST").expect("Cargo build scripts always have HOST");
     let target_os = get_os_from_triple(target.as_str()).unwrap();
 
-    let sdl2_compiled_path;
+    let sdl2_compiled_path: PathBuf;
     #[cfg(feature = "bundled")] {
         let sdl2_source_path = download_sdl2();
         sdl2_compiled_path = compile_sdl2(sdl2_source_path.as_path(), target_os);
