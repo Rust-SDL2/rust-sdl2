@@ -117,20 +117,32 @@ fn download_sdl2() -> PathBuf {
 // apply patches to sdl2 source
 #[cfg(feature = "bundled")]
 fn patch_sdl2(sdl2_source_path: &Path) {
+    // vector of <(patch_file_name, patch_file_contents)>
     let patches: Vec<(&str, &'static str)> = vec![
-        ("SDL2-2.0.8-4234-mac-os-dylib-fix.patch",
-            include_str!("patches/SDL2-2.0.8-4234-mac-os-dylib-fix.patch")),
+        // This patch fixes a CMake installation bug introduced in SDL2 2.0.4 on
+        // the Mac OS platform. Without this patch, the libSDL2.dylib generated
+        // during the SDL2 build phase will be overwritten by a symlink pointing
+        // to nothing. A variation of this patch was accepted upstream and
+        // should be included in SDL2 2.0.9.
+        // https://bugzilla.libsdl.org/show_bug.cgi?id=4234
+        ("SDL2-2.0.8-4234-mac-os-dylib-fix.patch", include_str!("patches/SDL2-2.0.8-4234-mac-os-dylib-fix.patch")),
     ];
     let sdl_version = format!("SDL2-{}", LASTEST_SDL2_VERSION);
 
     for patch in &patches {
-        // Only apply patches that apply to the current version of SDL2
+        // Only apply patches whose file name is prefixed with the currently
+        // targeted version of SDL2.
         if !patch.0.starts_with(&sdl_version) {
             continue;
         }
         let mut patch_set = unidiff::PatchSet::new();
         patch_set.parse(patch.1).expect("Error parsing diff");
 
+        // For every modified file, copy the existing file to <file_name>_old,
+        // open a new copy of <file_name>. and fill the new file with a
+        // combination of the unmodified contents, and the patched sections.
+        // TOOD: This code is untested (save for the immediate application), and
+        // probably belongs in the unidiff (or similar) package.
         for modified_file in patch_set.modified_files() {
             use std::io::{Write, BufRead};
 
@@ -183,6 +195,7 @@ fn patch_sdl2(sdl2_source_path: &Path) {
                 dst_buf.write_all(b"\n").unwrap();
             }
         }
+        // For every removed file, simply delete the original.
         // TODO: This is entirely untested code. There are likely bugs here, and
         // this really should be part of the unidiff library, not a function
         // defined here. Hopefully this gets moved somewhere else before it
@@ -194,6 +207,8 @@ fn patch_sdl2(sdl2_source_path: &Path) {
                         removed_file.path(),
                         sdl2_source_path.to_string_lossy()));
         }
+        // For every new file, copy the entire contents of the patched file into
+        // a newly created <file_name>.
         // TODO: This is entirely untested code. There are likely bugs here, and
         // this really should be part of the unidiff library, not a function
         // defined here. Hopefully this gets moved somewhere else before it
