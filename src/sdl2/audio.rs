@@ -823,7 +823,7 @@ mod test {
         assert!(cvt.is_conversion_needed());
 
         // since we're going from mono to stereo, our capacity must be at least twice the original (255) vec size
-        assert!(cvt.capacity(255) > 255*2, "capacity must be able to hold the converted audio sample");
+        assert!(cvt.capacity(255) >= 255*2, "capacity must be able to hold the converted audio sample");
 
         let new_buffer = cvt.convert(buffer);
         assert_eq!(new_buffer.len(), new_buffer_expected.len(), "capacity must be exactly equal to twice the original vec size");
