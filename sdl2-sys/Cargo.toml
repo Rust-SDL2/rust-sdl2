@@ -39,6 +39,10 @@ optional = true
 version = "0.2"
 optional = true
 
+[build-dependencies.unidiff]
+version = "0.2.1"
+optional = true
+
 [build-dependencies]
 cfg-if = "0.1"
 
@@ -49,7 +53,7 @@ use-pkgconfig = ["pkg-config"]
 use-bindgen = ["bindgen"]
 static-link = []
 use_mac_framework = []
-bundled = ["cmake", "reqwest", "tar", "flate2"]
+bundled = ["cmake", "reqwest", "tar", "flate2", "unidiff"]
 mixer = []
 image = []
 ttf = []
