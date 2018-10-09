@@ -1,16 +1,47 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
-### v0.31.1
+### v0.32
 
-[PR #737](https://github.com/Rust-SDL2/rust-sdl2/pull/737)
-* Fix `ClipboardUtil::set_clipboard_text` to return an Ok when it went well.
+[PR #790](https://github.com/Rust-SDL2/rust-sdl2/pull/790): Added missing `window_id` field to `Event::DropFile`
 
-[PR #733](https://github.com/Rust-SDL2/rust-sdl2/pull/733)
-* Add `video::border_size -> Result<(u16, u16, u16, u16), String>` equivalent of `SDL_GetWindowBorderSize()`
+[PR #789](https://github.com/Rust-SDL2/rust-sdl2/pull/789): Audio Safety Fixes
 
-[PR #732](https://github.com/Rust-SDL2/rust-sdl2/pull/732)
-* Implemented `From<(u8, u8, u8)>` and `From<(u8, u8, u8, u8)>` for `pixels::Color`. 
+[PR #785](https://github.com/Rust-SDL2/rust-sdl2/pull/785): Vulkan Support
+
+[PR #782](https://github.com/Rust-SDL2/rust-sdl2/pull/782)
+* Move ffi of features (mixer, ...) into `sys`
+* Updated SDL2's default version to 2.0.8
+
+[PR #780](https://github.com/Rust-SDL2/rust-sdl2/pull/780): Fixed a panic in `keyboard::Mod`
+
+[PR #775](https://github.com/Rust-SDL2/rust-sdl2/pull/775): Added `get_platform`
+
+[PR #774](https://github.com/Rust-SDL2/rust-sdl2/pull/774): `add_timer` is now must_use
+
+[PR #764](https://github.com/Rust-SDL2/rust-sdl2/pull/764): impl `Hash` for `Point` and `Rect`
+
+[PR #763](https://github.com/Rust-SDL2/rust-sdl2/pull/763): Allow `-sys` to build for `windows-gnu` target
+
+[PR #751](https://github.com/Rust-SDL2/rust-sdl2/pull/751):
+**Breaking change** `gl_setswap_interval` now returns a `Result` instead of a `bool`.
+
+[PR #759](https://github.com/Rust-SDL2/rust-sdl2/pull/759): Expose Joystick power level
+
+[PR #751](https://github.com/Rust-SDL2/rust-sdl2/pull/751)
+* Fix memory leak in `filesystem::base_path()`
+* Fix memory leak on `ClipboardUtil::clipboard_text()`
+
+[PR #740](https://github.com/Rust-SDL2/rust-sdl2/pull/740): Implement Debug for Event
+
+[PR #737](https://github.com/Rust-SDL2/rust-sdl2/pull/737):
+Fix `ClipboardUtil::set_clipboard_text` to return an Ok when it went well.
+
+[PR #733](https://github.com/Rust-SDL2/rust-sdl2/pull/733):
+Add `video::border_size -> Result<(u16, u16, u16, u16), String>` equivalent of `SDL_GetWindowBorderSize()`
+
+[PR #732](https://github.com/Rust-SDL2/rust-sdl2/pull/732):
+Implemented `From<(u8, u8, u8)>` and `From<(u8, u8, u8, u8)>` for `pixels::Color`. 
   `Canvas.set_draw_color` can now be called with tuples or other types which implements `Into<pixels::Color>`
 
 [PR #279](https://github.com/Rust-SDL2/rust-sdl2/pull/729)
