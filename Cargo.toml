@@ -7,7 +7,7 @@ documentation = "https://rust-sdl2.github.io/rust-sdl2/sdl2/"
 version = "0.32.0-beta"
 license = "MIT"
 authors = [ "Tony Aldridge <tony@angry-lawyer.com>", "Cobrand <cobrandw@gmail.com>"]
-keywords = ["SDL", "windowing", "graphics", "api", "engine", "2d"]
+keywords = ["SDL", "windowing", "graphics", "api", "engine"]
 categories = ["rendering","api-bindings","game-engines","multimedia"]
 
 [lib]
