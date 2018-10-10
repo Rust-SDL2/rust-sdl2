@@ -43,9 +43,13 @@ fn download_to<T: io::Write>(url: &str, mut dest: T) {
     use io::BufRead;
 
     let resp = reqwest::get(url).expect(&format!("Failed to GET resource: {:?}", url));
-    let size = resp.headers()
-        .get::<reqwest::header::ContentLength>()
-        .map(|ct_len| **ct_len)
+    let size: u32 = resp.headers()
+        .get(reqwest::header::CONTENT_LENGTH)
+        .and_then(|cl| {
+            cl.to_str().ok().and_then(|cl| {
+                cl.parse::<u32>().ok()
+            })
+        })
         .unwrap_or(0);
     if !resp.status().is_success() { panic!("Download request failed with status: {:?}", resp.status()) }
     if size == 0 { panic!("Size of content was returned was 0") }
@@ -107,7 +111,7 @@ fn download_sdl2() -> PathBuf {
 
     let reader = flate2::read::GzDecoder::new(
         fs::File::open(&sdl2_archive_path).unwrap()
-    ).unwrap();
+    );
     let mut ar = tar::Archive::new(reader);
     ar.unpack(&out_dir).unwrap();
 

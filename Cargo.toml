@@ -17,9 +17,9 @@ path       = "src/sdl2/lib.rs"
 
 [dependencies]
 bitflags = "0.7"
-libc = "0.2"
-rand = "0.3"
-lazy_static="0.2"
+libc = "^0.2"
+rand = "^0.5"
+lazy_static = "^1"
 
 [dependencies.num]
 version = "0.1"

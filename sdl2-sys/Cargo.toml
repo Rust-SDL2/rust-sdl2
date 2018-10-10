@@ -16,35 +16,35 @@ name = "sdl2_sys"
 path = "src/lib.rs"
 
 [build-dependencies.bindgen]
-version = "0.35"
+version = "^0.42"
 optional = true
 
 [build-dependencies.pkg-config]
-version = "0.3.9"
+version = "^0.3"
 optional = true
 
 [build-dependencies.cmake]
-version = "0.1"
+version = "^0.1"
 optional = true
 
 [build-dependencies.reqwest]
-version = "0.7"
+version = "^0.9"
 optional = true
 
 [build-dependencies.tar]
-version = "0.4"
+version = "^0.4"
 optional = true
 
 [build-dependencies.flate2]
-version = "0.2"
+version = "^1"
 optional = true
 
 [build-dependencies.unidiff]
-version = "0.2.1"
+version = "^0.2"
 optional = true
 
 [build-dependencies]
-cfg-if = "0.1"
+cfg-if = "^0.1"
 
 [features]
 
