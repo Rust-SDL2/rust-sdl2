@@ -6,6 +6,7 @@ rust:
 os:
   - linux
   - osx
+  - windows
 env:
   matrix:
     - CI_BUILD_FEATURES="bundled"
