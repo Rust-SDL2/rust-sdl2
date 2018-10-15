@@ -2,6 +2,7 @@ use libc::c_char;
 use std::error;
 use std::ffi::{CString, CStr, NulError};
 use std::fmt;
+use std::io;
 use std::path::Path;
 use rwops::RWops;
 
@@ -17,6 +18,7 @@ use sys;
 pub enum AddMappingError {
     InvalidMapping(NulError),
     InvalidFilePath(String),
+    ReadError(String),
     SdlError(String),
 }
 
@@ -27,7 +29,8 @@ impl fmt::Display for AddMappingError {
         match *self {
             InvalidMapping(ref e) => write!(f, "Null error: {}", e),
             InvalidFilePath(ref value) => write!(f, "Invalid file path ({})", value),
-            SdlError(ref e) => write!(f, "SDL error: {}", e)
+            ReadError(ref e) => write!(f, "Read error: {}", e),
+            SdlError(ref e) => write!(f, "SDL error: {}", e),
         }
     }
 }
@@ -39,6 +42,7 @@ impl error::Error for AddMappingError {
         match *self {
             InvalidMapping(_) => "invalid mapping",
             InvalidFilePath(_) => "invalid file path",
+            ReadError(_) => "read error",
             SdlError(ref e) => e,
         }
     }
@@ -110,7 +114,7 @@ impl GameControllerSubsystem {
                  == sys::SDL_ENABLE as i32 }
     }
 
-    /// Add a new mapping from a mapping string
+    /// Add a new controller input mapping from a mapping string.
     pub fn add_mapping(&self, mapping: &str)
             -> Result<MappingStatus, AddMappingError> {
         use self::AddMappingError::*;
@@ -128,24 +132,36 @@ impl GameControllerSubsystem {
         }
     }
 
-    /// Load mappings from a file
-    pub fn load_mappings<P: AsRef<Path>>(&self, path: P)
-            -> Result<i32, AddMappingError> {
+    /// Load controller input mappings from a file.
+    pub fn load_mappings<P: AsRef<Path>>(&self, path: P) -> Result<i32, AddMappingError> {
         use self::AddMappingError::*;
 
-        let file = match RWops::from_file(path, "r") {
-            Ok(f) => f,
-            Err(s) => return Err(InvalidFilePath(s))
-        };
-
-        let result = unsafe { sys::SDL_GameControllerAddMappingsFromRW(file.raw(), 0) };
-
-        match result {
-            -1 => Err(SdlError(get_error())),
-            _ => Ok(result)
-        }
+        let rw = RWops::from_file(path, "r").map_err(InvalidFilePath)?;
+        self.load_mappings_from_rw(rw)
     }
 
+    /// Load controller input mappings from a [`Read`](std::io::Read) object.
+    pub fn load_mappings_from_read<R: io::Read>(
+        &self,
+        read: &mut R,
+    ) -> Result<i32, AddMappingError> {
+        use self::AddMappingError::*;
+
+        let mut buffer = Vec::with_capacity(1024);
+        let rw = RWops::from_read(read, &mut buffer).map_err(ReadError)?;
+        self.load_mappings_from_rw(rw)
+    }
+
+    /// Load controller input mappings from an SDL [`RWops`] object.
+    pub fn load_mappings_from_rw<'a>(&self, rw: RWops<'a>) -> Result<i32, AddMappingError> {
+        use self::AddMappingError::*;
+
+        let result = unsafe { sys::SDL_GameControllerAddMappingsFromRW(rw.raw(), 0) };
+        match result {
+            -1 => Err(SdlError(get_error())),
+            _ => Ok(result),
+        }
+    }
 
     pub fn mapping_for_guid(&self, guid: joystick::Guid) -> Result<String, String> {
         let c_str = unsafe { sys::SDL_GameControllerMappingForGUID(guid.raw()) };
