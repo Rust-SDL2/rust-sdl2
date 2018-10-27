@@ -65,9 +65,16 @@ fn clamped_mul(a: i32, b: i32) -> i32 {
 /// recommended to use `Option<Rect>`, with `None` representing an empty
 /// rectangle (see, for example, the output of the
 /// [`intersection`](#method.intersection) method).
-#[derive(Debug, Clone, Copy)]
+#[derive(Clone, Copy)]
 pub struct Rect {
     raw: sys::SDL_Rect,
+}
+
+impl std::fmt::Debug for Rect {
+    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
+        return write!(fmt, "Rect {{ x: {}, y: {}, w: {}, h: {} }}",
+            self.raw.x, self.raw.y, self.raw.w, self.raw.h);
+    }
 }
 
 impl PartialEq for Rect {
@@ -653,9 +660,15 @@ impl BitOr<Rect> for Rect {
 }
 
 /// Immutable point type, consisting of x and y.
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone)]
 pub struct Point {
     raw: sys::SDL_Point
+}
+
+impl std::fmt::Debug for Point {
+    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
+        return write!(fmt, "Point {{ x: {}, y: {} }}", self.raw.x, self.raw.y);
+    }
 }
 
 impl PartialEq for Point {
