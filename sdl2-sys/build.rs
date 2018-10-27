@@ -12,6 +12,8 @@ extern crate tar;
 extern crate flate2;
 #[cfg(feature="bundled")]
 extern crate reqwest;
+#[cfg(feature="bundled")]
+extern crate unidiff;
 
 #[macro_use]
 extern crate cfg_if;
@@ -20,10 +22,10 @@ use std::path::{Path, PathBuf};
 use std::{io, fs, env};
 
 // corresponds to the headers that we have in sdl2-sys/SDL2-{version}
-const SDL2_HEADERS_BUNDLED_VERSION: &str = "2.0.8";
+const SDL2_HEADERS_BUNDLED_VERSION: &str = "2.0.5";
 
 // means the lastest stable version that can be downloaded from SDL2's source
-const LASTEST_SDL2_VERSION: &str = "2.0.8";
+const LASTEST_SDL2_VERSION: &str = "2.0.5";
 
 #[cfg(feature = "bindgen")]
 macro_rules! add_msvc_includes_to_bindings {
@@ -41,9 +43,13 @@ fn download_to<T: io::Write>(url: &str, mut dest: T) {
     use io::BufRead;
 
     let resp = reqwest::get(url).expect(&format!("Failed to GET resource: {:?}", url));
-    let size = resp.headers()
-        .get::<reqwest::header::ContentLength>()
-        .map(|ct_len| **ct_len)
+    let size: u32 = resp.headers()
+        .get(reqwest::header::CONTENT_LENGTH)
+        .and_then(|cl| {
+            cl.to_str().ok().and_then(|cl| {
+                cl.parse::<u32>().ok()
+            })
+        })
         .unwrap_or(0);
     if !resp.status().is_success() { panic!("Download request failed with status: {:?}", resp.status()) }
     if size == 0 { panic!("Size of content was returned was 0") }
@@ -105,11 +111,131 @@ fn download_sdl2() -> PathBuf {
 
     let reader = flate2::read::GzDecoder::new(
         fs::File::open(&sdl2_archive_path).unwrap()
-    ).unwrap();
+    );
     let mut ar = tar::Archive::new(reader);
     ar.unpack(&out_dir).unwrap();
 
     sdl2_build_path
+}
+
+// apply patches to sdl2 source
+#[cfg(feature = "bundled")]
+fn patch_sdl2(sdl2_source_path: &Path) {
+    // vector of <(patch_file_name, patch_file_contents)>
+    let patches: Vec<(&str, &'static str)> = vec![
+        // This patch fixes a CMake installation bug introduced in SDL2 2.0.4 on
+        // the Mac OS platform. Without this patch, the libSDL2.dylib generated
+        // during the SDL2 build phase will be overwritten by a symlink pointing
+        // to nothing. A variation of this patch was accepted upstream and
+        // should be included in SDL2 2.0.9.
+        // https://bugzilla.libsdl.org/show_bug.cgi?id=4234
+        ("SDL2-2.0.8-4234-mac-os-dylib-fix.patch", include_str!("patches/SDL2-2.0.8-4234-mac-os-dylib-fix.patch")),
+    ];
+    let sdl_version = format!("SDL2-{}", LASTEST_SDL2_VERSION);
+
+    for patch in &patches {
+        // Only apply patches whose file name is prefixed with the currently
+        // targeted version of SDL2.
+        if !patch.0.starts_with(&sdl_version) {
+            continue;
+        }
+        let mut patch_set = unidiff::PatchSet::new();
+        patch_set.parse(patch.1).expect("Error parsing diff");
+
+        // For every modified file, copy the existing file to <file_name>_old,
+        // open a new copy of <file_name>. and fill the new file with a
+        // combination of the unmodified contents, and the patched sections.
+        // TOOD: This code is untested (save for the immediate application), and
+        // probably belongs in the unidiff (or similar) package.
+        for modified_file in patch_set.modified_files() {
+            use std::io::{Write, BufRead};
+
+            let file_path = sdl2_source_path.join(modified_file.path());
+            let old_path = sdl2_source_path.join(format!("{}_old", modified_file.path()));
+            fs::rename(&file_path, &old_path)
+                .expect(&format!(
+                    "Rename of {} to {} failed",
+                    file_path.to_string_lossy(),
+                    old_path.to_string_lossy()));
+
+            let     dst_file = fs::File::create(file_path).unwrap();
+            let mut dst_buf  = io::BufWriter::new(dst_file);
+            let     old_file = fs::File::open(old_path).unwrap();
+            let mut old_buf  = io::BufReader::new(old_file);
+            let mut cursor = 0;
+
+            for (i, hunk) in modified_file.into_iter().enumerate() {
+                // Write old lines from cursor to the start of this hunk.
+                let num_lines = hunk.source_start - cursor - 1;
+                for _ in 0..num_lines {
+                    let mut line = String::new();
+                    old_buf.read_line(&mut line).unwrap();
+                    dst_buf.write_all(line.as_bytes()).unwrap();
+                }
+                cursor += num_lines;
+
+                // Skip lines in old_file, and verify that what we expect to
+                // replace is present in the old_file.
+                for expected_line in hunk.source_lines() {
+                let mut actual_line = String::new();
+                old_buf.read_line(&mut actual_line).unwrap();
+                actual_line.pop(); // Remove the trailing newline.
+                    if expected_line.value != actual_line {
+                        panic!("Can't apply patch; mismatch between expected and actual in hunk {}", i);
+                    }
+                }
+                cursor += hunk.source_length;
+
+                // Write the new lines into the destination.
+                for line in hunk.target_lines() {
+                    dst_buf.write_all(line.value.as_bytes()).unwrap();
+                    dst_buf.write_all(b"\n").unwrap();
+                }
+            }
+
+            // Write all remaining lines from the old file into the new.
+            for line in old_buf.lines() {
+                dst_buf.write_all(&line.unwrap().into_bytes()).unwrap();
+                dst_buf.write_all(b"\n").unwrap();
+            }
+        }
+        // For every removed file, simply delete the original.
+        // TODO: This is entirely untested code. There are likely bugs here, and
+        // this really should be part of the unidiff library, not a function
+        // defined here. Hopefully this gets moved somewhere else before it
+        // bites someone.
+        for removed_file in patch_set.removed_files() {
+            fs::remove_file(sdl2_source_path.join(removed_file.path()))
+                .expect(
+                    &format!("Failed to remove file {} from {}",
+                        removed_file.path(),
+                        sdl2_source_path.to_string_lossy()));
+        }
+        // For every new file, copy the entire contents of the patched file into
+        // a newly created <file_name>.
+        // TODO: This is entirely untested code. There are likely bugs here, and
+        // this really should be part of the unidiff library, not a function
+        // defined here. Hopefully this gets moved somewhere else before it
+        // bites someone.
+        for added_file in patch_set.added_files() {
+            use std::io::Write;
+
+            // This should be superfluous. I don't know how a new file would
+            // ever have more than one hunk.
+            assert!(added_file.len() == 1);
+            let file_path = sdl2_source_path.join(added_file.path());
+            let mut dst_file = fs::File::create(&file_path)
+                .expect(&format!(
+                    "Failed to create file {}",
+                    file_path.to_string_lossy()));
+            let mut dst_buf = io::BufWriter::new(&dst_file);
+
+            for line in added_file.into_iter().nth(0).unwrap().target_lines() {
+                dst_buf.write_all(line.value.as_bytes()).unwrap();
+                dst_buf.write_all(b"\n").unwrap();
+            }
+        }
+    }
 }
 
 // compile a shared or static lib depending on the feature 
@@ -281,14 +407,60 @@ fn link_sdl2(target_os: &str) {
     }
 }
 
+fn find_cargo_target_dir() -> PathBuf {
+    // Infer the top level cargo target dir from the OUT_DIR by searching
+    // upwards until we get to $CARGO_TARGET_DIR/build/ (which is always one
+    // level up from the deepest directory containing our package name)
+    let pkg_name = env::var("CARGO_PKG_NAME").unwrap();
+    let mut out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
+    loop {
+        {
+            let final_path_segment = out_dir.file_name().unwrap();
+            if final_path_segment.to_string_lossy().contains(&pkg_name) {
+                break;
+            }
+        }
+        if !out_dir.pop() {
+            panic!("Malformed build path: {}", out_dir.to_string_lossy());
+        }
+    }
+    out_dir.pop();
+    out_dir.pop();
+    out_dir
+}
+
+fn copy_dynamic_libraries(sdl2_compiled_path: &PathBuf, target_os: &str) {
+    // Windows binaries do not embed library search paths, so successfully
+    // linking the DLL isn't sufficient to find it at runtime -- it must be
+    // either on PATH or in the current working directory when we run binaries
+    // linked against it. In other words, to run the test suite we need to
+    // copy sdl2.dll out of its build tree and down to the top level cargo
+    // binary output directory.
+    if target_os.contains("windows") {
+        let sdl2_dll_name = "sdl2.dll";
+        let sdl2_bin_path = sdl2_compiled_path.join("bin");
+        let target_path = find_cargo_target_dir();
+
+        let src_dll_path = sdl2_bin_path.join(sdl2_dll_name);
+        let dst_dll_path = target_path.join(sdl2_dll_name);
+
+        fs::copy(&src_dll_path, &dst_dll_path)
+            .expect(&format!("Failed to copy SDL2 dynamic library from {} to {}",
+                             src_dll_path.to_string_lossy(),
+                             dst_dll_path.to_string_lossy()));
+    }
+}
+
 fn main() {
     let target = env::var("TARGET").expect("Cargo build scripts always have TARGET");
     let host = env::var("HOST").expect("Cargo build scripts always have HOST");
     let target_os = get_os_from_triple(target.as_str()).unwrap();
 
+    let sdl2_compiled_path: PathBuf;
     #[cfg(feature = "bundled")] {
         let sdl2_source_path = download_sdl2();
-        let sdl2_compiled_path = compile_sdl2(sdl2_source_path.as_path(), target_os);
+        patch_sdl2(sdl2_source_path.as_path());
+        sdl2_compiled_path = compile_sdl2(sdl2_source_path.as_path(), target_os);
 
         let sdl2_downloaded_include_path = sdl2_source_path.join("include");
         let sdl2_compiled_lib_path = sdl2_compiled_path.join("lib");
@@ -311,6 +483,10 @@ fn main() {
     }
 
     link_sdl2(target_os);
+
+    #[cfg(all(feature = "bundled", not(feature = "static-link")))] {
+        copy_dynamic_libraries(&sdl2_compiled_path, target_os);
+    }
 }
 
 #[cfg(not(feature = "bindgen"))]

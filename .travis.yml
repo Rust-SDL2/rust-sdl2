@@ -1,47 +1,37 @@
 language: rust
 sudo: required
 rust:
-- beta
-- nightly
-- stable
+  - beta
+  - nightly
+  - stable
 os:
-- linux
-- osx
+  - linux
+  - osx
+env:
+  matrix:
+    - CI_BUILD_FEATURES="bundled"
+    - CI_BUILD_FEATURES="gfx image ttf mixer"
+  global:
+    - RUST_TEST_THREADS=1
+    - TRAVIS_CARGO_NIGHTLY_FEATURE=""
+    - LD_LIBRARY_PATH: "/usr/local/lib"
+    - secure: MJhmVnQ2IM7+sVmc3vU4ndKOcQgLLeHUPW3qaQBQHKQmvoswCwQK60N17uSgWn1Ln8teqvSRHq4KclIjdMHI+VuQXJHQKHDgjcYbHxwmc3AM1Whnp0XB44ksKUmD109BGWSfZQxzF+6dA+YNOQ+mti+bpydMu8n2FMVjA/SXwQ8=
+
 install:
-- wget https://www.libsdl.org/release/SDL2-2.0.8.tar.gz -O sdl2.tar.gz
-- tar xzf sdl2.tar.gz
-- pushd SDL2-* && ./configure && make && sudo make install && popd
-- wget -q https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.14.tar.gz
-- wget -q https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.1.tar.gz
-- wget -q https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.1.tar.gz
-- wget -q -O SDL2_gfx-1.0.1.tar.gz https://sourceforge.net/projects/sdl2gfx/files/SDL2_gfx-1.0.1.tar.gz/download
-- tar xzf SDL2_ttf-*.tar.gz
-- tar xzf SDL2_image-*.tar.gz
-- tar xzf SDL2_mixer-*.tar.gz
-- tar xzf SDL2_gfx-*.tar.gz
-- pushd SDL2_ttf-* && ./configure && make && sudo make install && popd
-- pushd SDL2_image-* && ./configure && make && sudo make install && popd
-- pushd SDL2_mixer-* && ./configure && make && sudo make install && popd
-- pushd SDL2_gfx-* && ./autogen.sh && ./configure && make && sudo make install && popd
+  - if [[ $CI_BUILD_FEATURES != *"bundled"* ]]; then bash scripts/travis-install-sdl2.sh; fi
 
 before_script:
-- shopt -s expand_aliases
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then alias pip=pip2; fi
-- |
-  pip install 'travis-cargo<0.2' --user &&
-  export PATH=$HOME/.local/bin:$PATH &&
-  export PATH=~/Library/Python/2.7/bin:$PATH
+  - shopt -s expand_aliases
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then alias pip=pip2; fi
+  - |
+    pip install 'travis-cargo<0.2' --user &&
+    export PATH=$HOME/.local/bin:$PATH &&
+    export PATH=~/Library/Python/2.7/bin:$PATH
 script:
-- |
-  travis-cargo build -- --features "gfx image ttf mixer" &&
-  travis-cargo build -- --examples --features "gfx image ttf mixer" &&
-  travis-cargo test -- --features "gfx image ttf mixer" &&
-  travis-cargo --only stable doc -- --features "gfx image ttf mixer"
+  - |
+    travis-cargo build -- --features "${CI_BUILD_FEATURES}" &&
+    travis-cargo build -- --examples --features "${CI_BUILD_FEATURES}" &&
+    travis-cargo test -- --features "${CI_BUILD_FEATURES}" &&
+    travis-cargo --only stable doc -- --features "${CI_BUILD_FEATURES}"
 after_success:
-- travis-cargo --only stable doc-upload
-env:
-  global:
-  - RUST_TEST_THREADS=1
-  - TRAVIS_CARGO_NIGHTLY_FEATURE=""
-  - LD_LIBRARY_PATH: "/usr/local/lib"
-  - secure: MJhmVnQ2IM7+sVmc3vU4ndKOcQgLLeHUPW3qaQBQHKQmvoswCwQK60N17uSgWn1Ln8teqvSRHq4KclIjdMHI+VuQXJHQKHDgjcYbHxwmc3AM1Whnp0XB44ksKUmD109BGWSfZQxzF+6dA+YNOQ+mti+bpydMu8n2FMVjA/SXwQ8=
+  - travis-cargo --only stable doc-upload

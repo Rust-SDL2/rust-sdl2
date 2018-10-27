@@ -1,6 +1,8 @@
 //! # Getting started
 //!
 //! ```rust,no_run
+//! extern crate sdl2; 
+//!
 //! use sdl2::pixels::Color;
 //! use sdl2::event::Event;
 //! use sdl2::keyboard::Keycode;

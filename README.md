@@ -2,7 +2,7 @@
 
 Bindings for SDL2 in Rust
 
-### [Changelog for 0.31](changelog.md#v031)
+### [Changelog for 0.32](changelog.md#v032)
 
 # Overview
 
@@ -257,7 +257,7 @@ download through Crates.io:
 
 ```toml
     [dependencies]
-    sdl2 = "0.31"
+    sdl2 = "0.32"
 ```
 
 Alternatively, pull it from GitHub to obtain the latest version from master
@@ -278,7 +278,7 @@ adding this instead:
 
 ```toml
     [dependencies.sdl2]
-    version = "0.31"
+    version = "0.32"
     default-features = false
     features = ["ttf","image","gfx","mixer"]
 ```
@@ -458,6 +458,58 @@ fn main() {
 
 This method is useful when you don't care about sdl2's render capabilities, but you do care about
 its audio, controller and other neat features that sdl2 has.
+
+# Vulkan
+
+To use Vulkan, you need a Vulkan library for Rust. This example uses the
+[Vulkano](https://github.com/vulkano-rs/vulkano) library. Other libraries may use different data
+types for raw Vulkan object handles. The procedure to interface SDL2's Vulkan functions with these
+will be different for each one.
+
+```rust
+extern crate sdl2;
+extern crate vulkano;
+
+use sdl2::event::Event;
+use sdl2::keyboard::Keycode;
+use std::ffi::CString;
+use vulkano::VulkanObject;
+use vulkano::instance::{Instance, RawInstanceExtensions};
+use vulkano::swapchain::Surface;
+
+fn main() {
+    let sdl_context = sdl2::init().unwrap();
+    let video_subsystem = sdl_context.video().unwrap();
+
+    let window = video_subsystem.window("Window", 800, 600)
+        .vulkan()
+        .build()
+        .unwrap();
+
+    let instance_extensions = window.vulkan_instance_extensions().unwrap();
+    let raw_instance_extensions = RawInstanceExtensions::new(instance_extensions.iter().map(
+        |&v| CString::new(v).unwrap()
+        ));
+    let instance = Instance::new(None, raw_instance_extensions, None).unwrap();
+    let surface_handle = window.vulkan_create_surface(instance.internal_object()).unwrap();
+    let surface = unsafe { Surface::from_raw_surface(instance, surface_handle, window.context()) };
+
+    let mut event_pump = sdl_context.event_pump().unwrap();
+
+    'running: loop {
+        for event in event_pump.poll_iter() {
+            match event {
+                Event::Quit {..} | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
+                    break 'running
+                },
+                _ => {}
+            }
+        }
+        ::std::thread::sleep(::std::time::Duration::new(0, 1_000_000_000u32 / 60));
+    }
+}
+
+```
 
 # When things go wrong
 Rust, and Rust-SDL2, are both still heavily in development, and you may run
