@@ -32,20 +32,37 @@ fn test2(ev: &sdl2::EventSubsystem, ep: &mut sdl2::EventPump) {
         data2: 0x56_78 as *mut ::std::os::raw::c_void,
     };
 
-    let (t1, a1, a2) = match event {
-        event::Event::User { type_: t1, data1: a1, data2: a2, .. } => { (t1, a1, a2) }
-        _ => { panic!("expected user event") }
+    let (w1, t1, c1, a1, a2) = match event {
+        event::Event::User {
+            window_id: w1,
+            type_: t1,
+            code: c1,
+            data1: a1,
+            data2: a2,
+            ..
+        } => (w1, t1, c1, a1, a2),
+        _ => panic!("expected user event"),
     };
     ev.push_event(event.clone()).unwrap();
     let received = ep.poll_event().unwrap();
-    assert_eq!(&event, &received);
+    // Do not check for timestamp here because it is always modified by
+    // SDL_PushEvent.
     match &received {
-        &event::Event::User { type_: t2, data1: b1, data2: b2, .. }  => {
+        &event::Event::User {
+            window_id: w2,
+            type_: t2,
+            code: c2,
+            data1: b1,
+            data2: b2,
+            ..
+        } => {
+            assert_eq!(w1, w2);
             assert_eq!(t1, t2);
+            assert_eq!(c1, c2);
             assert_eq!(a1, b1);
             assert_eq!(a2, b2);
         }
-        other => { panic!("Received non User event: {:?}", other) }
+        other => panic!("Received non User event: {:?}", other),
     }
 }
 
