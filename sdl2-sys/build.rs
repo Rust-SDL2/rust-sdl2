@@ -123,13 +123,8 @@ fn download_sdl2() -> PathBuf {
 fn patch_sdl2(sdl2_source_path: &Path) {
     // vector of <(patch_file_name, patch_file_contents)>
     let patches: Vec<(&str, &'static str)> = vec![
-        // This patch fixes a CMake installation bug introduced in SDL2 2.0.4 on
-        // the Mac OS platform. Without this patch, the libSDL2.dylib generated
-        // during the SDL2 build phase will be overwritten by a symlink pointing
-        // to nothing. A variation of this patch was accepted upstream and
-        // should be included in SDL2 2.0.9.
-        // https://bugzilla.libsdl.org/show_bug.cgi?id=4234
-        ("SDL2-2.0.8-4234-mac-os-dylib-fix.patch", include_str!("patches/SDL2-2.0.8-4234-mac-os-dylib-fix.patch")),
+        // No patches at this time. If needed, add them like this:
+        // ("SDL-2.x.y-filename.patch", include_str!("patches/SDL-2.x.y-filename.patch")),
     ];
     let sdl_version = format!("SDL2-{}", LASTEST_SDL2_VERSION);
 
