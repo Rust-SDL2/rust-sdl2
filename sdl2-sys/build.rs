@@ -22,10 +22,10 @@ use std::path::{Path, PathBuf};
 use std::{io, fs, env};
 
 // corresponds to the headers that we have in sdl2-sys/SDL2-{version}
-const SDL2_HEADERS_BUNDLED_VERSION: &str = "2.0.5";
+const SDL2_HEADERS_BUNDLED_VERSION: &str = "2.0.8";
 
 // means the lastest stable version that can be downloaded from SDL2's source
-const LASTEST_SDL2_VERSION: &str = "2.0.5";
+const LASTEST_SDL2_VERSION: &str = "2.0.8";
 
 #[cfg(feature = "bindgen")]
 macro_rules! add_msvc_includes_to_bindings {
@@ -177,10 +177,10 @@ fn patch_sdl2(sdl2_source_path: &Path) {
                 // Skip lines in old_file, and verify that what we expect to
                 // replace is present in the old_file.
                 for expected_line in hunk.source_lines() {
-                let mut actual_line = String::new();
-                old_buf.read_line(&mut actual_line).unwrap();
-                actual_line.pop(); // Remove the trailing newline.
-                    if expected_line.value != actual_line {
+                    let mut actual_line = String::new();
+                    old_buf.read_line(&mut actual_line).unwrap();
+                    actual_line.pop(); // Remove the trailing newline.
+                    if expected_line.value.trim_end() != actual_line {
                         panic!("Can't apply patch; mismatch between expected and actual in hunk {}", i);
                     }
                 }
@@ -677,6 +677,7 @@ fn generate_bindings<S: AsRef<str> + ::std::fmt::Debug>(target: &str, host: &str
         .blacklist_type("FP_SUBNORMAL")
         .blacklist_type("FP_NORMAL")
         .blacklist_type("max_align_t") // Until https://github.com/rust-lang-nursery/rust-bindgen/issues/550 gets fixed
+        .derive_debug(false)
         .generate()
         .expect("Unable to generate bindings!");
 
