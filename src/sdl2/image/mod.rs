@@ -33,27 +33,27 @@ use sys;
 /// InitFlags are passed to init() to control which subsystem
 /// functionality to load.
 bitflags! {
-    pub flags InitFlag : u32 {
-        const INIT_JPG  = sys::image::IMG_InitFlags_IMG_INIT_JPG as u32,
-        const INIT_PNG  = sys::image::IMG_InitFlags_IMG_INIT_PNG as u32,
-        const INIT_TIF  = sys::image::IMG_InitFlags_IMG_INIT_TIF as u32,
-        const INIT_WEBP = sys::image::IMG_InitFlags_IMG_INIT_WEBP as u32
+    pub struct InitFlag : u32 {
+        const JPG  = sys::image::IMG_InitFlags_IMG_INIT_JPG as u32;
+        const PNG  = sys::image::IMG_InitFlags_IMG_INIT_PNG as u32;
+        const TIF  = sys::image::IMG_InitFlags_IMG_INIT_TIF as u32;
+        const WEBP = sys::image::IMG_InitFlags_IMG_INIT_WEBP as u32;
     }
 }
 
 // This is used for error message for init
 impl ::std::fmt::Display for InitFlag {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        if self.contains(INIT_JPG) {
+        if self.contains(InitFlag::JPG) {
             try!(f.write_str("INIT_JPG "));
         }
-        if self.contains(INIT_PNG) {
+        if self.contains(InitFlag::PNG) {
             try!(f.write_str("INIT_PNG "));
         }
-        if self.contains(INIT_TIF) {
+        if self.contains(InitFlag::TIF) {
             try!(f.write_str("INIT_TIF "));
         }
-        if self.contains(INIT_WEBP) {
+        if self.contains(InitFlag::WEBP) {
             try!(f.write_str("INIT_WEBP "));
         }
         Ok(())

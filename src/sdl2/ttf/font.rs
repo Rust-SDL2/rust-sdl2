@@ -16,12 +16,12 @@ use ::rwops::RWops;
 // Absolute paths are a workaround for https://github.com/rust-lang-nursery/bitflags/issues/39 .
 bitflags! {
     /// The styling of a font.
-    pub flags FontStyle: i32 {
-        const STYLE_NORMAL        = sys::ttf::TTF_STYLE_NORMAL as i32,
-        const STYLE_BOLD          = sys::ttf::TTF_STYLE_BOLD as i32,
-        const STYLE_ITALIC        = sys::ttf::TTF_STYLE_ITALIC as i32,
-        const STYLE_UNDERLINE     = sys::ttf::TTF_STYLE_UNDERLINE as i32,
-        const STYLE_STRIKETHROUGH = sys::ttf::TTF_STYLE_STRIKETHROUGH as i32,
+    pub struct FontStyle: i32 {
+        const NORMAL        = sys::ttf::TTF_STYLE_NORMAL as i32;
+        const BOLD          = sys::ttf::TTF_STYLE_BOLD as i32;
+        const ITALIC        = sys::ttf::TTF_STYLE_ITALIC as i32;
+        const UNDERLINE     = sys::ttf::TTF_STYLE_UNDERLINE as i32;
+        const STRIKETHROUGH = sys::ttf::TTF_STYLE_STRIKETHROUGH as i32;
     }
 }
 
