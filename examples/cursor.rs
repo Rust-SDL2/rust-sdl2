@@ -3,7 +3,7 @@ extern crate sdl2;
 use std::env;
 use std::path::Path;
 use sdl2::event::Event;
-use sdl2::image::{LoadSurface, INIT_PNG, INIT_JPG};
+use sdl2::image::{LoadSurface, InitFlag};
 use sdl2::keyboard::Keycode;
 use sdl2::mouse::Cursor;
 use sdl2::pixels::Color;
@@ -14,7 +14,7 @@ pub fn run(png: &Path) {
 
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
-    let _image_context = sdl2::image::init(INIT_PNG | INIT_JPG).unwrap();
+    let _image_context = sdl2::image::init(InitFlag::PNG | InitFlag::JPG).unwrap();
     let window = video_subsystem.window("rust-sdl2 demo: Cursor", 800, 600)
       .position_centered()
       .build()
