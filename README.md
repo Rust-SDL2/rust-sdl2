@@ -222,6 +222,19 @@ http://www.libsdl.org/ (SDL2-devel-2.0.x-mingw.tar.gz).
 
 5. When you're shipping your game make sure to copy SDL2.dll to the same directory that your compiled exe is in, otherwise the game won't launch.
 
+#### Static linking with MinGW
+
+If you want to use the `static-link` feature with the windows-gnu toolchain, then you will also need the following libraries:
+
+    libimm32.a
+    libversion.a
+    libdinput8.a
+    libdxguid.a
+
+These files are not currently included with the windows-gnu toolchain, but can be downloaded [here](https://sourceforge.net/projects/mingw-w64/files/). For the x86_64 toolchain, you want the `x86_64-win32-seh` package, and for i686 you want the `i686-win32-dwarf` one.
+
+You will find the aforementioned libraries under `mingw64/x86_64-w64-mingw32/lib/` (for x86_64) or `mingw32/i686-w64-mingw32/lib/` (for i686). Copy them to your toolchain's `lib` directory (the same one you copied the SDL .a files to).
+
 ### Windows (MSVC)
 
 1. Download MSVC development libraries from http://www.libsdl.org/ (SDL2-devel-2.0.x-VC.zip).
@@ -249,6 +262,13 @@ http://www.libsdl.org/ (SDL2-devel-2.0.x-mingw.tar.gz).
     into your cargo project, right next to your Cargo.toml.
 
  5. When you're shipping your game make sure to copy SDL2.dll to the same directory that your compiled exe is in, otherwise the game won't launch.
+
+#### Static linking with MSVC
+
+The MSVC development libraries provided by http://libsdl.org/ don't include a static library. This means that if you want to use the `static-link` feature with the windows-msvc toolchain, you have to either
+
+- build an SDL2 static library yourself and copy it to your toolchain's `lib` directory; or
+- also enable the `bundled` feature, which will build a static library for you.
 
 # Installation
 
