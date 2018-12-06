@@ -22,10 +22,10 @@ use std::path::{Path, PathBuf};
 use std::{io, fs, env};
 
 // corresponds to the headers that we have in sdl2-sys/SDL2-{version}
-const SDL2_HEADERS_BUNDLED_VERSION: &str = "2.0.8";
+const SDL2_HEADERS_BUNDLED_VERSION: &str = "2.0.9";
 
 // means the lastest stable version that can be downloaded from SDL2's source
-const LASTEST_SDL2_VERSION: &str = "2.0.8";
+const LASTEST_SDL2_VERSION: &str = "2.0.9";
 
 #[cfg(feature = "bindgen")]
 macro_rules! add_msvc_includes_to_bindings {
@@ -123,13 +123,8 @@ fn download_sdl2() -> PathBuf {
 fn patch_sdl2(sdl2_source_path: &Path) {
     // vector of <(patch_file_name, patch_file_contents)>
     let patches: Vec<(&str, &'static str)> = vec![
-        // This patch fixes a CMake installation bug introduced in SDL2 2.0.4 on
-        // the Mac OS platform. Without this patch, the libSDL2.dylib generated
-        // during the SDL2 build phase will be overwritten by a symlink pointing
-        // to nothing. A variation of this patch was accepted upstream and
-        // should be included in SDL2 2.0.9.
-        // https://bugzilla.libsdl.org/show_bug.cgi?id=4234
-        ("SDL2-2.0.8-4234-mac-os-dylib-fix.patch", include_str!("patches/SDL2-2.0.8-4234-mac-os-dylib-fix.patch")),
+        // No patches at this time. If needed, add them like this:
+        // ("SDL-2.x.y-filename.patch", include_str!("patches/SDL-2.x.y-filename.patch")),
     ];
     let sdl_version = format!("SDL2-{}", LASTEST_SDL2_VERSION);
 
