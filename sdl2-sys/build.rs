@@ -324,6 +324,7 @@ fn link_sdl2(target_os: &str) {
             println!("cargo:rustc-link-lib=uuid");
             println!("cargo:rustc-link-lib=dinput8");
             println!("cargo:rustc-link-lib=dxguid");
+            println!("cargo:rustc-link-lib=setupapi");
         } else if target_os.contains("linux") {
             println!("cargo:rustc-link-lib=sndio");
         } else if target_os == "darwin" {
