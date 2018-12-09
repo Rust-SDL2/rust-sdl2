@@ -11,8 +11,6 @@ extern crate tar;
 #[cfg(feature="bundled")]
 extern crate flate2;
 #[cfg(feature="bundled")]
-extern crate reqwest;
-#[cfg(feature="bundled")]
 extern crate unidiff;
 
 #[macro_use]
@@ -38,31 +36,35 @@ macro_rules! add_msvc_includes_to_bindings {
     };
 }
 
-#[cfg(feature="bundled")]
-fn download_to<T: io::Write>(url: &str, mut dest: T) {
-    use io::BufRead;
+#[cfg(feature = "bundled")]
+fn run_command(cmd: &str, args: &[&str]) {
+    use std::process::Command;
+    match Command::new(cmd).args(args).output() {
+        Ok(output) => {
+            if !output.status.success() {
+                let error = std::str::from_utf8(&output.stderr).unwrap();
+                panic!("Command '{}' failed: {}", cmd, error);
+            }
+        }
+        Err(error) => {
+            panic!("Error running command '{}': {:#}", cmd, error);
+        }
+    }
+}
 
-    let resp = reqwest::get(url).expect(&format!("Failed to GET resource: {:?}", url));
-    let size: u32 = resp.headers()
-        .get(reqwest::header::CONTENT_LENGTH)
-        .and_then(|cl| {
-            cl.to_str().ok().and_then(|cl| {
-                cl.parse::<u32>().ok()
-            })
-        })
-        .unwrap_or(0);
-    if !resp.status().is_success() { panic!("Download request failed with status: {:?}", resp.status()) }
-    if size == 0 { panic!("Size of content was returned was 0") }
-
-    let mut src = io::BufReader::new(resp);
-    loop {
-        let n = {
-            let mut buf = src.fill_buf().unwrap();
-            dest.write_all(&mut buf).unwrap();
-            buf.len()
-        };
-        if n == 0 { break; }
-        src.consume(n);
+#[cfg(feature = "bundled")]
+fn download_to(url: &str, dest: &str) {
+    if cfg!(windows) {
+        run_command("powershell", &[
+            "-NoProfile", "-NonInteractive",
+            "-Command", "& {
+                $client = New-Object System.Net.WebClient
+                $client.DownloadFile($args[0], $args[1])
+                if (!$?) { Exit 1 }
+            }", url, dest
+        ]);
+    } else {
+        run_command("curl", &[url, "-o", dest]);
     }
 }
 
@@ -105,8 +107,7 @@ fn download_sdl2() -> PathBuf {
 
     // avoid re-downloading the archive if it already exists    
     if !sdl2_archive_path.exists() {
-        let sdl2_archive = fs::File::create(&sdl2_archive_path).unwrap();
-        download_to(&sdl2_archive_url, &sdl2_archive);
+        download_to(&sdl2_archive_url, sdl2_archive_path.to_str().unwrap());
     }
 
     let reader = flate2::read::GzDecoder::new(
