@@ -402,6 +402,28 @@ impl GameController {
 
         unsafe { sys::SDL_GameControllerGetButton(self.raw, raw_button) != 0 }
     }
+
+    /// Set the rumble motors to their specified intensities, if supported.
+    /// Automatically resets back to zero after `duration_ms` milliseconds have passed.
+    pub fn set_rumble(&mut self,
+                      low_frequency_rumble: u16,
+                      high_frequency_rumble: u16,
+                      duration_ms: u32)
+                      -> Result<(), IntegerOrSdlError>
+    {
+        let result = unsafe {
+            sys::SDL_GameControllerRumble(self.raw,
+                                          low_frequency_rumble,
+                                          high_frequency_rumble,
+                                          duration_ms)
+        };
+
+        if result != 0 {
+            Err(IntegerOrSdlError::SdlError(get_error()))
+        } else {
+            Ok(())
+        }
+    }
 }
 
 impl Drop for GameController {
