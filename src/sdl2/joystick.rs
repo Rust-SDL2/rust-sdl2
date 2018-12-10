@@ -21,7 +21,7 @@ impl JoystickSubsystem {
     }
 
     /// Attempt to open the joystick at index `joystick_index` and return it.
-    pub fn open(&self, joystick_index: u32) 
+    pub fn open(&self, joystick_index: u32)
             -> Result<Joystick, IntegerOrSdlError> {
         use common::IntegerOrSdlError::*;
         let joystick_index = try!(validate_int(joystick_index, "joystick_index"));
@@ -342,6 +342,28 @@ impl Joystick {
             } else {
                 Err(SdlError(err))
             }
+        }
+    }
+
+    /// Set the rumble motors to their specified intensities, if supported.
+    /// Automatically resets back to zero after `duration_ms` milliseconds have passed.
+    pub fn set_rumble(&mut self,
+                      low_frequency_rumble: u16,
+                      high_frequency_rumble: u16,
+                      duration_ms: u32)
+                      -> Result<(), IntegerOrSdlError>
+    {
+        let result = unsafe {
+            sys::SDL_JoystickRumble(self.raw,
+                                    low_frequency_rumble,
+                                    high_frequency_rumble,
+                                    duration_ms)
+        };
+
+        if result != 0 {
+            Err(IntegerOrSdlError::SdlError(get_error()))
+        } else {
+            Ok(())
         }
     }
 }
