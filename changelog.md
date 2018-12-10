@@ -1,6 +1,11 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
+### v0.32.1 (unreleased)
+
+[PR #824](https://github.com/Rust-SDL2/rust-sdl2/pull/824):
+Added `controller::set_rumble` and `joystick::set_rumble`, wrappers for `SDL_GameControllerRumble` and `SDL_JoystickRumble` respectively.
+
 ### v0.32
 
 [PR #790](https://github.com/Rust-SDL2/rust-sdl2/pull/790): Added missing `window_id` field to `Event::DropFile`
@@ -41,7 +46,7 @@ Fix `ClipboardUtil::set_clipboard_text` to return an Ok when it went well.
 Add `video::border_size -> Result<(u16, u16, u16, u16), String>` equivalent of `SDL_GetWindowBorderSize()`
 
 [PR #732](https://github.com/Rust-SDL2/rust-sdl2/pull/732):
-Implemented `From<(u8, u8, u8)>` and `From<(u8, u8, u8, u8)>` for `pixels::Color`. 
+Implemented `From<(u8, u8, u8)>` and `From<(u8, u8, u8, u8)>` for `pixels::Color`.
   `Canvas.set_draw_color` can now be called with tuples or other types which implements `Into<pixels::Color>`
 
 [PR #279](https://github.com/Rust-SDL2/rust-sdl2/pull/729)
