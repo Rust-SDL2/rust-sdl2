@@ -2,7 +2,7 @@
 
 set -xueo pipefail
 
-wget https://www.libsdl.org/release/SDL2-2.0.8.tar.gz -O sdl2.tar.gz
+wget https://www.libsdl.org/release/SDL2-2.0.9.tar.gz -O sdl2.tar.gz
 tar xzf sdl2.tar.gz
 pushd SDL2-* && ./configure && make && sudo make install && popd
 wget -q https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.14.tar.gz
