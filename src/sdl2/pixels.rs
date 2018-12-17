@@ -238,6 +238,23 @@ pub enum PixelFormatEnum {
     YVYU = sys::SDL_PIXELFORMAT_YVYU as i32
 }
 
+// Endianness-agnostic aliases for 32-bit formats
+#[cfg(target_endian = "big")]
+impl PixelFormatEnum {
+    pub const RGBA32: PixelFormatEnum = PixelFormatEnum::RGBA8888;
+    pub const ARGB32: PixelFormatEnum = PixelFormatEnum::ARGB8888;
+    pub const BGRA32: PixelFormatEnum = PixelFormatEnum::BGRA8888;
+    pub const ABGR32: PixelFormatEnum = PixelFormatEnum::ABGR8888;
+}
+
+#[cfg(target_endian = "little")]
+impl PixelFormatEnum {
+    pub const RGBA32: PixelFormatEnum = PixelFormatEnum::ABGR8888;
+    pub const ARGB32: PixelFormatEnum = PixelFormatEnum::BGRA8888;
+    pub const BGRA32: PixelFormatEnum = PixelFormatEnum::ARGB8888;
+    pub const ABGR32: PixelFormatEnum = PixelFormatEnum::RGBA8888;
+}
+
 impl PixelFormatEnum {
     pub fn from_masks(masks: PixelMasks) -> PixelFormatEnum {
         unsafe {
