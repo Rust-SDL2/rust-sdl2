@@ -88,89 +88,84 @@ extern "C" fn c_timer_callback(_interval: u32, param: *mut c_void) -> uint32_t {
 }
 
 
-#[cfg(test)]
-fn test_timer_runs_multiple_times() {
-    use std::sync::{Arc, Mutex};
-    use std::time::Duration;
-
-    let sdl_context = ::sdl::init().unwrap();
-    let timer_subsystem = sdl_context.timer().unwrap();
-
-    let local_num = Arc::new(Mutex::new(0));
-    let timer_num = local_num.clone();
-
-    let _timer = timer_subsystem.add_timer(20, Box::new(|| {
-        // increment up to 10 times (0 -> 9)
-        // tick again in 100ms after each increment
-        //
-        let mut num = timer_num.lock().unwrap();
-        if *num < 9 {
-            *num += 1;
-            20
-        } else { 0 }
-    }));
-
-    ::std::thread::sleep(Duration::from_millis(250));              // tick the timer at least 10 times w/ 200ms of "buffer"
-    let num = local_num.lock().unwrap(); // read the number back
-    assert_eq!(*num, 9);                 // it should have incremented at least 10 times...
-}
-
-#[cfg(test)]
-fn test_timer_runs_at_least_once() {
-    use std::sync::{Arc, Mutex};
-    use std::time::Duration;
-
-    let sdl_context = ::sdl::init().unwrap();
-    let timer_subsystem = sdl_context.timer().unwrap();
-
-    let local_flag = Arc::new(Mutex::new(false));
-    let timer_flag = local_flag.clone();
-
-    let _timer = timer_subsystem.add_timer(20, Box::new(|| {
-        let mut flag = timer_flag.lock().unwrap();
-        *flag = true; 0
-    }));
-
-    ::std::thread::sleep(Duration::from_millis(50));
-    let flag = local_flag.lock().unwrap();
-    assert_eq!(*flag, true);
-}
-
-#[cfg(test)]
-fn test_timer_can_be_recreated() {
-    use std::time::Duration;
-    use std::sync::{Arc, Mutex};
-
-    let sdl_context = ::sdl::init().unwrap();
-    let timer_subsystem = sdl_context.timer().unwrap();
-
-    let local_num = Arc::new(Mutex::new(0));
-    let timer_num = local_num.clone();
-
-    // run the timer once and reclaim its closure
-    let timer_1 = timer_subsystem.add_timer(20, Box::new(move|| {
-        let mut num = timer_num.lock().unwrap();
-        *num += 1; // increment the number
-        0          // do not run timer again
-    }));
-
-    // reclaim closure after timer runs
-    ::std::thread::sleep(Duration::from_millis(50));
-    let closure = timer_1.into_inner();
-
-    // create a second timer and increment again
-    let _timer_2 = timer_subsystem.add_timer(20, closure);
-    ::std::thread::sleep(Duration::from_millis(50));
-
-    // check that timer was incremented twice
-    let num = local_num.lock().unwrap();
-    assert_eq!(*num, 2);
-}
-
-#[test]
 #[cfg(not(target_os = "macos"))]
-fn test_timer() {
-    test_timer_runs_multiple_times();
-    test_timer_runs_at_least_once();
-    test_timer_can_be_recreated();
+#[cfg(test)]
+mod test {
+    use std::sync::{Arc, Mutex};
+    use std::time::Duration;
+
+    #[test]
+    fn test_timer() {
+        test_timer_runs_multiple_times();
+        test_timer_runs_at_least_once();
+        test_timer_can_be_recreated();
+    }
+
+    fn test_timer_runs_multiple_times() {
+        let sdl_context = ::sdl::init().unwrap();
+        let timer_subsystem = sdl_context.timer().unwrap();
+
+        let local_num = Arc::new(Mutex::new(0));
+        let timer_num = local_num.clone();
+
+        let _timer = timer_subsystem.add_timer(20, Box::new(|| {
+            // increment up to 10 times (0 -> 9)
+            // tick again in 100ms after each increment
+            //
+            let mut num = timer_num.lock().unwrap();
+            if *num < 9 {
+                *num += 1;
+                20
+            } else { 0 }
+        }));
+
+        // tick the timer at least 10 times w/ 200ms of "buffer"
+        ::std::thread::sleep(Duration::from_millis(250));
+        let num = local_num.lock().unwrap(); // read the number back
+        assert_eq!(*num, 9);                 // it should have incremented at least 10 times...
+    }
+
+    fn test_timer_runs_at_least_once() {
+        let sdl_context = ::sdl::init().unwrap();
+        let timer_subsystem = sdl_context.timer().unwrap();
+
+        let local_flag = Arc::new(Mutex::new(false));
+        let timer_flag = local_flag.clone();
+
+        let _timer = timer_subsystem.add_timer(20, Box::new(|| {
+            let mut flag = timer_flag.lock().unwrap();
+            *flag = true; 0
+        }));
+
+        ::std::thread::sleep(Duration::from_millis(50));
+        let flag = local_flag.lock().unwrap();
+        assert_eq!(*flag, true);
+    }
+
+    fn test_timer_can_be_recreated() {
+        let sdl_context = ::sdl::init().unwrap();
+        let timer_subsystem = sdl_context.timer().unwrap();
+
+        let local_num = Arc::new(Mutex::new(0));
+        let timer_num = local_num.clone();
+
+        // run the timer once and reclaim its closure
+        let timer_1 = timer_subsystem.add_timer(20, Box::new(move|| {
+            let mut num = timer_num.lock().unwrap();
+            *num += 1; // increment the number
+            0          // do not run timer again
+        }));
+
+        // reclaim closure after timer runs
+        ::std::thread::sleep(Duration::from_millis(50));
+        let closure = timer_1.into_inner();
+
+        // create a second timer and increment again
+        let _timer_2 = timer_subsystem.add_timer(20, closure);
+        ::std::thread::sleep(Duration::from_millis(50));
+
+        // check that timer was incremented twice
+        let num = local_num.lock().unwrap();
+        assert_eq!(*num, 2);
+    }
 }
