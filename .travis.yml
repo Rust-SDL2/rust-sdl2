@@ -2,7 +2,6 @@ language: rust
 sudo: required
 rust:
   - beta
-  - nightly
   - stable
 os:
   - linux
