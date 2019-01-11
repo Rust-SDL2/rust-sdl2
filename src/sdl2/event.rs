@@ -710,6 +710,9 @@ pub enum Event {
     }
 }
 
+unsafe impl Send for Event {}
+unsafe impl Sync for Event {}
+
 /// Helper function to make converting scancodes
 /// and keycodes to primitive `SDL_Keysym` types.
 fn mk_keysym<S, K>(scancode: S,
