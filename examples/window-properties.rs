@@ -4,21 +4,21 @@ use sdl2::pixels::Color;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 
-pub fn main() {
-    let sdl_context = sdl2::init().unwrap();
-    let video_subsystem = sdl_context.video().unwrap();
+pub fn main() -> Result<(), String> {
+    let sdl_context = sdl2::init()?;
+    let video_subsystem = sdl_context.video()?;
 
     let window = video_subsystem
         .window("rust-sdl2 demo: Window", 800, 600)
         .resizable()
         .build()
-        .unwrap();
+        .map_err(|e| e.to_string())?;
 
-    let mut canvas = window.into_canvas().present_vsync().build().unwrap();
+    let mut canvas = window.into_canvas().present_vsync().build().map_err(|e| e.to_string())?;
 
     let mut tick = 0;
 
-    let mut event_pump = sdl_context.event_pump().unwrap();
+    let mut event_pump = sdl_context.event_pump().map_err(|e| e.to_string())?;
 
     'running: loop {
         for event in event_pump.poll_iter() {
@@ -41,7 +41,7 @@ pub fn main() {
                                 size.0,
                                 size.1,
                                 tick);
-            window.set_title(&title).unwrap();
+            window.set_title(&title).map_err(|e| e.to_string())?;
 
             tick += 1;
         }
@@ -50,4 +50,6 @@ pub fn main() {
         canvas.clear();
         canvas.present();
     }
+
+    Ok(())
 }

@@ -115,15 +115,13 @@ mod game_of_life {
     }
 }
 
-fn dummy_texture<'a>(canvas: &mut Canvas<Window>, texture_creator: &'a TextureCreator<WindowContext>) -> (Texture<'a>, Texture<'a>) {
+fn dummy_texture<'a>(canvas: &mut Canvas<Window>, texture_creator: &'a TextureCreator<WindowContext>) -> Result<(Texture<'a>, Texture<'a>), String> {
     enum TextureColor {
         Yellow,
         White,
     };
-    let mut square_texture1 : Texture =
-        texture_creator.create_texture_target(None, SQUARE_SIZE, SQUARE_SIZE).unwrap();
-    let mut square_texture2 : Texture =
-        texture_creator.create_texture_target(None, SQUARE_SIZE, SQUARE_SIZE).unwrap();
+    let mut square_texture1 = texture_creator.create_texture_target(None, SQUARE_SIZE, SQUARE_SIZE).map_err(|e| e.to_string())?;
+    let mut square_texture2 = texture_creator.create_texture_target(None, SQUARE_SIZE, SQUARE_SIZE).map_err(|e| e.to_string())?;
         // let's change the textures we just created
     {
         let textures = vec![
@@ -139,11 +137,13 @@ fn dummy_texture<'a>(canvas: &mut Canvas<Window>, texture_creator: &'a TextureCr
                         for j in 0..SQUARE_SIZE {
                             if (i+j) % 4 == 0 {
                                 texture_canvas.set_draw_color(Color::RGB(255, 255, 0));
-                                texture_canvas.draw_point(Point::new(i as i32, j as i32)).unwrap();
+                                texture_canvas.draw_point(Point::new(i as i32, j as i32))
+                                    .expect("could not draw point");
                             }
                             if (i+j*2) % 9 == 0 {
                                 texture_canvas.set_draw_color(Color::RGB(200, 200, 0));
-                                texture_canvas.draw_point(Point::new(i as i32, j as i32)).unwrap();
+                                texture_canvas.draw_point(Point::new(i as i32, j as i32))
+                                    .expect("could not draw point");
                             }
                         }
                     }
@@ -157,11 +157,13 @@ fn dummy_texture<'a>(canvas: &mut Canvas<Window>, texture_creator: &'a TextureCr
                                 // this doesn't mean anything, there was some trial and error to find
                                 // something that wasn't too ugly
                                 texture_canvas.set_draw_color(Color::RGB(192, 192, 192));
-                                texture_canvas.draw_point(Point::new(i as i32, j as i32)).unwrap();
+                                texture_canvas.draw_point(Point::new(i as i32, j as i32))
+                                    .expect("could not draw point");
                             }
                             if (i+j*2) % 5 == 0 {
                                 texture_canvas.set_draw_color(Color::RGB(64, 64, 64));
-                                texture_canvas.draw_point(Point::new(i as i32, j as i32)).unwrap();
+                                texture_canvas.draw_point(Point::new(i as i32, j as i32))
+                                    .expect("could not draw point");
                             }
                         }
                     }
@@ -175,22 +177,24 @@ fn dummy_texture<'a>(canvas: &mut Canvas<Window>, texture_creator: &'a TextureCr
                         // this doesn't mean anything, there was some trial and serror to find
                         // something that wasn't too ugly
                         texture_canvas.set_draw_color(Color::RGB(192, 192, 192));
-                        texture_canvas.draw_point(Point::new(i as i32, j as i32)).unwrap();
+                        texture_canvas.draw_point(Point::new(i as i32, j as i32))
+                            .expect("could not draw point");
                     }
                     if (i+j*2) % 5 == 0 {
                         texture_canvas.set_draw_color(Color::RGB(64, 64, 64));
-                        texture_canvas.draw_point(Point::new(i as i32, j as i32)).unwrap();
+                        texture_canvas.draw_point(Point::new(i as i32, j as i32))
+                            .expect("could not draw point");
                     }
                 }
             }
-        }).unwrap();
+        }).map_err(|e| e.to_string())?;
     }
-    (square_texture1, square_texture2)
+    Ok((square_texture1, square_texture2))
 }
 
-pub fn main() {
-    let sdl_context = sdl2::init().unwrap();
-    let video_subsystem = sdl_context.video().unwrap();
+pub fn main() -> Result<(), String> {
+    let sdl_context = sdl2::init()?;
+    let video_subsystem = sdl_context.video()?;
 
     // the window is the representation of a window in your operating system,
     // however you can only manipulate properties of that window, like its size, whether it's
@@ -202,14 +206,15 @@ pub fn main() {
                 SQUARE_SIZE*PLAYGROUND_HEIGHT)
         .position_centered()
         .build()
-        .unwrap();
+        .map_err(|e| e.to_string())?;
 
     // the canvas allows us to both manipulate the property of the window and to change its content
     // via hardware or software rendering. See CanvasBuilder for more info.
     let mut canvas = window.into_canvas()
         .target_texture()
         .present_vsync()
-        .build().unwrap();
+        .build()
+        .map_err(|e| e.to_string())?;
 
     println!("Using SDL_Renderer \"{}\"", canvas.info().name);
     canvas.set_draw_color(Color::RGB(0, 0, 0));
@@ -225,10 +230,10 @@ pub fn main() {
     let texture_creator : TextureCreator<_> = canvas.texture_creator();
 
     // Create a "target" texture so that we can use our Renderer with it later
-    let (square_texture1, square_texture2) = dummy_texture(&mut canvas, &texture_creator);
+    let (square_texture1, square_texture2) = dummy_texture(&mut canvas, &texture_creator)?;
     let mut game = game_of_life::GameOfLife::new();
 
-    let mut event_pump = sdl_context.event_pump().unwrap();
+    let mut event_pump = sdl_context.event_pump()?;
     let mut frame : u32 = 0;
     'running: loop {
         // get the inputs here
@@ -245,7 +250,7 @@ pub fn main() {
                     let y = (y as u32) / SQUARE_SIZE;
                     match game.get_mut(x as i32, y as i32) {
                         Some(square) => {*square = !(*square);},
-                        None => {panic!()}
+                        None => unreachable!(),
                     };
                 },
                 _ => {}
@@ -273,7 +278,7 @@ pub fn main() {
                             Rect::new(((i % PLAYGROUND_WIDTH) * SQUARE_SIZE) as i32,
                                       ((i / PLAYGROUND_WIDTH) * SQUARE_SIZE) as i32,
                                       SQUARE_SIZE,
-                                      SQUARE_SIZE)).unwrap();
+                                      SQUARE_SIZE))?;
             }
         }
         canvas.present();
@@ -281,4 +286,6 @@ pub fn main() {
             frame += 1;
         };
     }
+
+    Ok(())
 }

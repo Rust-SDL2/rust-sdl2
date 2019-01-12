@@ -7,27 +7,28 @@ use sdl2::rect::Rect;
 use sdl2::rect::Point;
 use std::time::Duration;
 
-fn main() {
-    let sdl_context = sdl2::init().unwrap();
-    let video_subsystem = sdl_context.video().unwrap();
+fn main() -> Result<(), String> {
+    let sdl_context = sdl2::init()?;
+    let video_subsystem = sdl_context.video()?;
 
     let window = video_subsystem.window("SDL2", 640, 480)
-        .position_centered().build().unwrap();
+        .position_centered().build().map_err(|e| e.to_string())?;
 
     let mut canvas = window.into_canvas()
-        .accelerated().build().unwrap();
+        .accelerated().build().map_err(|e| e.to_string())?;
     let texture_creator = canvas.texture_creator();
 
     canvas.set_draw_color(sdl2::pixels::Color::RGBA(0,0,0,255));
 
-    let mut timer = sdl_context.timer().unwrap();
+    let mut timer = sdl_context.timer()?;
 
-    let mut event_pump = sdl_context.event_pump().unwrap();
+    let mut event_pump = sdl_context.event_pump()?;
 
     // animation sheet and extras are available from
     // https://opengameart.org/content/a-platformer-in-the-forest
-    let temp_surface = sdl2::surface::Surface::load_bmp(Path::new("assets/characters.bmp")).unwrap();
-    let texture = texture_creator.create_texture_from_surface(&temp_surface).unwrap();
+    let temp_surface = sdl2::surface::Surface::load_bmp(Path::new("assets/characters.bmp"))?;
+    let texture = texture_creator.create_texture_from_surface(&temp_surface)
+        .map_err(|e| e.to_string())?;
 
     let frames_per_anim = 4;
     let sprite_tile_size = (32,32);
@@ -72,11 +73,13 @@ fn main() {
 
         canvas.clear();
         // copy the frame to the canvas
-        canvas.copy_ex(&texture, Some(source_rect_0), Some(dest_rect_0), 0.0, None, false, false).unwrap();
-        canvas.copy_ex(&texture, Some(source_rect_1), Some(dest_rect_1), 0.0, None, true, false).unwrap();
-        canvas.copy_ex(&texture, Some(source_rect_2), Some(dest_rect_2), 0.0, None, false, false).unwrap();
+        canvas.copy_ex(&texture, Some(source_rect_0), Some(dest_rect_0), 0.0, None, false, false)?;
+        canvas.copy_ex(&texture, Some(source_rect_1), Some(dest_rect_1), 0.0, None, true, false)?;
+        canvas.copy_ex(&texture, Some(source_rect_2), Some(dest_rect_2), 0.0, None, false, false)?;
         canvas.present();
 
         std::thread::sleep(Duration::from_millis(100));
     }
+
+    Ok(())
 }

@@ -13,7 +13,7 @@ use std::collections::HashMap;
 use std::hash::Hash;
 use std::rc::Rc;
 
-fn main() {
+fn main() -> Result<(), String> {
     let args: Vec<_> = env::args().collect();
 
     if args.len() < 3 {
@@ -22,16 +22,16 @@ fn main() {
         let image_path = &args[1];
         let font_path = &args[2];
 
-        let sdl_context = sdl2::init().unwrap();
-        let video_subsystem = sdl_context.video().unwrap();
-        let font_context = sdl2::ttf::init().unwrap();
-        let _image_context = sdl2::image::init(InitFlag::PNG | InitFlag::JPG).unwrap();
+        let sdl_context = sdl2::init()?;
+        let video_subsystem = sdl_context.video()?;
+        let font_context = sdl2::ttf::init().map_err(|e| e.to_string())?;
+        let _image_context = sdl2::image::init(InitFlag::PNG | InitFlag::JPG)?;
         let window = video_subsystem
             .window("rust-sdl2 resource-manager demo", 800, 600)
             .position_centered()
             .build()
-            .unwrap();
-        let mut canvas = window.into_canvas().software().build().unwrap();
+            .map_err(|e| e.to_string())?;
+        let mut canvas = window.into_canvas().software().build().map_err(|e| e.to_string())?;
         let texture_creator = canvas.texture_creator();
         let mut texture_manager = TextureManager::new(&texture_creator);
         let mut font_manager = FontManager::new(&font_context);
@@ -41,7 +41,7 @@ fn main() {
         };
 
         'mainloop: loop {
-            for event in sdl_context.event_pump().unwrap().poll_iter() {
+            for event in sdl_context.event_pump()?.poll_iter() {
                 match event {
                     Event::KeyDown { keycode: Some(Keycode::Escape), .. } |
                     Event::Quit { .. } => break 'mainloop,
@@ -49,25 +49,25 @@ fn main() {
                 }
             }
             // will load the image texture + font only once
-            let texture = texture_manager.load(image_path).unwrap();
-            let font = font_manager.load(&details).unwrap();
+            let texture = texture_manager.load(image_path)?;
+            let font = font_manager.load(&details)?;
 
             // not recommended to create a texture from the font each iteration
             // but it is the simplest thing to do for this example
             let surface = font.render("Hello Rust!")
-                .blended(Color::RGBA(255, 0, 0, 255))
-                .unwrap();
+                .blended(Color::RGBA(255, 0, 0, 255)).map_err(|e| e.to_string())?;
             let font_texture = texture_creator
-                .create_texture_from_surface(&surface)
-                .unwrap();
+                .create_texture_from_surface(&surface).map_err(|e| e.to_string())?;
 
             //draw all
             canvas.clear();
-            canvas.copy(&texture, None, None).unwrap();
-            canvas.copy(&font_texture, None, None).unwrap();
+            canvas.copy(&texture, None, None)?;
+            canvas.copy(&font_texture, None, None)?;
             canvas.present();
         }
     }
+
+    Ok(())
 }
 
 type TextureManager<'l, T> = ResourceManager<'l, String, Texture<'l>, TextureCreator<T>>;

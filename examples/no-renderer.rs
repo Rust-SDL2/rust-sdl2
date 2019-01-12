@@ -19,8 +19,8 @@ enum Gradient {
     White
 }
 
-fn set_window_gradient(window: &mut Window, event_pump: &sdl2::EventPump, gradient: Gradient) {
-    let mut surface = window.surface(event_pump).unwrap();
+fn set_window_gradient(window: &mut Window, event_pump: &sdl2::EventPump, gradient: Gradient) -> Result<(), String> {
+    let mut surface = window.surface(event_pump)?;
     for i in 0 .. (WINDOW_WIDTH / 4) {
         let c : u8 = 255 - (i as u8);
         let i = i as i32;
@@ -31,9 +31,9 @@ fn set_window_gradient(window: &mut Window, event_pump: &sdl2::EventPump, gradie
             Gradient::Blue => Color::RGB(0, 0, c),
             Gradient::White => Color::RGB(c, c, c),
         };
-        surface.fill_rect(Rect::new(i*4, 0, 4, WINDOW_HEIGHT), color).unwrap();
+        surface.fill_rect(Rect::new(i*4, 0, 4, WINDOW_HEIGHT), color)?;
     }
-    surface.finish().unwrap();
+    surface.finish()
 }
 
 fn next_gradient(gradient: Gradient) -> Gradient {
@@ -47,17 +47,17 @@ fn next_gradient(gradient: Gradient) -> Gradient {
     }
 }
 
-pub fn main() {
-    let sdl_context = sdl2::init().unwrap();
-    let video_subsystem = sdl_context.video().unwrap();
-    
+pub fn main() -> Result<(), String> {
+    let sdl_context = sdl2::init()?;
+    let video_subsystem = sdl_context.video()?;
+
     let mut window = video_subsystem.window("rust-sdl2 demo: No Renderer", WINDOW_WIDTH, WINDOW_HEIGHT)
         .position_centered()
         .build()
-        .unwrap();
-    let mut event_pump = sdl_context.event_pump().unwrap();
+        .map_err(|e| e.to_string())?;
+    let mut event_pump = sdl_context.event_pump()?;
     let mut current_gradient = Gradient::Red;
-    set_window_gradient(&mut window, &event_pump, current_gradient);
+    set_window_gradient(&mut window, &event_pump, current_gradient)?;
     'running: loop {
         let mut keypress : bool = false;
         for event in event_pump.poll_iter() {
@@ -73,8 +73,10 @@ pub fn main() {
         }
         if keypress {
             current_gradient = next_gradient(current_gradient);
-            set_window_gradient(&mut window, &event_pump, current_gradient);
+            set_window_gradient(&mut window, &event_pump, current_gradient)?;
         }
         ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
     }
+
+    Ok(())
 }

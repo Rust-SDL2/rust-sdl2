@@ -1,44 +1,33 @@
 extern crate sdl2;
 
-fn main() {
-    let sdl_context = sdl2::init().unwrap();
-    let joystick_subsystem = sdl_context.joystick().unwrap();
+fn main() -> Result<(), String> {
+    let sdl_context = sdl2::init()?;
+    let joystick_subsystem = sdl_context.joystick()?;
 
-    let available =
-        match joystick_subsystem.num_joysticks() {
-            Ok(n)  => n,
-            Err(e) => panic!("can't enumerate joysticks: {}", e),
-        };
+    let available = joystick_subsystem.num_joysticks()
+        .map_err(|e| format!("can't enumerate joysticks: {}", e))?;
 
     println!("{} joysticks available", available);
 
-    let mut joystick = None;
-
-    // Iterate over all available joysticks and stop once we manage to
-    // open one.
-    for id in 0..available {
-        match joystick_subsystem.open(id) {
-            Ok(c) => {
-                println!("Success: opened \"{}\"", c.name());
-                joystick = Some(c);
-                break;
-            },
-            Err(e) => println!("failed: {:?}", e),
-        }
-    }
-
-    // Print the joystick's power level, if a joystick was found.
-    let mut joystick = match joystick {
-        Some(j) => {
-            println!("\"{}\" power level: {:?}", j.name(), j.power_level().unwrap());
-            j
+    // Iterate over all available joysticks and stop once we manage to open one.
+    let mut joystick = (0..available).find_map(|id| match joystick_subsystem.open(id) {
+        Ok(c) => {
+            println!("Success: opened \"{}\"", c.name());
+            Some(c)
         },
-        None => panic!("Couldn't open any joystick"),
-    };
+        Err(e) => {
+            println!("failed: {:?}", e);
+            None
+        },
+    }).expect("Couldn't open any joystick");
+
+    // Print the joystick's power level
+    println!("\"{}\" power level: {:?}", joystick.name(), joystick.power_level()
+        .map_err(|e| e.to_string())?);
 
     let (mut lo_freq, mut hi_freq) = (0, 0);
 
-    for event in sdl_context.event_pump().unwrap().wait_iter() {
+    for event in sdl_context.event_pump()?.wait_iter() {
         use sdl2::event::Event;
 
         match event {
@@ -85,4 +74,6 @@ fn main() {
             _ => (),
         }
     }
+
+    Ok(())
 }
