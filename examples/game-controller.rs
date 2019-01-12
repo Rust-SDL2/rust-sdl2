@@ -1,52 +1,42 @@
 extern crate sdl2;
 
-fn main() {
-    let sdl_context = sdl2::init().unwrap();
-    let game_controller_subsystem = sdl_context.game_controller().unwrap();
+fn main() -> Result<(), String> {
+    let sdl_context = sdl2::init()?;
+    let game_controller_subsystem = sdl_context.game_controller()?;
 
-    let available =
-        match game_controller_subsystem.num_joysticks() {
-            Ok(n)  => n,
-            Err(e) => panic!("can't enumerate joysticks: {}", e),
-        };
+    let available = game_controller_subsystem.num_joysticks()
+        .map_err(|e| format!("can't enumerate joysticks: {}", e))?;
 
     println!("{} joysticks available", available);
 
-    let mut controller = None;
-
-    // Iterate over all available joysticks and look for game
-    // controllers.
-    for id in 0..available {
-        if game_controller_subsystem.is_game_controller(id) {
-            println!("Attempting to open controller {}", id);
-
-            match game_controller_subsystem.open(id) {
-                Ok(c) => {
-                    // We managed to find and open a game controller,
-                    // exit the loop
-                    println!("Success: opened \"{}\"", c.name());
-                    controller = Some(c);
-                    break;
-                },
-                Err(e) => println!("failed: {:?}", e),
-            }
-
-        } else {
-             println!("{} is not a game controller", id);
+    // Iterate over all available joysticks and look for game controllers.
+    let mut controller = (0..available).find_map(|id| {
+        if !game_controller_subsystem.is_game_controller(id) {
+            println!("{} is not a game controller", id);
+            return None;
         }
-    }
 
-    let mut controller =
-        match controller {
-            Some(c) => c,
-            None     => panic!("Couldn't open any controller"),
-        };
+        println!("Attempting to open controller {}", id);
+
+        match game_controller_subsystem.open(id) {
+            Ok(c) => {
+                // We managed to find and open a game controller,
+                // exit the loop
+                println!("Success: opened \"{}\"", c.name());
+                Some(c)
+            },
+            Err(e) => {
+                println!("failed: {:?}", e);
+                None
+            }
+        }
+    }).expect("Couldn't open any controller");
 
     println!("Controller mapping: {}", controller.mapping());
 
     let (mut lo_freq, mut hi_freq) = (0, 0);
 
-    for event in sdl_context.event_pump().unwrap().wait_iter() {
+    for event in sdl_context.event_pump()?.wait_iter() {
         use sdl2::event::Event;
         use sdl2::controller::Axis;
 
@@ -84,4 +74,6 @@ fn main() {
             _ => (),
         }
     }
+
+    Ok(())
 }

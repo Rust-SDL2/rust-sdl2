@@ -31,14 +31,15 @@ impl AudioCallback for Recording {
             self.pos += 1;
             if self.pos >= self.record_buffer.len() {
                 self.done = true;
-                self.done_sender.send(self.record_buffer.clone()).unwrap();
+                self.done_sender.send(self.record_buffer.clone())
+                    .expect("could not send record buffer");
                 break;
             }
         }
     }
 }
 
-fn record(audio_subsystem: &AudioSubsystem, desired_spec: &AudioSpecDesired) -> Vec<i16> {
+fn record(audio_subsystem: &AudioSubsystem, desired_spec: &AudioSpecDesired) -> Result<Vec<i16>, String> {
     println!("Capturing {:} seconds... Please rock!", RECORDING_LENGTH_SECONDS);
 
     let (done_sender, done_receiver) = mpsc::channel();
@@ -51,13 +52,13 @@ fn record(audio_subsystem: &AudioSubsystem, desired_spec: &AudioSpecDesired) -> 
             done_sender,
             done: false
         }
-    }).unwrap();
+    })?;
 
     println!("AudioDriver: {:?}", capture_device.subsystem().current_audio_driver());
     capture_device.resume();
 
     // Wait until the recording is done.
-    let recorded_vec = done_receiver.recv().unwrap();
+    let recorded_vec = done_receiver.recv().map_err(|e| e.to_string())?;
 
     capture_device.pause();
 
@@ -65,7 +66,7 @@ fn record(audio_subsystem: &AudioSubsystem, desired_spec: &AudioSpecDesired) -> 
     // Depending on your system it might be even important that the capture_device is dropped
     // before the playback starts.
 
-    recorded_vec
+    Ok(recorded_vec)
 }
 
 
@@ -77,7 +78,8 @@ fn calculate_average_volume(recorded_vec: &[i16]) -> f32 {
 
 /// Returns a percent value
 fn calculate_max_volume(recorded_vec: &[i16]) -> f32 {
-    let max: i64 = recorded_vec.iter().map(|&x| (x as i64).abs()).max().unwrap();
+    let max: i64 = recorded_vec.iter().map(|&x| (x as i64).abs()).max()
+        .expect("expected at least one value in recorded_vec");
     (max as f32) / (i16::MAX as f32) * 100.0
 }
 
@@ -98,7 +100,7 @@ impl AudioCallback for SoundPlayback {
     }
 }
 
-fn replay_recorded_vec(audio_subsystem: &AudioSubsystem, desired_spec: &AudioSpecDesired, recorded_vec: Vec<i16>) {
+fn replay_recorded_vec(audio_subsystem: &AudioSubsystem, desired_spec: &AudioSpecDesired, recorded_vec: Vec<i16>) -> Result<(), String> {
     println!("Playing...");
 
     let playback_device = audio_subsystem.open_playback(None, desired_spec, |spec| {
@@ -107,19 +109,21 @@ fn replay_recorded_vec(audio_subsystem: &AudioSubsystem, desired_spec: &AudioSpe
             data: recorded_vec,
             pos: 0,
         }
-    }).unwrap();
+    })?;
 
     // Start playback
     playback_device.resume();
 
     std::thread::sleep(Duration::from_secs(RECORDING_LENGTH_SECONDS as u64));
     // Device is automatically closed when dropped
+
+    Ok(())
 }
 
 
-fn main() {
-    let sdl_context = sdl2::init().unwrap();
-    let audio_subsystem = sdl_context.audio().unwrap();
+fn main() -> Result<(), String> {
+    let sdl_context = sdl2::init()?;
+    let audio_subsystem = sdl_context.audio()?;
 
     let desired_spec = AudioSpecDesired {
         freq: None,
@@ -127,10 +131,12 @@ fn main() {
         samples: None
     };
 
-    let recorded_vec = record(&audio_subsystem, &desired_spec);
+    let recorded_vec = record(&audio_subsystem, &desired_spec)?;
 
     println!("Average Volume of your Recording = {:?}%", calculate_average_volume(&recorded_vec));
     println!("Max Volume of your Recording = {:?}%", calculate_max_volume(&recorded_vec));
 
-    replay_recorded_vec(&audio_subsystem, &desired_spec, recorded_vec);
+    replay_recorded_vec(&audio_subsystem, &desired_spec, recorded_vec)?;
+
+    Ok(())
 }

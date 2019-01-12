@@ -21,9 +21,9 @@ impl AudioCallback for SquareWave {
     }
 }
 
-fn main() {
-    let sdl_context = sdl2::init().unwrap();
-    let audio_subsystem = sdl_context.audio().unwrap();
+fn main() -> Result<(), String> {
+    let sdl_context = sdl2::init()?;
+    let audio_subsystem = sdl_context.audio()?;
 
     let desired_spec = AudioSpecDesired {
         freq: Some(44_100),
@@ -41,7 +41,7 @@ fn main() {
             phase: 0.0,
             volume: 0.25
         }
-    }).unwrap();
+    })?;
 
     // Start playback
     device.resume();
@@ -50,4 +50,6 @@ fn main() {
     std::thread::sleep(Duration::from_millis(2_000));
 
     // Device is automatically closed when dropped
+    
+    Ok(())
 }

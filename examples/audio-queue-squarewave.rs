@@ -13,20 +13,20 @@ fn gen_wave(bytes_to_write: i32) -> Vec<i16> {
 
     for x in 0..sample_count {
         result.push(
-                if (x / period) % 2 == 0 {
+            if (x / period) % 2 == 0 {
                 tone_volume
-                }
-                else {
+            }
+            else {
                 -tone_volume
-                }
+            }
         );
     }
     result
 }
 
-fn main() {
-    let sdl_context = sdl2::init().unwrap();
-    let audio_subsystem = sdl_context.audio().unwrap();
+fn main() -> Result<(), String> {
+    let sdl_context = sdl2::init()?;
+    let audio_subsystem = sdl_context.audio()?;
 
     let desired_spec = AudioSpecDesired {
         freq: Some(48_000),
@@ -34,9 +34,9 @@ fn main() {
         // mono  -
         samples: Some(4)
         // default sample size
-        };
+    };
 
-    let device = audio_subsystem.open_queue::<i16, _>(None, &desired_spec).unwrap();
+    let device = audio_subsystem.open_queue::<i16, _>(None, &desired_spec)?;
 
     let target_bytes = 48_000 * 4;
     let wave = gen_wave(target_bytes);
@@ -48,4 +48,6 @@ fn main() {
     std::thread::sleep(Duration::from_millis(2_000));
 
     // Device is automatically closed when dropped
+
+    Ok(())
 }

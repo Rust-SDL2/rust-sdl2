@@ -5,21 +5,21 @@ use sdl2::rect::Rect;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 
-pub fn main() {
-    let sdl_context = sdl2::init().unwrap();
-    let video_subsystem = sdl_context.video().unwrap();
+pub fn main() -> Result<(), String> {
+    let sdl_context = sdl2::init()?;
+    let video_subsystem = sdl_context.video()?;
 
     let window = video_subsystem.window("rust-sdl2 demo: Video", 800, 600)
         .position_centered()
         .opengl()
         .build()
-        .unwrap();
+        .map_err(|e| e.to_string())?;
 
-    let mut canvas = window.into_canvas().build().unwrap();
+    let mut canvas = window.into_canvas().build().map_err(|e| e.to_string())?;
     let texture_creator = canvas.texture_creator();
 
-    let mut texture = texture_creator.create_texture_streaming(
-        PixelFormatEnum::IYUV, 256, 256).unwrap();
+    let mut texture = texture_creator.create_texture_streaming(PixelFormatEnum::IYUV, 256, 256)
+        .map_err(|e| e.to_string())?;
     // Create a U-V gradient
     texture.with_lock(None, |buffer: &mut [u8], pitch: usize| {
         // `pitch` is the width of the Y component
@@ -47,13 +47,13 @@ pub fn main() {
                 buffer[v_offset] = (y*2) as u8;
             }
         }
-    }).unwrap();
+    })?;
 
     canvas.clear();
-    canvas.copy(&texture, None, Some(Rect::new(100, 100, 256, 256))).unwrap();
+    canvas.copy(&texture, None, Some(Rect::new(100, 100, 256, 256)))?;
     canvas.present();
 
-    let mut event_pump = sdl_context.event_pump().unwrap();
+    let mut event_pump = sdl_context.event_pump()?;
 
     'running: loop {
         for event in event_pump.poll_iter() {
@@ -66,4 +66,6 @@ pub fn main() {
         }
         // The rest of the game loop goes here...
     }
+
+    Ok(())
 }

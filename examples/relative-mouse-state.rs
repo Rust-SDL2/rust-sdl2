@@ -5,16 +5,16 @@ use sdl2::mouse::MouseButton;
 use sdl2::keyboard::Keycode;
 use std::time::Duration;
 
-pub fn main() {
-    let sdl_context = sdl2::init().unwrap();
-    let video_subsystem = sdl_context.video().unwrap();
+pub fn main() -> Result<(), String> {
+    let sdl_context = sdl2::init()?;
+    let video_subsystem = sdl_context.video()?;
 
     let _window = video_subsystem.window("Mouse", 800, 600)
         .position_centered()
         .build()
-        .unwrap();
+        .map_err(|e| e.to_string())?;
 
-    let mut events = sdl_context.event_pump().unwrap();
+    let mut events = sdl_context.event_pump()?;
     let mut state;
 
     'running: loop {
@@ -35,4 +35,6 @@ pub fn main() {
 
         std::thread::sleep(Duration::from_millis(100));
     }
+
+    Ok(())
 }

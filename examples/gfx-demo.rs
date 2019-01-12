@@ -9,16 +9,16 @@ use sdl2::gfx::primitives::DrawRenderer;
 const SCREEN_WIDTH: u32 = 800;
 const SCREEN_HEIGHT: u32 = 600;
 
-fn main() {
-    let sdl_context = sdl2::init().unwrap();
-    let video_subsys = sdl_context.video().unwrap();
+fn main() -> Result<(), String> {
+    let sdl_context = sdl2::init()?;
+    let video_subsys = sdl_context.video()?;
     let window = video_subsys.window("rust-sdl2_gfx: draw line & FPSManager", SCREEN_WIDTH, SCREEN_HEIGHT)
         .position_centered()
         .opengl()
         .build()
-        .unwrap();
+        .map_err(|e| e.to_string())?;
 
-    let mut canvas = window.into_canvas().build().unwrap();
+    let mut canvas = window.into_canvas().build().map_err(|e| e.to_string())?;
 
     canvas.set_draw_color(pixels::Color::RGB(0, 0, 0));
     canvas.clear();
@@ -27,7 +27,7 @@ fn main() {
     let mut lastx = 0;
     let mut lasty = 0;
 
-    let mut events = sdl_context.event_pump().unwrap();
+    let mut events = sdl_context.event_pump()?;
 
     'main: loop {
         for event in events.poll_iter() {
@@ -42,10 +42,9 @@ fn main() {
                     } else if keycode == Keycode::Space {
                         println!("space down");
                         for i in 0..400 {
-                            canvas.pixel(i as i16, i as i16, 0xFF000FFu32).unwrap();
+                            canvas.pixel(i as i16, i as i16, 0xFF000FFu32)?;
                         }
                         canvas.present();
-
                     }
                 }
 
@@ -62,4 +61,6 @@ fn main() {
             }
         }
     }
+
+    Ok(())
 }

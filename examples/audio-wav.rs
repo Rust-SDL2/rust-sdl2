@@ -25,13 +25,13 @@ impl AudioCallback for Sound {
     }
 }
 
-fn main() {
+fn main() -> Result<(), String> {
     let wav_file : Cow<'static, Path> = match std::env::args().nth(1) {
         None => Cow::from(Path::new("./assets/sine.wav")),
         Some(s) => Cow::from(PathBuf::from(s))
     };
-    let sdl_context = sdl2::init().unwrap();
-    let audio_subsystem = sdl_context.audio().unwrap();
+    let sdl_context = sdl2::init()?;
+    let audio_subsystem = sdl_context.audio()?;
 
     let desired_spec = AudioSpecDesired {
         freq: Some(44_100),
@@ -56,7 +56,7 @@ fn main() {
             volume: 0.25,
             pos: 0,
         }
-    }).unwrap();
+    })?;
 
     // Start playback
     device.resume();
@@ -65,4 +65,6 @@ fn main() {
     std::thread::sleep(Duration::from_millis(1_000));
 
     // Device is automatically closed when dropped
+
+    Ok(())
 }

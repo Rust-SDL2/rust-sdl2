@@ -1,40 +1,31 @@
 extern crate sdl2;
 
-fn main() {
-    let sdl_context = sdl2::init().unwrap();
-    let joystick_subsystem = sdl_context.joystick().unwrap();
-    let haptic_subsystem = sdl_context.haptic().unwrap();
+fn main() -> Result<(), String> {
+    let sdl_context = sdl2::init()?;
+    let joystick_subsystem = sdl_context.joystick()?;
+    let haptic_subsystem = sdl_context.haptic()?;
 
-    let available =
-        match joystick_subsystem.num_joysticks() {
-            Ok(n)  => n,
-            Err(e) => panic!("can't enumerate joysticks: {}", e),
-        };
+    let available = joystick_subsystem.num_joysticks()
+        .map_err(|e| format!("can't enumerate joysticks: {}", e))?;
 
     println!("{} joysticks available", available);
 
-    let mut joystick_index = None;
+    // Iterate over all available joysticks and stop once we manage to open one.
+    let joystick_index = (0..available).find_map(|id| match joystick_subsystem.open(id) {
+        Ok(c) => {
+            println!("Success: opened \"{}\"", c.name());
+            Some(id)
+        },
+        Err(e) => {
+            println!("failed: {:?}", e);
+            None
+        },
+    }).expect("Couldn't open any joystick");
 
-    // Iterate over all available joysticks and stop once we manage to
-    // open one.
-    for id in 0..available {
-        match joystick_subsystem.open(id) {
-            Ok(c) => {
-                println!("Success: opened \"{}\"", c.name());
-                joystick_index = Some(id);
-                break;
-            },
-            Err(e) => println!("failed: {:?}", e),
-        }
-    }
+    let mut haptic = haptic_subsystem.open_from_joystick_id(joystick_index)
+        .map_err(|e| e.to_string())?;
 
-    if joystick_index.is_none() {
-        panic!("Couldn't open any joystick");
-    };
-
-    let mut haptic = haptic_subsystem.open_from_joystick_id(joystick_index.unwrap()).unwrap();
-
-    for event in sdl_context.event_pump().unwrap().wait_iter() {
+    for event in sdl_context.event_pump()?.wait_iter() {
         use sdl2::event::Event;
 
         match event {
@@ -59,4 +50,6 @@ fn main() {
             _ => (),
         }
     }
+
+    Ok(())
 }

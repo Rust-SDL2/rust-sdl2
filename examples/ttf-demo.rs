@@ -43,28 +43,29 @@ fn get_centered_rect(rect_width: u32, rect_height: u32, cons_width: u32, cons_he
     rect!(cx, cy, w, h)
 }
 
-fn run(font_path: &Path) {
-    let sdl_context = sdl2::init().unwrap();
-    let video_subsys = sdl_context.video().unwrap();
-    let ttf_context = sdl2::ttf::init().unwrap();
+fn run(font_path: &Path) -> Result<(), String> {
+    let sdl_context = sdl2::init()?;
+    let video_subsys = sdl_context.video()?;
+    let ttf_context = sdl2::ttf::init().map_err(|e| e.to_string())?;
 
     let window = video_subsys.window("SDL2_TTF Example", SCREEN_WIDTH, SCREEN_HEIGHT)
         .position_centered()
         .opengl()
         .build()
-        .unwrap();
+        .map_err(|e| e.to_string())?;
 
-    let mut canvas = window.into_canvas().build().unwrap();
+    let mut canvas = window.into_canvas().build().map_err(|e| e.to_string())?;
     let texture_creator = canvas.texture_creator();
 
     // Load a font
-    let mut font = ttf_context.load_font(font_path, 128).unwrap();
+    let mut font = ttf_context.load_font(font_path, 128)?;
     font.set_style(sdl2::ttf::FontStyle::BOLD);
 
     // render a surface, and convert it to a texture bound to the canvas
     let surface = font.render("Hello Rust!")
-        .blended(Color::RGBA(255, 0, 0, 255)).unwrap();
-    let texture = texture_creator.create_texture_from_surface(&surface).unwrap();
+        .blended(Color::RGBA(255, 0, 0, 255)).map_err(|e| e.to_string())?;
+    let texture = texture_creator.create_texture_from_surface(&surface)
+        .map_err(|e| e.to_string())?;
 
     canvas.set_draw_color(Color::RGBA(195, 217, 255, 255));
     canvas.clear();
@@ -75,11 +76,11 @@ fn run(font_path: &Path) {
     let padding = 64;
     let target = get_centered_rect(width, height, SCREEN_WIDTH - padding, SCREEN_HEIGHT - padding);
 
-    canvas.copy(&texture, None, Some(target)).unwrap();
+    canvas.copy(&texture, None, Some(target))?;
     canvas.present();
 
     'mainloop: loop {
-        for event in sdl_context.event_pump().unwrap().poll_iter() {
+        for event in sdl_context.event_pump()?.poll_iter() {
             match event {
                 Event::KeyDown {keycode: Some(Keycode::Escape), ..} |
                 Event::Quit {..} => break 'mainloop,
@@ -87,9 +88,11 @@ fn run(font_path: &Path) {
             }
         }
     }
+
+    Ok(())
 }
 
-fn main() {
+fn main() -> Result<(), String> {
     let args: Vec<_> = env::args().collect();
 
     println!("linked sdl2_ttf: {}", sdl2::ttf::get_linked_version());
@@ -98,6 +101,8 @@ fn main() {
         println!("Usage: ./demo font.[ttf|ttc|fon]")
     } else {
         let path: &Path = Path::new(&args[1]);
-        run(path);
+        run(path)?;
     }
+
+    Ok(())
 }
