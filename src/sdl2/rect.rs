@@ -2,6 +2,7 @@
 #![allow(const_err)]
 
 use sys;
+use std;
 use std::mem;
 use std::ptr;
 use std::ops::{Deref, DerefMut, Add, BitAnd, BitOr, Div, Mul, Neg, Sub};
