@@ -2,6 +2,7 @@ language: rust
 sudo: required
 rust:
   - beta
+  - beta-gnu
   - stable
   - stable-gnu
 os:
@@ -22,8 +23,12 @@ matrix:
   exclude:
     - os: linux
       rust: stable-gnu
+    - os: linux
+      rust: beta-gnu
     - os: osx
       rust: stable-gnu
+    - os: osx
+      rust: beta-gnu
 
 install:
   - if [[ $CI_BUILD_FEATURES != *"bundled"* ]]; then bash scripts/travis-install-sdl2.sh; fi
