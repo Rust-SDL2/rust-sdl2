@@ -6,7 +6,7 @@ function build() {
     if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
         ./configure --build=x86_64-mingw32
         mingw32-make V=1
-        sudo mingw32-make install
+        mingw32-make install
     else
         ./configure
         make
