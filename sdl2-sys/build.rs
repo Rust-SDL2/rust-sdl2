@@ -242,6 +242,34 @@ fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
 
     if target_os == "windows-gnu" {
         cfg.define("VIDEO_OPENGLES", "OFF");
+
+        // cmake will complain if sh.exe is in our PATH but make is not
+        use std::process::Command;
+        use std::io::ErrorKind;
+        // detect msys2 the same way the cmake crate does
+        let has_msys2 = Command::new("make").arg("--version").output().err()
+            .map(|e| e.kind() != ErrorKind::NotFound).unwrap_or(true);
+        // if we don't have msys2, remove sh.exe from PATH
+        if !has_msys2 {
+            if let Some(paths) = env::var_os("PATH") {
+                // keep only folders that do not contain sh.exe
+                let good_paths = env::split_paths(&paths)
+                    .filter(
+                        // path must not contain sh.exe
+                        |path| fs::read_dir(path).map(
+                            // everything in iter must not be sh.exe
+                            |mut iter| iter.all(
+                                // this thing must not be sh.exe
+                                |entry| entry.map(
+                                    |entry| entry.file_name() != "sh.exe"
+                                ).unwrap_or(true)
+                            )
+                        ).unwrap_or(true)
+                    );
+                let new_path = env::join_paths(good_paths).expect("Failed to filter out sh.exe from PATH");
+                cfg.env("PATH", new_path);
+            }
+        }
     }
 
     if cfg!(feature = "static-link") {
