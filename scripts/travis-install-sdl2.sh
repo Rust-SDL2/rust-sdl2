@@ -32,7 +32,7 @@ ${EXTRACT} SDL2_ttf-*${EXT} && rm SDL2_ttf-*${EXT}
 ${EXTRACT} SDL2_image-*${EXT} && rm SDL2_image-*${EXT}
 ${EXTRACT} SDL2_mixer-*${EXT} && rm SDL2_mixer-*${EXT}
 ${EXTRACT} SDL2_gfx-*${EXT} && rm SDL2_gfx-*${EXT}
-pushd SDL2_ttf-* && build && popd
+# pushd SDL2_ttf-* && build && popd
 pushd SDL2_image-* && build && popd
 pushd SDL2_mixer-* && build && popd
 pushd SDL2_gfx-* && ./autogen.sh && build && popd
