@@ -4,9 +4,8 @@ rust:
   - beta
   - stable
 os:
-  - linux
-  - osx
   - windows
+filter_secrets: false
 env:
   matrix:
     - CI_BUILD_FEATURES="bundled"
