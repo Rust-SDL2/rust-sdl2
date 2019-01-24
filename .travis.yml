@@ -4,6 +4,8 @@ rust:
   - beta
   - stable
 os:
+  - linux
+  - osx
   - windows
 filter_secrets: false
 env:
