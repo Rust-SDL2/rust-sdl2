@@ -4,7 +4,9 @@ set -xueo pipefail
 
 wget https://www.libsdl.org/release/SDL2-2.0.9.tar.gz -O sdl2.tar.gz
 tar xzf sdl2.tar.gz
-pushd SDL2-* && ./configure && make && sudo make install && popd
+if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then CONFIG_BUILD="--build=x86_64-mingw32"; else CONFIG_BUILD=; fi
+pushd SDL2-* && ./configure ${CONFIG_BUILD} && make && sudo make install && popd
+exit
 if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
     EXT=.zip
     EXTRACT=unzip
