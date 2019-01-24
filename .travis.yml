@@ -22,7 +22,7 @@ install:
 before_script:
   - shopt -s expand_aliases
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then alias pip=pip2; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then alias pip=python2 -m pip; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then alias pip="python2 -m pip"; fi
   - |
     pip install 'travis-cargo<0.2' --user &&
     export PATH=$HOME/.local/bin:$PATH &&
