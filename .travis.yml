@@ -3,6 +3,7 @@ sudo: required
 rust:
   - beta
   - stable
+  - stable-gnu
 os:
   - linux
   - osx
@@ -18,8 +19,10 @@ env:
     - LD_LIBRARY_PATH: "/usr/local/lib"
     - secure: MJhmVnQ2IM7+sVmc3vU4ndKOcQgLLeHUPW3qaQBQHKQmvoswCwQK60N17uSgWn1Ln8teqvSRHq4KclIjdMHI+VuQXJHQKHDgjcYbHxwmc3AM1Whnp0XB44ksKUmD109BGWSfZQxzF+6dA+YNOQ+mti+bpydMu8n2FMVjA/SXwQ8=
 matrix:
-  include:
-    - os: windows
+  exclude:
+    - os: linux
+      rust: stable-gnu
+    - os: osx
       rust: stable-gnu
 
 install:
