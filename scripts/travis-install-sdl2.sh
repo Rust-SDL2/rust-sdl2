@@ -10,7 +10,7 @@ if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
     EXTRACT=unzip
 else
     EXT=.tar.gz
-    EXTRACT=tar xzf
+    EXTRACT="tar xzf"
 fi
 wget -q https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.14${EXT}
 wget -q https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.1${EXT}
