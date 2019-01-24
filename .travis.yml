@@ -22,7 +22,7 @@ install:
 before_script:
   - shopt -s expand_aliases
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then alias pip=pip2; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install python2; alias pip="python2 -m pip"; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install python2; curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py; python2 get-pip.py; alias pip="python2 -m pip"; fi
   - |
     pip install 'travis-cargo<0.2' --user &&
     export PATH=$HOME/.local/bin:$PATH &&
