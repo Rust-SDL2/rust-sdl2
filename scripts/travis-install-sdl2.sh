@@ -27,7 +27,7 @@ function build() {
             export SHELL=$"/C/Program Files/Git/usr/bin/sh"
             ./configure --build=x86_64-mingw32 --prefix=${PREFIX} || return 1
             sed -i "s!/bin/sh!\"jifojsdf\"!" Makefile
-            head -n 20 Makefile
+            head -n 50 Makefile
             mingw32-make SHELL="adsdf" || return 1
             mingw32-make install SHELL="gdfhhgjh" || return 1
         else
