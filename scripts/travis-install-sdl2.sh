@@ -2,15 +2,14 @@
 
 set -xueo pipefail
 
-rustup show
-rustup which cargo
-RUST_TOOLCHAIN=$(rustup show | grep -A 3 active | tail -1 | sed "s/ (default)//")
-RUST_HOST=$(rustup show | grep "Default host" | sed "s/Default host: //")
+RUST_HOST=$(rustup show | grep -F "Default host" | sed "s/Default host: //")
+RUST_TOOLCHAIN=$(rustup show | grep -F "(default)" | sed "s/ (default)//")
 
 if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
     EXT=.zip
     EXTRACT=unzip
     PATH=$PATH:/C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin
+    PREFIX=/C/Users/travis/.rustup/toolchains/${RUST_TOOLCHAIN}/lib/rustlib/${RUST_HOST}/
 else
     EXT=.tar.gz
     EXTRACT="tar xzf"
@@ -19,12 +18,13 @@ fi
 function build() {
     if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
         if [[ "$TRAVIS_RUST_VERSION" == *"-gnu" ]]; then
-            ./configure --build=x86_64-mingw32 --prefix=/c/Users/travis/.rustup/toolchains/${RUST_TOOLCHAIN}/lib/rustlib/${RUST_HOST}/
+            ./configure --build=x86_64-mingw32 --prefix=${PREFIX}
             mingw32-make V=1
             mingw32-make install
         else
             cd VisualC
             msbuild /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v141 /p:WindowsTargetPlatformVersion=10.0.17763.0
+            cp x64/Release/*.lib x64/Release/*.dll ${PREFIX}/lib/
         fi
     else
         ./configure
