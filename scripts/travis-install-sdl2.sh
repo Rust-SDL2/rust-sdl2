@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 
 set -xueo pipefail
+RUST_TOOLCHAIN=$(rustup show | grep -A 3 active | tail -1 | sed "s/ (default)//")
+RUST_HOST=$(rustup show | grep "Default host" | sed "s/Default host: //")
+
+rustup which cargo
 
 function build() {
     if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
         if [[ "$TRAVIS_RUST_VERSION" == *"-gnu" ]]; then
-            ./configure --build=x86_64-mingw32
+            ./configure --build=x86_64-mingw32 --prefix=/c/Users/travis/.rustup/toolchains/${RUST_TOOLCHAIN}/lib/rustlib/${RUST_HOST}/
             mingw32-make V=1
             mingw32-make install
         else
