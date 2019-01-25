@@ -5,7 +5,7 @@ set -xueo pipefail
 RUST_HOST=$(rustup show | grep -F "Default host" | sed "s/Default host: //")
 RUST_TOOLCHAIN=$(rustup show | grep -F "(default)" | sed "s/ (default)//")
 
-MSBUILD="'/C/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin/MSBuild.exe'"
+MSBUILD='"/C/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin/MSBuild.exe"'
 
 if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
     ls -l ${MSBUILD}
