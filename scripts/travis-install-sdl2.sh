@@ -17,22 +17,26 @@ if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
     EXT=.zip
     EXTRACT=unzip
     PREFIX=/C/Users/travis/.rustup/toolchains/${RUST_TOOLCHAIN}/lib/rustlib/${RUST_HOST}/
-    PATH=$PATH:/C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin:${PREFIX}/bin
+    export PATH=$PATH:/C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin:${PREFIX}/bin
 else
     EXT=.tar.gz
     EXTRACT="tar xzf"
 fi
 
 function build() {
+    pushd $1
+    if [[ -f "autogen.sh" ]]; then
+        ./autogen.sh
+    fi
     if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
         if [[ "$TRAVIS_RUST_VERSION" == *"-gnu" ]]; then
             LD_LIBRARY_PATH=${PREFIX}/lib
             ./configure --build=x86_64-mingw32 --prefix=${PREFIX}
-            mingw32-make V=1
+            mingw32-make || mingw32-make V=1
             mingw32-make install
         else
             cd VisualC
-            msbuild /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v141 /p:WindowsTargetPlatformVersion=10.0.17763.0
+            MSBuild /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v141 /p:WindowsTargetPlatformVersion=10.0.17763.0
             cp x64/Release/*.lib x64/Release/*.dll ${PREFIX}/lib/
         fi
     else
@@ -40,11 +44,12 @@ function build() {
         make
         sudo make install
     fi
+    popd
 }
 
 wget https://www.libsdl.org/release/SDL2-2.0.9.tar.gz -O sdl2.tar.gz
 tar xzf sdl2.tar.gz
-(pushd SDL2-* && build && popd) || exit
+build SDL2-* || exit
 wget -q https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.14${EXT}
 wget -q https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.1${EXT}
 wget -q https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.2${EXT}
@@ -54,6 +59,6 @@ ${EXTRACT} SDL2_image-*${EXT} && rm SDL2_image-*${EXT}
 ${EXTRACT} SDL2_mixer-*${EXT} && rm SDL2_mixer-*${EXT}
 ${EXTRACT} SDL2_gfx-*${EXT} && rm SDL2_gfx-*${EXT}
 # pushd SDL2_ttf-* && build && popd
-pushd SDL2_image-* && build && popd
-pushd SDL2_mixer-* && build && popd
-pushd SDL2_gfx-* && ./autogen.sh && build && popd
+build SDL2_image-*
+build SDL2_mixer-*
+build SDL2_gfx-*
