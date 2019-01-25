@@ -13,6 +13,7 @@ if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
     EXT=.zip
     EXTRACT=unzip
     PREFIX=/C/Users/travis/.rustup/toolchains/${RUST_TOOLCHAIN}/lib/rustlib/${RUST_HOST}/
+    WINSDK=$(ls "/C/Program Files (x86)/Microsoft SDKs/Windows Kits/10/ExtensionSDKs/Microsoft.UniversalCRT.Debug")
     export PATH=$PATH:/C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin:${PREFIX}/bin
 else
     EXT=.tar.gz
@@ -29,7 +30,7 @@ function build() {
             mingw32-make install SHELL=/C/Program\ Files/Git/usr/bin/sh || return 1
         else
             cd VisualC
-            "${MSBUILD}" -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v141 -p:WindowsTargetPlatformVersion=10.0.17763.0
+            "${MSBUILD}" $(ls *.sln | grep -v "SDL_image_VS2008.sln") -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v141 -p:WindowsTargetPlatformVersion=${WINSDK} || return 1
             cp x64/Release/*.lib x64/Release/*.dll ${PREFIX}/lib/
         fi
     else
