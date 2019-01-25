@@ -6,14 +6,7 @@ RUST_HOST=$(rustup show | grep -F "Default host" | sed "s/Default host: //")
 RUST_TOOLCHAIN=$(rustup show | grep -F "(default)" | sed "s/ (default)//")
 
 if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
-    ls /C/
-    ls /C/Program\ Files\ \(x86\)/
-    ls /C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/
-    ls /C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/
-    ls /C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/
-    ls /C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild
-    ls /C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0
-    ls /C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin
+    ls -l /C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin/MSBuild.exe
     EXT=.zip
     EXTRACT=unzip
     PREFIX=/C/Users/travis/.rustup/toolchains/${RUST_TOOLCHAIN}/lib/rustlib/${RUST_HOST}/
@@ -36,7 +29,8 @@ function build() {
             mingw32-make install
         else
             cd VisualC
-            MSBuild /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v141 /p:WindowsTargetPlatformVersion=10.0.17763.0
+            /C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin/MSBuild \
+                /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v141 /p:WindowsTargetPlatformVersion=10.0.17763.0
             cp x64/Release/*.lib x64/Release/*.dll ${PREFIX}/lib/
         fi
     else
