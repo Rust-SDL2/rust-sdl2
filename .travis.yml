@@ -1,13 +1,13 @@
 language: rust
 sudo: required
 rust:
-  - beta
-  - beta-gnu
+  # - beta
+  # - beta-gnu
   - stable
   - stable-gnu
 os:
-  - linux
-  - osx
+  # - linux
+  # - osx
   - windows
 filter_secrets: false
 env:
