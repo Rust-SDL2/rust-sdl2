@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 set -xueo pipefail
+
+rustup show
+rustup which cargo
 RUST_TOOLCHAIN=$(rustup show | grep -A 3 active | tail -1 | sed "s/ (default)//")
 RUST_HOST=$(rustup show | grep "Default host" | sed "s/Default host: //")
 
@@ -12,8 +15,6 @@ else
     EXT=.tar.gz
     EXTRACT="tar xzf"
 fi
-
-rustup which cargo
 
 function build() {
     if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
