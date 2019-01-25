@@ -9,7 +9,7 @@ MSBUILD='/C/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/MSBuild/
 
 if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
     ls -l "${MSBUILD}"
-    "${MSBUILD}" /help
+    "${MSBUILD}" -help
     EXT=.zip
     EXTRACT=unzip
     PREFIX=/C/Users/travis/.rustup/toolchains/${RUST_TOOLCHAIN}/lib/rustlib/${RUST_HOST}/
@@ -29,7 +29,7 @@ function build() {
             mingw32-make install SHELL=/C/Program\ Files/Git/usr/bin/sh || return 1
         else
             cd VisualC
-            "${MSBUILD}" /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v141 /p:WindowsTargetPlatformVersion=10.0.17763.0
+            "${MSBUILD}" -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v141 -p:WindowsTargetPlatformVersion=10.0.17763.0
             cp x64/Release/*.lib x64/Release/*.dll ${PREFIX}/lib/
         fi
     else
