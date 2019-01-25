@@ -14,7 +14,7 @@ function build() {
             mingw32-make install
         else
             cd VisualC
-            msbuild
+            msbuild /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v141 /p:WindowsTargetPlatformVersion=10.0.17763.0
         fi
     else
         ./configure
