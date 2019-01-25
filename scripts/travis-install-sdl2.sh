@@ -4,6 +4,15 @@ set -xueo pipefail
 RUST_TOOLCHAIN=$(rustup show | grep -A 3 active | tail -1 | sed "s/ (default)//")
 RUST_HOST=$(rustup show | grep "Default host" | sed "s/Default host: //")
 
+if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
+    EXT=.zip
+    EXTRACT=unzip
+    PATH=$PATH:/C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin
+else
+    EXT=.tar.gz
+    EXTRACT="tar xzf"
+fi
+
 rustup which cargo
 
 function build() {
@@ -26,13 +35,6 @@ function build() {
 wget https://www.libsdl.org/release/SDL2-2.0.9.tar.gz -O sdl2.tar.gz
 tar xzf sdl2.tar.gz
 (pushd SDL2-* && build && popd) || exit
-if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
-    EXT=.zip
-    EXTRACT=unzip
-else
-    EXT=.tar.gz
-    EXTRACT="tar xzf"
-fi
 wget -q https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.14${EXT}
 wget -q https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.1${EXT}
 wget -q https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.2${EXT}
