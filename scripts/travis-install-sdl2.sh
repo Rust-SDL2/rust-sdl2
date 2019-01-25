@@ -11,7 +11,7 @@ if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
     EXT=.zip
     EXTRACT=unzip
     PREFIX=/C/Users/travis/.rustup/toolchains/${RUST_TOOLCHAIN}/lib/rustlib/${RUST_HOST}/
-    WINSDK=$(ls -1r "/C/Program Files (x86)/Microsoft SDKs/Windows Kits/10/ExtensionSDKs/Microsoft.UniversalCRT.Debug" | head -1)
+    WINSDKS=$(ls -1r "/C/Program Files (x86)/Microsoft SDKs/Windows Kits/10/ExtensionSDKs/Microsoft.UniversalCRT.Debug")
     TOOLSET=$(grep -m 1 "PlatformToolset" "/C/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/Common7/IDE/VC/VCWizards/default.vcxproj" | sed "s/    <PlatformToolset>//" | sed "s!</PlatformToolset>!!")
     export PATH=$PATH:/C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin:${PREFIX}/bin
 else
@@ -27,16 +27,18 @@ function build() {
             export SHELL=$"/C/Program Files/Git/usr/bin/sh"
             ./configure --build=x86_64-mingw32 --prefix=${PREFIX} || return 1
             sed -i "s!/bin/sh!\"jifojsdf\"!" Makefile
-            head -n 50 Makefile
-            mingw32-make SHELL="adsdf" || return 1
+            head -n 60 Makefile
+            mingw32-make V=1 SHELL="adsdf" || return 1
             mingw32-make install SHELL="gdfhhgjh" || return 1
         else
             cd VisualC
             export INCLUDE=../../SDL-2.0.9/include
             export LIB=${PREFIX}/lib
             export UseEnv=true
-            "${MSBUILD}" $(ls *.sln | grep -v "SDL_image_VS2008.sln") -p:Configuration=Release -p:Platform=x64 \
-                -p:PlatformToolset=${TOOLSET} -p:WindowsTargetPlatformVersion=${WINSDK} || return 1
+            for WINSDK in ${WINSDKS}; do
+                "${MSBUILD}" $(ls *.sln | grep -v "SDL_image_VS2008.sln") -p:Configuration=Release -p:Platform=x64 \
+                    -p:PlatformToolset=${TOOLSET} -p:WindowsTargetPlatformVersion=${WINSDK} && break
+            done
             cp x64/Release/*.lib x64/Release/*.dll ${PREFIX}/lib/
         fi
     else
