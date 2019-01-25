@@ -25,9 +25,10 @@ function build() {
     if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
         if [[ "$TRAVIS_RUST_VERSION" == *"-gnu" ]]; then
             LD_LIBRARY_PATH=${PREFIX}/lib
+            export SHELL=$"/C/Program Files/Git/usr/bin/sh"
             ./configure --build=x86_64-mingw32 --prefix=${PREFIX} || return 1
-            mingw32-make SHELL=/C/Program\ Files/Git/usr/bin/sh || return 1
-            mingw32-make install SHELL=/C/Program\ Files/Git/usr/bin/sh || return 1
+            mingw32-make SHELL="/C/Program Files/Git/usr/bin/sh" || return 1
+            mingw32-make install SHELL="/C/Program Files/Git/usr/bin/sh" || return 1
         else
             cd VisualC
             "${MSBUILD}" $(ls *.sln | grep -v "SDL_image_VS2008.sln") -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v141 -p:WindowsTargetPlatformVersion=${WINSDK} || return 1
