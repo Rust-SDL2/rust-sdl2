@@ -16,8 +16,8 @@ if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
     ls /C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin
     EXT=.zip
     EXTRACT=unzip
-    PATH=$PATH:/C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin
     PREFIX=/C/Users/travis/.rustup/toolchains/${RUST_TOOLCHAIN}/lib/rustlib/${RUST_HOST}/
+    PATH=$PATH:/C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin:${PREFIX}/bin
 else
     EXT=.tar.gz
     EXTRACT="tar xzf"
@@ -26,6 +26,7 @@ fi
 function build() {
     if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
         if [[ "$TRAVIS_RUST_VERSION" == *"-gnu" ]]; then
+            LD_LIBRARY_PATH=${PREFIX}/lib
             ./configure --build=x86_64-mingw32 --prefix=${PREFIX}
             mingw32-make V=1
             mingw32-make install
