@@ -4,9 +4,14 @@ set -xueo pipefail
 
 function build() {
     if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
-        ./configure --build=x86_64-mingw32
-        mingw32-make V=1
-        mingw32-make install
+        if [[ "$TRAVIS_RUST_VERSION" == *"-gnu" ]]; then
+            ./configure --build=x86_64-mingw32
+            mingw32-make V=1
+            mingw32-make install
+        else
+            cd VisualC
+            msbuild
+        fi
     else
         ./configure
         make
