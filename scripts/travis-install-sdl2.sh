@@ -27,12 +27,15 @@ function build() {
             export SHELL=$"/C/Program Files/Git/usr/bin/sh"
             ./configure --build=x86_64-mingw32 --prefix=${PREFIX} || return 1
             sed -i "s!/bin/sh!\"jifojsdf\"!" Makefile
+            head -n 20 Makefile
             mingw32-make SHELL="adsdf" || return 1
             mingw32-make install SHELL="gdfhhgjh" || return 1
         else
             cd VisualC
+            export INCLUDE=../../SDL-2.0.9/include
+            export LIB=${PREFIX}/lib
             "${MSBUILD}" $(ls *.sln | grep -v "SDL_image_VS2008.sln") -p:Configuration=Release -p:Platform=x64 \
-                -p:PlatformToolset=${TOOLSET} -p:WindowsTargetPlatformVersion=${WINSDK} -p:IncludePath='../../SDL2-2.0.9/include/SDL2;$(IncludePath)' \
+                -p:PlatformToolset=${TOOLSET} -p:WindowsTargetPlatformVersion=${WINSDK} -p:IncludePath='../../SDL2-2.0.9/include;$(IncludePath)' \
                  || return 1
             cp x64/Release/*.lib x64/Release/*.dll ${PREFIX}/lib/
         fi
