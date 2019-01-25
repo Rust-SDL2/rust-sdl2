@@ -25,11 +25,11 @@ function build() {
         if [[ "$TRAVIS_RUST_VERSION" == *"-gnu" ]]; then
             LD_LIBRARY_PATH=${PREFIX}/lib
             ./configure --build=x86_64-mingw32 --prefix=${PREFIX}
-            mingw32-make || mingw32-make V=1
-            mingw32-make install
+            mingw32-make SHELL=/C/Program\ Files/Git/usr/bin/sh
+            mingw32-make install SHELL=/C/Program\ Files/Git/usr/bin/sh
         else
             cd VisualC
-            /C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin/MSBuild \
+            /C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin/MSBuild.exe \
                 /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v141 /p:WindowsTargetPlatformVersion=10.0.17763.0
             cp x64/Release/*.lib x64/Release/*.dll ${PREFIX}/lib/
         fi
