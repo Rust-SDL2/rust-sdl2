@@ -8,12 +8,11 @@ RUST_TOOLCHAIN=$(rustup show | grep -F "(default)" | sed "s/ (default)//")
 MSBUILD='/C/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin/MSBuild.exe'
 
 if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
-    ls -l "${MSBUILD}"
-    "${MSBUILD}" -help
     EXT=.zip
     EXTRACT=unzip
     PREFIX=/C/Users/travis/.rustup/toolchains/${RUST_TOOLCHAIN}/lib/rustlib/${RUST_HOST}/
-    WINSDK=$(ls "/C/Program Files (x86)/Microsoft SDKs/Windows Kits/10/ExtensionSDKs/Microsoft.UniversalCRT.Debug")
+    WINSDK=$(ls -1r "/C/Program Files (x86)/Microsoft SDKs/Windows Kits/10/ExtensionSDKs/Microsoft.UniversalCRT.Debug" | head -1)
+    TOOLSET=$(grep -m 1 "PlatformToolset" Common7\IDE\VC\VCWizards\default.vcxproj | sed "s/    <PlatformToolset>//" | sed "s!</PlatformToolset>!!")
     export PATH=$PATH:/C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin:${PREFIX}/bin
 else
     EXT=.tar.gz
@@ -31,7 +30,7 @@ function build() {
             mingw32-make install SHELL="/C/Program Files/Git/usr/bin/sh" || return 1
         else
             cd VisualC
-            "${MSBUILD}" $(ls *.sln | grep -v "SDL_image_VS2008.sln") -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=v141 -p:WindowsTargetPlatformVersion=${WINSDK} || return 1
+            "${MSBUILD}" $(ls *.sln | grep -v "SDL_image_VS2008.sln") -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=${TOOLSET} -p:WindowsTargetPlatformVersion=${WINSDK} || return 1
             cp x64/Release/*.lib x64/Release/*.dll ${PREFIX}/lib/
         fi
     else
