@@ -6,6 +6,14 @@ RUST_HOST=$(rustup show | grep -F "Default host" | sed "s/Default host: //")
 RUST_TOOLCHAIN=$(rustup show | grep -F "(default)" | sed "s/ (default)//")
 
 if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
+    ls /C/
+    ls /C/Program\ Files\ \(x86\)/
+    ls /C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/
+    ls /C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/
+    ls /C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/
+    ls /C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild
+    ls /C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0
+    ls /C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin
     EXT=.zip
     EXTRACT=unzip
     PATH=$PATH:/C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin
