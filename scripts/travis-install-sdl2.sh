@@ -36,7 +36,7 @@ function build() {
             export INCLUDE=../../SDL-2.0.9/include
             export LIB=${PREFIX}/lib
             export UseEnv=true
-            "${MSBUILD}" $(ls *.sln | grep -v "SDL_image_VS2008.sln") -t:SDL -p:Configuration=Release -p:Platform=x64 \
+            "${MSBUILD}" SDL/SDL.vcxproj -p:Configuration=Release -p:Platform=x64 \
                 -p:PlatformToolset=${TOOLSET} -p:WindowsTargetPlatformVersion=${WINSDK}
             cp x64/Release/*.lib x64/Release/*.dll ${PREFIX}/lib/ || return 1
         fi
