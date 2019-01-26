@@ -11,7 +11,7 @@ if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
     EXT=.zip
     EXTRACT="unzip -q"
     PREFIX=/C/Users/travis/.rustup/toolchains/${RUST_TOOLCHAIN}/lib/rustlib/${RUST_HOST}/
-    WINSDKS=$(ls "/C/Program Files (x86)/Windows Kits/10/Lib")
+    WINSDK=10.0.17134.0
     TOOLSET=$(grep -m 1 "PlatformToolset" "/C/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/Common7/IDE/VC/VCWizards/default.vcxproj" | sed "s/    <PlatformToolset>//" | sed "s!</PlatformToolset>!!")
     export PATH=$PATH:/C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin:${PREFIX}/bin
 else
@@ -36,12 +36,8 @@ function build() {
             export INCLUDE=../../SDL-2.0.9/include
             export LIB=${PREFIX}/lib
             export UseEnv=true
-            # this is perhaps the worst thing i have ever done in my life
-            for WINSDK in $(seq 744 20000); do
-                WINSDK=10.0.${WINSDK}.0
-                "${MSBUILD}" $(ls *.sln | grep -v "SDL_image_VS2008.sln") -t:SDL -p:Configuration=Release -p:Platform=x64 \
-                    -p:PlatformToolset=${TOOLSET} -p:WindowsTargetPlatformVersion=${WINSDK} && break
-            done
+            "${MSBUILD}" $(ls *.sln | grep -v "SDL_image_VS2008.sln") -t:SDL -p:Configuration=Release -p:Platform=x64 \
+                -p:PlatformToolset=${TOOLSET} -p:WindowsTargetPlatformVersion=${WINSDK}
             cp x64/Release/*.lib x64/Release/*.dll ${PREFIX}/lib/ || return 1
         fi
     else
