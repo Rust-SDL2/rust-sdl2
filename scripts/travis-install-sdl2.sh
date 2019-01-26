@@ -37,9 +37,9 @@ function build() {
             export LIB=${PREFIX}/lib
             export UseEnv=true
             # this is perhaps the worst thing i have ever done in my life
-            for WINSDK in $(seq 1 20000); do
+            for WINSDK in $(seq 744 20000); do
                 WINSDK=10.0.${WINSDK}.0
-                "${MSBUILD}" $(ls *.sln | grep -v "SDL_image_VS2008.sln") -p:Configuration=Release -p:Platform=x64 \
+                "${MSBUILD}" $(ls *.sln | grep -v "SDL_image_VS2008.sln") -t:SDL -p:Configuration=Release -p:Platform=x64 \
                     -p:PlatformToolset=${TOOLSET} -p:WindowsTargetPlatformVersion=${WINSDK} && break
             done
             cp x64/Release/*.lib x64/Release/*.dll ${PREFIX}/lib/ || return 1
