@@ -36,9 +36,11 @@ function build() {
             export INCLUDE=../../SDL-2.0.9/include
             export LIB=${PREFIX}/lib
             export UseEnv=true
-            for WINSDK in ${WINSDKS}; do
+            # this is perhaps the worst thing i have ever done in my life
+            for WINSDK in $(seq 1 20000); do
+                WINSDK=10.0.${WINSDK}.0
                 "${MSBUILD}" $(ls *.sln | grep -v "SDL_image_VS2008.sln") -p:Configuration=Release -p:Platform=x64 \
-                -p:PlatformToolset=${TOOLSET} -p:WindowsTargetPlatformVersion=${WINSDK} && break
+                    -p:PlatformToolset=${TOOLSET} -p:WindowsTargetPlatformVersion=${WINSDK} && break
             done
             cp x64/Release/*.lib x64/Release/*.dll ${PREFIX}/lib/ || return 1
         fi
