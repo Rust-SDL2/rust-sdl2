@@ -11,6 +11,7 @@ if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
     EXT=.zip
     EXTRACT="unzip -q"
     PREFIX=/C/Users/travis/.rustup/toolchains/${RUST_TOOLCHAIN}/lib/rustlib/${RUST_HOST}/
+    cat "/C/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/Common7/IDE/VC/VCTargets/Microsoft.Cpp.WindowsSDK.targets"
     WINSDK_ROOT="/C/Program Files (x86)/Windows Kits/10/DesignTime/CommonConfiguration/Neutral/UAP"
     ls -l "${WINSDK_ROOT}"
     for WINSDK_MAYBE in $(ls "${WINSDK_ROOT}"); do
