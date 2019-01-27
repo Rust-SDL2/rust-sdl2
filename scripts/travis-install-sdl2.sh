@@ -11,9 +11,11 @@ if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
     EXT=.zip
     EXTRACT="unzip -q"
     PREFIX=/C/Users/travis/.rustup/toolchains/${RUST_TOOLCHAIN}/lib/rustlib/${RUST_HOST}/
-    ls -l "/C/Program Files (x86)/Windows Kits/10/DesignTime/CommonConfiguration/Neutral/UAP"
-    for WINSDK_MAYBE in $(ls "/C/Program Files (x86)/Windows Kits/10/DesignTime/CommonConfiguration/Neutral/UAP"); do
-        if [[ -f "${WINSDK_MAYBE}/UAP.props" ]]; then
+    WINSDK_ROOT="/C/Program Files (x86)/Windows Kits/10/DesignTime/CommonConfiguration/Neutral/UAP"
+    ls -l "${WINSDK_ROOT}"
+    for WINSDK_MAYBE in $(ls "${WINSDK_ROOT}"); do
+        ls -l "${WINSDK_ROOT}/${WINSDK_MAYBE}"
+        if [[ -f "${WINSDK_ROOT}/${WINSDK_MAYBE}/UAP.props" ]]; then
             export WINSDK=${WINSDK_MAYBE}
         fi
     done
