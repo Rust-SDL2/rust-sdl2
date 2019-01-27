@@ -11,7 +11,12 @@ if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
     EXT=.zip
     EXTRACT="unzip -q"
     PREFIX=/C/Users/travis/.rustup/toolchains/${RUST_TOOLCHAIN}/lib/rustlib/${RUST_HOST}/
-    WINSDK=10.0.17134.0
+    ls -l "/C/Program Files (x86)/Windows Kits/10/DesignTime/CommonConfiguration/Neutral/UAP"
+    for WINSDK_MAYBE in $(ls "/C/Program Files (x86)/Windows Kits/10/DesignTime/CommonConfiguration/Neutral/UAP"); do
+        if [[ -f "${WINSDK_MAYBE}/UAP.props" ]]; then
+            export WINSDK=${WINSDK_MAYBE}
+        fi
+    done
     TOOLSET=$(grep -m 1 "PlatformToolset" "/C/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/Common7/IDE/VC/VCWizards/default.vcxproj" | sed "s/    <PlatformToolset>//" | sed "s!</PlatformToolset>!!")
     export PATH=$PATH:/C/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin:${PREFIX}/bin
 else
