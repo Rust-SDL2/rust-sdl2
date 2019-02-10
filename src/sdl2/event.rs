@@ -710,6 +710,15 @@ pub enum Event {
     }
 }
 
+/// This does not auto-derive because `User`'s `data` fields can be used to
+/// store pointers to types that are `!Send`. Dereferencing these as pointers
+/// requires using `unsafe` and ensuring your own safety guarantees.
+unsafe impl Send for Event {}
+/// This does not auto-derive because `User`'s `data` fields can be used to
+/// store pointers to types that are `!Sync`. Dereferencing these as pointers
+/// requires using `unsafe` and ensuring your own safety guarantees.
+unsafe impl Sync for Event {}
+
 /// Helper function to make converting scancodes
 /// and keycodes to primitive `SDL_Keysym` types.
 fn mk_keysym<S, K>(scancode: S,
