@@ -37,11 +37,8 @@ function build() {
         if [[ "$TRAVIS_RUST_VERSION" == *"-gnu" ]]; then
             LD_LIBRARY_PATH=${PREFIX}/lib
             ./configure --build=x86_64-mingw32 --prefix=${PREFIX} || return 1
-            powershell <<EOF
-Set-Item -Path Env:Path -Value (((Get-ChildItem Env:Path).Value.Split(';') | Where-Object { (\$_ -ne 'C:\\Program Files\\Git\\bin' -and \$_ -ne 'C:\\Program Files\\Git\\usr\\bin') }) -join ';')
-mingw32-make V=1
-EOF
-            PATH=$(nuke_bin_in_path) cmd <<< "mingw32-make V=1"
+            cat Makefile
+            mingw32-make V=1
             mingw32-make install || return 1
         else
             cd VisualC
@@ -52,6 +49,9 @@ EOF
 "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat"
 msbuild SDL\\SDL.vcxproj -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=${TOOLSET} -p:WindowsTargetPlatformVersion=${WINSDK}
 EOF
+            ls
+            ls x64
+            ls x64/Release
             cp x64/Release/*.lib x64/Release/*.dll ${PREFIX}/lib/ || return 1
         fi
     else
