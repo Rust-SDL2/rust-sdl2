@@ -36,8 +36,8 @@ function build() {
     if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
         if [[ "$TRAVIS_RUST_VERSION" == *"-gnu" ]]; then
             LD_LIBRARY_PATH=${PREFIX}/lib
+            CONFIG_SHELL="/C/Program\\ Files/Git/usr/bin/sh"
             ./configure --build=x86_64-mingw32 --prefix=${PREFIX} || return 1
-            cat Makefile
             mingw32-make V=1
             mingw32-make install || return 1
         else
@@ -49,10 +49,12 @@ function build() {
 "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat"
 msbuild SDL\\SDL.vcxproj -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=${TOOLSET} -p:WindowsTargetPlatformVersion=${WINSDK}
 EOF
-            ls
-            ls x64
-            ls x64/Release
-            cp x64/Release/*.lib x64/Release/*.dll ${PREFIX}/lib/ || return 1
+            echo
+            ls *
+            ls SDL
+            ls SDL/x64
+            ls SDL/x64/Release
+            cp SDL/x64/Release/*.lib SDL/x64/Release/*.dll ${PREFIX}/lib/ || return 1
         fi
     else
         ./configure
