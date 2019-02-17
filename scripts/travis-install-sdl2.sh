@@ -38,7 +38,8 @@ function build() {
             LD_LIBRARY_PATH=${PREFIX}/lib
             CONFIG_SHELL="/C/Program\\ Files/Git/usr/bin/sh"
             ./configure --build=x86_64-mingw32 --prefix=${PREFIX} || return 1
-            mingw32-make V=1
+            cat Makefile
+            mingw32-make
             mingw32-make install || return 1
         else
             cd VisualC
@@ -47,13 +48,10 @@ function build() {
             export UseEnv=true
             cmd <<EOF
 "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat"
-msbuild SDL\\SDL.vcxproj -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=${TOOLSET} -p:WindowsTargetPlatformVersion=${WINSDK}
+msbuild $2 -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=${TOOLSET} -p:WindowsTargetPlatformVersion=${WINSDK}
 EOF
             echo
             ls *
-            ls SDL
-            ls SDL/x64
-            ls SDL/x64/Release
             cp SDL/x64/Release/*.lib SDL/x64/Release/*.dll ${PREFIX}/lib/ || return 1
         fi
     else
@@ -66,7 +64,7 @@ EOF
 
 wget https://www.libsdl.org/release/SDL2-2.0.9.tar.gz -O sdl2.tar.gz
 tar xzf sdl2.tar.gz
-build SDL2-* || exit 1
+build SDL2-* SDL\\SDL.vcxproj || exit 1
 if [[ "$CI_BUILD_FEATURES" == *"ttfBROKEN"* ]]; then
     wget -q https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.14${EXT}
     ${EXTRACT} SDL2_ttf-*${EXT} && rm SDL2_ttf-*${EXT}
@@ -75,7 +73,7 @@ fi
 if [[ "$CI_BUILD_FEATURES" == *"image"* ]]; then
     wget -q https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.1${EXT}
     ${EXTRACT} SDL2_image-*${EXT} && rm SDL2_image-*${EXT}
-    build SDL2_image-*
+    build SDL2_image-* SDL_image.vcxproj
 fi
 if [[ "$CI_BUILD_FEATURES" == *"mixer"* ]]; then
     wget -q https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.2${EXT}
