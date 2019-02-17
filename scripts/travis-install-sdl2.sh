@@ -38,16 +38,20 @@ function build() {
             LD_LIBRARY_PATH=${PREFIX}/lib
             CONFIG_SHELL="/C/Program\\ Files/Git/usr/bin/sh"
             ./configure --build=x86_64-mingw32 --prefix=${PREFIX} || return 1
+            sed -i 's!/bin/sh!"/C/Program Files/Git/usr/bin/sh"!' Makefile
             cat Makefile
             mingw32-make
             mingw32-make install || return 1
         else
             cd VisualC
             export INCLUDE=../../SDL-2.0.9/include
+            ls ${INCLUDE}
             export LIB=${PREFIX}/lib
             export UseEnv=true
             cmd <<EOF
 "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat"
+echo %INCLUDE%
+echo %UseEnv%
 msbuild $2 -p:Configuration=Release -p:Platform=x64 -p:PlatformToolset=${TOOLSET} -p:WindowsTargetPlatformVersion=${WINSDK}
 EOF
             echo
