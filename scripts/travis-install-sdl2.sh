@@ -36,15 +36,19 @@ function build() {
     if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
         if [[ "$TRAVIS_RUST_VERSION" == *"-gnu" ]]; then
             LD_LIBRARY_PATH=${PREFIX}/lib
-            CONFIG_SHELL="/C/Program\\ Files/Git/usr/bin/sh"
+            CONFIG_SHELL="/C/Program\\ Files/Git/bin/bash"
             ./configure --build=x86_64-mingw32 --prefix=${PREFIX} || return 1
-            sed -i 's!/bin/sh!"/C/Program Files/Git/usr/bin/sh"!' Makefile
+            sed -i 's!/bin/sh!"/C/Program Files/Git/bin/bash"!' Makefile
             cat Makefile
             mingw32-make
             mingw32-make install || return 1
         else
             cd VisualC
             export INCLUDE=../../SDL-2.0.9/include
+            pwd
+            ls ..
+            ls ../..
+            ls ../../SDL-2.0.9
             ls ${INCLUDE}
             export LIB=${PREFIX}/lib
             export UseEnv=true
