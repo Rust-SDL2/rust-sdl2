@@ -70,8 +70,8 @@ pub struct Rect {
     raw: sys::SDL_Rect,
 }
 
-impl std::fmt::Debug for Rect {
-    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
+impl ::std::fmt::Debug for Rect {
+    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
         return write!(fmt, "Rect {{ x: {}, y: {}, w: {}, h: {} }}",
             self.raw.x, self.raw.y, self.raw.w, self.raw.h);
     }
@@ -665,8 +665,8 @@ pub struct Point {
     raw: sys::SDL_Point
 }
 
-impl std::fmt::Debug for Point {
-    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
+impl ::std::fmt::Debug for Point {
+    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
         return write!(fmt, "Point {{ x: {}, y: {} }}", self.raw.x, self.raw.y);
     }
 }
