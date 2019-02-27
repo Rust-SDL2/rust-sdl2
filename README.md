@@ -189,7 +189,7 @@ fn main() {
 
 `/*.dll`
 
-8. When you're shipping your game make sure to copy the corresponding SDL2.dll to the same directory that your compiled exe is in, otherwise the game won't launch.
+8. When you're publish your game make sure to copy the corresponding SDL2.dll to the same directory that your compiled exe is in, otherwise the game won't launch.
 
 And now your project should build and run on any Windows computer!
 
