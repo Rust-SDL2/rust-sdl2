@@ -359,7 +359,7 @@ fn link_sdl2(target_os: &str) {
     // -lSDL2_mixer can find it.
     #[cfg(all(not(feature = "use-pkgconfig"), not(feature = "static-link")))] {
         if cfg!(feature = "mixer") {
-            if cfg!(any(target_os="linux", target_os="freebsd")) {
+            if cfg!(any(target_os="linux", target_os="freebsd", target_os="openbsd")) {
                 println!("cargo:rustc-flags=-l SDL2_mixer");
             } else if cfg!(target_os="windows") {
                 println!("cargo:rustc-flags=-l SDL2_mixer");
@@ -372,7 +372,7 @@ fn link_sdl2(target_os: &str) {
             }
         }
         if cfg!(feature = "image") {
-            if cfg!(any(target_os="linux", target_os="freebsd")) {
+            if cfg!(any(target_os="linux", target_os="freebsd", target_os="openbsd")) {
                 println!("cargo:rustc-flags=-l SDL2_image");
             } else if cfg!(target_os="windows") {
                 println!("cargo:rustc-flags=-l SDL2_image");
@@ -385,7 +385,7 @@ fn link_sdl2(target_os: &str) {
             }
         }
         if cfg!(feature = "ttf") {
-            if cfg!(any(target_os="linux", target_os="freebsd")) {
+            if cfg!(any(target_os="linux", target_os="freebsd", target_os="openbsd")) {
                 println!("cargo:rustc-flags=-l SDL2_ttf");
             } else if cfg!(target_os="windows") {
                 println!("cargo:rustc-flags=-l SDL2_ttf");
@@ -398,7 +398,7 @@ fn link_sdl2(target_os: &str) {
             }
         }
         if cfg!(feature = "gfx") {
-            if cfg!(any(target_os="linux", target_os="freebsd")) {
+            if cfg!(any(target_os="linux", target_os="freebsd", target_os="openbsd")) {
                 println!("cargo:rustc-flags=-l SDL2_gfx");
             } else if cfg!(target_os="windows") {
                 println!("cargo:rustc-flags=-l SDL2_gfx");
