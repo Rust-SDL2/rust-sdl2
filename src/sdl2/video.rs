@@ -1472,6 +1472,25 @@ impl Window {
             Err(get_error())
         }
     }
+
+    pub fn set_opacity(&mut self, opacity: f32) -> Result<(), String> {
+        let result = unsafe { sys::SDL_SetWindowOpacity(self.context.raw, opacity) };
+        if result < 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    pub fn opacity(&self) -> Result<f32, String> {
+        let mut opacity = 0.0;
+        let result = unsafe { sys::SDL_GetWindowOpacity(self.context.raw, &mut opacity) };
+        if result < 0 {
+            Err(get_error())
+        } else {
+            Ok(opacity)
+        }
+    }
 }
 
 #[derive(Copy, Clone)]
