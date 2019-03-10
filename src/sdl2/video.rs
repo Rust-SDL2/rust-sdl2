@@ -1472,6 +1472,34 @@ impl Window {
             Err(get_error())
         }
     }
+
+    /// Set the transparency of the window. The given value will be clamped internally between
+    /// `0.0` (fully transparent), and `1.0` (fully opaque).
+    ///
+    /// This method returns an error if opacity isn't supported by the current platform.
+    pub fn set_opacity(&mut self, opacity: f32) -> Result<(), String> {
+        let result = unsafe { sys::SDL_SetWindowOpacity(self.context.raw, opacity) };
+        if result < 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Returns the transparency of the window, as a value between `0.0` (fully transparent), and
+    /// `1.0` (fully opaque).
+    ///
+    /// If opacity isn't supported by the current platform, this method returns `Ok(1.0)` instead
+    /// of an error.
+    pub fn opacity(&self) -> Result<f32, String> {
+        let mut opacity = 0.0;
+        let result = unsafe { sys::SDL_GetWindowOpacity(self.context.raw, &mut opacity) };
+        if result < 0 {
+            Err(get_error())
+        } else {
+            Ok(opacity)
+        }
+    }
 }
 
 #[derive(Copy, Clone)]
