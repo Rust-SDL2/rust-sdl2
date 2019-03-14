@@ -9,6 +9,9 @@ Added 32-bit array pixelformats
 [PR #824](https://github.com/Rust-SDL2/rust-sdl2/pull/824):
 Added `controller::set_rumble` and `joystick::set_rumble`, wrappers for `SDL_GameControllerRumble` and `SDL_JoystickRumble` respectively.
 
+[PR #867](https://github.com/Rust-SDL2/rust-sdl2/pull/867):
+Added `Window::opacity` and `Window::set_opacity`, wrappers for `SDL_GetWindowOpacity` and `SDL_SetWindowOpacity` respectively. This bumps the minimum `SDL2` version requirement from `2.0.4` to `2.0.5`.
+
 ### v0.32
 
 [PR #790](https://github.com/Rust-SDL2/rust-sdl2/pull/790): Added missing `window_id` field to `Event::DropFile`

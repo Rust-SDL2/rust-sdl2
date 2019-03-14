@@ -32,7 +32,7 @@ We currently target the latest stable release of Rust.
 
 ## *SDL2.0 development libraries*
 
-SDL2 >= 2.0.8 is recommended to use these bindings, but note that SDL2 >= 2.0.4 is also supported. Below 2.0.4, you may experience link-time errors as some functions are used here but are not defined in SDL2. If you experience this issue because you are on a LTS machine (for instance, Ubuntu 12.04 or Ubuntu 14.04), we definitely recommend you to use the feature "bundled" which will compile the lastest stable version of SDL2 for your project.
+SDL2 >= 2.0.8 is recommended to use these bindings, but note that SDL2 >= 2.0.5 is also supported. Below 2.0.5, you may experience link-time errors as some functions are used here but are not defined in SDL2. If you experience this issue because you are on a LTS machine (for instance, Ubuntu 12.04 or Ubuntu 14.04), we definitely recommend you to use the feature "bundled" which will compile the lastest stable version of SDL2 for your project.
 
 ### "Bundled" Feature
 
