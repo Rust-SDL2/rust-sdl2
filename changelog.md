@@ -3,6 +3,9 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### v0.32.1
 
+[PR #868](https://github.com/Rust-SDL2/rust-sdl2/pull/868):
+Added inplace operations for `rect::Point`.
+
 [PR #827](https://github.com/Rust-SDL2/rust-sdl2/pull/827):
 Added 32-bit array pixelformats
 
