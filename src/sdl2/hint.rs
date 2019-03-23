@@ -1,5 +1,5 @@
 use std::ffi::{CString, CStr};
-use sys;
+use crate::sys;
 use libc::c_char;
 
 const VIDEO_MINIMIZE_ON_FOCUS_LOSS: &'static str = "SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS";

@@ -535,7 +535,10 @@ fn copy_pregenerated_bindings() {
 // to be found by bindgen (should point to the include/ directories)
 fn generate_bindings<S: AsRef<str> + ::std::fmt::Debug>(target: &str, host: &str, headers_paths: &[S]) {
     let target_os = get_os_from_triple(target).unwrap();
-    let mut bindings = bindgen::Builder::default();
+    let mut bindings = bindgen::Builder::default()
+        // enable no_std-friendly output by only using core definitions
+        .use_core()
+        .ctypes_prefix("libc");
 
     let mut image_bindings = bindgen::Builder::default();
 

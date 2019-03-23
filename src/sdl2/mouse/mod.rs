@@ -1,10 +1,10 @@
-use get_error;
-use surface::SurfaceRef;
-use video;
-use EventPump;
+use crate::get_error;
+use crate::surface::SurfaceRef;
+use crate::video;
+use crate::EventPump;
 use std::mem::transmute;
 
-use sys;
+use crate::sys;
 
 mod relative;
 pub use self::relative::RelativeMouseState;
@@ -314,7 +314,7 @@ impl<'a> Iterator for PressedMouseButtonIterator<'a> {
     }
 }
 
-impl ::Sdl {
+impl crate::Sdl {
     #[inline]
     pub fn mouse(&self) -> MouseUtil {
         MouseUtil {
@@ -332,7 +332,7 @@ impl ::Sdl {
 /// sdl_context.mouse().show_cursor(false);
 /// ```
 pub struct MouseUtil {
-    _sdldrop: ::std::rc::Rc<::SdlDrop>
+    _sdldrop: ::std::rc::Rc<crate::SdlDrop>
 }
 
 impl MouseUtil {
@@ -361,7 +361,7 @@ impl MouseUtil {
     }
 
     pub fn is_cursor_showing(&self) -> bool {
-        unsafe { sys::SDL_ShowCursor(::sys::SDL_QUERY) == 1 }
+        unsafe { sys::SDL_ShowCursor(crate::sys::SDL_QUERY) == 1 }
     }
 
     pub fn show_cursor(&self, show: bool) {

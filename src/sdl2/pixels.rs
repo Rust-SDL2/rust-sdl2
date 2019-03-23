@@ -5,9 +5,9 @@ use self::rand::distributions::{Distribution, Standard};
 use libc::uint32_t;
 use num::FromPrimitive;
 use std::mem::transmute;
-use sys;
+use crate::sys;
 
-use get_error;
+use crate::get_error;
 
 pub struct Palette {
     raw: *mut sys::SDL_Palette
@@ -17,7 +17,7 @@ impl Palette {
     #[inline]
     /// Creates a new, uninitialized palette
     pub fn new(mut capacity: usize) -> Result<Self, String> {
-        use common::*;
+        use crate::common::*;
 
         let ncolors = {
             // This is kind of a hack. We have to cast twice because
@@ -45,7 +45,7 @@ impl Palette {
 
     /// Creates a palette from the provided colors
     pub fn with_colors(colors: &[Color]) -> Result<Self, String> {
-        let pal = try!(Self::new(colors.len()));
+        let pal = r#try!(Self::new(colors.len()));
 
         // Already validated, so don't check again
         let ncolors = colors.len() as ::libc::c_int;
@@ -382,7 +382,7 @@ impl PixelFormatEnum {
     }
 
     pub fn supports_alpha(&self) -> bool {
-        use ::pixels::PixelFormatEnum::*;
+        use crate::pixels::PixelFormatEnum::*;
         match *self {
             ARGB4444 | ARGB1555 | ARGB8888 | ARGB2101010 |
             ABGR4444 | ABGR1555 | ABGR8888 |
@@ -492,7 +492,7 @@ fn test_pixel_format_enum() {
     ];
 
 
-    let _sdl_context = ::sdl::init().unwrap();
+    let _sdl_context = crate::sdl::init().unwrap();
     for format in pixel_formats {
         // If we don't support making a surface of a specific format,
         // that's fine, just keep going the best we can.

@@ -1,11 +1,11 @@
 use std::error;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt;
-use std::os::raw::c_void;
-use get_error;
+use libc::c_void;
+use crate::get_error;
 use libc::c_char;
 
-use sys;
+use crate::sys;
 
 pub fn base_path() -> Result<String, String> {
     let result = unsafe {

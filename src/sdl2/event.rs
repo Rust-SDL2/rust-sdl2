@@ -13,21 +13,21 @@ use std::marker::PhantomData;
 use std::collections::HashMap;
 use std::sync::Mutex;
 use std::mem::transmute;
-use std::os::raw::c_void;
+use libc::c_void;
 
-use controller;
-use controller::{Axis, Button};
-use joystick;
-use joystick::HatState;
-use keyboard;
-use keyboard::Mod;
-use keyboard::Keycode;
-use mouse;
-use mouse::{MouseButton, MouseState, MouseWheelDirection};
-use keyboard::Scancode;
-use get_error;
+use crate::controller;
+use crate::controller::{Axis, Button};
+use crate::joystick;
+use crate::joystick::HatState;
+use crate::keyboard;
+use crate::keyboard::Mod;
+use crate::keyboard::Keycode;
+use crate::mouse;
+use crate::mouse::{MouseButton, MouseState, MouseWheelDirection};
+use crate::keyboard::Scancode;
+use crate::get_error;
 
-use sys;
+use crate::sys;
 
 struct CustomEventTypeMaps {
     sdl_id_to_type_id: HashMap<u32, ::std::any::TypeId>,
@@ -47,7 +47,7 @@ lazy_static! {
     static ref CUSTOM_EVENT_TYPES : Mutex<CustomEventTypeMaps> = { Mutex::new(CustomEventTypeMaps::new()) };
 }
 
-impl ::EventSubsystem {
+impl crate::EventSubsystem {
     /// Removes all events in the event queue that match the specified event type.
     pub fn flush_event(&self, event_type: EventType) {
         unsafe { sys::SDL_FlushEvent(event_type as uint32_t) };
@@ -144,8 +144,8 @@ impl ::EventSubsystem {
     ///    window_id: 0,
     ///    type_: custom_event_type_id,
     ///    code: 456,
-    ///    data1: 0x1234 as *mut ::std::os::raw::c_void,
-    ///    data2: 0x5678 as *mut ::std::os::raw::c_void,
+    ///    data1: 0x1234 as *mut libc::c_void,
+    ///    data2: 0x5678 as *mut libc::c_void,
     /// };
     ///
     /// ev.push_event(event);
@@ -153,7 +153,7 @@ impl ::EventSubsystem {
     /// ```
     #[inline(always)]
     pub unsafe fn register_event(&self) -> Result<u32, String> {
-        Ok(*try!(self.register_events(1)).first().unwrap())
+        Ok(*r#try!(self.register_events(1)).first().unwrap())
     }
 
     /// Registers custom SDL events.
@@ -185,7 +185,7 @@ impl ::EventSubsystem {
     pub fn register_custom_event<T: ::std::any::Any>(&self)
             -> Result<(), String> {
         use ::std::any::TypeId;
-        let event_id = *try!(unsafe { self.register_events(1) }).first().unwrap();
+        let event_id = *r#try!(unsafe { self.register_events(1) }).first().unwrap();
         let mut cet = CUSTOM_EVENT_TYPES.lock().unwrap();
         let type_id = TypeId::of::<Box<T>>();
 
@@ -254,7 +254,7 @@ impl ::EventSubsystem {
            data2: ::std::ptr::null_mut()
         };
 
-        try!(self.push_event(event));
+        r#try!(self.push_event(event));
 
         Ok(())
     }
@@ -319,7 +319,7 @@ pub enum EventType {
 impl FromPrimitive for EventType {
     fn from_i64(n: i64) -> Option<EventType> {
         use self::EventType::*;
-        use sys::SDL_EventType::*;
+        use crate::sys::SDL_EventType::*;
         let n = n as u32;
 
         Some( match unsafe { transmute(n) } {
@@ -1683,7 +1683,7 @@ unsafe fn wait_event_timeout(timeout: u32) -> Option<Event> {
     else { None }
 }
 
-impl ::EventPump {
+impl crate::EventPump {
     /// Query if an event type is enabled.
     pub fn is_event_enabled(&self, event_type: EventType) -> bool {
         let result = unsafe { sys::SDL_EventState(event_type as u32, sys::SDL_QUERY) };
@@ -1770,18 +1770,18 @@ impl ::EventPump {
     }
 
     #[inline]
-    pub fn keyboard_state(&self) -> ::keyboard::KeyboardState {
-        ::keyboard::KeyboardState::new(self)
+    pub fn keyboard_state(&self) -> crate::keyboard::KeyboardState {
+        crate::keyboard::KeyboardState::new(self)
     }
 
     #[inline]
-    pub fn mouse_state(&self) -> ::mouse::MouseState {
-        ::mouse::MouseState::new(self)
+    pub fn mouse_state(&self) -> crate::mouse::MouseState {
+        crate::mouse::MouseState::new(self)
     }
 
     #[inline]
-    pub fn relative_mouse_state(&self) -> ::mouse::RelativeMouseState {
-        ::mouse::RelativeMouseState::new(self)
+    pub fn relative_mouse_state(&self) -> crate::mouse::RelativeMouseState {
+        crate::mouse::RelativeMouseState::new(self)
     }
 }
 

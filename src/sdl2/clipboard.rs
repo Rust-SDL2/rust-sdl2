@@ -1,9 +1,9 @@
 use std::ffi::{CString, CStr};
-use std::os::raw::c_void;
+use libc::c_void;
 use libc::c_char;
-use get_error;
+use crate::get_error;
 
-use sys;
+use crate::sys;
 
 /// Clipboard utility functions. Access with `VideoSubsystem::clipboard()`.
 ///
@@ -16,10 +16,10 @@ use sys;
 /// video_subsystem.clipboard().set_clipboard_text("Hello World!").unwrap();
 /// ```
 pub struct ClipboardUtil {
-    _subsystem: ::VideoSubsystem
+    _subsystem: crate::VideoSubsystem
 }
 
-impl ::VideoSubsystem {
+impl crate::VideoSubsystem {
     #[inline]
     pub fn clipboard(&self) -> ClipboardUtil {
         ClipboardUtil {

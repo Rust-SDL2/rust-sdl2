@@ -620,7 +620,7 @@ extern "C" {
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    pub fn gfxPrimitivesSetFont(fontdata: *const ::std::os::raw::c_void, cw: Uint32, ch: Uint32);
+    pub fn gfxPrimitivesSetFont(fontdata: *const ::libc::c_void, cw: Uint32, ch: Uint32);
 }
 extern "C" {
     pub fn gfxPrimitivesSetFontRotation(rotation: Uint32);

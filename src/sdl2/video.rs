@@ -5,20 +5,20 @@ use std::rc::Rc;
 use std::error::Error;
 use std::ops::{Deref, DerefMut};
 
-use rect::Rect;
-use render::CanvasBuilder;
-use surface::SurfaceRef;
-use pixels::PixelFormatEnum;
-use VideoSubsystem;
-use EventPump;
+use crate::rect::Rect;
+use crate::render::CanvasBuilder;
+use crate::surface::SurfaceRef;
+use crate::pixels::PixelFormatEnum;
+use crate::VideoSubsystem;
+use crate::EventPump;
 use num::FromPrimitive;
-use common::{validate_int, IntegerOrSdlError};
+use crate::common::{validate_int, IntegerOrSdlError};
 
-use get_error;
+use crate::get_error;
 
-use sys;
+use crate::sys;
 
-pub use sys::{VkInstance, VkSurfaceKHR};
+pub use crate::sys::{VkInstance, VkSurfaceKHR};
 
 
 pub struct WindowSurfaceRef<'a>(&'a mut SurfaceRef, &'a Window);
@@ -182,17 +182,17 @@ macro_rules! attrs {
 /// assert_eq!(gl_attr.context_version(), (3, 2));
 /// ```
 pub mod gl_attr {
-    use sys;
-    use get_error;
+    use crate::sys;
+    use crate::get_error;
     use std::marker::PhantomData;
     use super::{GLProfile, GLAttrTypeUtil};
 
     /// OpenGL context getters and setters. Obtain with `VideoSubsystem::gl_attr()`.
     pub struct GLAttr<'a> {
-        _marker: PhantomData<&'a ::VideoSubsystem>
+        _marker: PhantomData<&'a crate::VideoSubsystem>
     }
 
-    impl ::VideoSubsystem {
+    impl crate::VideoSubsystem {
         /// Obtains access to the OpenGL window attributes.
         pub fn gl_attr(&self) -> GLAttr {
             GLAttr {
@@ -315,7 +315,7 @@ pub mod gl_attr {
     /// The type that allows you to build a OpenGL context configuration.
     pub struct ContextFlagsBuilder<'a> {
         flags: i32,
-        _marker: PhantomData<&'a ::VideoSubsystem>
+        _marker: PhantomData<&'a crate::VideoSubsystem>
     }
 
     impl<'a> ContextFlagsBuilder<'a> {
@@ -1210,7 +1210,7 @@ impl Window {
     }
 
     pub fn set_title(&mut self, title: &str) -> Result<(), NulError> {
-        let title = try!(CString::new(title));
+        let title = r#try!(CString::new(title));
         Ok(unsafe {
             sys::SDL_SetWindowTitle(self.context.raw, title.as_ptr() as *const c_char);
         })
@@ -1268,8 +1268,8 @@ impl Window {
 
     pub fn set_size(&mut self, width: u32, height: u32)
             -> Result<(), IntegerOrSdlError> {
-        let w = try!(validate_int(width, "width"));
-        let h = try!(validate_int(height, "height"));
+        let w = r#try!(validate_int(width, "width"));
+        let h = r#try!(validate_int(height, "height"));
         Ok(unsafe {
             sys::SDL_SetWindowSize(self.context.raw, w, h)
         })
@@ -1298,8 +1298,8 @@ impl Window {
 
     pub fn set_minimum_size(&mut self, width: u32, height: u32)
             -> Result<(), IntegerOrSdlError> {
-        let w = try!(validate_int(width, "width"));
-        let h = try!(validate_int(height, "height"));
+        let w = r#try!(validate_int(width, "width"));
+        let h = r#try!(validate_int(height, "height"));
         Ok(unsafe {
             sys::SDL_SetWindowMinimumSize(self.context.raw, w, h)
         })
@@ -1314,8 +1314,8 @@ impl Window {
 
     pub fn set_maximum_size(&mut self, width: u32, height: u32)
             -> Result<(), IntegerOrSdlError> {
-        let w = try!(validate_int(width, "width"));
-        let h = try!(validate_int(height, "height"));
+        let w = r#try!(validate_int(width, "width"));
+        let h = r#try!(validate_int(height, "height"));
         Ok(unsafe {
             sys::SDL_SetWindowMaximumSize(self.context.raw, w, h)
         })

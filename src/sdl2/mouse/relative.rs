@@ -1,6 +1,6 @@
-use EventPump;
+use crate::EventPump;
 
-use sys;
+use crate::sys;
 
 use super::{MouseButton, MouseButtonIterator, PressedMouseButtonIterator};
 

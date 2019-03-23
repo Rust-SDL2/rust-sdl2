@@ -28,12 +28,12 @@
 //! None of the draw methods in `Canvas` are expected to fail.
 //! If they do, a panic is raised and the program is aborted.
 
-use video::{Window, WindowContext};
-use surface;
-use surface::{Surface, SurfaceRef, SurfaceContext};
-use pixels;
-use pixels::PixelFormatEnum;
-use get_error;
+use crate::video::{Window, WindowContext};
+use crate::surface;
+use crate::surface::{Surface, SurfaceRef, SurfaceContext};
+use crate::pixels;
+use crate::pixels::PixelFormatEnum;
+use crate::get_error;
 use std::fmt;
 use std::error::Error;
 #[cfg(not(feature = "unsafe_textures"))]
@@ -43,16 +43,16 @@ use std::ops::Deref;
 use std::ptr;
 use std::rc::Rc;
 use libc::{c_int, uint32_t, c_double};
-use rect::Point;
-use rect::Rect;
+use crate::rect::Point;
+use crate::rect::Rect;
 use std::ffi::CStr;
 use num::FromPrimitive;
 use std::vec::Vec;
-use common::{validate_int, IntegerOrSdlError};
+use crate::common::{validate_int, IntegerOrSdlError};
 use std::mem::{transmute, uninitialized};
-use std::os::raw::c_void;
+use libc::c_void;
 
-use sys;
+use crate::sys;
 
 /// Contains the description of an error returned by SDL
 #[derive(Debug)]
@@ -652,10 +652,10 @@ impl CanvasBuilder {
 
     /// Builds the renderer.
     pub fn build(self) -> Result<WindowCanvas, IntegerOrSdlError> {
-        use common::IntegerOrSdlError::*;
+        use crate::common::IntegerOrSdlError::*;
         let index = match self.index {
             None => -1,
-            Some(index) => try!(validate_int(index, "index")),
+            Some(index) => r#try!(validate_int(index, "index")),
         };
         let raw = unsafe { sys::SDL_CreateRenderer(self.window.raw(), index, self.renderer_flags) };
 
@@ -984,9 +984,9 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Sets a device independent resolution for rendering.
     pub fn set_logical_size(&mut self, width: u32, height: u32) -> Result<(), IntegerOrSdlError> {
-        use common::IntegerOrSdlError::*;
-        let width = try!(validate_int(width, "width"));
-        let height = try!(validate_int(height, "height"));
+        use crate::common::IntegerOrSdlError::*;
+        let width = r#try!(validate_int(width, "width"));
+        let height = r#try!(validate_int(height, "height"));
         let result = unsafe { sys::SDL_RenderSetLogicalSize(self.context.raw, width, height) };
         match result {
             0 => Ok(()),
@@ -1244,7 +1244,7 @@ impl<T: RenderTarget> Canvas<T> {
               R2: Into<Option<Rect>>,
               P: Into<Option<Point>>
     {
-        use sys::SDL_RendererFlip::*;
+        use crate::sys::SDL_RendererFlip::*;
         let flip = unsafe { match (flip_horizontal, flip_vertical) {
             (false, false) => SDL_FLIP_NONE,
             (true, false) => SDL_FLIP_HORIZONTAL,
@@ -1289,7 +1289,7 @@ impl<T: RenderTarget> Canvas<T> {
             let (actual_rect, w, h) = match rect {
                 Some(ref rect) => (rect.raw(), rect.width() as usize, rect.height() as usize),
                 None => {
-                    let (w, h) = try!(self.output_size());
+                    let (w, h) = r#try!(self.output_size());
                     (ptr::null(), w as usize, h as usize)
                 }
             };

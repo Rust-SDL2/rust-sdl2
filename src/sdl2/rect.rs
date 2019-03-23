@@ -1,7 +1,7 @@
 //! Rectangles and points.
 #![allow(const_err)]
 
-use sys;
+use crate::sys;
 use std::mem;
 use std::ptr;
 use std::ops::{Deref, DerefMut, Add, AddAssign, BitAnd, BitOr, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};

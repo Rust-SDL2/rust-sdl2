@@ -1,4 +1,4 @@
-use sys;
+use crate::sys;
 use std::ptr::null_mut;
 use std::ffi::{CStr, CString};
 
@@ -56,7 +56,7 @@ pub enum Priority {
 
 impl Priority {
     fn from_ll(value: sys::SDL_LogPriority) -> Priority {
-        use sys::SDL_LogPriority::*;
+        use crate::sys::SDL_LogPriority::*;
         match value {
             SDL_LOG_PRIORITY_VERBOSE => Priority::Verbose,
             SDL_LOG_PRIORITY_DEBUG => Priority::Debug,
@@ -75,10 +75,10 @@ fn dummy(_priority: Priority, _category: Category, _message: &str) {
 // NEVER make this public
 static mut custom_log_fn : fn(Priority, Category, &str) = dummy;
 
-unsafe extern "C" fn rust_sdl2_log_fn(_userdata: *mut ::std::os::raw::c_void,
-                                   category: ::std::os::raw::c_int,
+unsafe extern "C" fn rust_sdl2_log_fn(_userdata: *mut libc::c_void,
+                                   category: libc::c_int,
                                    priority: sys::SDL_LogPriority,
-                                   message: *const ::std::os::raw::c_char) {
+                                   message: *const libc::c_char) {
     let category = Category::from_ll(category as u32);
     let priority = Priority::from_ll(priority);
     let message = CStr::from_ptr(message).to_string_lossy();
@@ -98,6 +98,6 @@ pub fn log(message: &str) {
     let message = message.replace('%', "%%");
     let message = CString::new(message).unwrap();
     unsafe {
-        ::sys::SDL_Log(message.into_raw());
+        crate::sys::SDL_Log(message.into_raw());
     }
 }

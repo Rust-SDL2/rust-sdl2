@@ -10,10 +10,14 @@ categories = ["rendering","external-ffi-bindings","game-engines","multimedia"]
 license = "MIT"
 links = "SDL2"
 build = "build.rs"
+edition = "2018"
 
 [lib]
 name = "sdl2_sys"
 path = "src/lib.rs"
+
+[dependencies]
+libc = "^0.2"
 
 [build-dependencies.bindgen]
 version = "^0.42"

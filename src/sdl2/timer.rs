@@ -1,10 +1,10 @@
 use libc::uint32_t;
-use std::os::raw::c_void;
+use libc::c_void;
 use std::marker::PhantomData;
 use std::mem;
-use sys;
+use crate::sys;
 
-use TimerSubsystem;
+use crate::TimerSubsystem;
 
 impl TimerSubsystem {
     /// Constructs a new timer using the boxed closure `callback`.
@@ -102,7 +102,7 @@ mod test {
     }
 
     fn test_timer_runs_multiple_times() {
-        let sdl_context = ::sdl::init().unwrap();
+        let sdl_context = crate::sdl::init().unwrap();
         let timer_subsystem = sdl_context.timer().unwrap();
 
         let local_num = Arc::new(Mutex::new(0));
@@ -126,7 +126,7 @@ mod test {
     }
 
     fn test_timer_runs_at_least_once() {
-        let sdl_context = ::sdl::init().unwrap();
+        let sdl_context = crate::sdl::init().unwrap();
         let timer_subsystem = sdl_context.timer().unwrap();
 
         let local_flag = Arc::new(Mutex::new(false));
@@ -143,7 +143,7 @@ mod test {
     }
 
     fn test_timer_can_be_recreated() {
-        let sdl_context = ::sdl::init().unwrap();
+        let sdl_context = crate::sdl::init().unwrap();
         let timer_subsystem = sdl_context.timer().unwrap();
 
         let local_num = Arc::new(Mutex::new(0));

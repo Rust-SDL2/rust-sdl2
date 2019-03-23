@@ -200,31 +200,31 @@ extern "C" {
     pub fn Mix_SetPostMix(
         mix_func: ::std::option::Option<
             unsafe extern "C" fn(
-                udata: *mut ::std::os::raw::c_void,
+                udata: *mut ::libc::c_void,
                 stream: *mut Uint8,
                 len: ::std::os::raw::c_int,
             ),
         >,
-        arg: *mut ::std::os::raw::c_void,
+        arg: *mut ::libc::c_void,
     );
 }
 extern "C" {
     pub fn Mix_HookMusic(
         mix_func: ::std::option::Option<
             unsafe extern "C" fn(
-                udata: *mut ::std::os::raw::c_void,
+                udata: *mut ::libc::c_void,
                 stream: *mut Uint8,
                 len: ::std::os::raw::c_int,
             ),
         >,
-        arg: *mut ::std::os::raw::c_void,
+        arg: *mut ::libc::c_void,
     );
 }
 extern "C" {
     pub fn Mix_HookMusicFinished(music_finished: ::std::option::Option<unsafe extern "C" fn()>);
 }
 extern "C" {
-    pub fn Mix_GetMusicHookData() -> *mut ::std::os::raw::c_void;
+    pub fn Mix_GetMusicHookData() -> *mut ::libc::c_void;
 }
 extern "C" {
     pub fn Mix_ChannelFinished(
@@ -236,20 +236,20 @@ extern "C" {
 pub type Mix_EffectFunc_t = ::std::option::Option<
     unsafe extern "C" fn(
         chan: ::std::os::raw::c_int,
-        stream: *mut ::std::os::raw::c_void,
+        stream: *mut ::libc::c_void,
         len: ::std::os::raw::c_int,
-        udata: *mut ::std::os::raw::c_void,
+        udata: *mut ::libc::c_void,
     ),
 >;
 pub type Mix_EffectDone_t = ::std::option::Option<
-    unsafe extern "C" fn(chan: ::std::os::raw::c_int, udata: *mut ::std::os::raw::c_void),
+    unsafe extern "C" fn(chan: ::std::os::raw::c_int, udata: *mut ::libc::c_void),
 >;
 extern "C" {
     pub fn Mix_RegisterEffect(
         chan: ::std::os::raw::c_int,
         f: Mix_EffectFunc_t,
         d: Mix_EffectDone_t,
-        arg: *mut ::std::os::raw::c_void,
+        arg: *mut ::libc::c_void,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
@@ -454,10 +454,10 @@ extern "C" {
         function: ::std::option::Option<
             unsafe extern "C" fn(
                 arg1: *const ::std::os::raw::c_char,
-                arg2: *mut ::std::os::raw::c_void,
+                arg2: *mut ::libc::c_void,
             ) -> ::std::os::raw::c_int,
         >,
-        data: *mut ::std::os::raw::c_void,
+        data: *mut ::libc::c_void,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {

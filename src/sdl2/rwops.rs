@@ -3,11 +3,11 @@ use std::io;
 use std::path::Path;
 use std::marker::PhantomData;
 use libc::{c_int, size_t, c_char};
-use std::os::raw::c_void;
-use get_error;
+use libc::c_void;
+use crate::get_error;
 use std::mem::transmute;
 
-use sys;
+use crate::sys;
 
 /// A structure that provides an abstract interface to stream I/O.
 pub struct RWops<'a> {

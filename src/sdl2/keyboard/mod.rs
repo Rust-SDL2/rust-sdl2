@@ -1,9 +1,9 @@
-use EventPump;
-use rect::Rect;
-use video::Window;
+use crate::EventPump;
+use crate::rect::Rect;
+use crate::video::Window;
 use std::mem::transmute;
 
-use sys;
+use crate::sys;
 
 mod keycode;
 mod scancode;
@@ -140,7 +140,7 @@ impl<'a> Iterator for PressedScancodeIterator<'a> {
     }
 }
 
-impl ::Sdl {
+impl crate::Sdl {
     #[inline]
     pub fn keyboard(&self) -> KeyboardUtil {
         KeyboardUtil {
@@ -149,7 +149,7 @@ impl ::Sdl {
     }
 }
 
-impl ::VideoSubsystem {
+impl crate::VideoSubsystem {
     #[inline]
     pub fn text_input(&self) -> TextInputUtil {
         TextInputUtil {
@@ -166,7 +166,7 @@ impl ::VideoSubsystem {
 /// let focused = sdl_context.keyboard().focused_window_id().is_some();
 /// ```
 pub struct KeyboardUtil {
-    _sdldrop: ::std::rc::Rc<::SdlDrop>
+    _sdldrop: ::std::rc::Rc<crate::SdlDrop>
 }
 
 impl KeyboardUtil {
@@ -202,7 +202,7 @@ impl KeyboardUtil {
 /// video_subsystem.text_input().start();
 /// ```
 pub struct TextInputUtil {
-    _subsystem: ::VideoSubsystem
+    _subsystem: crate::VideoSubsystem
 }
 
 impl TextInputUtil {
