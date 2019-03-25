@@ -540,16 +540,35 @@ fn generate_bindings<S: AsRef<str> + ::std::fmt::Debug>(target: &str, host: &str
         .use_core()
         .ctypes_prefix("libc");
 
-    let mut image_bindings = bindgen::Builder::default();
+    let mut image_bindings = bindgen::Builder::default()
+        .use_core()
+        .raw_line("use crate::*;")
+        .ctypes_prefix("libc");
 
-    let mut ttf_bindings = bindgen::Builder::default();
+    let mut ttf_bindings = bindgen::Builder::default()
+        .use_core()
+        .raw_line("use crate::*;")
+        .ctypes_prefix("libc");
 
-    let mut mixer_bindings = bindgen::Builder::default();
+    let mut mixer_bindings = bindgen::Builder::default()
+        .use_core()
+        .raw_line("use crate::*;")
+        .ctypes_prefix("libc");
 
-    let mut gfx_framerate_bindings = bindgen::Builder::default();
-    let mut gfx_primitives_bindings = bindgen::Builder::default();
-    let mut gfx_imagefilter_bindings = bindgen::Builder::default();
-    let mut gfx_rotozoom_bindings = bindgen::Builder::default();
+    let mut gfx_framerate_bindings = bindgen::Builder::default()
+        .use_core()
+        .ctypes_prefix("libc");
+    let mut gfx_primitives_bindings = bindgen::Builder::default()
+        .use_core()
+        .raw_line("use crate::*;")
+        .ctypes_prefix("libc");
+    let mut gfx_imagefilter_bindings = bindgen::Builder::default()
+        .use_core()
+        .ctypes_prefix("libc");
+    let mut gfx_rotozoom_bindings = bindgen::Builder::default()
+        .use_core()
+        .raw_line("use crate::*;")
+        .ctypes_prefix("libc");
 
     // Set correct target triple for bindgen when cross-compiling
     if target != host {
