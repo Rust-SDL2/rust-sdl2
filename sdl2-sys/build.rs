@@ -323,6 +323,7 @@ fn link_sdl2(target_os: &str) {
 
         // Also linked to any required libraries for each supported platform
         if target_os.contains("windows") {
+            //bogus
             println!("cargo:rustc-link-lib=shell32");
             println!("cargo:rustc-link-lib=user32");
             println!("cargo:rustc-link-lib=gdi32");
