@@ -3,7 +3,7 @@
 pub const FPS_UPPER_LIMIT: u32 = 200;
 pub const FPS_LOWER_LIMIT: u32 = 1;
 pub const FPS_DEFAULT: u32 = 30;
-pub type __uint32_t = ::std::os::raw::c_uint;
+pub type __uint32_t = libc::c_uint;
 pub type Uint32 = u32;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -17,17 +17,17 @@ pub struct FPSmanager {
 #[test]
 fn bindgen_test_layout_FPSmanager() {
     assert_eq!(
-        ::std::mem::size_of::<FPSmanager>(),
+        ::core::mem::size_of::<FPSmanager>(),
         20usize,
         concat!("Size of: ", stringify!(FPSmanager))
     );
     assert_eq!(
-        ::std::mem::align_of::<FPSmanager>(),
+        ::core::mem::align_of::<FPSmanager>(),
         4usize,
         concat!("Alignment of ", stringify!(FPSmanager))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<FPSmanager>())).framecount as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<FPSmanager>())).framecount as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -37,7 +37,7 @@ fn bindgen_test_layout_FPSmanager() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<FPSmanager>())).rateticks as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<FPSmanager>())).rateticks as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -47,7 +47,7 @@ fn bindgen_test_layout_FPSmanager() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<FPSmanager>())).baseticks as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<FPSmanager>())).baseticks as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -57,7 +57,7 @@ fn bindgen_test_layout_FPSmanager() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<FPSmanager>())).lastticks as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<FPSmanager>())).lastticks as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -67,7 +67,7 @@ fn bindgen_test_layout_FPSmanager() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<FPSmanager>())).rate as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<FPSmanager>())).rate as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -81,13 +81,13 @@ extern "C" {
     pub fn SDL_initFramerate(manager: *mut FPSmanager);
 }
 extern "C" {
-    pub fn SDL_setFramerate(manager: *mut FPSmanager, rate: Uint32) -> ::std::os::raw::c_int;
+    pub fn SDL_setFramerate(manager: *mut FPSmanager, rate: Uint32) -> libc::c_int;
 }
 extern "C" {
-    pub fn SDL_getFramerate(manager: *mut FPSmanager) -> ::std::os::raw::c_int;
+    pub fn SDL_getFramerate(manager: *mut FPSmanager) -> libc::c_int;
 }
 extern "C" {
-    pub fn SDL_getFramecount(manager: *mut FPSmanager) -> ::std::os::raw::c_int;
+    pub fn SDL_getFramecount(manager: *mut FPSmanager) -> libc::c_int;
 }
 extern "C" {
     pub fn SDL_framerateDelay(manager: *mut FPSmanager) -> Uint32;
