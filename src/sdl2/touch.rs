@@ -1,4 +1,4 @@
-use sys;
+use crate::sys;
 
 pub type Finger = sys::SDL_Finger;
 pub type TouchDevice = sys::SDL_TouchID;

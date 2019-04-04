@@ -5,7 +5,7 @@ use std::ptr;
 use std::ffi::CString;
 use num::traits::ToPrimitive;
 use libc::{c_int, c_char};
-use std::os::raw::c_void;
+use libc::c_void;
 use render::Canvas;
 use surface::Surface;
 use pixels;

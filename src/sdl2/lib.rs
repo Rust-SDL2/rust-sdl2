@@ -63,7 +63,7 @@ pub extern crate sdl2_sys as sys;
 #[cfg(feature = "gfx")]
 extern crate c_vec;
 
-pub use sdl::*;
+pub use crate::sdl::*;
 
 pub mod clipboard;
 pub mod cpuinfo;
@@ -103,4 +103,4 @@ pub mod gfx;
 
 mod common;
 // Export return types and such from the common module.
-pub use common::IntegerOrSdlError;
+pub use crate::common::IntegerOrSdlError;

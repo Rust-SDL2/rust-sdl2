@@ -27,7 +27,7 @@ use std::ffi::{CString, CStr};
 use std::str::from_utf8;
 use std::borrow::ToOwned;
 use std::path::Path;
-use std::os::raw::c_void;
+use libc::c_void;
 use libc::{c_int, uint16_t, c_double, c_uint};
 use ::get_error;
 use ::rwops::RWops;

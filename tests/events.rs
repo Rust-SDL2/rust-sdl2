@@ -28,8 +28,8 @@ fn test2(ev: &sdl2::EventSubsystem, ep: &mut sdl2::EventPump) {
         window_id: 0,
         type_: user_event_id,
         code: 456,
-        data1: 0x12_34 as *mut ::std::os::raw::c_void,
-        data2: 0x56_78 as *mut ::std::os::raw::c_void,
+        data1: 0x12_34 as *mut libc::c_void,
+        data2: 0x56_78 as *mut libc::c_void,
     };
 
     let (w1, t1, c1, a1, a2) = match event {

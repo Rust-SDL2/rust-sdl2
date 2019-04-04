@@ -4,15 +4,15 @@ use std::ffi::{CString, CStr, NulError};
 use std::fmt;
 use std::io;
 use std::path::Path;
-use rwops::RWops;
+use crate::rwops::RWops;
 
-use GameControllerSubsystem;
-use get_error;
-use joystick;
-use common::{validate_int, IntegerOrSdlError};
+use crate::GameControllerSubsystem;
+use crate::get_error;
+use crate::joystick;
+use crate::common::{validate_int, IntegerOrSdlError};
 use std::mem::transmute;
 
-use sys;
+use crate::sys;
 
 #[derive(Debug)]
 pub enum AddMappingError {
@@ -73,8 +73,8 @@ impl GameControllerSubsystem {
     /// Controller IDs are the same as joystick IDs and the maximum number can
     /// be retrieved using the `SDL_NumJoysticks` function.
     pub fn open(&self, joystick_index: u32) -> Result<GameController, IntegerOrSdlError> {
-        use common::IntegerOrSdlError::*;
-        let joystick_index = try!(validate_int(joystick_index, "joystick_index"));
+        use crate::common::IntegerOrSdlError::*;
+        let joystick_index = r#try!(validate_int(joystick_index, "joystick_index"));
         let controller = unsafe { sys::SDL_GameControllerOpen(joystick_index) };
 
         if controller.is_null() {
@@ -89,8 +89,8 @@ impl GameControllerSubsystem {
 
     /// Return the name of the controller at index `joystick_index`.
     pub fn name_for_index(&self, joystick_index: u32) -> Result<String, IntegerOrSdlError> {
-        use common::IntegerOrSdlError::*;
-        let joystick_index = try!(validate_int(joystick_index, "joystick_index"));
+        use crate::common::IntegerOrSdlError::*;
+        let joystick_index = r#try!(validate_int(joystick_index, "joystick_index"));
         let c_str = unsafe { sys::SDL_GameControllerNameForIndex(joystick_index) };
 
         if c_str.is_null() {

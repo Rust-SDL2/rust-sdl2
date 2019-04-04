@@ -54,19 +54,18 @@
 
 use std::ffi::{CStr, CString};
 use num::FromPrimitive;
-use libc::{c_int, uint8_t, c_char};
-use std::os::raw::c_void;
+use libc::{c_int, c_void, uint8_t, c_char};
 use std::ops::{Deref, DerefMut};
 use std::path::Path;
 use std::marker::PhantomData;
 use std::mem;
 use std::ptr;
 
-use AudioSubsystem;
-use get_error;
-use rwops::RWops;
+use crate::AudioSubsystem;
+use crate::get_error;
+use crate::rwops::RWops;
 
-use sys;
+use crate::sys;
 
 impl AudioSubsystem {
     /// Opens a new audio device given the desired parameters and callback.
@@ -281,7 +280,7 @@ pub struct AudioSpecWAV {
 impl AudioSpecWAV {
     /// Loads a WAVE from the file path.
     pub fn load_wav<P: AsRef<Path>>(path: P) -> Result<AudioSpecWAV, String> {
-        let mut file = try!(RWops::from_file(path, "rb"));
+        let mut file = r#try!(RWops::from_file(path, "rb"));
         AudioSpecWAV::load_wav_rw(&mut file)
     }
 
@@ -330,7 +329,7 @@ where Self::Channel: AudioFormatNum + 'static
 {
     type Channel;
 
-    fn callback(&mut self, &mut [Self::Channel]);
+    fn callback(&mut self, _: &mut [Self::Channel]);
 }
 
 /// A phantom type for retrieving the `SDL_AudioFormat` of a given generic type.

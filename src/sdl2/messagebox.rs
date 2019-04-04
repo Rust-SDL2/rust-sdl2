@@ -4,10 +4,10 @@ use std::fmt;
 use std::ptr;
 use std::os::raw::{c_char,c_int};
 
-use video::Window;
-use get_error;
+use crate::video::Window;
+use crate::get_error;
 
-use sys;
+use crate::sys;
 
 bitflags! {
     pub struct MessageBoxFlag: u32 {

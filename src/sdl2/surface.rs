@@ -4,17 +4,17 @@ use std::ops::{Deref, DerefMut};
 use std::path::Path;
 use std::rc::Rc;
 
-use rect::Rect;
-use get_error;
+use crate::rect::Rect;
+use crate::get_error;
 use std::ptr;
 use libc::c_int;
 use num::FromPrimitive;
-use pixels;
-use render::{BlendMode, Canvas};
-use rwops::RWops;
+use crate::pixels;
+use crate::render::{BlendMode, Canvas};
+use crate::rwops::RWops;
 use std::mem::transmute;
 
-use sys;
+use crate::sys;
 
 /// Holds a `SDL_Surface`
 ///
@@ -115,7 +115,7 @@ impl<'a> Surface<'a> {
     /// let surface = Surface::new(512, 512, PixelFormatEnum::RGB24).unwrap();
     /// ```
     pub fn new(width: u32, height: u32, format: pixels::PixelFormatEnum) -> Result<Surface<'static>, String> {
-        let masks = try!(format.into_masks());
+        let masks = r#try!(format.into_masks());
         Surface::from_pixelmasks(width, height, masks)
     }
 
@@ -148,7 +148,7 @@ impl<'a> Surface<'a> {
 
     /// Creates a new surface from an existing buffer, using a pixel format.
     pub fn from_data(data: &'a mut [u8], width: u32, height: u32, pitch: u32, format: pixels::PixelFormatEnum) -> Result<Surface<'a>, String> {
-        let masks = try!(format.into_masks());
+        let masks = r#try!(format.into_masks());
         Surface::from_data_pixelmasks(data, width, height, pitch, masks)
     }
 
@@ -186,7 +186,7 @@ impl<'a> Surface<'a> {
     }
 
     pub fn load_bmp<P: AsRef<Path>>(path: P) -> Result<Surface<'static>, String> {
-        let mut file = try!(RWops::from_file(path, "rb"));
+        let mut file = r#try!(RWops::from_file(path, "rb"));
         Surface::load_bmp_rw(&mut file)
     }
 
@@ -332,7 +332,7 @@ impl SurfaceRef {
     }
 
     pub fn save_bmp<P: AsRef<Path>>(&self, path: P) -> Result<(), String> {
-        let mut file = try!(RWops::from_file(path, "wb"));
+        let mut file = r#try!(RWops::from_file(path, "wb"));
         self.save_bmp_rw(&mut file)
     }
 

@@ -7,7 +7,7 @@ use sdl2::mouse::MouseButton;
 use sdl2::keyboard::Keycode;
 use sdl2::video::{Window, WindowContext};
 use sdl2::render::{Canvas, Texture, TextureCreator};
-use game_of_life::{SQUARE_SIZE, PLAYGROUND_WIDTH, PLAYGROUND_HEIGHT};
+use crate::game_of_life::{SQUARE_SIZE, PLAYGROUND_WIDTH, PLAYGROUND_HEIGHT};
 
 mod game_of_life {
     pub const SQUARE_SIZE: u32 = 16;

@@ -4,7 +4,7 @@ use std::ffi::{CString, CStr};
 use libc::c_char;
 use std::mem::transmute;
 
-use sys;
+use crate::sys;
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(i32)]
@@ -500,7 +500,7 @@ impl fmt::Display for Keycode {
     }
 }
 
-use keyboard::Scancode;
+use crate::keyboard::Scancode;
 
 impl Keycode {
     /// Gets the virtual key from a scancode. Returns None if there is no corresponding virtual key.

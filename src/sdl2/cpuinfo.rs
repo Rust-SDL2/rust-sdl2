@@ -1,4 +1,4 @@
-use sys;
+use crate::sys;
 
 pub const CACHELINESIZE: u8 = 128;
 

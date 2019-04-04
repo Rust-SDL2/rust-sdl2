@@ -5,7 +5,7 @@ use std::rc::Rc;
 use libc::{c_char, uint32_t};
 use std::mem::transmute;
 
-use sys;
+use crate::sys;
 
 #[repr(i32)]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
@@ -45,10 +45,10 @@ impl error::Error for Error {
     }
 }
 
-use std::sync::atomic::{AtomicBool, ATOMIC_BOOL_INIT};
+use std::sync::atomic::{AtomicBool};
 /// Only one Sdl context can be alive at a time.
 /// Set to false by default (not alive).
-static IS_SDL_CONTEXT_ALIVE: AtomicBool = ATOMIC_BOOL_INIT;
+static IS_SDL_CONTEXT_ALIVE: AtomicBool = AtomicBool::new(false);
 
 /// The SDL context type. Initialize with `sdl2::init()`.
 ///
@@ -327,7 +327,7 @@ pub fn get_error() -> String {
 }
 
 pub fn set_error(err: &str) -> Result<(), NulError> {
-    let c_string = try!(CString::new(err));
+    let c_string = r#try!(CString::new(err));
     Ok(unsafe {
         sys::SDL_SetError(c_string.as_ptr() as *const c_char);
     })

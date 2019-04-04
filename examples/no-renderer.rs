@@ -37,7 +37,7 @@ fn set_window_gradient(window: &mut Window, event_pump: &sdl2::EventPump, gradie
 }
 
 fn next_gradient(gradient: Gradient) -> Gradient {
-    use Gradient::*;
+    use crate::Gradient::*;
     match gradient {
         Red => Cyan,
         Cyan => Green,

@@ -23,7 +23,7 @@ pub const __USE_ISOC99: u32 = 1;
 pub const __USE_ISOC95: u32 = 1;
 pub const __USE_POSIX_IMPLICITLY: u32 = 1;
 pub const _POSIX_SOURCE: u32 = 1;
-pub const _POSIX_C_SOURCE: u32 = 200809;
+pub const _POSIX_C_SOURCE: f64 = 200809.0;
 pub const __USE_POSIX: u32 = 1;
 pub const __USE_POSIX2: u32 = 1;
 pub const __USE_POSIX199309: u32 = 1;
@@ -38,7 +38,7 @@ pub const __GLIBC_USE_DEPRECATED_GETS: u32 = 0;
 pub const _STDC_PREDEF_H: u32 = 1;
 pub const __STDC_IEC_559__: u32 = 1;
 pub const __STDC_IEC_559_COMPLEX__: u32 = 1;
-pub const __STDC_ISO_10646__: u32 = 201706;
+pub const __STDC_ISO_10646__: f64 = 201706.0;
 pub const __GNU_LIBRARY__: u32 = 6;
 pub const __GLIBC__: u32 = 2;
 pub const __GLIBC_MINOR__: u32 = 28;
@@ -80,19 +80,19 @@ pub const UINT_LEAST8_MAX: u32 = 255;
 pub const UINT_LEAST16_MAX: u32 = 65535;
 pub const UINT_LEAST32_MAX: u32 = 4294967295;
 pub const INT_FAST8_MIN: i32 = -128;
-pub const INT_FAST16_MIN: i64 = -9223372036854775808;
-pub const INT_FAST32_MIN: i64 = -9223372036854775808;
+pub const INT_FAST16_MIN: f64 = -9223372036854776000.0;
+pub const INT_FAST32_MIN: f64 = -9223372036854776000.0;
 pub const INT_FAST8_MAX: u32 = 127;
-pub const INT_FAST16_MAX: u64 = 9223372036854775807;
-pub const INT_FAST32_MAX: u64 = 9223372036854775807;
+pub const INT_FAST16_MAX: f64 = 9223372036854776000.0;
+pub const INT_FAST32_MAX: f64 = 9223372036854776000.0;
 pub const UINT_FAST8_MAX: u32 = 255;
 pub const UINT_FAST16_MAX: i32 = -1;
 pub const UINT_FAST32_MAX: i32 = -1;
-pub const INTPTR_MIN: i64 = -9223372036854775808;
-pub const INTPTR_MAX: u64 = 9223372036854775807;
+pub const INTPTR_MIN: f64 = -9223372036854776000.0;
+pub const INTPTR_MAX: f64 = 9223372036854776000.0;
 pub const UINTPTR_MAX: i32 = -1;
-pub const PTRDIFF_MIN: i64 = -9223372036854775808;
-pub const PTRDIFF_MAX: u64 = 9223372036854775807;
+pub const PTRDIFF_MIN: f64 = -9223372036854776000.0;
+pub const PTRDIFF_MAX: f64 = 9223372036854776000.0;
 pub const SIG_ATOMIC_MIN: i32 = -2147483648;
 pub const SIG_ATOMIC_MAX: u32 = 2147483647;
 pub const SIZE_MAX: i32 = -1;
@@ -447,44 +447,19 @@ pub const SDL_INIT_EVERYTHING: u32 = 62001;
 pub const XlibSpecificationRelease: u32 = 6;
 pub const X_PROTOCOL: u32 = 11;
 pub const X_PROTOCOL_REVISION: u32 = 0;
-pub const None: u32 = 0;
-pub const ParentRelative: u32 = 1;
-pub const CopyFromParent: u32 = 0;
-pub const PointerWindow: u32 = 0;
-pub const InputFocus: u32 = 1;
-pub const PointerRoot: u32 = 1;
-pub const AnyPropertyType: u32 = 0;
-pub const AnyKey: u32 = 0;
-pub const AnyButton: u32 = 0;
-pub const AllTemporary: u32 = 0;
-pub const CurrentTime: u32 = 0;
-pub const NoSymbol: u32 = 0;
-pub const NoEventMask: u32 = 0;
-pub const KeyPressMask: u32 = 1;
-pub const KeyReleaseMask: u32 = 2;
-pub const ButtonPressMask: u32 = 4;
-pub const ButtonReleaseMask: u32 = 8;
-pub const EnterWindowMask: u32 = 16;
-pub const LeaveWindowMask: u32 = 32;
-pub const PointerMotionMask: u32 = 64;
-pub const PointerMotionHintMask: u32 = 128;
-pub const Button1MotionMask: u32 = 256;
-pub const Button2MotionMask: u32 = 512;
-pub const Button3MotionMask: u32 = 1024;
-pub const Button4MotionMask: u32 = 2048;
-pub const Button5MotionMask: u32 = 4096;
-pub const ButtonMotionMask: u32 = 8192;
-pub const KeymapStateMask: u32 = 16384;
-pub const ExposureMask: u32 = 32768;
-pub const VisibilityChangeMask: u32 = 65536;
-pub const StructureNotifyMask: u32 = 131072;
-pub const ResizeRedirectMask: u32 = 262144;
-pub const SubstructureNotifyMask: u32 = 524288;
-pub const SubstructureRedirectMask: u32 = 1048576;
-pub const FocusChangeMask: u32 = 2097152;
-pub const PropertyChangeMask: u32 = 4194304;
-pub const ColormapChangeMask: u32 = 8388608;
-pub const OwnerGrabButtonMask: u32 = 16777216;
+pub const None: f64 = 0.0;
+pub const ParentRelative: f64 = 1.0;
+pub const CopyFromParent: f64 = 0.0;
+pub const PointerWindow: f64 = 0.0;
+pub const InputFocus: f64 = 1.0;
+pub const PointerRoot: f64 = 1.0;
+pub const AnyPropertyType: f64 = 0.0;
+pub const AnyKey: f64 = 0.0;
+pub const AnyButton: f64 = 0.0;
+pub const AllTemporary: f64 = 0.0;
+pub const CurrentTime: f64 = 0.0;
+pub const NoSymbol: f64 = 0.0;
+pub const NoEventMask: f64 = 0.0;
 pub const KeyPress: u32 = 2;
 pub const KeyRelease: u32 = 3;
 pub const ButtonPress: u32 = 4;
@@ -612,21 +587,6 @@ pub const FirstExtensionError: u32 = 128;
 pub const LastExtensionError: u32 = 255;
 pub const InputOutput: u32 = 1;
 pub const InputOnly: u32 = 2;
-pub const CWBackPixmap: u32 = 1;
-pub const CWBackPixel: u32 = 2;
-pub const CWBorderPixmap: u32 = 4;
-pub const CWBorderPixel: u32 = 8;
-pub const CWBitGravity: u32 = 16;
-pub const CWWinGravity: u32 = 32;
-pub const CWBackingStore: u32 = 64;
-pub const CWBackingPlanes: u32 = 128;
-pub const CWBackingPixel: u32 = 256;
-pub const CWOverrideRedirect: u32 = 512;
-pub const CWSaveUnder: u32 = 1024;
-pub const CWEventMask: u32 = 2048;
-pub const CWDontPropagate: u32 = 4096;
-pub const CWColormap: u32 = 8192;
-pub const CWCursor: u32 = 16384;
 pub const CWX: u32 = 1;
 pub const CWY: u32 = 2;
 pub const CWWidth: u32 = 4;
@@ -712,29 +672,6 @@ pub const Nonconvex: u32 = 1;
 pub const Convex: u32 = 2;
 pub const ArcChord: u32 = 0;
 pub const ArcPieSlice: u32 = 1;
-pub const GCFunction: u32 = 1;
-pub const GCPlaneMask: u32 = 2;
-pub const GCForeground: u32 = 4;
-pub const GCBackground: u32 = 8;
-pub const GCLineWidth: u32 = 16;
-pub const GCLineStyle: u32 = 32;
-pub const GCCapStyle: u32 = 64;
-pub const GCJoinStyle: u32 = 128;
-pub const GCFillStyle: u32 = 256;
-pub const GCFillRule: u32 = 512;
-pub const GCTile: u32 = 1024;
-pub const GCStipple: u32 = 2048;
-pub const GCTileStipXOrigin: u32 = 4096;
-pub const GCTileStipYOrigin: u32 = 8192;
-pub const GCFont: u32 = 16384;
-pub const GCSubwindowMode: u32 = 32768;
-pub const GCGraphicsExposures: u32 = 65536;
-pub const GCClipXOrigin: u32 = 131072;
-pub const GCClipYOrigin: u32 = 262144;
-pub const GCClipMask: u32 = 524288;
-pub const GCDashOffset: u32 = 1048576;
-pub const GCDashList: u32 = 2097152;
-pub const GCArcMode: u32 = 4194304;
 pub const GCLastBit: u32 = 22;
 pub const FontLeftToRight: u32 = 0;
 pub const FontRightToLeft: u32 = 1;
@@ -755,14 +692,6 @@ pub const AutoRepeatModeOn: u32 = 1;
 pub const AutoRepeatModeDefault: u32 = 2;
 pub const LedModeOff: u32 = 0;
 pub const LedModeOn: u32 = 1;
-pub const KBKeyClickPercent: u32 = 1;
-pub const KBBellPercent: u32 = 2;
-pub const KBBellPitch: u32 = 4;
-pub const KBBellDuration: u32 = 8;
-pub const KBLed: u32 = 16;
-pub const KBLedMode: u32 = 32;
-pub const KBKey: u32 = 64;
-pub const KBAutoRepeatMode: u32 = 128;
 pub const MappingSuccess: u32 = 0;
 pub const MappingBusy: u32 = 1;
 pub const MappingFailed: u32 = 2;
@@ -868,20 +797,10 @@ pub const XLookupNone: u32 = 1;
 pub const XLookupChars: u32 = 2;
 pub const XLookupKeySym: u32 = 3;
 pub const XLookupBoth: u32 = 4;
-pub const XIMReverse: u32 = 1;
-pub const XIMUnderline: u32 = 2;
-pub const XIMHighlight: u32 = 4;
-pub const XIMPrimary: u32 = 32;
-pub const XIMSecondary: u32 = 64;
-pub const XIMTertiary: u32 = 128;
-pub const XIMVisibleToForward: u32 = 256;
-pub const XIMVisibleToBackword: u32 = 512;
-pub const XIMVisibleToCenter: u32 = 1024;
-pub const XIMPreeditUnKnown: u32 = 0;
-pub const XIMPreeditEnable: u32 = 1;
-pub const XIMPreeditDisable: u32 = 2;
-pub const XIMInitialState: u32 = 1;
-pub const XIMPreserveState: u32 = 2;
+pub const XIMReverse: f64 = 1.0;
+pub const XIMPreeditUnKnown: f64 = 0.0;
+pub const XIMPreeditEnable: f64 = 1.0;
+pub const XIMInitialState: f64 = 1.0;
 pub const XIMStringConversionLeftEdge: u32 = 1;
 pub const XIMStringConversionRightEdge: u32 = 2;
 pub const XIMStringConversionTopEdge: u32 = 4;
@@ -899,23 +818,23 @@ pub const XIMHotKeyStateOFF: u32 = 2;
 pub const XATOM_H: u32 = 1;
 extern "C" {
     ///  \brief Gets the name of the platform.
-    pub fn SDL_GetPlatform() -> *const ::std::os::raw::c_char;
+    pub fn SDL_GetPlatform() -> *const libc::c_char;
 }
-pub type wchar_t = ::std::os::raw::c_int;
+pub type wchar_t = libc::c_int;
 pub type va_list = __builtin_va_list;
 pub type __gnuc_va_list = __builtin_va_list;
-pub type __u_char = ::std::os::raw::c_uchar;
-pub type __u_short = ::std::os::raw::c_ushort;
-pub type __u_int = ::std::os::raw::c_uint;
-pub type __u_long = ::std::os::raw::c_ulong;
-pub type __int8_t = ::std::os::raw::c_schar;
-pub type __uint8_t = ::std::os::raw::c_uchar;
-pub type __int16_t = ::std::os::raw::c_short;
-pub type __uint16_t = ::std::os::raw::c_ushort;
-pub type __int32_t = ::std::os::raw::c_int;
-pub type __uint32_t = ::std::os::raw::c_uint;
-pub type __int64_t = ::std::os::raw::c_long;
-pub type __uint64_t = ::std::os::raw::c_ulong;
+pub type __u_char = libc::c_uchar;
+pub type __u_short = libc::c_ushort;
+pub type __u_int = libc::c_uint;
+pub type __u_long = libc::c_ulong;
+pub type __int8_t = libc::c_schar;
+pub type __uint8_t = libc::c_uchar;
+pub type __int16_t = libc::c_short;
+pub type __uint16_t = libc::c_ushort;
+pub type __int32_t = libc::c_int;
+pub type __uint32_t = libc::c_uint;
+pub type __int64_t = libc::c_long;
+pub type __uint64_t = libc::c_ulong;
 pub type __int_least8_t = __int8_t;
 pub type __uint_least8_t = __uint8_t;
 pub type __int_least16_t = __int16_t;
@@ -924,39 +843,39 @@ pub type __int_least32_t = __int32_t;
 pub type __uint_least32_t = __uint32_t;
 pub type __int_least64_t = __int64_t;
 pub type __uint_least64_t = __uint64_t;
-pub type __quad_t = ::std::os::raw::c_long;
-pub type __u_quad_t = ::std::os::raw::c_ulong;
-pub type __intmax_t = ::std::os::raw::c_long;
-pub type __uintmax_t = ::std::os::raw::c_ulong;
-pub type __dev_t = ::std::os::raw::c_ulong;
-pub type __uid_t = ::std::os::raw::c_uint;
-pub type __gid_t = ::std::os::raw::c_uint;
-pub type __ino_t = ::std::os::raw::c_ulong;
-pub type __ino64_t = ::std::os::raw::c_ulong;
-pub type __mode_t = ::std::os::raw::c_uint;
-pub type __nlink_t = ::std::os::raw::c_ulong;
-pub type __off_t = ::std::os::raw::c_long;
-pub type __off64_t = ::std::os::raw::c_long;
-pub type __pid_t = ::std::os::raw::c_int;
+pub type __quad_t = libc::c_long;
+pub type __u_quad_t = libc::c_ulong;
+pub type __intmax_t = libc::c_long;
+pub type __uintmax_t = libc::c_ulong;
+pub type __dev_t = libc::c_ulong;
+pub type __uid_t = libc::c_uint;
+pub type __gid_t = libc::c_uint;
+pub type __ino_t = libc::c_ulong;
+pub type __ino64_t = libc::c_ulong;
+pub type __mode_t = libc::c_uint;
+pub type __nlink_t = libc::c_ulong;
+pub type __off_t = libc::c_long;
+pub type __off64_t = libc::c_long;
+pub type __pid_t = libc::c_int;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct __fsid_t {
-    pub __val: [::std::os::raw::c_int; 2usize],
+    pub __val: [libc::c_int; 2usize],
 }
 #[test]
 fn bindgen_test_layout___fsid_t() {
     assert_eq!(
-        ::std::mem::size_of::<__fsid_t>(),
+        ::core::mem::size_of::<__fsid_t>(),
         8usize,
         concat!("Size of: ", stringify!(__fsid_t))
     );
     assert_eq!(
-        ::std::mem::align_of::<__fsid_t>(),
+        ::core::mem::align_of::<__fsid_t>(),
         4usize,
         concat!("Alignment of ", stringify!(__fsid_t))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__fsid_t>())).__val as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__fsid_t>())).__val as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -966,33 +885,33 @@ fn bindgen_test_layout___fsid_t() {
         )
     );
 }
-pub type __clock_t = ::std::os::raw::c_long;
-pub type __rlim_t = ::std::os::raw::c_ulong;
-pub type __rlim64_t = ::std::os::raw::c_ulong;
-pub type __id_t = ::std::os::raw::c_uint;
-pub type __time_t = ::std::os::raw::c_long;
-pub type __useconds_t = ::std::os::raw::c_uint;
-pub type __suseconds_t = ::std::os::raw::c_long;
-pub type __daddr_t = ::std::os::raw::c_int;
-pub type __key_t = ::std::os::raw::c_int;
-pub type __clockid_t = ::std::os::raw::c_int;
-pub type __timer_t = *mut ::std::os::raw::c_void;
-pub type __blksize_t = ::std::os::raw::c_long;
-pub type __blkcnt_t = ::std::os::raw::c_long;
-pub type __blkcnt64_t = ::std::os::raw::c_long;
-pub type __fsblkcnt_t = ::std::os::raw::c_ulong;
-pub type __fsblkcnt64_t = ::std::os::raw::c_ulong;
-pub type __fsfilcnt_t = ::std::os::raw::c_ulong;
-pub type __fsfilcnt64_t = ::std::os::raw::c_ulong;
-pub type __fsword_t = ::std::os::raw::c_long;
-pub type __ssize_t = ::std::os::raw::c_long;
-pub type __syscall_slong_t = ::std::os::raw::c_long;
-pub type __syscall_ulong_t = ::std::os::raw::c_ulong;
+pub type __clock_t = libc::c_long;
+pub type __rlim_t = libc::c_ulong;
+pub type __rlim64_t = libc::c_ulong;
+pub type __id_t = libc::c_uint;
+pub type __time_t = libc::c_long;
+pub type __useconds_t = libc::c_uint;
+pub type __suseconds_t = libc::c_long;
+pub type __daddr_t = libc::c_int;
+pub type __key_t = libc::c_int;
+pub type __clockid_t = libc::c_int;
+pub type __timer_t = *mut libc::c_void;
+pub type __blksize_t = libc::c_long;
+pub type __blkcnt_t = libc::c_long;
+pub type __blkcnt64_t = libc::c_long;
+pub type __fsblkcnt_t = libc::c_ulong;
+pub type __fsblkcnt64_t = libc::c_ulong;
+pub type __fsfilcnt_t = libc::c_ulong;
+pub type __fsfilcnt64_t = libc::c_ulong;
+pub type __fsword_t = libc::c_long;
+pub type __ssize_t = libc::c_long;
+pub type __syscall_slong_t = libc::c_long;
+pub type __syscall_ulong_t = libc::c_ulong;
 pub type __loff_t = __off64_t;
-pub type __caddr_t = *mut ::std::os::raw::c_char;
-pub type __intptr_t = ::std::os::raw::c_long;
-pub type __socklen_t = ::std::os::raw::c_uint;
-pub type __sig_atomic_t = ::std::os::raw::c_int;
+pub type __caddr_t = *mut libc::c_char;
+pub type __intptr_t = libc::c_long;
+pub type __socklen_t = libc::c_uint;
+pub type __sig_atomic_t = libc::c_int;
 pub type int_least8_t = __int_least8_t;
 pub type int_least16_t = __int_least16_t;
 pub type int_least32_t = __int_least32_t;
@@ -1001,14 +920,14 @@ pub type uint_least8_t = __uint_least8_t;
 pub type uint_least16_t = __uint_least16_t;
 pub type uint_least32_t = __uint_least32_t;
 pub type uint_least64_t = __uint_least64_t;
-pub type int_fast8_t = ::std::os::raw::c_schar;
-pub type int_fast16_t = ::std::os::raw::c_long;
-pub type int_fast32_t = ::std::os::raw::c_long;
-pub type int_fast64_t = ::std::os::raw::c_long;
-pub type uint_fast8_t = ::std::os::raw::c_uchar;
-pub type uint_fast16_t = ::std::os::raw::c_ulong;
-pub type uint_fast32_t = ::std::os::raw::c_ulong;
-pub type uint_fast64_t = ::std::os::raw::c_ulong;
+pub type int_fast8_t = libc::c_schar;
+pub type int_fast16_t = libc::c_long;
+pub type int_fast32_t = libc::c_long;
+pub type int_fast64_t = libc::c_long;
+pub type uint_fast8_t = libc::c_uchar;
+pub type uint_fast16_t = libc::c_ulong;
+pub type uint_fast32_t = libc::c_ulong;
+pub type uint_fast64_t = libc::c_ulong;
 pub type intmax_t = __intmax_t;
 pub type uintmax_t = __uintmax_t;
 #[repr(u32)]
@@ -1025,48 +944,40 @@ pub type Sint32 = i32;
 pub type Uint32 = u32;
 pub type Sint64 = i64;
 pub type Uint64 = u64;
-pub type SDL_compile_time_assert_uint8 = [::std::os::raw::c_int; 1usize];
-pub type SDL_compile_time_assert_sint8 = [::std::os::raw::c_int; 1usize];
-pub type SDL_compile_time_assert_uint16 = [::std::os::raw::c_int; 1usize];
-pub type SDL_compile_time_assert_sint16 = [::std::os::raw::c_int; 1usize];
-pub type SDL_compile_time_assert_uint32 = [::std::os::raw::c_int; 1usize];
-pub type SDL_compile_time_assert_sint32 = [::std::os::raw::c_int; 1usize];
-pub type SDL_compile_time_assert_uint64 = [::std::os::raw::c_int; 1usize];
-pub type SDL_compile_time_assert_sint64 = [::std::os::raw::c_int; 1usize];
+pub type SDL_compile_time_assert_uint8 = [libc::c_int; 1usize];
+pub type SDL_compile_time_assert_sint8 = [libc::c_int; 1usize];
+pub type SDL_compile_time_assert_uint16 = [libc::c_int; 1usize];
+pub type SDL_compile_time_assert_sint16 = [libc::c_int; 1usize];
+pub type SDL_compile_time_assert_uint32 = [libc::c_int; 1usize];
+pub type SDL_compile_time_assert_sint32 = [libc::c_int; 1usize];
+pub type SDL_compile_time_assert_uint64 = [libc::c_int; 1usize];
+pub type SDL_compile_time_assert_sint64 = [libc::c_int; 1usize];
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum SDL_DUMMY_ENUM {
     DUMMY_ENUM_VALUE = 0,
 }
-pub type SDL_compile_time_assert_enum = [::std::os::raw::c_int; 1usize];
+pub type SDL_compile_time_assert_enum = [libc::c_int; 1usize];
 extern "C" {
-    pub fn SDL_malloc(size: usize) -> *mut ::std::os::raw::c_void;
+    pub fn SDL_malloc(size: usize) -> *mut libc::c_void;
 }
 extern "C" {
-    pub fn SDL_calloc(nmemb: usize, size: usize) -> *mut ::std::os::raw::c_void;
+    pub fn SDL_calloc(nmemb: usize, size: usize) -> *mut libc::c_void;
 }
 extern "C" {
-    pub fn SDL_realloc(
-        mem: *mut ::std::os::raw::c_void,
-        size: usize,
-    ) -> *mut ::std::os::raw::c_void;
+    pub fn SDL_realloc(mem: *mut libc::c_void, size: usize) -> *mut libc::c_void;
 }
 extern "C" {
-    pub fn SDL_free(mem: *mut ::std::os::raw::c_void);
+    pub fn SDL_free(mem: *mut libc::c_void);
 }
 pub type SDL_malloc_func =
-    ::std::option::Option<unsafe extern "C" fn(size: usize) -> *mut ::std::os::raw::c_void>;
-pub type SDL_calloc_func = ::std::option::Option<
-    unsafe extern "C" fn(nmemb: usize, size: usize) -> *mut ::std::os::raw::c_void,
+    ::core::option::Option<unsafe extern "C" fn(size: usize) -> *mut libc::c_void>;
+pub type SDL_calloc_func =
+    ::core::option::Option<unsafe extern "C" fn(nmemb: usize, size: usize) -> *mut libc::c_void>;
+pub type SDL_realloc_func = ::core::option::Option<
+    unsafe extern "C" fn(mem: *mut libc::c_void, size: usize) -> *mut libc::c_void,
 >;
-pub type SDL_realloc_func = ::std::option::Option<
-    unsafe extern "C" fn(
-        mem: *mut ::std::os::raw::c_void,
-        size: usize,
-    ) -> *mut ::std::os::raw::c_void,
->;
-pub type SDL_free_func =
-    ::std::option::Option<unsafe extern "C" fn(mem: *mut ::std::os::raw::c_void)>;
+pub type SDL_free_func = ::core::option::Option<unsafe extern "C" fn(mem: *mut libc::c_void)>;
 extern "C" {
     ///  \brief Get the current set of SDL memory functions
     pub fn SDL_GetMemoryFunctions(
@@ -1088,77 +999,69 @@ extern "C" {
         calloc_func: SDL_calloc_func,
         realloc_func: SDL_realloc_func,
         free_func: SDL_free_func,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the number of outstanding (unfreed) allocations
-    pub fn SDL_GetNumAllocations() -> ::std::os::raw::c_int;
+    pub fn SDL_GetNumAllocations() -> libc::c_int;
 }
 extern "C" {
-    pub fn SDL_getenv(name: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+    pub fn SDL_getenv(name: *const libc::c_char) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn SDL_setenv(
-        name: *const ::std::os::raw::c_char,
-        value: *const ::std::os::raw::c_char,
-        overwrite: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        name: *const libc::c_char,
+        value: *const libc::c_char,
+        overwrite: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn SDL_qsort(
-        base: *mut ::std::os::raw::c_void,
+        base: *mut libc::c_void,
         nmemb: usize,
         size: usize,
-        compare: ::std::option::Option<
+        compare: ::core::option::Option<
             unsafe extern "C" fn(
-                arg1: *const ::std::os::raw::c_void,
-                arg2: *const ::std::os::raw::c_void,
-            ) -> ::std::os::raw::c_int,
+                arg1: *const libc::c_void,
+                arg2: *const libc::c_void,
+            ) -> libc::c_int,
         >,
     );
 }
 extern "C" {
-    pub fn SDL_abs(x: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn SDL_abs(x: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn SDL_isdigit(x: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn SDL_isdigit(x: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn SDL_isspace(x: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn SDL_isspace(x: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn SDL_toupper(x: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn SDL_toupper(x: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn SDL_tolower(x: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn SDL_tolower(x: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn SDL_memset(
-        dst: *mut ::std::os::raw::c_void,
-        c: ::std::os::raw::c_int,
-        len: usize,
-    ) -> *mut ::std::os::raw::c_void;
+    pub fn SDL_memset(dst: *mut libc::c_void, c: libc::c_int, len: usize) -> *mut libc::c_void;
 }
 extern "C" {
     pub fn SDL_memcpy(
-        dst: *mut ::std::os::raw::c_void,
-        src: *const ::std::os::raw::c_void,
+        dst: *mut libc::c_void,
+        src: *const libc::c_void,
         len: usize,
-    ) -> *mut ::std::os::raw::c_void;
+    ) -> *mut libc::c_void;
 }
 extern "C" {
     pub fn SDL_memmove(
-        dst: *mut ::std::os::raw::c_void,
-        src: *const ::std::os::raw::c_void,
+        dst: *mut libc::c_void,
+        src: *const libc::c_void,
         len: usize,
-    ) -> *mut ::std::os::raw::c_void;
+    ) -> *mut libc::c_void;
 }
 extern "C" {
-    pub fn SDL_memcmp(
-        s1: *const ::std::os::raw::c_void,
-        s2: *const ::std::os::raw::c_void,
-        len: usize,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_memcmp(s1: *const libc::c_void, s2: *const libc::c_void, len: usize) -> libc::c_int;
 }
 extern "C" {
     pub fn SDL_wcsdup(wstr: *const wchar_t) -> *mut wchar_t;
@@ -1173,202 +1076,175 @@ extern "C" {
     pub fn SDL_wcslcat(dst: *mut wchar_t, src: *const wchar_t, maxlen: usize) -> usize;
 }
 extern "C" {
-    pub fn SDL_wcscmp(str1: *const wchar_t, str2: *const wchar_t) -> ::std::os::raw::c_int;
+    pub fn SDL_wcscmp(str1: *const wchar_t, str2: *const wchar_t) -> libc::c_int;
 }
 extern "C" {
-    pub fn SDL_strlen(str: *const ::std::os::raw::c_char) -> usize;
+    pub fn SDL_strlen(str: *const libc::c_char) -> usize;
 }
 extern "C" {
-    pub fn SDL_strlcpy(
-        dst: *mut ::std::os::raw::c_char,
-        src: *const ::std::os::raw::c_char,
-        maxlen: usize,
-    ) -> usize;
+    pub fn SDL_strlcpy(dst: *mut libc::c_char, src: *const libc::c_char, maxlen: usize) -> usize;
 }
 extern "C" {
     pub fn SDL_utf8strlcpy(
-        dst: *mut ::std::os::raw::c_char,
-        src: *const ::std::os::raw::c_char,
+        dst: *mut libc::c_char,
+        src: *const libc::c_char,
         dst_bytes: usize,
     ) -> usize;
 }
 extern "C" {
-    pub fn SDL_strlcat(
-        dst: *mut ::std::os::raw::c_char,
-        src: *const ::std::os::raw::c_char,
-        maxlen: usize,
-    ) -> usize;
+    pub fn SDL_strlcat(dst: *mut libc::c_char, src: *const libc::c_char, maxlen: usize) -> usize;
 }
 extern "C" {
-    pub fn SDL_strdup(str: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+    pub fn SDL_strdup(str: *const libc::c_char) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn SDL_strrev(str: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+    pub fn SDL_strrev(str: *mut libc::c_char) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn SDL_strupr(str: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+    pub fn SDL_strupr(str: *mut libc::c_char) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn SDL_strlwr(str: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+    pub fn SDL_strlwr(str: *mut libc::c_char) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn SDL_strchr(
-        str: *const ::std::os::raw::c_char,
-        c: ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
+    pub fn SDL_strchr(str: *const libc::c_char, c: libc::c_int) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn SDL_strrchr(
-        str: *const ::std::os::raw::c_char,
-        c: ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
+    pub fn SDL_strrchr(str: *const libc::c_char, c: libc::c_int) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn SDL_strstr(
-        haystack: *const ::std::os::raw::c_char,
-        needle: *const ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_char;
+        haystack: *const libc::c_char,
+        needle: *const libc::c_char,
+    ) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn SDL_utf8strlen(str: *const ::std::os::raw::c_char) -> usize;
+    pub fn SDL_utf8strlen(str: *const libc::c_char) -> usize;
 }
 extern "C" {
     pub fn SDL_itoa(
-        value: ::std::os::raw::c_int,
-        str: *mut ::std::os::raw::c_char,
-        radix: ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
+        value: libc::c_int,
+        str: *mut libc::c_char,
+        radix: libc::c_int,
+    ) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn SDL_uitoa(
-        value: ::std::os::raw::c_uint,
-        str: *mut ::std::os::raw::c_char,
-        radix: ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
+        value: libc::c_uint,
+        str: *mut libc::c_char,
+        radix: libc::c_int,
+    ) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn SDL_ltoa(
-        value: ::std::os::raw::c_long,
-        str: *mut ::std::os::raw::c_char,
-        radix: ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
+        value: libc::c_long,
+        str: *mut libc::c_char,
+        radix: libc::c_int,
+    ) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn SDL_ultoa(
-        value: ::std::os::raw::c_ulong,
-        str: *mut ::std::os::raw::c_char,
-        radix: ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
+        value: libc::c_ulong,
+        str: *mut libc::c_char,
+        radix: libc::c_int,
+    ) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn SDL_lltoa(
         value: Sint64,
-        str: *mut ::std::os::raw::c_char,
-        radix: ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
+        str: *mut libc::c_char,
+        radix: libc::c_int,
+    ) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn SDL_ulltoa(
         value: Uint64,
-        str: *mut ::std::os::raw::c_char,
-        radix: ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
+        str: *mut libc::c_char,
+        radix: libc::c_int,
+    ) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn SDL_atoi(str: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn SDL_atoi(str: *const libc::c_char) -> libc::c_int;
 }
 extern "C" {
-    pub fn SDL_atof(str: *const ::std::os::raw::c_char) -> f64;
+    pub fn SDL_atof(str: *const libc::c_char) -> f64;
 }
 extern "C" {
     pub fn SDL_strtol(
-        str: *const ::std::os::raw::c_char,
-        endp: *mut *mut ::std::os::raw::c_char,
-        base: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_long;
+        str: *const libc::c_char,
+        endp: *mut *mut libc::c_char,
+        base: libc::c_int,
+    ) -> libc::c_long;
 }
 extern "C" {
     pub fn SDL_strtoul(
-        str: *const ::std::os::raw::c_char,
-        endp: *mut *mut ::std::os::raw::c_char,
-        base: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_ulong;
+        str: *const libc::c_char,
+        endp: *mut *mut libc::c_char,
+        base: libc::c_int,
+    ) -> libc::c_ulong;
 }
 extern "C" {
     pub fn SDL_strtoll(
-        str: *const ::std::os::raw::c_char,
-        endp: *mut *mut ::std::os::raw::c_char,
-        base: ::std::os::raw::c_int,
+        str: *const libc::c_char,
+        endp: *mut *mut libc::c_char,
+        base: libc::c_int,
     ) -> Sint64;
 }
 extern "C" {
     pub fn SDL_strtoull(
-        str: *const ::std::os::raw::c_char,
-        endp: *mut *mut ::std::os::raw::c_char,
-        base: ::std::os::raw::c_int,
+        str: *const libc::c_char,
+        endp: *mut *mut libc::c_char,
+        base: libc::c_int,
     ) -> Uint64;
 }
 extern "C" {
-    pub fn SDL_strtod(
-        str: *const ::std::os::raw::c_char,
-        endp: *mut *mut ::std::os::raw::c_char,
-    ) -> f64;
+    pub fn SDL_strtod(str: *const libc::c_char, endp: *mut *mut libc::c_char) -> f64;
 }
 extern "C" {
-    pub fn SDL_strcmp(
-        str1: *const ::std::os::raw::c_char,
-        str2: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_strcmp(str1: *const libc::c_char, str2: *const libc::c_char) -> libc::c_int;
 }
 extern "C" {
     pub fn SDL_strncmp(
-        str1: *const ::std::os::raw::c_char,
-        str2: *const ::std::os::raw::c_char,
+        str1: *const libc::c_char,
+        str2: *const libc::c_char,
         maxlen: usize,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn SDL_strcasecmp(
-        str1: *const ::std::os::raw::c_char,
-        str2: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_strcasecmp(str1: *const libc::c_char, str2: *const libc::c_char) -> libc::c_int;
 }
 extern "C" {
     pub fn SDL_strncasecmp(
-        str1: *const ::std::os::raw::c_char,
-        str2: *const ::std::os::raw::c_char,
+        str1: *const libc::c_char,
+        str2: *const libc::c_char,
         len: usize,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn SDL_sscanf(
-        text: *const ::std::os::raw::c_char,
-        fmt: *const ::std::os::raw::c_char,
-        ...
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_sscanf(text: *const libc::c_char, fmt: *const libc::c_char, ...) -> libc::c_int;
 }
 extern "C" {
     pub fn SDL_vsscanf(
-        text: *const ::std::os::raw::c_char,
-        fmt: *const ::std::os::raw::c_char,
+        text: *const libc::c_char,
+        fmt: *const libc::c_char,
         ap: *mut __va_list_tag,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn SDL_snprintf(
-        text: *mut ::std::os::raw::c_char,
+        text: *mut libc::c_char,
         maxlen: usize,
-        fmt: *const ::std::os::raw::c_char,
+        fmt: *const libc::c_char,
         ...
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn SDL_vsnprintf(
-        text: *mut ::std::os::raw::c_char,
+        text: *mut libc::c_char,
         maxlen: usize,
-        fmt: *const ::std::os::raw::c_char,
+        fmt: *const libc::c_char,
         ap: *mut __va_list_tag,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn SDL_acos(x: f64) -> f64;
@@ -1455,10 +1331,10 @@ extern "C" {
     pub fn SDL_powf(x: f32, y: f32) -> f32;
 }
 extern "C" {
-    pub fn SDL_scalbn(x: f64, n: ::std::os::raw::c_int) -> f64;
+    pub fn SDL_scalbn(x: f64, n: libc::c_int) -> f64;
 }
 extern "C" {
-    pub fn SDL_scalbnf(x: f32, n: ::std::os::raw::c_int) -> f32;
+    pub fn SDL_scalbnf(x: f32, n: libc::c_int) -> f32;
 }
 extern "C" {
     pub fn SDL_sin(x: f64) -> f64;
@@ -1479,26 +1355,26 @@ extern "C" {
     pub fn SDL_tanf(x: f32) -> f32;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _SDL_iconv_t {
     _unused: [u8; 0],
 }
 pub type SDL_iconv_t = *mut _SDL_iconv_t;
 extern "C" {
     pub fn SDL_iconv_open(
-        tocode: *const ::std::os::raw::c_char,
-        fromcode: *const ::std::os::raw::c_char,
+        tocode: *const libc::c_char,
+        fromcode: *const libc::c_char,
     ) -> SDL_iconv_t;
 }
 extern "C" {
-    pub fn SDL_iconv_close(cd: SDL_iconv_t) -> ::std::os::raw::c_int;
+    pub fn SDL_iconv_close(cd: SDL_iconv_t) -> libc::c_int;
 }
 extern "C" {
     pub fn SDL_iconv(
         cd: SDL_iconv_t,
-        inbuf: *mut *const ::std::os::raw::c_char,
+        inbuf: *mut *const libc::c_char,
         inbytesleft: *mut usize,
-        outbuf: *mut *mut ::std::os::raw::c_char,
+        outbuf: *mut *mut libc::c_char,
         outbytesleft: *mut usize,
     ) -> usize;
 }
@@ -1506,18 +1382,15 @@ extern "C" {
     ///  This function converts a string between encodings in one pass, returning a
     ///  string that must be freed with SDL_free() or NULL on error.
     pub fn SDL_iconv_string(
-        tocode: *const ::std::os::raw::c_char,
-        fromcode: *const ::std::os::raw::c_char,
-        inbuf: *const ::std::os::raw::c_char,
+        tocode: *const libc::c_char,
+        fromcode: *const libc::c_char,
+        inbuf: *const libc::c_char,
         inbytesleft: usize,
-    ) -> *mut ::std::os::raw::c_char;
+    ) -> *mut libc::c_char;
 }
 extern "C" {
     ///  The prototype for the application's main() function
-    pub fn SDL_main(
-        argc: ::std::os::raw::c_int,
-        argv: *mut *mut ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_main(argc: libc::c_int, argv: *mut *mut libc::c_char) -> libc::c_int;
 }
 extern "C" {
     ///  This is called by the real SDL main function to let the rest of the
@@ -1542,30 +1415,30 @@ pub enum SDL_AssertState {
     SDL_ASSERTION_ALWAYS_IGNORE = 4,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_AssertData {
-    pub always_ignore: ::std::os::raw::c_int,
-    pub trigger_count: ::std::os::raw::c_uint,
-    pub condition: *const ::std::os::raw::c_char,
-    pub filename: *const ::std::os::raw::c_char,
-    pub linenum: ::std::os::raw::c_int,
-    pub function: *const ::std::os::raw::c_char,
+    pub always_ignore: libc::c_int,
+    pub trigger_count: libc::c_uint,
+    pub condition: *const libc::c_char,
+    pub filename: *const libc::c_char,
+    pub linenum: libc::c_int,
+    pub function: *const libc::c_char,
     pub next: *const SDL_AssertData,
 }
 #[test]
 fn bindgen_test_layout_SDL_AssertData() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_AssertData>(),
+        ::core::mem::size_of::<SDL_AssertData>(),
         48usize,
         concat!("Size of: ", stringify!(SDL_AssertData))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_AssertData>(),
+        ::core::mem::align_of::<SDL_AssertData>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_AssertData))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AssertData>())).always_ignore as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AssertData>())).always_ignore as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1575,7 +1448,7 @@ fn bindgen_test_layout_SDL_AssertData() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AssertData>())).trigger_count as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AssertData>())).trigger_count as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -1585,7 +1458,7 @@ fn bindgen_test_layout_SDL_AssertData() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AssertData>())).condition as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AssertData>())).condition as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -1595,7 +1468,7 @@ fn bindgen_test_layout_SDL_AssertData() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AssertData>())).filename as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AssertData>())).filename as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -1605,7 +1478,7 @@ fn bindgen_test_layout_SDL_AssertData() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AssertData>())).linenum as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AssertData>())).linenum as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -1615,7 +1488,7 @@ fn bindgen_test_layout_SDL_AssertData() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AssertData>())).function as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AssertData>())).function as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -1625,7 +1498,7 @@ fn bindgen_test_layout_SDL_AssertData() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AssertData>())).next as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AssertData>())).next as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -1638,15 +1511,15 @@ fn bindgen_test_layout_SDL_AssertData() {
 extern "C" {
     pub fn SDL_ReportAssertion(
         arg1: *mut SDL_AssertData,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: *const ::std::os::raw::c_char,
-        arg4: ::std::os::raw::c_int,
+        arg2: *const libc::c_char,
+        arg3: *const libc::c_char,
+        arg4: libc::c_int,
     ) -> SDL_AssertState;
 }
-pub type SDL_AssertionHandler = ::std::option::Option<
+pub type SDL_AssertionHandler = ::core::option::Option<
     unsafe extern "C" fn(
         data: *const SDL_AssertData,
-        userdata: *mut ::std::os::raw::c_void,
+        userdata: *mut libc::c_void,
     ) -> SDL_AssertState,
 >;
 extern "C" {
@@ -1668,10 +1541,7 @@ extern "C" {
     ///
     ///  \param handler Callback function, called when an assertion fails.
     ///  \param userdata A pointer passed to the callback as-is.
-    pub fn SDL_SetAssertionHandler(
-        handler: SDL_AssertionHandler,
-        userdata: *mut ::std::os::raw::c_void,
-    );
+    pub fn SDL_SetAssertionHandler(handler: SDL_AssertionHandler, userdata: *mut libc::c_void);
 }
 extern "C" {
     ///  \brief Get the default assertion handler.
@@ -1698,9 +1568,7 @@ extern "C" {
     ///                    If you don't care about this data, it is safe to pass
     ///                    a NULL pointer to this function to ignore it.
     ///  \return The SDL_AssertionHandler that is called when an assert triggers.
-    pub fn SDL_GetAssertionHandler(
-        puserdata: *mut *mut ::std::os::raw::c_void,
-    ) -> SDL_AssertionHandler;
+    pub fn SDL_GetAssertionHandler(puserdata: *mut *mut libc::c_void) -> SDL_AssertionHandler;
 }
 extern "C" {
     ///  \brief Get a list of all assertion failures.
@@ -1733,7 +1601,7 @@ extern "C" {
     ///  \sa SDL_GetAssertionReport
     pub fn SDL_ResetAssertionReport();
 }
-pub type SDL_SpinLock = ::std::os::raw::c_int;
+pub type SDL_SpinLock = libc::c_int;
 extern "C" {
     /// \brief Try to lock a spin lock by setting it to a non-zero value.
     ///
@@ -1780,24 +1648,24 @@ extern "C" {
 /// \brief A type representing an atomic integer value.  It is a struct
 ///        so people don't accidentally use numeric operations on it.
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_atomic_t {
-    pub value: ::std::os::raw::c_int,
+    pub value: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_SDL_atomic_t() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_atomic_t>(),
+        ::core::mem::size_of::<SDL_atomic_t>(),
         4usize,
         concat!("Size of: ", stringify!(SDL_atomic_t))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_atomic_t>(),
+        ::core::mem::align_of::<SDL_atomic_t>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_atomic_t))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_atomic_t>())).value as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_atomic_t>())).value as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1815,19 +1683,19 @@ extern "C" {
     /// \note If you don't know what this function is for, you shouldn't use it!
     pub fn SDL_AtomicCAS(
         a: *mut SDL_atomic_t,
-        oldval: ::std::os::raw::c_int,
-        newval: ::std::os::raw::c_int,
+        oldval: libc::c_int,
+        newval: libc::c_int,
     ) -> SDL_bool;
 }
 extern "C" {
     /// \brief Set an atomic variable to a value.
     ///
     /// \return The previous value of the atomic variable.
-    pub fn SDL_AtomicSet(a: *mut SDL_atomic_t, v: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn SDL_AtomicSet(a: *mut SDL_atomic_t, v: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     /// \brief Get the value of an atomic variable
-    pub fn SDL_AtomicGet(a: *mut SDL_atomic_t) -> ::std::os::raw::c_int;
+    pub fn SDL_AtomicGet(a: *mut SDL_atomic_t) -> libc::c_int;
 }
 extern "C" {
     /// \brief Add to an atomic variable.
@@ -1835,7 +1703,7 @@ extern "C" {
     /// \return The previous value of the atomic variable.
     ///
     /// \note This same style can be used for any number operation
-    pub fn SDL_AtomicAdd(a: *mut SDL_atomic_t, v: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn SDL_AtomicAdd(a: *mut SDL_atomic_t, v: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     /// \brief Set a pointer to a new value if it is currently an old value.
@@ -1844,29 +1712,26 @@ extern "C" {
     ///
     /// \note If you don't know what this function is for, you shouldn't use it!
     pub fn SDL_AtomicCASPtr(
-        a: *mut *mut ::std::os::raw::c_void,
-        oldval: *mut ::std::os::raw::c_void,
-        newval: *mut ::std::os::raw::c_void,
+        a: *mut *mut libc::c_void,
+        oldval: *mut libc::c_void,
+        newval: *mut libc::c_void,
     ) -> SDL_bool;
 }
 extern "C" {
     /// \brief Set a pointer to a value atomically.
     ///
     /// \return The previous value of the pointer.
-    pub fn SDL_AtomicSetPtr(
-        a: *mut *mut ::std::os::raw::c_void,
-        v: *mut ::std::os::raw::c_void,
-    ) -> *mut ::std::os::raw::c_void;
+    pub fn SDL_AtomicSetPtr(a: *mut *mut libc::c_void, v: *mut libc::c_void) -> *mut libc::c_void;
 }
 extern "C" {
     /// \brief Get the value of a pointer atomically.
-    pub fn SDL_AtomicGetPtr(a: *mut *mut ::std::os::raw::c_void) -> *mut ::std::os::raw::c_void;
+    pub fn SDL_AtomicGetPtr(a: *mut *mut libc::c_void) -> *mut libc::c_void;
 }
 extern "C" {
-    pub fn SDL_SetError(fmt: *const ::std::os::raw::c_char, ...) -> ::std::os::raw::c_int;
+    pub fn SDL_SetError(fmt: *const libc::c_char, ...) -> libc::c_int;
 }
 extern "C" {
-    pub fn SDL_GetError() -> *const ::std::os::raw::c_char;
+    pub fn SDL_GetError() -> *const libc::c_char;
 }
 extern "C" {
     pub fn SDL_ClearError();
@@ -1882,10 +1747,10 @@ pub enum SDL_errorcode {
     SDL_LASTERROR = 5,
 }
 extern "C" {
-    pub fn SDL_Error(code: SDL_errorcode) -> ::std::os::raw::c_int;
+    pub fn SDL_Error(code: SDL_errorcode) -> libc::c_int;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_mutex {
     _unused: [u8; 0],
 }
@@ -1894,23 +1759,23 @@ extern "C" {
     pub fn SDL_CreateMutex() -> *mut SDL_mutex;
 }
 extern "C" {
-    pub fn SDL_LockMutex(mutex: *mut SDL_mutex) -> ::std::os::raw::c_int;
+    pub fn SDL_LockMutex(mutex: *mut SDL_mutex) -> libc::c_int;
 }
 extern "C" {
     ///  Try to lock the mutex
     ///
     ///  \return 0, SDL_MUTEX_TIMEDOUT, or -1 on error
-    pub fn SDL_TryLockMutex(mutex: *mut SDL_mutex) -> ::std::os::raw::c_int;
+    pub fn SDL_TryLockMutex(mutex: *mut SDL_mutex) -> libc::c_int;
 }
 extern "C" {
-    pub fn SDL_UnlockMutex(mutex: *mut SDL_mutex) -> ::std::os::raw::c_int;
+    pub fn SDL_UnlockMutex(mutex: *mut SDL_mutex) -> libc::c_int;
 }
 extern "C" {
     ///  Destroy a mutex.
     pub fn SDL_DestroyMutex(mutex: *mut SDL_mutex);
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_semaphore {
     _unused: [u8; 0],
 }
@@ -1927,14 +1792,14 @@ extern "C" {
     ///  This function suspends the calling thread until the semaphore pointed
     ///  to by \c sem has a positive count. It then atomically decreases the
     ///  semaphore count.
-    pub fn SDL_SemWait(sem: *mut SDL_sem) -> ::std::os::raw::c_int;
+    pub fn SDL_SemWait(sem: *mut SDL_sem) -> libc::c_int;
 }
 extern "C" {
     ///  Non-blocking variant of SDL_SemWait().
     ///
     ///  \return 0 if the wait succeeds, ::SDL_MUTEX_TIMEDOUT if the wait would
     ///          block, and -1 on error.
-    pub fn SDL_SemTryWait(sem: *mut SDL_sem) -> ::std::os::raw::c_int;
+    pub fn SDL_SemTryWait(sem: *mut SDL_sem) -> libc::c_int;
 }
 extern "C" {
     ///  Variant of SDL_SemWait() with a timeout in milliseconds.
@@ -1944,20 +1809,20 @@ extern "C" {
     ///
     ///  \warning On some platforms this function is implemented by looping with a
     ///           delay of 1 ms, and so should be avoided if possible.
-    pub fn SDL_SemWaitTimeout(sem: *mut SDL_sem, ms: Uint32) -> ::std::os::raw::c_int;
+    pub fn SDL_SemWaitTimeout(sem: *mut SDL_sem, ms: Uint32) -> libc::c_int;
 }
 extern "C" {
     ///  Atomically increases the semaphore's count (not blocking).
     ///
     ///  \return 0, or -1 on error.
-    pub fn SDL_SemPost(sem: *mut SDL_sem) -> ::std::os::raw::c_int;
+    pub fn SDL_SemPost(sem: *mut SDL_sem) -> libc::c_int;
 }
 extern "C" {
     ///  Returns the current count of the semaphore.
     pub fn SDL_SemValue(sem: *mut SDL_sem) -> Uint32;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_cond {
     _unused: [u8; 0],
 }
@@ -1998,13 +1863,13 @@ extern "C" {
     ///  Restart one of the threads that are waiting on the condition variable.
     ///
     ///  \return 0 or -1 on error.
-    pub fn SDL_CondSignal(cond: *mut SDL_cond) -> ::std::os::raw::c_int;
+    pub fn SDL_CondSignal(cond: *mut SDL_cond) -> libc::c_int;
 }
 extern "C" {
     ///  Restart all threads that are waiting on the condition variable.
     ///
     ///  \return 0 or -1 on error.
-    pub fn SDL_CondBroadcast(cond: *mut SDL_cond) -> ::std::os::raw::c_int;
+    pub fn SDL_CondBroadcast(cond: *mut SDL_cond) -> libc::c_int;
 }
 extern "C" {
     ///  Wait on the condition variable, unlocking the provided mutex.
@@ -2014,7 +1879,7 @@ extern "C" {
     ///  The mutex is re-locked once the condition variable is signaled.
     ///
     ///  \return 0 when it is signaled, or -1 on error.
-    pub fn SDL_CondWait(cond: *mut SDL_cond, mutex: *mut SDL_mutex) -> ::std::os::raw::c_int;
+    pub fn SDL_CondWait(cond: *mut SDL_cond, mutex: *mut SDL_mutex) -> libc::c_int;
 }
 extern "C" {
     ///  Waits for at most \c ms milliseconds, and returns 0 if the condition
@@ -2027,15 +1892,15 @@ extern "C" {
         cond: *mut SDL_cond,
         mutex: *mut SDL_mutex,
         ms: Uint32,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_Thread {
     _unused: [u8; 0],
 }
-pub type SDL_threadID = ::std::os::raw::c_ulong;
-pub type SDL_TLSID = ::std::os::raw::c_uint;
+pub type SDL_threadID = libc::c_ulong;
+pub type SDL_TLSID = libc::c_uint;
 #[repr(u32)]
 ///  The SDL thread priority.
 ///
@@ -2049,9 +1914,8 @@ pub enum SDL_ThreadPriority {
 }
 ///  The function passed to SDL_CreateThread().
 ///  It is passed a void* user context parameter and returns an int.
-pub type SDL_ThreadFunction = ::std::option::Option<
-    unsafe extern "C" fn(data: *mut ::std::os::raw::c_void) -> ::std::os::raw::c_int,
->;
+pub type SDL_ThreadFunction =
+    ::core::option::Option<unsafe extern "C" fn(data: *mut libc::c_void) -> libc::c_int>;
 extern "C" {
     ///  Create a thread with a default stack size.
     ///
@@ -2059,8 +1923,8 @@ extern "C" {
     ///  SDL_CreateThreadWithStackSize(fn, name, 0, data);
     pub fn SDL_CreateThread(
         fn_: SDL_ThreadFunction,
-        name: *const ::std::os::raw::c_char,
-        data: *mut ::std::os::raw::c_void,
+        name: *const libc::c_char,
+        data: *mut libc::c_void,
     ) -> *mut SDL_Thread;
 }
 extern "C" {
@@ -2090,9 +1954,9 @@ extern "C" {
     ///    function.
     pub fn SDL_CreateThreadWithStackSize(
         fn_: SDL_ThreadFunction,
-        name: *const ::std::os::raw::c_char,
+        name: *const libc::c_char,
         stacksize: usize,
-        data: *mut ::std::os::raw::c_void,
+        data: *mut libc::c_void,
     ) -> *mut SDL_Thread;
 }
 extern "C" {
@@ -2101,7 +1965,7 @@ extern "C" {
     ///  specified thread, or NULL if it doesn't have a name. This is internal
     ///  memory, not to be free()'d by the caller, and remains valid until the
     ///  specified thread is cleaned up by SDL_WaitThread().
-    pub fn SDL_GetThreadName(thread: *mut SDL_Thread) -> *const ::std::os::raw::c_char;
+    pub fn SDL_GetThreadName(thread: *mut SDL_Thread) -> *const libc::c_char;
 }
 extern "C" {
     ///  Get the thread identifier for the current thread.
@@ -2115,7 +1979,7 @@ extern "C" {
 }
 extern "C" {
     ///  Set the priority for the current thread
-    pub fn SDL_SetThreadPriority(priority: SDL_ThreadPriority) -> ::std::os::raw::c_int;
+    pub fn SDL_SetThreadPriority(priority: SDL_ThreadPriority) -> libc::c_int;
 }
 extern "C" {
     ///  Wait for a thread to finish. Threads that haven't been detached will
@@ -2134,7 +1998,7 @@ extern "C" {
     ///  both, or behavior is undefined.
     ///
     ///  It is safe to pass NULL to this function; it is a no-op.
-    pub fn SDL_WaitThread(thread: *mut SDL_Thread, status: *mut ::std::os::raw::c_int);
+    pub fn SDL_WaitThread(thread: *mut SDL_Thread, status: *mut libc::c_int);
 }
 extern "C" {
     ///  A thread may be "detached" to signify that it should not remain until
@@ -2203,7 +2067,7 @@ extern "C" {
     ///
     ///  \sa SDL_TLSCreate()
     ///  \sa SDL_TLSSet()
-    pub fn SDL_TLSGet(id: SDL_TLSID) -> *mut ::std::os::raw::c_void;
+    pub fn SDL_TLSGet(id: SDL_TLSID) -> *mut libc::c_void;
 }
 extern "C" {
     ///  \brief Set the value associated with a thread local storage ID for the current thread.
@@ -2218,35 +2082,35 @@ extern "C" {
     ///  \sa SDL_TLSGet()
     pub fn SDL_TLSSet(
         id: SDL_TLSID,
-        value: *const ::std::os::raw::c_void,
-        destructor: ::std::option::Option<unsafe extern "C" fn(arg1: *mut ::std::os::raw::c_void)>,
-    ) -> ::std::os::raw::c_int;
+        value: *const libc::c_void,
+        destructor: ::core::option::Option<unsafe extern "C" fn(arg1: *mut libc::c_void)>,
+    ) -> libc::c_int;
 }
 /// This is the read/write operation structure -- very basic.
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct SDL_RWops {
     ///  Return the size of the file in this rwops, or -1 if unknown
-    pub size: ::std::option::Option<unsafe extern "C" fn(context: *mut SDL_RWops) -> Sint64>,
+    pub size: ::core::option::Option<unsafe extern "C" fn(context: *mut SDL_RWops) -> Sint64>,
     ///  Seek to \c offset relative to \c whence, one of stdio's whence values:
     ///  RW_SEEK_SET, RW_SEEK_CUR, RW_SEEK_END
     ///
     ///  \return the final offset in the data stream, or -1 on error.
-    pub seek: ::std::option::Option<
+    pub seek: ::core::option::Option<
         unsafe extern "C" fn(
             context: *mut SDL_RWops,
             offset: Sint64,
-            whence: ::std::os::raw::c_int,
+            whence: libc::c_int,
         ) -> Sint64,
     >,
     ///  Read up to \c maxnum objects each of size \c size from the data
     ///  stream to the area pointed at by \c ptr.
     ///
     ///  \return the number of objects read, or 0 at error or end of file.
-    pub read: ::std::option::Option<
+    pub read: ::core::option::Option<
         unsafe extern "C" fn(
             context: *mut SDL_RWops,
-            ptr: *mut ::std::os::raw::c_void,
+            ptr: *mut libc::c_void,
             size: usize,
             maxnum: usize,
         ) -> usize,
@@ -2255,10 +2119,10 @@ pub struct SDL_RWops {
     ///  pointed at by \c ptr to data stream.
     ///
     ///  \return the number of objects written, or 0 at error or end of file.
-    pub write: ::std::option::Option<
+    pub write: ::core::option::Option<
         unsafe extern "C" fn(
             context: *mut SDL_RWops,
-            ptr: *const ::std::os::raw::c_void,
+            ptr: *const libc::c_void,
             size: usize,
             num: usize,
         ) -> usize,
@@ -2266,9 +2130,7 @@ pub struct SDL_RWops {
     ///  Close and free an allocated SDL_RWops structure.
     ///
     ///  \return 0 if successful or -1 on write error when flushing data.
-    pub close: ::std::option::Option<
-        unsafe extern "C" fn(context: *mut SDL_RWops) -> ::std::os::raw::c_int,
-    >,
+    pub close: ::core::option::Option<unsafe extern "C" fn(context: *mut SDL_RWops) -> libc::c_int>,
     pub type_: Uint32,
     pub hidden: SDL_RWops__bindgen_ty_1,
 }
@@ -2280,7 +2142,7 @@ pub union SDL_RWops__bindgen_ty_1 {
     _bindgen_union_align: [u64; 3usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_RWops__bindgen_ty_1__bindgen_ty_1 {
     pub base: *mut Uint8,
     pub here: *mut Uint8,
@@ -2289,7 +2151,7 @@ pub struct SDL_RWops__bindgen_ty_1__bindgen_ty_1 {
 #[test]
 fn bindgen_test_layout_SDL_RWops__bindgen_ty_1__bindgen_ty_1() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_RWops__bindgen_ty_1__bindgen_ty_1>(),
+        ::core::mem::size_of::<SDL_RWops__bindgen_ty_1__bindgen_ty_1>(),
         24usize,
         concat!(
             "Size of: ",
@@ -2297,7 +2159,7 @@ fn bindgen_test_layout_SDL_RWops__bindgen_ty_1__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_RWops__bindgen_ty_1__bindgen_ty_1>(),
+        ::core::mem::align_of::<SDL_RWops__bindgen_ty_1__bindgen_ty_1>(),
         8usize,
         concat!(
             "Alignment of ",
@@ -2306,7 +2168,7 @@ fn bindgen_test_layout_SDL_RWops__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_RWops__bindgen_ty_1__bindgen_ty_1>())).base as *const _
+            &(*(::core::ptr::null::<SDL_RWops__bindgen_ty_1__bindgen_ty_1>())).base as *const _
                 as usize
         },
         0usize,
@@ -2319,7 +2181,7 @@ fn bindgen_test_layout_SDL_RWops__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_RWops__bindgen_ty_1__bindgen_ty_1>())).here as *const _
+            &(*(::core::ptr::null::<SDL_RWops__bindgen_ty_1__bindgen_ty_1>())).here as *const _
                 as usize
         },
         8usize,
@@ -2332,7 +2194,7 @@ fn bindgen_test_layout_SDL_RWops__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_RWops__bindgen_ty_1__bindgen_ty_1>())).stop as *const _
+            &(*(::core::ptr::null::<SDL_RWops__bindgen_ty_1__bindgen_ty_1>())).stop as *const _
                 as usize
         },
         16usize,
@@ -2345,15 +2207,15 @@ fn bindgen_test_layout_SDL_RWops__bindgen_ty_1__bindgen_ty_1() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_RWops__bindgen_ty_1__bindgen_ty_2 {
-    pub data1: *mut ::std::os::raw::c_void,
-    pub data2: *mut ::std::os::raw::c_void,
+    pub data1: *mut libc::c_void,
+    pub data2: *mut libc::c_void,
 }
 #[test]
 fn bindgen_test_layout_SDL_RWops__bindgen_ty_1__bindgen_ty_2() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_RWops__bindgen_ty_1__bindgen_ty_2>(),
+        ::core::mem::size_of::<SDL_RWops__bindgen_ty_1__bindgen_ty_2>(),
         16usize,
         concat!(
             "Size of: ",
@@ -2361,7 +2223,7 @@ fn bindgen_test_layout_SDL_RWops__bindgen_ty_1__bindgen_ty_2() {
         )
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_RWops__bindgen_ty_1__bindgen_ty_2>(),
+        ::core::mem::align_of::<SDL_RWops__bindgen_ty_1__bindgen_ty_2>(),
         8usize,
         concat!(
             "Alignment of ",
@@ -2370,7 +2232,7 @@ fn bindgen_test_layout_SDL_RWops__bindgen_ty_1__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_RWops__bindgen_ty_1__bindgen_ty_2>())).data1 as *const _
+            &(*(::core::ptr::null::<SDL_RWops__bindgen_ty_1__bindgen_ty_2>())).data1 as *const _
                 as usize
         },
         0usize,
@@ -2383,7 +2245,7 @@ fn bindgen_test_layout_SDL_RWops__bindgen_ty_1__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_RWops__bindgen_ty_1__bindgen_ty_2>())).data2 as *const _
+            &(*(::core::ptr::null::<SDL_RWops__bindgen_ty_1__bindgen_ty_2>())).data2 as *const _
                 as usize
         },
         8usize,
@@ -2398,17 +2260,17 @@ fn bindgen_test_layout_SDL_RWops__bindgen_ty_1__bindgen_ty_2() {
 #[test]
 fn bindgen_test_layout_SDL_RWops__bindgen_ty_1() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_RWops__bindgen_ty_1>(),
+        ::core::mem::size_of::<SDL_RWops__bindgen_ty_1>(),
         24usize,
         concat!("Size of: ", stringify!(SDL_RWops__bindgen_ty_1))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_RWops__bindgen_ty_1>(),
+        ::core::mem::align_of::<SDL_RWops__bindgen_ty_1>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_RWops__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_RWops__bindgen_ty_1>())).mem as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_RWops__bindgen_ty_1>())).mem as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -2418,7 +2280,9 @@ fn bindgen_test_layout_SDL_RWops__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_RWops__bindgen_ty_1>())).unknown as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<SDL_RWops__bindgen_ty_1>())).unknown as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -2431,17 +2295,17 @@ fn bindgen_test_layout_SDL_RWops__bindgen_ty_1() {
 #[test]
 fn bindgen_test_layout_SDL_RWops() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_RWops>(),
+        ::core::mem::size_of::<SDL_RWops>(),
         72usize,
         concat!("Size of: ", stringify!(SDL_RWops))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_RWops>(),
+        ::core::mem::align_of::<SDL_RWops>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_RWops))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_RWops>())).size as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_RWops>())).size as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -2451,7 +2315,7 @@ fn bindgen_test_layout_SDL_RWops() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_RWops>())).seek as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_RWops>())).seek as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -2461,7 +2325,7 @@ fn bindgen_test_layout_SDL_RWops() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_RWops>())).read as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_RWops>())).read as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -2471,7 +2335,7 @@ fn bindgen_test_layout_SDL_RWops() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_RWops>())).write as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_RWops>())).write as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -2481,7 +2345,7 @@ fn bindgen_test_layout_SDL_RWops() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_RWops>())).close as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_RWops>())).close as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -2491,7 +2355,7 @@ fn bindgen_test_layout_SDL_RWops() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_RWops>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_RWops>())).type_ as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -2501,7 +2365,7 @@ fn bindgen_test_layout_SDL_RWops() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_RWops>())).hidden as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_RWops>())).hidden as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -2512,25 +2376,16 @@ fn bindgen_test_layout_SDL_RWops() {
     );
 }
 extern "C" {
-    pub fn SDL_RWFromFile(
-        file: *const ::std::os::raw::c_char,
-        mode: *const ::std::os::raw::c_char,
-    ) -> *mut SDL_RWops;
+    pub fn SDL_RWFromFile(file: *const libc::c_char, mode: *const libc::c_char) -> *mut SDL_RWops;
 }
 extern "C" {
-    pub fn SDL_RWFromFP(fp: *mut ::std::os::raw::c_void, autoclose: SDL_bool) -> *mut SDL_RWops;
+    pub fn SDL_RWFromFP(fp: *mut libc::c_void, autoclose: SDL_bool) -> *mut SDL_RWops;
 }
 extern "C" {
-    pub fn SDL_RWFromMem(
-        mem: *mut ::std::os::raw::c_void,
-        size: ::std::os::raw::c_int,
-    ) -> *mut SDL_RWops;
+    pub fn SDL_RWFromMem(mem: *mut libc::c_void, size: libc::c_int) -> *mut SDL_RWops;
 }
 extern "C" {
-    pub fn SDL_RWFromConstMem(
-        mem: *const ::std::os::raw::c_void,
-        size: ::std::os::raw::c_int,
-    ) -> *mut SDL_RWops;
+    pub fn SDL_RWFromConstMem(mem: *const libc::c_void, size: libc::c_int) -> *mut SDL_RWops;
 }
 extern "C" {
     pub fn SDL_AllocRW() -> *mut SDL_RWops;
@@ -2553,8 +2408,8 @@ extern "C" {
     pub fn SDL_LoadFile_RW(
         src: *mut SDL_RWops,
         datasize: *mut usize,
-        freesrc: ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_void;
+        freesrc: libc::c_int,
+    ) -> *mut libc::c_void;
 }
 extern "C" {
     pub fn SDL_ReadU8(src: *mut SDL_RWops) -> Uint8;
@@ -2629,12 +2484,8 @@ pub type SDL_AudioFormat = Uint16;
 ///
 ///  You can choose to avoid callbacks and use SDL_QueueAudio() instead, if
 ///  you like. Just open your audio device with a NULL callback.
-pub type SDL_AudioCallback = ::std::option::Option<
-    unsafe extern "C" fn(
-        userdata: *mut ::std::os::raw::c_void,
-        stream: *mut Uint8,
-        len: ::std::os::raw::c_int,
-    ),
+pub type SDL_AudioCallback = ::core::option::Option<
+    unsafe extern "C" fn(userdata: *mut libc::c_void, stream: *mut Uint8, len: libc::c_int),
 >;
 ///  The calculated values in this structure are calculated by SDL_OpenAudio().
 ///
@@ -2647,10 +2498,10 @@ pub type SDL_AudioCallback = ::std::option::Option<
 ///  7:  FL FR FC LFE BC SL SR       (6.1 surround)
 ///  8:  FL FR FC LFE BL BR SL SR    (7.1 surround)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_AudioSpec {
     ///< DSP frequency -- samples per second
-    pub freq: ::std::os::raw::c_int,
+    pub freq: libc::c_int,
     ///< Audio data format
     pub format: SDL_AudioFormat,
     ///< Number of channels: 1 mono, 2 stereo
@@ -2666,22 +2517,22 @@ pub struct SDL_AudioSpec {
     ///< Callback that feeds the audio device (NULL to use SDL_QueueAudio()).
     pub callback: SDL_AudioCallback,
     ///< Userdata passed to callback (ignored for NULL callbacks).
-    pub userdata: *mut ::std::os::raw::c_void,
+    pub userdata: *mut libc::c_void,
 }
 #[test]
 fn bindgen_test_layout_SDL_AudioSpec() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_AudioSpec>(),
+        ::core::mem::size_of::<SDL_AudioSpec>(),
         32usize,
         concat!("Size of: ", stringify!(SDL_AudioSpec))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_AudioSpec>(),
+        ::core::mem::align_of::<SDL_AudioSpec>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_AudioSpec))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioSpec>())).freq as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioSpec>())).freq as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -2691,7 +2542,7 @@ fn bindgen_test_layout_SDL_AudioSpec() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioSpec>())).format as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioSpec>())).format as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -2701,7 +2552,7 @@ fn bindgen_test_layout_SDL_AudioSpec() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioSpec>())).channels as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioSpec>())).channels as *const _ as usize },
         6usize,
         concat!(
             "Offset of field: ",
@@ -2711,7 +2562,7 @@ fn bindgen_test_layout_SDL_AudioSpec() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioSpec>())).silence as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioSpec>())).silence as *const _ as usize },
         7usize,
         concat!(
             "Offset of field: ",
@@ -2721,7 +2572,7 @@ fn bindgen_test_layout_SDL_AudioSpec() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioSpec>())).samples as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioSpec>())).samples as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -2731,7 +2582,7 @@ fn bindgen_test_layout_SDL_AudioSpec() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioSpec>())).padding as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioSpec>())).padding as *const _ as usize },
         10usize,
         concat!(
             "Offset of field: ",
@@ -2741,7 +2592,7 @@ fn bindgen_test_layout_SDL_AudioSpec() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioSpec>())).size as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioSpec>())).size as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -2751,7 +2602,7 @@ fn bindgen_test_layout_SDL_AudioSpec() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioSpec>())).callback as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioSpec>())).callback as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -2761,7 +2612,7 @@ fn bindgen_test_layout_SDL_AudioSpec() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioSpec>())).userdata as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioSpec>())).userdata as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -2772,12 +2623,12 @@ fn bindgen_test_layout_SDL_AudioSpec() {
     );
 }
 pub type SDL_AudioFilter =
-    ::std::option::Option<unsafe extern "C" fn(cvt: *mut SDL_AudioCVT, format: SDL_AudioFormat)>;
+    ::core::option::Option<unsafe extern "C" fn(cvt: *mut SDL_AudioCVT, format: SDL_AudioFormat)>;
 #[repr(C, packed)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_AudioCVT {
     ///< Set to 1 if conversion possible
-    pub needed: ::std::os::raw::c_int,
+    pub needed: libc::c_int,
     ///< Source audio format
     pub src_format: SDL_AudioFormat,
     ///< Target audio format
@@ -2787,32 +2638,32 @@ pub struct SDL_AudioCVT {
     ///< Buffer to hold entire audio data
     pub buf: *mut Uint8,
     ///< Length of original audio buffer
-    pub len: ::std::os::raw::c_int,
+    pub len: libc::c_int,
     ///< Length of converted audio buffer
-    pub len_cvt: ::std::os::raw::c_int,
+    pub len_cvt: libc::c_int,
     ///< buffer must be len*len_mult big
-    pub len_mult: ::std::os::raw::c_int,
+    pub len_mult: libc::c_int,
     ///< Given len, final size is len*len_ratio
     pub len_ratio: f64,
     ///< NULL-terminated list of filter functions
     pub filters: [SDL_AudioFilter; 10usize],
     ///< Current audio conversion function
-    pub filter_index: ::std::os::raw::c_int,
+    pub filter_index: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_SDL_AudioCVT() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_AudioCVT>(),
+        ::core::mem::size_of::<SDL_AudioCVT>(),
         128usize,
         concat!("Size of: ", stringify!(SDL_AudioCVT))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_AudioCVT>(),
+        ::core::mem::align_of::<SDL_AudioCVT>(),
         1usize,
         concat!("Alignment of ", stringify!(SDL_AudioCVT))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioCVT>())).needed as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioCVT>())).needed as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -2822,7 +2673,7 @@ fn bindgen_test_layout_SDL_AudioCVT() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioCVT>())).src_format as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioCVT>())).src_format as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -2832,7 +2683,7 @@ fn bindgen_test_layout_SDL_AudioCVT() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioCVT>())).dst_format as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioCVT>())).dst_format as *const _ as usize },
         6usize,
         concat!(
             "Offset of field: ",
@@ -2842,7 +2693,7 @@ fn bindgen_test_layout_SDL_AudioCVT() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioCVT>())).rate_incr as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioCVT>())).rate_incr as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -2852,7 +2703,7 @@ fn bindgen_test_layout_SDL_AudioCVT() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioCVT>())).buf as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioCVT>())).buf as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -2862,7 +2713,7 @@ fn bindgen_test_layout_SDL_AudioCVT() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioCVT>())).len as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioCVT>())).len as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -2872,7 +2723,7 @@ fn bindgen_test_layout_SDL_AudioCVT() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioCVT>())).len_cvt as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioCVT>())).len_cvt as *const _ as usize },
         28usize,
         concat!(
             "Offset of field: ",
@@ -2882,7 +2733,7 @@ fn bindgen_test_layout_SDL_AudioCVT() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioCVT>())).len_mult as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioCVT>())).len_mult as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -2892,7 +2743,7 @@ fn bindgen_test_layout_SDL_AudioCVT() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioCVT>())).len_ratio as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioCVT>())).len_ratio as *const _ as usize },
         36usize,
         concat!(
             "Offset of field: ",
@@ -2902,7 +2753,7 @@ fn bindgen_test_layout_SDL_AudioCVT() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioCVT>())).filters as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioCVT>())).filters as *const _ as usize },
         44usize,
         concat!(
             "Offset of field: ",
@@ -2912,7 +2763,7 @@ fn bindgen_test_layout_SDL_AudioCVT() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioCVT>())).filter_index as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioCVT>())).filter_index as *const _ as usize },
         124usize,
         concat!(
             "Offset of field: ",
@@ -2923,13 +2774,13 @@ fn bindgen_test_layout_SDL_AudioCVT() {
     );
 }
 extern "C" {
-    pub fn SDL_GetNumAudioDrivers() -> ::std::os::raw::c_int;
+    pub fn SDL_GetNumAudioDrivers() -> libc::c_int;
 }
 extern "C" {
-    pub fn SDL_GetAudioDriver(index: ::std::os::raw::c_int) -> *const ::std::os::raw::c_char;
+    pub fn SDL_GetAudioDriver(index: libc::c_int) -> *const libc::c_char;
 }
 extern "C" {
-    pub fn SDL_AudioInit(driver_name: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn SDL_AudioInit(driver_name: *const libc::c_char) -> libc::c_int;
 }
 extern "C" {
     pub fn SDL_AudioQuit();
@@ -2937,7 +2788,7 @@ extern "C" {
 extern "C" {
     ///  This function returns the name of the current audio driver, or NULL
     ///  if no driver has been initialized.
-    pub fn SDL_GetCurrentAudioDriver() -> *const ::std::os::raw::c_char;
+    pub fn SDL_GetCurrentAudioDriver() -> *const libc::c_char;
 }
 extern "C" {
     ///  This function opens the audio device with the desired parameters, and
@@ -2983,10 +2834,7 @@ extern "C" {
     ///  for your audio callback function to be called.  Since the audio driver
     ///  may modify the requested size of the audio buffer, you should allocate
     ///  any local mixing buffers after you open the audio device.
-    pub fn SDL_OpenAudio(
-        desired: *mut SDL_AudioSpec,
-        obtained: *mut SDL_AudioSpec,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_OpenAudio(desired: *mut SDL_AudioSpec, obtained: *mut SDL_AudioSpec) -> libc::c_int;
 }
 ///  SDL Audio Device IDs.
 ///
@@ -3007,7 +2855,7 @@ extern "C" {
     ///  In many common cases, when this function returns a value <= 0, it can still
     ///  successfully open the default device (NULL for first argument of
     ///  SDL_OpenAudioDevice()).
-    pub fn SDL_GetNumAudioDevices(iscapture: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn SDL_GetNumAudioDevices(iscapture: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     ///  Get the human-readable name of a specific audio device.
@@ -3022,9 +2870,9 @@ extern "C" {
     ///  string for any length of time, you should make your own copy of it, as it
     ///  will be invalid next time any of several other SDL functions is called.
     pub fn SDL_GetAudioDeviceName(
-        index: ::std::os::raw::c_int,
-        iscapture: ::std::os::raw::c_int,
-    ) -> *const ::std::os::raw::c_char;
+        index: libc::c_int,
+        iscapture: libc::c_int,
+    ) -> *const libc::c_char;
 }
 extern "C" {
     ///  Open a specific audio device. Passing in a device name of NULL requests
@@ -3039,11 +2887,11 @@ extern "C" {
     ///
     ///  SDL_OpenAudio(), unlike this function, always acts on device ID 1.
     pub fn SDL_OpenAudioDevice(
-        device: *const ::std::os::raw::c_char,
-        iscapture: ::std::os::raw::c_int,
+        device: *const libc::c_char,
+        iscapture: libc::c_int,
         desired: *const SDL_AudioSpec,
         obtained: *mut SDL_AudioSpec,
-        allowed_changes: ::std::os::raw::c_int,
+        allowed_changes: libc::c_int,
     ) -> SDL_AudioDeviceID;
 }
 #[repr(u32)]
@@ -3060,10 +2908,10 @@ extern "C" {
     pub fn SDL_GetAudioDeviceStatus(dev: SDL_AudioDeviceID) -> SDL_AudioStatus;
 }
 extern "C" {
-    pub fn SDL_PauseAudio(pause_on: ::std::os::raw::c_int);
+    pub fn SDL_PauseAudio(pause_on: libc::c_int);
 }
 extern "C" {
-    pub fn SDL_PauseAudioDevice(dev: SDL_AudioDeviceID, pause_on: ::std::os::raw::c_int);
+    pub fn SDL_PauseAudioDevice(dev: SDL_AudioDeviceID, pause_on: libc::c_int);
 }
 extern "C" {
     ///  This function loads a WAVE from the data source, automatically freeing
@@ -3085,7 +2933,7 @@ extern "C" {
     ///  corrupt.  Currently raw and MS-ADPCM WAVE files are supported.
     pub fn SDL_LoadWAV_RW(
         src: *mut SDL_RWops,
-        freesrc: ::std::os::raw::c_int,
+        freesrc: libc::c_int,
         spec: *mut SDL_AudioSpec,
         audio_buf: *mut *mut Uint8,
         audio_len: *mut Uint32,
@@ -3107,11 +2955,11 @@ extern "C" {
         cvt: *mut SDL_AudioCVT,
         src_format: SDL_AudioFormat,
         src_channels: Uint8,
-        src_rate: ::std::os::raw::c_int,
+        src_rate: libc::c_int,
         dst_format: SDL_AudioFormat,
         dst_channels: Uint8,
-        dst_rate: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        dst_rate: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  Once you have initialized the \c cvt structure using SDL_BuildAudioCVT(),
@@ -3124,10 +2972,10 @@ extern "C" {
     ///  SDL_BuildAudioCVT(), and should be \c cvt->len*cvt->len_mult bytes long.
     ///
     ///  \return 0 on success or -1 if \c cvt->buf is NULL.
-    pub fn SDL_ConvertAudio(cvt: *mut SDL_AudioCVT) -> ::std::os::raw::c_int;
+    pub fn SDL_ConvertAudio(cvt: *mut SDL_AudioCVT) -> libc::c_int;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _SDL_AudioStream {
     _unused: [u8; 0],
 }
@@ -3152,10 +3000,10 @@ extern "C" {
     pub fn SDL_NewAudioStream(
         src_format: SDL_AudioFormat,
         src_channels: Uint8,
-        src_rate: ::std::os::raw::c_int,
+        src_rate: libc::c_int,
         dst_format: SDL_AudioFormat,
         dst_channels: Uint8,
-        dst_rate: ::std::os::raw::c_int,
+        dst_rate: libc::c_int,
     ) -> *mut SDL_AudioStream;
 }
 extern "C" {
@@ -3174,9 +3022,9 @@ extern "C" {
     ///  \sa SDL_FreeAudioStream
     pub fn SDL_AudioStreamPut(
         stream: *mut SDL_AudioStream,
-        buf: *const ::std::os::raw::c_void,
-        len: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        buf: *const libc::c_void,
+        len: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  Get converted/resampled data from the stream
@@ -3194,9 +3042,9 @@ extern "C" {
     ///  \sa SDL_FreeAudioStream
     pub fn SDL_AudioStreamGet(
         stream: *mut SDL_AudioStream,
-        buf: *mut ::std::os::raw::c_void,
-        len: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        buf: *mut libc::c_void,
+        len: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     /// Get the number of converted/resampled bytes available. The stream may be
@@ -3210,7 +3058,7 @@ extern "C" {
     ///  \sa SDL_AudioStreamFlush
     ///  \sa SDL_AudioStreamClear
     ///  \sa SDL_FreeAudioStream
-    pub fn SDL_AudioStreamAvailable(stream: *mut SDL_AudioStream) -> ::std::os::raw::c_int;
+    pub fn SDL_AudioStreamAvailable(stream: *mut SDL_AudioStream) -> libc::c_int;
 }
 extern "C" {
     /// Tell the stream that you're done sending data, and anything being buffered
@@ -3226,7 +3074,7 @@ extern "C" {
     ///  \sa SDL_AudioStreamAvailable
     ///  \sa SDL_AudioStreamClear
     ///  \sa SDL_FreeAudioStream
-    pub fn SDL_AudioStreamFlush(stream: *mut SDL_AudioStream) -> ::std::os::raw::c_int;
+    pub fn SDL_AudioStreamFlush(stream: *mut SDL_AudioStream) -> libc::c_int;
 }
 extern "C" {
     ///  Clear any pending data in the stream without converting it
@@ -3256,12 +3104,7 @@ extern "C" {
     ///  The volume ranges from 0 - 128, and should be set to ::SDL_MIX_MAXVOLUME
     ///  for full audio volume.  Note this does not change hardware volume.
     ///  This is provided for convenience -- you can mix your own audio data.
-    pub fn SDL_MixAudio(
-        dst: *mut Uint8,
-        src: *const Uint8,
-        len: Uint32,
-        volume: ::std::os::raw::c_int,
-    );
+    pub fn SDL_MixAudio(dst: *mut Uint8, src: *const Uint8, len: Uint32, volume: libc::c_int);
 }
 extern "C" {
     ///  This works like SDL_MixAudio(), but you specify the audio format instead of
@@ -3272,7 +3115,7 @@ extern "C" {
         src: *const Uint8,
         format: SDL_AudioFormat,
         len: Uint32,
-        volume: ::std::os::raw::c_int,
+        volume: libc::c_int,
     );
 }
 extern "C" {
@@ -3315,9 +3158,9 @@ extern "C" {
     ///  \sa SDL_ClearQueuedAudio
     pub fn SDL_QueueAudio(
         dev: SDL_AudioDeviceID,
-        data: *const ::std::os::raw::c_void,
+        data: *const libc::c_void,
         len: Uint32,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  Dequeue more audio on non-callback devices.
@@ -3362,11 +3205,8 @@ extern "C" {
     ///
     ///  \sa SDL_GetQueuedAudioSize
     ///  \sa SDL_ClearQueuedAudio
-    pub fn SDL_DequeueAudio(
-        dev: SDL_AudioDeviceID,
-        data: *mut ::std::os::raw::c_void,
-        len: Uint32,
-    ) -> Uint32;
+    pub fn SDL_DequeueAudio(dev: SDL_AudioDeviceID, data: *mut libc::c_void, len: Uint32)
+        -> Uint32;
 }
 extern "C" {
     ///  Get the number of bytes of still-queued audio.
@@ -3461,13 +3301,13 @@ extern "C" {
     /// \brief Put UTF-8 text into the clipboard
     ///
     /// \sa SDL_GetClipboardText()
-    pub fn SDL_SetClipboardText(text: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn SDL_SetClipboardText(text: *const libc::c_char) -> libc::c_int;
 }
 extern "C" {
     /// \brief Get UTF-8 text from the clipboard, which must be freed with SDL_free()
     ///
     /// \sa SDL_SetClipboardText()
-    pub fn SDL_GetClipboardText() -> *mut ::std::os::raw::c_char;
+    pub fn SDL_GetClipboardText() -> *mut libc::c_char;
 }
 extern "C" {
     /// \brief Returns a flag indicating whether the clipboard exists and contains a text string that is non-empty
@@ -3475,39 +3315,39 @@ extern "C" {
     /// \sa SDL_GetClipboardText()
     pub fn SDL_HasClipboardText() -> SDL_bool;
 }
-pub type __m64 = [::std::os::raw::c_longlong; 1usize];
-pub type __v1di = [::std::os::raw::c_longlong; 1usize];
-pub type __v2si = [::std::os::raw::c_int; 2usize];
-pub type __v4hi = [::std::os::raw::c_short; 4usize];
-pub type __v8qi = [::std::os::raw::c_char; 8usize];
-pub type __v4si = [::std::os::raw::c_int; 4usize];
+pub type __m64 = [libc::c_longlong; 1usize];
+pub type __v1di = [libc::c_longlong; 1usize];
+pub type __v2si = [libc::c_int; 2usize];
+pub type __v4hi = [libc::c_short; 4usize];
+pub type __v8qi = [libc::c_char; 8usize];
+pub type __v4si = [libc::c_int; 4usize];
 pub type __v4sf = [f32; 4usize];
 pub type __m128 = [f32; 4usize];
-pub type __v4su = [::std::os::raw::c_uint; 4usize];
+pub type __v4su = [libc::c_uint; 4usize];
 pub type _Float32 = f32;
 pub type _Float64 = f64;
 pub type _Float32x = f64;
 pub type _Float64x = f64;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct div_t {
-    pub quot: ::std::os::raw::c_int,
-    pub rem: ::std::os::raw::c_int,
+    pub quot: libc::c_int,
+    pub rem: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_div_t() {
     assert_eq!(
-        ::std::mem::size_of::<div_t>(),
+        ::core::mem::size_of::<div_t>(),
         8usize,
         concat!("Size of: ", stringify!(div_t))
     );
     assert_eq!(
-        ::std::mem::align_of::<div_t>(),
+        ::core::mem::align_of::<div_t>(),
         4usize,
         concat!("Alignment of ", stringify!(div_t))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<div_t>())).quot as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<div_t>())).quot as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -3517,7 +3357,7 @@ fn bindgen_test_layout_div_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<div_t>())).rem as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<div_t>())).rem as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -3528,25 +3368,25 @@ fn bindgen_test_layout_div_t() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ldiv_t {
-    pub quot: ::std::os::raw::c_long,
-    pub rem: ::std::os::raw::c_long,
+    pub quot: libc::c_long,
+    pub rem: libc::c_long,
 }
 #[test]
 fn bindgen_test_layout_ldiv_t() {
     assert_eq!(
-        ::std::mem::size_of::<ldiv_t>(),
+        ::core::mem::size_of::<ldiv_t>(),
         16usize,
         concat!("Size of: ", stringify!(ldiv_t))
     );
     assert_eq!(
-        ::std::mem::align_of::<ldiv_t>(),
+        ::core::mem::align_of::<ldiv_t>(),
         8usize,
         concat!("Alignment of ", stringify!(ldiv_t))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ldiv_t>())).quot as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<ldiv_t>())).quot as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -3556,7 +3396,7 @@ fn bindgen_test_layout_ldiv_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ldiv_t>())).rem as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<ldiv_t>())).rem as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -3567,25 +3407,25 @@ fn bindgen_test_layout_ldiv_t() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct lldiv_t {
-    pub quot: ::std::os::raw::c_longlong,
-    pub rem: ::std::os::raw::c_longlong,
+    pub quot: libc::c_longlong,
+    pub rem: libc::c_longlong,
 }
 #[test]
 fn bindgen_test_layout_lldiv_t() {
     assert_eq!(
-        ::std::mem::size_of::<lldiv_t>(),
+        ::core::mem::size_of::<lldiv_t>(),
         16usize,
         concat!("Size of: ", stringify!(lldiv_t))
     );
     assert_eq!(
-        ::std::mem::align_of::<lldiv_t>(),
+        ::core::mem::align_of::<lldiv_t>(),
         8usize,
         concat!("Alignment of ", stringify!(lldiv_t))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<lldiv_t>())).quot as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<lldiv_t>())).quot as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -3595,7 +3435,7 @@ fn bindgen_test_layout_lldiv_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<lldiv_t>())).rem as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<lldiv_t>())).rem as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -3609,82 +3449,73 @@ extern "C" {
     pub fn __ctype_get_mb_cur_max() -> usize;
 }
 extern "C" {
-    pub fn atof(__nptr: *const ::std::os::raw::c_char) -> f64;
+    pub fn atof(__nptr: *const libc::c_char) -> f64;
 }
 extern "C" {
-    pub fn atoi(__nptr: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn atoi(__nptr: *const libc::c_char) -> libc::c_int;
 }
 extern "C" {
-    pub fn atol(__nptr: *const ::std::os::raw::c_char) -> ::std::os::raw::c_long;
+    pub fn atol(__nptr: *const libc::c_char) -> libc::c_long;
 }
 extern "C" {
-    pub fn atoll(__nptr: *const ::std::os::raw::c_char) -> ::std::os::raw::c_longlong;
+    pub fn atoll(__nptr: *const libc::c_char) -> libc::c_longlong;
 }
 extern "C" {
-    pub fn strtod(
-        __nptr: *const ::std::os::raw::c_char,
-        __endptr: *mut *mut ::std::os::raw::c_char,
-    ) -> f64;
+    pub fn strtod(__nptr: *const libc::c_char, __endptr: *mut *mut libc::c_char) -> f64;
 }
 extern "C" {
-    pub fn strtof(
-        __nptr: *const ::std::os::raw::c_char,
-        __endptr: *mut *mut ::std::os::raw::c_char,
-    ) -> f32;
+    pub fn strtof(__nptr: *const libc::c_char, __endptr: *mut *mut libc::c_char) -> f32;
 }
 extern "C" {
-    pub fn strtold(
-        __nptr: *const ::std::os::raw::c_char,
-        __endptr: *mut *mut ::std::os::raw::c_char,
-    ) -> f64;
+    pub fn strtold(__nptr: *const libc::c_char, __endptr: *mut *mut libc::c_char) -> f64;
 }
 extern "C" {
     pub fn strtol(
-        __nptr: *const ::std::os::raw::c_char,
-        __endptr: *mut *mut ::std::os::raw::c_char,
-        __base: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_long;
+        __nptr: *const libc::c_char,
+        __endptr: *mut *mut libc::c_char,
+        __base: libc::c_int,
+    ) -> libc::c_long;
 }
 extern "C" {
     pub fn strtoul(
-        __nptr: *const ::std::os::raw::c_char,
-        __endptr: *mut *mut ::std::os::raw::c_char,
-        __base: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_ulong;
+        __nptr: *const libc::c_char,
+        __endptr: *mut *mut libc::c_char,
+        __base: libc::c_int,
+    ) -> libc::c_ulong;
 }
 extern "C" {
     pub fn strtoq(
-        __nptr: *const ::std::os::raw::c_char,
-        __endptr: *mut *mut ::std::os::raw::c_char,
-        __base: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_longlong;
+        __nptr: *const libc::c_char,
+        __endptr: *mut *mut libc::c_char,
+        __base: libc::c_int,
+    ) -> libc::c_longlong;
 }
 extern "C" {
     pub fn strtouq(
-        __nptr: *const ::std::os::raw::c_char,
-        __endptr: *mut *mut ::std::os::raw::c_char,
-        __base: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_ulonglong;
+        __nptr: *const libc::c_char,
+        __endptr: *mut *mut libc::c_char,
+        __base: libc::c_int,
+    ) -> libc::c_ulonglong;
 }
 extern "C" {
     pub fn strtoll(
-        __nptr: *const ::std::os::raw::c_char,
-        __endptr: *mut *mut ::std::os::raw::c_char,
-        __base: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_longlong;
+        __nptr: *const libc::c_char,
+        __endptr: *mut *mut libc::c_char,
+        __base: libc::c_int,
+    ) -> libc::c_longlong;
 }
 extern "C" {
     pub fn strtoull(
-        __nptr: *const ::std::os::raw::c_char,
-        __endptr: *mut *mut ::std::os::raw::c_char,
-        __base: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_ulonglong;
+        __nptr: *const libc::c_char,
+        __endptr: *mut *mut libc::c_char,
+        __base: libc::c_int,
+    ) -> libc::c_ulonglong;
 }
 extern "C" {
-    pub fn l64a(__n: ::std::os::raw::c_long) -> *mut ::std::os::raw::c_char;
+    pub fn l64a(__n: libc::c_long) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn a64l(__s: *const ::std::os::raw::c_char) -> ::std::os::raw::c_long;
+    pub fn a64l(__s: *const libc::c_char) -> libc::c_long;
 }
 pub type u_char = __u_char;
 pub type u_short = __u_short;
@@ -3710,33 +3541,33 @@ pub type clock_t = __clock_t;
 pub type clockid_t = __clockid_t;
 pub type time_t = __time_t;
 pub type timer_t = __timer_t;
-pub type ulong = ::std::os::raw::c_ulong;
-pub type ushort = ::std::os::raw::c_ushort;
-pub type uint = ::std::os::raw::c_uint;
-pub type u_int8_t = ::std::os::raw::c_uchar;
-pub type u_int16_t = ::std::os::raw::c_ushort;
-pub type u_int32_t = ::std::os::raw::c_uint;
-pub type u_int64_t = ::std::os::raw::c_ulong;
-pub type register_t = ::std::os::raw::c_long;
+pub type ulong = libc::c_ulong;
+pub type ushort = libc::c_ushort;
+pub type uint = libc::c_uint;
+pub type u_int8_t = libc::c_uchar;
+pub type u_int16_t = libc::c_ushort;
+pub type u_int32_t = libc::c_uint;
+pub type u_int64_t = libc::c_ulong;
+pub type register_t = libc::c_long;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct __sigset_t {
-    pub __val: [::std::os::raw::c_ulong; 16usize],
+    pub __val: [libc::c_ulong; 16usize],
 }
 #[test]
 fn bindgen_test_layout___sigset_t() {
     assert_eq!(
-        ::std::mem::size_of::<__sigset_t>(),
+        ::core::mem::size_of::<__sigset_t>(),
         128usize,
         concat!("Size of: ", stringify!(__sigset_t))
     );
     assert_eq!(
-        ::std::mem::align_of::<__sigset_t>(),
+        ::core::mem::align_of::<__sigset_t>(),
         8usize,
         concat!("Alignment of ", stringify!(__sigset_t))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__sigset_t>())).__val as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__sigset_t>())).__val as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -3748,7 +3579,7 @@ fn bindgen_test_layout___sigset_t() {
 }
 pub type sigset_t = __sigset_t;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct timeval {
     pub tv_sec: __time_t,
     pub tv_usec: __suseconds_t,
@@ -3756,17 +3587,17 @@ pub struct timeval {
 #[test]
 fn bindgen_test_layout_timeval() {
     assert_eq!(
-        ::std::mem::size_of::<timeval>(),
+        ::core::mem::size_of::<timeval>(),
         16usize,
         concat!("Size of: ", stringify!(timeval))
     );
     assert_eq!(
-        ::std::mem::align_of::<timeval>(),
+        ::core::mem::align_of::<timeval>(),
         8usize,
         concat!("Alignment of ", stringify!(timeval))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<timeval>())).tv_sec as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<timeval>())).tv_sec as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -3776,7 +3607,7 @@ fn bindgen_test_layout_timeval() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<timeval>())).tv_usec as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<timeval>())).tv_usec as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -3787,7 +3618,7 @@ fn bindgen_test_layout_timeval() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct timespec {
     pub tv_sec: __time_t,
     pub tv_nsec: __syscall_slong_t,
@@ -3795,17 +3626,17 @@ pub struct timespec {
 #[test]
 fn bindgen_test_layout_timespec() {
     assert_eq!(
-        ::std::mem::size_of::<timespec>(),
+        ::core::mem::size_of::<timespec>(),
         16usize,
         concat!("Size of: ", stringify!(timespec))
     );
     assert_eq!(
-        ::std::mem::align_of::<timespec>(),
+        ::core::mem::align_of::<timespec>(),
         8usize,
         concat!("Alignment of ", stringify!(timespec))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<timespec>())).tv_sec as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<timespec>())).tv_sec as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -3815,7 +3646,7 @@ fn bindgen_test_layout_timespec() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<timespec>())).tv_nsec as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<timespec>())).tv_nsec as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -3826,26 +3657,26 @@ fn bindgen_test_layout_timespec() {
     );
 }
 pub type suseconds_t = __suseconds_t;
-pub type __fd_mask = ::std::os::raw::c_long;
+pub type __fd_mask = libc::c_long;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fd_set {
     pub __fds_bits: [__fd_mask; 16usize],
 }
 #[test]
 fn bindgen_test_layout_fd_set() {
     assert_eq!(
-        ::std::mem::size_of::<fd_set>(),
+        ::core::mem::size_of::<fd_set>(),
         128usize,
         concat!("Size of: ", stringify!(fd_set))
     );
     assert_eq!(
-        ::std::mem::align_of::<fd_set>(),
+        ::core::mem::align_of::<fd_set>(),
         8usize,
         concat!("Alignment of ", stringify!(fd_set))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<fd_set>())).__fds_bits as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<fd_set>())).__fds_bits as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -3858,58 +3689,58 @@ fn bindgen_test_layout_fd_set() {
 pub type fd_mask = __fd_mask;
 extern "C" {
     pub fn select(
-        __nfds: ::std::os::raw::c_int,
+        __nfds: libc::c_int,
         __readfds: *mut fd_set,
         __writefds: *mut fd_set,
         __exceptfds: *mut fd_set,
         __timeout: *mut timeval,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn pselect(
-        __nfds: ::std::os::raw::c_int,
+        __nfds: libc::c_int,
         __readfds: *mut fd_set,
         __writefds: *mut fd_set,
         __exceptfds: *mut fd_set,
         __timeout: *const timespec,
         __sigmask: *const __sigset_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 pub type blksize_t = __blksize_t;
 pub type blkcnt_t = __blkcnt_t;
 pub type fsblkcnt_t = __fsblkcnt_t;
 pub type fsfilcnt_t = __fsfilcnt_t;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct __pthread_rwlock_arch_t {
-    pub __readers: ::std::os::raw::c_uint,
-    pub __writers: ::std::os::raw::c_uint,
-    pub __wrphase_futex: ::std::os::raw::c_uint,
-    pub __writers_futex: ::std::os::raw::c_uint,
-    pub __pad3: ::std::os::raw::c_uint,
-    pub __pad4: ::std::os::raw::c_uint,
-    pub __cur_writer: ::std::os::raw::c_int,
-    pub __shared: ::std::os::raw::c_int,
-    pub __rwelision: ::std::os::raw::c_schar,
-    pub __pad1: [::std::os::raw::c_uchar; 7usize],
-    pub __pad2: ::std::os::raw::c_ulong,
-    pub __flags: ::std::os::raw::c_uint,
+    pub __readers: libc::c_uint,
+    pub __writers: libc::c_uint,
+    pub __wrphase_futex: libc::c_uint,
+    pub __writers_futex: libc::c_uint,
+    pub __pad3: libc::c_uint,
+    pub __pad4: libc::c_uint,
+    pub __cur_writer: libc::c_int,
+    pub __shared: libc::c_int,
+    pub __rwelision: libc::c_schar,
+    pub __pad1: [libc::c_uchar; 7usize],
+    pub __pad2: libc::c_ulong,
+    pub __flags: libc::c_uint,
 }
 #[test]
 fn bindgen_test_layout___pthread_rwlock_arch_t() {
     assert_eq!(
-        ::std::mem::size_of::<__pthread_rwlock_arch_t>(),
+        ::core::mem::size_of::<__pthread_rwlock_arch_t>(),
         56usize,
         concat!("Size of: ", stringify!(__pthread_rwlock_arch_t))
     );
     assert_eq!(
-        ::std::mem::align_of::<__pthread_rwlock_arch_t>(),
+        ::core::mem::align_of::<__pthread_rwlock_arch_t>(),
         8usize,
         concat!("Alignment of ", stringify!(__pthread_rwlock_arch_t))
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<__pthread_rwlock_arch_t>())).__readers as *const _ as usize
+            &(*(::core::ptr::null::<__pthread_rwlock_arch_t>())).__readers as *const _ as usize
         },
         0usize,
         concat!(
@@ -3921,7 +3752,7 @@ fn bindgen_test_layout___pthread_rwlock_arch_t() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<__pthread_rwlock_arch_t>())).__writers as *const _ as usize
+            &(*(::core::ptr::null::<__pthread_rwlock_arch_t>())).__writers as *const _ as usize
         },
         4usize,
         concat!(
@@ -3933,7 +3764,8 @@ fn bindgen_test_layout___pthread_rwlock_arch_t() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<__pthread_rwlock_arch_t>())).__wrphase_futex as *const _ as usize
+            &(*(::core::ptr::null::<__pthread_rwlock_arch_t>())).__wrphase_futex as *const _
+                as usize
         },
         8usize,
         concat!(
@@ -3945,7 +3777,8 @@ fn bindgen_test_layout___pthread_rwlock_arch_t() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<__pthread_rwlock_arch_t>())).__writers_futex as *const _ as usize
+            &(*(::core::ptr::null::<__pthread_rwlock_arch_t>())).__writers_futex as *const _
+                as usize
         },
         12usize,
         concat!(
@@ -3956,7 +3789,7 @@ fn bindgen_test_layout___pthread_rwlock_arch_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_rwlock_arch_t>())).__pad3 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__pthread_rwlock_arch_t>())).__pad3 as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -3966,7 +3799,7 @@ fn bindgen_test_layout___pthread_rwlock_arch_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_rwlock_arch_t>())).__pad4 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__pthread_rwlock_arch_t>())).__pad4 as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -3977,7 +3810,7 @@ fn bindgen_test_layout___pthread_rwlock_arch_t() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<__pthread_rwlock_arch_t>())).__cur_writer as *const _ as usize
+            &(*(::core::ptr::null::<__pthread_rwlock_arch_t>())).__cur_writer as *const _ as usize
         },
         24usize,
         concat!(
@@ -3989,7 +3822,7 @@ fn bindgen_test_layout___pthread_rwlock_arch_t() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<__pthread_rwlock_arch_t>())).__shared as *const _ as usize
+            &(*(::core::ptr::null::<__pthread_rwlock_arch_t>())).__shared as *const _ as usize
         },
         28usize,
         concat!(
@@ -4001,7 +3834,7 @@ fn bindgen_test_layout___pthread_rwlock_arch_t() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<__pthread_rwlock_arch_t>())).__rwelision as *const _ as usize
+            &(*(::core::ptr::null::<__pthread_rwlock_arch_t>())).__rwelision as *const _ as usize
         },
         32usize,
         concat!(
@@ -4012,7 +3845,7 @@ fn bindgen_test_layout___pthread_rwlock_arch_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_rwlock_arch_t>())).__pad1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__pthread_rwlock_arch_t>())).__pad1 as *const _ as usize },
         33usize,
         concat!(
             "Offset of field: ",
@@ -4022,7 +3855,7 @@ fn bindgen_test_layout___pthread_rwlock_arch_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_rwlock_arch_t>())).__pad2 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__pthread_rwlock_arch_t>())).__pad2 as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -4032,7 +3865,9 @@ fn bindgen_test_layout___pthread_rwlock_arch_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_rwlock_arch_t>())).__flags as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<__pthread_rwlock_arch_t>())).__flags as *const _ as usize
+        },
         48usize,
         concat!(
             "Offset of field: ",
@@ -4043,7 +3878,7 @@ fn bindgen_test_layout___pthread_rwlock_arch_t() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct __pthread_internal_list {
     pub __prev: *mut __pthread_internal_list,
     pub __next: *mut __pthread_internal_list,
@@ -4051,17 +3886,17 @@ pub struct __pthread_internal_list {
 #[test]
 fn bindgen_test_layout___pthread_internal_list() {
     assert_eq!(
-        ::std::mem::size_of::<__pthread_internal_list>(),
+        ::core::mem::size_of::<__pthread_internal_list>(),
         16usize,
         concat!("Size of: ", stringify!(__pthread_internal_list))
     );
     assert_eq!(
-        ::std::mem::align_of::<__pthread_internal_list>(),
+        ::core::mem::align_of::<__pthread_internal_list>(),
         8usize,
         concat!("Alignment of ", stringify!(__pthread_internal_list))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_internal_list>())).__prev as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__pthread_internal_list>())).__prev as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4071,7 +3906,7 @@ fn bindgen_test_layout___pthread_internal_list() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_internal_list>())).__next as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__pthread_internal_list>())).__next as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -4083,31 +3918,31 @@ fn bindgen_test_layout___pthread_internal_list() {
 }
 pub type __pthread_list_t = __pthread_internal_list;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct __pthread_mutex_s {
-    pub __lock: ::std::os::raw::c_int,
-    pub __count: ::std::os::raw::c_uint,
-    pub __owner: ::std::os::raw::c_int,
-    pub __nusers: ::std::os::raw::c_uint,
-    pub __kind: ::std::os::raw::c_int,
-    pub __spins: ::std::os::raw::c_short,
-    pub __elision: ::std::os::raw::c_short,
+    pub __lock: libc::c_int,
+    pub __count: libc::c_uint,
+    pub __owner: libc::c_int,
+    pub __nusers: libc::c_uint,
+    pub __kind: libc::c_int,
+    pub __spins: libc::c_short,
+    pub __elision: libc::c_short,
     pub __list: __pthread_list_t,
 }
 #[test]
 fn bindgen_test_layout___pthread_mutex_s() {
     assert_eq!(
-        ::std::mem::size_of::<__pthread_mutex_s>(),
+        ::core::mem::size_of::<__pthread_mutex_s>(),
         40usize,
         concat!("Size of: ", stringify!(__pthread_mutex_s))
     );
     assert_eq!(
-        ::std::mem::align_of::<__pthread_mutex_s>(),
+        ::core::mem::align_of::<__pthread_mutex_s>(),
         8usize,
         concat!("Alignment of ", stringify!(__pthread_mutex_s))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_mutex_s>())).__lock as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__pthread_mutex_s>())).__lock as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4117,7 +3952,7 @@ fn bindgen_test_layout___pthread_mutex_s() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_mutex_s>())).__count as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__pthread_mutex_s>())).__count as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -4127,7 +3962,7 @@ fn bindgen_test_layout___pthread_mutex_s() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_mutex_s>())).__owner as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__pthread_mutex_s>())).__owner as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -4137,7 +3972,7 @@ fn bindgen_test_layout___pthread_mutex_s() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_mutex_s>())).__nusers as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__pthread_mutex_s>())).__nusers as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -4147,7 +3982,7 @@ fn bindgen_test_layout___pthread_mutex_s() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_mutex_s>())).__kind as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__pthread_mutex_s>())).__kind as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -4157,7 +3992,7 @@ fn bindgen_test_layout___pthread_mutex_s() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_mutex_s>())).__spins as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__pthread_mutex_s>())).__spins as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -4167,7 +4002,7 @@ fn bindgen_test_layout___pthread_mutex_s() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_mutex_s>())).__elision as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__pthread_mutex_s>())).__elision as *const _ as usize },
         22usize,
         concat!(
             "Offset of field: ",
@@ -4177,7 +4012,7 @@ fn bindgen_test_layout___pthread_mutex_s() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_mutex_s>())).__list as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__pthread_mutex_s>())).__list as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -4192,29 +4027,29 @@ fn bindgen_test_layout___pthread_mutex_s() {
 pub struct __pthread_cond_s {
     pub __bindgen_anon_1: __pthread_cond_s__bindgen_ty_1,
     pub __bindgen_anon_2: __pthread_cond_s__bindgen_ty_2,
-    pub __g_refs: [::std::os::raw::c_uint; 2usize],
-    pub __g_size: [::std::os::raw::c_uint; 2usize],
-    pub __g1_orig_size: ::std::os::raw::c_uint,
-    pub __wrefs: ::std::os::raw::c_uint,
-    pub __g_signals: [::std::os::raw::c_uint; 2usize],
+    pub __g_refs: [libc::c_uint; 2usize],
+    pub __g_size: [libc::c_uint; 2usize],
+    pub __g1_orig_size: libc::c_uint,
+    pub __wrefs: libc::c_uint,
+    pub __g_signals: [libc::c_uint; 2usize],
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union __pthread_cond_s__bindgen_ty_1 {
-    pub __wseq: ::std::os::raw::c_ulonglong,
+    pub __wseq: libc::c_ulonglong,
     pub __wseq32: __pthread_cond_s__bindgen_ty_1__bindgen_ty_1,
     _bindgen_union_align: u64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct __pthread_cond_s__bindgen_ty_1__bindgen_ty_1 {
-    pub __low: ::std::os::raw::c_uint,
-    pub __high: ::std::os::raw::c_uint,
+    pub __low: libc::c_uint,
+    pub __high: libc::c_uint,
 }
 #[test]
 fn bindgen_test_layout___pthread_cond_s__bindgen_ty_1__bindgen_ty_1() {
     assert_eq!(
-        ::std::mem::size_of::<__pthread_cond_s__bindgen_ty_1__bindgen_ty_1>(),
+        ::core::mem::size_of::<__pthread_cond_s__bindgen_ty_1__bindgen_ty_1>(),
         8usize,
         concat!(
             "Size of: ",
@@ -4222,7 +4057,7 @@ fn bindgen_test_layout___pthread_cond_s__bindgen_ty_1__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        ::std::mem::align_of::<__pthread_cond_s__bindgen_ty_1__bindgen_ty_1>(),
+        ::core::mem::align_of::<__pthread_cond_s__bindgen_ty_1__bindgen_ty_1>(),
         4usize,
         concat!(
             "Alignment of ",
@@ -4231,7 +4066,7 @@ fn bindgen_test_layout___pthread_cond_s__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<__pthread_cond_s__bindgen_ty_1__bindgen_ty_1>())).__low
+            &(*(::core::ptr::null::<__pthread_cond_s__bindgen_ty_1__bindgen_ty_1>())).__low
                 as *const _ as usize
         },
         0usize,
@@ -4244,7 +4079,7 @@ fn bindgen_test_layout___pthread_cond_s__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<__pthread_cond_s__bindgen_ty_1__bindgen_ty_1>())).__high
+            &(*(::core::ptr::null::<__pthread_cond_s__bindgen_ty_1__bindgen_ty_1>())).__high
                 as *const _ as usize
         },
         4usize,
@@ -4259,18 +4094,18 @@ fn bindgen_test_layout___pthread_cond_s__bindgen_ty_1__bindgen_ty_1() {
 #[test]
 fn bindgen_test_layout___pthread_cond_s__bindgen_ty_1() {
     assert_eq!(
-        ::std::mem::size_of::<__pthread_cond_s__bindgen_ty_1>(),
+        ::core::mem::size_of::<__pthread_cond_s__bindgen_ty_1>(),
         8usize,
         concat!("Size of: ", stringify!(__pthread_cond_s__bindgen_ty_1))
     );
     assert_eq!(
-        ::std::mem::align_of::<__pthread_cond_s__bindgen_ty_1>(),
+        ::core::mem::align_of::<__pthread_cond_s__bindgen_ty_1>(),
         8usize,
         concat!("Alignment of ", stringify!(__pthread_cond_s__bindgen_ty_1))
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<__pthread_cond_s__bindgen_ty_1>())).__wseq as *const _ as usize
+            &(*(::core::ptr::null::<__pthread_cond_s__bindgen_ty_1>())).__wseq as *const _ as usize
         },
         0usize,
         concat!(
@@ -4282,7 +4117,8 @@ fn bindgen_test_layout___pthread_cond_s__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<__pthread_cond_s__bindgen_ty_1>())).__wseq32 as *const _ as usize
+            &(*(::core::ptr::null::<__pthread_cond_s__bindgen_ty_1>())).__wseq32 as *const _
+                as usize
         },
         0usize,
         concat!(
@@ -4296,20 +4132,20 @@ fn bindgen_test_layout___pthread_cond_s__bindgen_ty_1() {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union __pthread_cond_s__bindgen_ty_2 {
-    pub __g1_start: ::std::os::raw::c_ulonglong,
+    pub __g1_start: libc::c_ulonglong,
     pub __g1_start32: __pthread_cond_s__bindgen_ty_2__bindgen_ty_1,
     _bindgen_union_align: u64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct __pthread_cond_s__bindgen_ty_2__bindgen_ty_1 {
-    pub __low: ::std::os::raw::c_uint,
-    pub __high: ::std::os::raw::c_uint,
+    pub __low: libc::c_uint,
+    pub __high: libc::c_uint,
 }
 #[test]
 fn bindgen_test_layout___pthread_cond_s__bindgen_ty_2__bindgen_ty_1() {
     assert_eq!(
-        ::std::mem::size_of::<__pthread_cond_s__bindgen_ty_2__bindgen_ty_1>(),
+        ::core::mem::size_of::<__pthread_cond_s__bindgen_ty_2__bindgen_ty_1>(),
         8usize,
         concat!(
             "Size of: ",
@@ -4317,7 +4153,7 @@ fn bindgen_test_layout___pthread_cond_s__bindgen_ty_2__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        ::std::mem::align_of::<__pthread_cond_s__bindgen_ty_2__bindgen_ty_1>(),
+        ::core::mem::align_of::<__pthread_cond_s__bindgen_ty_2__bindgen_ty_1>(),
         4usize,
         concat!(
             "Alignment of ",
@@ -4326,7 +4162,7 @@ fn bindgen_test_layout___pthread_cond_s__bindgen_ty_2__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<__pthread_cond_s__bindgen_ty_2__bindgen_ty_1>())).__low
+            &(*(::core::ptr::null::<__pthread_cond_s__bindgen_ty_2__bindgen_ty_1>())).__low
                 as *const _ as usize
         },
         0usize,
@@ -4339,7 +4175,7 @@ fn bindgen_test_layout___pthread_cond_s__bindgen_ty_2__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<__pthread_cond_s__bindgen_ty_2__bindgen_ty_1>())).__high
+            &(*(::core::ptr::null::<__pthread_cond_s__bindgen_ty_2__bindgen_ty_1>())).__high
                 as *const _ as usize
         },
         4usize,
@@ -4354,18 +4190,18 @@ fn bindgen_test_layout___pthread_cond_s__bindgen_ty_2__bindgen_ty_1() {
 #[test]
 fn bindgen_test_layout___pthread_cond_s__bindgen_ty_2() {
     assert_eq!(
-        ::std::mem::size_of::<__pthread_cond_s__bindgen_ty_2>(),
+        ::core::mem::size_of::<__pthread_cond_s__bindgen_ty_2>(),
         8usize,
         concat!("Size of: ", stringify!(__pthread_cond_s__bindgen_ty_2))
     );
     assert_eq!(
-        ::std::mem::align_of::<__pthread_cond_s__bindgen_ty_2>(),
+        ::core::mem::align_of::<__pthread_cond_s__bindgen_ty_2>(),
         8usize,
         concat!("Alignment of ", stringify!(__pthread_cond_s__bindgen_ty_2))
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<__pthread_cond_s__bindgen_ty_2>())).__g1_start as *const _
+            &(*(::core::ptr::null::<__pthread_cond_s__bindgen_ty_2>())).__g1_start as *const _
                 as usize
         },
         0usize,
@@ -4378,7 +4214,7 @@ fn bindgen_test_layout___pthread_cond_s__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<__pthread_cond_s__bindgen_ty_2>())).__g1_start32 as *const _
+            &(*(::core::ptr::null::<__pthread_cond_s__bindgen_ty_2>())).__g1_start32 as *const _
                 as usize
         },
         0usize,
@@ -4393,17 +4229,17 @@ fn bindgen_test_layout___pthread_cond_s__bindgen_ty_2() {
 #[test]
 fn bindgen_test_layout___pthread_cond_s() {
     assert_eq!(
-        ::std::mem::size_of::<__pthread_cond_s>(),
+        ::core::mem::size_of::<__pthread_cond_s>(),
         48usize,
         concat!("Size of: ", stringify!(__pthread_cond_s))
     );
     assert_eq!(
-        ::std::mem::align_of::<__pthread_cond_s>(),
+        ::core::mem::align_of::<__pthread_cond_s>(),
         8usize,
         concat!("Alignment of ", stringify!(__pthread_cond_s))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_cond_s>())).__g_refs as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__pthread_cond_s>())).__g_refs as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -4413,7 +4249,7 @@ fn bindgen_test_layout___pthread_cond_s() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_cond_s>())).__g_size as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__pthread_cond_s>())).__g_size as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -4423,7 +4259,9 @@ fn bindgen_test_layout___pthread_cond_s() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_cond_s>())).__g1_orig_size as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<__pthread_cond_s>())).__g1_orig_size as *const _ as usize
+        },
         32usize,
         concat!(
             "Offset of field: ",
@@ -4433,7 +4271,7 @@ fn bindgen_test_layout___pthread_cond_s() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_cond_s>())).__wrefs as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__pthread_cond_s>())).__wrefs as *const _ as usize },
         36usize,
         concat!(
             "Offset of field: ",
@@ -4443,7 +4281,7 @@ fn bindgen_test_layout___pthread_cond_s() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__pthread_cond_s>())).__g_signals as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__pthread_cond_s>())).__g_signals as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -4453,28 +4291,28 @@ fn bindgen_test_layout___pthread_cond_s() {
         )
     );
 }
-pub type pthread_t = ::std::os::raw::c_ulong;
+pub type pthread_t = libc::c_ulong;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union pthread_mutexattr_t {
-    pub __size: [::std::os::raw::c_char; 4usize],
-    pub __align: ::std::os::raw::c_int,
+    pub __size: [libc::c_char; 4usize],
+    pub __align: libc::c_int,
     _bindgen_union_align: u32,
 }
 #[test]
 fn bindgen_test_layout_pthread_mutexattr_t() {
     assert_eq!(
-        ::std::mem::size_of::<pthread_mutexattr_t>(),
+        ::core::mem::size_of::<pthread_mutexattr_t>(),
         4usize,
         concat!("Size of: ", stringify!(pthread_mutexattr_t))
     );
     assert_eq!(
-        ::std::mem::align_of::<pthread_mutexattr_t>(),
+        ::core::mem::align_of::<pthread_mutexattr_t>(),
         4usize,
         concat!("Alignment of ", stringify!(pthread_mutexattr_t))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_mutexattr_t>())).__size as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_mutexattr_t>())).__size as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4484,7 +4322,7 @@ fn bindgen_test_layout_pthread_mutexattr_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_mutexattr_t>())).__align as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_mutexattr_t>())).__align as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4497,24 +4335,24 @@ fn bindgen_test_layout_pthread_mutexattr_t() {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union pthread_condattr_t {
-    pub __size: [::std::os::raw::c_char; 4usize],
-    pub __align: ::std::os::raw::c_int,
+    pub __size: [libc::c_char; 4usize],
+    pub __align: libc::c_int,
     _bindgen_union_align: u32,
 }
 #[test]
 fn bindgen_test_layout_pthread_condattr_t() {
     assert_eq!(
-        ::std::mem::size_of::<pthread_condattr_t>(),
+        ::core::mem::size_of::<pthread_condattr_t>(),
         4usize,
         concat!("Size of: ", stringify!(pthread_condattr_t))
     );
     assert_eq!(
-        ::std::mem::align_of::<pthread_condattr_t>(),
+        ::core::mem::align_of::<pthread_condattr_t>(),
         4usize,
         concat!("Alignment of ", stringify!(pthread_condattr_t))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_condattr_t>())).__size as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_condattr_t>())).__size as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4524,7 +4362,7 @@ fn bindgen_test_layout_pthread_condattr_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_condattr_t>())).__align as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_condattr_t>())).__align as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4534,29 +4372,29 @@ fn bindgen_test_layout_pthread_condattr_t() {
         )
     );
 }
-pub type pthread_key_t = ::std::os::raw::c_uint;
-pub type pthread_once_t = ::std::os::raw::c_int;
+pub type pthread_key_t = libc::c_uint;
+pub type pthread_once_t = libc::c_int;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union pthread_attr_t {
-    pub __size: [::std::os::raw::c_char; 56usize],
-    pub __align: ::std::os::raw::c_long,
+    pub __size: [libc::c_char; 56usize],
+    pub __align: libc::c_long,
     _bindgen_union_align: [u64; 7usize],
 }
 #[test]
 fn bindgen_test_layout_pthread_attr_t() {
     assert_eq!(
-        ::std::mem::size_of::<pthread_attr_t>(),
+        ::core::mem::size_of::<pthread_attr_t>(),
         56usize,
         concat!("Size of: ", stringify!(pthread_attr_t))
     );
     assert_eq!(
-        ::std::mem::align_of::<pthread_attr_t>(),
+        ::core::mem::align_of::<pthread_attr_t>(),
         8usize,
         concat!("Alignment of ", stringify!(pthread_attr_t))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_attr_t>())).__size as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_attr_t>())).__size as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4566,7 +4404,7 @@ fn bindgen_test_layout_pthread_attr_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_attr_t>())).__align as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_attr_t>())).__align as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4580,24 +4418,24 @@ fn bindgen_test_layout_pthread_attr_t() {
 #[derive(Copy, Clone)]
 pub union pthread_mutex_t {
     pub __data: __pthread_mutex_s,
-    pub __size: [::std::os::raw::c_char; 40usize],
-    pub __align: ::std::os::raw::c_long,
+    pub __size: [libc::c_char; 40usize],
+    pub __align: libc::c_long,
     _bindgen_union_align: [u64; 5usize],
 }
 #[test]
 fn bindgen_test_layout_pthread_mutex_t() {
     assert_eq!(
-        ::std::mem::size_of::<pthread_mutex_t>(),
+        ::core::mem::size_of::<pthread_mutex_t>(),
         40usize,
         concat!("Size of: ", stringify!(pthread_mutex_t))
     );
     assert_eq!(
-        ::std::mem::align_of::<pthread_mutex_t>(),
+        ::core::mem::align_of::<pthread_mutex_t>(),
         8usize,
         concat!("Alignment of ", stringify!(pthread_mutex_t))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_mutex_t>())).__data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_mutex_t>())).__data as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4607,7 +4445,7 @@ fn bindgen_test_layout_pthread_mutex_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_mutex_t>())).__size as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_mutex_t>())).__size as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4617,7 +4455,7 @@ fn bindgen_test_layout_pthread_mutex_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_mutex_t>())).__align as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_mutex_t>())).__align as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4631,24 +4469,24 @@ fn bindgen_test_layout_pthread_mutex_t() {
 #[derive(Copy, Clone)]
 pub union pthread_cond_t {
     pub __data: __pthread_cond_s,
-    pub __size: [::std::os::raw::c_char; 48usize],
-    pub __align: ::std::os::raw::c_longlong,
+    pub __size: [libc::c_char; 48usize],
+    pub __align: libc::c_longlong,
     _bindgen_union_align: [u64; 6usize],
 }
 #[test]
 fn bindgen_test_layout_pthread_cond_t() {
     assert_eq!(
-        ::std::mem::size_of::<pthread_cond_t>(),
+        ::core::mem::size_of::<pthread_cond_t>(),
         48usize,
         concat!("Size of: ", stringify!(pthread_cond_t))
     );
     assert_eq!(
-        ::std::mem::align_of::<pthread_cond_t>(),
+        ::core::mem::align_of::<pthread_cond_t>(),
         8usize,
         concat!("Alignment of ", stringify!(pthread_cond_t))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_cond_t>())).__data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_cond_t>())).__data as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4658,7 +4496,7 @@ fn bindgen_test_layout_pthread_cond_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_cond_t>())).__size as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_cond_t>())).__size as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4668,7 +4506,7 @@ fn bindgen_test_layout_pthread_cond_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_cond_t>())).__align as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_cond_t>())).__align as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4682,24 +4520,24 @@ fn bindgen_test_layout_pthread_cond_t() {
 #[derive(Copy, Clone)]
 pub union pthread_rwlock_t {
     pub __data: __pthread_rwlock_arch_t,
-    pub __size: [::std::os::raw::c_char; 56usize],
-    pub __align: ::std::os::raw::c_long,
+    pub __size: [libc::c_char; 56usize],
+    pub __align: libc::c_long,
     _bindgen_union_align: [u64; 7usize],
 }
 #[test]
 fn bindgen_test_layout_pthread_rwlock_t() {
     assert_eq!(
-        ::std::mem::size_of::<pthread_rwlock_t>(),
+        ::core::mem::size_of::<pthread_rwlock_t>(),
         56usize,
         concat!("Size of: ", stringify!(pthread_rwlock_t))
     );
     assert_eq!(
-        ::std::mem::align_of::<pthread_rwlock_t>(),
+        ::core::mem::align_of::<pthread_rwlock_t>(),
         8usize,
         concat!("Alignment of ", stringify!(pthread_rwlock_t))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_rwlock_t>())).__data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_rwlock_t>())).__data as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4709,7 +4547,7 @@ fn bindgen_test_layout_pthread_rwlock_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_rwlock_t>())).__size as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_rwlock_t>())).__size as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4719,7 +4557,7 @@ fn bindgen_test_layout_pthread_rwlock_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_rwlock_t>())).__align as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_rwlock_t>())).__align as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4732,24 +4570,24 @@ fn bindgen_test_layout_pthread_rwlock_t() {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union pthread_rwlockattr_t {
-    pub __size: [::std::os::raw::c_char; 8usize],
-    pub __align: ::std::os::raw::c_long,
+    pub __size: [libc::c_char; 8usize],
+    pub __align: libc::c_long,
     _bindgen_union_align: u64,
 }
 #[test]
 fn bindgen_test_layout_pthread_rwlockattr_t() {
     assert_eq!(
-        ::std::mem::size_of::<pthread_rwlockattr_t>(),
+        ::core::mem::size_of::<pthread_rwlockattr_t>(),
         8usize,
         concat!("Size of: ", stringify!(pthread_rwlockattr_t))
     );
     assert_eq!(
-        ::std::mem::align_of::<pthread_rwlockattr_t>(),
+        ::core::mem::align_of::<pthread_rwlockattr_t>(),
         8usize,
         concat!("Alignment of ", stringify!(pthread_rwlockattr_t))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_rwlockattr_t>())).__size as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_rwlockattr_t>())).__size as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4759,7 +4597,7 @@ fn bindgen_test_layout_pthread_rwlockattr_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_rwlockattr_t>())).__align as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_rwlockattr_t>())).__align as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4769,28 +4607,28 @@ fn bindgen_test_layout_pthread_rwlockattr_t() {
         )
     );
 }
-pub type pthread_spinlock_t = ::std::os::raw::c_int;
+pub type pthread_spinlock_t = libc::c_int;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union pthread_barrier_t {
-    pub __size: [::std::os::raw::c_char; 32usize],
-    pub __align: ::std::os::raw::c_long,
+    pub __size: [libc::c_char; 32usize],
+    pub __align: libc::c_long,
     _bindgen_union_align: [u64; 4usize],
 }
 #[test]
 fn bindgen_test_layout_pthread_barrier_t() {
     assert_eq!(
-        ::std::mem::size_of::<pthread_barrier_t>(),
+        ::core::mem::size_of::<pthread_barrier_t>(),
         32usize,
         concat!("Size of: ", stringify!(pthread_barrier_t))
     );
     assert_eq!(
-        ::std::mem::align_of::<pthread_barrier_t>(),
+        ::core::mem::align_of::<pthread_barrier_t>(),
         8usize,
         concat!("Alignment of ", stringify!(pthread_barrier_t))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_barrier_t>())).__size as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_barrier_t>())).__size as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4800,7 +4638,7 @@ fn bindgen_test_layout_pthread_barrier_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_barrier_t>())).__align as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_barrier_t>())).__align as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4813,24 +4651,24 @@ fn bindgen_test_layout_pthread_barrier_t() {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union pthread_barrierattr_t {
-    pub __size: [::std::os::raw::c_char; 4usize],
-    pub __align: ::std::os::raw::c_int,
+    pub __size: [libc::c_char; 4usize],
+    pub __align: libc::c_int,
     _bindgen_union_align: u32,
 }
 #[test]
 fn bindgen_test_layout_pthread_barrierattr_t() {
     assert_eq!(
-        ::std::mem::size_of::<pthread_barrierattr_t>(),
+        ::core::mem::size_of::<pthread_barrierattr_t>(),
         4usize,
         concat!("Size of: ", stringify!(pthread_barrierattr_t))
     );
     assert_eq!(
-        ::std::mem::align_of::<pthread_barrierattr_t>(),
+        ::core::mem::align_of::<pthread_barrierattr_t>(),
         4usize,
         concat!("Alignment of ", stringify!(pthread_barrierattr_t))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_barrierattr_t>())).__size as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_barrierattr_t>())).__size as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4840,7 +4678,7 @@ fn bindgen_test_layout_pthread_barrierattr_t() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pthread_barrierattr_t>())).__align as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<pthread_barrierattr_t>())).__align as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4851,46 +4689,46 @@ fn bindgen_test_layout_pthread_barrierattr_t() {
     );
 }
 extern "C" {
-    pub fn random() -> ::std::os::raw::c_long;
+    pub fn random() -> libc::c_long;
 }
 extern "C" {
-    pub fn srandom(__seed: ::std::os::raw::c_uint);
+    pub fn srandom(__seed: libc::c_uint);
 }
 extern "C" {
     pub fn initstate(
-        __seed: ::std::os::raw::c_uint,
-        __statebuf: *mut ::std::os::raw::c_char,
+        __seed: libc::c_uint,
+        __statebuf: *mut libc::c_char,
         __statelen: usize,
-    ) -> *mut ::std::os::raw::c_char;
+    ) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn setstate(__statebuf: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+    pub fn setstate(__statebuf: *mut libc::c_char) -> *mut libc::c_char;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct random_data {
     pub fptr: *mut i32,
     pub rptr: *mut i32,
     pub state: *mut i32,
-    pub rand_type: ::std::os::raw::c_int,
-    pub rand_deg: ::std::os::raw::c_int,
-    pub rand_sep: ::std::os::raw::c_int,
+    pub rand_type: libc::c_int,
+    pub rand_deg: libc::c_int,
+    pub rand_sep: libc::c_int,
     pub end_ptr: *mut i32,
 }
 #[test]
 fn bindgen_test_layout_random_data() {
     assert_eq!(
-        ::std::mem::size_of::<random_data>(),
+        ::core::mem::size_of::<random_data>(),
         48usize,
         concat!("Size of: ", stringify!(random_data))
     );
     assert_eq!(
-        ::std::mem::align_of::<random_data>(),
+        ::core::mem::align_of::<random_data>(),
         8usize,
         concat!("Alignment of ", stringify!(random_data))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<random_data>())).fptr as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<random_data>())).fptr as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -4900,7 +4738,7 @@ fn bindgen_test_layout_random_data() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<random_data>())).rptr as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<random_data>())).rptr as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -4910,7 +4748,7 @@ fn bindgen_test_layout_random_data() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<random_data>())).state as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<random_data>())).state as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -4920,7 +4758,7 @@ fn bindgen_test_layout_random_data() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<random_data>())).rand_type as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<random_data>())).rand_type as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -4930,7 +4768,7 @@ fn bindgen_test_layout_random_data() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<random_data>())).rand_deg as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<random_data>())).rand_deg as *const _ as usize },
         28usize,
         concat!(
             "Offset of field: ",
@@ -4940,7 +4778,7 @@ fn bindgen_test_layout_random_data() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<random_data>())).rand_sep as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<random_data>())).rand_sep as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -4950,7 +4788,7 @@ fn bindgen_test_layout_random_data() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<random_data>())).end_ptr as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<random_data>())).end_ptr as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -4961,87 +4799,81 @@ fn bindgen_test_layout_random_data() {
     );
 }
 extern "C" {
-    pub fn random_r(__buf: *mut random_data, __result: *mut i32) -> ::std::os::raw::c_int;
+    pub fn random_r(__buf: *mut random_data, __result: *mut i32) -> libc::c_int;
 }
 extern "C" {
-    pub fn srandom_r(
-        __seed: ::std::os::raw::c_uint,
-        __buf: *mut random_data,
-    ) -> ::std::os::raw::c_int;
+    pub fn srandom_r(__seed: libc::c_uint, __buf: *mut random_data) -> libc::c_int;
 }
 extern "C" {
     pub fn initstate_r(
-        __seed: ::std::os::raw::c_uint,
-        __statebuf: *mut ::std::os::raw::c_char,
+        __seed: libc::c_uint,
+        __statebuf: *mut libc::c_char,
         __statelen: usize,
         __buf: *mut random_data,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn setstate_r(
-        __statebuf: *mut ::std::os::raw::c_char,
-        __buf: *mut random_data,
-    ) -> ::std::os::raw::c_int;
+    pub fn setstate_r(__statebuf: *mut libc::c_char, __buf: *mut random_data) -> libc::c_int;
 }
 extern "C" {
-    pub fn rand() -> ::std::os::raw::c_int;
+    pub fn rand() -> libc::c_int;
 }
 extern "C" {
-    pub fn srand(__seed: ::std::os::raw::c_uint);
+    pub fn srand(__seed: libc::c_uint);
 }
 extern "C" {
-    pub fn rand_r(__seed: *mut ::std::os::raw::c_uint) -> ::std::os::raw::c_int;
+    pub fn rand_r(__seed: *mut libc::c_uint) -> libc::c_int;
 }
 extern "C" {
     pub fn drand48() -> f64;
 }
 extern "C" {
-    pub fn erand48(__xsubi: *mut ::std::os::raw::c_ushort) -> f64;
+    pub fn erand48(__xsubi: *mut libc::c_ushort) -> f64;
 }
 extern "C" {
-    pub fn lrand48() -> ::std::os::raw::c_long;
+    pub fn lrand48() -> libc::c_long;
 }
 extern "C" {
-    pub fn nrand48(__xsubi: *mut ::std::os::raw::c_ushort) -> ::std::os::raw::c_long;
+    pub fn nrand48(__xsubi: *mut libc::c_ushort) -> libc::c_long;
 }
 extern "C" {
-    pub fn mrand48() -> ::std::os::raw::c_long;
+    pub fn mrand48() -> libc::c_long;
 }
 extern "C" {
-    pub fn jrand48(__xsubi: *mut ::std::os::raw::c_ushort) -> ::std::os::raw::c_long;
+    pub fn jrand48(__xsubi: *mut libc::c_ushort) -> libc::c_long;
 }
 extern "C" {
-    pub fn srand48(__seedval: ::std::os::raw::c_long);
+    pub fn srand48(__seedval: libc::c_long);
 }
 extern "C" {
-    pub fn seed48(__seed16v: *mut ::std::os::raw::c_ushort) -> *mut ::std::os::raw::c_ushort;
+    pub fn seed48(__seed16v: *mut libc::c_ushort) -> *mut libc::c_ushort;
 }
 extern "C" {
-    pub fn lcong48(__param: *mut ::std::os::raw::c_ushort);
+    pub fn lcong48(__param: *mut libc::c_ushort);
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct drand48_data {
-    pub __x: [::std::os::raw::c_ushort; 3usize],
-    pub __old_x: [::std::os::raw::c_ushort; 3usize],
-    pub __c: ::std::os::raw::c_ushort,
-    pub __init: ::std::os::raw::c_ushort,
-    pub __a: ::std::os::raw::c_ulonglong,
+    pub __x: [libc::c_ushort; 3usize],
+    pub __old_x: [libc::c_ushort; 3usize],
+    pub __c: libc::c_ushort,
+    pub __init: libc::c_ushort,
+    pub __a: libc::c_ulonglong,
 }
 #[test]
 fn bindgen_test_layout_drand48_data() {
     assert_eq!(
-        ::std::mem::size_of::<drand48_data>(),
+        ::core::mem::size_of::<drand48_data>(),
         24usize,
         concat!("Size of: ", stringify!(drand48_data))
     );
     assert_eq!(
-        ::std::mem::align_of::<drand48_data>(),
+        ::core::mem::align_of::<drand48_data>(),
         8usize,
         concat!("Alignment of ", stringify!(drand48_data))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<drand48_data>())).__x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<drand48_data>())).__x as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -5051,7 +4883,7 @@ fn bindgen_test_layout_drand48_data() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<drand48_data>())).__old_x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<drand48_data>())).__old_x as *const _ as usize },
         6usize,
         concat!(
             "Offset of field: ",
@@ -5061,7 +4893,7 @@ fn bindgen_test_layout_drand48_data() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<drand48_data>())).__c as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<drand48_data>())).__c as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -5071,7 +4903,7 @@ fn bindgen_test_layout_drand48_data() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<drand48_data>())).__init as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<drand48_data>())).__init as *const _ as usize },
         14usize,
         concat!(
             "Offset of field: ",
@@ -5081,7 +4913,7 @@ fn bindgen_test_layout_drand48_data() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<drand48_data>())).__a as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<drand48_data>())).__a as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -5092,348 +4924,303 @@ fn bindgen_test_layout_drand48_data() {
     );
 }
 extern "C" {
-    pub fn drand48_r(__buffer: *mut drand48_data, __result: *mut f64) -> ::std::os::raw::c_int;
+    pub fn drand48_r(__buffer: *mut drand48_data, __result: *mut f64) -> libc::c_int;
 }
 extern "C" {
     pub fn erand48_r(
-        __xsubi: *mut ::std::os::raw::c_ushort,
+        __xsubi: *mut libc::c_ushort,
         __buffer: *mut drand48_data,
         __result: *mut f64,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn lrand48_r(
-        __buffer: *mut drand48_data,
-        __result: *mut ::std::os::raw::c_long,
-    ) -> ::std::os::raw::c_int;
+    pub fn lrand48_r(__buffer: *mut drand48_data, __result: *mut libc::c_long) -> libc::c_int;
 }
 extern "C" {
     pub fn nrand48_r(
-        __xsubi: *mut ::std::os::raw::c_ushort,
+        __xsubi: *mut libc::c_ushort,
         __buffer: *mut drand48_data,
-        __result: *mut ::std::os::raw::c_long,
-    ) -> ::std::os::raw::c_int;
+        __result: *mut libc::c_long,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn mrand48_r(
-        __buffer: *mut drand48_data,
-        __result: *mut ::std::os::raw::c_long,
-    ) -> ::std::os::raw::c_int;
+    pub fn mrand48_r(__buffer: *mut drand48_data, __result: *mut libc::c_long) -> libc::c_int;
 }
 extern "C" {
     pub fn jrand48_r(
-        __xsubi: *mut ::std::os::raw::c_ushort,
+        __xsubi: *mut libc::c_ushort,
         __buffer: *mut drand48_data,
-        __result: *mut ::std::os::raw::c_long,
-    ) -> ::std::os::raw::c_int;
+        __result: *mut libc::c_long,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn srand48_r(
-        __seedval: ::std::os::raw::c_long,
-        __buffer: *mut drand48_data,
-    ) -> ::std::os::raw::c_int;
+    pub fn srand48_r(__seedval: libc::c_long, __buffer: *mut drand48_data) -> libc::c_int;
 }
 extern "C" {
-    pub fn seed48_r(
-        __seed16v: *mut ::std::os::raw::c_ushort,
-        __buffer: *mut drand48_data,
-    ) -> ::std::os::raw::c_int;
+    pub fn seed48_r(__seed16v: *mut libc::c_ushort, __buffer: *mut drand48_data) -> libc::c_int;
 }
 extern "C" {
-    pub fn lcong48_r(
-        __param: *mut ::std::os::raw::c_ushort,
-        __buffer: *mut drand48_data,
-    ) -> ::std::os::raw::c_int;
+    pub fn lcong48_r(__param: *mut libc::c_ushort, __buffer: *mut drand48_data) -> libc::c_int;
 }
 extern "C" {
-    pub fn malloc(__size: usize) -> *mut ::std::os::raw::c_void;
+    pub fn malloc(__size: usize) -> *mut libc::c_void;
 }
 extern "C" {
-    pub fn calloc(__nmemb: usize, __size: usize) -> *mut ::std::os::raw::c_void;
+    pub fn calloc(__nmemb: usize, __size: usize) -> *mut libc::c_void;
 }
 extern "C" {
-    pub fn realloc(
-        __ptr: *mut ::std::os::raw::c_void,
-        __size: usize,
-    ) -> *mut ::std::os::raw::c_void;
+    pub fn realloc(__ptr: *mut libc::c_void, __size: usize) -> *mut libc::c_void;
 }
 extern "C" {
-    pub fn free(__ptr: *mut ::std::os::raw::c_void);
+    pub fn free(__ptr: *mut libc::c_void);
 }
 extern "C" {
-    pub fn alloca(__size: usize) -> *mut ::std::os::raw::c_void;
+    pub fn alloca(__size: usize) -> *mut libc::c_void;
 }
 extern "C" {
-    pub fn valloc(__size: usize) -> *mut ::std::os::raw::c_void;
+    pub fn valloc(__size: usize) -> *mut libc::c_void;
 }
 extern "C" {
     pub fn posix_memalign(
-        __memptr: *mut *mut ::std::os::raw::c_void,
+        __memptr: *mut *mut libc::c_void,
         __alignment: usize,
         __size: usize,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn aligned_alloc(__alignment: usize, __size: usize) -> *mut ::std::os::raw::c_void;
+    pub fn aligned_alloc(__alignment: usize, __size: usize) -> *mut libc::c_void;
 }
 extern "C" {
     pub fn abort();
 }
 extern "C" {
-    pub fn atexit(__func: ::std::option::Option<unsafe extern "C" fn()>) -> ::std::os::raw::c_int;
+    pub fn atexit(__func: ::core::option::Option<unsafe extern "C" fn()>) -> libc::c_int;
 }
 extern "C" {
-    pub fn at_quick_exit(
-        __func: ::std::option::Option<unsafe extern "C" fn()>,
-    ) -> ::std::os::raw::c_int;
+    pub fn at_quick_exit(__func: ::core::option::Option<unsafe extern "C" fn()>) -> libc::c_int;
 }
 extern "C" {
     pub fn on_exit(
-        __func: ::std::option::Option<
-            unsafe extern "C" fn(
-                __status: ::std::os::raw::c_int,
-                __arg: *mut ::std::os::raw::c_void,
-            ),
+        __func: ::core::option::Option<
+            unsafe extern "C" fn(__status: libc::c_int, __arg: *mut libc::c_void),
         >,
-        __arg: *mut ::std::os::raw::c_void,
-    ) -> ::std::os::raw::c_int;
+        __arg: *mut libc::c_void,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn exit(__status: ::std::os::raw::c_int);
+    pub fn exit(__status: libc::c_int);
 }
 extern "C" {
-    pub fn quick_exit(__status: ::std::os::raw::c_int);
+    pub fn quick_exit(__status: libc::c_int);
 }
 extern "C" {
-    pub fn _Exit(__status: ::std::os::raw::c_int);
+    pub fn _Exit(__status: libc::c_int);
 }
 extern "C" {
-    pub fn getenv(__name: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+    pub fn getenv(__name: *const libc::c_char) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn putenv(__string: *mut ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn putenv(__string: *mut libc::c_char) -> libc::c_int;
 }
 extern "C" {
     pub fn setenv(
-        __name: *const ::std::os::raw::c_char,
-        __value: *const ::std::os::raw::c_char,
-        __replace: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        __name: *const libc::c_char,
+        __value: *const libc::c_char,
+        __replace: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn unsetenv(__name: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn unsetenv(__name: *const libc::c_char) -> libc::c_int;
 }
 extern "C" {
-    pub fn clearenv() -> ::std::os::raw::c_int;
+    pub fn clearenv() -> libc::c_int;
 }
 extern "C" {
-    pub fn mktemp(__template: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+    pub fn mktemp(__template: *mut libc::c_char) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn mkstemp(__template: *mut ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn mkstemp(__template: *mut libc::c_char) -> libc::c_int;
 }
 extern "C" {
-    pub fn mkstemps(
-        __template: *mut ::std::os::raw::c_char,
-        __suffixlen: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn mkstemps(__template: *mut libc::c_char, __suffixlen: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn mkdtemp(__template: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+    pub fn mkdtemp(__template: *mut libc::c_char) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn system(__command: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn system(__command: *const libc::c_char) -> libc::c_int;
 }
 extern "C" {
     pub fn realpath(
-        __name: *const ::std::os::raw::c_char,
-        __resolved: *mut ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_char;
+        __name: *const libc::c_char,
+        __resolved: *mut libc::c_char,
+    ) -> *mut libc::c_char;
 }
-pub type __compar_fn_t = ::std::option::Option<
-    unsafe extern "C" fn(
-        arg1: *const ::std::os::raw::c_void,
-        arg2: *const ::std::os::raw::c_void,
-    ) -> ::std::os::raw::c_int,
+pub type __compar_fn_t = ::core::option::Option<
+    unsafe extern "C" fn(arg1: *const libc::c_void, arg2: *const libc::c_void) -> libc::c_int,
 >;
 extern "C" {
     pub fn bsearch(
-        __key: *const ::std::os::raw::c_void,
-        __base: *const ::std::os::raw::c_void,
+        __key: *const libc::c_void,
+        __base: *const libc::c_void,
         __nmemb: usize,
         __size: usize,
         __compar: __compar_fn_t,
-    ) -> *mut ::std::os::raw::c_void;
+    ) -> *mut libc::c_void;
 }
 extern "C" {
-    pub fn qsort(
-        __base: *mut ::std::os::raw::c_void,
-        __nmemb: usize,
-        __size: usize,
-        __compar: __compar_fn_t,
-    );
+    pub fn qsort(__base: *mut libc::c_void, __nmemb: usize, __size: usize, __compar: __compar_fn_t);
 }
 extern "C" {
-    pub fn abs(__x: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn abs(__x: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn labs(__x: ::std::os::raw::c_long) -> ::std::os::raw::c_long;
+    pub fn labs(__x: libc::c_long) -> libc::c_long;
 }
 extern "C" {
-    pub fn llabs(__x: ::std::os::raw::c_longlong) -> ::std::os::raw::c_longlong;
+    pub fn llabs(__x: libc::c_longlong) -> libc::c_longlong;
 }
 extern "C" {
-    pub fn div(__numer: ::std::os::raw::c_int, __denom: ::std::os::raw::c_int) -> div_t;
+    pub fn div(__numer: libc::c_int, __denom: libc::c_int) -> div_t;
 }
 extern "C" {
-    pub fn ldiv(__numer: ::std::os::raw::c_long, __denom: ::std::os::raw::c_long) -> ldiv_t;
+    pub fn ldiv(__numer: libc::c_long, __denom: libc::c_long) -> ldiv_t;
 }
 extern "C" {
-    pub fn lldiv(
-        __numer: ::std::os::raw::c_longlong,
-        __denom: ::std::os::raw::c_longlong,
-    ) -> lldiv_t;
+    pub fn lldiv(__numer: libc::c_longlong, __denom: libc::c_longlong) -> lldiv_t;
 }
 extern "C" {
     pub fn ecvt(
         __value: f64,
-        __ndigit: ::std::os::raw::c_int,
-        __decpt: *mut ::std::os::raw::c_int,
-        __sign: *mut ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
+        __ndigit: libc::c_int,
+        __decpt: *mut libc::c_int,
+        __sign: *mut libc::c_int,
+    ) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn fcvt(
         __value: f64,
-        __ndigit: ::std::os::raw::c_int,
-        __decpt: *mut ::std::os::raw::c_int,
-        __sign: *mut ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
+        __ndigit: libc::c_int,
+        __decpt: *mut libc::c_int,
+        __sign: *mut libc::c_int,
+    ) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn gcvt(
-        __value: f64,
-        __ndigit: ::std::os::raw::c_int,
-        __buf: *mut ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_char;
+    pub fn gcvt(__value: f64, __ndigit: libc::c_int, __buf: *mut libc::c_char)
+        -> *mut libc::c_char;
 }
 extern "C" {
     pub fn qecvt(
         __value: f64,
-        __ndigit: ::std::os::raw::c_int,
-        __decpt: *mut ::std::os::raw::c_int,
-        __sign: *mut ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
+        __ndigit: libc::c_int,
+        __decpt: *mut libc::c_int,
+        __sign: *mut libc::c_int,
+    ) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn qfcvt(
         __value: f64,
-        __ndigit: ::std::os::raw::c_int,
-        __decpt: *mut ::std::os::raw::c_int,
-        __sign: *mut ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
+        __ndigit: libc::c_int,
+        __decpt: *mut libc::c_int,
+        __sign: *mut libc::c_int,
+    ) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn qgcvt(
         __value: f64,
-        __ndigit: ::std::os::raw::c_int,
-        __buf: *mut ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_char;
+        __ndigit: libc::c_int,
+        __buf: *mut libc::c_char,
+    ) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn ecvt_r(
         __value: f64,
-        __ndigit: ::std::os::raw::c_int,
-        __decpt: *mut ::std::os::raw::c_int,
-        __sign: *mut ::std::os::raw::c_int,
-        __buf: *mut ::std::os::raw::c_char,
+        __ndigit: libc::c_int,
+        __decpt: *mut libc::c_int,
+        __sign: *mut libc::c_int,
+        __buf: *mut libc::c_char,
         __len: usize,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn fcvt_r(
         __value: f64,
-        __ndigit: ::std::os::raw::c_int,
-        __decpt: *mut ::std::os::raw::c_int,
-        __sign: *mut ::std::os::raw::c_int,
-        __buf: *mut ::std::os::raw::c_char,
+        __ndigit: libc::c_int,
+        __decpt: *mut libc::c_int,
+        __sign: *mut libc::c_int,
+        __buf: *mut libc::c_char,
         __len: usize,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn qecvt_r(
         __value: f64,
-        __ndigit: ::std::os::raw::c_int,
-        __decpt: *mut ::std::os::raw::c_int,
-        __sign: *mut ::std::os::raw::c_int,
-        __buf: *mut ::std::os::raw::c_char,
+        __ndigit: libc::c_int,
+        __decpt: *mut libc::c_int,
+        __sign: *mut libc::c_int,
+        __buf: *mut libc::c_char,
         __len: usize,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn qfcvt_r(
         __value: f64,
-        __ndigit: ::std::os::raw::c_int,
-        __decpt: *mut ::std::os::raw::c_int,
-        __sign: *mut ::std::os::raw::c_int,
-        __buf: *mut ::std::os::raw::c_char,
+        __ndigit: libc::c_int,
+        __decpt: *mut libc::c_int,
+        __sign: *mut libc::c_int,
+        __buf: *mut libc::c_char,
         __len: usize,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn mblen(__s: *const ::std::os::raw::c_char, __n: usize) -> ::std::os::raw::c_int;
+    pub fn mblen(__s: *const libc::c_char, __n: usize) -> libc::c_int;
 }
 extern "C" {
-    pub fn mbtowc(
-        __pwc: *mut wchar_t,
-        __s: *const ::std::os::raw::c_char,
-        __n: usize,
-    ) -> ::std::os::raw::c_int;
+    pub fn mbtowc(__pwc: *mut wchar_t, __s: *const libc::c_char, __n: usize) -> libc::c_int;
 }
 extern "C" {
-    pub fn wctomb(__s: *mut ::std::os::raw::c_char, __wchar: wchar_t) -> ::std::os::raw::c_int;
+    pub fn wctomb(__s: *mut libc::c_char, __wchar: wchar_t) -> libc::c_int;
 }
 extern "C" {
-    pub fn mbstowcs(__pwcs: *mut wchar_t, __s: *const ::std::os::raw::c_char, __n: usize) -> usize;
+    pub fn mbstowcs(__pwcs: *mut wchar_t, __s: *const libc::c_char, __n: usize) -> usize;
 }
 extern "C" {
-    pub fn wcstombs(__s: *mut ::std::os::raw::c_char, __pwcs: *const wchar_t, __n: usize) -> usize;
+    pub fn wcstombs(__s: *mut libc::c_char, __pwcs: *const wchar_t, __n: usize) -> usize;
 }
 extern "C" {
-    pub fn rpmatch(__response: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn rpmatch(__response: *const libc::c_char) -> libc::c_int;
 }
 extern "C" {
     pub fn getsubopt(
-        __optionp: *mut *mut ::std::os::raw::c_char,
-        __tokens: *const *mut ::std::os::raw::c_char,
-        __valuep: *mut *mut ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        __optionp: *mut *mut libc::c_char,
+        __tokens: *const *mut libc::c_char,
+        __valuep: *mut *mut libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn getloadavg(__loadavg: *mut f64, __nelem: ::std::os::raw::c_int)
-        -> ::std::os::raw::c_int;
+    pub fn getloadavg(__loadavg: *mut f64, __nelem: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     pub fn _mm_sfence();
 }
 extern "C" {
-    pub fn _mm_getcsr() -> ::std::os::raw::c_uint;
+    pub fn _mm_getcsr() -> libc::c_uint;
 }
 extern "C" {
-    pub fn _mm_setcsr(__i: ::std::os::raw::c_uint);
+    pub fn _mm_setcsr(__i: libc::c_uint);
 }
 pub type __m128d = [f64; 2usize];
-pub type __m128i = [::std::os::raw::c_longlong; 2usize];
+pub type __m128i = [libc::c_longlong; 2usize];
 pub type __v2df = [f64; 2usize];
-pub type __v2di = [::std::os::raw::c_longlong; 2usize];
-pub type __v8hi = [::std::os::raw::c_short; 8usize];
-pub type __v16qi = [::std::os::raw::c_char; 16usize];
-pub type __v2du = [::std::os::raw::c_ulonglong; 2usize];
-pub type __v8hu = [::std::os::raw::c_ushort; 8usize];
-pub type __v16qu = [::std::os::raw::c_uchar; 16usize];
-pub type __v16qs = [::std::os::raw::c_schar; 16usize];
+pub type __v2di = [libc::c_longlong; 2usize];
+pub type __v8hi = [libc::c_short; 8usize];
+pub type __v16qi = [libc::c_char; 16usize];
+pub type __v2du = [libc::c_ulonglong; 2usize];
+pub type __v8hu = [libc::c_ushort; 8usize];
+pub type __v16qu = [libc::c_uchar; 16usize];
+pub type __v16qs = [libc::c_schar; 16usize];
 extern "C" {
-    pub fn _mm_clflush(__p: *const ::std::os::raw::c_void);
+    pub fn _mm_clflush(__p: *const libc::c_void);
 }
 extern "C" {
     pub fn _mm_lfence();
@@ -5446,14 +5233,14 @@ extern "C" {
 }
 extern "C" {
     ///  This function returns the number of CPU cores available.
-    pub fn SDL_GetCPUCount() -> ::std::os::raw::c_int;
+    pub fn SDL_GetCPUCount() -> libc::c_int;
 }
 extern "C" {
     ///  This function returns the L1 cache line size of the CPU
     ///
     ///  This is useful for determining multi-threaded structure padding
     ///  or SIMD prefetch sizes.
-    pub fn SDL_GetCPUCacheLineSize() -> ::std::os::raw::c_int;
+    pub fn SDL_GetCPUCacheLineSize() -> libc::c_int;
 }
 extern "C" {
     ///  This function returns true if the CPU has the RDTSC instruction.
@@ -5509,7 +5296,7 @@ extern "C" {
 }
 extern "C" {
     ///  This function returns the amount of RAM configured in the system, in MB.
-    pub fn SDL_GetSystemRAM() -> ::std::os::raw::c_int;
+    pub fn SDL_GetSystemRAM() -> libc::c_int;
 }
 pub const SDL_PIXELTYPE_UNKNOWN: _bindgen_ty_1 = _bindgen_ty_1::SDL_PIXELTYPE_UNKNOWN;
 pub const SDL_PIXELTYPE_INDEX1: _bindgen_ty_1 = _bindgen_ty_1::SDL_PIXELTYPE_INDEX1;
@@ -5711,7 +5498,7 @@ pub enum _bindgen_ty_6 {
     SDL_PIXELFORMAT_EXTERNAL_OES = 542328143,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_Color {
     pub r: Uint8,
     pub g: Uint8,
@@ -5721,17 +5508,17 @@ pub struct SDL_Color {
 #[test]
 fn bindgen_test_layout_SDL_Color() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_Color>(),
+        ::core::mem::size_of::<SDL_Color>(),
         4usize,
         concat!("Size of: ", stringify!(SDL_Color))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_Color>(),
+        ::core::mem::align_of::<SDL_Color>(),
         1usize,
         concat!("Alignment of ", stringify!(SDL_Color))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Color>())).r as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Color>())).r as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -5741,7 +5528,7 @@ fn bindgen_test_layout_SDL_Color() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Color>())).g as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Color>())).g as *const _ as usize },
         1usize,
         concat!(
             "Offset of field: ",
@@ -5751,7 +5538,7 @@ fn bindgen_test_layout_SDL_Color() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Color>())).b as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Color>())).b as *const _ as usize },
         2usize,
         concat!(
             "Offset of field: ",
@@ -5761,7 +5548,7 @@ fn bindgen_test_layout_SDL_Color() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Color>())).a as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Color>())).a as *const _ as usize },
         3usize,
         concat!(
             "Offset of field: ",
@@ -5772,27 +5559,27 @@ fn bindgen_test_layout_SDL_Color() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_Palette {
-    pub ncolors: ::std::os::raw::c_int,
+    pub ncolors: libc::c_int,
     pub colors: *mut SDL_Color,
     pub version: Uint32,
-    pub refcount: ::std::os::raw::c_int,
+    pub refcount: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_SDL_Palette() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_Palette>(),
+        ::core::mem::size_of::<SDL_Palette>(),
         24usize,
         concat!("Size of: ", stringify!(SDL_Palette))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_Palette>(),
+        ::core::mem::align_of::<SDL_Palette>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_Palette))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Palette>())).ncolors as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Palette>())).ncolors as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -5802,7 +5589,7 @@ fn bindgen_test_layout_SDL_Palette() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Palette>())).colors as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Palette>())).colors as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -5812,7 +5599,7 @@ fn bindgen_test_layout_SDL_Palette() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Palette>())).version as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Palette>())).version as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -5822,7 +5609,7 @@ fn bindgen_test_layout_SDL_Palette() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Palette>())).refcount as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Palette>())).refcount as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -5834,7 +5621,7 @@ fn bindgen_test_layout_SDL_Palette() {
 }
 ///  \note Everything in the pixel format structure is read-only.
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_PixelFormat {
     pub format: Uint32,
     pub palette: *mut SDL_Palette,
@@ -5853,23 +5640,23 @@ pub struct SDL_PixelFormat {
     pub Gshift: Uint8,
     pub Bshift: Uint8,
     pub Ashift: Uint8,
-    pub refcount: ::std::os::raw::c_int,
+    pub refcount: libc::c_int,
     pub next: *mut SDL_PixelFormat,
 }
 #[test]
 fn bindgen_test_layout_SDL_PixelFormat() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_PixelFormat>(),
+        ::core::mem::size_of::<SDL_PixelFormat>(),
         56usize,
         concat!("Size of: ", stringify!(SDL_PixelFormat))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_PixelFormat>(),
+        ::core::mem::align_of::<SDL_PixelFormat>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_PixelFormat))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_PixelFormat>())).format as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_PixelFormat>())).format as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -5879,7 +5666,7 @@ fn bindgen_test_layout_SDL_PixelFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_PixelFormat>())).palette as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_PixelFormat>())).palette as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -5889,7 +5676,7 @@ fn bindgen_test_layout_SDL_PixelFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_PixelFormat>())).BitsPerPixel as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_PixelFormat>())).BitsPerPixel as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -5899,7 +5686,7 @@ fn bindgen_test_layout_SDL_PixelFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_PixelFormat>())).BytesPerPixel as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_PixelFormat>())).BytesPerPixel as *const _ as usize },
         17usize,
         concat!(
             "Offset of field: ",
@@ -5909,7 +5696,7 @@ fn bindgen_test_layout_SDL_PixelFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_PixelFormat>())).padding as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_PixelFormat>())).padding as *const _ as usize },
         18usize,
         concat!(
             "Offset of field: ",
@@ -5919,7 +5706,7 @@ fn bindgen_test_layout_SDL_PixelFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_PixelFormat>())).Rmask as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_PixelFormat>())).Rmask as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -5929,7 +5716,7 @@ fn bindgen_test_layout_SDL_PixelFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_PixelFormat>())).Gmask as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_PixelFormat>())).Gmask as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -5939,7 +5726,7 @@ fn bindgen_test_layout_SDL_PixelFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_PixelFormat>())).Bmask as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_PixelFormat>())).Bmask as *const _ as usize },
         28usize,
         concat!(
             "Offset of field: ",
@@ -5949,7 +5736,7 @@ fn bindgen_test_layout_SDL_PixelFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_PixelFormat>())).Amask as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_PixelFormat>())).Amask as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -5959,7 +5746,7 @@ fn bindgen_test_layout_SDL_PixelFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_PixelFormat>())).Rloss as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_PixelFormat>())).Rloss as *const _ as usize },
         36usize,
         concat!(
             "Offset of field: ",
@@ -5969,7 +5756,7 @@ fn bindgen_test_layout_SDL_PixelFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_PixelFormat>())).Gloss as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_PixelFormat>())).Gloss as *const _ as usize },
         37usize,
         concat!(
             "Offset of field: ",
@@ -5979,7 +5766,7 @@ fn bindgen_test_layout_SDL_PixelFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_PixelFormat>())).Bloss as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_PixelFormat>())).Bloss as *const _ as usize },
         38usize,
         concat!(
             "Offset of field: ",
@@ -5989,7 +5776,7 @@ fn bindgen_test_layout_SDL_PixelFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_PixelFormat>())).Aloss as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_PixelFormat>())).Aloss as *const _ as usize },
         39usize,
         concat!(
             "Offset of field: ",
@@ -5999,7 +5786,7 @@ fn bindgen_test_layout_SDL_PixelFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_PixelFormat>())).Rshift as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_PixelFormat>())).Rshift as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -6009,7 +5796,7 @@ fn bindgen_test_layout_SDL_PixelFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_PixelFormat>())).Gshift as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_PixelFormat>())).Gshift as *const _ as usize },
         41usize,
         concat!(
             "Offset of field: ",
@@ -6019,7 +5806,7 @@ fn bindgen_test_layout_SDL_PixelFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_PixelFormat>())).Bshift as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_PixelFormat>())).Bshift as *const _ as usize },
         42usize,
         concat!(
             "Offset of field: ",
@@ -6029,7 +5816,7 @@ fn bindgen_test_layout_SDL_PixelFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_PixelFormat>())).Ashift as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_PixelFormat>())).Ashift as *const _ as usize },
         43usize,
         concat!(
             "Offset of field: ",
@@ -6039,7 +5826,7 @@ fn bindgen_test_layout_SDL_PixelFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_PixelFormat>())).refcount as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_PixelFormat>())).refcount as *const _ as usize },
         44usize,
         concat!(
             "Offset of field: ",
@@ -6049,7 +5836,7 @@ fn bindgen_test_layout_SDL_PixelFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_PixelFormat>())).next as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_PixelFormat>())).next as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -6061,7 +5848,7 @@ fn bindgen_test_layout_SDL_PixelFormat() {
 }
 extern "C" {
     /// \brief Get the human readable name of a pixel format
-    pub fn SDL_GetPixelFormatName(format: Uint32) -> *const ::std::os::raw::c_char;
+    pub fn SDL_GetPixelFormatName(format: Uint32) -> *const libc::c_char;
 }
 extern "C" {
     ///  \brief Convert one of the enumerated pixel formats to a bpp and RGBA masks.
@@ -6071,7 +5858,7 @@ extern "C" {
     ///  \sa SDL_MasksToPixelFormatEnum()
     pub fn SDL_PixelFormatEnumToMasks(
         format: Uint32,
-        bpp: *mut ::std::os::raw::c_int,
+        bpp: *mut libc::c_int,
         Rmask: *mut Uint32,
         Gmask: *mut Uint32,
         Bmask: *mut Uint32,
@@ -6086,7 +5873,7 @@ extern "C" {
     ///
     ///  \sa SDL_PixelFormatEnumToMasks()
     pub fn SDL_MasksToPixelFormatEnum(
-        bpp: ::std::os::raw::c_int,
+        bpp: libc::c_int,
         Rmask: Uint32,
         Gmask: Uint32,
         Bmask: Uint32,
@@ -6110,14 +5897,14 @@ extern "C" {
     ///  \note The palette entries are initialized to white.
     ///
     ///  \sa SDL_FreePalette()
-    pub fn SDL_AllocPalette(ncolors: ::std::os::raw::c_int) -> *mut SDL_Palette;
+    pub fn SDL_AllocPalette(ncolors: libc::c_int) -> *mut SDL_Palette;
 }
 extern "C" {
     ///  \brief Set the palette for a pixel format structure.
     pub fn SDL_SetPixelFormatPalette(
         format: *mut SDL_PixelFormat,
         palette: *mut SDL_Palette,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Set a range of colors in a palette.
@@ -6131,9 +5918,9 @@ extern "C" {
     pub fn SDL_SetPaletteColors(
         palette: *mut SDL_Palette,
         colors: *const SDL_Color,
-        firstcolor: ::std::os::raw::c_int,
-        ncolors: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        firstcolor: libc::c_int,
+        ncolors: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Free a palette created with SDL_AllocPalette().
@@ -6193,25 +5980,25 @@ extern "C" {
 ///  \sa SDL_EnclosePoints
 ///  \sa SDL_PointInRect
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_Point {
-    pub x: ::std::os::raw::c_int,
-    pub y: ::std::os::raw::c_int,
+    pub x: libc::c_int,
+    pub y: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_SDL_Point() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_Point>(),
+        ::core::mem::size_of::<SDL_Point>(),
         8usize,
         concat!("Size of: ", stringify!(SDL_Point))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_Point>(),
+        ::core::mem::align_of::<SDL_Point>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_Point))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Point>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Point>())).x as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -6221,7 +6008,7 @@ fn bindgen_test_layout_SDL_Point() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Point>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Point>())).y as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -6240,27 +6027,27 @@ fn bindgen_test_layout_SDL_Point() {
 ///  \sa SDL_UnionRect
 ///  \sa SDL_EnclosePoints
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_Rect {
-    pub x: ::std::os::raw::c_int,
-    pub y: ::std::os::raw::c_int,
-    pub w: ::std::os::raw::c_int,
-    pub h: ::std::os::raw::c_int,
+    pub x: libc::c_int,
+    pub y: libc::c_int,
+    pub w: libc::c_int,
+    pub h: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_SDL_Rect() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_Rect>(),
+        ::core::mem::size_of::<SDL_Rect>(),
         16usize,
         concat!("Size of: ", stringify!(SDL_Rect))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_Rect>(),
+        ::core::mem::align_of::<SDL_Rect>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_Rect))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Rect>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Rect>())).x as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -6270,7 +6057,7 @@ fn bindgen_test_layout_SDL_Rect() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Rect>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Rect>())).y as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -6280,7 +6067,7 @@ fn bindgen_test_layout_SDL_Rect() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Rect>())).w as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Rect>())).w as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -6290,7 +6077,7 @@ fn bindgen_test_layout_SDL_Rect() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Rect>())).h as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Rect>())).h as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -6326,7 +6113,7 @@ extern "C" {
     ///  \return SDL_TRUE if any points were within the clipping rect
     pub fn SDL_EnclosePoints(
         points: *const SDL_Point,
-        count: ::std::os::raw::c_int,
+        count: libc::c_int,
         clip: *const SDL_Rect,
         result: *mut SDL_Rect,
     ) -> SDL_bool;
@@ -6337,10 +6124,10 @@ extern "C" {
     ///  \return SDL_TRUE if there is an intersection, SDL_FALSE otherwise.
     pub fn SDL_IntersectRectAndLine(
         rect: *const SDL_Rect,
-        X1: *mut ::std::os::raw::c_int,
-        Y1: *mut ::std::os::raw::c_int,
-        X2: *mut ::std::os::raw::c_int,
-        Y2: *mut ::std::os::raw::c_int,
+        X1: *mut libc::c_int,
+        Y1: *mut libc::c_int,
+        X2: *mut libc::c_int,
+        Y2: *mut libc::c_int,
     ) -> SDL_bool;
 }
 #[repr(u32)]
@@ -6432,47 +6219,47 @@ extern "C" {
 /// \note  This structure should be treated as read-only, except for \c pixels,
 ///        which, if not NULL, contains the raw pixel data for the surface.
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_Surface {
     ///< Read-only
     pub flags: Uint32,
     ///< Read-only
     pub format: *mut SDL_PixelFormat,
     ///< Read-only
-    pub w: ::std::os::raw::c_int,
+    pub w: libc::c_int,
     ///< Read-only
-    pub h: ::std::os::raw::c_int,
+    pub h: libc::c_int,
     ///< Read-only
-    pub pitch: ::std::os::raw::c_int,
+    pub pitch: libc::c_int,
     ///< Read-write
-    pub pixels: *mut ::std::os::raw::c_void,
+    pub pixels: *mut libc::c_void,
     ///< Read-write
-    pub userdata: *mut ::std::os::raw::c_void,
+    pub userdata: *mut libc::c_void,
     ///< Read-only
-    pub locked: ::std::os::raw::c_int,
+    pub locked: libc::c_int,
     ///< Read-only
-    pub lock_data: *mut ::std::os::raw::c_void,
+    pub lock_data: *mut libc::c_void,
     ///< Read-only
     pub clip_rect: SDL_Rect,
     ///< Private
     pub map: *mut SDL_BlitMap,
     ///< Read-mostly
-    pub refcount: ::std::os::raw::c_int,
+    pub refcount: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_SDL_Surface() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_Surface>(),
+        ::core::mem::size_of::<SDL_Surface>(),
         96usize,
         concat!("Size of: ", stringify!(SDL_Surface))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_Surface>(),
+        ::core::mem::align_of::<SDL_Surface>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_Surface))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Surface>())).flags as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Surface>())).flags as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -6482,7 +6269,7 @@ fn bindgen_test_layout_SDL_Surface() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Surface>())).format as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Surface>())).format as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -6492,7 +6279,7 @@ fn bindgen_test_layout_SDL_Surface() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Surface>())).w as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Surface>())).w as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -6502,7 +6289,7 @@ fn bindgen_test_layout_SDL_Surface() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Surface>())).h as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Surface>())).h as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -6512,7 +6299,7 @@ fn bindgen_test_layout_SDL_Surface() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Surface>())).pitch as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Surface>())).pitch as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -6522,7 +6309,7 @@ fn bindgen_test_layout_SDL_Surface() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Surface>())).pixels as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Surface>())).pixels as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -6532,7 +6319,7 @@ fn bindgen_test_layout_SDL_Surface() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Surface>())).userdata as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Surface>())).userdata as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -6542,7 +6329,7 @@ fn bindgen_test_layout_SDL_Surface() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Surface>())).locked as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Surface>())).locked as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -6552,7 +6339,7 @@ fn bindgen_test_layout_SDL_Surface() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Surface>())).lock_data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Surface>())).lock_data as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -6562,7 +6349,7 @@ fn bindgen_test_layout_SDL_Surface() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Surface>())).clip_rect as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Surface>())).clip_rect as *const _ as usize },
         64usize,
         concat!(
             "Offset of field: ",
@@ -6572,7 +6359,7 @@ fn bindgen_test_layout_SDL_Surface() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Surface>())).map as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Surface>())).map as *const _ as usize },
         80usize,
         concat!(
             "Offset of field: ",
@@ -6582,7 +6369,7 @@ fn bindgen_test_layout_SDL_Surface() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Surface>())).refcount as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Surface>())).refcount as *const _ as usize },
         88usize,
         concat!(
             "Offset of field: ",
@@ -6593,13 +6380,13 @@ fn bindgen_test_layout_SDL_Surface() {
     );
 }
 /// \brief The type of function used for surface blitting functions.
-pub type SDL_blit = ::std::option::Option<
+pub type SDL_blit = ::core::option::Option<
     unsafe extern "C" fn(
         src: *mut SDL_Surface,
         srcrect: *mut SDL_Rect,
         dst: *mut SDL_Surface,
         dstrect: *mut SDL_Rect,
-    ) -> ::std::os::raw::c_int,
+    ) -> libc::c_int,
 >;
 #[repr(u32)]
 /// \brief The formula used for converting between YUV and RGB
@@ -6633,9 +6420,9 @@ extern "C" {
     ///  \param Amask The alpha mask of the surface to create.
     pub fn SDL_CreateRGBSurface(
         flags: Uint32,
-        width: ::std::os::raw::c_int,
-        height: ::std::os::raw::c_int,
-        depth: ::std::os::raw::c_int,
+        width: libc::c_int,
+        height: libc::c_int,
+        depth: libc::c_int,
         Rmask: Uint32,
         Gmask: Uint32,
         Bmask: Uint32,
@@ -6645,19 +6432,19 @@ extern "C" {
 extern "C" {
     pub fn SDL_CreateRGBSurfaceWithFormat(
         flags: Uint32,
-        width: ::std::os::raw::c_int,
-        height: ::std::os::raw::c_int,
-        depth: ::std::os::raw::c_int,
+        width: libc::c_int,
+        height: libc::c_int,
+        depth: libc::c_int,
         format: Uint32,
     ) -> *mut SDL_Surface;
 }
 extern "C" {
     pub fn SDL_CreateRGBSurfaceFrom(
-        pixels: *mut ::std::os::raw::c_void,
-        width: ::std::os::raw::c_int,
-        height: ::std::os::raw::c_int,
-        depth: ::std::os::raw::c_int,
-        pitch: ::std::os::raw::c_int,
+        pixels: *mut libc::c_void,
+        width: libc::c_int,
+        height: libc::c_int,
+        depth: libc::c_int,
+        pitch: libc::c_int,
         Rmask: Uint32,
         Gmask: Uint32,
         Bmask: Uint32,
@@ -6666,11 +6453,11 @@ extern "C" {
 }
 extern "C" {
     pub fn SDL_CreateRGBSurfaceWithFormatFrom(
-        pixels: *mut ::std::os::raw::c_void,
-        width: ::std::os::raw::c_int,
-        height: ::std::os::raw::c_int,
-        depth: ::std::os::raw::c_int,
-        pitch: ::std::os::raw::c_int,
+        pixels: *mut libc::c_void,
+        width: libc::c_int,
+        height: libc::c_int,
+        depth: libc::c_int,
+        pitch: libc::c_int,
         format: Uint32,
     ) -> *mut SDL_Surface;
 }
@@ -6686,7 +6473,7 @@ extern "C" {
     pub fn SDL_SetSurfacePalette(
         surface: *mut SDL_Surface,
         palette: *mut SDL_Palette,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Sets up a surface for directly accessing the pixels.
@@ -6706,7 +6493,7 @@ extern "C" {
     ///  SDL_LockSurface() returns 0, or -1 if the surface couldn't be locked.
     ///
     ///  \sa SDL_UnlockSurface()
-    pub fn SDL_LockSurface(surface: *mut SDL_Surface) -> ::std::os::raw::c_int;
+    pub fn SDL_LockSurface(surface: *mut SDL_Surface) -> libc::c_int;
 }
 extern "C" {
     /// \sa SDL_LockSurface()
@@ -6720,7 +6507,7 @@ extern "C" {
     ///  The new surface should be freed with SDL_FreeSurface().
     ///
     ///  \return the new surface, or NULL if there was an error.
-    pub fn SDL_LoadBMP_RW(src: *mut SDL_RWops, freesrc: ::std::os::raw::c_int) -> *mut SDL_Surface;
+    pub fn SDL_LoadBMP_RW(src: *mut SDL_RWops, freesrc: libc::c_int) -> *mut SDL_Surface;
 }
 extern "C" {
     ///  Save a surface to a seekable SDL data stream (memory or file).
@@ -6737,8 +6524,8 @@ extern "C" {
     pub fn SDL_SaveBMP_RW(
         surface: *mut SDL_Surface,
         dst: *mut SDL_RWops,
-        freedst: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        freedst: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Sets the RLE acceleration hint for a surface.
@@ -6747,10 +6534,7 @@ extern "C" {
     ///
     ///  \note If RLE is enabled, colorkey and alpha blending blits are much faster,
     ///        but the surface must be locked before directly accessing the pixels.
-    pub fn SDL_SetSurfaceRLE(
-        surface: *mut SDL_Surface,
-        flag: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_SetSurfaceRLE(surface: *mut SDL_Surface, flag: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Sets the color key (transparent pixel) in a blittable surface.
@@ -6764,9 +6548,9 @@ extern "C" {
     ///  You can pass SDL_RLEACCEL to enable RLE accelerated blits.
     pub fn SDL_SetColorKey(
         surface: *mut SDL_Surface,
-        flag: ::std::os::raw::c_int,
+        flag: libc::c_int,
         key: Uint32,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Returns whether the surface has a color key
@@ -6783,7 +6567,7 @@ extern "C" {
     ///
     ///  \return 0 on success, or -1 if the surface is not valid or colorkey is not
     ///          enabled.
-    pub fn SDL_GetColorKey(surface: *mut SDL_Surface, key: *mut Uint32) -> ::std::os::raw::c_int;
+    pub fn SDL_GetColorKey(surface: *mut SDL_Surface, key: *mut Uint32) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Set an additional color value used in blit operations.
@@ -6801,7 +6585,7 @@ extern "C" {
         r: Uint8,
         g: Uint8,
         b: Uint8,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the additional color value used in blit operations.
@@ -6819,7 +6603,7 @@ extern "C" {
         r: *mut Uint8,
         g: *mut Uint8,
         b: *mut Uint8,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Set an additional alpha value used in blit operations.
@@ -6830,8 +6614,7 @@ extern "C" {
     ///  \return 0 on success, or -1 if the surface is not valid.
     ///
     ///  \sa SDL_GetSurfaceAlphaMod()
-    pub fn SDL_SetSurfaceAlphaMod(surface: *mut SDL_Surface, alpha: Uint8)
-        -> ::std::os::raw::c_int;
+    pub fn SDL_SetSurfaceAlphaMod(surface: *mut SDL_Surface, alpha: Uint8) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the additional alpha value used in blit operations.
@@ -6842,10 +6625,7 @@ extern "C" {
     ///  \return 0 on success, or -1 if the surface is not valid.
     ///
     ///  \sa SDL_SetSurfaceAlphaMod()
-    pub fn SDL_GetSurfaceAlphaMod(
-        surface: *mut SDL_Surface,
-        alpha: *mut Uint8,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_GetSurfaceAlphaMod(surface: *mut SDL_Surface, alpha: *mut Uint8) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Set the blend mode used for blit operations.
@@ -6859,7 +6639,7 @@ extern "C" {
     pub fn SDL_SetSurfaceBlendMode(
         surface: *mut SDL_Surface,
         blendMode: SDL_BlendMode,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the blend mode used for blit operations.
@@ -6873,7 +6653,7 @@ extern "C" {
     pub fn SDL_GetSurfaceBlendMode(
         surface: *mut SDL_Surface,
         blendMode: *mut SDL_BlendMode,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  Sets the clipping rectangle for the destination surface in a blit.
@@ -6926,15 +6706,15 @@ extern "C" {
     ///
     ///  \return 0 on success, or -1 if there was an error
     pub fn SDL_ConvertPixels(
-        width: ::std::os::raw::c_int,
-        height: ::std::os::raw::c_int,
+        width: libc::c_int,
+        height: libc::c_int,
         src_format: Uint32,
-        src: *const ::std::os::raw::c_void,
-        src_pitch: ::std::os::raw::c_int,
+        src: *const libc::c_void,
+        src_pitch: libc::c_int,
         dst_format: Uint32,
-        dst: *mut ::std::os::raw::c_void,
-        dst_pitch: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        dst: *mut libc::c_void,
+        dst_pitch: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  Performs a fast fill of the given rectangle with \c color.
@@ -6945,19 +6725,16 @@ extern "C" {
     ///  can be generated by the SDL_MapRGB() function.
     ///
     ///  \return 0 on success, or -1 on error.
-    pub fn SDL_FillRect(
-        dst: *mut SDL_Surface,
-        rect: *const SDL_Rect,
-        color: Uint32,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_FillRect(dst: *mut SDL_Surface, rect: *const SDL_Rect, color: Uint32)
+        -> libc::c_int;
 }
 extern "C" {
     pub fn SDL_FillRects(
         dst: *mut SDL_Surface,
         rects: *const SDL_Rect,
-        count: ::std::os::raw::c_int,
+        count: libc::c_int,
         color: Uint32,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  This is the public blit function, SDL_BlitSurface(), and it performs
@@ -6967,7 +6744,7 @@ extern "C" {
         srcrect: *const SDL_Rect,
         dst: *mut SDL_Surface,
         dstrect: *mut SDL_Rect,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  This is a semi-private blit function and it performs low-level surface
@@ -6977,7 +6754,7 @@ extern "C" {
         srcrect: *mut SDL_Rect,
         dst: *mut SDL_Surface,
         dstrect: *mut SDL_Rect,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Perform a fast, low quality, stretch blit between two surfaces of the
@@ -6989,7 +6766,7 @@ extern "C" {
         srcrect: *const SDL_Rect,
         dst: *mut SDL_Surface,
         dstrect: *const SDL_Rect,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  This is the public scaled blit function, SDL_BlitScaled(), and it performs
@@ -6999,7 +6776,7 @@ extern "C" {
         srcrect: *const SDL_Rect,
         dst: *mut SDL_Surface,
         dstrect: *mut SDL_Rect,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  This is a semi-private blit function and it performs low-level surface
@@ -7009,7 +6786,7 @@ extern "C" {
         srcrect: *mut SDL_Rect,
         dst: *mut SDL_Surface,
         dstrect: *mut SDL_Rect,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Set the YUV conversion mode
@@ -7022,8 +6799,8 @@ extern "C" {
 extern "C" {
     ///  \brief Get the YUV conversion mode, returning the correct mode for the resolution when the current conversion mode is SDL_YUV_CONVERSION_AUTOMATIC
     pub fn SDL_GetYUVConversionModeForResolution(
-        width: ::std::os::raw::c_int,
-        height: ::std::os::raw::c_int,
+        width: libc::c_int,
+        height: libc::c_int,
     ) -> SDL_YUV_CONVERSION_MODE;
 }
 ///  \brief  The structure that defines a display mode
@@ -7036,33 +6813,33 @@ extern "C" {
 ///  \sa SDL_SetWindowDisplayMode()
 ///  \sa SDL_GetWindowDisplayMode()
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_DisplayMode {
     ///< pixel format
     pub format: Uint32,
     ///< width, in screen coordinates
-    pub w: ::std::os::raw::c_int,
+    pub w: libc::c_int,
     ///< height, in screen coordinates
-    pub h: ::std::os::raw::c_int,
+    pub h: libc::c_int,
     ///< refresh rate (or zero for unspecified)
-    pub refresh_rate: ::std::os::raw::c_int,
+    pub refresh_rate: libc::c_int,
     ///< driver-specific data, initialize to 0
-    pub driverdata: *mut ::std::os::raw::c_void,
+    pub driverdata: *mut libc::c_void,
 }
 #[test]
 fn bindgen_test_layout_SDL_DisplayMode() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_DisplayMode>(),
+        ::core::mem::size_of::<SDL_DisplayMode>(),
         24usize,
         concat!("Size of: ", stringify!(SDL_DisplayMode))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_DisplayMode>(),
+        ::core::mem::align_of::<SDL_DisplayMode>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_DisplayMode))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DisplayMode>())).format as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DisplayMode>())).format as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -7072,7 +6849,7 @@ fn bindgen_test_layout_SDL_DisplayMode() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DisplayMode>())).w as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DisplayMode>())).w as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -7082,7 +6859,7 @@ fn bindgen_test_layout_SDL_DisplayMode() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DisplayMode>())).h as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DisplayMode>())).h as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -7092,7 +6869,7 @@ fn bindgen_test_layout_SDL_DisplayMode() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DisplayMode>())).refresh_rate as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DisplayMode>())).refresh_rate as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -7102,7 +6879,7 @@ fn bindgen_test_layout_SDL_DisplayMode() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DisplayMode>())).driverdata as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DisplayMode>())).driverdata as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -7113,7 +6890,7 @@ fn bindgen_test_layout_SDL_DisplayMode() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_Window {
     _unused: [u8; 0],
 }
@@ -7234,7 +7011,7 @@ pub enum SDL_DisplayOrientation {
     SDL_ORIENTATION_PORTRAIT_FLIPPED = 4,
 }
 ///  \brief An opaque handle to an OpenGL context.
-pub type SDL_GLContext = *mut ::std::os::raw::c_void;
+pub type SDL_GLContext = *mut libc::c_void;
 #[repr(u32)]
 ///  \brief OpenGL configuration attributes
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -7299,7 +7076,7 @@ extern "C" {
     ///  \brief Get the number of video drivers compiled into SDL
     ///
     ///  \sa SDL_GetVideoDriver()
-    pub fn SDL_GetNumVideoDrivers() -> ::std::os::raw::c_int;
+    pub fn SDL_GetNumVideoDrivers() -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the name of a built in video driver.
@@ -7308,7 +7085,7 @@ extern "C" {
     ///        normally checked during initialization.
     ///
     ///  \sa SDL_GetNumVideoDrivers()
-    pub fn SDL_GetVideoDriver(index: ::std::os::raw::c_int) -> *const ::std::os::raw::c_char;
+    pub fn SDL_GetVideoDriver(index: libc::c_int) -> *const libc::c_char;
 }
 extern "C" {
     ///  \brief Initialize the video subsystem, optionally specifying a video driver.
@@ -7323,7 +7100,7 @@ extern "C" {
     ///  and pixel formats, but does not initialize a window or graphics mode.
     ///
     ///  \sa SDL_VideoQuit()
-    pub fn SDL_VideoInit(driver_name: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn SDL_VideoInit(driver_name: *const libc::c_char) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Shuts down the video subsystem.
@@ -7341,13 +7118,13 @@ extern "C" {
     ///
     ///  \sa SDL_GetNumVideoDrivers()
     ///  \sa SDL_GetVideoDriver()
-    pub fn SDL_GetCurrentVideoDriver() -> *const ::std::os::raw::c_char;
+    pub fn SDL_GetCurrentVideoDriver() -> *const libc::c_char;
 }
 extern "C" {
     ///  \brief Returns the number of available video displays.
     ///
     ///  \sa SDL_GetDisplayBounds()
-    pub fn SDL_GetNumVideoDisplays() -> ::std::os::raw::c_int;
+    pub fn SDL_GetNumVideoDisplays() -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the name of a display in UTF-8 encoding
@@ -7355,8 +7132,7 @@ extern "C" {
     ///  \return The name of a display, or NULL for an invalid display index.
     ///
     ///  \sa SDL_GetNumVideoDisplays()
-    pub fn SDL_GetDisplayName(displayIndex: ::std::os::raw::c_int)
-        -> *const ::std::os::raw::c_char;
+    pub fn SDL_GetDisplayName(displayIndex: libc::c_int) -> *const libc::c_char;
 }
 extern "C" {
     ///  \brief Get the desktop area represented by a display, with the primary
@@ -7365,10 +7141,7 @@ extern "C" {
     ///  \return 0 on success, or -1 if the index is out of range.
     ///
     ///  \sa SDL_GetNumVideoDisplays()
-    pub fn SDL_GetDisplayBounds(
-        displayIndex: ::std::os::raw::c_int,
-        rect: *mut SDL_Rect,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_GetDisplayBounds(displayIndex: libc::c_int, rect: *mut SDL_Rect) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the usable desktop area represented by a display, with the
@@ -7387,9 +7160,9 @@ extern "C" {
     ///  \sa SDL_GetDisplayBounds()
     ///  \sa SDL_GetNumVideoDisplays()
     pub fn SDL_GetDisplayUsableBounds(
-        displayIndex: ::std::os::raw::c_int,
+        displayIndex: libc::c_int,
         rect: *mut SDL_Rect,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the dots/pixels-per-inch for a display
@@ -7401,11 +7174,11 @@ extern "C" {
     ///
     ///  \sa SDL_GetNumVideoDisplays()
     pub fn SDL_GetDisplayDPI(
-        displayIndex: ::std::os::raw::c_int,
+        displayIndex: libc::c_int,
         ddpi: *mut f32,
         hdpi: *mut f32,
         vdpi: *mut f32,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the orientation of a display
@@ -7413,14 +7186,13 @@ extern "C" {
     ///  \return The orientation of the display, or SDL_ORIENTATION_UNKNOWN if it isn't available.
     ///
     ///  \sa SDL_GetNumVideoDisplays()
-    pub fn SDL_GetDisplayOrientation(displayIndex: ::std::os::raw::c_int)
-        -> SDL_DisplayOrientation;
+    pub fn SDL_GetDisplayOrientation(displayIndex: libc::c_int) -> SDL_DisplayOrientation;
 }
 extern "C" {
     ///  \brief Returns the number of available display modes.
     ///
     ///  \sa SDL_GetDisplayMode()
-    pub fn SDL_GetNumDisplayModes(displayIndex: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn SDL_GetNumDisplayModes(displayIndex: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Fill in information about a specific display mode.
@@ -7433,24 +7205,24 @@ extern "C" {
     ///
     ///  \sa SDL_GetNumDisplayModes()
     pub fn SDL_GetDisplayMode(
-        displayIndex: ::std::os::raw::c_int,
-        modeIndex: ::std::os::raw::c_int,
+        displayIndex: libc::c_int,
+        modeIndex: libc::c_int,
         mode: *mut SDL_DisplayMode,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Fill in information about the desktop display mode.
     pub fn SDL_GetDesktopDisplayMode(
-        displayIndex: ::std::os::raw::c_int,
+        displayIndex: libc::c_int,
         mode: *mut SDL_DisplayMode,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Fill in information about the current display mode.
     pub fn SDL_GetCurrentDisplayMode(
-        displayIndex: ::std::os::raw::c_int,
+        displayIndex: libc::c_int,
         mode: *mut SDL_DisplayMode,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the closest match to the requested display mode.
@@ -7473,7 +7245,7 @@ extern "C" {
     ///  \sa SDL_GetNumDisplayModes()
     ///  \sa SDL_GetDisplayMode()
     pub fn SDL_GetClosestDisplayMode(
-        displayIndex: ::std::os::raw::c_int,
+        displayIndex: libc::c_int,
         mode: *const SDL_DisplayMode,
         closest: *mut SDL_DisplayMode,
     ) -> *mut SDL_DisplayMode;
@@ -7483,7 +7255,7 @@ extern "C" {
     ///
     ///  \return the display index of the display containing the center of the
     ///          window, or -1 on error.
-    pub fn SDL_GetWindowDisplayIndex(window: *mut SDL_Window) -> ::std::os::raw::c_int;
+    pub fn SDL_GetWindowDisplayIndex(window: *mut SDL_Window) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Set the display mode used when a fullscreen window is visible.
@@ -7501,7 +7273,7 @@ extern "C" {
     pub fn SDL_SetWindowDisplayMode(
         window: *mut SDL_Window,
         mode: *const SDL_DisplayMode,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Fill in information about the display mode used when a fullscreen
@@ -7512,7 +7284,7 @@ extern "C" {
     pub fn SDL_GetWindowDisplayMode(
         window: *mut SDL_Window,
         mode: *mut SDL_DisplayMode,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the pixel format associated with the window.
@@ -7560,11 +7332,11 @@ extern "C" {
     ///  \sa SDL_GL_LoadLibrary()
     ///  \sa SDL_Vulkan_LoadLibrary()
     pub fn SDL_CreateWindow(
-        title: *const ::std::os::raw::c_char,
-        x: ::std::os::raw::c_int,
-        y: ::std::os::raw::c_int,
-        w: ::std::os::raw::c_int,
-        h: ::std::os::raw::c_int,
+        title: *const libc::c_char,
+        x: libc::c_int,
+        y: libc::c_int,
+        w: libc::c_int,
+        h: libc::c_int,
         flags: Uint32,
     ) -> *mut SDL_Window;
 }
@@ -7576,7 +7348,7 @@ extern "C" {
     ///  \return The created window, or NULL if window creation failed.
     ///
     ///  \sa SDL_DestroyWindow()
-    pub fn SDL_CreateWindowFrom(data: *const ::std::os::raw::c_void) -> *mut SDL_Window;
+    pub fn SDL_CreateWindowFrom(data: *const libc::c_void) -> *mut SDL_Window;
 }
 extern "C" {
     ///  \brief Get the numeric ID of a window, for logging purposes.
@@ -7594,13 +7366,13 @@ extern "C" {
     ///  \brief Set the title of a window, in UTF-8 format.
     ///
     ///  \sa SDL_GetWindowTitle()
-    pub fn SDL_SetWindowTitle(window: *mut SDL_Window, title: *const ::std::os::raw::c_char);
+    pub fn SDL_SetWindowTitle(window: *mut SDL_Window, title: *const libc::c_char);
 }
 extern "C" {
     ///  \brief Get the title of a window, in UTF-8 format.
     ///
     ///  \sa SDL_SetWindowTitle()
-    pub fn SDL_GetWindowTitle(window: *mut SDL_Window) -> *const ::std::os::raw::c_char;
+    pub fn SDL_GetWindowTitle(window: *mut SDL_Window) -> *const libc::c_char;
 }
 extern "C" {
     ///  \brief Set the icon for a window.
@@ -7623,9 +7395,9 @@ extern "C" {
     ///  \sa SDL_GetWindowData()
     pub fn SDL_SetWindowData(
         window: *mut SDL_Window,
-        name: *const ::std::os::raw::c_char,
-        userdata: *mut ::std::os::raw::c_void,
-    ) -> *mut ::std::os::raw::c_void;
+        name: *const libc::c_char,
+        userdata: *mut libc::c_void,
+    ) -> *mut libc::c_void;
 }
 extern "C" {
     ///  \brief Retrieve the data pointer associated with a window.
@@ -7638,8 +7410,8 @@ extern "C" {
     ///  \sa SDL_SetWindowData()
     pub fn SDL_GetWindowData(
         window: *mut SDL_Window,
-        name: *const ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_void;
+        name: *const libc::c_char,
+    ) -> *mut libc::c_void;
 }
 extern "C" {
     ///  \brief Set the position of a window.
@@ -7653,11 +7425,7 @@ extern "C" {
     ///  \note The window coordinate origin is the upper left of the display.
     ///
     ///  \sa SDL_GetWindowPosition()
-    pub fn SDL_SetWindowPosition(
-        window: *mut SDL_Window,
-        x: ::std::os::raw::c_int,
-        y: ::std::os::raw::c_int,
-    );
+    pub fn SDL_SetWindowPosition(window: *mut SDL_Window, x: libc::c_int, y: libc::c_int);
 }
 extern "C" {
     ///  \brief Get the position of a window.
@@ -7669,11 +7437,7 @@ extern "C" {
     ///                  coordinates. May be NULL.
     ///
     ///  \sa SDL_SetWindowPosition()
-    pub fn SDL_GetWindowPosition(
-        window: *mut SDL_Window,
-        x: *mut ::std::os::raw::c_int,
-        y: *mut ::std::os::raw::c_int,
-    );
+    pub fn SDL_GetWindowPosition(window: *mut SDL_Window, x: *mut libc::c_int, y: *mut libc::c_int);
 }
 extern "C" {
     ///  \brief Set the size of a window's client area.
@@ -7692,11 +7456,7 @@ extern "C" {
     ///
     ///  \sa SDL_GetWindowSize()
     ///  \sa SDL_SetWindowDisplayMode()
-    pub fn SDL_SetWindowSize(
-        window: *mut SDL_Window,
-        w: ::std::os::raw::c_int,
-        h: ::std::os::raw::c_int,
-    );
+    pub fn SDL_SetWindowSize(window: *mut SDL_Window, w: libc::c_int, h: libc::c_int);
 }
 extern "C" {
     ///  \brief Get the size of a window's client area.
@@ -7713,11 +7473,7 @@ extern "C" {
     ///  SDL_GetRendererOutputSize() to get the real client area size in pixels.
     ///
     ///  \sa SDL_SetWindowSize()
-    pub fn SDL_GetWindowSize(
-        window: *mut SDL_Window,
-        w: *mut ::std::os::raw::c_int,
-        h: *mut ::std::os::raw::c_int,
-    );
+    pub fn SDL_GetWindowSize(window: *mut SDL_Window, w: *mut libc::c_int, h: *mut libc::c_int);
 }
 extern "C" {
     ///  \brief Get the size of a window's borders (decorations) around the client area.
@@ -7735,11 +7491,11 @@ extern "C" {
     ///        if the window in question was borderless.
     pub fn SDL_GetWindowBordersSize(
         window: *mut SDL_Window,
-        top: *mut ::std::os::raw::c_int,
-        left: *mut ::std::os::raw::c_int,
-        bottom: *mut ::std::os::raw::c_int,
-        right: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        top: *mut libc::c_int,
+        left: *mut libc::c_int,
+        bottom: *mut libc::c_int,
+        right: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Set the minimum size of a window's client area.
@@ -7755,8 +7511,8 @@ extern "C" {
     ///  \sa SDL_SetWindowMaximumSize()
     pub fn SDL_SetWindowMinimumSize(
         window: *mut SDL_Window,
-        min_w: ::std::os::raw::c_int,
-        min_h: ::std::os::raw::c_int,
+        min_w: libc::c_int,
+        min_h: libc::c_int,
     );
 }
 extern "C" {
@@ -7770,8 +7526,8 @@ extern "C" {
     ///  \sa SDL_SetWindowMinimumSize()
     pub fn SDL_GetWindowMinimumSize(
         window: *mut SDL_Window,
-        w: *mut ::std::os::raw::c_int,
-        h: *mut ::std::os::raw::c_int,
+        w: *mut libc::c_int,
+        h: *mut libc::c_int,
     );
 }
 extern "C" {
@@ -7788,8 +7544,8 @@ extern "C" {
     ///  \sa SDL_SetWindowMinimumSize()
     pub fn SDL_SetWindowMaximumSize(
         window: *mut SDL_Window,
-        max_w: ::std::os::raw::c_int,
-        max_h: ::std::os::raw::c_int,
+        max_w: libc::c_int,
+        max_h: libc::c_int,
     );
 }
 extern "C" {
@@ -7803,8 +7559,8 @@ extern "C" {
     ///  \sa SDL_SetWindowMaximumSize()
     pub fn SDL_GetWindowMaximumSize(
         window: *mut SDL_Window,
-        w: *mut ::std::os::raw::c_int,
-        h: *mut ::std::os::raw::c_int,
+        w: *mut libc::c_int,
+        h: *mut libc::c_int,
     );
 }
 extern "C" {
@@ -7879,8 +7635,7 @@ extern "C" {
     ///
     ///  \sa SDL_SetWindowDisplayMode()
     ///  \sa SDL_GetWindowDisplayMode()
-    pub fn SDL_SetWindowFullscreen(window: *mut SDL_Window, flags: Uint32)
-        -> ::std::os::raw::c_int;
+    pub fn SDL_SetWindowFullscreen(window: *mut SDL_Window, flags: Uint32) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the SDL surface associated with the window.
@@ -7903,7 +7658,7 @@ extern "C" {
     ///
     ///  \sa SDL_GetWindowSurface()
     ///  \sa SDL_UpdateWindowSurfaceRects()
-    pub fn SDL_UpdateWindowSurface(window: *mut SDL_Window) -> ::std::os::raw::c_int;
+    pub fn SDL_UpdateWindowSurface(window: *mut SDL_Window) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Copy a number of rectangles on the window surface to the screen.
@@ -7915,8 +7670,8 @@ extern "C" {
     pub fn SDL_UpdateWindowSurfaceRects(
         window: *mut SDL_Window,
         rects: *const SDL_Rect,
-        numrects: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        numrects: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Set a window's input grab mode.
@@ -7953,10 +7708,7 @@ extern "C" {
     ///
     ///  \sa SDL_GetWindowBrightness()
     ///  \sa SDL_SetWindowGammaRamp()
-    pub fn SDL_SetWindowBrightness(
-        window: *mut SDL_Window,
-        brightness: f32,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_SetWindowBrightness(window: *mut SDL_Window, brightness: f32) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the brightness (gamma correction) for a window.
@@ -7976,7 +7728,7 @@ extern "C" {
     ///  \return 0 on success, or -1 if setting the opacity isn't supported.
     ///
     ///  \sa SDL_GetWindowOpacity()
-    pub fn SDL_SetWindowOpacity(window: *mut SDL_Window, opacity: f32) -> ::std::os::raw::c_int;
+    pub fn SDL_SetWindowOpacity(window: *mut SDL_Window, opacity: f32) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the opacity of a window.
@@ -7990,10 +7742,7 @@ extern "C" {
     ///  \return 0 on success, or -1 on error (invalid window, etc).
     ///
     ///  \sa SDL_SetWindowOpacity()
-    pub fn SDL_GetWindowOpacity(
-        window: *mut SDL_Window,
-        out_opacity: *mut f32,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_GetWindowOpacity(window: *mut SDL_Window, out_opacity: *mut f32) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Sets the window as a modal for another window (TODO: reconsider this function and/or its name)
@@ -8005,7 +7754,7 @@ extern "C" {
     pub fn SDL_SetWindowModalFor(
         modal_window: *mut SDL_Window,
         parent_window: *mut SDL_Window,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Explicitly sets input focus to the window.
@@ -8018,7 +7767,7 @@ extern "C" {
     ///
     ///  \return 0 on success, or -1 otherwise.
     ///  \sa SDL_RaiseWindow()
-    pub fn SDL_SetWindowInputFocus(window: *mut SDL_Window) -> ::std::os::raw::c_int;
+    pub fn SDL_SetWindowInputFocus(window: *mut SDL_Window) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Set the gamma ramp for a window.
@@ -8042,7 +7791,7 @@ extern "C" {
         red: *const Uint16,
         green: *const Uint16,
         blue: *const Uint16,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the gamma ramp for a window.
@@ -8063,7 +7812,7 @@ extern "C" {
         red: *mut Uint16,
         green: *mut Uint16,
         blue: *mut Uint16,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 #[repr(u32)]
 ///  \brief Possible return values from the SDL_HitTest callback.
@@ -8087,11 +7836,11 @@ pub enum SDL_HitTestResult {
 ///  \brief Callback used for hit-testing.
 ///
 ///  \sa SDL_SetWindowHitTest
-pub type SDL_HitTest = ::std::option::Option<
+pub type SDL_HitTest = ::core::option::Option<
     unsafe extern "C" fn(
         win: *mut SDL_Window,
         area: *const SDL_Point,
-        data: *mut ::std::os::raw::c_void,
+        data: *mut libc::c_void,
     ) -> SDL_HitTestResult,
 >;
 extern "C" {
@@ -8133,8 +7882,8 @@ extern "C" {
     pub fn SDL_SetWindowHitTest(
         window: *mut SDL_Window,
         callback: SDL_HitTest,
-        callback_data: *mut ::std::os::raw::c_void,
-    ) -> ::std::os::raw::c_int;
+        callback_data: *mut libc::c_void,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Destroy a window.
@@ -8178,13 +7927,11 @@ extern "C" {
     ///
     ///  \sa SDL_GL_GetProcAddress()
     ///  \sa SDL_GL_UnloadLibrary()
-    pub fn SDL_GL_LoadLibrary(path: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn SDL_GL_LoadLibrary(path: *const libc::c_char) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the address of an OpenGL function.
-    pub fn SDL_GL_GetProcAddress(
-        proc_: *const ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_void;
+    pub fn SDL_GL_GetProcAddress(proc_: *const libc::c_char) -> *mut libc::c_void;
 }
 extern "C" {
     ///  \brief Unload the OpenGL library previously loaded by SDL_GL_LoadLibrary().
@@ -8195,7 +7942,7 @@ extern "C" {
 extern "C" {
     ///  \brief Return true if an OpenGL extension is supported for the current
     ///         context.
-    pub fn SDL_GL_ExtensionSupported(extension: *const ::std::os::raw::c_char) -> SDL_bool;
+    pub fn SDL_GL_ExtensionSupported(extension: *const libc::c_char) -> SDL_bool;
 }
 extern "C" {
     ///  \brief Reset all previously set OpenGL context attributes to their default values
@@ -8205,20 +7952,14 @@ extern "C" {
     ///  \brief Set an OpenGL window attribute before window creation.
     ///
     ///  \return 0 on success, or -1 if the attribute could not be set.
-    pub fn SDL_GL_SetAttribute(
-        attr: SDL_GLattr,
-        value: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_GL_SetAttribute(attr: SDL_GLattr, value: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the actual value for an attribute from the current context.
     ///
     ///  \return 0 on success, or -1 if the attribute could not be retrieved.
     ///          The integer at \c value will be modified in either case.
-    pub fn SDL_GL_GetAttribute(
-        attr: SDL_GLattr,
-        value: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_GL_GetAttribute(attr: SDL_GLattr, value: *mut libc::c_int) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Create an OpenGL context for use with an OpenGL window, and make it
@@ -8231,10 +7972,7 @@ extern "C" {
     ///  \brief Set up an OpenGL context for rendering into an OpenGL window.
     ///
     ///  \note The context must have been created with a compatible window.
-    pub fn SDL_GL_MakeCurrent(
-        window: *mut SDL_Window,
-        context: SDL_GLContext,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_GL_MakeCurrent(window: *mut SDL_Window, context: SDL_GLContext) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the currently active OpenGL window.
@@ -8261,8 +7999,8 @@ extern "C" {
     ///  \sa SDL_CreateWindow()
     pub fn SDL_GL_GetDrawableSize(
         window: *mut SDL_Window,
-        w: *mut ::std::os::raw::c_int,
-        h: *mut ::std::os::raw::c_int,
+        w: *mut libc::c_int,
+        h: *mut libc::c_int,
     );
 }
 extern "C" {
@@ -8276,7 +8014,7 @@ extern "C" {
     ///  \return 0 on success, or -1 if setting the swap interval is not supported.
     ///
     ///  \sa SDL_GL_GetSwapInterval()
-    pub fn SDL_GL_SetSwapInterval(interval: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn SDL_GL_SetSwapInterval(interval: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the swap interval for the current OpenGL context.
@@ -8288,7 +8026,7 @@ extern "C" {
     ///          valid current context, this will return 0 as a safe default.
     ///
     ///  \sa SDL_GL_SetSwapInterval()
-    pub fn SDL_GL_GetSwapInterval() -> ::std::os::raw::c_int;
+    pub fn SDL_GL_GetSwapInterval() -> libc::c_int;
 }
 extern "C" {
     /// \brief Swap the OpenGL buffers for a window, if double-buffering is
@@ -9155,7 +8893,7 @@ pub enum SDL_Keymod {
 ///
 ///  \note  If you are looking for translated character input, see the ::SDL_TEXTINPUT event.
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_Keysym {
     ///< SDL physical key code - see ::SDL_Scancode for details
     pub scancode: SDL_Scancode,
@@ -9168,17 +8906,17 @@ pub struct SDL_Keysym {
 #[test]
 fn bindgen_test_layout_SDL_Keysym() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_Keysym>(),
+        ::core::mem::size_of::<SDL_Keysym>(),
         16usize,
         concat!("Size of: ", stringify!(SDL_Keysym))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_Keysym>(),
+        ::core::mem::align_of::<SDL_Keysym>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_Keysym))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Keysym>())).scancode as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Keysym>())).scancode as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -9188,7 +8926,7 @@ fn bindgen_test_layout_SDL_Keysym() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Keysym>())).sym as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Keysym>())).sym as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -9198,7 +8936,7 @@ fn bindgen_test_layout_SDL_Keysym() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Keysym>())).mod_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Keysym>())).mod_ as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -9208,7 +8946,7 @@ fn bindgen_test_layout_SDL_Keysym() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Keysym>())).unused as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Keysym>())).unused as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -9236,7 +8974,7 @@ extern "C" {
     ///      printf("<RETURN> is pressed.\n");
     ///  }
     ///  \endcode
-    pub fn SDL_GetKeyboardState(numkeys: *mut ::std::os::raw::c_int) -> *const Uint8;
+    pub fn SDL_GetKeyboardState(numkeys: *mut libc::c_int) -> *const Uint8;
 }
 extern "C" {
     ///  \brief Get the current key modifier state for the keyboard.
@@ -9274,7 +9012,7 @@ extern "C" {
     ///          an empty string ("").
     ///
     ///  \sa SDL_Scancode
-    pub fn SDL_GetScancodeName(scancode: SDL_Scancode) -> *const ::std::os::raw::c_char;
+    pub fn SDL_GetScancodeName(scancode: SDL_Scancode) -> *const libc::c_char;
 }
 extern "C" {
     ///  \brief Get a scancode from a human-readable name
@@ -9282,7 +9020,7 @@ extern "C" {
     ///  \return scancode, or SDL_SCANCODE_UNKNOWN if the name wasn't recognized
     ///
     ///  \sa SDL_Scancode
-    pub fn SDL_GetScancodeFromName(name: *const ::std::os::raw::c_char) -> SDL_Scancode;
+    pub fn SDL_GetScancodeFromName(name: *const libc::c_char) -> SDL_Scancode;
 }
 extern "C" {
     ///  \brief Get a human-readable name for a key.
@@ -9293,7 +9031,7 @@ extern "C" {
     ///          empty string ("").
     ///
     ///  \sa SDL_Keycode
-    pub fn SDL_GetKeyName(key: SDL_Keycode) -> *const ::std::os::raw::c_char;
+    pub fn SDL_GetKeyName(key: SDL_Keycode) -> *const libc::c_char;
 }
 extern "C" {
     ///  \brief Get a key code from a human-readable name
@@ -9301,7 +9039,7 @@ extern "C" {
     ///  \return key code, or SDLK_UNKNOWN if the name wasn't recognized
     ///
     ///  \sa SDL_Keycode
-    pub fn SDL_GetKeyFromName(name: *const ::std::os::raw::c_char) -> SDL_Keycode;
+    pub fn SDL_GetKeyFromName(name: *const libc::c_char) -> SDL_Keycode;
 }
 extern "C" {
     ///  \brief Start accepting Unicode text input events.
@@ -9355,7 +9093,7 @@ extern "C" {
     pub fn SDL_IsScreenKeyboardShown(window: *mut SDL_Window) -> SDL_bool;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_Cursor {
     _unused: [u8; 0],
 }
@@ -9409,10 +9147,7 @@ extern "C" {
     ///  be tested using the SDL_BUTTON(X) macros, and x and y are set to the
     ///  mouse cursor position relative to the focus window for the currently
     ///  selected mouse.  You can pass NULL for either x or y.
-    pub fn SDL_GetMouseState(
-        x: *mut ::std::os::raw::c_int,
-        y: *mut ::std::os::raw::c_int,
-    ) -> Uint32;
+    pub fn SDL_GetMouseState(x: *mut libc::c_int, y: *mut libc::c_int) -> Uint32;
 }
 extern "C" {
     ///  \brief Get the current state of the mouse, in relation to the desktop
@@ -9436,10 +9171,7 @@ extern "C" {
     ///  \return The current button state as a bitmask, which can be tested using the SDL_BUTTON(X) macros.
     ///
     ///  \sa SDL_GetMouseState
-    pub fn SDL_GetGlobalMouseState(
-        x: *mut ::std::os::raw::c_int,
-        y: *mut ::std::os::raw::c_int,
-    ) -> Uint32;
+    pub fn SDL_GetGlobalMouseState(x: *mut libc::c_int, y: *mut libc::c_int) -> Uint32;
 }
 extern "C" {
     ///  \brief Retrieve the relative state of the mouse.
@@ -9447,10 +9179,7 @@ extern "C" {
     ///  The current button state is returned as a button bitmask, which can
     ///  be tested using the SDL_BUTTON(X) macros, and x and y are set to the
     ///  mouse deltas since the last call to SDL_GetRelativeMouseState().
-    pub fn SDL_GetRelativeMouseState(
-        x: *mut ::std::os::raw::c_int,
-        y: *mut ::std::os::raw::c_int,
-    ) -> Uint32;
+    pub fn SDL_GetRelativeMouseState(x: *mut libc::c_int, y: *mut libc::c_int) -> Uint32;
 }
 extern "C" {
     ///  \brief Moves the mouse to the given position within the window.
@@ -9460,11 +9189,7 @@ extern "C" {
     ///  \param y The y coordinate within the window
     ///
     ///  \note This function generates a mouse motion event
-    pub fn SDL_WarpMouseInWindow(
-        window: *mut SDL_Window,
-        x: ::std::os::raw::c_int,
-        y: ::std::os::raw::c_int,
-    );
+    pub fn SDL_WarpMouseInWindow(window: *mut SDL_Window, x: libc::c_int, y: libc::c_int);
 }
 extern "C" {
     ///  \brief Moves the mouse to the given position in global screen space.
@@ -9474,10 +9199,7 @@ extern "C" {
     ///  \return 0 on success, -1 on error (usually: unsupported by a platform).
     ///
     ///  \note This function generates a mouse motion event
-    pub fn SDL_WarpMouseGlobal(
-        x: ::std::os::raw::c_int,
-        y: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_WarpMouseGlobal(x: libc::c_int, y: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Set relative mouse mode.
@@ -9494,7 +9216,7 @@ extern "C" {
     ///  \note This function will flush any pending mouse motion.
     ///
     ///  \sa SDL_GetRelativeMouseMode()
-    pub fn SDL_SetRelativeMouseMode(enabled: SDL_bool) -> ::std::os::raw::c_int;
+    pub fn SDL_SetRelativeMouseMode(enabled: SDL_bool) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Capture the mouse, to track input outside an SDL window.
@@ -9524,7 +9246,7 @@ extern "C" {
     ///  SDL_WINDOW_MOUSE_CAPTURE flag set.
     ///
     ///  \return 0 on success, or -1 if not supported.
-    pub fn SDL_CaptureMouse(enabled: SDL_bool) -> ::std::os::raw::c_int;
+    pub fn SDL_CaptureMouse(enabled: SDL_bool) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Query whether relative mouse mode is enabled.
@@ -9552,10 +9274,10 @@ extern "C" {
     pub fn SDL_CreateCursor(
         data: *const Uint8,
         mask: *const Uint8,
-        w: ::std::os::raw::c_int,
-        h: ::std::os::raw::c_int,
-        hot_x: ::std::os::raw::c_int,
-        hot_y: ::std::os::raw::c_int,
+        w: libc::c_int,
+        h: libc::c_int,
+        hot_x: libc::c_int,
+        hot_y: libc::c_int,
     ) -> *mut SDL_Cursor;
 }
 extern "C" {
@@ -9564,8 +9286,8 @@ extern "C" {
     ///  \sa SDL_FreeCursor()
     pub fn SDL_CreateColorCursor(
         surface: *mut SDL_Surface,
-        hot_x: ::std::os::raw::c_int,
-        hot_y: ::std::os::raw::c_int,
+        hot_x: libc::c_int,
+        hot_y: libc::c_int,
     ) -> *mut SDL_Cursor;
 }
 extern "C" {
@@ -9601,34 +9323,34 @@ extern "C" {
     ///                state.
     ///
     ///  \return 1 if the cursor is shown, or 0 if the cursor is hidden.
-    pub fn SDL_ShowCursor(toggle: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn SDL_ShowCursor(toggle: libc::c_int) -> libc::c_int;
 }
 /// The joystick structure used to identify an SDL joystick
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _SDL_Joystick {
     _unused: [u8; 0],
 }
 pub type SDL_Joystick = _SDL_Joystick;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_JoystickGUID {
     pub data: [Uint8; 16usize],
 }
 #[test]
 fn bindgen_test_layout_SDL_JoystickGUID() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_JoystickGUID>(),
+        ::core::mem::size_of::<SDL_JoystickGUID>(),
         16usize,
         concat!("Size of: ", stringify!(SDL_JoystickGUID))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_JoystickGUID>(),
+        ::core::mem::align_of::<SDL_JoystickGUID>(),
         1usize,
         concat!("Alignment of ", stringify!(SDL_JoystickGUID))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoystickGUID>())).data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoystickGUID>())).data as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -9685,56 +9407,52 @@ extern "C" {
 }
 extern "C" {
     ///  Count the number of joysticks attached to the system right now
-    pub fn SDL_NumJoysticks() -> ::std::os::raw::c_int;
+    pub fn SDL_NumJoysticks() -> libc::c_int;
 }
 extern "C" {
     ///  Get the implementation dependent name of a joystick.
     ///  This can be called before any joysticks are opened.
     ///  If no name can be found, this function returns NULL.
-    pub fn SDL_JoystickNameForIndex(
-        device_index: ::std::os::raw::c_int,
-    ) -> *const ::std::os::raw::c_char;
+    pub fn SDL_JoystickNameForIndex(device_index: libc::c_int) -> *const libc::c_char;
 }
 extern "C" {
     ///  Get the player index of a joystick, or -1 if it's not available
     ///  This can be called before any joysticks are opened.
-    pub fn SDL_JoystickGetDevicePlayerIndex(
-        device_index: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_JoystickGetDevicePlayerIndex(device_index: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     ///  Return the GUID for the joystick at this index
     ///  This can be called before any joysticks are opened.
-    pub fn SDL_JoystickGetDeviceGUID(device_index: ::std::os::raw::c_int) -> SDL_JoystickGUID;
+    pub fn SDL_JoystickGetDeviceGUID(device_index: libc::c_int) -> SDL_JoystickGUID;
 }
 extern "C" {
     ///  Get the USB vendor ID of a joystick, if available.
     ///  This can be called before any joysticks are opened.
     ///  If the vendor ID isn't available this function returns 0.
-    pub fn SDL_JoystickGetDeviceVendor(device_index: ::std::os::raw::c_int) -> Uint16;
+    pub fn SDL_JoystickGetDeviceVendor(device_index: libc::c_int) -> Uint16;
 }
 extern "C" {
     ///  Get the USB product ID of a joystick, if available.
     ///  This can be called before any joysticks are opened.
     ///  If the product ID isn't available this function returns 0.
-    pub fn SDL_JoystickGetDeviceProduct(device_index: ::std::os::raw::c_int) -> Uint16;
+    pub fn SDL_JoystickGetDeviceProduct(device_index: libc::c_int) -> Uint16;
 }
 extern "C" {
     ///  Get the product version of a joystick, if available.
     ///  This can be called before any joysticks are opened.
     ///  If the product version isn't available this function returns 0.
-    pub fn SDL_JoystickGetDeviceProductVersion(device_index: ::std::os::raw::c_int) -> Uint16;
+    pub fn SDL_JoystickGetDeviceProductVersion(device_index: libc::c_int) -> Uint16;
 }
 extern "C" {
     ///  Get the type of a joystick, if available.
     ///  This can be called before any joysticks are opened.
-    pub fn SDL_JoystickGetDeviceType(device_index: ::std::os::raw::c_int) -> SDL_JoystickType;
+    pub fn SDL_JoystickGetDeviceType(device_index: libc::c_int) -> SDL_JoystickType;
 }
 extern "C" {
     ///  Get the instance ID of a joystick.
     ///  This can be called before any joysticks are opened.
     ///  If the index is out of range, this function will return -1.
-    pub fn SDL_JoystickGetDeviceInstanceID(device_index: ::std::os::raw::c_int) -> SDL_JoystickID;
+    pub fn SDL_JoystickGetDeviceInstanceID(device_index: libc::c_int) -> SDL_JoystickID;
 }
 extern "C" {
     ///  Open a joystick for use.
@@ -9744,7 +9462,7 @@ extern "C" {
     ///  there instead.
     ///
     ///  \return A joystick identifier, or NULL if an error occurred.
-    pub fn SDL_JoystickOpen(device_index: ::std::os::raw::c_int) -> *mut SDL_Joystick;
+    pub fn SDL_JoystickOpen(device_index: libc::c_int) -> *mut SDL_Joystick;
 }
 extern "C" {
     /// Return the SDL_Joystick associated with an instance id.
@@ -9753,13 +9471,13 @@ extern "C" {
 extern "C" {
     ///  Return the name for this currently opened joystick.
     ///  If no name can be found, this function returns NULL.
-    pub fn SDL_JoystickName(joystick: *mut SDL_Joystick) -> *const ::std::os::raw::c_char;
+    pub fn SDL_JoystickName(joystick: *mut SDL_Joystick) -> *const libc::c_char;
 }
 extern "C" {
     ///  Get the player index of an opened joystick, or -1 if it's not available
     ///
     ///  For XInput controllers this returns the XInput user index.
-    pub fn SDL_JoystickGetPlayerIndex(joystick: *mut SDL_Joystick) -> ::std::os::raw::c_int;
+    pub fn SDL_JoystickGetPlayerIndex(joystick: *mut SDL_Joystick) -> libc::c_int;
 }
 extern "C" {
     ///  Return the GUID for this opened joystick
@@ -9789,15 +9507,13 @@ extern "C" {
     ///  (32 for the string plus a NULL terminator).
     pub fn SDL_JoystickGetGUIDString(
         guid: SDL_JoystickGUID,
-        pszGUID: *mut ::std::os::raw::c_char,
-        cbGUID: ::std::os::raw::c_int,
+        pszGUID: *mut libc::c_char,
+        cbGUID: libc::c_int,
     );
 }
 extern "C" {
     ///  Convert a string into a joystick guid
-    pub fn SDL_JoystickGetGUIDFromString(
-        pchGUID: *const ::std::os::raw::c_char,
-    ) -> SDL_JoystickGUID;
+    pub fn SDL_JoystickGetGUIDFromString(pchGUID: *const libc::c_char) -> SDL_JoystickGUID;
 }
 extern "C" {
     ///  Returns SDL_TRUE if the joystick has been opened and currently connected, or SDL_FALSE if it has not.
@@ -9809,22 +9525,22 @@ extern "C" {
 }
 extern "C" {
     ///  Get the number of general axis controls on a joystick.
-    pub fn SDL_JoystickNumAxes(joystick: *mut SDL_Joystick) -> ::std::os::raw::c_int;
+    pub fn SDL_JoystickNumAxes(joystick: *mut SDL_Joystick) -> libc::c_int;
 }
 extern "C" {
     ///  Get the number of trackballs on a joystick.
     ///
     ///  Joystick trackballs have only relative motion events associated
     ///  with them and their state cannot be polled.
-    pub fn SDL_JoystickNumBalls(joystick: *mut SDL_Joystick) -> ::std::os::raw::c_int;
+    pub fn SDL_JoystickNumBalls(joystick: *mut SDL_Joystick) -> libc::c_int;
 }
 extern "C" {
     ///  Get the number of POV hats on a joystick.
-    pub fn SDL_JoystickNumHats(joystick: *mut SDL_Joystick) -> ::std::os::raw::c_int;
+    pub fn SDL_JoystickNumHats(joystick: *mut SDL_Joystick) -> libc::c_int;
 }
 extern "C" {
     ///  Get the number of buttons on a joystick.
-    pub fn SDL_JoystickNumButtons(joystick: *mut SDL_Joystick) -> ::std::os::raw::c_int;
+    pub fn SDL_JoystickNumButtons(joystick: *mut SDL_Joystick) -> libc::c_int;
 }
 extern "C" {
     ///  Update the current state of the open joysticks.
@@ -9841,7 +9557,7 @@ extern "C" {
     ///  information.
     ///
     ///  The state can be one of ::SDL_QUERY, ::SDL_ENABLE or ::SDL_IGNORE.
-    pub fn SDL_JoystickEventState(state: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn SDL_JoystickEventState(state: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     ///  Get the current state of an axis control on a joystick.
@@ -9849,7 +9565,7 @@ extern "C" {
     ///  The state is a value ranging from -32768 to 32767.
     ///
     ///  The axis indices start at index 0.
-    pub fn SDL_JoystickGetAxis(joystick: *mut SDL_Joystick, axis: ::std::os::raw::c_int) -> Sint16;
+    pub fn SDL_JoystickGetAxis(joystick: *mut SDL_Joystick, axis: libc::c_int) -> Sint16;
 }
 extern "C" {
     ///  Get the initial state of an axis control on a joystick.
@@ -9861,7 +9577,7 @@ extern "C" {
     ///  \return SDL_TRUE if this axis has any initial value, or SDL_FALSE if not.
     pub fn SDL_JoystickGetAxisInitialState(
         joystick: *mut SDL_Joystick,
-        axis: ::std::os::raw::c_int,
+        axis: libc::c_int,
         state: *mut Sint16,
     ) -> SDL_bool;
 }
@@ -9880,7 +9596,7 @@ extern "C" {
     ///           - ::SDL_HAT_RIGHTDOWN
     ///           - ::SDL_HAT_LEFTUP
     ///           - ::SDL_HAT_LEFTDOWN
-    pub fn SDL_JoystickGetHat(joystick: *mut SDL_Joystick, hat: ::std::os::raw::c_int) -> Uint8;
+    pub fn SDL_JoystickGetHat(joystick: *mut SDL_Joystick, hat: libc::c_int) -> Uint8;
 }
 extern "C" {
     ///  Get the ball axis change since the last poll.
@@ -9890,19 +9606,16 @@ extern "C" {
     ///  The ball indices start at index 0.
     pub fn SDL_JoystickGetBall(
         joystick: *mut SDL_Joystick,
-        ball: ::std::os::raw::c_int,
-        dx: *mut ::std::os::raw::c_int,
-        dy: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        ball: libc::c_int,
+        dx: *mut libc::c_int,
+        dy: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  Get the current state of a button on a joystick.
     ///
     ///  The button indices start at index 0.
-    pub fn SDL_JoystickGetButton(
-        joystick: *mut SDL_Joystick,
-        button: ::std::os::raw::c_int,
-    ) -> Uint8;
+    pub fn SDL_JoystickGetButton(joystick: *mut SDL_Joystick, button: libc::c_int) -> Uint8;
 }
 extern "C" {
     ///  Trigger a rumble effect
@@ -9919,7 +9632,7 @@ extern "C" {
         low_frequency_rumble: Uint16,
         high_frequency_rumble: Uint16,
         duration_ms: Uint32,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  Close a joystick previously opened with SDL_JoystickOpen().
@@ -9931,7 +9644,7 @@ extern "C" {
 }
 /// The gamecontroller structure used to identify an SDL game controller
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _SDL_GameController {
     _unused: [u8; 0],
 }
@@ -9954,21 +9667,21 @@ pub struct SDL_GameControllerButtonBind {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union SDL_GameControllerButtonBind__bindgen_ty_1 {
-    pub button: ::std::os::raw::c_int,
-    pub axis: ::std::os::raw::c_int,
+    pub button: libc::c_int,
+    pub axis: libc::c_int,
     pub hat: SDL_GameControllerButtonBind__bindgen_ty_1__bindgen_ty_1,
     _bindgen_union_align: [u32; 2usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_GameControllerButtonBind__bindgen_ty_1__bindgen_ty_1 {
-    pub hat: ::std::os::raw::c_int,
-    pub hat_mask: ::std::os::raw::c_int,
+    pub hat: libc::c_int,
+    pub hat_mask: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_SDL_GameControllerButtonBind__bindgen_ty_1__bindgen_ty_1() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_GameControllerButtonBind__bindgen_ty_1__bindgen_ty_1>(),
+        ::core::mem::size_of::<SDL_GameControllerButtonBind__bindgen_ty_1__bindgen_ty_1>(),
         8usize,
         concat!(
             "Size of: ",
@@ -9976,7 +9689,7 @@ fn bindgen_test_layout_SDL_GameControllerButtonBind__bindgen_ty_1__bindgen_ty_1(
         )
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_GameControllerButtonBind__bindgen_ty_1__bindgen_ty_1>(),
+        ::core::mem::align_of::<SDL_GameControllerButtonBind__bindgen_ty_1__bindgen_ty_1>(),
         4usize,
         concat!(
             "Alignment of ",
@@ -9985,8 +9698,8 @@ fn bindgen_test_layout_SDL_GameControllerButtonBind__bindgen_ty_1__bindgen_ty_1(
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_GameControllerButtonBind__bindgen_ty_1__bindgen_ty_1>())).hat
-                as *const _ as usize
+            &(*(::core::ptr::null::<SDL_GameControllerButtonBind__bindgen_ty_1__bindgen_ty_1>()))
+                .hat as *const _ as usize
         },
         0usize,
         concat!(
@@ -9998,7 +9711,7 @@ fn bindgen_test_layout_SDL_GameControllerButtonBind__bindgen_ty_1__bindgen_ty_1(
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_GameControllerButtonBind__bindgen_ty_1__bindgen_ty_1>()))
+            &(*(::core::ptr::null::<SDL_GameControllerButtonBind__bindgen_ty_1__bindgen_ty_1>()))
                 .hat_mask as *const _ as usize
         },
         4usize,
@@ -10013,7 +9726,7 @@ fn bindgen_test_layout_SDL_GameControllerButtonBind__bindgen_ty_1__bindgen_ty_1(
 #[test]
 fn bindgen_test_layout_SDL_GameControllerButtonBind__bindgen_ty_1() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_GameControllerButtonBind__bindgen_ty_1>(),
+        ::core::mem::size_of::<SDL_GameControllerButtonBind__bindgen_ty_1>(),
         8usize,
         concat!(
             "Size of: ",
@@ -10021,7 +9734,7 @@ fn bindgen_test_layout_SDL_GameControllerButtonBind__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_GameControllerButtonBind__bindgen_ty_1>(),
+        ::core::mem::align_of::<SDL_GameControllerButtonBind__bindgen_ty_1>(),
         4usize,
         concat!(
             "Alignment of ",
@@ -10030,7 +9743,7 @@ fn bindgen_test_layout_SDL_GameControllerButtonBind__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_GameControllerButtonBind__bindgen_ty_1>())).button
+            &(*(::core::ptr::null::<SDL_GameControllerButtonBind__bindgen_ty_1>())).button
                 as *const _ as usize
         },
         0usize,
@@ -10043,7 +9756,7 @@ fn bindgen_test_layout_SDL_GameControllerButtonBind__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_GameControllerButtonBind__bindgen_ty_1>())).axis as *const _
+            &(*(::core::ptr::null::<SDL_GameControllerButtonBind__bindgen_ty_1>())).axis as *const _
                 as usize
         },
         0usize,
@@ -10056,7 +9769,7 @@ fn bindgen_test_layout_SDL_GameControllerButtonBind__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_GameControllerButtonBind__bindgen_ty_1>())).hat as *const _
+            &(*(::core::ptr::null::<SDL_GameControllerButtonBind__bindgen_ty_1>())).hat as *const _
                 as usize
         },
         0usize,
@@ -10071,18 +9784,18 @@ fn bindgen_test_layout_SDL_GameControllerButtonBind__bindgen_ty_1() {
 #[test]
 fn bindgen_test_layout_SDL_GameControllerButtonBind() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_GameControllerButtonBind>(),
+        ::core::mem::size_of::<SDL_GameControllerButtonBind>(),
         12usize,
         concat!("Size of: ", stringify!(SDL_GameControllerButtonBind))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_GameControllerButtonBind>(),
+        ::core::mem::align_of::<SDL_GameControllerButtonBind>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_GameControllerButtonBind))
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_GameControllerButtonBind>())).bindType as *const _ as usize
+            &(*(::core::ptr::null::<SDL_GameControllerButtonBind>())).bindType as *const _ as usize
         },
         0usize,
         concat!(
@@ -10094,7 +9807,7 @@ fn bindgen_test_layout_SDL_GameControllerButtonBind() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_GameControllerButtonBind>())).value as *const _ as usize
+            &(*(::core::ptr::null::<SDL_GameControllerButtonBind>())).value as *const _ as usize
         },
         4usize,
         concat!(
@@ -10114,56 +9827,48 @@ extern "C" {
     /// \return number of mappings added, -1 on error
     pub fn SDL_GameControllerAddMappingsFromRW(
         rw: *mut SDL_RWops,
-        freerw: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        freerw: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  Add or update an existing mapping configuration
     ///
     /// \return 1 if mapping is added, 0 if updated, -1 on error
-    pub fn SDL_GameControllerAddMapping(
-        mappingString: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_GameControllerAddMapping(mappingString: *const libc::c_char) -> libc::c_int;
 }
 extern "C" {
     ///  Get the number of mappings installed
     ///
     ///  \return the number of mappings
-    pub fn SDL_GameControllerNumMappings() -> ::std::os::raw::c_int;
+    pub fn SDL_GameControllerNumMappings() -> libc::c_int;
 }
 extern "C" {
     ///  Get the mapping at a particular index.
     ///
     ///  \return the mapping string.  Must be freed with SDL_free().  Returns NULL if the index is out of range.
-    pub fn SDL_GameControllerMappingForIndex(
-        mapping_index: ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
+    pub fn SDL_GameControllerMappingForIndex(mapping_index: libc::c_int) -> *mut libc::c_char;
 }
 extern "C" {
     ///  Get a mapping string for a GUID
     ///
     ///  \return the mapping string.  Must be freed with SDL_free().  Returns NULL if no mapping is available
-    pub fn SDL_GameControllerMappingForGUID(guid: SDL_JoystickGUID) -> *mut ::std::os::raw::c_char;
+    pub fn SDL_GameControllerMappingForGUID(guid: SDL_JoystickGUID) -> *mut libc::c_char;
 }
 extern "C" {
     ///  Get a mapping string for an open GameController
     ///
     ///  \return the mapping string.  Must be freed with SDL_free().  Returns NULL if no mapping is available
-    pub fn SDL_GameControllerMapping(
-        gamecontroller: *mut SDL_GameController,
-    ) -> *mut ::std::os::raw::c_char;
+    pub fn SDL_GameControllerMapping(gamecontroller: *mut SDL_GameController) -> *mut libc::c_char;
 }
 extern "C" {
     ///  Is the joystick on this index supported by the game controller interface?
-    pub fn SDL_IsGameController(joystick_index: ::std::os::raw::c_int) -> SDL_bool;
+    pub fn SDL_IsGameController(joystick_index: libc::c_int) -> SDL_bool;
 }
 extern "C" {
     ///  Get the implementation dependent name of a game controller.
     ///  This can be called before any controllers are opened.
     ///  If no name can be found, this function returns NULL.
-    pub fn SDL_GameControllerNameForIndex(
-        joystick_index: ::std::os::raw::c_int,
-    ) -> *const ::std::os::raw::c_char;
+    pub fn SDL_GameControllerNameForIndex(joystick_index: libc::c_int) -> *const libc::c_char;
 }
 extern "C" {
     ///  Get the mapping of a game controller.
@@ -10171,8 +9876,8 @@ extern "C" {
     ///
     ///  \return the mapping string.  Must be freed with SDL_free().  Returns NULL if no mapping is available
     pub fn SDL_GameControllerMappingForDeviceIndex(
-        joystick_index: ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
+        joystick_index: libc::c_int,
+    ) -> *mut libc::c_char;
 }
 extern "C" {
     ///  Open a game controller for use.
@@ -10182,8 +9887,7 @@ extern "C" {
     ///  used there instead.
     ///
     ///  \return A controller identifier, or NULL if an error occurred.
-    pub fn SDL_GameControllerOpen(joystick_index: ::std::os::raw::c_int)
-        -> *mut SDL_GameController;
+    pub fn SDL_GameControllerOpen(joystick_index: libc::c_int) -> *mut SDL_GameController;
 }
 extern "C" {
     /// Return the SDL_GameController associated with an instance id.
@@ -10191,17 +9895,14 @@ extern "C" {
 }
 extern "C" {
     ///  Return the name for this currently opened controller
-    pub fn SDL_GameControllerName(
-        gamecontroller: *mut SDL_GameController,
-    ) -> *const ::std::os::raw::c_char;
+    pub fn SDL_GameControllerName(gamecontroller: *mut SDL_GameController) -> *const libc::c_char;
 }
 extern "C" {
     ///  Get the player index of an opened game controller, or -1 if it's not available
     ///
     ///  For XInput controllers this returns the XInput user index.
-    pub fn SDL_GameControllerGetPlayerIndex(
-        gamecontroller: *mut SDL_GameController,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_GameControllerGetPlayerIndex(gamecontroller: *mut SDL_GameController)
+        -> libc::c_int;
 }
 extern "C" {
     ///  Get the USB vendor ID of an opened controller, if available.
@@ -10237,7 +9938,7 @@ extern "C" {
     ///  information.
     ///
     ///  The state can be one of ::SDL_QUERY, ::SDL_ENABLE or ::SDL_IGNORE.
-    pub fn SDL_GameControllerEventState(state: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn SDL_GameControllerEventState(state: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     ///  Update the current state of the open game controllers.
@@ -10268,14 +9969,12 @@ pub enum SDL_GameControllerAxis {
 extern "C" {
     ///  turn this string into a axis mapping
     pub fn SDL_GameControllerGetAxisFromString(
-        pchString: *const ::std::os::raw::c_char,
+        pchString: *const libc::c_char,
     ) -> SDL_GameControllerAxis;
 }
 extern "C" {
     ///  turn this axis enum into a string mapping
-    pub fn SDL_GameControllerGetStringForAxis(
-        axis: SDL_GameControllerAxis,
-    ) -> *const ::std::os::raw::c_char;
+    pub fn SDL_GameControllerGetStringForAxis(axis: SDL_GameControllerAxis) -> *const libc::c_char;
 }
 extern "C" {
     ///  Get the SDL joystick layer binding for this controller button mapping
@@ -10321,14 +10020,14 @@ pub enum SDL_GameControllerButton {
 extern "C" {
     ///  turn this string into a button mapping
     pub fn SDL_GameControllerGetButtonFromString(
-        pchString: *const ::std::os::raw::c_char,
+        pchString: *const libc::c_char,
     ) -> SDL_GameControllerButton;
 }
 extern "C" {
     ///  turn this button enum into a string mapping
     pub fn SDL_GameControllerGetStringForButton(
         button: SDL_GameControllerButton,
-    ) -> *const ::std::os::raw::c_char;
+    ) -> *const libc::c_char;
 }
 extern "C" {
     ///  Get the SDL joystick layer binding for this controller button mapping
@@ -10361,7 +10060,7 @@ extern "C" {
         low_frequency_rumble: Uint16,
         high_frequency_rumble: Uint16,
         duration_ms: Uint32,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  Close a controller previously opened with SDL_GameControllerOpen().
@@ -10370,7 +10069,7 @@ extern "C" {
 pub type SDL_TouchID = Sint64;
 pub type SDL_FingerID = Sint64;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_Finger {
     pub id: SDL_FingerID,
     pub x: f32,
@@ -10380,17 +10079,17 @@ pub struct SDL_Finger {
 #[test]
 fn bindgen_test_layout_SDL_Finger() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_Finger>(),
+        ::core::mem::size_of::<SDL_Finger>(),
         24usize,
         concat!("Size of: ", stringify!(SDL_Finger))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_Finger>(),
+        ::core::mem::align_of::<SDL_Finger>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_Finger))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Finger>())).id as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Finger>())).id as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -10400,7 +10099,7 @@ fn bindgen_test_layout_SDL_Finger() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Finger>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Finger>())).x as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -10410,7 +10109,7 @@ fn bindgen_test_layout_SDL_Finger() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Finger>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Finger>())).y as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -10420,7 +10119,7 @@ fn bindgen_test_layout_SDL_Finger() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Finger>())).pressure as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Finger>())).pressure as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -10432,53 +10131,44 @@ fn bindgen_test_layout_SDL_Finger() {
 }
 extern "C" {
     ///  \brief Get the number of registered touch devices.
-    pub fn SDL_GetNumTouchDevices() -> ::std::os::raw::c_int;
+    pub fn SDL_GetNumTouchDevices() -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the touch ID with the given index, or 0 if the index is invalid.
-    pub fn SDL_GetTouchDevice(index: ::std::os::raw::c_int) -> SDL_TouchID;
+    pub fn SDL_GetTouchDevice(index: libc::c_int) -> SDL_TouchID;
 }
 extern "C" {
     ///  \brief Get the number of active fingers for a given touch device.
-    pub fn SDL_GetNumTouchFingers(touchID: SDL_TouchID) -> ::std::os::raw::c_int;
+    pub fn SDL_GetNumTouchFingers(touchID: SDL_TouchID) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the finger object of the given touch, with the given index.
-    pub fn SDL_GetTouchFinger(
-        touchID: SDL_TouchID,
-        index: ::std::os::raw::c_int,
-    ) -> *mut SDL_Finger;
+    pub fn SDL_GetTouchFinger(touchID: SDL_TouchID, index: libc::c_int) -> *mut SDL_Finger;
 }
 pub type SDL_GestureID = Sint64;
 extern "C" {
     ///  \brief Begin Recording a gesture on the specified touch, or all touches (-1)
     ///
     ///
-    pub fn SDL_RecordGesture(touchId: SDL_TouchID) -> ::std::os::raw::c_int;
+    pub fn SDL_RecordGesture(touchId: SDL_TouchID) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Save all currently loaded Dollar Gesture templates
     ///
     ///
-    pub fn SDL_SaveAllDollarTemplates(dst: *mut SDL_RWops) -> ::std::os::raw::c_int;
+    pub fn SDL_SaveAllDollarTemplates(dst: *mut SDL_RWops) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Save a currently loaded Dollar Gesture template
     ///
     ///
-    pub fn SDL_SaveDollarTemplate(
-        gestureId: SDL_GestureID,
-        dst: *mut SDL_RWops,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_SaveDollarTemplate(gestureId: SDL_GestureID, dst: *mut SDL_RWops) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Load Dollar Gesture templates from a file
     ///
     ///
-    pub fn SDL_LoadDollarTemplates(
-        touchId: SDL_TouchID,
-        src: *mut SDL_RWops,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_LoadDollarTemplates(touchId: SDL_TouchID, src: *mut SDL_RWops) -> libc::c_int;
 }
 #[repr(u32)]
 /// \brief The types of events that can be delivered.
@@ -10597,7 +10287,7 @@ pub enum SDL_EventType {
 }
 ///  \brief Fields shared by every event
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_CommonEvent {
     pub type_: Uint32,
     ///< In milliseconds, populated using SDL_GetTicks()
@@ -10606,17 +10296,17 @@ pub struct SDL_CommonEvent {
 #[test]
 fn bindgen_test_layout_SDL_CommonEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_CommonEvent>(),
+        ::core::mem::size_of::<SDL_CommonEvent>(),
         8usize,
         concat!("Size of: ", stringify!(SDL_CommonEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_CommonEvent>(),
+        ::core::mem::align_of::<SDL_CommonEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_CommonEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_CommonEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_CommonEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -10626,7 +10316,7 @@ fn bindgen_test_layout_SDL_CommonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_CommonEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_CommonEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -10638,7 +10328,7 @@ fn bindgen_test_layout_SDL_CommonEvent() {
 }
 ///  \brief Display state change event data (event.display.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_DisplayEvent {
     ///< ::SDL_DISPLAYEVENT
     pub type_: Uint32,
@@ -10657,17 +10347,17 @@ pub struct SDL_DisplayEvent {
 #[test]
 fn bindgen_test_layout_SDL_DisplayEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_DisplayEvent>(),
+        ::core::mem::size_of::<SDL_DisplayEvent>(),
         20usize,
         concat!("Size of: ", stringify!(SDL_DisplayEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_DisplayEvent>(),
+        ::core::mem::align_of::<SDL_DisplayEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_DisplayEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DisplayEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DisplayEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -10677,7 +10367,7 @@ fn bindgen_test_layout_SDL_DisplayEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DisplayEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DisplayEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -10687,7 +10377,7 @@ fn bindgen_test_layout_SDL_DisplayEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DisplayEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DisplayEvent>())).display as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -10697,7 +10387,7 @@ fn bindgen_test_layout_SDL_DisplayEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DisplayEvent>())).event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DisplayEvent>())).event as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -10707,7 +10397,7 @@ fn bindgen_test_layout_SDL_DisplayEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DisplayEvent>())).padding1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DisplayEvent>())).padding1 as *const _ as usize },
         13usize,
         concat!(
             "Offset of field: ",
@@ -10717,7 +10407,7 @@ fn bindgen_test_layout_SDL_DisplayEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DisplayEvent>())).padding2 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DisplayEvent>())).padding2 as *const _ as usize },
         14usize,
         concat!(
             "Offset of field: ",
@@ -10727,7 +10417,7 @@ fn bindgen_test_layout_SDL_DisplayEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DisplayEvent>())).padding3 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DisplayEvent>())).padding3 as *const _ as usize },
         15usize,
         concat!(
             "Offset of field: ",
@@ -10737,7 +10427,7 @@ fn bindgen_test_layout_SDL_DisplayEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DisplayEvent>())).data1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DisplayEvent>())).data1 as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -10749,7 +10439,7 @@ fn bindgen_test_layout_SDL_DisplayEvent() {
 }
 ///  \brief Window state change event data (event.window.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_WindowEvent {
     ///< ::SDL_WINDOWEVENT
     pub type_: Uint32,
@@ -10770,17 +10460,17 @@ pub struct SDL_WindowEvent {
 #[test]
 fn bindgen_test_layout_SDL_WindowEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_WindowEvent>(),
+        ::core::mem::size_of::<SDL_WindowEvent>(),
         24usize,
         concat!("Size of: ", stringify!(SDL_WindowEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_WindowEvent>(),
+        ::core::mem::align_of::<SDL_WindowEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_WindowEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_WindowEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_WindowEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -10790,7 +10480,7 @@ fn bindgen_test_layout_SDL_WindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_WindowEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_WindowEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -10800,7 +10490,7 @@ fn bindgen_test_layout_SDL_WindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_WindowEvent>())).windowID as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_WindowEvent>())).windowID as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -10810,7 +10500,7 @@ fn bindgen_test_layout_SDL_WindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_WindowEvent>())).event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_WindowEvent>())).event as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -10820,7 +10510,7 @@ fn bindgen_test_layout_SDL_WindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_WindowEvent>())).padding1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_WindowEvent>())).padding1 as *const _ as usize },
         13usize,
         concat!(
             "Offset of field: ",
@@ -10830,7 +10520,7 @@ fn bindgen_test_layout_SDL_WindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_WindowEvent>())).padding2 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_WindowEvent>())).padding2 as *const _ as usize },
         14usize,
         concat!(
             "Offset of field: ",
@@ -10840,7 +10530,7 @@ fn bindgen_test_layout_SDL_WindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_WindowEvent>())).padding3 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_WindowEvent>())).padding3 as *const _ as usize },
         15usize,
         concat!(
             "Offset of field: ",
@@ -10850,7 +10540,7 @@ fn bindgen_test_layout_SDL_WindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_WindowEvent>())).data1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_WindowEvent>())).data1 as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -10860,7 +10550,7 @@ fn bindgen_test_layout_SDL_WindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_WindowEvent>())).data2 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_WindowEvent>())).data2 as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -10872,7 +10562,7 @@ fn bindgen_test_layout_SDL_WindowEvent() {
 }
 ///  \brief Keyboard button event structure (event.key.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_KeyboardEvent {
     ///< ::SDL_KEYDOWN or ::SDL_KEYUP
     pub type_: Uint32,
@@ -10892,17 +10582,17 @@ pub struct SDL_KeyboardEvent {
 #[test]
 fn bindgen_test_layout_SDL_KeyboardEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_KeyboardEvent>(),
+        ::core::mem::size_of::<SDL_KeyboardEvent>(),
         32usize,
         concat!("Size of: ", stringify!(SDL_KeyboardEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_KeyboardEvent>(),
+        ::core::mem::align_of::<SDL_KeyboardEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_KeyboardEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_KeyboardEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_KeyboardEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -10912,7 +10602,7 @@ fn bindgen_test_layout_SDL_KeyboardEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_KeyboardEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_KeyboardEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -10922,7 +10612,7 @@ fn bindgen_test_layout_SDL_KeyboardEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_KeyboardEvent>())).windowID as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_KeyboardEvent>())).windowID as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -10932,7 +10622,7 @@ fn bindgen_test_layout_SDL_KeyboardEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_KeyboardEvent>())).state as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_KeyboardEvent>())).state as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -10942,7 +10632,7 @@ fn bindgen_test_layout_SDL_KeyboardEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_KeyboardEvent>())).repeat as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_KeyboardEvent>())).repeat as *const _ as usize },
         13usize,
         concat!(
             "Offset of field: ",
@@ -10952,7 +10642,7 @@ fn bindgen_test_layout_SDL_KeyboardEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_KeyboardEvent>())).padding2 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_KeyboardEvent>())).padding2 as *const _ as usize },
         14usize,
         concat!(
             "Offset of field: ",
@@ -10962,7 +10652,7 @@ fn bindgen_test_layout_SDL_KeyboardEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_KeyboardEvent>())).padding3 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_KeyboardEvent>())).padding3 as *const _ as usize },
         15usize,
         concat!(
             "Offset of field: ",
@@ -10972,7 +10662,7 @@ fn bindgen_test_layout_SDL_KeyboardEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_KeyboardEvent>())).keysym as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_KeyboardEvent>())).keysym as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -10984,7 +10674,7 @@ fn bindgen_test_layout_SDL_KeyboardEvent() {
 }
 ///  \brief Keyboard text editing event structure (event.edit.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_TextEditingEvent {
     ///< ::SDL_TEXTEDITING
     pub type_: Uint32,
@@ -10993,7 +10683,7 @@ pub struct SDL_TextEditingEvent {
     ///< The window with keyboard focus, if any
     pub windowID: Uint32,
     ///< The editing text
-    pub text: [::std::os::raw::c_char; 32usize],
+    pub text: [libc::c_char; 32usize],
     ///< The start cursor of selected editing text
     pub start: Sint32,
     ///< The length of selected editing text
@@ -11002,17 +10692,17 @@ pub struct SDL_TextEditingEvent {
 #[test]
 fn bindgen_test_layout_SDL_TextEditingEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_TextEditingEvent>(),
+        ::core::mem::size_of::<SDL_TextEditingEvent>(),
         52usize,
         concat!("Size of: ", stringify!(SDL_TextEditingEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_TextEditingEvent>(),
+        ::core::mem::align_of::<SDL_TextEditingEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_TextEditingEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_TextEditingEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_TextEditingEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -11022,7 +10712,7 @@ fn bindgen_test_layout_SDL_TextEditingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_TextEditingEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_TextEditingEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -11032,7 +10722,7 @@ fn bindgen_test_layout_SDL_TextEditingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_TextEditingEvent>())).windowID as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_TextEditingEvent>())).windowID as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -11042,7 +10732,7 @@ fn bindgen_test_layout_SDL_TextEditingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_TextEditingEvent>())).text as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_TextEditingEvent>())).text as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -11052,7 +10742,7 @@ fn bindgen_test_layout_SDL_TextEditingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_TextEditingEvent>())).start as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_TextEditingEvent>())).start as *const _ as usize },
         44usize,
         concat!(
             "Offset of field: ",
@@ -11062,7 +10752,7 @@ fn bindgen_test_layout_SDL_TextEditingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_TextEditingEvent>())).length as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_TextEditingEvent>())).length as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -11074,7 +10764,7 @@ fn bindgen_test_layout_SDL_TextEditingEvent() {
 }
 ///  \brief Keyboard text input event structure (event.text.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_TextInputEvent {
     ///< ::SDL_TEXTINPUT
     pub type_: Uint32,
@@ -11083,22 +10773,22 @@ pub struct SDL_TextInputEvent {
     ///< The window with keyboard focus, if any
     pub windowID: Uint32,
     ///< The input text
-    pub text: [::std::os::raw::c_char; 32usize],
+    pub text: [libc::c_char; 32usize],
 }
 #[test]
 fn bindgen_test_layout_SDL_TextInputEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_TextInputEvent>(),
+        ::core::mem::size_of::<SDL_TextInputEvent>(),
         44usize,
         concat!("Size of: ", stringify!(SDL_TextInputEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_TextInputEvent>(),
+        ::core::mem::align_of::<SDL_TextInputEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_TextInputEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_TextInputEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_TextInputEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -11108,7 +10798,7 @@ fn bindgen_test_layout_SDL_TextInputEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_TextInputEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_TextInputEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -11118,7 +10808,7 @@ fn bindgen_test_layout_SDL_TextInputEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_TextInputEvent>())).windowID as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_TextInputEvent>())).windowID as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -11128,7 +10818,7 @@ fn bindgen_test_layout_SDL_TextInputEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_TextInputEvent>())).text as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_TextInputEvent>())).text as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -11140,7 +10830,7 @@ fn bindgen_test_layout_SDL_TextInputEvent() {
 }
 ///  \brief Mouse motion event structure (event.motion.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_MouseMotionEvent {
     ///< ::SDL_MOUSEMOTION
     pub type_: Uint32,
@@ -11164,17 +10854,17 @@ pub struct SDL_MouseMotionEvent {
 #[test]
 fn bindgen_test_layout_SDL_MouseMotionEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_MouseMotionEvent>(),
+        ::core::mem::size_of::<SDL_MouseMotionEvent>(),
         36usize,
         concat!("Size of: ", stringify!(SDL_MouseMotionEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_MouseMotionEvent>(),
+        ::core::mem::align_of::<SDL_MouseMotionEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_MouseMotionEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseMotionEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseMotionEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -11184,7 +10874,7 @@ fn bindgen_test_layout_SDL_MouseMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseMotionEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseMotionEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -11194,7 +10884,7 @@ fn bindgen_test_layout_SDL_MouseMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseMotionEvent>())).windowID as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseMotionEvent>())).windowID as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -11204,7 +10894,7 @@ fn bindgen_test_layout_SDL_MouseMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseMotionEvent>())).which as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseMotionEvent>())).which as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -11214,7 +10904,7 @@ fn bindgen_test_layout_SDL_MouseMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseMotionEvent>())).state as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseMotionEvent>())).state as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -11224,7 +10914,7 @@ fn bindgen_test_layout_SDL_MouseMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseMotionEvent>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseMotionEvent>())).x as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -11234,7 +10924,7 @@ fn bindgen_test_layout_SDL_MouseMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseMotionEvent>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseMotionEvent>())).y as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -11244,7 +10934,7 @@ fn bindgen_test_layout_SDL_MouseMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseMotionEvent>())).xrel as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseMotionEvent>())).xrel as *const _ as usize },
         28usize,
         concat!(
             "Offset of field: ",
@@ -11254,7 +10944,7 @@ fn bindgen_test_layout_SDL_MouseMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseMotionEvent>())).yrel as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseMotionEvent>())).yrel as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -11266,7 +10956,7 @@ fn bindgen_test_layout_SDL_MouseMotionEvent() {
 }
 ///  \brief Mouse button event structure (event.button.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_MouseButtonEvent {
     ///< ::SDL_MOUSEBUTTONDOWN or ::SDL_MOUSEBUTTONUP
     pub type_: Uint32,
@@ -11291,17 +10981,17 @@ pub struct SDL_MouseButtonEvent {
 #[test]
 fn bindgen_test_layout_SDL_MouseButtonEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_MouseButtonEvent>(),
+        ::core::mem::size_of::<SDL_MouseButtonEvent>(),
         28usize,
         concat!("Size of: ", stringify!(SDL_MouseButtonEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_MouseButtonEvent>(),
+        ::core::mem::align_of::<SDL_MouseButtonEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_MouseButtonEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseButtonEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseButtonEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -11311,7 +11001,7 @@ fn bindgen_test_layout_SDL_MouseButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseButtonEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseButtonEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -11321,7 +11011,7 @@ fn bindgen_test_layout_SDL_MouseButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseButtonEvent>())).windowID as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseButtonEvent>())).windowID as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -11331,7 +11021,7 @@ fn bindgen_test_layout_SDL_MouseButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseButtonEvent>())).which as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseButtonEvent>())).which as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -11341,7 +11031,7 @@ fn bindgen_test_layout_SDL_MouseButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseButtonEvent>())).button as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseButtonEvent>())).button as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -11351,7 +11041,7 @@ fn bindgen_test_layout_SDL_MouseButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseButtonEvent>())).state as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseButtonEvent>())).state as *const _ as usize },
         17usize,
         concat!(
             "Offset of field: ",
@@ -11361,7 +11051,7 @@ fn bindgen_test_layout_SDL_MouseButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseButtonEvent>())).clicks as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseButtonEvent>())).clicks as *const _ as usize },
         18usize,
         concat!(
             "Offset of field: ",
@@ -11371,7 +11061,7 @@ fn bindgen_test_layout_SDL_MouseButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseButtonEvent>())).padding1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseButtonEvent>())).padding1 as *const _ as usize },
         19usize,
         concat!(
             "Offset of field: ",
@@ -11381,7 +11071,7 @@ fn bindgen_test_layout_SDL_MouseButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseButtonEvent>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseButtonEvent>())).x as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -11391,7 +11081,7 @@ fn bindgen_test_layout_SDL_MouseButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseButtonEvent>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseButtonEvent>())).y as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -11403,7 +11093,7 @@ fn bindgen_test_layout_SDL_MouseButtonEvent() {
 }
 ///  \brief Mouse wheel event structure (event.wheel.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_MouseWheelEvent {
     ///< ::SDL_MOUSEWHEEL
     pub type_: Uint32,
@@ -11423,17 +11113,17 @@ pub struct SDL_MouseWheelEvent {
 #[test]
 fn bindgen_test_layout_SDL_MouseWheelEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_MouseWheelEvent>(),
+        ::core::mem::size_of::<SDL_MouseWheelEvent>(),
         28usize,
         concat!("Size of: ", stringify!(SDL_MouseWheelEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_MouseWheelEvent>(),
+        ::core::mem::align_of::<SDL_MouseWheelEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_MouseWheelEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseWheelEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseWheelEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -11443,7 +11133,7 @@ fn bindgen_test_layout_SDL_MouseWheelEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseWheelEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseWheelEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -11453,7 +11143,7 @@ fn bindgen_test_layout_SDL_MouseWheelEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseWheelEvent>())).windowID as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseWheelEvent>())).windowID as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -11463,7 +11153,7 @@ fn bindgen_test_layout_SDL_MouseWheelEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseWheelEvent>())).which as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseWheelEvent>())).which as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -11473,7 +11163,7 @@ fn bindgen_test_layout_SDL_MouseWheelEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseWheelEvent>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseWheelEvent>())).x as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -11483,7 +11173,7 @@ fn bindgen_test_layout_SDL_MouseWheelEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseWheelEvent>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseWheelEvent>())).y as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -11493,7 +11183,7 @@ fn bindgen_test_layout_SDL_MouseWheelEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MouseWheelEvent>())).direction as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MouseWheelEvent>())).direction as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -11505,7 +11195,7 @@ fn bindgen_test_layout_SDL_MouseWheelEvent() {
 }
 ///  \brief Joystick axis motion event structure (event.jaxis.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_JoyAxisEvent {
     ///< ::SDL_JOYAXISMOTION
     pub type_: Uint32,
@@ -11525,17 +11215,17 @@ pub struct SDL_JoyAxisEvent {
 #[test]
 fn bindgen_test_layout_SDL_JoyAxisEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_JoyAxisEvent>(),
+        ::core::mem::size_of::<SDL_JoyAxisEvent>(),
         20usize,
         concat!("Size of: ", stringify!(SDL_JoyAxisEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_JoyAxisEvent>(),
+        ::core::mem::align_of::<SDL_JoyAxisEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_JoyAxisEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyAxisEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyAxisEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -11545,7 +11235,7 @@ fn bindgen_test_layout_SDL_JoyAxisEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyAxisEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyAxisEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -11555,7 +11245,7 @@ fn bindgen_test_layout_SDL_JoyAxisEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyAxisEvent>())).which as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyAxisEvent>())).which as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -11565,7 +11255,7 @@ fn bindgen_test_layout_SDL_JoyAxisEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyAxisEvent>())).axis as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyAxisEvent>())).axis as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -11575,7 +11265,7 @@ fn bindgen_test_layout_SDL_JoyAxisEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyAxisEvent>())).padding1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyAxisEvent>())).padding1 as *const _ as usize },
         13usize,
         concat!(
             "Offset of field: ",
@@ -11585,7 +11275,7 @@ fn bindgen_test_layout_SDL_JoyAxisEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyAxisEvent>())).padding2 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyAxisEvent>())).padding2 as *const _ as usize },
         14usize,
         concat!(
             "Offset of field: ",
@@ -11595,7 +11285,7 @@ fn bindgen_test_layout_SDL_JoyAxisEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyAxisEvent>())).padding3 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyAxisEvent>())).padding3 as *const _ as usize },
         15usize,
         concat!(
             "Offset of field: ",
@@ -11605,7 +11295,7 @@ fn bindgen_test_layout_SDL_JoyAxisEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyAxisEvent>())).value as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyAxisEvent>())).value as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -11615,7 +11305,7 @@ fn bindgen_test_layout_SDL_JoyAxisEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyAxisEvent>())).padding4 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyAxisEvent>())).padding4 as *const _ as usize },
         18usize,
         concat!(
             "Offset of field: ",
@@ -11627,7 +11317,7 @@ fn bindgen_test_layout_SDL_JoyAxisEvent() {
 }
 ///  \brief Joystick trackball motion event structure (event.jball.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_JoyBallEvent {
     ///< ::SDL_JOYBALLMOTION
     pub type_: Uint32,
@@ -11648,17 +11338,17 @@ pub struct SDL_JoyBallEvent {
 #[test]
 fn bindgen_test_layout_SDL_JoyBallEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_JoyBallEvent>(),
+        ::core::mem::size_of::<SDL_JoyBallEvent>(),
         20usize,
         concat!("Size of: ", stringify!(SDL_JoyBallEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_JoyBallEvent>(),
+        ::core::mem::align_of::<SDL_JoyBallEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_JoyBallEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyBallEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyBallEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -11668,7 +11358,7 @@ fn bindgen_test_layout_SDL_JoyBallEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyBallEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyBallEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -11678,7 +11368,7 @@ fn bindgen_test_layout_SDL_JoyBallEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyBallEvent>())).which as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyBallEvent>())).which as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -11688,7 +11378,7 @@ fn bindgen_test_layout_SDL_JoyBallEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyBallEvent>())).ball as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyBallEvent>())).ball as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -11698,7 +11388,7 @@ fn bindgen_test_layout_SDL_JoyBallEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyBallEvent>())).padding1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyBallEvent>())).padding1 as *const _ as usize },
         13usize,
         concat!(
             "Offset of field: ",
@@ -11708,7 +11398,7 @@ fn bindgen_test_layout_SDL_JoyBallEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyBallEvent>())).padding2 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyBallEvent>())).padding2 as *const _ as usize },
         14usize,
         concat!(
             "Offset of field: ",
@@ -11718,7 +11408,7 @@ fn bindgen_test_layout_SDL_JoyBallEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyBallEvent>())).padding3 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyBallEvent>())).padding3 as *const _ as usize },
         15usize,
         concat!(
             "Offset of field: ",
@@ -11728,7 +11418,7 @@ fn bindgen_test_layout_SDL_JoyBallEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyBallEvent>())).xrel as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyBallEvent>())).xrel as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -11738,7 +11428,7 @@ fn bindgen_test_layout_SDL_JoyBallEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyBallEvent>())).yrel as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyBallEvent>())).yrel as *const _ as usize },
         18usize,
         concat!(
             "Offset of field: ",
@@ -11750,7 +11440,7 @@ fn bindgen_test_layout_SDL_JoyBallEvent() {
 }
 ///  \brief Joystick hat position change event structure (event.jhat.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_JoyHatEvent {
     ///< ::SDL_JOYHATMOTION
     pub type_: Uint32,
@@ -11773,17 +11463,17 @@ pub struct SDL_JoyHatEvent {
 #[test]
 fn bindgen_test_layout_SDL_JoyHatEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_JoyHatEvent>(),
+        ::core::mem::size_of::<SDL_JoyHatEvent>(),
         16usize,
         concat!("Size of: ", stringify!(SDL_JoyHatEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_JoyHatEvent>(),
+        ::core::mem::align_of::<SDL_JoyHatEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_JoyHatEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyHatEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyHatEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -11793,7 +11483,7 @@ fn bindgen_test_layout_SDL_JoyHatEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyHatEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyHatEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -11803,7 +11493,7 @@ fn bindgen_test_layout_SDL_JoyHatEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyHatEvent>())).which as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyHatEvent>())).which as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -11813,7 +11503,7 @@ fn bindgen_test_layout_SDL_JoyHatEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyHatEvent>())).hat as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyHatEvent>())).hat as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -11823,7 +11513,7 @@ fn bindgen_test_layout_SDL_JoyHatEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyHatEvent>())).value as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyHatEvent>())).value as *const _ as usize },
         13usize,
         concat!(
             "Offset of field: ",
@@ -11833,7 +11523,7 @@ fn bindgen_test_layout_SDL_JoyHatEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyHatEvent>())).padding1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyHatEvent>())).padding1 as *const _ as usize },
         14usize,
         concat!(
             "Offset of field: ",
@@ -11843,7 +11533,7 @@ fn bindgen_test_layout_SDL_JoyHatEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyHatEvent>())).padding2 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyHatEvent>())).padding2 as *const _ as usize },
         15usize,
         concat!(
             "Offset of field: ",
@@ -11855,7 +11545,7 @@ fn bindgen_test_layout_SDL_JoyHatEvent() {
 }
 ///  \brief Joystick button event structure (event.jbutton.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_JoyButtonEvent {
     ///< ::SDL_JOYBUTTONDOWN or ::SDL_JOYBUTTONUP
     pub type_: Uint32,
@@ -11873,17 +11563,17 @@ pub struct SDL_JoyButtonEvent {
 #[test]
 fn bindgen_test_layout_SDL_JoyButtonEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_JoyButtonEvent>(),
+        ::core::mem::size_of::<SDL_JoyButtonEvent>(),
         16usize,
         concat!("Size of: ", stringify!(SDL_JoyButtonEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_JoyButtonEvent>(),
+        ::core::mem::align_of::<SDL_JoyButtonEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_JoyButtonEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyButtonEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyButtonEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -11893,7 +11583,7 @@ fn bindgen_test_layout_SDL_JoyButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyButtonEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyButtonEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -11903,7 +11593,7 @@ fn bindgen_test_layout_SDL_JoyButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyButtonEvent>())).which as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyButtonEvent>())).which as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -11913,7 +11603,7 @@ fn bindgen_test_layout_SDL_JoyButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyButtonEvent>())).button as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyButtonEvent>())).button as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -11923,7 +11613,7 @@ fn bindgen_test_layout_SDL_JoyButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyButtonEvent>())).state as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyButtonEvent>())).state as *const _ as usize },
         13usize,
         concat!(
             "Offset of field: ",
@@ -11933,7 +11623,7 @@ fn bindgen_test_layout_SDL_JoyButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyButtonEvent>())).padding1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyButtonEvent>())).padding1 as *const _ as usize },
         14usize,
         concat!(
             "Offset of field: ",
@@ -11943,7 +11633,7 @@ fn bindgen_test_layout_SDL_JoyButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyButtonEvent>())).padding2 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyButtonEvent>())).padding2 as *const _ as usize },
         15usize,
         concat!(
             "Offset of field: ",
@@ -11955,7 +11645,7 @@ fn bindgen_test_layout_SDL_JoyButtonEvent() {
 }
 ///  \brief Joystick device event structure (event.jdevice.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_JoyDeviceEvent {
     ///< ::SDL_JOYDEVICEADDED or ::SDL_JOYDEVICEREMOVED
     pub type_: Uint32,
@@ -11967,17 +11657,17 @@ pub struct SDL_JoyDeviceEvent {
 #[test]
 fn bindgen_test_layout_SDL_JoyDeviceEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_JoyDeviceEvent>(),
+        ::core::mem::size_of::<SDL_JoyDeviceEvent>(),
         12usize,
         concat!("Size of: ", stringify!(SDL_JoyDeviceEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_JoyDeviceEvent>(),
+        ::core::mem::align_of::<SDL_JoyDeviceEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_JoyDeviceEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyDeviceEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyDeviceEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -11987,7 +11677,7 @@ fn bindgen_test_layout_SDL_JoyDeviceEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyDeviceEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyDeviceEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -11997,7 +11687,7 @@ fn bindgen_test_layout_SDL_JoyDeviceEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_JoyDeviceEvent>())).which as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_JoyDeviceEvent>())).which as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -12009,7 +11699,7 @@ fn bindgen_test_layout_SDL_JoyDeviceEvent() {
 }
 ///  \brief Game controller axis motion event structure (event.caxis.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_ControllerAxisEvent {
     ///< ::SDL_CONTROLLERAXISMOTION
     pub type_: Uint32,
@@ -12029,17 +11719,17 @@ pub struct SDL_ControllerAxisEvent {
 #[test]
 fn bindgen_test_layout_SDL_ControllerAxisEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_ControllerAxisEvent>(),
+        ::core::mem::size_of::<SDL_ControllerAxisEvent>(),
         20usize,
         concat!("Size of: ", stringify!(SDL_ControllerAxisEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_ControllerAxisEvent>(),
+        ::core::mem::align_of::<SDL_ControllerAxisEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_ControllerAxisEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_ControllerAxisEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_ControllerAxisEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -12050,7 +11740,7 @@ fn bindgen_test_layout_SDL_ControllerAxisEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_ControllerAxisEvent>())).timestamp as *const _ as usize
+            &(*(::core::ptr::null::<SDL_ControllerAxisEvent>())).timestamp as *const _ as usize
         },
         4usize,
         concat!(
@@ -12061,7 +11751,7 @@ fn bindgen_test_layout_SDL_ControllerAxisEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_ControllerAxisEvent>())).which as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_ControllerAxisEvent>())).which as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -12071,7 +11761,7 @@ fn bindgen_test_layout_SDL_ControllerAxisEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_ControllerAxisEvent>())).axis as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_ControllerAxisEvent>())).axis as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -12082,7 +11772,7 @@ fn bindgen_test_layout_SDL_ControllerAxisEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_ControllerAxisEvent>())).padding1 as *const _ as usize
+            &(*(::core::ptr::null::<SDL_ControllerAxisEvent>())).padding1 as *const _ as usize
         },
         13usize,
         concat!(
@@ -12094,7 +11784,7 @@ fn bindgen_test_layout_SDL_ControllerAxisEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_ControllerAxisEvent>())).padding2 as *const _ as usize
+            &(*(::core::ptr::null::<SDL_ControllerAxisEvent>())).padding2 as *const _ as usize
         },
         14usize,
         concat!(
@@ -12106,7 +11796,7 @@ fn bindgen_test_layout_SDL_ControllerAxisEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_ControllerAxisEvent>())).padding3 as *const _ as usize
+            &(*(::core::ptr::null::<SDL_ControllerAxisEvent>())).padding3 as *const _ as usize
         },
         15usize,
         concat!(
@@ -12117,7 +11807,7 @@ fn bindgen_test_layout_SDL_ControllerAxisEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_ControllerAxisEvent>())).value as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_ControllerAxisEvent>())).value as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -12128,7 +11818,7 @@ fn bindgen_test_layout_SDL_ControllerAxisEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_ControllerAxisEvent>())).padding4 as *const _ as usize
+            &(*(::core::ptr::null::<SDL_ControllerAxisEvent>())).padding4 as *const _ as usize
         },
         18usize,
         concat!(
@@ -12141,7 +11831,7 @@ fn bindgen_test_layout_SDL_ControllerAxisEvent() {
 }
 ///  \brief Game controller button event structure (event.cbutton.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_ControllerButtonEvent {
     ///< ::SDL_CONTROLLERBUTTONDOWN or ::SDL_CONTROLLERBUTTONUP
     pub type_: Uint32,
@@ -12159,17 +11849,19 @@ pub struct SDL_ControllerButtonEvent {
 #[test]
 fn bindgen_test_layout_SDL_ControllerButtonEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_ControllerButtonEvent>(),
+        ::core::mem::size_of::<SDL_ControllerButtonEvent>(),
         16usize,
         concat!("Size of: ", stringify!(SDL_ControllerButtonEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_ControllerButtonEvent>(),
+        ::core::mem::align_of::<SDL_ControllerButtonEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_ControllerButtonEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_ControllerButtonEvent>())).type_ as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<SDL_ControllerButtonEvent>())).type_ as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -12180,7 +11872,7 @@ fn bindgen_test_layout_SDL_ControllerButtonEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_ControllerButtonEvent>())).timestamp as *const _ as usize
+            &(*(::core::ptr::null::<SDL_ControllerButtonEvent>())).timestamp as *const _ as usize
         },
         4usize,
         concat!(
@@ -12191,7 +11883,9 @@ fn bindgen_test_layout_SDL_ControllerButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_ControllerButtonEvent>())).which as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<SDL_ControllerButtonEvent>())).which as *const _ as usize
+        },
         8usize,
         concat!(
             "Offset of field: ",
@@ -12202,7 +11896,7 @@ fn bindgen_test_layout_SDL_ControllerButtonEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_ControllerButtonEvent>())).button as *const _ as usize
+            &(*(::core::ptr::null::<SDL_ControllerButtonEvent>())).button as *const _ as usize
         },
         12usize,
         concat!(
@@ -12213,7 +11907,9 @@ fn bindgen_test_layout_SDL_ControllerButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_ControllerButtonEvent>())).state as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<SDL_ControllerButtonEvent>())).state as *const _ as usize
+        },
         13usize,
         concat!(
             "Offset of field: ",
@@ -12224,7 +11920,7 @@ fn bindgen_test_layout_SDL_ControllerButtonEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_ControllerButtonEvent>())).padding1 as *const _ as usize
+            &(*(::core::ptr::null::<SDL_ControllerButtonEvent>())).padding1 as *const _ as usize
         },
         14usize,
         concat!(
@@ -12236,7 +11932,7 @@ fn bindgen_test_layout_SDL_ControllerButtonEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_ControllerButtonEvent>())).padding2 as *const _ as usize
+            &(*(::core::ptr::null::<SDL_ControllerButtonEvent>())).padding2 as *const _ as usize
         },
         15usize,
         concat!(
@@ -12249,7 +11945,7 @@ fn bindgen_test_layout_SDL_ControllerButtonEvent() {
 }
 ///  \brief Controller device event structure (event.cdevice.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_ControllerDeviceEvent {
     ///< ::SDL_CONTROLLERDEVICEADDED, ::SDL_CONTROLLERDEVICEREMOVED, or ::SDL_CONTROLLERDEVICEREMAPPED
     pub type_: Uint32,
@@ -12261,17 +11957,19 @@ pub struct SDL_ControllerDeviceEvent {
 #[test]
 fn bindgen_test_layout_SDL_ControllerDeviceEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_ControllerDeviceEvent>(),
+        ::core::mem::size_of::<SDL_ControllerDeviceEvent>(),
         12usize,
         concat!("Size of: ", stringify!(SDL_ControllerDeviceEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_ControllerDeviceEvent>(),
+        ::core::mem::align_of::<SDL_ControllerDeviceEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_ControllerDeviceEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_ControllerDeviceEvent>())).type_ as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<SDL_ControllerDeviceEvent>())).type_ as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -12282,7 +11980,7 @@ fn bindgen_test_layout_SDL_ControllerDeviceEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_ControllerDeviceEvent>())).timestamp as *const _ as usize
+            &(*(::core::ptr::null::<SDL_ControllerDeviceEvent>())).timestamp as *const _ as usize
         },
         4usize,
         concat!(
@@ -12293,7 +11991,9 @@ fn bindgen_test_layout_SDL_ControllerDeviceEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_ControllerDeviceEvent>())).which as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<SDL_ControllerDeviceEvent>())).which as *const _ as usize
+        },
         8usize,
         concat!(
             "Offset of field: ",
@@ -12305,7 +12005,7 @@ fn bindgen_test_layout_SDL_ControllerDeviceEvent() {
 }
 ///  \brief Audio device event structure (event.adevice.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_AudioDeviceEvent {
     ///< ::SDL_AUDIODEVICEADDED, or ::SDL_AUDIODEVICEREMOVED
     pub type_: Uint32,
@@ -12322,17 +12022,17 @@ pub struct SDL_AudioDeviceEvent {
 #[test]
 fn bindgen_test_layout_SDL_AudioDeviceEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_AudioDeviceEvent>(),
+        ::core::mem::size_of::<SDL_AudioDeviceEvent>(),
         16usize,
         concat!("Size of: ", stringify!(SDL_AudioDeviceEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_AudioDeviceEvent>(),
+        ::core::mem::align_of::<SDL_AudioDeviceEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_AudioDeviceEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioDeviceEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioDeviceEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -12342,7 +12042,7 @@ fn bindgen_test_layout_SDL_AudioDeviceEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioDeviceEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioDeviceEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -12352,7 +12052,7 @@ fn bindgen_test_layout_SDL_AudioDeviceEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioDeviceEvent>())).which as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioDeviceEvent>())).which as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -12362,7 +12062,7 @@ fn bindgen_test_layout_SDL_AudioDeviceEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioDeviceEvent>())).iscapture as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioDeviceEvent>())).iscapture as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -12372,7 +12072,7 @@ fn bindgen_test_layout_SDL_AudioDeviceEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioDeviceEvent>())).padding1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioDeviceEvent>())).padding1 as *const _ as usize },
         13usize,
         concat!(
             "Offset of field: ",
@@ -12382,7 +12082,7 @@ fn bindgen_test_layout_SDL_AudioDeviceEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioDeviceEvent>())).padding2 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioDeviceEvent>())).padding2 as *const _ as usize },
         14usize,
         concat!(
             "Offset of field: ",
@@ -12392,7 +12092,7 @@ fn bindgen_test_layout_SDL_AudioDeviceEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_AudioDeviceEvent>())).padding3 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_AudioDeviceEvent>())).padding3 as *const _ as usize },
         15usize,
         concat!(
             "Offset of field: ",
@@ -12404,7 +12104,7 @@ fn bindgen_test_layout_SDL_AudioDeviceEvent() {
 }
 ///  \brief Touch finger event structure (event.tfinger.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_TouchFingerEvent {
     ///< ::SDL_FINGERMOTION or ::SDL_FINGERDOWN or ::SDL_FINGERUP
     pub type_: Uint32,
@@ -12427,17 +12127,17 @@ pub struct SDL_TouchFingerEvent {
 #[test]
 fn bindgen_test_layout_SDL_TouchFingerEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_TouchFingerEvent>(),
+        ::core::mem::size_of::<SDL_TouchFingerEvent>(),
         48usize,
         concat!("Size of: ", stringify!(SDL_TouchFingerEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_TouchFingerEvent>(),
+        ::core::mem::align_of::<SDL_TouchFingerEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_TouchFingerEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_TouchFingerEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_TouchFingerEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -12447,7 +12147,7 @@ fn bindgen_test_layout_SDL_TouchFingerEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_TouchFingerEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_TouchFingerEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -12457,7 +12157,7 @@ fn bindgen_test_layout_SDL_TouchFingerEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_TouchFingerEvent>())).touchId as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_TouchFingerEvent>())).touchId as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -12467,7 +12167,7 @@ fn bindgen_test_layout_SDL_TouchFingerEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_TouchFingerEvent>())).fingerId as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_TouchFingerEvent>())).fingerId as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -12477,7 +12177,7 @@ fn bindgen_test_layout_SDL_TouchFingerEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_TouchFingerEvent>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_TouchFingerEvent>())).x as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -12487,7 +12187,7 @@ fn bindgen_test_layout_SDL_TouchFingerEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_TouchFingerEvent>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_TouchFingerEvent>())).y as *const _ as usize },
         28usize,
         concat!(
             "Offset of field: ",
@@ -12497,7 +12197,7 @@ fn bindgen_test_layout_SDL_TouchFingerEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_TouchFingerEvent>())).dx as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_TouchFingerEvent>())).dx as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -12507,7 +12207,7 @@ fn bindgen_test_layout_SDL_TouchFingerEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_TouchFingerEvent>())).dy as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_TouchFingerEvent>())).dy as *const _ as usize },
         36usize,
         concat!(
             "Offset of field: ",
@@ -12517,7 +12217,7 @@ fn bindgen_test_layout_SDL_TouchFingerEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_TouchFingerEvent>())).pressure as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_TouchFingerEvent>())).pressure as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -12529,7 +12229,7 @@ fn bindgen_test_layout_SDL_TouchFingerEvent() {
 }
 ///  \brief Multiple Finger Gesture Event (event.mgesture.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_MultiGestureEvent {
     ///< ::SDL_MULTIGESTURE
     pub type_: Uint32,
@@ -12547,17 +12247,17 @@ pub struct SDL_MultiGestureEvent {
 #[test]
 fn bindgen_test_layout_SDL_MultiGestureEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_MultiGestureEvent>(),
+        ::core::mem::size_of::<SDL_MultiGestureEvent>(),
         40usize,
         concat!("Size of: ", stringify!(SDL_MultiGestureEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_MultiGestureEvent>(),
+        ::core::mem::align_of::<SDL_MultiGestureEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_MultiGestureEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MultiGestureEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MultiGestureEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -12567,7 +12267,9 @@ fn bindgen_test_layout_SDL_MultiGestureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MultiGestureEvent>())).timestamp as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<SDL_MultiGestureEvent>())).timestamp as *const _ as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -12577,7 +12279,7 @@ fn bindgen_test_layout_SDL_MultiGestureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MultiGestureEvent>())).touchId as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MultiGestureEvent>())).touchId as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -12587,7 +12289,7 @@ fn bindgen_test_layout_SDL_MultiGestureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MultiGestureEvent>())).dTheta as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MultiGestureEvent>())).dTheta as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -12597,7 +12299,7 @@ fn bindgen_test_layout_SDL_MultiGestureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MultiGestureEvent>())).dDist as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MultiGestureEvent>())).dDist as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -12607,7 +12309,7 @@ fn bindgen_test_layout_SDL_MultiGestureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MultiGestureEvent>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MultiGestureEvent>())).x as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -12617,7 +12319,7 @@ fn bindgen_test_layout_SDL_MultiGestureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MultiGestureEvent>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MultiGestureEvent>())).y as *const _ as usize },
         28usize,
         concat!(
             "Offset of field: ",
@@ -12628,7 +12330,7 @@ fn bindgen_test_layout_SDL_MultiGestureEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_MultiGestureEvent>())).numFingers as *const _ as usize
+            &(*(::core::ptr::null::<SDL_MultiGestureEvent>())).numFingers as *const _ as usize
         },
         32usize,
         concat!(
@@ -12639,7 +12341,7 @@ fn bindgen_test_layout_SDL_MultiGestureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MultiGestureEvent>())).padding as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MultiGestureEvent>())).padding as *const _ as usize },
         34usize,
         concat!(
             "Offset of field: ",
@@ -12651,7 +12353,7 @@ fn bindgen_test_layout_SDL_MultiGestureEvent() {
 }
 /// \brief Dollar Gesture Event (event.dgesture.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_DollarGestureEvent {
     ///< ::SDL_DOLLARGESTURE or ::SDL_DOLLARRECORD
     pub type_: Uint32,
@@ -12670,17 +12372,17 @@ pub struct SDL_DollarGestureEvent {
 #[test]
 fn bindgen_test_layout_SDL_DollarGestureEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_DollarGestureEvent>(),
+        ::core::mem::size_of::<SDL_DollarGestureEvent>(),
         40usize,
         concat!("Size of: ", stringify!(SDL_DollarGestureEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_DollarGestureEvent>(),
+        ::core::mem::align_of::<SDL_DollarGestureEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_DollarGestureEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DollarGestureEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DollarGestureEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -12691,7 +12393,7 @@ fn bindgen_test_layout_SDL_DollarGestureEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_DollarGestureEvent>())).timestamp as *const _ as usize
+            &(*(::core::ptr::null::<SDL_DollarGestureEvent>())).timestamp as *const _ as usize
         },
         4usize,
         concat!(
@@ -12702,7 +12404,7 @@ fn bindgen_test_layout_SDL_DollarGestureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DollarGestureEvent>())).touchId as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DollarGestureEvent>())).touchId as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -12713,7 +12415,7 @@ fn bindgen_test_layout_SDL_DollarGestureEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_DollarGestureEvent>())).gestureId as *const _ as usize
+            &(*(::core::ptr::null::<SDL_DollarGestureEvent>())).gestureId as *const _ as usize
         },
         16usize,
         concat!(
@@ -12725,7 +12427,7 @@ fn bindgen_test_layout_SDL_DollarGestureEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_DollarGestureEvent>())).numFingers as *const _ as usize
+            &(*(::core::ptr::null::<SDL_DollarGestureEvent>())).numFingers as *const _ as usize
         },
         24usize,
         concat!(
@@ -12736,7 +12438,7 @@ fn bindgen_test_layout_SDL_DollarGestureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DollarGestureEvent>())).error as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DollarGestureEvent>())).error as *const _ as usize },
         28usize,
         concat!(
             "Offset of field: ",
@@ -12746,7 +12448,7 @@ fn bindgen_test_layout_SDL_DollarGestureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DollarGestureEvent>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DollarGestureEvent>())).x as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -12756,7 +12458,7 @@ fn bindgen_test_layout_SDL_DollarGestureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DollarGestureEvent>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DollarGestureEvent>())).y as *const _ as usize },
         36usize,
         concat!(
             "Offset of field: ",
@@ -12770,31 +12472,31 @@ fn bindgen_test_layout_SDL_DollarGestureEvent() {
 ///         This event is enabled by default, you can disable it with SDL_EventState().
 ///  \note If this event is enabled, you must free the filename in the event.
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_DropEvent {
     ///< ::SDL_DROPBEGIN or ::SDL_DROPFILE or ::SDL_DROPTEXT or ::SDL_DROPCOMPLETE
     pub type_: Uint32,
     ///< In milliseconds, populated using SDL_GetTicks()
     pub timestamp: Uint32,
     ///< The file name, which should be freed with SDL_free(), is NULL on begin/complete
-    pub file: *mut ::std::os::raw::c_char,
+    pub file: *mut libc::c_char,
     ///< The window that was dropped on, if any
     pub windowID: Uint32,
 }
 #[test]
 fn bindgen_test_layout_SDL_DropEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_DropEvent>(),
+        ::core::mem::size_of::<SDL_DropEvent>(),
         24usize,
         concat!("Size of: ", stringify!(SDL_DropEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_DropEvent>(),
+        ::core::mem::align_of::<SDL_DropEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_DropEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DropEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DropEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -12804,7 +12506,7 @@ fn bindgen_test_layout_SDL_DropEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DropEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DropEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -12814,7 +12516,7 @@ fn bindgen_test_layout_SDL_DropEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DropEvent>())).file as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DropEvent>())).file as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -12824,7 +12526,7 @@ fn bindgen_test_layout_SDL_DropEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_DropEvent>())).windowID as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_DropEvent>())).windowID as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -12836,7 +12538,7 @@ fn bindgen_test_layout_SDL_DropEvent() {
 }
 ///  \brief Sensor event structure (event.sensor.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_SensorEvent {
     ///< ::SDL_SENSORUPDATE
     pub type_: Uint32,
@@ -12850,17 +12552,17 @@ pub struct SDL_SensorEvent {
 #[test]
 fn bindgen_test_layout_SDL_SensorEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_SensorEvent>(),
+        ::core::mem::size_of::<SDL_SensorEvent>(),
         36usize,
         concat!("Size of: ", stringify!(SDL_SensorEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_SensorEvent>(),
+        ::core::mem::align_of::<SDL_SensorEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_SensorEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_SensorEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_SensorEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -12870,7 +12572,7 @@ fn bindgen_test_layout_SDL_SensorEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_SensorEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_SensorEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -12880,7 +12582,7 @@ fn bindgen_test_layout_SDL_SensorEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_SensorEvent>())).which as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_SensorEvent>())).which as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -12890,7 +12592,7 @@ fn bindgen_test_layout_SDL_SensorEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_SensorEvent>())).data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_SensorEvent>())).data as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -12902,7 +12604,7 @@ fn bindgen_test_layout_SDL_SensorEvent() {
 }
 ///  \brief The "quit requested" event
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_QuitEvent {
     ///< ::SDL_QUIT
     pub type_: Uint32,
@@ -12912,17 +12614,17 @@ pub struct SDL_QuitEvent {
 #[test]
 fn bindgen_test_layout_SDL_QuitEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_QuitEvent>(),
+        ::core::mem::size_of::<SDL_QuitEvent>(),
         8usize,
         concat!("Size of: ", stringify!(SDL_QuitEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_QuitEvent>(),
+        ::core::mem::align_of::<SDL_QuitEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_QuitEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_QuitEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_QuitEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -12932,7 +12634,7 @@ fn bindgen_test_layout_SDL_QuitEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_QuitEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_QuitEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -12944,7 +12646,7 @@ fn bindgen_test_layout_SDL_QuitEvent() {
 }
 ///  \brief OS Specific event
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_OSEvent {
     ///< ::SDL_QUIT
     pub type_: Uint32,
@@ -12954,17 +12656,17 @@ pub struct SDL_OSEvent {
 #[test]
 fn bindgen_test_layout_SDL_OSEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_OSEvent>(),
+        ::core::mem::size_of::<SDL_OSEvent>(),
         8usize,
         concat!("Size of: ", stringify!(SDL_OSEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_OSEvent>(),
+        ::core::mem::align_of::<SDL_OSEvent>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_OSEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_OSEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_OSEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -12974,7 +12676,7 @@ fn bindgen_test_layout_SDL_OSEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_OSEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_OSEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -12986,7 +12688,7 @@ fn bindgen_test_layout_SDL_OSEvent() {
 }
 ///  \brief A user-defined event type (event.user.*)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_UserEvent {
     ///< ::SDL_USEREVENT through ::SDL_LASTEVENT-1
     pub type_: Uint32,
@@ -12997,24 +12699,24 @@ pub struct SDL_UserEvent {
     ///< User defined event code
     pub code: Sint32,
     ///< User defined data pointer
-    pub data1: *mut ::std::os::raw::c_void,
+    pub data1: *mut libc::c_void,
     ///< User defined data pointer
-    pub data2: *mut ::std::os::raw::c_void,
+    pub data2: *mut libc::c_void,
 }
 #[test]
 fn bindgen_test_layout_SDL_UserEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_UserEvent>(),
+        ::core::mem::size_of::<SDL_UserEvent>(),
         32usize,
         concat!("Size of: ", stringify!(SDL_UserEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_UserEvent>(),
+        ::core::mem::align_of::<SDL_UserEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_UserEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_UserEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_UserEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13024,7 +12726,7 @@ fn bindgen_test_layout_SDL_UserEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_UserEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_UserEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -13034,7 +12736,7 @@ fn bindgen_test_layout_SDL_UserEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_UserEvent>())).windowID as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_UserEvent>())).windowID as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -13044,7 +12746,7 @@ fn bindgen_test_layout_SDL_UserEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_UserEvent>())).code as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_UserEvent>())).code as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -13054,7 +12756,7 @@ fn bindgen_test_layout_SDL_UserEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_UserEvent>())).data1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_UserEvent>())).data1 as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -13064,7 +12766,7 @@ fn bindgen_test_layout_SDL_UserEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_UserEvent>())).data2 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_UserEvent>())).data2 as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -13079,7 +12781,7 @@ fn bindgen_test_layout_SDL_UserEvent() {
 ///
 ///  \note If you want to use this event, you should include SDL_syswm.h.
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_SysWMEvent {
     ///< ::SDL_SYSWMEVENT
     pub type_: Uint32,
@@ -13091,17 +12793,17 @@ pub struct SDL_SysWMEvent {
 #[test]
 fn bindgen_test_layout_SDL_SysWMEvent() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_SysWMEvent>(),
+        ::core::mem::size_of::<SDL_SysWMEvent>(),
         16usize,
         concat!("Size of: ", stringify!(SDL_SysWMEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_SysWMEvent>(),
+        ::core::mem::align_of::<SDL_SysWMEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_SysWMEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_SysWMEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_SysWMEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13111,7 +12813,7 @@ fn bindgen_test_layout_SDL_SysWMEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_SysWMEvent>())).timestamp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_SysWMEvent>())).timestamp as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -13121,7 +12823,7 @@ fn bindgen_test_layout_SDL_SysWMEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_SysWMEvent>())).msg as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_SysWMEvent>())).msg as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -13195,17 +12897,17 @@ pub union SDL_Event {
 #[test]
 fn bindgen_test_layout_SDL_Event() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_Event>(),
+        ::core::mem::size_of::<SDL_Event>(),
         56usize,
         concat!("Size of: ", stringify!(SDL_Event))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_Event>(),
+        ::core::mem::align_of::<SDL_Event>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_Event))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13215,7 +12917,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).common as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).common as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13225,7 +12927,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).display as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13235,7 +12937,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).window as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13245,7 +12947,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).key as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).key as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13255,7 +12957,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).edit as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).edit as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13265,7 +12967,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).text as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).text as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13275,7 +12977,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).motion as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).motion as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13285,7 +12987,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).button as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).button as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13295,7 +12997,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).wheel as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).wheel as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13305,7 +13007,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).jaxis as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).jaxis as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13315,7 +13017,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).jball as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).jball as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13325,7 +13027,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).jhat as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).jhat as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13335,7 +13037,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).jbutton as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).jbutton as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13345,7 +13047,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).jdevice as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).jdevice as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13355,7 +13057,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).caxis as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).caxis as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13365,7 +13067,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).cbutton as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).cbutton as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13375,7 +13077,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).cdevice as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).cdevice as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13385,7 +13087,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).adevice as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).adevice as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13395,7 +13097,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).sensor as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).sensor as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13405,7 +13107,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).quit as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).quit as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13415,7 +13117,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).user as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).user as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13425,7 +13127,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).syswm as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).syswm as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13435,7 +13137,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).tfinger as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).tfinger as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13445,7 +13147,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).mgesture as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).mgesture as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13455,7 +13157,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).dgesture as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).dgesture as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13465,7 +13167,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).drop as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).drop as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13475,7 +13177,7 @@ fn bindgen_test_layout_SDL_Event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_Event>())).padding as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).padding as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13519,11 +13221,11 @@ extern "C" {
     ///  This function is thread-safe.
     pub fn SDL_PeepEvents(
         events: *mut SDL_Event,
-        numevents: ::std::os::raw::c_int,
+        numevents: libc::c_int,
         action: SDL_eventaction,
         minType: Uint32,
         maxType: Uint32,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  Checks to see if certain event types are in the event queue.
@@ -13549,7 +13251,7 @@ extern "C" {
     ///
     ///  \param event If not NULL, the next event is removed from the queue and
     ///               stored in that area.
-    pub fn SDL_PollEvent(event: *mut SDL_Event) -> ::std::os::raw::c_int;
+    pub fn SDL_PollEvent(event: *mut SDL_Event) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Waits indefinitely for the next available event.
@@ -13558,7 +13260,7 @@ extern "C" {
     ///
     ///  \param event If not NULL, the next event is removed from the queue and
     ///               stored in that area.
-    pub fn SDL_WaitEvent(event: *mut SDL_Event) -> ::std::os::raw::c_int;
+    pub fn SDL_WaitEvent(event: *mut SDL_Event) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Waits until the specified timeout (in milliseconds) for the next
@@ -13569,23 +13271,17 @@ extern "C" {
     ///  \param event If not NULL, the next event is removed from the queue and
     ///               stored in that area.
     ///  \param timeout The timeout (in milliseconds) to wait for next event.
-    pub fn SDL_WaitEventTimeout(
-        event: *mut SDL_Event,
-        timeout: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_WaitEventTimeout(event: *mut SDL_Event, timeout: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Add an event to the event queue.
     ///
     ///  \return 1 on success, 0 if the event was filtered, or -1 if the event queue
     ///          was full or there was some other error.
-    pub fn SDL_PushEvent(event: *mut SDL_Event) -> ::std::os::raw::c_int;
+    pub fn SDL_PushEvent(event: *mut SDL_Event) -> libc::c_int;
 }
-pub type SDL_EventFilter = ::std::option::Option<
-    unsafe extern "C" fn(
-        userdata: *mut ::std::os::raw::c_void,
-        event: *mut SDL_Event,
-    ) -> ::std::os::raw::c_int,
+pub type SDL_EventFilter = ::core::option::Option<
+    unsafe extern "C" fn(userdata: *mut libc::c_void, event: *mut SDL_Event) -> libc::c_int,
 >;
 extern "C" {
     ///  Sets up a filter to process all events before they change internal state and
@@ -13611,28 +13307,28 @@ extern "C" {
     ///
     ///  If the quit event is generated by an interrupt signal, it will bypass the
     ///  internal queue and be delivered to the application at the next event poll.
-    pub fn SDL_SetEventFilter(filter: SDL_EventFilter, userdata: *mut ::std::os::raw::c_void);
+    pub fn SDL_SetEventFilter(filter: SDL_EventFilter, userdata: *mut libc::c_void);
 }
 extern "C" {
     ///  Return the current event filter - can be used to "chain" filters.
     ///  If there is no event filter set, this function returns SDL_FALSE.
     pub fn SDL_GetEventFilter(
         filter: *mut SDL_EventFilter,
-        userdata: *mut *mut ::std::os::raw::c_void,
+        userdata: *mut *mut libc::c_void,
     ) -> SDL_bool;
 }
 extern "C" {
     ///  Add a function which is called when an event is added to the queue.
-    pub fn SDL_AddEventWatch(filter: SDL_EventFilter, userdata: *mut ::std::os::raw::c_void);
+    pub fn SDL_AddEventWatch(filter: SDL_EventFilter, userdata: *mut libc::c_void);
 }
 extern "C" {
     ///  Remove an event watch function added with SDL_AddEventWatch()
-    pub fn SDL_DelEventWatch(filter: SDL_EventFilter, userdata: *mut ::std::os::raw::c_void);
+    pub fn SDL_DelEventWatch(filter: SDL_EventFilter, userdata: *mut libc::c_void);
 }
 extern "C" {
     ///  Run the filter function on the current event queue, removing any
     ///  events for which the filter returns 0.
-    pub fn SDL_FilterEvents(filter: SDL_EventFilter, userdata: *mut ::std::os::raw::c_void);
+    pub fn SDL_FilterEvents(filter: SDL_EventFilter, userdata: *mut libc::c_void);
 }
 extern "C" {
     ///  This function allows you to set the state of processing certain events.
@@ -13642,7 +13338,7 @@ extern "C" {
     ///     normally.
     ///   - If \c state is set to ::SDL_QUERY, SDL_EventState() will return the
     ///     current processing state of the specified event.
-    pub fn SDL_EventState(type_: Uint32, state: ::std::os::raw::c_int) -> Uint8;
+    pub fn SDL_EventState(type_: Uint32, state: libc::c_int) -> Uint8;
 }
 extern "C" {
     ///  This function allocates a set of user-defined events, and returns
@@ -13650,7 +13346,7 @@ extern "C" {
     ///
     ///  If there aren't enough user-defined events left, this function
     ///  returns (Uint32)-1
-    pub fn SDL_RegisterEvents(numevents: ::std::os::raw::c_int) -> Uint32;
+    pub fn SDL_RegisterEvents(numevents: libc::c_int) -> Uint32;
 }
 extern "C" {
     /// \brief Get the path where the application resides.
@@ -13674,7 +13370,7 @@ extern "C" {
     ///  \return String of base dir in UTF-8 encoding, or NULL on error.
     ///
     /// \sa SDL_GetPrefPath
-    pub fn SDL_GetBasePath() -> *mut ::std::os::raw::c_char;
+    pub fn SDL_GetBasePath() -> *mut libc::c_char;
 }
 extern "C" {
     /// \brief Get the user-and-app-specific path where files can be written.
@@ -13736,10 +13432,8 @@ extern "C" {
     ///          if there's a problem (creating directory failed, etc).
     ///
     /// \sa SDL_GetBasePath
-    pub fn SDL_GetPrefPath(
-        org: *const ::std::os::raw::c_char,
-        app: *const ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_char;
+    pub fn SDL_GetPrefPath(org: *const libc::c_char, app: *const libc::c_char)
+        -> *mut libc::c_char;
 }
 ///  \typedef SDL_Haptic
 ///
@@ -13749,7 +13443,7 @@ extern "C" {
 ///  \sa SDL_HapticOpenFromJoystick
 ///  \sa SDL_HapticClose
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _SDL_Haptic {
     _unused: [u8; 0],
 }
@@ -13848,7 +13542,7 @@ pub type SDL_Haptic = _SDL_Haptic;
 ///  \sa SDL_HapticEffect
 ///  \sa SDL_HapticNumAxes
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_HapticDirection {
     ///< The type of encoding.
     pub type_: Uint8,
@@ -13858,17 +13552,17 @@ pub struct SDL_HapticDirection {
 #[test]
 fn bindgen_test_layout_SDL_HapticDirection() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_HapticDirection>(),
+        ::core::mem::size_of::<SDL_HapticDirection>(),
         16usize,
         concat!("Size of: ", stringify!(SDL_HapticDirection))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_HapticDirection>(),
+        ::core::mem::align_of::<SDL_HapticDirection>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_HapticDirection))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticDirection>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticDirection>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13878,7 +13572,7 @@ fn bindgen_test_layout_SDL_HapticDirection() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticDirection>())).dir as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticDirection>())).dir as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -13898,7 +13592,7 @@ fn bindgen_test_layout_SDL_HapticDirection() {
 ///  \sa SDL_HAPTIC_CONSTANT
 ///  \sa SDL_HapticEffect
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_HapticConstant {
     ///< ::SDL_HAPTIC_CONSTANT
     pub type_: Uint16,
@@ -13926,17 +13620,17 @@ pub struct SDL_HapticConstant {
 #[test]
 fn bindgen_test_layout_SDL_HapticConstant() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_HapticConstant>(),
+        ::core::mem::size_of::<SDL_HapticConstant>(),
         40usize,
         concat!("Size of: ", stringify!(SDL_HapticConstant))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_HapticConstant>(),
+        ::core::mem::align_of::<SDL_HapticConstant>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_HapticConstant))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticConstant>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticConstant>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -13946,7 +13640,7 @@ fn bindgen_test_layout_SDL_HapticConstant() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticConstant>())).direction as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticConstant>())).direction as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -13956,7 +13650,7 @@ fn bindgen_test_layout_SDL_HapticConstant() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticConstant>())).length as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticConstant>())).length as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -13966,7 +13660,7 @@ fn bindgen_test_layout_SDL_HapticConstant() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticConstant>())).delay as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticConstant>())).delay as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -13976,7 +13670,7 @@ fn bindgen_test_layout_SDL_HapticConstant() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticConstant>())).button as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticConstant>())).button as *const _ as usize },
         26usize,
         concat!(
             "Offset of field: ",
@@ -13986,7 +13680,7 @@ fn bindgen_test_layout_SDL_HapticConstant() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticConstant>())).interval as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticConstant>())).interval as *const _ as usize },
         28usize,
         concat!(
             "Offset of field: ",
@@ -13996,7 +13690,7 @@ fn bindgen_test_layout_SDL_HapticConstant() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticConstant>())).level as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticConstant>())).level as *const _ as usize },
         30usize,
         concat!(
             "Offset of field: ",
@@ -14007,7 +13701,7 @@ fn bindgen_test_layout_SDL_HapticConstant() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_HapticConstant>())).attack_length as *const _ as usize
+            &(*(::core::ptr::null::<SDL_HapticConstant>())).attack_length as *const _ as usize
         },
         32usize,
         concat!(
@@ -14018,7 +13712,9 @@ fn bindgen_test_layout_SDL_HapticConstant() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticConstant>())).attack_level as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<SDL_HapticConstant>())).attack_level as *const _ as usize
+        },
         34usize,
         concat!(
             "Offset of field: ",
@@ -14028,7 +13724,7 @@ fn bindgen_test_layout_SDL_HapticConstant() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticConstant>())).fade_length as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticConstant>())).fade_length as *const _ as usize },
         36usize,
         concat!(
             "Offset of field: ",
@@ -14038,7 +13734,7 @@ fn bindgen_test_layout_SDL_HapticConstant() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticConstant>())).fade_level as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticConstant>())).fade_level as *const _ as usize },
         38usize,
         concat!(
             "Offset of field: ",
@@ -14104,7 +13800,7 @@ fn bindgen_test_layout_SDL_HapticConstant() {
 ///  \sa SDL_HAPTIC_SAWTOOTHDOWN
 ///  \sa SDL_HapticEffect
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_HapticPeriodic {
     ///< ::SDL_HAPTIC_SINE, ::SDL_HAPTIC_LEFTRIGHT,
     ///::SDL_HAPTIC_TRIANGLE, ::SDL_HAPTIC_SAWTOOTHUP or
@@ -14140,17 +13836,17 @@ pub struct SDL_HapticPeriodic {
 #[test]
 fn bindgen_test_layout_SDL_HapticPeriodic() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_HapticPeriodic>(),
+        ::core::mem::size_of::<SDL_HapticPeriodic>(),
         48usize,
         concat!("Size of: ", stringify!(SDL_HapticPeriodic))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_HapticPeriodic>(),
+        ::core::mem::align_of::<SDL_HapticPeriodic>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_HapticPeriodic))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticPeriodic>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticPeriodic>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -14160,7 +13856,7 @@ fn bindgen_test_layout_SDL_HapticPeriodic() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticPeriodic>())).direction as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticPeriodic>())).direction as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -14170,7 +13866,7 @@ fn bindgen_test_layout_SDL_HapticPeriodic() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticPeriodic>())).length as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticPeriodic>())).length as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -14180,7 +13876,7 @@ fn bindgen_test_layout_SDL_HapticPeriodic() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticPeriodic>())).delay as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticPeriodic>())).delay as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -14190,7 +13886,7 @@ fn bindgen_test_layout_SDL_HapticPeriodic() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticPeriodic>())).button as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticPeriodic>())).button as *const _ as usize },
         26usize,
         concat!(
             "Offset of field: ",
@@ -14200,7 +13896,7 @@ fn bindgen_test_layout_SDL_HapticPeriodic() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticPeriodic>())).interval as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticPeriodic>())).interval as *const _ as usize },
         28usize,
         concat!(
             "Offset of field: ",
@@ -14210,7 +13906,7 @@ fn bindgen_test_layout_SDL_HapticPeriodic() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticPeriodic>())).period as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticPeriodic>())).period as *const _ as usize },
         30usize,
         concat!(
             "Offset of field: ",
@@ -14220,7 +13916,7 @@ fn bindgen_test_layout_SDL_HapticPeriodic() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticPeriodic>())).magnitude as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticPeriodic>())).magnitude as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -14230,7 +13926,7 @@ fn bindgen_test_layout_SDL_HapticPeriodic() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticPeriodic>())).offset as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticPeriodic>())).offset as *const _ as usize },
         34usize,
         concat!(
             "Offset of field: ",
@@ -14240,7 +13936,7 @@ fn bindgen_test_layout_SDL_HapticPeriodic() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticPeriodic>())).phase as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticPeriodic>())).phase as *const _ as usize },
         36usize,
         concat!(
             "Offset of field: ",
@@ -14251,7 +13947,7 @@ fn bindgen_test_layout_SDL_HapticPeriodic() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_HapticPeriodic>())).attack_length as *const _ as usize
+            &(*(::core::ptr::null::<SDL_HapticPeriodic>())).attack_length as *const _ as usize
         },
         38usize,
         concat!(
@@ -14262,7 +13958,9 @@ fn bindgen_test_layout_SDL_HapticPeriodic() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticPeriodic>())).attack_level as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<SDL_HapticPeriodic>())).attack_level as *const _ as usize
+        },
         40usize,
         concat!(
             "Offset of field: ",
@@ -14272,7 +13970,7 @@ fn bindgen_test_layout_SDL_HapticPeriodic() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticPeriodic>())).fade_length as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticPeriodic>())).fade_length as *const _ as usize },
         42usize,
         concat!(
             "Offset of field: ",
@@ -14282,7 +13980,7 @@ fn bindgen_test_layout_SDL_HapticPeriodic() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticPeriodic>())).fade_level as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticPeriodic>())).fade_level as *const _ as usize },
         44usize,
         concat!(
             "Offset of field: ",
@@ -14315,7 +14013,7 @@ fn bindgen_test_layout_SDL_HapticPeriodic() {
 ///  \sa SDL_HAPTIC_FRICTION
 ///  \sa SDL_HapticEffect
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_HapticCondition {
     ///< ::SDL_HAPTIC_SPRING, ::SDL_HAPTIC_DAMPER,
     ///::SDL_HAPTIC_INERTIA or ::SDL_HAPTIC_FRICTION
@@ -14346,17 +14044,17 @@ pub struct SDL_HapticCondition {
 #[test]
 fn bindgen_test_layout_SDL_HapticCondition() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_HapticCondition>(),
+        ::core::mem::size_of::<SDL_HapticCondition>(),
         68usize,
         concat!("Size of: ", stringify!(SDL_HapticCondition))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_HapticCondition>(),
+        ::core::mem::align_of::<SDL_HapticCondition>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_HapticCondition))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCondition>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCondition>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -14366,7 +14064,7 @@ fn bindgen_test_layout_SDL_HapticCondition() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCondition>())).direction as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCondition>())).direction as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -14376,7 +14074,7 @@ fn bindgen_test_layout_SDL_HapticCondition() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCondition>())).length as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCondition>())).length as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -14386,7 +14084,7 @@ fn bindgen_test_layout_SDL_HapticCondition() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCondition>())).delay as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCondition>())).delay as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -14396,7 +14094,7 @@ fn bindgen_test_layout_SDL_HapticCondition() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCondition>())).button as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCondition>())).button as *const _ as usize },
         26usize,
         concat!(
             "Offset of field: ",
@@ -14406,7 +14104,7 @@ fn bindgen_test_layout_SDL_HapticCondition() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCondition>())).interval as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCondition>())).interval as *const _ as usize },
         28usize,
         concat!(
             "Offset of field: ",
@@ -14416,7 +14114,7 @@ fn bindgen_test_layout_SDL_HapticCondition() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCondition>())).right_sat as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCondition>())).right_sat as *const _ as usize },
         30usize,
         concat!(
             "Offset of field: ",
@@ -14426,7 +14124,7 @@ fn bindgen_test_layout_SDL_HapticCondition() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCondition>())).left_sat as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCondition>())).left_sat as *const _ as usize },
         36usize,
         concat!(
             "Offset of field: ",
@@ -14436,7 +14134,9 @@ fn bindgen_test_layout_SDL_HapticCondition() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCondition>())).right_coeff as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<SDL_HapticCondition>())).right_coeff as *const _ as usize
+        },
         42usize,
         concat!(
             "Offset of field: ",
@@ -14446,7 +14146,7 @@ fn bindgen_test_layout_SDL_HapticCondition() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCondition>())).left_coeff as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCondition>())).left_coeff as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -14456,7 +14156,7 @@ fn bindgen_test_layout_SDL_HapticCondition() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCondition>())).deadband as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCondition>())).deadband as *const _ as usize },
         54usize,
         concat!(
             "Offset of field: ",
@@ -14466,7 +14166,7 @@ fn bindgen_test_layout_SDL_HapticCondition() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCondition>())).center as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCondition>())).center as *const _ as usize },
         60usize,
         concat!(
             "Offset of field: ",
@@ -14488,7 +14188,7 @@ fn bindgen_test_layout_SDL_HapticCondition() {
 ///  \sa SDL_HAPTIC_RAMP
 ///  \sa SDL_HapticEffect
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_HapticRamp {
     ///< ::SDL_HAPTIC_RAMP
     pub type_: Uint16,
@@ -14518,17 +14218,17 @@ pub struct SDL_HapticRamp {
 #[test]
 fn bindgen_test_layout_SDL_HapticRamp() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_HapticRamp>(),
+        ::core::mem::size_of::<SDL_HapticRamp>(),
         44usize,
         concat!("Size of: ", stringify!(SDL_HapticRamp))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_HapticRamp>(),
+        ::core::mem::align_of::<SDL_HapticRamp>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_HapticRamp))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticRamp>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticRamp>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -14538,7 +14238,7 @@ fn bindgen_test_layout_SDL_HapticRamp() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticRamp>())).direction as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticRamp>())).direction as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -14548,7 +14248,7 @@ fn bindgen_test_layout_SDL_HapticRamp() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticRamp>())).length as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticRamp>())).length as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -14558,7 +14258,7 @@ fn bindgen_test_layout_SDL_HapticRamp() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticRamp>())).delay as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticRamp>())).delay as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -14568,7 +14268,7 @@ fn bindgen_test_layout_SDL_HapticRamp() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticRamp>())).button as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticRamp>())).button as *const _ as usize },
         26usize,
         concat!(
             "Offset of field: ",
@@ -14578,7 +14278,7 @@ fn bindgen_test_layout_SDL_HapticRamp() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticRamp>())).interval as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticRamp>())).interval as *const _ as usize },
         28usize,
         concat!(
             "Offset of field: ",
@@ -14588,7 +14288,7 @@ fn bindgen_test_layout_SDL_HapticRamp() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticRamp>())).start as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticRamp>())).start as *const _ as usize },
         30usize,
         concat!(
             "Offset of field: ",
@@ -14598,7 +14298,7 @@ fn bindgen_test_layout_SDL_HapticRamp() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticRamp>())).end as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticRamp>())).end as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -14608,7 +14308,7 @@ fn bindgen_test_layout_SDL_HapticRamp() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticRamp>())).attack_length as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticRamp>())).attack_length as *const _ as usize },
         34usize,
         concat!(
             "Offset of field: ",
@@ -14618,7 +14318,7 @@ fn bindgen_test_layout_SDL_HapticRamp() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticRamp>())).attack_level as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticRamp>())).attack_level as *const _ as usize },
         36usize,
         concat!(
             "Offset of field: ",
@@ -14628,7 +14328,7 @@ fn bindgen_test_layout_SDL_HapticRamp() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticRamp>())).fade_length as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticRamp>())).fade_length as *const _ as usize },
         38usize,
         concat!(
             "Offset of field: ",
@@ -14638,7 +14338,7 @@ fn bindgen_test_layout_SDL_HapticRamp() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticRamp>())).fade_level as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticRamp>())).fade_level as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -14659,7 +14359,7 @@ fn bindgen_test_layout_SDL_HapticRamp() {
 /// \sa SDL_HAPTIC_LEFTRIGHT
 /// \sa SDL_HapticEffect
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_HapticLeftRight {
     ///< ::SDL_HAPTIC_LEFTRIGHT
     pub type_: Uint16,
@@ -14673,17 +14373,17 @@ pub struct SDL_HapticLeftRight {
 #[test]
 fn bindgen_test_layout_SDL_HapticLeftRight() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_HapticLeftRight>(),
+        ::core::mem::size_of::<SDL_HapticLeftRight>(),
         12usize,
         concat!("Size of: ", stringify!(SDL_HapticLeftRight))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_HapticLeftRight>(),
+        ::core::mem::align_of::<SDL_HapticLeftRight>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_HapticLeftRight))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticLeftRight>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticLeftRight>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -14693,7 +14393,7 @@ fn bindgen_test_layout_SDL_HapticLeftRight() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticLeftRight>())).length as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticLeftRight>())).length as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -14704,7 +14404,7 @@ fn bindgen_test_layout_SDL_HapticLeftRight() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_HapticLeftRight>())).large_magnitude as *const _ as usize
+            &(*(::core::ptr::null::<SDL_HapticLeftRight>())).large_magnitude as *const _ as usize
         },
         8usize,
         concat!(
@@ -14716,7 +14416,7 @@ fn bindgen_test_layout_SDL_HapticLeftRight() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_HapticLeftRight>())).small_magnitude as *const _ as usize
+            &(*(::core::ptr::null::<SDL_HapticLeftRight>())).small_magnitude as *const _ as usize
         },
         10usize,
         concat!(
@@ -14741,7 +14441,7 @@ fn bindgen_test_layout_SDL_HapticLeftRight() {
 ///  \sa SDL_HAPTIC_CUSTOM
 ///  \sa SDL_HapticEffect
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_HapticCustom {
     ///< ::SDL_HAPTIC_CUSTOM
     pub type_: Uint16,
@@ -14775,17 +14475,17 @@ pub struct SDL_HapticCustom {
 #[test]
 fn bindgen_test_layout_SDL_HapticCustom() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_HapticCustom>(),
+        ::core::mem::size_of::<SDL_HapticCustom>(),
         56usize,
         concat!("Size of: ", stringify!(SDL_HapticCustom))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_HapticCustom>(),
+        ::core::mem::align_of::<SDL_HapticCustom>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_HapticCustom))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCustom>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCustom>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -14795,7 +14495,7 @@ fn bindgen_test_layout_SDL_HapticCustom() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCustom>())).direction as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCustom>())).direction as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -14805,7 +14505,7 @@ fn bindgen_test_layout_SDL_HapticCustom() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCustom>())).length as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCustom>())).length as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -14815,7 +14515,7 @@ fn bindgen_test_layout_SDL_HapticCustom() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCustom>())).delay as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCustom>())).delay as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -14825,7 +14525,7 @@ fn bindgen_test_layout_SDL_HapticCustom() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCustom>())).button as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCustom>())).button as *const _ as usize },
         26usize,
         concat!(
             "Offset of field: ",
@@ -14835,7 +14535,7 @@ fn bindgen_test_layout_SDL_HapticCustom() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCustom>())).interval as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCustom>())).interval as *const _ as usize },
         28usize,
         concat!(
             "Offset of field: ",
@@ -14845,7 +14545,7 @@ fn bindgen_test_layout_SDL_HapticCustom() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCustom>())).channels as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCustom>())).channels as *const _ as usize },
         30usize,
         concat!(
             "Offset of field: ",
@@ -14855,7 +14555,7 @@ fn bindgen_test_layout_SDL_HapticCustom() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCustom>())).period as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCustom>())).period as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -14865,7 +14565,7 @@ fn bindgen_test_layout_SDL_HapticCustom() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCustom>())).samples as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCustom>())).samples as *const _ as usize },
         34usize,
         concat!(
             "Offset of field: ",
@@ -14875,7 +14575,7 @@ fn bindgen_test_layout_SDL_HapticCustom() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCustom>())).data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCustom>())).data as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -14885,7 +14585,7 @@ fn bindgen_test_layout_SDL_HapticCustom() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCustom>())).attack_length as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCustom>())).attack_length as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -14895,7 +14595,7 @@ fn bindgen_test_layout_SDL_HapticCustom() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCustom>())).attack_level as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCustom>())).attack_level as *const _ as usize },
         50usize,
         concat!(
             "Offset of field: ",
@@ -14905,7 +14605,7 @@ fn bindgen_test_layout_SDL_HapticCustom() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCustom>())).fade_length as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCustom>())).fade_length as *const _ as usize },
         52usize,
         concat!(
             "Offset of field: ",
@@ -14915,7 +14615,7 @@ fn bindgen_test_layout_SDL_HapticCustom() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticCustom>())).fade_level as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticCustom>())).fade_level as *const _ as usize },
         54usize,
         concat!(
             "Offset of field: ",
@@ -15014,17 +14714,17 @@ pub union SDL_HapticEffect {
 #[test]
 fn bindgen_test_layout_SDL_HapticEffect() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_HapticEffect>(),
+        ::core::mem::size_of::<SDL_HapticEffect>(),
         72usize,
         concat!("Size of: ", stringify!(SDL_HapticEffect))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_HapticEffect>(),
+        ::core::mem::align_of::<SDL_HapticEffect>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_HapticEffect))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticEffect>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticEffect>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -15034,7 +14734,7 @@ fn bindgen_test_layout_SDL_HapticEffect() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticEffect>())).constant as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticEffect>())).constant as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -15044,7 +14744,7 @@ fn bindgen_test_layout_SDL_HapticEffect() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticEffect>())).periodic as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticEffect>())).periodic as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -15054,7 +14754,7 @@ fn bindgen_test_layout_SDL_HapticEffect() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticEffect>())).condition as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticEffect>())).condition as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -15064,7 +14764,7 @@ fn bindgen_test_layout_SDL_HapticEffect() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticEffect>())).ramp as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticEffect>())).ramp as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -15074,7 +14774,7 @@ fn bindgen_test_layout_SDL_HapticEffect() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticEffect>())).leftright as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticEffect>())).leftright as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -15084,7 +14784,7 @@ fn bindgen_test_layout_SDL_HapticEffect() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_HapticEffect>())).custom as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_HapticEffect>())).custom as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -15098,7 +14798,7 @@ extern "C" {
     ///  \brief Count the number of haptic devices attached to the system.
     ///
     ///  \return Number of haptic devices detected on the system.
-    pub fn SDL_NumHaptics() -> ::std::os::raw::c_int;
+    pub fn SDL_NumHaptics() -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the implementation dependent name of a haptic device.
@@ -15110,7 +14810,7 @@ extern "C" {
     ///  \return Name of the device or NULL on error.
     ///
     ///  \sa SDL_NumHaptics
-    pub fn SDL_HapticName(device_index: ::std::os::raw::c_int) -> *const ::std::os::raw::c_char;
+    pub fn SDL_HapticName(device_index: libc::c_int) -> *const libc::c_char;
 }
 extern "C" {
     ///  \brief Opens a haptic device for use.
@@ -15133,7 +14833,7 @@ extern "C" {
     ///  \sa SDL_HapticSetAutocenter
     ///  \sa SDL_HapticPause
     ///  \sa SDL_HapticStopAll
-    pub fn SDL_HapticOpen(device_index: ::std::os::raw::c_int) -> *mut SDL_Haptic;
+    pub fn SDL_HapticOpen(device_index: libc::c_int) -> *mut SDL_Haptic;
 }
 extern "C" {
     ///  \brief Checks if the haptic device at index has been opened.
@@ -15143,7 +14843,7 @@ extern "C" {
     ///
     ///  \sa SDL_HapticOpen
     ///  \sa SDL_HapticIndex
-    pub fn SDL_HapticOpened(device_index: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn SDL_HapticOpened(device_index: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Gets the index of a haptic device.
@@ -15153,7 +14853,7 @@ extern "C" {
     ///
     ///  \sa SDL_HapticOpen
     ///  \sa SDL_HapticOpened
-    pub fn SDL_HapticIndex(haptic: *mut SDL_Haptic) -> ::std::os::raw::c_int;
+    pub fn SDL_HapticIndex(haptic: *mut SDL_Haptic) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Gets whether or not the current mouse has haptic capabilities.
@@ -15161,7 +14861,7 @@ extern "C" {
     ///  \return SDL_TRUE if the mouse is haptic, SDL_FALSE if it isn't.
     ///
     ///  \sa SDL_HapticOpenFromMouse
-    pub fn SDL_MouseIsHaptic() -> ::std::os::raw::c_int;
+    pub fn SDL_MouseIsHaptic() -> libc::c_int;
 }
 extern "C" {
     ///  \brief Tries to open a haptic device from the current mouse.
@@ -15180,7 +14880,7 @@ extern "C" {
     ///          or -1 if an error occurred.
     ///
     ///  \sa SDL_HapticOpenFromJoystick
-    pub fn SDL_JoystickIsHaptic(joystick: *mut SDL_Joystick) -> ::std::os::raw::c_int;
+    pub fn SDL_JoystickIsHaptic(joystick: *mut SDL_Joystick) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Opens a haptic device for use from a joystick device.
@@ -15219,7 +14919,7 @@ extern "C" {
     ///
     ///  \sa SDL_HapticNumEffectsPlaying
     ///  \sa SDL_HapticQuery
-    pub fn SDL_HapticNumEffects(haptic: *mut SDL_Haptic) -> ::std::os::raw::c_int;
+    pub fn SDL_HapticNumEffects(haptic: *mut SDL_Haptic) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Returns the number of effects a haptic device can play at the same
@@ -15234,7 +14934,7 @@ extern "C" {
     ///
     ///  \sa SDL_HapticNumEffects
     ///  \sa SDL_HapticQuery
-    pub fn SDL_HapticNumEffectsPlaying(haptic: *mut SDL_Haptic) -> ::std::os::raw::c_int;
+    pub fn SDL_HapticNumEffectsPlaying(haptic: *mut SDL_Haptic) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Gets the haptic device's supported features in bitwise manner.
@@ -15251,13 +14951,13 @@ extern "C" {
     ///
     ///  \sa SDL_HapticNumEffects
     ///  \sa SDL_HapticEffectSupported
-    pub fn SDL_HapticQuery(haptic: *mut SDL_Haptic) -> ::std::os::raw::c_uint;
+    pub fn SDL_HapticQuery(haptic: *mut SDL_Haptic) -> libc::c_uint;
 }
 extern "C" {
     ///  \brief Gets the number of haptic axes the device has.
     ///
     ///  \sa SDL_HapticDirection
-    pub fn SDL_HapticNumAxes(haptic: *mut SDL_Haptic) -> ::std::os::raw::c_int;
+    pub fn SDL_HapticNumAxes(haptic: *mut SDL_Haptic) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Checks to see if effect is supported by haptic.
@@ -15271,7 +14971,7 @@ extern "C" {
     pub fn SDL_HapticEffectSupported(
         haptic: *mut SDL_Haptic,
         effect: *mut SDL_HapticEffect,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Creates a new haptic effect on the device.
@@ -15286,7 +14986,7 @@ extern "C" {
     pub fn SDL_HapticNewEffect(
         haptic: *mut SDL_Haptic,
         effect: *mut SDL_HapticEffect,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Updates the properties of an effect.
@@ -15306,9 +15006,9 @@ extern "C" {
     ///  \sa SDL_HapticDestroyEffect
     pub fn SDL_HapticUpdateEffect(
         haptic: *mut SDL_Haptic,
-        effect: ::std::os::raw::c_int,
+        effect: libc::c_int,
         data: *mut SDL_HapticEffect,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Runs the haptic effect on its associated haptic device.
@@ -15329,9 +15029,9 @@ extern "C" {
     ///  \sa SDL_HapticGetEffectStatus
     pub fn SDL_HapticRunEffect(
         haptic: *mut SDL_Haptic,
-        effect: ::std::os::raw::c_int,
+        effect: libc::c_int,
         iterations: Uint32,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Stops the haptic effect on its associated haptic device.
@@ -15342,10 +15042,7 @@ extern "C" {
     ///
     ///  \sa SDL_HapticRunEffect
     ///  \sa SDL_HapticDestroyEffect
-    pub fn SDL_HapticStopEffect(
-        haptic: *mut SDL_Haptic,
-        effect: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_HapticStopEffect(haptic: *mut SDL_Haptic, effect: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Destroys a haptic effect on the device.
@@ -15357,7 +15054,7 @@ extern "C" {
     ///  \param effect Identifier of the effect to destroy.
     ///
     ///  \sa SDL_HapticNewEffect
-    pub fn SDL_HapticDestroyEffect(haptic: *mut SDL_Haptic, effect: ::std::os::raw::c_int);
+    pub fn SDL_HapticDestroyEffect(haptic: *mut SDL_Haptic, effect: libc::c_int);
 }
 extern "C" {
     ///  \brief Gets the status of the current effect on the haptic device.
@@ -15370,10 +15067,7 @@ extern "C" {
     ///
     ///  \sa SDL_HapticRunEffect
     ///  \sa SDL_HapticStopEffect
-    pub fn SDL_HapticGetEffectStatus(
-        haptic: *mut SDL_Haptic,
-        effect: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_HapticGetEffectStatus(haptic: *mut SDL_Haptic, effect: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Sets the global gain of the device.
@@ -15390,10 +15084,7 @@ extern "C" {
     ///  \return 0 on success or -1 on error.
     ///
     ///  \sa SDL_HapticQuery
-    pub fn SDL_HapticSetGain(
-        haptic: *mut SDL_Haptic,
-        gain: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_HapticSetGain(haptic: *mut SDL_Haptic, gain: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Sets the global autocenter of the device.
@@ -15408,10 +15099,8 @@ extern "C" {
     ///  \return 0 on success or -1 on error.
     ///
     ///  \sa SDL_HapticQuery
-    pub fn SDL_HapticSetAutocenter(
-        haptic: *mut SDL_Haptic,
-        autocenter: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_HapticSetAutocenter(haptic: *mut SDL_Haptic, autocenter: libc::c_int)
+        -> libc::c_int;
 }
 extern "C" {
     ///  \brief Pauses a haptic device.
@@ -15426,7 +15115,7 @@ extern "C" {
     ///  \return 0 on success or -1 on error.
     ///
     ///  \sa SDL_HapticUnpause
-    pub fn SDL_HapticPause(haptic: *mut SDL_Haptic) -> ::std::os::raw::c_int;
+    pub fn SDL_HapticPause(haptic: *mut SDL_Haptic) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Unpauses a haptic device.
@@ -15437,14 +15126,14 @@ extern "C" {
     ///  \return 0 on success or -1 on error.
     ///
     ///  \sa SDL_HapticPause
-    pub fn SDL_HapticUnpause(haptic: *mut SDL_Haptic) -> ::std::os::raw::c_int;
+    pub fn SDL_HapticUnpause(haptic: *mut SDL_Haptic) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Stops all the currently playing effects on a haptic device.
     ///
     ///  \param haptic Haptic device to stop.
     ///  \return 0 on success or -1 on error.
-    pub fn SDL_HapticStopAll(haptic: *mut SDL_Haptic) -> ::std::os::raw::c_int;
+    pub fn SDL_HapticStopAll(haptic: *mut SDL_Haptic) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Checks to see if rumble is supported on a haptic device.
@@ -15455,7 +15144,7 @@ extern "C" {
     ///  \sa SDL_HapticRumbleInit
     ///  \sa SDL_HapticRumblePlay
     ///  \sa SDL_HapticRumbleStop
-    pub fn SDL_HapticRumbleSupported(haptic: *mut SDL_Haptic) -> ::std::os::raw::c_int;
+    pub fn SDL_HapticRumbleSupported(haptic: *mut SDL_Haptic) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Initializes the haptic device for simple rumble playback.
@@ -15467,7 +15156,7 @@ extern "C" {
     ///  \sa SDL_HapticRumbleSupported
     ///  \sa SDL_HapticRumblePlay
     ///  \sa SDL_HapticRumbleStop
-    pub fn SDL_HapticRumbleInit(haptic: *mut SDL_Haptic) -> ::std::os::raw::c_int;
+    pub fn SDL_HapticRumbleInit(haptic: *mut SDL_Haptic) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Runs simple rumble on a haptic device
@@ -15484,7 +15173,7 @@ extern "C" {
         haptic: *mut SDL_Haptic,
         strength: f32,
         length: Uint32,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Stops the simple rumble on a haptic device.
@@ -15495,7 +15184,7 @@ extern "C" {
     ///  \sa SDL_HapticRumbleSupported
     ///  \sa SDL_HapticRumbleInit
     ///  \sa SDL_HapticRumblePlay
-    pub fn SDL_HapticRumbleStop(haptic: *mut SDL_Haptic) -> ::std::os::raw::c_int;
+    pub fn SDL_HapticRumbleStop(haptic: *mut SDL_Haptic) -> libc::c_int;
 }
 #[repr(u32)]
 ///  \brief  An enumeration of hint priorities
@@ -15514,8 +15203,8 @@ extern "C" {
     ///
     ///  \return SDL_TRUE if the hint was set, SDL_FALSE otherwise
     pub fn SDL_SetHintWithPriority(
-        name: *const ::std::os::raw::c_char,
-        value: *const ::std::os::raw::c_char,
+        name: *const libc::c_char,
+        value: *const libc::c_char,
         priority: SDL_HintPriority,
     ) -> SDL_bool;
 }
@@ -15523,33 +15212,27 @@ extern "C" {
     ///  \brief Set a hint with normal priority
     ///
     ///  \return SDL_TRUE if the hint was set, SDL_FALSE otherwise
-    pub fn SDL_SetHint(
-        name: *const ::std::os::raw::c_char,
-        value: *const ::std::os::raw::c_char,
-    ) -> SDL_bool;
+    pub fn SDL_SetHint(name: *const libc::c_char, value: *const libc::c_char) -> SDL_bool;
 }
 extern "C" {
     ///  \brief Get a hint
     ///
     ///  \return The string value of a hint variable.
-    pub fn SDL_GetHint(name: *const ::std::os::raw::c_char) -> *const ::std::os::raw::c_char;
+    pub fn SDL_GetHint(name: *const libc::c_char) -> *const libc::c_char;
 }
 extern "C" {
     ///  \brief Get a hint
     ///
     ///  \return The boolean value of a hint variable.
-    pub fn SDL_GetHintBoolean(
-        name: *const ::std::os::raw::c_char,
-        default_value: SDL_bool,
-    ) -> SDL_bool;
+    pub fn SDL_GetHintBoolean(name: *const libc::c_char, default_value: SDL_bool) -> SDL_bool;
 }
 /// \brief type definition of the hint callback function.
-pub type SDL_HintCallback = ::std::option::Option<
+pub type SDL_HintCallback = ::core::option::Option<
     unsafe extern "C" fn(
-        userdata: *mut ::std::os::raw::c_void,
-        name: *const ::std::os::raw::c_char,
-        oldValue: *const ::std::os::raw::c_char,
-        newValue: *const ::std::os::raw::c_char,
+        userdata: *mut libc::c_void,
+        name: *const libc::c_char,
+        oldValue: *const libc::c_char,
+        newValue: *const libc::c_char,
     ),
 >;
 extern "C" {
@@ -15559,9 +15242,9 @@ extern "C" {
     ///  \param callback The function to call when the hint value changes
     ///  \param userdata A pointer to pass to the callback function
     pub fn SDL_AddHintCallback(
-        name: *const ::std::os::raw::c_char,
+        name: *const libc::c_char,
         callback: SDL_HintCallback,
-        userdata: *mut ::std::os::raw::c_void,
+        userdata: *mut libc::c_void,
     );
 }
 extern "C" {
@@ -15571,9 +15254,9 @@ extern "C" {
     ///  \param callback The function being called when the hint value changes
     ///  \param userdata A pointer being passed to the callback function
     pub fn SDL_DelHintCallback(
-        name: *const ::std::os::raw::c_char,
+        name: *const libc::c_char,
         callback: SDL_HintCallback,
-        userdata: *mut ::std::os::raw::c_void,
+        userdata: *mut libc::c_void,
     );
 }
 extern "C" {
@@ -15586,20 +15269,20 @@ extern "C" {
     ///  This function dynamically loads a shared object and returns a pointer
     ///  to the object handle (or NULL if there was an error).
     ///  The 'sofile' parameter is a system dependent name of the object file.
-    pub fn SDL_LoadObject(sofile: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_void;
+    pub fn SDL_LoadObject(sofile: *const libc::c_char) -> *mut libc::c_void;
 }
 extern "C" {
     ///  Given an object handle, this function looks up the address of the
     ///  named function in the shared object and returns it.  This address
     ///  is no longer valid after calling SDL_UnloadObject().
     pub fn SDL_LoadFunction(
-        handle: *mut ::std::os::raw::c_void,
-        name: *const ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_void;
+        handle: *mut libc::c_void,
+        name: *const libc::c_char,
+    ) -> *mut libc::c_void;
 }
 extern "C" {
     ///  Unload a shared object from memory.
-    pub fn SDL_UnloadObject(handle: *mut ::std::os::raw::c_void);
+    pub fn SDL_UnloadObject(handle: *mut libc::c_void);
 }
 pub const SDL_LOG_CATEGORY_APPLICATION: _bindgen_ty_8 = _bindgen_ty_8::SDL_LOG_CATEGORY_APPLICATION;
 pub const SDL_LOG_CATEGORY_ERROR: _bindgen_ty_8 = _bindgen_ty_8::SDL_LOG_CATEGORY_ERROR;
@@ -15669,11 +15352,11 @@ extern "C" {
 }
 extern "C" {
     ///  \brief Set the priority of a particular log category
-    pub fn SDL_LogSetPriority(category: ::std::os::raw::c_int, priority: SDL_LogPriority);
+    pub fn SDL_LogSetPriority(category: libc::c_int, priority: SDL_LogPriority);
 }
 extern "C" {
     ///  \brief Get the priority of a particular log category
-    pub fn SDL_LogGetPriority(category: ::std::os::raw::c_int) -> SDL_LogPriority;
+    pub fn SDL_LogGetPriority(category: libc::c_int) -> SDL_LogPriority;
 }
 extern "C" {
     ///  \brief Reset all priorities to default.
@@ -15683,77 +15366,70 @@ extern "C" {
 }
 extern "C" {
     ///  \brief Log a message with SDL_LOG_CATEGORY_APPLICATION and SDL_LOG_PRIORITY_INFO
-    pub fn SDL_Log(fmt: *const ::std::os::raw::c_char, ...);
+    pub fn SDL_Log(fmt: *const libc::c_char, ...);
 }
 extern "C" {
     ///  \brief Log a message with SDL_LOG_PRIORITY_VERBOSE
-    pub fn SDL_LogVerbose(category: ::std::os::raw::c_int, fmt: *const ::std::os::raw::c_char, ...);
+    pub fn SDL_LogVerbose(category: libc::c_int, fmt: *const libc::c_char, ...);
 }
 extern "C" {
     ///  \brief Log a message with SDL_LOG_PRIORITY_DEBUG
-    pub fn SDL_LogDebug(category: ::std::os::raw::c_int, fmt: *const ::std::os::raw::c_char, ...);
+    pub fn SDL_LogDebug(category: libc::c_int, fmt: *const libc::c_char, ...);
 }
 extern "C" {
     ///  \brief Log a message with SDL_LOG_PRIORITY_INFO
-    pub fn SDL_LogInfo(category: ::std::os::raw::c_int, fmt: *const ::std::os::raw::c_char, ...);
+    pub fn SDL_LogInfo(category: libc::c_int, fmt: *const libc::c_char, ...);
 }
 extern "C" {
     ///  \brief Log a message with SDL_LOG_PRIORITY_WARN
-    pub fn SDL_LogWarn(category: ::std::os::raw::c_int, fmt: *const ::std::os::raw::c_char, ...);
+    pub fn SDL_LogWarn(category: libc::c_int, fmt: *const libc::c_char, ...);
 }
 extern "C" {
     ///  \brief Log a message with SDL_LOG_PRIORITY_ERROR
-    pub fn SDL_LogError(category: ::std::os::raw::c_int, fmt: *const ::std::os::raw::c_char, ...);
+    pub fn SDL_LogError(category: libc::c_int, fmt: *const libc::c_char, ...);
 }
 extern "C" {
     ///  \brief Log a message with SDL_LOG_PRIORITY_CRITICAL
-    pub fn SDL_LogCritical(
-        category: ::std::os::raw::c_int,
-        fmt: *const ::std::os::raw::c_char,
-        ...
-    );
+    pub fn SDL_LogCritical(category: libc::c_int, fmt: *const libc::c_char, ...);
 }
 extern "C" {
     ///  \brief Log a message with the specified category and priority.
     pub fn SDL_LogMessage(
-        category: ::std::os::raw::c_int,
+        category: libc::c_int,
         priority: SDL_LogPriority,
-        fmt: *const ::std::os::raw::c_char,
+        fmt: *const libc::c_char,
         ...
     );
 }
 extern "C" {
     ///  \brief Log a message with the specified category and priority.
     pub fn SDL_LogMessageV(
-        category: ::std::os::raw::c_int,
+        category: libc::c_int,
         priority: SDL_LogPriority,
-        fmt: *const ::std::os::raw::c_char,
+        fmt: *const libc::c_char,
         ap: *mut __va_list_tag,
     );
 }
 ///  \brief The prototype for the log output function
-pub type SDL_LogOutputFunction = ::std::option::Option<
+pub type SDL_LogOutputFunction = ::core::option::Option<
     unsafe extern "C" fn(
-        userdata: *mut ::std::os::raw::c_void,
-        category: ::std::os::raw::c_int,
+        userdata: *mut libc::c_void,
+        category: libc::c_int,
         priority: SDL_LogPriority,
-        message: *const ::std::os::raw::c_char,
+        message: *const libc::c_char,
     ),
 >;
 extern "C" {
     ///  \brief Get the current log output function.
     pub fn SDL_LogGetOutputFunction(
         callback: *mut SDL_LogOutputFunction,
-        userdata: *mut *mut ::std::os::raw::c_void,
+        userdata: *mut *mut libc::c_void,
     );
 }
 extern "C" {
     ///  \brief This function allows you to replace the default log output
     ///         function with one of your own.
-    pub fn SDL_LogSetOutputFunction(
-        callback: SDL_LogOutputFunction,
-        userdata: *mut ::std::os::raw::c_void,
-    );
+    pub fn SDL_LogSetOutputFunction(callback: SDL_LogOutputFunction, userdata: *mut libc::c_void);
 }
 #[repr(u32)]
 /// \brief SDL_MessageBox flags. If supported will display warning icon, etc.
@@ -15777,29 +15453,29 @@ pub enum SDL_MessageBoxButtonFlags {
 }
 ///  \brief Individual button data.
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_MessageBoxButtonData {
     ///< ::SDL_MessageBoxButtonFlags
     pub flags: Uint32,
     ///< User defined button id (value returned via SDL_ShowMessageBox)
-    pub buttonid: ::std::os::raw::c_int,
+    pub buttonid: libc::c_int,
     ///< The UTF-8 button text
-    pub text: *const ::std::os::raw::c_char,
+    pub text: *const libc::c_char,
 }
 #[test]
 fn bindgen_test_layout_SDL_MessageBoxButtonData() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_MessageBoxButtonData>(),
+        ::core::mem::size_of::<SDL_MessageBoxButtonData>(),
         16usize,
         concat!("Size of: ", stringify!(SDL_MessageBoxButtonData))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_MessageBoxButtonData>(),
+        ::core::mem::align_of::<SDL_MessageBoxButtonData>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_MessageBoxButtonData))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MessageBoxButtonData>())).flags as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MessageBoxButtonData>())).flags as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -15810,7 +15486,7 @@ fn bindgen_test_layout_SDL_MessageBoxButtonData() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_MessageBoxButtonData>())).buttonid as *const _ as usize
+            &(*(::core::ptr::null::<SDL_MessageBoxButtonData>())).buttonid as *const _ as usize
         },
         4usize,
         concat!(
@@ -15821,7 +15497,7 @@ fn bindgen_test_layout_SDL_MessageBoxButtonData() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MessageBoxButtonData>())).text as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MessageBoxButtonData>())).text as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -15833,7 +15509,7 @@ fn bindgen_test_layout_SDL_MessageBoxButtonData() {
 }
 /// \brief RGB value used in a message box color scheme
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_MessageBoxColor {
     pub r: Uint8,
     pub g: Uint8,
@@ -15842,17 +15518,17 @@ pub struct SDL_MessageBoxColor {
 #[test]
 fn bindgen_test_layout_SDL_MessageBoxColor() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_MessageBoxColor>(),
+        ::core::mem::size_of::<SDL_MessageBoxColor>(),
         3usize,
         concat!("Size of: ", stringify!(SDL_MessageBoxColor))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_MessageBoxColor>(),
+        ::core::mem::align_of::<SDL_MessageBoxColor>(),
         1usize,
         concat!("Alignment of ", stringify!(SDL_MessageBoxColor))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MessageBoxColor>())).r as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MessageBoxColor>())).r as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -15862,7 +15538,7 @@ fn bindgen_test_layout_SDL_MessageBoxColor() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MessageBoxColor>())).g as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MessageBoxColor>())).g as *const _ as usize },
         1usize,
         concat!(
             "Offset of field: ",
@@ -15872,7 +15548,7 @@ fn bindgen_test_layout_SDL_MessageBoxColor() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MessageBoxColor>())).b as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MessageBoxColor>())).b as *const _ as usize },
         2usize,
         concat!(
             "Offset of field: ",
@@ -15894,25 +15570,25 @@ pub enum SDL_MessageBoxColorType {
 }
 /// \brief A set of colors to use for message box dialogs
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_MessageBoxColorScheme {
     pub colors: [SDL_MessageBoxColor; 5usize],
 }
 #[test]
 fn bindgen_test_layout_SDL_MessageBoxColorScheme() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_MessageBoxColorScheme>(),
+        ::core::mem::size_of::<SDL_MessageBoxColorScheme>(),
         15usize,
         concat!("Size of: ", stringify!(SDL_MessageBoxColorScheme))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_MessageBoxColorScheme>(),
+        ::core::mem::align_of::<SDL_MessageBoxColorScheme>(),
         1usize,
         concat!("Alignment of ", stringify!(SDL_MessageBoxColorScheme))
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_MessageBoxColorScheme>())).colors as *const _ as usize
+            &(*(::core::ptr::null::<SDL_MessageBoxColorScheme>())).colors as *const _ as usize
         },
         0usize,
         concat!(
@@ -15925,17 +15601,17 @@ fn bindgen_test_layout_SDL_MessageBoxColorScheme() {
 }
 ///  \brief MessageBox structure containing title, text, window, etc.
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_MessageBoxData {
     ///< ::SDL_MessageBoxFlags
     pub flags: Uint32,
     ///< Parent window, can be NULL
     pub window: *mut SDL_Window,
     ///< UTF-8 title
-    pub title: *const ::std::os::raw::c_char,
+    pub title: *const libc::c_char,
     ///< UTF-8 message text
-    pub message: *const ::std::os::raw::c_char,
-    pub numbuttons: ::std::os::raw::c_int,
+    pub message: *const libc::c_char,
+    pub numbuttons: libc::c_int,
     pub buttons: *const SDL_MessageBoxButtonData,
     ///< ::SDL_MessageBoxColorScheme, can be NULL to use system settings
     pub colorScheme: *const SDL_MessageBoxColorScheme,
@@ -15943,17 +15619,17 @@ pub struct SDL_MessageBoxData {
 #[test]
 fn bindgen_test_layout_SDL_MessageBoxData() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_MessageBoxData>(),
+        ::core::mem::size_of::<SDL_MessageBoxData>(),
         56usize,
         concat!("Size of: ", stringify!(SDL_MessageBoxData))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_MessageBoxData>(),
+        ::core::mem::align_of::<SDL_MessageBoxData>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_MessageBoxData))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MessageBoxData>())).flags as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MessageBoxData>())).flags as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -15963,7 +15639,7 @@ fn bindgen_test_layout_SDL_MessageBoxData() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MessageBoxData>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MessageBoxData>())).window as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -15973,7 +15649,7 @@ fn bindgen_test_layout_SDL_MessageBoxData() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MessageBoxData>())).title as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MessageBoxData>())).title as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -15983,7 +15659,7 @@ fn bindgen_test_layout_SDL_MessageBoxData() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MessageBoxData>())).message as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MessageBoxData>())).message as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -15993,7 +15669,7 @@ fn bindgen_test_layout_SDL_MessageBoxData() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MessageBoxData>())).numbuttons as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MessageBoxData>())).numbuttons as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -16003,7 +15679,7 @@ fn bindgen_test_layout_SDL_MessageBoxData() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MessageBoxData>())).buttons as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MessageBoxData>())).buttons as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -16013,7 +15689,7 @@ fn bindgen_test_layout_SDL_MessageBoxData() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_MessageBoxData>())).colorScheme as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_MessageBoxData>())).colorScheme as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -16038,8 +15714,8 @@ extern "C" {
     ///        closes the messagebox.
     pub fn SDL_ShowMessageBox(
         messageboxdata: *const SDL_MessageBoxData,
-        buttonid: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        buttonid: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Create a simple modal message box
@@ -16054,10 +15730,10 @@ extern "C" {
     ///  \sa SDL_ShowMessageBox
     pub fn SDL_ShowSimpleMessageBox(
         flags: Uint32,
-        title: *const ::std::os::raw::c_char,
-        message: *const ::std::os::raw::c_char,
+        title: *const libc::c_char,
+        message: *const libc::c_char,
         window: *mut SDL_Window,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 #[repr(u32)]
 ///  \brief The basic state for the system's power supply.
@@ -16086,10 +15762,7 @@ extern "C" {
     ///             can't determine a value, or we're not running on a battery.
     ///
     ///  \return The state of the battery (if any).
-    pub fn SDL_GetPowerInfo(
-        secs: *mut ::std::os::raw::c_int,
-        pct: *mut ::std::os::raw::c_int,
-    ) -> SDL_PowerState;
+    pub fn SDL_GetPowerInfo(secs: *mut libc::c_int, pct: *mut libc::c_int) -> SDL_PowerState;
 }
 #[repr(u32)]
 ///  \brief Flags used when creating a rendering context
@@ -16109,10 +15782,10 @@ pub enum SDL_RendererFlags {
 }
 ///  \brief Information on the capabilities of a render driver or context.
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_RendererInfo {
     ///< The name of the renderer
-    pub name: *const ::std::os::raw::c_char,
+    pub name: *const libc::c_char,
     ///< Supported ::SDL_RendererFlags
     pub flags: Uint32,
     ///< The number of available texture formats
@@ -16120,24 +15793,24 @@ pub struct SDL_RendererInfo {
     ///< The available texture formats
     pub texture_formats: [Uint32; 16usize],
     ///< The maximum texture width
-    pub max_texture_width: ::std::os::raw::c_int,
+    pub max_texture_width: libc::c_int,
     ///< The maximum texture height
-    pub max_texture_height: ::std::os::raw::c_int,
+    pub max_texture_height: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_SDL_RendererInfo() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_RendererInfo>(),
+        ::core::mem::size_of::<SDL_RendererInfo>(),
         88usize,
         concat!("Size of: ", stringify!(SDL_RendererInfo))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_RendererInfo>(),
+        ::core::mem::align_of::<SDL_RendererInfo>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_RendererInfo))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_RendererInfo>())).name as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_RendererInfo>())).name as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -16147,7 +15820,7 @@ fn bindgen_test_layout_SDL_RendererInfo() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_RendererInfo>())).flags as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_RendererInfo>())).flags as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -16158,7 +15831,7 @@ fn bindgen_test_layout_SDL_RendererInfo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_RendererInfo>())).num_texture_formats as *const _ as usize
+            &(*(::core::ptr::null::<SDL_RendererInfo>())).num_texture_formats as *const _ as usize
         },
         12usize,
         concat!(
@@ -16170,7 +15843,7 @@ fn bindgen_test_layout_SDL_RendererInfo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_RendererInfo>())).texture_formats as *const _ as usize
+            &(*(::core::ptr::null::<SDL_RendererInfo>())).texture_formats as *const _ as usize
         },
         16usize,
         concat!(
@@ -16182,7 +15855,7 @@ fn bindgen_test_layout_SDL_RendererInfo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_RendererInfo>())).max_texture_width as *const _ as usize
+            &(*(::core::ptr::null::<SDL_RendererInfo>())).max_texture_width as *const _ as usize
         },
         80usize,
         concat!(
@@ -16194,7 +15867,7 @@ fn bindgen_test_layout_SDL_RendererInfo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_RendererInfo>())).max_texture_height as *const _ as usize
+            &(*(::core::ptr::null::<SDL_RendererInfo>())).max_texture_height as *const _ as usize
         },
         84usize,
         concat!(
@@ -16240,13 +15913,13 @@ pub enum SDL_RendererFlip {
 }
 ///  \brief A structure representing rendering state
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_Renderer {
     _unused: [u8; 0],
 }
 ///  \brief An efficient driver-specific representation of pixel data
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_Texture {
     _unused: [u8; 0],
 }
@@ -16260,7 +15933,7 @@ extern "C" {
     ///
     ///  \sa SDL_GetRenderDriverInfo()
     ///  \sa SDL_CreateRenderer()
-    pub fn SDL_GetNumRenderDrivers() -> ::std::os::raw::c_int;
+    pub fn SDL_GetNumRenderDrivers() -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get information about a specific 2D rendering driver for the current
@@ -16273,10 +15946,7 @@ extern "C" {
     ///  \return 0 on success, -1 if the index was out of range.
     ///
     ///  \sa SDL_CreateRenderer()
-    pub fn SDL_GetRenderDriverInfo(
-        index: ::std::os::raw::c_int,
-        info: *mut SDL_RendererInfo,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_GetRenderDriverInfo(index: libc::c_int, info: *mut SDL_RendererInfo) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Create a window and default renderer
@@ -16289,12 +15959,12 @@ extern "C" {
     ///
     ///  \return 0 on success, or -1 on error
     pub fn SDL_CreateWindowAndRenderer(
-        width: ::std::os::raw::c_int,
-        height: ::std::os::raw::c_int,
+        width: libc::c_int,
+        height: libc::c_int,
         window_flags: Uint32,
         window: *mut *mut SDL_Window,
         renderer: *mut *mut SDL_Renderer,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Create a 2D rendering context for a window.
@@ -16311,7 +15981,7 @@ extern "C" {
     ///  \sa SDL_DestroyRenderer()
     pub fn SDL_CreateRenderer(
         window: *mut SDL_Window,
-        index: ::std::os::raw::c_int,
+        index: libc::c_int,
         flags: Uint32,
     ) -> *mut SDL_Renderer;
 }
@@ -16335,15 +16005,15 @@ extern "C" {
     pub fn SDL_GetRendererInfo(
         renderer: *mut SDL_Renderer,
         info: *mut SDL_RendererInfo,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the output size in pixels of a rendering context.
     pub fn SDL_GetRendererOutputSize(
         renderer: *mut SDL_Renderer,
-        w: *mut ::std::os::raw::c_int,
-        h: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        w: *mut libc::c_int,
+        h: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Create a texture for a rendering context.
@@ -16366,9 +16036,9 @@ extern "C" {
     pub fn SDL_CreateTexture(
         renderer: *mut SDL_Renderer,
         format: Uint32,
-        access: ::std::os::raw::c_int,
-        w: ::std::os::raw::c_int,
-        h: ::std::os::raw::c_int,
+        access: libc::c_int,
+        w: libc::c_int,
+        h: libc::c_int,
     ) -> *mut SDL_Texture;
 }
 extern "C" {
@@ -16403,10 +16073,10 @@ extern "C" {
     pub fn SDL_QueryTexture(
         texture: *mut SDL_Texture,
         format: *mut Uint32,
-        access: *mut ::std::os::raw::c_int,
-        w: *mut ::std::os::raw::c_int,
-        h: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        access: *mut libc::c_int,
+        w: *mut libc::c_int,
+        h: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Set an additional color value used in render copy operations.
@@ -16425,7 +16095,7 @@ extern "C" {
         r: Uint8,
         g: Uint8,
         b: Uint8,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the additional color value used in render copy operations.
@@ -16443,7 +16113,7 @@ extern "C" {
         r: *mut Uint8,
         g: *mut Uint8,
         b: *mut Uint8,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Set an additional alpha value used in render copy operations.
@@ -16455,8 +16125,7 @@ extern "C" {
     ///          is not supported.
     ///
     ///  \sa SDL_GetTextureAlphaMod()
-    pub fn SDL_SetTextureAlphaMod(texture: *mut SDL_Texture, alpha: Uint8)
-        -> ::std::os::raw::c_int;
+    pub fn SDL_SetTextureAlphaMod(texture: *mut SDL_Texture, alpha: Uint8) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the additional alpha value used in render copy operations.
@@ -16467,10 +16136,7 @@ extern "C" {
     ///  \return 0 on success, or -1 if the texture is not valid.
     ///
     ///  \sa SDL_SetTextureAlphaMod()
-    pub fn SDL_GetTextureAlphaMod(
-        texture: *mut SDL_Texture,
-        alpha: *mut Uint8,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_GetTextureAlphaMod(texture: *mut SDL_Texture, alpha: *mut Uint8) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Set the blend mode used for texture copy operations.
@@ -16488,7 +16154,7 @@ extern "C" {
     pub fn SDL_SetTextureBlendMode(
         texture: *mut SDL_Texture,
         blendMode: SDL_BlendMode,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the blend mode used for texture copy operations.
@@ -16502,7 +16168,7 @@ extern "C" {
     pub fn SDL_GetTextureBlendMode(
         texture: *mut SDL_Texture,
         blendMode: *mut SDL_BlendMode,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Update the given texture rectangle with new pixel data.
@@ -16522,9 +16188,9 @@ extern "C" {
     pub fn SDL_UpdateTexture(
         texture: *mut SDL_Texture,
         rect: *const SDL_Rect,
-        pixels: *const ::std::os::raw::c_void,
-        pitch: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        pixels: *const libc::c_void,
+        pitch: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Update a rectangle within a planar YV12 or IYUV texture with new pixel data.
@@ -16548,12 +16214,12 @@ extern "C" {
         texture: *mut SDL_Texture,
         rect: *const SDL_Rect,
         Yplane: *const Uint8,
-        Ypitch: ::std::os::raw::c_int,
+        Ypitch: libc::c_int,
         Uplane: *const Uint8,
-        Upitch: ::std::os::raw::c_int,
+        Upitch: libc::c_int,
         Vplane: *const Uint8,
-        Vpitch: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        Vpitch: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Lock a portion of the texture for write-only pixel access.
@@ -16572,9 +16238,9 @@ extern "C" {
     pub fn SDL_LockTexture(
         texture: *mut SDL_Texture,
         rect: *const SDL_Rect,
-        pixels: *mut *mut ::std::os::raw::c_void,
-        pitch: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        pixels: *mut *mut libc::c_void,
+        pitch: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Unlock a texture, uploading the changes to video memory, if needed.
@@ -16602,7 +16268,7 @@ extern "C" {
     pub fn SDL_SetRenderTarget(
         renderer: *mut SDL_Renderer,
         texture: *mut SDL_Texture,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     /// \brief Get the current render target or NULL for the default render target.
@@ -16636,9 +16302,9 @@ extern "C" {
     ///  \sa SDL_RenderSetViewport()
     pub fn SDL_RenderSetLogicalSize(
         renderer: *mut SDL_Renderer,
-        w: ::std::os::raw::c_int,
-        h: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        w: libc::c_int,
+        h: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get device independent resolution for rendering
@@ -16650,8 +16316,8 @@ extern "C" {
     ///  \sa SDL_RenderSetLogicalSize()
     pub fn SDL_RenderGetLogicalSize(
         renderer: *mut SDL_Renderer,
-        w: *mut ::std::os::raw::c_int,
-        h: *mut ::std::os::raw::c_int,
+        w: *mut libc::c_int,
+        h: *mut libc::c_int,
     );
 }
 extern "C" {
@@ -16665,10 +16331,7 @@ extern "C" {
     ///  rounded down to the lower multiple.
     ///
     ///  \sa SDL_RenderSetLogicalSize()
-    pub fn SDL_RenderSetIntegerScale(
-        renderer: *mut SDL_Renderer,
-        enable: SDL_bool,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_RenderSetIntegerScale(renderer: *mut SDL_Renderer, enable: SDL_bool) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get whether integer scales are forced for resolution-independent rendering
@@ -16692,10 +16355,8 @@ extern "C" {
     ///
     ///  \sa SDL_RenderGetViewport()
     ///  \sa SDL_RenderSetLogicalSize()
-    pub fn SDL_RenderSetViewport(
-        renderer: *mut SDL_Renderer,
-        rect: *const SDL_Rect,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_RenderSetViewport(renderer: *mut SDL_Renderer, rect: *const SDL_Rect)
+        -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the drawing area for the current target.
@@ -16713,10 +16374,8 @@ extern "C" {
     ///  \return 0 on success, or -1 on error
     ///
     ///  \sa SDL_RenderGetClipRect()
-    pub fn SDL_RenderSetClipRect(
-        renderer: *mut SDL_Renderer,
-        rect: *const SDL_Rect,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_RenderSetClipRect(renderer: *mut SDL_Renderer, rect: *const SDL_Rect)
+        -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the clip rectangle for the current target.
@@ -16753,11 +16412,8 @@ extern "C" {
     ///
     ///  \sa SDL_RenderGetScale()
     ///  \sa SDL_RenderSetLogicalSize()
-    pub fn SDL_RenderSetScale(
-        renderer: *mut SDL_Renderer,
-        scaleX: f32,
-        scaleY: f32,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_RenderSetScale(renderer: *mut SDL_Renderer, scaleX: f32, scaleY: f32)
+        -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the drawing scale for the current target.
@@ -16786,7 +16442,7 @@ extern "C" {
         g: Uint8,
         b: Uint8,
         a: Uint8,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the color used for drawing operations (Rect, Line and Clear).
@@ -16805,7 +16461,7 @@ extern "C" {
         g: *mut Uint8,
         b: *mut Uint8,
         a: *mut Uint8,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Set the blend mode used for drawing operations (Fill and Line).
@@ -16822,7 +16478,7 @@ extern "C" {
     pub fn SDL_SetRenderDrawBlendMode(
         renderer: *mut SDL_Renderer,
         blendMode: SDL_BlendMode,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the blend mode used for drawing operations.
@@ -16836,7 +16492,7 @@ extern "C" {
     pub fn SDL_GetRenderDrawBlendMode(
         renderer: *mut SDL_Renderer,
         blendMode: *mut SDL_BlendMode,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Clear the current rendering target with the drawing color
@@ -16845,7 +16501,7 @@ extern "C" {
     ///  the clip rectangle.
     ///
     ///  \return 0 on success, or -1 on error
-    pub fn SDL_RenderClear(renderer: *mut SDL_Renderer) -> ::std::os::raw::c_int;
+    pub fn SDL_RenderClear(renderer: *mut SDL_Renderer) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Draw a point on the current rendering target.
@@ -16857,9 +16513,9 @@ extern "C" {
     ///  \return 0 on success, or -1 on error
     pub fn SDL_RenderDrawPoint(
         renderer: *mut SDL_Renderer,
-        x: ::std::os::raw::c_int,
-        y: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        x: libc::c_int,
+        y: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Draw multiple points on the current rendering target.
@@ -16872,8 +16528,8 @@ extern "C" {
     pub fn SDL_RenderDrawPoints(
         renderer: *mut SDL_Renderer,
         points: *const SDL_Point,
-        count: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        count: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Draw a line on the current rendering target.
@@ -16887,11 +16543,11 @@ extern "C" {
     ///  \return 0 on success, or -1 on error
     pub fn SDL_RenderDrawLine(
         renderer: *mut SDL_Renderer,
-        x1: ::std::os::raw::c_int,
-        y1: ::std::os::raw::c_int,
-        x2: ::std::os::raw::c_int,
-        y2: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        x1: libc::c_int,
+        y1: libc::c_int,
+        x2: libc::c_int,
+        y2: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Draw a series of connected lines on the current rendering target.
@@ -16904,8 +16560,8 @@ extern "C" {
     pub fn SDL_RenderDrawLines(
         renderer: *mut SDL_Renderer,
         points: *const SDL_Point,
-        count: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        count: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Draw a rectangle on the current rendering target.
@@ -16914,10 +16570,7 @@ extern "C" {
     ///  \param rect A pointer to the destination rectangle, or NULL to outline the entire rendering target.
     ///
     ///  \return 0 on success, or -1 on error
-    pub fn SDL_RenderDrawRect(
-        renderer: *mut SDL_Renderer,
-        rect: *const SDL_Rect,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_RenderDrawRect(renderer: *mut SDL_Renderer, rect: *const SDL_Rect) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Draw some number of rectangles on the current rendering target.
@@ -16930,8 +16583,8 @@ extern "C" {
     pub fn SDL_RenderDrawRects(
         renderer: *mut SDL_Renderer,
         rects: *const SDL_Rect,
-        count: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        count: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Fill a rectangle on the current rendering target with the drawing color.
@@ -16941,10 +16594,7 @@ extern "C" {
     ///              rendering target.
     ///
     ///  \return 0 on success, or -1 on error
-    pub fn SDL_RenderFillRect(
-        renderer: *mut SDL_Renderer,
-        rect: *const SDL_Rect,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_RenderFillRect(renderer: *mut SDL_Renderer, rect: *const SDL_Rect) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Fill some number of rectangles on the current rendering target with the drawing color.
@@ -16957,8 +16607,8 @@ extern "C" {
     pub fn SDL_RenderFillRects(
         renderer: *mut SDL_Renderer,
         rects: *const SDL_Rect,
-        count: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        count: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Copy a portion of the texture to the current rendering target.
@@ -16976,7 +16626,7 @@ extern "C" {
         texture: *mut SDL_Texture,
         srcrect: *const SDL_Rect,
         dstrect: *const SDL_Rect,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Copy a portion of the source texture to the current rendering target, rotating it by angle around the given center
@@ -17000,7 +16650,7 @@ extern "C" {
         angle: f64,
         center: *const SDL_Point,
         flip: SDL_RendererFlip,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Read pixels from the current rendering target.
@@ -17020,9 +16670,9 @@ extern "C" {
         renderer: *mut SDL_Renderer,
         rect: *const SDL_Rect,
         format: Uint32,
-        pixels: *mut ::std::os::raw::c_void,
-        pitch: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        pixels: *mut libc::c_void,
+        pitch: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Update the screen with rendering performed.
@@ -17055,7 +16705,7 @@ extern "C" {
         texture: *mut SDL_Texture,
         texw: *mut f32,
         texh: *mut f32,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Unbind a texture from the current OpenGL/ES/ES2 context.
@@ -17063,7 +16713,7 @@ extern "C" {
     ///  \param texture  The SDL texture to unbind
     ///
     ///  \return 0 on success, or -1 if the operation is not supported
-    pub fn SDL_GL_UnbindTexture(texture: *mut SDL_Texture) -> ::std::os::raw::c_int;
+    pub fn SDL_GL_UnbindTexture(texture: *mut SDL_Texture) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the CAMetalLayer associated with the given Metal renderer
@@ -17073,7 +16723,7 @@ extern "C" {
     ///  \return CAMetalLayer* on success, or NULL if the renderer isn't a Metal renderer
     ///
     ///  \sa SDL_RenderGetMetalCommandEncoder()
-    pub fn SDL_RenderGetMetalLayer(renderer: *mut SDL_Renderer) -> *mut ::std::os::raw::c_void;
+    pub fn SDL_RenderGetMetalLayer(renderer: *mut SDL_Renderer) -> *mut libc::c_void;
 }
 extern "C" {
     ///  \brief Get the Metal command encoder for the current frame
@@ -17083,9 +16733,7 @@ extern "C" {
     ///  \return id<MTLRenderCommandEncoder> on success, or NULL if the renderer isn't a Metal renderer
     ///
     ///  \sa SDL_RenderGetMetalLayer()
-    pub fn SDL_RenderGetMetalCommandEncoder(
-        renderer: *mut SDL_Renderer,
-    ) -> *mut ::std::os::raw::c_void;
+    pub fn SDL_RenderGetMetalCommandEncoder(renderer: *mut SDL_Renderer) -> *mut libc::c_void;
 }
 ///  \brief SDL_sensor.h
 ///
@@ -17093,7 +16741,7 @@ extern "C" {
 ///  with the ::SDL_INIT_SENSOR flag.  This causes SDL to scan the system
 ///  for sensors, and load appropriate drivers.
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _SDL_Sensor {
     _unused: [u8; 0],
 }
@@ -17117,7 +16765,7 @@ pub enum SDL_SensorType {
 }
 extern "C" {
     ///  \brief Count the number of sensors attached to the system right now
-    pub fn SDL_NumSensors() -> ::std::os::raw::c_int;
+    pub fn SDL_NumSensors() -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the implementation dependent name of a sensor.
@@ -17125,9 +16773,7 @@ extern "C" {
     ///  This can be called before any sensors are opened.
     ///
     ///  \return The sensor name, or NULL if device_index is out of range.
-    pub fn SDL_SensorGetDeviceName(
-        device_index: ::std::os::raw::c_int,
-    ) -> *const ::std::os::raw::c_char;
+    pub fn SDL_SensorGetDeviceName(device_index: libc::c_int) -> *const libc::c_char;
 }
 extern "C" {
     ///  \brief Get the type of a sensor.
@@ -17135,7 +16781,7 @@ extern "C" {
     ///  This can be called before any sensors are opened.
     ///
     ///  \return The sensor type, or SDL_SENSOR_INVALID if device_index is out of range.
-    pub fn SDL_SensorGetDeviceType(device_index: ::std::os::raw::c_int) -> SDL_SensorType;
+    pub fn SDL_SensorGetDeviceType(device_index: libc::c_int) -> SDL_SensorType;
 }
 extern "C" {
     ///  \brief Get the platform dependent type of a sensor.
@@ -17143,9 +16789,7 @@ extern "C" {
     ///  This can be called before any sensors are opened.
     ///
     ///  \return The sensor platform dependent type, or -1 if device_index is out of range.
-    pub fn SDL_SensorGetDeviceNonPortableType(
-        device_index: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_SensorGetDeviceNonPortableType(device_index: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the instance ID of a sensor.
@@ -17153,7 +16797,7 @@ extern "C" {
     ///  This can be called before any sensors are opened.
     ///
     ///  \return The sensor instance ID, or -1 if device_index is out of range.
-    pub fn SDL_SensorGetDeviceInstanceID(device_index: ::std::os::raw::c_int) -> SDL_SensorID;
+    pub fn SDL_SensorGetDeviceInstanceID(device_index: libc::c_int) -> SDL_SensorID;
 }
 extern "C" {
     ///  \brief Open a sensor for use.
@@ -17161,7 +16805,7 @@ extern "C" {
     ///  The index passed as an argument refers to the N'th sensor on the system.
     ///
     ///  \return A sensor identifier, or NULL if an error occurred.
-    pub fn SDL_SensorOpen(device_index: ::std::os::raw::c_int) -> *mut SDL_Sensor;
+    pub fn SDL_SensorOpen(device_index: libc::c_int) -> *mut SDL_Sensor;
 }
 extern "C" {
     /// Return the SDL_Sensor associated with an instance id.
@@ -17171,7 +16815,7 @@ extern "C" {
     ///  \brief Get the implementation dependent name of a sensor.
     ///
     ///  \return The sensor name, or NULL if the sensor is NULL.
-    pub fn SDL_SensorGetName(sensor: *mut SDL_Sensor) -> *const ::std::os::raw::c_char;
+    pub fn SDL_SensorGetName(sensor: *mut SDL_Sensor) -> *const libc::c_char;
 }
 extern "C" {
     ///  \brief Get the type of a sensor.
@@ -17187,7 +16831,7 @@ extern "C" {
     ///  This can be called before any sensors are opened.
     ///
     ///  \return The sensor platform dependent type, or -1 if the sensor is NULL.
-    pub fn SDL_SensorGetNonPortableType(sensor: *mut SDL_Sensor) -> ::std::os::raw::c_int;
+    pub fn SDL_SensorGetNonPortableType(sensor: *mut SDL_Sensor) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the instance ID of a sensor.
@@ -17210,8 +16854,8 @@ extern "C" {
     pub fn SDL_SensorGetData(
         sensor: *mut SDL_Sensor,
         data: *mut f32,
-        num_values: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        num_values: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     ///  Close a sensor previously opened with SDL_SensorOpen()
@@ -17245,11 +16889,11 @@ extern "C" {
     ///
     ///  \sa SDL_DestroyWindow()
     pub fn SDL_CreateShapedWindow(
-        title: *const ::std::os::raw::c_char,
-        x: ::std::os::raw::c_uint,
-        y: ::std::os::raw::c_uint,
-        w: ::std::os::raw::c_uint,
-        h: ::std::os::raw::c_uint,
+        title: *const libc::c_char,
+        x: libc::c_uint,
+        y: libc::c_uint,
+        w: libc::c_uint,
+        h: libc::c_uint,
         flags: Uint32,
     ) -> *mut SDL_Window;
 }
@@ -17288,18 +16932,18 @@ pub union SDL_WindowShapeParams {
 #[test]
 fn bindgen_test_layout_SDL_WindowShapeParams() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_WindowShapeParams>(),
+        ::core::mem::size_of::<SDL_WindowShapeParams>(),
         4usize,
         concat!("Size of: ", stringify!(SDL_WindowShapeParams))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_WindowShapeParams>(),
+        ::core::mem::align_of::<SDL_WindowShapeParams>(),
         1usize,
         concat!("Alignment of ", stringify!(SDL_WindowShapeParams))
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_WindowShapeParams>())).binarizationCutoff as *const _
+            &(*(::core::ptr::null::<SDL_WindowShapeParams>())).binarizationCutoff as *const _
                 as usize
         },
         0usize,
@@ -17311,7 +16955,7 @@ fn bindgen_test_layout_SDL_WindowShapeParams() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_WindowShapeParams>())).colorKey as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_WindowShapeParams>())).colorKey as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -17333,17 +16977,17 @@ pub struct SDL_WindowShapeMode {
 #[test]
 fn bindgen_test_layout_SDL_WindowShapeMode() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_WindowShapeMode>(),
+        ::core::mem::size_of::<SDL_WindowShapeMode>(),
         8usize,
         concat!("Size of: ", stringify!(SDL_WindowShapeMode))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_WindowShapeMode>(),
+        ::core::mem::align_of::<SDL_WindowShapeMode>(),
         4usize,
         concat!("Alignment of ", stringify!(SDL_WindowShapeMode))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_WindowShapeMode>())).mode as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_WindowShapeMode>())).mode as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -17353,7 +16997,7 @@ fn bindgen_test_layout_SDL_WindowShapeMode() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_WindowShapeMode>())).parameters as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_WindowShapeMode>())).parameters as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -17379,7 +17023,7 @@ extern "C" {
         window: *mut SDL_Window,
         shape: *mut SDL_Surface,
         shape_mode: *mut SDL_WindowShapeMode,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     /// \brief Get the shape parameters of a shaped window.
@@ -17396,16 +17040,13 @@ extern "C" {
     pub fn SDL_GetShapedWindowMode(
         window: *mut SDL_Window,
         shape_mode: *mut SDL_WindowShapeMode,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     ///\brief Sets the UNIX nice value for a thread, using setpriority() if possible, and RealtimeKit if available.
     ///
     ///\return 0 on success, or -1 on error.
-    pub fn SDL_LinuxSetThreadPriority(
-        threadID: Sint64,
-        priority: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn SDL_LinuxSetThreadPriority(threadID: Sint64, priority: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     ///\brief Return true if the current device is a tablet.
@@ -17435,11 +17076,11 @@ extern "C" {
 ///  the next timer interval.  If the returned value is the same as the one
 ///  passed in, the periodic alarm continues, otherwise a new alarm is
 ///  scheduled.  If the callback returns 0, the periodic alarm is cancelled.
-pub type SDL_TimerCallback = ::std::option::Option<
-    unsafe extern "C" fn(interval: Uint32, param: *mut ::std::os::raw::c_void) -> Uint32,
+pub type SDL_TimerCallback = ::core::option::Option<
+    unsafe extern "C" fn(interval: Uint32, param: *mut libc::c_void) -> Uint32,
 >;
 /// Definition of the timer ID type.
-pub type SDL_TimerID = ::std::os::raw::c_int;
+pub type SDL_TimerID = libc::c_int;
 extern "C" {
     /// \brief Add a new timer to the pool of timers already running.
     ///
@@ -17447,7 +17088,7 @@ extern "C" {
     pub fn SDL_AddTimer(
         interval: Uint32,
         callback: SDL_TimerCallback,
-        param: *mut ::std::os::raw::c_void,
+        param: *mut libc::c_void,
     ) -> SDL_TimerID;
 }
 extern "C" {
@@ -17469,7 +17110,7 @@ extern "C" {
 ///  \sa SDL_VERSION
 ///  \sa SDL_GetVersion
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_version {
     ///< major version
     pub major: Uint8,
@@ -17481,17 +17122,17 @@ pub struct SDL_version {
 #[test]
 fn bindgen_test_layout_SDL_version() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_version>(),
+        ::core::mem::size_of::<SDL_version>(),
         3usize,
         concat!("Size of: ", stringify!(SDL_version))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_version>(),
+        ::core::mem::align_of::<SDL_version>(),
         1usize,
         concat!("Alignment of ", stringify!(SDL_version))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_version>())).major as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_version>())).major as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -17501,7 +17142,7 @@ fn bindgen_test_layout_SDL_version() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_version>())).minor as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_version>())).minor as *const _ as usize },
         1usize,
         concat!(
             "Offset of field: ",
@@ -17511,7 +17152,7 @@ fn bindgen_test_layout_SDL_version() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_version>())).patch as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_version>())).patch as *const _ as usize },
         2usize,
         concat!(
             "Offset of field: ",
@@ -17552,7 +17193,7 @@ extern "C" {
     ///  Returns an arbitrary string (a hash value) uniquely identifying the
     ///  exact revision of the SDL library in use, and is only useful in comparing
     ///  against other revisions. It is NOT an incrementing number.
-    pub fn SDL_GetRevision() -> *const ::std::os::raw::c_char;
+    pub fn SDL_GetRevision() -> *const libc::c_char;
 }
 extern "C" {
     ///  \brief Get the revision number of SDL that is linked against your program.
@@ -17560,11 +17201,11 @@ extern "C" {
     ///  Returns a number uniquely identifying the exact revision of the SDL
     ///  library in use. It is an incrementing number based on commits to
     ///  hg.libsdl.org.
-    pub fn SDL_GetRevisionNumber() -> ::std::os::raw::c_int;
+    pub fn SDL_GetRevisionNumber() -> libc::c_int;
 }
 extern "C" {
     ///  This function initializes  the subsystems specified by \c flags
-    pub fn SDL_Init(flags: Uint32) -> ::std::os::raw::c_int;
+    pub fn SDL_Init(flags: Uint32) -> libc::c_int;
 }
 extern "C" {
     ///  This function initializes specific SDL subsystems
@@ -17574,7 +17215,7 @@ extern "C" {
     ///  shutdown a subsystem manually (or call SDL_Quit() to force shutdown).
     ///  If a subsystem is already loaded then this call will
     ///  increase the ref-count and return.
-    pub fn SDL_InitSubSystem(flags: Uint32) -> ::std::os::raw::c_int;
+    pub fn SDL_InitSubSystem(flags: Uint32) -> libc::c_int;
 }
 extern "C" {
     ///  This function cleans up specific SDL subsystems
@@ -17592,11 +17233,11 @@ extern "C" {
     ///  call it upon all exit conditions.
     pub fn SDL_Quit();
 }
-pub type XID = ::std::os::raw::c_ulong;
-pub type Mask = ::std::os::raw::c_ulong;
-pub type Atom = ::std::os::raw::c_ulong;
-pub type VisualID = ::std::os::raw::c_ulong;
-pub type Time = ::std::os::raw::c_ulong;
+pub type XID = libc::c_ulong;
+pub type Mask = libc::c_ulong;
+pub type Atom = libc::c_ulong;
+pub type VisualID = libc::c_ulong;
+pub type Time = libc::c_ulong;
 pub type Window = XID;
 pub type Drawable = XID;
 pub type Font = XID;
@@ -17605,38 +17246,34 @@ pub type Cursor = XID;
 pub type Colormap = XID;
 pub type GContext = XID;
 pub type KeySym = XID;
-pub type KeyCode = ::std::os::raw::c_uchar;
+pub type KeyCode = libc::c_uchar;
 extern "C" {
-    pub fn _Xmblen(
-        str: *mut ::std::os::raw::c_char,
-        len: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn _Xmblen(str: *mut libc::c_char, len: libc::c_int) -> libc::c_int;
 }
-pub type XPointer = *mut ::std::os::raw::c_char;
+pub type XPointer = *mut libc::c_char;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _XExtData {
-    pub number: ::std::os::raw::c_int,
+    pub number: libc::c_int,
     pub next: *mut _XExtData,
-    pub free_private: ::std::option::Option<
-        unsafe extern "C" fn(extension: *mut _XExtData) -> ::std::os::raw::c_int,
-    >,
+    pub free_private:
+        ::core::option::Option<unsafe extern "C" fn(extension: *mut _XExtData) -> libc::c_int>,
     pub private_data: XPointer,
 }
 #[test]
 fn bindgen_test_layout__XExtData() {
     assert_eq!(
-        ::std::mem::size_of::<_XExtData>(),
+        ::core::mem::size_of::<_XExtData>(),
         32usize,
         concat!("Size of: ", stringify!(_XExtData))
     );
     assert_eq!(
-        ::std::mem::align_of::<_XExtData>(),
+        ::core::mem::align_of::<_XExtData>(),
         8usize,
         concat!("Alignment of ", stringify!(_XExtData))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XExtData>())).number as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XExtData>())).number as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -17646,7 +17283,7 @@ fn bindgen_test_layout__XExtData() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XExtData>())).next as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XExtData>())).next as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -17656,7 +17293,7 @@ fn bindgen_test_layout__XExtData() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XExtData>())).free_private as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XExtData>())).free_private as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -17666,7 +17303,7 @@ fn bindgen_test_layout__XExtData() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XExtData>())).private_data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XExtData>())).private_data as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -17678,27 +17315,27 @@ fn bindgen_test_layout__XExtData() {
 }
 pub type XExtData = _XExtData;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XExtCodes {
-    pub extension: ::std::os::raw::c_int,
-    pub major_opcode: ::std::os::raw::c_int,
-    pub first_event: ::std::os::raw::c_int,
-    pub first_error: ::std::os::raw::c_int,
+    pub extension: libc::c_int,
+    pub major_opcode: libc::c_int,
+    pub first_event: libc::c_int,
+    pub first_error: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XExtCodes() {
     assert_eq!(
-        ::std::mem::size_of::<XExtCodes>(),
+        ::core::mem::size_of::<XExtCodes>(),
         16usize,
         concat!("Size of: ", stringify!(XExtCodes))
     );
     assert_eq!(
-        ::std::mem::align_of::<XExtCodes>(),
+        ::core::mem::align_of::<XExtCodes>(),
         4usize,
         concat!("Alignment of ", stringify!(XExtCodes))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XExtCodes>())).extension as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XExtCodes>())).extension as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -17708,7 +17345,7 @@ fn bindgen_test_layout_XExtCodes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XExtCodes>())).major_opcode as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XExtCodes>())).major_opcode as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -17718,7 +17355,7 @@ fn bindgen_test_layout_XExtCodes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XExtCodes>())).first_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XExtCodes>())).first_event as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -17728,7 +17365,7 @@ fn bindgen_test_layout_XExtCodes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XExtCodes>())).first_error as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XExtCodes>())).first_error as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -17739,26 +17376,26 @@ fn bindgen_test_layout_XExtCodes() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XPixmapFormatValues {
-    pub depth: ::std::os::raw::c_int,
-    pub bits_per_pixel: ::std::os::raw::c_int,
-    pub scanline_pad: ::std::os::raw::c_int,
+    pub depth: libc::c_int,
+    pub bits_per_pixel: libc::c_int,
+    pub scanline_pad: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XPixmapFormatValues() {
     assert_eq!(
-        ::std::mem::size_of::<XPixmapFormatValues>(),
+        ::core::mem::size_of::<XPixmapFormatValues>(),
         12usize,
         concat!("Size of: ", stringify!(XPixmapFormatValues))
     );
     assert_eq!(
-        ::std::mem::align_of::<XPixmapFormatValues>(),
+        ::core::mem::align_of::<XPixmapFormatValues>(),
         4usize,
         concat!("Alignment of ", stringify!(XPixmapFormatValues))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XPixmapFormatValues>())).depth as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XPixmapFormatValues>())).depth as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -17769,7 +17406,7 @@ fn bindgen_test_layout_XPixmapFormatValues() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XPixmapFormatValues>())).bits_per_pixel as *const _ as usize
+            &(*(::core::ptr::null::<XPixmapFormatValues>())).bits_per_pixel as *const _ as usize
         },
         4usize,
         concat!(
@@ -17781,7 +17418,7 @@ fn bindgen_test_layout_XPixmapFormatValues() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XPixmapFormatValues>())).scanline_pad as *const _ as usize
+            &(*(::core::ptr::null::<XPixmapFormatValues>())).scanline_pad as *const _ as usize
         },
         8usize,
         concat!(
@@ -17793,46 +17430,46 @@ fn bindgen_test_layout_XPixmapFormatValues() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XGCValues {
-    pub function: ::std::os::raw::c_int,
-    pub plane_mask: ::std::os::raw::c_ulong,
-    pub foreground: ::std::os::raw::c_ulong,
-    pub background: ::std::os::raw::c_ulong,
-    pub line_width: ::std::os::raw::c_int,
-    pub line_style: ::std::os::raw::c_int,
-    pub cap_style: ::std::os::raw::c_int,
-    pub join_style: ::std::os::raw::c_int,
-    pub fill_style: ::std::os::raw::c_int,
-    pub fill_rule: ::std::os::raw::c_int,
-    pub arc_mode: ::std::os::raw::c_int,
+    pub function: libc::c_int,
+    pub plane_mask: libc::c_ulong,
+    pub foreground: libc::c_ulong,
+    pub background: libc::c_ulong,
+    pub line_width: libc::c_int,
+    pub line_style: libc::c_int,
+    pub cap_style: libc::c_int,
+    pub join_style: libc::c_int,
+    pub fill_style: libc::c_int,
+    pub fill_rule: libc::c_int,
+    pub arc_mode: libc::c_int,
     pub tile: Pixmap,
     pub stipple: Pixmap,
-    pub ts_x_origin: ::std::os::raw::c_int,
-    pub ts_y_origin: ::std::os::raw::c_int,
+    pub ts_x_origin: libc::c_int,
+    pub ts_y_origin: libc::c_int,
     pub font: Font,
-    pub subwindow_mode: ::std::os::raw::c_int,
-    pub graphics_exposures: ::std::os::raw::c_int,
-    pub clip_x_origin: ::std::os::raw::c_int,
-    pub clip_y_origin: ::std::os::raw::c_int,
+    pub subwindow_mode: libc::c_int,
+    pub graphics_exposures: libc::c_int,
+    pub clip_x_origin: libc::c_int,
+    pub clip_y_origin: libc::c_int,
     pub clip_mask: Pixmap,
-    pub dash_offset: ::std::os::raw::c_int,
-    pub dashes: ::std::os::raw::c_char,
+    pub dash_offset: libc::c_int,
+    pub dashes: libc::c_char,
 }
 #[test]
 fn bindgen_test_layout_XGCValues() {
     assert_eq!(
-        ::std::mem::size_of::<XGCValues>(),
+        ::core::mem::size_of::<XGCValues>(),
         128usize,
         concat!("Size of: ", stringify!(XGCValues))
     );
     assert_eq!(
-        ::std::mem::align_of::<XGCValues>(),
+        ::core::mem::align_of::<XGCValues>(),
         8usize,
         concat!("Alignment of ", stringify!(XGCValues))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).function as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).function as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -17842,7 +17479,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).plane_mask as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).plane_mask as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -17852,7 +17489,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).foreground as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).foreground as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -17862,7 +17499,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).background as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).background as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -17872,7 +17509,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).line_width as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).line_width as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -17882,7 +17519,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).line_style as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).line_style as *const _ as usize },
         36usize,
         concat!(
             "Offset of field: ",
@@ -17892,7 +17529,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).cap_style as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).cap_style as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -17902,7 +17539,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).join_style as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).join_style as *const _ as usize },
         44usize,
         concat!(
             "Offset of field: ",
@@ -17912,7 +17549,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).fill_style as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).fill_style as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -17922,7 +17559,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).fill_rule as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).fill_rule as *const _ as usize },
         52usize,
         concat!(
             "Offset of field: ",
@@ -17932,7 +17569,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).arc_mode as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).arc_mode as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -17942,7 +17579,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).tile as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).tile as *const _ as usize },
         64usize,
         concat!(
             "Offset of field: ",
@@ -17952,7 +17589,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).stipple as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).stipple as *const _ as usize },
         72usize,
         concat!(
             "Offset of field: ",
@@ -17962,7 +17599,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).ts_x_origin as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).ts_x_origin as *const _ as usize },
         80usize,
         concat!(
             "Offset of field: ",
@@ -17972,7 +17609,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).ts_y_origin as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).ts_y_origin as *const _ as usize },
         84usize,
         concat!(
             "Offset of field: ",
@@ -17982,7 +17619,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).font as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).font as *const _ as usize },
         88usize,
         concat!(
             "Offset of field: ",
@@ -17992,7 +17629,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).subwindow_mode as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).subwindow_mode as *const _ as usize },
         96usize,
         concat!(
             "Offset of field: ",
@@ -18002,7 +17639,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).graphics_exposures as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).graphics_exposures as *const _ as usize },
         100usize,
         concat!(
             "Offset of field: ",
@@ -18012,7 +17649,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).clip_x_origin as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).clip_x_origin as *const _ as usize },
         104usize,
         concat!(
             "Offset of field: ",
@@ -18022,7 +17659,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).clip_y_origin as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).clip_y_origin as *const _ as usize },
         108usize,
         concat!(
             "Offset of field: ",
@@ -18032,7 +17669,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).clip_mask as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).clip_mask as *const _ as usize },
         112usize,
         concat!(
             "Offset of field: ",
@@ -18042,7 +17679,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).dash_offset as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).dash_offset as *const _ as usize },
         120usize,
         concat!(
             "Offset of field: ",
@@ -18052,7 +17689,7 @@ fn bindgen_test_layout_XGCValues() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGCValues>())).dashes as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGCValues>())).dashes as *const _ as usize },
         124usize,
         concat!(
             "Offset of field: ",
@@ -18063,37 +17700,37 @@ fn bindgen_test_layout_XGCValues() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _XGC {
     _unused: [u8; 0],
 }
 pub type GC = *mut _XGC;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct Visual {
     pub ext_data: *mut XExtData,
     pub visualid: VisualID,
-    pub class: ::std::os::raw::c_int,
-    pub red_mask: ::std::os::raw::c_ulong,
-    pub green_mask: ::std::os::raw::c_ulong,
-    pub blue_mask: ::std::os::raw::c_ulong,
-    pub bits_per_rgb: ::std::os::raw::c_int,
-    pub map_entries: ::std::os::raw::c_int,
+    pub class: libc::c_int,
+    pub red_mask: libc::c_ulong,
+    pub green_mask: libc::c_ulong,
+    pub blue_mask: libc::c_ulong,
+    pub bits_per_rgb: libc::c_int,
+    pub map_entries: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_Visual() {
     assert_eq!(
-        ::std::mem::size_of::<Visual>(),
+        ::core::mem::size_of::<Visual>(),
         56usize,
         concat!("Size of: ", stringify!(Visual))
     );
     assert_eq!(
-        ::std::mem::align_of::<Visual>(),
+        ::core::mem::align_of::<Visual>(),
         8usize,
         concat!("Alignment of ", stringify!(Visual))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Visual>())).ext_data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Visual>())).ext_data as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -18103,7 +17740,7 @@ fn bindgen_test_layout_Visual() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Visual>())).visualid as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Visual>())).visualid as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -18113,7 +17750,7 @@ fn bindgen_test_layout_Visual() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Visual>())).class as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Visual>())).class as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -18123,7 +17760,7 @@ fn bindgen_test_layout_Visual() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Visual>())).red_mask as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Visual>())).red_mask as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -18133,7 +17770,7 @@ fn bindgen_test_layout_Visual() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Visual>())).green_mask as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Visual>())).green_mask as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -18143,7 +17780,7 @@ fn bindgen_test_layout_Visual() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Visual>())).blue_mask as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Visual>())).blue_mask as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -18153,7 +17790,7 @@ fn bindgen_test_layout_Visual() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Visual>())).bits_per_rgb as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Visual>())).bits_per_rgb as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -18163,7 +17800,7 @@ fn bindgen_test_layout_Visual() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Visual>())).map_entries as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Visual>())).map_entries as *const _ as usize },
         52usize,
         concat!(
             "Offset of field: ",
@@ -18174,26 +17811,26 @@ fn bindgen_test_layout_Visual() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct Depth {
-    pub depth: ::std::os::raw::c_int,
-    pub nvisuals: ::std::os::raw::c_int,
+    pub depth: libc::c_int,
+    pub nvisuals: libc::c_int,
     pub visuals: *mut Visual,
 }
 #[test]
 fn bindgen_test_layout_Depth() {
     assert_eq!(
-        ::std::mem::size_of::<Depth>(),
+        ::core::mem::size_of::<Depth>(),
         16usize,
         concat!("Size of: ", stringify!(Depth))
     );
     assert_eq!(
-        ::std::mem::align_of::<Depth>(),
+        ::core::mem::align_of::<Depth>(),
         8usize,
         concat!("Alignment of ", stringify!(Depth))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Depth>())).depth as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Depth>())).depth as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -18203,7 +17840,7 @@ fn bindgen_test_layout_Depth() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Depth>())).nvisuals as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Depth>())).nvisuals as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -18213,7 +17850,7 @@ fn bindgen_test_layout_Depth() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Depth>())).visuals as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Depth>())).visuals as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -18224,48 +17861,48 @@ fn bindgen_test_layout_Depth() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _XDisplay {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct Screen {
     pub ext_data: *mut XExtData,
     pub display: *mut _XDisplay,
     pub root: Window,
-    pub width: ::std::os::raw::c_int,
-    pub height: ::std::os::raw::c_int,
-    pub mwidth: ::std::os::raw::c_int,
-    pub mheight: ::std::os::raw::c_int,
-    pub ndepths: ::std::os::raw::c_int,
+    pub width: libc::c_int,
+    pub height: libc::c_int,
+    pub mwidth: libc::c_int,
+    pub mheight: libc::c_int,
+    pub ndepths: libc::c_int,
     pub depths: *mut Depth,
-    pub root_depth: ::std::os::raw::c_int,
+    pub root_depth: libc::c_int,
     pub root_visual: *mut Visual,
     pub default_gc: GC,
     pub cmap: Colormap,
-    pub white_pixel: ::std::os::raw::c_ulong,
-    pub black_pixel: ::std::os::raw::c_ulong,
-    pub max_maps: ::std::os::raw::c_int,
-    pub min_maps: ::std::os::raw::c_int,
-    pub backing_store: ::std::os::raw::c_int,
-    pub save_unders: ::std::os::raw::c_int,
-    pub root_input_mask: ::std::os::raw::c_long,
+    pub white_pixel: libc::c_ulong,
+    pub black_pixel: libc::c_ulong,
+    pub max_maps: libc::c_int,
+    pub min_maps: libc::c_int,
+    pub backing_store: libc::c_int,
+    pub save_unders: libc::c_int,
+    pub root_input_mask: libc::c_long,
 }
 #[test]
 fn bindgen_test_layout_Screen() {
     assert_eq!(
-        ::std::mem::size_of::<Screen>(),
+        ::core::mem::size_of::<Screen>(),
         128usize,
         concat!("Size of: ", stringify!(Screen))
     );
     assert_eq!(
-        ::std::mem::align_of::<Screen>(),
+        ::core::mem::align_of::<Screen>(),
         8usize,
         concat!("Alignment of ", stringify!(Screen))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).ext_data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).ext_data as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -18275,7 +17912,7 @@ fn bindgen_test_layout_Screen() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).display as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -18285,7 +17922,7 @@ fn bindgen_test_layout_Screen() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).root as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).root as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -18295,7 +17932,7 @@ fn bindgen_test_layout_Screen() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).width as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).width as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -18305,7 +17942,7 @@ fn bindgen_test_layout_Screen() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).height as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).height as *const _ as usize },
         28usize,
         concat!(
             "Offset of field: ",
@@ -18315,7 +17952,7 @@ fn bindgen_test_layout_Screen() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).mwidth as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).mwidth as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -18325,7 +17962,7 @@ fn bindgen_test_layout_Screen() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).mheight as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).mheight as *const _ as usize },
         36usize,
         concat!(
             "Offset of field: ",
@@ -18335,7 +17972,7 @@ fn bindgen_test_layout_Screen() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).ndepths as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).ndepths as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -18345,7 +17982,7 @@ fn bindgen_test_layout_Screen() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).depths as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).depths as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -18355,7 +17992,7 @@ fn bindgen_test_layout_Screen() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).root_depth as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).root_depth as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -18365,7 +18002,7 @@ fn bindgen_test_layout_Screen() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).root_visual as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).root_visual as *const _ as usize },
         64usize,
         concat!(
             "Offset of field: ",
@@ -18375,7 +18012,7 @@ fn bindgen_test_layout_Screen() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).default_gc as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).default_gc as *const _ as usize },
         72usize,
         concat!(
             "Offset of field: ",
@@ -18385,7 +18022,7 @@ fn bindgen_test_layout_Screen() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).cmap as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).cmap as *const _ as usize },
         80usize,
         concat!(
             "Offset of field: ",
@@ -18395,7 +18032,7 @@ fn bindgen_test_layout_Screen() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).white_pixel as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).white_pixel as *const _ as usize },
         88usize,
         concat!(
             "Offset of field: ",
@@ -18405,7 +18042,7 @@ fn bindgen_test_layout_Screen() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).black_pixel as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).black_pixel as *const _ as usize },
         96usize,
         concat!(
             "Offset of field: ",
@@ -18415,7 +18052,7 @@ fn bindgen_test_layout_Screen() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).max_maps as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).max_maps as *const _ as usize },
         104usize,
         concat!(
             "Offset of field: ",
@@ -18425,7 +18062,7 @@ fn bindgen_test_layout_Screen() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).min_maps as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).min_maps as *const _ as usize },
         108usize,
         concat!(
             "Offset of field: ",
@@ -18435,7 +18072,7 @@ fn bindgen_test_layout_Screen() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).backing_store as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).backing_store as *const _ as usize },
         112usize,
         concat!(
             "Offset of field: ",
@@ -18445,7 +18082,7 @@ fn bindgen_test_layout_Screen() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).save_unders as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).save_unders as *const _ as usize },
         116usize,
         concat!(
             "Offset of field: ",
@@ -18455,7 +18092,7 @@ fn bindgen_test_layout_Screen() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Screen>())).root_input_mask as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<Screen>())).root_input_mask as *const _ as usize },
         120usize,
         concat!(
             "Offset of field: ",
@@ -18466,27 +18103,27 @@ fn bindgen_test_layout_Screen() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ScreenFormat {
     pub ext_data: *mut XExtData,
-    pub depth: ::std::os::raw::c_int,
-    pub bits_per_pixel: ::std::os::raw::c_int,
-    pub scanline_pad: ::std::os::raw::c_int,
+    pub depth: libc::c_int,
+    pub bits_per_pixel: libc::c_int,
+    pub scanline_pad: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_ScreenFormat() {
     assert_eq!(
-        ::std::mem::size_of::<ScreenFormat>(),
+        ::core::mem::size_of::<ScreenFormat>(),
         24usize,
         concat!("Size of: ", stringify!(ScreenFormat))
     );
     assert_eq!(
-        ::std::mem::align_of::<ScreenFormat>(),
+        ::core::mem::align_of::<ScreenFormat>(),
         8usize,
         concat!("Alignment of ", stringify!(ScreenFormat))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ScreenFormat>())).ext_data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<ScreenFormat>())).ext_data as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -18496,7 +18133,7 @@ fn bindgen_test_layout_ScreenFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ScreenFormat>())).depth as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<ScreenFormat>())).depth as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -18506,7 +18143,7 @@ fn bindgen_test_layout_ScreenFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ScreenFormat>())).bits_per_pixel as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<ScreenFormat>())).bits_per_pixel as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -18516,7 +18153,7 @@ fn bindgen_test_layout_ScreenFormat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ScreenFormat>())).scanline_pad as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<ScreenFormat>())).scanline_pad as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -18527,39 +18164,39 @@ fn bindgen_test_layout_ScreenFormat() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XSetWindowAttributes {
     pub background_pixmap: Pixmap,
-    pub background_pixel: ::std::os::raw::c_ulong,
+    pub background_pixel: libc::c_ulong,
     pub border_pixmap: Pixmap,
-    pub border_pixel: ::std::os::raw::c_ulong,
-    pub bit_gravity: ::std::os::raw::c_int,
-    pub win_gravity: ::std::os::raw::c_int,
-    pub backing_store: ::std::os::raw::c_int,
-    pub backing_planes: ::std::os::raw::c_ulong,
-    pub backing_pixel: ::std::os::raw::c_ulong,
-    pub save_under: ::std::os::raw::c_int,
-    pub event_mask: ::std::os::raw::c_long,
-    pub do_not_propagate_mask: ::std::os::raw::c_long,
-    pub override_redirect: ::std::os::raw::c_int,
+    pub border_pixel: libc::c_ulong,
+    pub bit_gravity: libc::c_int,
+    pub win_gravity: libc::c_int,
+    pub backing_store: libc::c_int,
+    pub backing_planes: libc::c_ulong,
+    pub backing_pixel: libc::c_ulong,
+    pub save_under: libc::c_int,
+    pub event_mask: libc::c_long,
+    pub do_not_propagate_mask: libc::c_long,
+    pub override_redirect: libc::c_int,
     pub colormap: Colormap,
     pub cursor: Cursor,
 }
 #[test]
 fn bindgen_test_layout_XSetWindowAttributes() {
     assert_eq!(
-        ::std::mem::size_of::<XSetWindowAttributes>(),
+        ::core::mem::size_of::<XSetWindowAttributes>(),
         112usize,
         concat!("Size of: ", stringify!(XSetWindowAttributes))
     );
     assert_eq!(
-        ::std::mem::align_of::<XSetWindowAttributes>(),
+        ::core::mem::align_of::<XSetWindowAttributes>(),
         8usize,
         concat!("Alignment of ", stringify!(XSetWindowAttributes))
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XSetWindowAttributes>())).background_pixmap as *const _ as usize
+            &(*(::core::ptr::null::<XSetWindowAttributes>())).background_pixmap as *const _ as usize
         },
         0usize,
         concat!(
@@ -18571,7 +18208,7 @@ fn bindgen_test_layout_XSetWindowAttributes() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XSetWindowAttributes>())).background_pixel as *const _ as usize
+            &(*(::core::ptr::null::<XSetWindowAttributes>())).background_pixel as *const _ as usize
         },
         8usize,
         concat!(
@@ -18583,7 +18220,7 @@ fn bindgen_test_layout_XSetWindowAttributes() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XSetWindowAttributes>())).border_pixmap as *const _ as usize
+            &(*(::core::ptr::null::<XSetWindowAttributes>())).border_pixmap as *const _ as usize
         },
         16usize,
         concat!(
@@ -18595,7 +18232,7 @@ fn bindgen_test_layout_XSetWindowAttributes() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XSetWindowAttributes>())).border_pixel as *const _ as usize
+            &(*(::core::ptr::null::<XSetWindowAttributes>())).border_pixel as *const _ as usize
         },
         24usize,
         concat!(
@@ -18607,7 +18244,7 @@ fn bindgen_test_layout_XSetWindowAttributes() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XSetWindowAttributes>())).bit_gravity as *const _ as usize
+            &(*(::core::ptr::null::<XSetWindowAttributes>())).bit_gravity as *const _ as usize
         },
         32usize,
         concat!(
@@ -18619,7 +18256,7 @@ fn bindgen_test_layout_XSetWindowAttributes() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XSetWindowAttributes>())).win_gravity as *const _ as usize
+            &(*(::core::ptr::null::<XSetWindowAttributes>())).win_gravity as *const _ as usize
         },
         36usize,
         concat!(
@@ -18631,7 +18268,7 @@ fn bindgen_test_layout_XSetWindowAttributes() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XSetWindowAttributes>())).backing_store as *const _ as usize
+            &(*(::core::ptr::null::<XSetWindowAttributes>())).backing_store as *const _ as usize
         },
         40usize,
         concat!(
@@ -18643,7 +18280,7 @@ fn bindgen_test_layout_XSetWindowAttributes() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XSetWindowAttributes>())).backing_planes as *const _ as usize
+            &(*(::core::ptr::null::<XSetWindowAttributes>())).backing_planes as *const _ as usize
         },
         48usize,
         concat!(
@@ -18655,7 +18292,7 @@ fn bindgen_test_layout_XSetWindowAttributes() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XSetWindowAttributes>())).backing_pixel as *const _ as usize
+            &(*(::core::ptr::null::<XSetWindowAttributes>())).backing_pixel as *const _ as usize
         },
         56usize,
         concat!(
@@ -18666,7 +18303,9 @@ fn bindgen_test_layout_XSetWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSetWindowAttributes>())).save_under as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<XSetWindowAttributes>())).save_under as *const _ as usize
+        },
         64usize,
         concat!(
             "Offset of field: ",
@@ -18676,7 +18315,9 @@ fn bindgen_test_layout_XSetWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSetWindowAttributes>())).event_mask as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<XSetWindowAttributes>())).event_mask as *const _ as usize
+        },
         72usize,
         concat!(
             "Offset of field: ",
@@ -18687,7 +18328,7 @@ fn bindgen_test_layout_XSetWindowAttributes() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XSetWindowAttributes>())).do_not_propagate_mask as *const _
+            &(*(::core::ptr::null::<XSetWindowAttributes>())).do_not_propagate_mask as *const _
                 as usize
         },
         80usize,
@@ -18700,7 +18341,7 @@ fn bindgen_test_layout_XSetWindowAttributes() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XSetWindowAttributes>())).override_redirect as *const _ as usize
+            &(*(::core::ptr::null::<XSetWindowAttributes>())).override_redirect as *const _ as usize
         },
         88usize,
         concat!(
@@ -18711,7 +18352,7 @@ fn bindgen_test_layout_XSetWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSetWindowAttributes>())).colormap as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSetWindowAttributes>())).colormap as *const _ as usize },
         96usize,
         concat!(
             "Offset of field: ",
@@ -18721,7 +18362,7 @@ fn bindgen_test_layout_XSetWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSetWindowAttributes>())).cursor as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSetWindowAttributes>())).cursor as *const _ as usize },
         104usize,
         concat!(
             "Offset of field: ",
@@ -18732,46 +18373,46 @@ fn bindgen_test_layout_XSetWindowAttributes() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XWindowAttributes {
-    pub x: ::std::os::raw::c_int,
-    pub y: ::std::os::raw::c_int,
-    pub width: ::std::os::raw::c_int,
-    pub height: ::std::os::raw::c_int,
-    pub border_width: ::std::os::raw::c_int,
-    pub depth: ::std::os::raw::c_int,
+    pub x: libc::c_int,
+    pub y: libc::c_int,
+    pub width: libc::c_int,
+    pub height: libc::c_int,
+    pub border_width: libc::c_int,
+    pub depth: libc::c_int,
     pub visual: *mut Visual,
     pub root: Window,
-    pub class: ::std::os::raw::c_int,
-    pub bit_gravity: ::std::os::raw::c_int,
-    pub win_gravity: ::std::os::raw::c_int,
-    pub backing_store: ::std::os::raw::c_int,
-    pub backing_planes: ::std::os::raw::c_ulong,
-    pub backing_pixel: ::std::os::raw::c_ulong,
-    pub save_under: ::std::os::raw::c_int,
+    pub class: libc::c_int,
+    pub bit_gravity: libc::c_int,
+    pub win_gravity: libc::c_int,
+    pub backing_store: libc::c_int,
+    pub backing_planes: libc::c_ulong,
+    pub backing_pixel: libc::c_ulong,
+    pub save_under: libc::c_int,
     pub colormap: Colormap,
-    pub map_installed: ::std::os::raw::c_int,
-    pub map_state: ::std::os::raw::c_int,
-    pub all_event_masks: ::std::os::raw::c_long,
-    pub your_event_mask: ::std::os::raw::c_long,
-    pub do_not_propagate_mask: ::std::os::raw::c_long,
-    pub override_redirect: ::std::os::raw::c_int,
+    pub map_installed: libc::c_int,
+    pub map_state: libc::c_int,
+    pub all_event_masks: libc::c_long,
+    pub your_event_mask: libc::c_long,
+    pub do_not_propagate_mask: libc::c_long,
+    pub override_redirect: libc::c_int,
     pub screen: *mut Screen,
 }
 #[test]
 fn bindgen_test_layout_XWindowAttributes() {
     assert_eq!(
-        ::std::mem::size_of::<XWindowAttributes>(),
+        ::core::mem::size_of::<XWindowAttributes>(),
         136usize,
         concat!("Size of: ", stringify!(XWindowAttributes))
     );
     assert_eq!(
-        ::std::mem::align_of::<XWindowAttributes>(),
+        ::core::mem::align_of::<XWindowAttributes>(),
         8usize,
         concat!("Alignment of ", stringify!(XWindowAttributes))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowAttributes>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowAttributes>())).x as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -18781,7 +18422,7 @@ fn bindgen_test_layout_XWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowAttributes>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowAttributes>())).y as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -18791,7 +18432,7 @@ fn bindgen_test_layout_XWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowAttributes>())).width as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowAttributes>())).width as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -18801,7 +18442,7 @@ fn bindgen_test_layout_XWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowAttributes>())).height as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowAttributes>())).height as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -18811,7 +18452,7 @@ fn bindgen_test_layout_XWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowAttributes>())).border_width as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowAttributes>())).border_width as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -18821,7 +18462,7 @@ fn bindgen_test_layout_XWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowAttributes>())).depth as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowAttributes>())).depth as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -18831,7 +18472,7 @@ fn bindgen_test_layout_XWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowAttributes>())).visual as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowAttributes>())).visual as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -18841,7 +18482,7 @@ fn bindgen_test_layout_XWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowAttributes>())).root as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowAttributes>())).root as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -18851,7 +18492,7 @@ fn bindgen_test_layout_XWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowAttributes>())).class as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowAttributes>())).class as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -18861,7 +18502,7 @@ fn bindgen_test_layout_XWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowAttributes>())).bit_gravity as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowAttributes>())).bit_gravity as *const _ as usize },
         44usize,
         concat!(
             "Offset of field: ",
@@ -18871,7 +18512,7 @@ fn bindgen_test_layout_XWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowAttributes>())).win_gravity as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowAttributes>())).win_gravity as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -18881,7 +18522,9 @@ fn bindgen_test_layout_XWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowAttributes>())).backing_store as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<XWindowAttributes>())).backing_store as *const _ as usize
+        },
         52usize,
         concat!(
             "Offset of field: ",
@@ -18892,7 +18535,7 @@ fn bindgen_test_layout_XWindowAttributes() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XWindowAttributes>())).backing_planes as *const _ as usize
+            &(*(::core::ptr::null::<XWindowAttributes>())).backing_planes as *const _ as usize
         },
         56usize,
         concat!(
@@ -18903,7 +18546,9 @@ fn bindgen_test_layout_XWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowAttributes>())).backing_pixel as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<XWindowAttributes>())).backing_pixel as *const _ as usize
+        },
         64usize,
         concat!(
             "Offset of field: ",
@@ -18913,7 +18558,7 @@ fn bindgen_test_layout_XWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowAttributes>())).save_under as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowAttributes>())).save_under as *const _ as usize },
         72usize,
         concat!(
             "Offset of field: ",
@@ -18923,7 +18568,7 @@ fn bindgen_test_layout_XWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowAttributes>())).colormap as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowAttributes>())).colormap as *const _ as usize },
         80usize,
         concat!(
             "Offset of field: ",
@@ -18933,7 +18578,9 @@ fn bindgen_test_layout_XWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowAttributes>())).map_installed as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<XWindowAttributes>())).map_installed as *const _ as usize
+        },
         88usize,
         concat!(
             "Offset of field: ",
@@ -18943,7 +18590,7 @@ fn bindgen_test_layout_XWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowAttributes>())).map_state as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowAttributes>())).map_state as *const _ as usize },
         92usize,
         concat!(
             "Offset of field: ",
@@ -18954,7 +18601,7 @@ fn bindgen_test_layout_XWindowAttributes() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XWindowAttributes>())).all_event_masks as *const _ as usize
+            &(*(::core::ptr::null::<XWindowAttributes>())).all_event_masks as *const _ as usize
         },
         96usize,
         concat!(
@@ -18966,7 +18613,7 @@ fn bindgen_test_layout_XWindowAttributes() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XWindowAttributes>())).your_event_mask as *const _ as usize
+            &(*(::core::ptr::null::<XWindowAttributes>())).your_event_mask as *const _ as usize
         },
         104usize,
         concat!(
@@ -18978,7 +18625,8 @@ fn bindgen_test_layout_XWindowAttributes() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XWindowAttributes>())).do_not_propagate_mask as *const _ as usize
+            &(*(::core::ptr::null::<XWindowAttributes>())).do_not_propagate_mask as *const _
+                as usize
         },
         112usize,
         concat!(
@@ -18990,7 +18638,7 @@ fn bindgen_test_layout_XWindowAttributes() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XWindowAttributes>())).override_redirect as *const _ as usize
+            &(*(::core::ptr::null::<XWindowAttributes>())).override_redirect as *const _ as usize
         },
         120usize,
         concat!(
@@ -19001,7 +18649,7 @@ fn bindgen_test_layout_XWindowAttributes() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowAttributes>())).screen as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowAttributes>())).screen as *const _ as usize },
         128usize,
         concat!(
             "Offset of field: ",
@@ -19012,26 +18660,26 @@ fn bindgen_test_layout_XWindowAttributes() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XHostAddress {
-    pub family: ::std::os::raw::c_int,
-    pub length: ::std::os::raw::c_int,
-    pub address: *mut ::std::os::raw::c_char,
+    pub family: libc::c_int,
+    pub length: libc::c_int,
+    pub address: *mut libc::c_char,
 }
 #[test]
 fn bindgen_test_layout_XHostAddress() {
     assert_eq!(
-        ::std::mem::size_of::<XHostAddress>(),
+        ::core::mem::size_of::<XHostAddress>(),
         16usize,
         concat!("Size of: ", stringify!(XHostAddress))
     );
     assert_eq!(
-        ::std::mem::align_of::<XHostAddress>(),
+        ::core::mem::align_of::<XHostAddress>(),
         8usize,
         concat!("Alignment of ", stringify!(XHostAddress))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XHostAddress>())).family as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XHostAddress>())).family as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -19041,7 +18689,7 @@ fn bindgen_test_layout_XHostAddress() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XHostAddress>())).length as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XHostAddress>())).length as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -19051,7 +18699,7 @@ fn bindgen_test_layout_XHostAddress() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XHostAddress>())).address as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XHostAddress>())).address as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -19062,28 +18710,28 @@ fn bindgen_test_layout_XHostAddress() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XServerInterpretedAddress {
-    pub typelength: ::std::os::raw::c_int,
-    pub valuelength: ::std::os::raw::c_int,
-    pub type_: *mut ::std::os::raw::c_char,
-    pub value: *mut ::std::os::raw::c_char,
+    pub typelength: libc::c_int,
+    pub valuelength: libc::c_int,
+    pub type_: *mut libc::c_char,
+    pub value: *mut libc::c_char,
 }
 #[test]
 fn bindgen_test_layout_XServerInterpretedAddress() {
     assert_eq!(
-        ::std::mem::size_of::<XServerInterpretedAddress>(),
+        ::core::mem::size_of::<XServerInterpretedAddress>(),
         24usize,
         concat!("Size of: ", stringify!(XServerInterpretedAddress))
     );
     assert_eq!(
-        ::std::mem::align_of::<XServerInterpretedAddress>(),
+        ::core::mem::align_of::<XServerInterpretedAddress>(),
         8usize,
         concat!("Alignment of ", stringify!(XServerInterpretedAddress))
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XServerInterpretedAddress>())).typelength as *const _ as usize
+            &(*(::core::ptr::null::<XServerInterpretedAddress>())).typelength as *const _ as usize
         },
         0usize,
         concat!(
@@ -19095,7 +18743,7 @@ fn bindgen_test_layout_XServerInterpretedAddress() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XServerInterpretedAddress>())).valuelength as *const _ as usize
+            &(*(::core::ptr::null::<XServerInterpretedAddress>())).valuelength as *const _ as usize
         },
         4usize,
         concat!(
@@ -19106,7 +18754,9 @@ fn bindgen_test_layout_XServerInterpretedAddress() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XServerInterpretedAddress>())).type_ as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<XServerInterpretedAddress>())).type_ as *const _ as usize
+        },
         8usize,
         concat!(
             "Offset of field: ",
@@ -19116,7 +18766,9 @@ fn bindgen_test_layout_XServerInterpretedAddress() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XServerInterpretedAddress>())).value as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<XServerInterpretedAddress>())).value as *const _ as usize
+        },
         16usize,
         concat!(
             "Offset of field: ",
@@ -19127,90 +18779,87 @@ fn bindgen_test_layout_XServerInterpretedAddress() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _XImage {
-    pub width: ::std::os::raw::c_int,
-    pub height: ::std::os::raw::c_int,
-    pub xoffset: ::std::os::raw::c_int,
-    pub format: ::std::os::raw::c_int,
-    pub data: *mut ::std::os::raw::c_char,
-    pub byte_order: ::std::os::raw::c_int,
-    pub bitmap_unit: ::std::os::raw::c_int,
-    pub bitmap_bit_order: ::std::os::raw::c_int,
-    pub bitmap_pad: ::std::os::raw::c_int,
-    pub depth: ::std::os::raw::c_int,
-    pub bytes_per_line: ::std::os::raw::c_int,
-    pub bits_per_pixel: ::std::os::raw::c_int,
-    pub red_mask: ::std::os::raw::c_ulong,
-    pub green_mask: ::std::os::raw::c_ulong,
-    pub blue_mask: ::std::os::raw::c_ulong,
+    pub width: libc::c_int,
+    pub height: libc::c_int,
+    pub xoffset: libc::c_int,
+    pub format: libc::c_int,
+    pub data: *mut libc::c_char,
+    pub byte_order: libc::c_int,
+    pub bitmap_unit: libc::c_int,
+    pub bitmap_bit_order: libc::c_int,
+    pub bitmap_pad: libc::c_int,
+    pub depth: libc::c_int,
+    pub bytes_per_line: libc::c_int,
+    pub bits_per_pixel: libc::c_int,
+    pub red_mask: libc::c_ulong,
+    pub green_mask: libc::c_ulong,
+    pub blue_mask: libc::c_ulong,
     pub obdata: XPointer,
     pub f: _XImage_funcs,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _XImage_funcs {
-    pub create_image: ::std::option::Option<
+    pub create_image: ::core::option::Option<
         unsafe extern "C" fn(
             arg1: *mut _XDisplay,
             arg2: *mut Visual,
-            arg3: ::std::os::raw::c_uint,
-            arg4: ::std::os::raw::c_int,
-            arg5: ::std::os::raw::c_int,
-            arg6: *mut ::std::os::raw::c_char,
-            arg7: ::std::os::raw::c_uint,
-            arg8: ::std::os::raw::c_uint,
-            arg9: ::std::os::raw::c_int,
-            arg10: ::std::os::raw::c_int,
+            arg3: libc::c_uint,
+            arg4: libc::c_int,
+            arg5: libc::c_int,
+            arg6: *mut libc::c_char,
+            arg7: libc::c_uint,
+            arg8: libc::c_uint,
+            arg9: libc::c_int,
+            arg10: libc::c_int,
         ) -> *mut _XImage,
     >,
     pub destroy_image:
-        ::std::option::Option<unsafe extern "C" fn(arg1: *mut _XImage) -> ::std::os::raw::c_int>,
-    pub get_pixel: ::std::option::Option<
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut _XImage) -> libc::c_int>,
+    pub get_pixel: ::core::option::Option<
         unsafe extern "C" fn(
             arg1: *mut _XImage,
-            arg2: ::std::os::raw::c_int,
-            arg3: ::std::os::raw::c_int,
-        ) -> ::std::os::raw::c_ulong,
+            arg2: libc::c_int,
+            arg3: libc::c_int,
+        ) -> libc::c_ulong,
     >,
-    pub put_pixel: ::std::option::Option<
+    pub put_pixel: ::core::option::Option<
         unsafe extern "C" fn(
             arg1: *mut _XImage,
-            arg2: ::std::os::raw::c_int,
-            arg3: ::std::os::raw::c_int,
-            arg4: ::std::os::raw::c_ulong,
-        ) -> ::std::os::raw::c_int,
+            arg2: libc::c_int,
+            arg3: libc::c_int,
+            arg4: libc::c_ulong,
+        ) -> libc::c_int,
     >,
-    pub sub_image: ::std::option::Option<
+    pub sub_image: ::core::option::Option<
         unsafe extern "C" fn(
             arg1: *mut _XImage,
-            arg2: ::std::os::raw::c_int,
-            arg3: ::std::os::raw::c_int,
-            arg4: ::std::os::raw::c_uint,
-            arg5: ::std::os::raw::c_uint,
+            arg2: libc::c_int,
+            arg3: libc::c_int,
+            arg4: libc::c_uint,
+            arg5: libc::c_uint,
         ) -> *mut _XImage,
     >,
-    pub add_pixel: ::std::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut _XImage,
-            arg2: ::std::os::raw::c_long,
-        ) -> ::std::os::raw::c_int,
+    pub add_pixel: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut _XImage, arg2: libc::c_long) -> libc::c_int,
     >,
 }
 #[test]
 fn bindgen_test_layout__XImage_funcs() {
     assert_eq!(
-        ::std::mem::size_of::<_XImage_funcs>(),
+        ::core::mem::size_of::<_XImage_funcs>(),
         48usize,
         concat!("Size of: ", stringify!(_XImage_funcs))
     );
     assert_eq!(
-        ::std::mem::align_of::<_XImage_funcs>(),
+        ::core::mem::align_of::<_XImage_funcs>(),
         8usize,
         concat!("Alignment of ", stringify!(_XImage_funcs))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage_funcs>())).create_image as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage_funcs>())).create_image as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -19220,7 +18869,7 @@ fn bindgen_test_layout__XImage_funcs() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage_funcs>())).destroy_image as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage_funcs>())).destroy_image as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -19230,7 +18879,7 @@ fn bindgen_test_layout__XImage_funcs() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage_funcs>())).get_pixel as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage_funcs>())).get_pixel as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -19240,7 +18889,7 @@ fn bindgen_test_layout__XImage_funcs() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage_funcs>())).put_pixel as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage_funcs>())).put_pixel as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -19250,7 +18899,7 @@ fn bindgen_test_layout__XImage_funcs() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage_funcs>())).sub_image as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage_funcs>())).sub_image as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -19260,7 +18909,7 @@ fn bindgen_test_layout__XImage_funcs() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage_funcs>())).add_pixel as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage_funcs>())).add_pixel as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -19273,17 +18922,17 @@ fn bindgen_test_layout__XImage_funcs() {
 #[test]
 fn bindgen_test_layout__XImage() {
     assert_eq!(
-        ::std::mem::size_of::<_XImage>(),
+        ::core::mem::size_of::<_XImage>(),
         136usize,
         concat!("Size of: ", stringify!(_XImage))
     );
     assert_eq!(
-        ::std::mem::align_of::<_XImage>(),
+        ::core::mem::align_of::<_XImage>(),
         8usize,
         concat!("Alignment of ", stringify!(_XImage))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage>())).width as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage>())).width as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -19293,7 +18942,7 @@ fn bindgen_test_layout__XImage() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage>())).height as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage>())).height as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -19303,7 +18952,7 @@ fn bindgen_test_layout__XImage() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage>())).xoffset as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage>())).xoffset as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -19313,7 +18962,7 @@ fn bindgen_test_layout__XImage() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage>())).format as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage>())).format as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -19323,7 +18972,7 @@ fn bindgen_test_layout__XImage() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage>())).data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage>())).data as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -19333,7 +18982,7 @@ fn bindgen_test_layout__XImage() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage>())).byte_order as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage>())).byte_order as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -19343,7 +18992,7 @@ fn bindgen_test_layout__XImage() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage>())).bitmap_unit as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage>())).bitmap_unit as *const _ as usize },
         28usize,
         concat!(
             "Offset of field: ",
@@ -19353,7 +19002,7 @@ fn bindgen_test_layout__XImage() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage>())).bitmap_bit_order as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage>())).bitmap_bit_order as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -19363,7 +19012,7 @@ fn bindgen_test_layout__XImage() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage>())).bitmap_pad as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage>())).bitmap_pad as *const _ as usize },
         36usize,
         concat!(
             "Offset of field: ",
@@ -19373,7 +19022,7 @@ fn bindgen_test_layout__XImage() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage>())).depth as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage>())).depth as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -19383,7 +19032,7 @@ fn bindgen_test_layout__XImage() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage>())).bytes_per_line as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage>())).bytes_per_line as *const _ as usize },
         44usize,
         concat!(
             "Offset of field: ",
@@ -19393,7 +19042,7 @@ fn bindgen_test_layout__XImage() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage>())).bits_per_pixel as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage>())).bits_per_pixel as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -19403,7 +19052,7 @@ fn bindgen_test_layout__XImage() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage>())).red_mask as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage>())).red_mask as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -19413,7 +19062,7 @@ fn bindgen_test_layout__XImage() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage>())).green_mask as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage>())).green_mask as *const _ as usize },
         64usize,
         concat!(
             "Offset of field: ",
@@ -19423,7 +19072,7 @@ fn bindgen_test_layout__XImage() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage>())).blue_mask as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage>())).blue_mask as *const _ as usize },
         72usize,
         concat!(
             "Offset of field: ",
@@ -19433,7 +19082,7 @@ fn bindgen_test_layout__XImage() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage>())).obdata as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage>())).obdata as *const _ as usize },
         80usize,
         concat!(
             "Offset of field: ",
@@ -19443,7 +19092,7 @@ fn bindgen_test_layout__XImage() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XImage>())).f as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XImage>())).f as *const _ as usize },
         88usize,
         concat!(
             "Offset of field: ",
@@ -19455,30 +19104,30 @@ fn bindgen_test_layout__XImage() {
 }
 pub type XImage = _XImage;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XWindowChanges {
-    pub x: ::std::os::raw::c_int,
-    pub y: ::std::os::raw::c_int,
-    pub width: ::std::os::raw::c_int,
-    pub height: ::std::os::raw::c_int,
-    pub border_width: ::std::os::raw::c_int,
+    pub x: libc::c_int,
+    pub y: libc::c_int,
+    pub width: libc::c_int,
+    pub height: libc::c_int,
+    pub border_width: libc::c_int,
     pub sibling: Window,
-    pub stack_mode: ::std::os::raw::c_int,
+    pub stack_mode: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XWindowChanges() {
     assert_eq!(
-        ::std::mem::size_of::<XWindowChanges>(),
+        ::core::mem::size_of::<XWindowChanges>(),
         40usize,
         concat!("Size of: ", stringify!(XWindowChanges))
     );
     assert_eq!(
-        ::std::mem::align_of::<XWindowChanges>(),
+        ::core::mem::align_of::<XWindowChanges>(),
         8usize,
         concat!("Alignment of ", stringify!(XWindowChanges))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowChanges>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowChanges>())).x as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -19488,7 +19137,7 @@ fn bindgen_test_layout_XWindowChanges() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowChanges>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowChanges>())).y as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -19498,7 +19147,7 @@ fn bindgen_test_layout_XWindowChanges() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowChanges>())).width as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowChanges>())).width as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -19508,7 +19157,7 @@ fn bindgen_test_layout_XWindowChanges() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowChanges>())).height as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowChanges>())).height as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -19518,7 +19167,7 @@ fn bindgen_test_layout_XWindowChanges() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowChanges>())).border_width as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowChanges>())).border_width as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -19528,7 +19177,7 @@ fn bindgen_test_layout_XWindowChanges() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowChanges>())).sibling as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowChanges>())).sibling as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -19538,7 +19187,7 @@ fn bindgen_test_layout_XWindowChanges() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XWindowChanges>())).stack_mode as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XWindowChanges>())).stack_mode as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -19549,29 +19198,29 @@ fn bindgen_test_layout_XWindowChanges() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XColor {
-    pub pixel: ::std::os::raw::c_ulong,
-    pub red: ::std::os::raw::c_ushort,
-    pub green: ::std::os::raw::c_ushort,
-    pub blue: ::std::os::raw::c_ushort,
-    pub flags: ::std::os::raw::c_char,
-    pub pad: ::std::os::raw::c_char,
+    pub pixel: libc::c_ulong,
+    pub red: libc::c_ushort,
+    pub green: libc::c_ushort,
+    pub blue: libc::c_ushort,
+    pub flags: libc::c_char,
+    pub pad: libc::c_char,
 }
 #[test]
 fn bindgen_test_layout_XColor() {
     assert_eq!(
-        ::std::mem::size_of::<XColor>(),
+        ::core::mem::size_of::<XColor>(),
         16usize,
         concat!("Size of: ", stringify!(XColor))
     );
     assert_eq!(
-        ::std::mem::align_of::<XColor>(),
+        ::core::mem::align_of::<XColor>(),
         8usize,
         concat!("Alignment of ", stringify!(XColor))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XColor>())).pixel as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XColor>())).pixel as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -19581,7 +19230,7 @@ fn bindgen_test_layout_XColor() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XColor>())).red as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XColor>())).red as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -19591,7 +19240,7 @@ fn bindgen_test_layout_XColor() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XColor>())).green as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XColor>())).green as *const _ as usize },
         10usize,
         concat!(
             "Offset of field: ",
@@ -19601,7 +19250,7 @@ fn bindgen_test_layout_XColor() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XColor>())).blue as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XColor>())).blue as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -19611,7 +19260,7 @@ fn bindgen_test_layout_XColor() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XColor>())).flags as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XColor>())).flags as *const _ as usize },
         14usize,
         concat!(
             "Offset of field: ",
@@ -19621,7 +19270,7 @@ fn bindgen_test_layout_XColor() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XColor>())).pad as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XColor>())).pad as *const _ as usize },
         15usize,
         concat!(
             "Offset of field: ",
@@ -19632,27 +19281,27 @@ fn bindgen_test_layout_XColor() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XSegment {
-    pub x1: ::std::os::raw::c_short,
-    pub y1: ::std::os::raw::c_short,
-    pub x2: ::std::os::raw::c_short,
-    pub y2: ::std::os::raw::c_short,
+    pub x1: libc::c_short,
+    pub y1: libc::c_short,
+    pub x2: libc::c_short,
+    pub y2: libc::c_short,
 }
 #[test]
 fn bindgen_test_layout_XSegment() {
     assert_eq!(
-        ::std::mem::size_of::<XSegment>(),
+        ::core::mem::size_of::<XSegment>(),
         8usize,
         concat!("Size of: ", stringify!(XSegment))
     );
     assert_eq!(
-        ::std::mem::align_of::<XSegment>(),
+        ::core::mem::align_of::<XSegment>(),
         2usize,
         concat!("Alignment of ", stringify!(XSegment))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSegment>())).x1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSegment>())).x1 as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -19662,7 +19311,7 @@ fn bindgen_test_layout_XSegment() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSegment>())).y1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSegment>())).y1 as *const _ as usize },
         2usize,
         concat!(
             "Offset of field: ",
@@ -19672,7 +19321,7 @@ fn bindgen_test_layout_XSegment() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSegment>())).x2 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSegment>())).x2 as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -19682,7 +19331,7 @@ fn bindgen_test_layout_XSegment() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSegment>())).y2 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSegment>())).y2 as *const _ as usize },
         6usize,
         concat!(
             "Offset of field: ",
@@ -19693,56 +19342,56 @@ fn bindgen_test_layout_XSegment() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XPoint {
-    pub x: ::std::os::raw::c_short,
-    pub y: ::std::os::raw::c_short,
+    pub x: libc::c_short,
+    pub y: libc::c_short,
 }
 #[test]
 fn bindgen_test_layout_XPoint() {
     assert_eq!(
-        ::std::mem::size_of::<XPoint>(),
+        ::core::mem::size_of::<XPoint>(),
         4usize,
         concat!("Size of: ", stringify!(XPoint))
     );
     assert_eq!(
-        ::std::mem::align_of::<XPoint>(),
+        ::core::mem::align_of::<XPoint>(),
         2usize,
         concat!("Alignment of ", stringify!(XPoint))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XPoint>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XPoint>())).x as *const _ as usize },
         0usize,
         concat!("Offset of field: ", stringify!(XPoint), "::", stringify!(x))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XPoint>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XPoint>())).y as *const _ as usize },
         2usize,
         concat!("Offset of field: ", stringify!(XPoint), "::", stringify!(y))
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XRectangle {
-    pub x: ::std::os::raw::c_short,
-    pub y: ::std::os::raw::c_short,
-    pub width: ::std::os::raw::c_ushort,
-    pub height: ::std::os::raw::c_ushort,
+    pub x: libc::c_short,
+    pub y: libc::c_short,
+    pub width: libc::c_ushort,
+    pub height: libc::c_ushort,
 }
 #[test]
 fn bindgen_test_layout_XRectangle() {
     assert_eq!(
-        ::std::mem::size_of::<XRectangle>(),
+        ::core::mem::size_of::<XRectangle>(),
         8usize,
         concat!("Size of: ", stringify!(XRectangle))
     );
     assert_eq!(
-        ::std::mem::align_of::<XRectangle>(),
+        ::core::mem::align_of::<XRectangle>(),
         2usize,
         concat!("Alignment of ", stringify!(XRectangle))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XRectangle>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XRectangle>())).x as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -19752,7 +19401,7 @@ fn bindgen_test_layout_XRectangle() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XRectangle>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XRectangle>())).y as *const _ as usize },
         2usize,
         concat!(
             "Offset of field: ",
@@ -19762,7 +19411,7 @@ fn bindgen_test_layout_XRectangle() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XRectangle>())).width as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XRectangle>())).width as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -19772,7 +19421,7 @@ fn bindgen_test_layout_XRectangle() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XRectangle>())).height as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XRectangle>())).height as *const _ as usize },
         6usize,
         concat!(
             "Offset of field: ",
@@ -19783,39 +19432,39 @@ fn bindgen_test_layout_XRectangle() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XArc {
-    pub x: ::std::os::raw::c_short,
-    pub y: ::std::os::raw::c_short,
-    pub width: ::std::os::raw::c_ushort,
-    pub height: ::std::os::raw::c_ushort,
-    pub angle1: ::std::os::raw::c_short,
-    pub angle2: ::std::os::raw::c_short,
+    pub x: libc::c_short,
+    pub y: libc::c_short,
+    pub width: libc::c_ushort,
+    pub height: libc::c_ushort,
+    pub angle1: libc::c_short,
+    pub angle2: libc::c_short,
 }
 #[test]
 fn bindgen_test_layout_XArc() {
     assert_eq!(
-        ::std::mem::size_of::<XArc>(),
+        ::core::mem::size_of::<XArc>(),
         12usize,
         concat!("Size of: ", stringify!(XArc))
     );
     assert_eq!(
-        ::std::mem::align_of::<XArc>(),
+        ::core::mem::align_of::<XArc>(),
         2usize,
         concat!("Alignment of ", stringify!(XArc))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XArc>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XArc>())).x as *const _ as usize },
         0usize,
         concat!("Offset of field: ", stringify!(XArc), "::", stringify!(x))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XArc>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XArc>())).y as *const _ as usize },
         2usize,
         concat!("Offset of field: ", stringify!(XArc), "::", stringify!(y))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XArc>())).width as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XArc>())).width as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -19825,7 +19474,7 @@ fn bindgen_test_layout_XArc() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XArc>())).height as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XArc>())).height as *const _ as usize },
         6usize,
         concat!(
             "Offset of field: ",
@@ -19835,7 +19484,7 @@ fn bindgen_test_layout_XArc() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XArc>())).angle1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XArc>())).angle1 as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -19845,7 +19494,7 @@ fn bindgen_test_layout_XArc() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XArc>())).angle2 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XArc>())).angle2 as *const _ as usize },
         10usize,
         concat!(
             "Offset of field: ",
@@ -19856,32 +19505,32 @@ fn bindgen_test_layout_XArc() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XKeyboardControl {
-    pub key_click_percent: ::std::os::raw::c_int,
-    pub bell_percent: ::std::os::raw::c_int,
-    pub bell_pitch: ::std::os::raw::c_int,
-    pub bell_duration: ::std::os::raw::c_int,
-    pub led: ::std::os::raw::c_int,
-    pub led_mode: ::std::os::raw::c_int,
-    pub key: ::std::os::raw::c_int,
-    pub auto_repeat_mode: ::std::os::raw::c_int,
+    pub key_click_percent: libc::c_int,
+    pub bell_percent: libc::c_int,
+    pub bell_pitch: libc::c_int,
+    pub bell_duration: libc::c_int,
+    pub led: libc::c_int,
+    pub led_mode: libc::c_int,
+    pub key: libc::c_int,
+    pub auto_repeat_mode: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XKeyboardControl() {
     assert_eq!(
-        ::std::mem::size_of::<XKeyboardControl>(),
+        ::core::mem::size_of::<XKeyboardControl>(),
         32usize,
         concat!("Size of: ", stringify!(XKeyboardControl))
     );
     assert_eq!(
-        ::std::mem::align_of::<XKeyboardControl>(),
+        ::core::mem::align_of::<XKeyboardControl>(),
         4usize,
         concat!("Alignment of ", stringify!(XKeyboardControl))
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XKeyboardControl>())).key_click_percent as *const _ as usize
+            &(*(::core::ptr::null::<XKeyboardControl>())).key_click_percent as *const _ as usize
         },
         0usize,
         concat!(
@@ -19892,7 +19541,7 @@ fn bindgen_test_layout_XKeyboardControl() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyboardControl>())).bell_percent as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyboardControl>())).bell_percent as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -19902,7 +19551,7 @@ fn bindgen_test_layout_XKeyboardControl() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyboardControl>())).bell_pitch as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyboardControl>())).bell_pitch as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -19912,7 +19561,7 @@ fn bindgen_test_layout_XKeyboardControl() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyboardControl>())).bell_duration as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyboardControl>())).bell_duration as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -19922,7 +19571,7 @@ fn bindgen_test_layout_XKeyboardControl() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyboardControl>())).led as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyboardControl>())).led as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -19932,7 +19581,7 @@ fn bindgen_test_layout_XKeyboardControl() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyboardControl>())).led_mode as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyboardControl>())).led_mode as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -19942,7 +19591,7 @@ fn bindgen_test_layout_XKeyboardControl() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyboardControl>())).key as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyboardControl>())).key as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -19953,7 +19602,7 @@ fn bindgen_test_layout_XKeyboardControl() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XKeyboardControl>())).auto_repeat_mode as *const _ as usize
+            &(*(::core::ptr::null::<XKeyboardControl>())).auto_repeat_mode as *const _ as usize
         },
         28usize,
         concat!(
@@ -19965,31 +19614,31 @@ fn bindgen_test_layout_XKeyboardControl() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XKeyboardState {
-    pub key_click_percent: ::std::os::raw::c_int,
-    pub bell_percent: ::std::os::raw::c_int,
-    pub bell_pitch: ::std::os::raw::c_uint,
-    pub bell_duration: ::std::os::raw::c_uint,
-    pub led_mask: ::std::os::raw::c_ulong,
-    pub global_auto_repeat: ::std::os::raw::c_int,
-    pub auto_repeats: [::std::os::raw::c_char; 32usize],
+    pub key_click_percent: libc::c_int,
+    pub bell_percent: libc::c_int,
+    pub bell_pitch: libc::c_uint,
+    pub bell_duration: libc::c_uint,
+    pub led_mask: libc::c_ulong,
+    pub global_auto_repeat: libc::c_int,
+    pub auto_repeats: [libc::c_char; 32usize],
 }
 #[test]
 fn bindgen_test_layout_XKeyboardState() {
     assert_eq!(
-        ::std::mem::size_of::<XKeyboardState>(),
+        ::core::mem::size_of::<XKeyboardState>(),
         64usize,
         concat!("Size of: ", stringify!(XKeyboardState))
     );
     assert_eq!(
-        ::std::mem::align_of::<XKeyboardState>(),
+        ::core::mem::align_of::<XKeyboardState>(),
         8usize,
         concat!("Alignment of ", stringify!(XKeyboardState))
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XKeyboardState>())).key_click_percent as *const _ as usize
+            &(*(::core::ptr::null::<XKeyboardState>())).key_click_percent as *const _ as usize
         },
         0usize,
         concat!(
@@ -20000,7 +19649,7 @@ fn bindgen_test_layout_XKeyboardState() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyboardState>())).bell_percent as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyboardState>())).bell_percent as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -20010,7 +19659,7 @@ fn bindgen_test_layout_XKeyboardState() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyboardState>())).bell_pitch as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyboardState>())).bell_pitch as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -20020,7 +19669,7 @@ fn bindgen_test_layout_XKeyboardState() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyboardState>())).bell_duration as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyboardState>())).bell_duration as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -20030,7 +19679,7 @@ fn bindgen_test_layout_XKeyboardState() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyboardState>())).led_mask as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyboardState>())).led_mask as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -20041,7 +19690,7 @@ fn bindgen_test_layout_XKeyboardState() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XKeyboardState>())).global_auto_repeat as *const _ as usize
+            &(*(::core::ptr::null::<XKeyboardState>())).global_auto_repeat as *const _ as usize
         },
         24usize,
         concat!(
@@ -20052,7 +19701,7 @@ fn bindgen_test_layout_XKeyboardState() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyboardState>())).auto_repeats as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyboardState>())).auto_repeats as *const _ as usize },
         28usize,
         concat!(
             "Offset of field: ",
@@ -20063,26 +19712,26 @@ fn bindgen_test_layout_XKeyboardState() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XTimeCoord {
     pub time: Time,
-    pub x: ::std::os::raw::c_short,
-    pub y: ::std::os::raw::c_short,
+    pub x: libc::c_short,
+    pub y: libc::c_short,
 }
 #[test]
 fn bindgen_test_layout_XTimeCoord() {
     assert_eq!(
-        ::std::mem::size_of::<XTimeCoord>(),
+        ::core::mem::size_of::<XTimeCoord>(),
         16usize,
         concat!("Size of: ", stringify!(XTimeCoord))
     );
     assert_eq!(
-        ::std::mem::align_of::<XTimeCoord>(),
+        ::core::mem::align_of::<XTimeCoord>(),
         8usize,
         concat!("Alignment of ", stringify!(XTimeCoord))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XTimeCoord>())).time as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XTimeCoord>())).time as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -20092,7 +19741,7 @@ fn bindgen_test_layout_XTimeCoord() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XTimeCoord>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XTimeCoord>())).x as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -20102,7 +19751,7 @@ fn bindgen_test_layout_XTimeCoord() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XTimeCoord>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XTimeCoord>())).y as *const _ as usize },
         10usize,
         concat!(
             "Offset of field: ",
@@ -20113,25 +19762,25 @@ fn bindgen_test_layout_XTimeCoord() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XModifierKeymap {
-    pub max_keypermod: ::std::os::raw::c_int,
+    pub max_keypermod: libc::c_int,
     pub modifiermap: *mut KeyCode,
 }
 #[test]
 fn bindgen_test_layout_XModifierKeymap() {
     assert_eq!(
-        ::std::mem::size_of::<XModifierKeymap>(),
+        ::core::mem::size_of::<XModifierKeymap>(),
         16usize,
         concat!("Size of: ", stringify!(XModifierKeymap))
     );
     assert_eq!(
-        ::std::mem::align_of::<XModifierKeymap>(),
+        ::core::mem::align_of::<XModifierKeymap>(),
         8usize,
         concat!("Alignment of ", stringify!(XModifierKeymap))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XModifierKeymap>())).max_keypermod as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XModifierKeymap>())).max_keypermod as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -20141,7 +19790,7 @@ fn bindgen_test_layout_XModifierKeymap() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XModifierKeymap>())).modifiermap as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XModifierKeymap>())).modifiermap as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -20153,78 +19802,78 @@ fn bindgen_test_layout_XModifierKeymap() {
 }
 pub type Display = _XDisplay;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _XPrivate {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _XrmHashBucketRec {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _bindgen_ty_9 {
     pub ext_data: *mut XExtData,
     pub private1: *mut _XPrivate,
-    pub fd: ::std::os::raw::c_int,
-    pub private2: ::std::os::raw::c_int,
-    pub proto_major_version: ::std::os::raw::c_int,
-    pub proto_minor_version: ::std::os::raw::c_int,
-    pub vendor: *mut ::std::os::raw::c_char,
+    pub fd: libc::c_int,
+    pub private2: libc::c_int,
+    pub proto_major_version: libc::c_int,
+    pub proto_minor_version: libc::c_int,
+    pub vendor: *mut libc::c_char,
     pub private3: XID,
     pub private4: XID,
     pub private5: XID,
-    pub private6: ::std::os::raw::c_int,
-    pub resource_alloc: ::std::option::Option<unsafe extern "C" fn(arg1: *mut _XDisplay) -> XID>,
-    pub byte_order: ::std::os::raw::c_int,
-    pub bitmap_unit: ::std::os::raw::c_int,
-    pub bitmap_pad: ::std::os::raw::c_int,
-    pub bitmap_bit_order: ::std::os::raw::c_int,
-    pub nformats: ::std::os::raw::c_int,
+    pub private6: libc::c_int,
+    pub resource_alloc: ::core::option::Option<unsafe extern "C" fn(arg1: *mut _XDisplay) -> XID>,
+    pub byte_order: libc::c_int,
+    pub bitmap_unit: libc::c_int,
+    pub bitmap_pad: libc::c_int,
+    pub bitmap_bit_order: libc::c_int,
+    pub nformats: libc::c_int,
     pub pixmap_format: *mut ScreenFormat,
-    pub private8: ::std::os::raw::c_int,
-    pub release: ::std::os::raw::c_int,
+    pub private8: libc::c_int,
+    pub release: libc::c_int,
     pub private9: *mut _XPrivate,
     pub private10: *mut _XPrivate,
-    pub qlen: ::std::os::raw::c_int,
-    pub last_request_read: ::std::os::raw::c_ulong,
-    pub request: ::std::os::raw::c_ulong,
+    pub qlen: libc::c_int,
+    pub last_request_read: libc::c_ulong,
+    pub request: libc::c_ulong,
     pub private11: XPointer,
     pub private12: XPointer,
     pub private13: XPointer,
     pub private14: XPointer,
-    pub max_request_size: ::std::os::raw::c_uint,
+    pub max_request_size: libc::c_uint,
     pub db: *mut _XrmHashBucketRec,
     pub private15:
-        ::std::option::Option<unsafe extern "C" fn(arg1: *mut _XDisplay) -> ::std::os::raw::c_int>,
-    pub display_name: *mut ::std::os::raw::c_char,
-    pub default_screen: ::std::os::raw::c_int,
-    pub nscreens: ::std::os::raw::c_int,
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut _XDisplay) -> libc::c_int>,
+    pub display_name: *mut libc::c_char,
+    pub default_screen: libc::c_int,
+    pub nscreens: libc::c_int,
     pub screens: *mut Screen,
-    pub motion_buffer: ::std::os::raw::c_ulong,
-    pub private16: ::std::os::raw::c_ulong,
-    pub min_keycode: ::std::os::raw::c_int,
-    pub max_keycode: ::std::os::raw::c_int,
+    pub motion_buffer: libc::c_ulong,
+    pub private16: libc::c_ulong,
+    pub min_keycode: libc::c_int,
+    pub max_keycode: libc::c_int,
     pub private17: XPointer,
     pub private18: XPointer,
-    pub private19: ::std::os::raw::c_int,
-    pub xdefaults: *mut ::std::os::raw::c_char,
+    pub private19: libc::c_int,
+    pub xdefaults: *mut libc::c_char,
 }
 #[test]
 fn bindgen_test_layout__bindgen_ty_9() {
     assert_eq!(
-        ::std::mem::size_of::<_bindgen_ty_9>(),
+        ::core::mem::size_of::<_bindgen_ty_9>(),
         296usize,
         concat!("Size of: ", stringify!(_bindgen_ty_9))
     );
     assert_eq!(
-        ::std::mem::align_of::<_bindgen_ty_9>(),
+        ::core::mem::align_of::<_bindgen_ty_9>(),
         8usize,
         concat!("Alignment of ", stringify!(_bindgen_ty_9))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).ext_data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).ext_data as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -20234,7 +19883,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).private1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).private1 as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -20244,7 +19893,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).fd as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).fd as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -20254,7 +19903,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).private2 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).private2 as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -20265,7 +19914,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_bindgen_ty_9>())).proto_major_version as *const _ as usize
+            &(*(::core::ptr::null::<_bindgen_ty_9>())).proto_major_version as *const _ as usize
         },
         24usize,
         concat!(
@@ -20277,7 +19926,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_bindgen_ty_9>())).proto_minor_version as *const _ as usize
+            &(*(::core::ptr::null::<_bindgen_ty_9>())).proto_minor_version as *const _ as usize
         },
         28usize,
         concat!(
@@ -20288,7 +19937,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).vendor as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).vendor as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -20298,7 +19947,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).private3 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).private3 as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -20308,7 +19957,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).private4 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).private4 as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -20318,7 +19967,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).private5 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).private5 as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -20328,7 +19977,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).private6 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).private6 as *const _ as usize },
         64usize,
         concat!(
             "Offset of field: ",
@@ -20338,7 +19987,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).resource_alloc as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).resource_alloc as *const _ as usize },
         72usize,
         concat!(
             "Offset of field: ",
@@ -20348,7 +19997,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).byte_order as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).byte_order as *const _ as usize },
         80usize,
         concat!(
             "Offset of field: ",
@@ -20358,7 +20007,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).bitmap_unit as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).bitmap_unit as *const _ as usize },
         84usize,
         concat!(
             "Offset of field: ",
@@ -20368,7 +20017,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).bitmap_pad as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).bitmap_pad as *const _ as usize },
         88usize,
         concat!(
             "Offset of field: ",
@@ -20378,7 +20027,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).bitmap_bit_order as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).bitmap_bit_order as *const _ as usize },
         92usize,
         concat!(
             "Offset of field: ",
@@ -20388,7 +20037,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).nformats as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).nformats as *const _ as usize },
         96usize,
         concat!(
             "Offset of field: ",
@@ -20398,7 +20047,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).pixmap_format as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).pixmap_format as *const _ as usize },
         104usize,
         concat!(
             "Offset of field: ",
@@ -20408,7 +20057,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).private8 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).private8 as *const _ as usize },
         112usize,
         concat!(
             "Offset of field: ",
@@ -20418,7 +20067,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).release as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).release as *const _ as usize },
         116usize,
         concat!(
             "Offset of field: ",
@@ -20428,7 +20077,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).private9 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).private9 as *const _ as usize },
         120usize,
         concat!(
             "Offset of field: ",
@@ -20438,7 +20087,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).private10 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).private10 as *const _ as usize },
         128usize,
         concat!(
             "Offset of field: ",
@@ -20448,7 +20097,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).qlen as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).qlen as *const _ as usize },
         136usize,
         concat!(
             "Offset of field: ",
@@ -20458,7 +20107,9 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).last_request_read as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<_bindgen_ty_9>())).last_request_read as *const _ as usize
+        },
         144usize,
         concat!(
             "Offset of field: ",
@@ -20468,7 +20119,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).request as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).request as *const _ as usize },
         152usize,
         concat!(
             "Offset of field: ",
@@ -20478,7 +20129,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).private11 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).private11 as *const _ as usize },
         160usize,
         concat!(
             "Offset of field: ",
@@ -20488,7 +20139,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).private12 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).private12 as *const _ as usize },
         168usize,
         concat!(
             "Offset of field: ",
@@ -20498,7 +20149,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).private13 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).private13 as *const _ as usize },
         176usize,
         concat!(
             "Offset of field: ",
@@ -20508,7 +20159,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).private14 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).private14 as *const _ as usize },
         184usize,
         concat!(
             "Offset of field: ",
@@ -20518,7 +20169,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).max_request_size as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).max_request_size as *const _ as usize },
         192usize,
         concat!(
             "Offset of field: ",
@@ -20528,7 +20179,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).db as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).db as *const _ as usize },
         200usize,
         concat!(
             "Offset of field: ",
@@ -20538,7 +20189,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).private15 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).private15 as *const _ as usize },
         208usize,
         concat!(
             "Offset of field: ",
@@ -20548,7 +20199,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).display_name as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).display_name as *const _ as usize },
         216usize,
         concat!(
             "Offset of field: ",
@@ -20558,7 +20209,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).default_screen as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).default_screen as *const _ as usize },
         224usize,
         concat!(
             "Offset of field: ",
@@ -20568,7 +20219,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).nscreens as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).nscreens as *const _ as usize },
         228usize,
         concat!(
             "Offset of field: ",
@@ -20578,7 +20229,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).screens as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).screens as *const _ as usize },
         232usize,
         concat!(
             "Offset of field: ",
@@ -20588,7 +20239,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).motion_buffer as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).motion_buffer as *const _ as usize },
         240usize,
         concat!(
             "Offset of field: ",
@@ -20598,7 +20249,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).private16 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).private16 as *const _ as usize },
         248usize,
         concat!(
             "Offset of field: ",
@@ -20608,7 +20259,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).min_keycode as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).min_keycode as *const _ as usize },
         256usize,
         concat!(
             "Offset of field: ",
@@ -20618,7 +20269,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).max_keycode as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).max_keycode as *const _ as usize },
         260usize,
         concat!(
             "Offset of field: ",
@@ -20628,7 +20279,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).private17 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).private17 as *const _ as usize },
         264usize,
         concat!(
             "Offset of field: ",
@@ -20638,7 +20289,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).private18 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).private18 as *const _ as usize },
         272usize,
         concat!(
             "Offset of field: ",
@@ -20648,7 +20299,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).private19 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).private19 as *const _ as usize },
         280usize,
         concat!(
             "Offset of field: ",
@@ -20658,7 +20309,7 @@ fn bindgen_test_layout__bindgen_ty_9() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_bindgen_ty_9>())).xdefaults as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_9>())).xdefaults as *const _ as usize },
         288usize,
         concat!(
             "Offset of field: ",
@@ -20670,38 +20321,38 @@ fn bindgen_test_layout__bindgen_ty_9() {
 }
 pub type _XPrivDisplay = *mut _bindgen_ty_9;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XKeyEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub window: Window,
     pub root: Window,
     pub subwindow: Window,
     pub time: Time,
-    pub x: ::std::os::raw::c_int,
-    pub y: ::std::os::raw::c_int,
-    pub x_root: ::std::os::raw::c_int,
-    pub y_root: ::std::os::raw::c_int,
-    pub state: ::std::os::raw::c_uint,
-    pub keycode: ::std::os::raw::c_uint,
-    pub same_screen: ::std::os::raw::c_int,
+    pub x: libc::c_int,
+    pub y: libc::c_int,
+    pub x_root: libc::c_int,
+    pub y_root: libc::c_int,
+    pub state: libc::c_uint,
+    pub keycode: libc::c_uint,
+    pub same_screen: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XKeyEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XKeyEvent>(),
+        ::core::mem::size_of::<XKeyEvent>(),
         96usize,
         concat!("Size of: ", stringify!(XKeyEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XKeyEvent>(),
+        ::core::mem::align_of::<XKeyEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XKeyEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -20711,7 +20362,7 @@ fn bindgen_test_layout_XKeyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -20721,7 +20372,7 @@ fn bindgen_test_layout_XKeyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -20731,7 +20382,7 @@ fn bindgen_test_layout_XKeyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -20741,7 +20392,7 @@ fn bindgen_test_layout_XKeyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyEvent>())).window as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -20751,7 +20402,7 @@ fn bindgen_test_layout_XKeyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyEvent>())).root as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyEvent>())).root as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -20761,7 +20412,7 @@ fn bindgen_test_layout_XKeyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyEvent>())).subwindow as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyEvent>())).subwindow as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -20771,7 +20422,7 @@ fn bindgen_test_layout_XKeyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyEvent>())).time as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyEvent>())).time as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -20781,7 +20432,7 @@ fn bindgen_test_layout_XKeyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyEvent>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyEvent>())).x as *const _ as usize },
         64usize,
         concat!(
             "Offset of field: ",
@@ -20791,7 +20442,7 @@ fn bindgen_test_layout_XKeyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyEvent>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyEvent>())).y as *const _ as usize },
         68usize,
         concat!(
             "Offset of field: ",
@@ -20801,7 +20452,7 @@ fn bindgen_test_layout_XKeyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyEvent>())).x_root as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyEvent>())).x_root as *const _ as usize },
         72usize,
         concat!(
             "Offset of field: ",
@@ -20811,7 +20462,7 @@ fn bindgen_test_layout_XKeyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyEvent>())).y_root as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyEvent>())).y_root as *const _ as usize },
         76usize,
         concat!(
             "Offset of field: ",
@@ -20821,7 +20472,7 @@ fn bindgen_test_layout_XKeyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyEvent>())).state as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyEvent>())).state as *const _ as usize },
         80usize,
         concat!(
             "Offset of field: ",
@@ -20831,7 +20482,7 @@ fn bindgen_test_layout_XKeyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyEvent>())).keycode as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyEvent>())).keycode as *const _ as usize },
         84usize,
         concat!(
             "Offset of field: ",
@@ -20841,7 +20492,7 @@ fn bindgen_test_layout_XKeyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeyEvent>())).same_screen as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeyEvent>())).same_screen as *const _ as usize },
         88usize,
         concat!(
             "Offset of field: ",
@@ -20854,38 +20505,38 @@ fn bindgen_test_layout_XKeyEvent() {
 pub type XKeyPressedEvent = XKeyEvent;
 pub type XKeyReleasedEvent = XKeyEvent;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XButtonEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub window: Window,
     pub root: Window,
     pub subwindow: Window,
     pub time: Time,
-    pub x: ::std::os::raw::c_int,
-    pub y: ::std::os::raw::c_int,
-    pub x_root: ::std::os::raw::c_int,
-    pub y_root: ::std::os::raw::c_int,
-    pub state: ::std::os::raw::c_uint,
-    pub button: ::std::os::raw::c_uint,
-    pub same_screen: ::std::os::raw::c_int,
+    pub x: libc::c_int,
+    pub y: libc::c_int,
+    pub x_root: libc::c_int,
+    pub y_root: libc::c_int,
+    pub state: libc::c_uint,
+    pub button: libc::c_uint,
+    pub same_screen: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XButtonEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XButtonEvent>(),
+        ::core::mem::size_of::<XButtonEvent>(),
         96usize,
         concat!("Size of: ", stringify!(XButtonEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XButtonEvent>(),
+        ::core::mem::align_of::<XButtonEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XButtonEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XButtonEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XButtonEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -20895,7 +20546,7 @@ fn bindgen_test_layout_XButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XButtonEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XButtonEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -20905,7 +20556,7 @@ fn bindgen_test_layout_XButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XButtonEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XButtonEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -20915,7 +20566,7 @@ fn bindgen_test_layout_XButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XButtonEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XButtonEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -20925,7 +20576,7 @@ fn bindgen_test_layout_XButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XButtonEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XButtonEvent>())).window as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -20935,7 +20586,7 @@ fn bindgen_test_layout_XButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XButtonEvent>())).root as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XButtonEvent>())).root as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -20945,7 +20596,7 @@ fn bindgen_test_layout_XButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XButtonEvent>())).subwindow as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XButtonEvent>())).subwindow as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -20955,7 +20606,7 @@ fn bindgen_test_layout_XButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XButtonEvent>())).time as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XButtonEvent>())).time as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -20965,7 +20616,7 @@ fn bindgen_test_layout_XButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XButtonEvent>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XButtonEvent>())).x as *const _ as usize },
         64usize,
         concat!(
             "Offset of field: ",
@@ -20975,7 +20626,7 @@ fn bindgen_test_layout_XButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XButtonEvent>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XButtonEvent>())).y as *const _ as usize },
         68usize,
         concat!(
             "Offset of field: ",
@@ -20985,7 +20636,7 @@ fn bindgen_test_layout_XButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XButtonEvent>())).x_root as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XButtonEvent>())).x_root as *const _ as usize },
         72usize,
         concat!(
             "Offset of field: ",
@@ -20995,7 +20646,7 @@ fn bindgen_test_layout_XButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XButtonEvent>())).y_root as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XButtonEvent>())).y_root as *const _ as usize },
         76usize,
         concat!(
             "Offset of field: ",
@@ -21005,7 +20656,7 @@ fn bindgen_test_layout_XButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XButtonEvent>())).state as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XButtonEvent>())).state as *const _ as usize },
         80usize,
         concat!(
             "Offset of field: ",
@@ -21015,7 +20666,7 @@ fn bindgen_test_layout_XButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XButtonEvent>())).button as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XButtonEvent>())).button as *const _ as usize },
         84usize,
         concat!(
             "Offset of field: ",
@@ -21025,7 +20676,7 @@ fn bindgen_test_layout_XButtonEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XButtonEvent>())).same_screen as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XButtonEvent>())).same_screen as *const _ as usize },
         88usize,
         concat!(
             "Offset of field: ",
@@ -21038,38 +20689,38 @@ fn bindgen_test_layout_XButtonEvent() {
 pub type XButtonPressedEvent = XButtonEvent;
 pub type XButtonReleasedEvent = XButtonEvent;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XMotionEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub window: Window,
     pub root: Window,
     pub subwindow: Window,
     pub time: Time,
-    pub x: ::std::os::raw::c_int,
-    pub y: ::std::os::raw::c_int,
-    pub x_root: ::std::os::raw::c_int,
-    pub y_root: ::std::os::raw::c_int,
-    pub state: ::std::os::raw::c_uint,
-    pub is_hint: ::std::os::raw::c_char,
-    pub same_screen: ::std::os::raw::c_int,
+    pub x: libc::c_int,
+    pub y: libc::c_int,
+    pub x_root: libc::c_int,
+    pub y_root: libc::c_int,
+    pub state: libc::c_uint,
+    pub is_hint: libc::c_char,
+    pub same_screen: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XMotionEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XMotionEvent>(),
+        ::core::mem::size_of::<XMotionEvent>(),
         96usize,
         concat!("Size of: ", stringify!(XMotionEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XMotionEvent>(),
+        ::core::mem::align_of::<XMotionEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XMotionEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMotionEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMotionEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -21079,7 +20730,7 @@ fn bindgen_test_layout_XMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMotionEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMotionEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -21089,7 +20740,7 @@ fn bindgen_test_layout_XMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMotionEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMotionEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -21099,7 +20750,7 @@ fn bindgen_test_layout_XMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMotionEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMotionEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -21109,7 +20760,7 @@ fn bindgen_test_layout_XMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMotionEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMotionEvent>())).window as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -21119,7 +20770,7 @@ fn bindgen_test_layout_XMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMotionEvent>())).root as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMotionEvent>())).root as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -21129,7 +20780,7 @@ fn bindgen_test_layout_XMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMotionEvent>())).subwindow as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMotionEvent>())).subwindow as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -21139,7 +20790,7 @@ fn bindgen_test_layout_XMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMotionEvent>())).time as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMotionEvent>())).time as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -21149,7 +20800,7 @@ fn bindgen_test_layout_XMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMotionEvent>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMotionEvent>())).x as *const _ as usize },
         64usize,
         concat!(
             "Offset of field: ",
@@ -21159,7 +20810,7 @@ fn bindgen_test_layout_XMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMotionEvent>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMotionEvent>())).y as *const _ as usize },
         68usize,
         concat!(
             "Offset of field: ",
@@ -21169,7 +20820,7 @@ fn bindgen_test_layout_XMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMotionEvent>())).x_root as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMotionEvent>())).x_root as *const _ as usize },
         72usize,
         concat!(
             "Offset of field: ",
@@ -21179,7 +20830,7 @@ fn bindgen_test_layout_XMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMotionEvent>())).y_root as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMotionEvent>())).y_root as *const _ as usize },
         76usize,
         concat!(
             "Offset of field: ",
@@ -21189,7 +20840,7 @@ fn bindgen_test_layout_XMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMotionEvent>())).state as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMotionEvent>())).state as *const _ as usize },
         80usize,
         concat!(
             "Offset of field: ",
@@ -21199,7 +20850,7 @@ fn bindgen_test_layout_XMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMotionEvent>())).is_hint as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMotionEvent>())).is_hint as *const _ as usize },
         84usize,
         concat!(
             "Offset of field: ",
@@ -21209,7 +20860,7 @@ fn bindgen_test_layout_XMotionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMotionEvent>())).same_screen as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMotionEvent>())).same_screen as *const _ as usize },
         88usize,
         concat!(
             "Offset of field: ",
@@ -21221,40 +20872,40 @@ fn bindgen_test_layout_XMotionEvent() {
 }
 pub type XPointerMovedEvent = XMotionEvent;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XCrossingEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub window: Window,
     pub root: Window,
     pub subwindow: Window,
     pub time: Time,
-    pub x: ::std::os::raw::c_int,
-    pub y: ::std::os::raw::c_int,
-    pub x_root: ::std::os::raw::c_int,
-    pub y_root: ::std::os::raw::c_int,
-    pub mode: ::std::os::raw::c_int,
-    pub detail: ::std::os::raw::c_int,
-    pub same_screen: ::std::os::raw::c_int,
-    pub focus: ::std::os::raw::c_int,
-    pub state: ::std::os::raw::c_uint,
+    pub x: libc::c_int,
+    pub y: libc::c_int,
+    pub x_root: libc::c_int,
+    pub y_root: libc::c_int,
+    pub mode: libc::c_int,
+    pub detail: libc::c_int,
+    pub same_screen: libc::c_int,
+    pub focus: libc::c_int,
+    pub state: libc::c_uint,
 }
 #[test]
 fn bindgen_test_layout_XCrossingEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XCrossingEvent>(),
+        ::core::mem::size_of::<XCrossingEvent>(),
         104usize,
         concat!("Size of: ", stringify!(XCrossingEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XCrossingEvent>(),
+        ::core::mem::align_of::<XCrossingEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XCrossingEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCrossingEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCrossingEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -21264,7 +20915,7 @@ fn bindgen_test_layout_XCrossingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCrossingEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCrossingEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -21274,7 +20925,7 @@ fn bindgen_test_layout_XCrossingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCrossingEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCrossingEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -21284,7 +20935,7 @@ fn bindgen_test_layout_XCrossingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCrossingEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCrossingEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -21294,7 +20945,7 @@ fn bindgen_test_layout_XCrossingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCrossingEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCrossingEvent>())).window as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -21304,7 +20955,7 @@ fn bindgen_test_layout_XCrossingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCrossingEvent>())).root as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCrossingEvent>())).root as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -21314,7 +20965,7 @@ fn bindgen_test_layout_XCrossingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCrossingEvent>())).subwindow as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCrossingEvent>())).subwindow as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -21324,7 +20975,7 @@ fn bindgen_test_layout_XCrossingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCrossingEvent>())).time as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCrossingEvent>())).time as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -21334,7 +20985,7 @@ fn bindgen_test_layout_XCrossingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCrossingEvent>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCrossingEvent>())).x as *const _ as usize },
         64usize,
         concat!(
             "Offset of field: ",
@@ -21344,7 +20995,7 @@ fn bindgen_test_layout_XCrossingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCrossingEvent>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCrossingEvent>())).y as *const _ as usize },
         68usize,
         concat!(
             "Offset of field: ",
@@ -21354,7 +21005,7 @@ fn bindgen_test_layout_XCrossingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCrossingEvent>())).x_root as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCrossingEvent>())).x_root as *const _ as usize },
         72usize,
         concat!(
             "Offset of field: ",
@@ -21364,7 +21015,7 @@ fn bindgen_test_layout_XCrossingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCrossingEvent>())).y_root as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCrossingEvent>())).y_root as *const _ as usize },
         76usize,
         concat!(
             "Offset of field: ",
@@ -21374,7 +21025,7 @@ fn bindgen_test_layout_XCrossingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCrossingEvent>())).mode as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCrossingEvent>())).mode as *const _ as usize },
         80usize,
         concat!(
             "Offset of field: ",
@@ -21384,7 +21035,7 @@ fn bindgen_test_layout_XCrossingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCrossingEvent>())).detail as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCrossingEvent>())).detail as *const _ as usize },
         84usize,
         concat!(
             "Offset of field: ",
@@ -21394,7 +21045,7 @@ fn bindgen_test_layout_XCrossingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCrossingEvent>())).same_screen as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCrossingEvent>())).same_screen as *const _ as usize },
         88usize,
         concat!(
             "Offset of field: ",
@@ -21404,7 +21055,7 @@ fn bindgen_test_layout_XCrossingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCrossingEvent>())).focus as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCrossingEvent>())).focus as *const _ as usize },
         92usize,
         concat!(
             "Offset of field: ",
@@ -21414,7 +21065,7 @@ fn bindgen_test_layout_XCrossingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCrossingEvent>())).state as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCrossingEvent>())).state as *const _ as usize },
         96usize,
         concat!(
             "Offset of field: ",
@@ -21427,30 +21078,30 @@ fn bindgen_test_layout_XCrossingEvent() {
 pub type XEnterWindowEvent = XCrossingEvent;
 pub type XLeaveWindowEvent = XCrossingEvent;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XFocusChangeEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub window: Window,
-    pub mode: ::std::os::raw::c_int,
-    pub detail: ::std::os::raw::c_int,
+    pub mode: libc::c_int,
+    pub detail: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XFocusChangeEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XFocusChangeEvent>(),
+        ::core::mem::size_of::<XFocusChangeEvent>(),
         48usize,
         concat!("Size of: ", stringify!(XFocusChangeEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XFocusChangeEvent>(),
+        ::core::mem::align_of::<XFocusChangeEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XFocusChangeEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFocusChangeEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFocusChangeEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -21460,7 +21111,7 @@ fn bindgen_test_layout_XFocusChangeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFocusChangeEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFocusChangeEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -21470,7 +21121,7 @@ fn bindgen_test_layout_XFocusChangeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFocusChangeEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFocusChangeEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -21480,7 +21131,7 @@ fn bindgen_test_layout_XFocusChangeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFocusChangeEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFocusChangeEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -21490,7 +21141,7 @@ fn bindgen_test_layout_XFocusChangeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFocusChangeEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFocusChangeEvent>())).window as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -21500,7 +21151,7 @@ fn bindgen_test_layout_XFocusChangeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFocusChangeEvent>())).mode as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFocusChangeEvent>())).mode as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -21510,7 +21161,7 @@ fn bindgen_test_layout_XFocusChangeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFocusChangeEvent>())).detail as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFocusChangeEvent>())).detail as *const _ as usize },
         44usize,
         concat!(
             "Offset of field: ",
@@ -21523,29 +21174,29 @@ fn bindgen_test_layout_XFocusChangeEvent() {
 pub type XFocusInEvent = XFocusChangeEvent;
 pub type XFocusOutEvent = XFocusChangeEvent;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XKeymapEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub window: Window,
-    pub key_vector: [::std::os::raw::c_char; 32usize],
+    pub key_vector: [libc::c_char; 32usize],
 }
 #[test]
 fn bindgen_test_layout_XKeymapEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XKeymapEvent>(),
+        ::core::mem::size_of::<XKeymapEvent>(),
         72usize,
         concat!("Size of: ", stringify!(XKeymapEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XKeymapEvent>(),
+        ::core::mem::align_of::<XKeymapEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XKeymapEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeymapEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeymapEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -21555,7 +21206,7 @@ fn bindgen_test_layout_XKeymapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeymapEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeymapEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -21565,7 +21216,7 @@ fn bindgen_test_layout_XKeymapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeymapEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeymapEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -21575,7 +21226,7 @@ fn bindgen_test_layout_XKeymapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeymapEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeymapEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -21585,7 +21236,7 @@ fn bindgen_test_layout_XKeymapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeymapEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeymapEvent>())).window as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -21595,7 +21246,7 @@ fn bindgen_test_layout_XKeymapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XKeymapEvent>())).key_vector as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XKeymapEvent>())).key_vector as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -21606,33 +21257,33 @@ fn bindgen_test_layout_XKeymapEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XExposeEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub window: Window,
-    pub x: ::std::os::raw::c_int,
-    pub y: ::std::os::raw::c_int,
-    pub width: ::std::os::raw::c_int,
-    pub height: ::std::os::raw::c_int,
-    pub count: ::std::os::raw::c_int,
+    pub x: libc::c_int,
+    pub y: libc::c_int,
+    pub width: libc::c_int,
+    pub height: libc::c_int,
+    pub count: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XExposeEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XExposeEvent>(),
+        ::core::mem::size_of::<XExposeEvent>(),
         64usize,
         concat!("Size of: ", stringify!(XExposeEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XExposeEvent>(),
+        ::core::mem::align_of::<XExposeEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XExposeEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XExposeEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XExposeEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -21642,7 +21293,7 @@ fn bindgen_test_layout_XExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XExposeEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XExposeEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -21652,7 +21303,7 @@ fn bindgen_test_layout_XExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XExposeEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XExposeEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -21662,7 +21313,7 @@ fn bindgen_test_layout_XExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XExposeEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XExposeEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -21672,7 +21323,7 @@ fn bindgen_test_layout_XExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XExposeEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XExposeEvent>())).window as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -21682,7 +21333,7 @@ fn bindgen_test_layout_XExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XExposeEvent>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XExposeEvent>())).x as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -21692,7 +21343,7 @@ fn bindgen_test_layout_XExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XExposeEvent>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XExposeEvent>())).y as *const _ as usize },
         44usize,
         concat!(
             "Offset of field: ",
@@ -21702,7 +21353,7 @@ fn bindgen_test_layout_XExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XExposeEvent>())).width as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XExposeEvent>())).width as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -21712,7 +21363,7 @@ fn bindgen_test_layout_XExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XExposeEvent>())).height as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XExposeEvent>())).height as *const _ as usize },
         52usize,
         concat!(
             "Offset of field: ",
@@ -21722,7 +21373,7 @@ fn bindgen_test_layout_XExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XExposeEvent>())).count as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XExposeEvent>())).count as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -21733,35 +21384,35 @@ fn bindgen_test_layout_XExposeEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XGraphicsExposeEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub drawable: Drawable,
-    pub x: ::std::os::raw::c_int,
-    pub y: ::std::os::raw::c_int,
-    pub width: ::std::os::raw::c_int,
-    pub height: ::std::os::raw::c_int,
-    pub count: ::std::os::raw::c_int,
-    pub major_code: ::std::os::raw::c_int,
-    pub minor_code: ::std::os::raw::c_int,
+    pub x: libc::c_int,
+    pub y: libc::c_int,
+    pub width: libc::c_int,
+    pub height: libc::c_int,
+    pub count: libc::c_int,
+    pub major_code: libc::c_int,
+    pub minor_code: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XGraphicsExposeEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XGraphicsExposeEvent>(),
+        ::core::mem::size_of::<XGraphicsExposeEvent>(),
         72usize,
         concat!("Size of: ", stringify!(XGraphicsExposeEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XGraphicsExposeEvent>(),
+        ::core::mem::align_of::<XGraphicsExposeEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XGraphicsExposeEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGraphicsExposeEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGraphicsExposeEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -21771,7 +21422,7 @@ fn bindgen_test_layout_XGraphicsExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGraphicsExposeEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGraphicsExposeEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -21781,7 +21432,9 @@ fn bindgen_test_layout_XGraphicsExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGraphicsExposeEvent>())).send_event as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<XGraphicsExposeEvent>())).send_event as *const _ as usize
+        },
         16usize,
         concat!(
             "Offset of field: ",
@@ -21791,7 +21444,7 @@ fn bindgen_test_layout_XGraphicsExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGraphicsExposeEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGraphicsExposeEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -21801,7 +21454,7 @@ fn bindgen_test_layout_XGraphicsExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGraphicsExposeEvent>())).drawable as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGraphicsExposeEvent>())).drawable as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -21811,7 +21464,7 @@ fn bindgen_test_layout_XGraphicsExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGraphicsExposeEvent>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGraphicsExposeEvent>())).x as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -21821,7 +21474,7 @@ fn bindgen_test_layout_XGraphicsExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGraphicsExposeEvent>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGraphicsExposeEvent>())).y as *const _ as usize },
         44usize,
         concat!(
             "Offset of field: ",
@@ -21831,7 +21484,7 @@ fn bindgen_test_layout_XGraphicsExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGraphicsExposeEvent>())).width as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGraphicsExposeEvent>())).width as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -21841,7 +21494,7 @@ fn bindgen_test_layout_XGraphicsExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGraphicsExposeEvent>())).height as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGraphicsExposeEvent>())).height as *const _ as usize },
         52usize,
         concat!(
             "Offset of field: ",
@@ -21851,7 +21504,7 @@ fn bindgen_test_layout_XGraphicsExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGraphicsExposeEvent>())).count as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGraphicsExposeEvent>())).count as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -21861,7 +21514,9 @@ fn bindgen_test_layout_XGraphicsExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGraphicsExposeEvent>())).major_code as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<XGraphicsExposeEvent>())).major_code as *const _ as usize
+        },
         60usize,
         concat!(
             "Offset of field: ",
@@ -21871,7 +21526,9 @@ fn bindgen_test_layout_XGraphicsExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGraphicsExposeEvent>())).minor_code as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<XGraphicsExposeEvent>())).minor_code as *const _ as usize
+        },
         64usize,
         concat!(
             "Offset of field: ",
@@ -21882,30 +21539,30 @@ fn bindgen_test_layout_XGraphicsExposeEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XNoExposeEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub drawable: Drawable,
-    pub major_code: ::std::os::raw::c_int,
-    pub minor_code: ::std::os::raw::c_int,
+    pub major_code: libc::c_int,
+    pub minor_code: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XNoExposeEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XNoExposeEvent>(),
+        ::core::mem::size_of::<XNoExposeEvent>(),
         48usize,
         concat!("Size of: ", stringify!(XNoExposeEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XNoExposeEvent>(),
+        ::core::mem::align_of::<XNoExposeEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XNoExposeEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XNoExposeEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XNoExposeEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -21915,7 +21572,7 @@ fn bindgen_test_layout_XNoExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XNoExposeEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XNoExposeEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -21925,7 +21582,7 @@ fn bindgen_test_layout_XNoExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XNoExposeEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XNoExposeEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -21935,7 +21592,7 @@ fn bindgen_test_layout_XNoExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XNoExposeEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XNoExposeEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -21945,7 +21602,7 @@ fn bindgen_test_layout_XNoExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XNoExposeEvent>())).drawable as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XNoExposeEvent>())).drawable as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -21955,7 +21612,7 @@ fn bindgen_test_layout_XNoExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XNoExposeEvent>())).major_code as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XNoExposeEvent>())).major_code as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -21965,7 +21622,7 @@ fn bindgen_test_layout_XNoExposeEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XNoExposeEvent>())).minor_code as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XNoExposeEvent>())).minor_code as *const _ as usize },
         44usize,
         concat!(
             "Offset of field: ",
@@ -21976,29 +21633,29 @@ fn bindgen_test_layout_XNoExposeEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XVisibilityEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub window: Window,
-    pub state: ::std::os::raw::c_int,
+    pub state: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XVisibilityEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XVisibilityEvent>(),
+        ::core::mem::size_of::<XVisibilityEvent>(),
         48usize,
         concat!("Size of: ", stringify!(XVisibilityEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XVisibilityEvent>(),
+        ::core::mem::align_of::<XVisibilityEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XVisibilityEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XVisibilityEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XVisibilityEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -22008,7 +21665,7 @@ fn bindgen_test_layout_XVisibilityEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XVisibilityEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XVisibilityEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -22018,7 +21675,7 @@ fn bindgen_test_layout_XVisibilityEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XVisibilityEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XVisibilityEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -22028,7 +21685,7 @@ fn bindgen_test_layout_XVisibilityEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XVisibilityEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XVisibilityEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -22038,7 +21695,7 @@ fn bindgen_test_layout_XVisibilityEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XVisibilityEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XVisibilityEvent>())).window as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -22048,7 +21705,7 @@ fn bindgen_test_layout_XVisibilityEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XVisibilityEvent>())).state as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XVisibilityEvent>())).state as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -22059,35 +21716,35 @@ fn bindgen_test_layout_XVisibilityEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XCreateWindowEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub parent: Window,
     pub window: Window,
-    pub x: ::std::os::raw::c_int,
-    pub y: ::std::os::raw::c_int,
-    pub width: ::std::os::raw::c_int,
-    pub height: ::std::os::raw::c_int,
-    pub border_width: ::std::os::raw::c_int,
-    pub override_redirect: ::std::os::raw::c_int,
+    pub x: libc::c_int,
+    pub y: libc::c_int,
+    pub width: libc::c_int,
+    pub height: libc::c_int,
+    pub border_width: libc::c_int,
+    pub override_redirect: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XCreateWindowEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XCreateWindowEvent>(),
+        ::core::mem::size_of::<XCreateWindowEvent>(),
         72usize,
         concat!("Size of: ", stringify!(XCreateWindowEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XCreateWindowEvent>(),
+        ::core::mem::align_of::<XCreateWindowEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XCreateWindowEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCreateWindowEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCreateWindowEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -22097,7 +21754,7 @@ fn bindgen_test_layout_XCreateWindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCreateWindowEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCreateWindowEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -22107,7 +21764,7 @@ fn bindgen_test_layout_XCreateWindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCreateWindowEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCreateWindowEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -22117,7 +21774,7 @@ fn bindgen_test_layout_XCreateWindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCreateWindowEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCreateWindowEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -22127,7 +21784,7 @@ fn bindgen_test_layout_XCreateWindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCreateWindowEvent>())).parent as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCreateWindowEvent>())).parent as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -22137,7 +21794,7 @@ fn bindgen_test_layout_XCreateWindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCreateWindowEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCreateWindowEvent>())).window as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -22147,7 +21804,7 @@ fn bindgen_test_layout_XCreateWindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCreateWindowEvent>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCreateWindowEvent>())).x as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -22157,7 +21814,7 @@ fn bindgen_test_layout_XCreateWindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCreateWindowEvent>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCreateWindowEvent>())).y as *const _ as usize },
         52usize,
         concat!(
             "Offset of field: ",
@@ -22167,7 +21824,7 @@ fn bindgen_test_layout_XCreateWindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCreateWindowEvent>())).width as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCreateWindowEvent>())).width as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -22177,7 +21834,7 @@ fn bindgen_test_layout_XCreateWindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCreateWindowEvent>())).height as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCreateWindowEvent>())).height as *const _ as usize },
         60usize,
         concat!(
             "Offset of field: ",
@@ -22187,7 +21844,9 @@ fn bindgen_test_layout_XCreateWindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCreateWindowEvent>())).border_width as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<XCreateWindowEvent>())).border_width as *const _ as usize
+        },
         64usize,
         concat!(
             "Offset of field: ",
@@ -22198,7 +21857,7 @@ fn bindgen_test_layout_XCreateWindowEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XCreateWindowEvent>())).override_redirect as *const _ as usize
+            &(*(::core::ptr::null::<XCreateWindowEvent>())).override_redirect as *const _ as usize
         },
         68usize,
         concat!(
@@ -22210,11 +21869,11 @@ fn bindgen_test_layout_XCreateWindowEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XDestroyWindowEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub event: Window,
     pub window: Window,
@@ -22222,17 +21881,17 @@ pub struct XDestroyWindowEvent {
 #[test]
 fn bindgen_test_layout_XDestroyWindowEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XDestroyWindowEvent>(),
+        ::core::mem::size_of::<XDestroyWindowEvent>(),
         48usize,
         concat!("Size of: ", stringify!(XDestroyWindowEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XDestroyWindowEvent>(),
+        ::core::mem::align_of::<XDestroyWindowEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XDestroyWindowEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XDestroyWindowEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XDestroyWindowEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -22242,7 +21901,7 @@ fn bindgen_test_layout_XDestroyWindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XDestroyWindowEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XDestroyWindowEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -22252,7 +21911,7 @@ fn bindgen_test_layout_XDestroyWindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XDestroyWindowEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XDestroyWindowEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -22262,7 +21921,7 @@ fn bindgen_test_layout_XDestroyWindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XDestroyWindowEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XDestroyWindowEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -22272,7 +21931,7 @@ fn bindgen_test_layout_XDestroyWindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XDestroyWindowEvent>())).event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XDestroyWindowEvent>())).event as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -22282,7 +21941,7 @@ fn bindgen_test_layout_XDestroyWindowEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XDestroyWindowEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XDestroyWindowEvent>())).window as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -22293,30 +21952,30 @@ fn bindgen_test_layout_XDestroyWindowEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XUnmapEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub event: Window,
     pub window: Window,
-    pub from_configure: ::std::os::raw::c_int,
+    pub from_configure: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XUnmapEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XUnmapEvent>(),
+        ::core::mem::size_of::<XUnmapEvent>(),
         56usize,
         concat!("Size of: ", stringify!(XUnmapEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XUnmapEvent>(),
+        ::core::mem::align_of::<XUnmapEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XUnmapEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XUnmapEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XUnmapEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -22326,7 +21985,7 @@ fn bindgen_test_layout_XUnmapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XUnmapEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XUnmapEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -22336,7 +21995,7 @@ fn bindgen_test_layout_XUnmapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XUnmapEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XUnmapEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -22346,7 +22005,7 @@ fn bindgen_test_layout_XUnmapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XUnmapEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XUnmapEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -22356,7 +22015,7 @@ fn bindgen_test_layout_XUnmapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XUnmapEvent>())).event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XUnmapEvent>())).event as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -22366,7 +22025,7 @@ fn bindgen_test_layout_XUnmapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XUnmapEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XUnmapEvent>())).window as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -22376,7 +22035,7 @@ fn bindgen_test_layout_XUnmapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XUnmapEvent>())).from_configure as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XUnmapEvent>())).from_configure as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -22387,30 +22046,30 @@ fn bindgen_test_layout_XUnmapEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XMapEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub event: Window,
     pub window: Window,
-    pub override_redirect: ::std::os::raw::c_int,
+    pub override_redirect: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XMapEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XMapEvent>(),
+        ::core::mem::size_of::<XMapEvent>(),
         56usize,
         concat!("Size of: ", stringify!(XMapEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XMapEvent>(),
+        ::core::mem::align_of::<XMapEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XMapEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMapEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMapEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -22420,7 +22079,7 @@ fn bindgen_test_layout_XMapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMapEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMapEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -22430,7 +22089,7 @@ fn bindgen_test_layout_XMapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMapEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMapEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -22440,7 +22099,7 @@ fn bindgen_test_layout_XMapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMapEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMapEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -22450,7 +22109,7 @@ fn bindgen_test_layout_XMapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMapEvent>())).event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMapEvent>())).event as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -22460,7 +22119,7 @@ fn bindgen_test_layout_XMapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMapEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMapEvent>())).window as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -22470,7 +22129,7 @@ fn bindgen_test_layout_XMapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMapEvent>())).override_redirect as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMapEvent>())).override_redirect as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -22481,11 +22140,11 @@ fn bindgen_test_layout_XMapEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XMapRequestEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub parent: Window,
     pub window: Window,
@@ -22493,17 +22152,17 @@ pub struct XMapRequestEvent {
 #[test]
 fn bindgen_test_layout_XMapRequestEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XMapRequestEvent>(),
+        ::core::mem::size_of::<XMapRequestEvent>(),
         48usize,
         concat!("Size of: ", stringify!(XMapRequestEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XMapRequestEvent>(),
+        ::core::mem::align_of::<XMapRequestEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XMapRequestEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMapRequestEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMapRequestEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -22513,7 +22172,7 @@ fn bindgen_test_layout_XMapRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMapRequestEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMapRequestEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -22523,7 +22182,7 @@ fn bindgen_test_layout_XMapRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMapRequestEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMapRequestEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -22533,7 +22192,7 @@ fn bindgen_test_layout_XMapRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMapRequestEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMapRequestEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -22543,7 +22202,7 @@ fn bindgen_test_layout_XMapRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMapRequestEvent>())).parent as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMapRequestEvent>())).parent as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -22553,7 +22212,7 @@ fn bindgen_test_layout_XMapRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMapRequestEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMapRequestEvent>())).window as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -22564,33 +22223,33 @@ fn bindgen_test_layout_XMapRequestEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XReparentEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub event: Window,
     pub window: Window,
     pub parent: Window,
-    pub x: ::std::os::raw::c_int,
-    pub y: ::std::os::raw::c_int,
-    pub override_redirect: ::std::os::raw::c_int,
+    pub x: libc::c_int,
+    pub y: libc::c_int,
+    pub override_redirect: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XReparentEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XReparentEvent>(),
+        ::core::mem::size_of::<XReparentEvent>(),
         72usize,
         concat!("Size of: ", stringify!(XReparentEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XReparentEvent>(),
+        ::core::mem::align_of::<XReparentEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XReparentEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XReparentEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XReparentEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -22600,7 +22259,7 @@ fn bindgen_test_layout_XReparentEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XReparentEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XReparentEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -22610,7 +22269,7 @@ fn bindgen_test_layout_XReparentEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XReparentEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XReparentEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -22620,7 +22279,7 @@ fn bindgen_test_layout_XReparentEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XReparentEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XReparentEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -22630,7 +22289,7 @@ fn bindgen_test_layout_XReparentEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XReparentEvent>())).event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XReparentEvent>())).event as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -22640,7 +22299,7 @@ fn bindgen_test_layout_XReparentEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XReparentEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XReparentEvent>())).window as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -22650,7 +22309,7 @@ fn bindgen_test_layout_XReparentEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XReparentEvent>())).parent as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XReparentEvent>())).parent as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -22660,7 +22319,7 @@ fn bindgen_test_layout_XReparentEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XReparentEvent>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XReparentEvent>())).x as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -22670,7 +22329,7 @@ fn bindgen_test_layout_XReparentEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XReparentEvent>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XReparentEvent>())).y as *const _ as usize },
         60usize,
         concat!(
             "Offset of field: ",
@@ -22681,7 +22340,7 @@ fn bindgen_test_layout_XReparentEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XReparentEvent>())).override_redirect as *const _ as usize
+            &(*(::core::ptr::null::<XReparentEvent>())).override_redirect as *const _ as usize
         },
         64usize,
         concat!(
@@ -22693,36 +22352,36 @@ fn bindgen_test_layout_XReparentEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XConfigureEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub event: Window,
     pub window: Window,
-    pub x: ::std::os::raw::c_int,
-    pub y: ::std::os::raw::c_int,
-    pub width: ::std::os::raw::c_int,
-    pub height: ::std::os::raw::c_int,
-    pub border_width: ::std::os::raw::c_int,
+    pub x: libc::c_int,
+    pub y: libc::c_int,
+    pub width: libc::c_int,
+    pub height: libc::c_int,
+    pub border_width: libc::c_int,
     pub above: Window,
-    pub override_redirect: ::std::os::raw::c_int,
+    pub override_redirect: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XConfigureEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XConfigureEvent>(),
+        ::core::mem::size_of::<XConfigureEvent>(),
         88usize,
         concat!("Size of: ", stringify!(XConfigureEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XConfigureEvent>(),
+        ::core::mem::align_of::<XConfigureEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XConfigureEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -22732,7 +22391,7 @@ fn bindgen_test_layout_XConfigureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -22742,7 +22401,7 @@ fn bindgen_test_layout_XConfigureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -22752,7 +22411,7 @@ fn bindgen_test_layout_XConfigureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -22762,7 +22421,7 @@ fn bindgen_test_layout_XConfigureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureEvent>())).event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureEvent>())).event as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -22772,7 +22431,7 @@ fn bindgen_test_layout_XConfigureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureEvent>())).window as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -22782,7 +22441,7 @@ fn bindgen_test_layout_XConfigureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureEvent>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureEvent>())).x as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -22792,7 +22451,7 @@ fn bindgen_test_layout_XConfigureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureEvent>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureEvent>())).y as *const _ as usize },
         52usize,
         concat!(
             "Offset of field: ",
@@ -22802,7 +22461,7 @@ fn bindgen_test_layout_XConfigureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureEvent>())).width as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureEvent>())).width as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -22812,7 +22471,7 @@ fn bindgen_test_layout_XConfigureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureEvent>())).height as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureEvent>())).height as *const _ as usize },
         60usize,
         concat!(
             "Offset of field: ",
@@ -22822,7 +22481,7 @@ fn bindgen_test_layout_XConfigureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureEvent>())).border_width as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureEvent>())).border_width as *const _ as usize },
         64usize,
         concat!(
             "Offset of field: ",
@@ -22832,7 +22491,7 @@ fn bindgen_test_layout_XConfigureEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureEvent>())).above as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureEvent>())).above as *const _ as usize },
         72usize,
         concat!(
             "Offset of field: ",
@@ -22843,7 +22502,7 @@ fn bindgen_test_layout_XConfigureEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XConfigureEvent>())).override_redirect as *const _ as usize
+            &(*(::core::ptr::null::<XConfigureEvent>())).override_redirect as *const _ as usize
         },
         80usize,
         concat!(
@@ -22855,31 +22514,31 @@ fn bindgen_test_layout_XConfigureEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XGravityEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub event: Window,
     pub window: Window,
-    pub x: ::std::os::raw::c_int,
-    pub y: ::std::os::raw::c_int,
+    pub x: libc::c_int,
+    pub y: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XGravityEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XGravityEvent>(),
+        ::core::mem::size_of::<XGravityEvent>(),
         56usize,
         concat!("Size of: ", stringify!(XGravityEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XGravityEvent>(),
+        ::core::mem::align_of::<XGravityEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XGravityEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGravityEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGravityEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -22889,7 +22548,7 @@ fn bindgen_test_layout_XGravityEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGravityEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGravityEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -22899,7 +22558,7 @@ fn bindgen_test_layout_XGravityEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGravityEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGravityEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -22909,7 +22568,7 @@ fn bindgen_test_layout_XGravityEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGravityEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGravityEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -22919,7 +22578,7 @@ fn bindgen_test_layout_XGravityEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGravityEvent>())).event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGravityEvent>())).event as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -22929,7 +22588,7 @@ fn bindgen_test_layout_XGravityEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGravityEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGravityEvent>())).window as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -22939,7 +22598,7 @@ fn bindgen_test_layout_XGravityEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGravityEvent>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGravityEvent>())).x as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -22949,7 +22608,7 @@ fn bindgen_test_layout_XGravityEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGravityEvent>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGravityEvent>())).y as *const _ as usize },
         52usize,
         concat!(
             "Offset of field: ",
@@ -22960,30 +22619,30 @@ fn bindgen_test_layout_XGravityEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XResizeRequestEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub window: Window,
-    pub width: ::std::os::raw::c_int,
-    pub height: ::std::os::raw::c_int,
+    pub width: libc::c_int,
+    pub height: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XResizeRequestEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XResizeRequestEvent>(),
+        ::core::mem::size_of::<XResizeRequestEvent>(),
         48usize,
         concat!("Size of: ", stringify!(XResizeRequestEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XResizeRequestEvent>(),
+        ::core::mem::align_of::<XResizeRequestEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XResizeRequestEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XResizeRequestEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XResizeRequestEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -22993,7 +22652,7 @@ fn bindgen_test_layout_XResizeRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XResizeRequestEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XResizeRequestEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -23003,7 +22662,7 @@ fn bindgen_test_layout_XResizeRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XResizeRequestEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XResizeRequestEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -23013,7 +22672,7 @@ fn bindgen_test_layout_XResizeRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XResizeRequestEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XResizeRequestEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -23023,7 +22682,7 @@ fn bindgen_test_layout_XResizeRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XResizeRequestEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XResizeRequestEvent>())).window as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -23033,7 +22692,7 @@ fn bindgen_test_layout_XResizeRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XResizeRequestEvent>())).width as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XResizeRequestEvent>())).width as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -23043,7 +22702,7 @@ fn bindgen_test_layout_XResizeRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XResizeRequestEvent>())).height as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XResizeRequestEvent>())).height as *const _ as usize },
         44usize,
         concat!(
             "Offset of field: ",
@@ -23054,37 +22713,37 @@ fn bindgen_test_layout_XResizeRequestEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XConfigureRequestEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub parent: Window,
     pub window: Window,
-    pub x: ::std::os::raw::c_int,
-    pub y: ::std::os::raw::c_int,
-    pub width: ::std::os::raw::c_int,
-    pub height: ::std::os::raw::c_int,
-    pub border_width: ::std::os::raw::c_int,
+    pub x: libc::c_int,
+    pub y: libc::c_int,
+    pub width: libc::c_int,
+    pub height: libc::c_int,
+    pub border_width: libc::c_int,
     pub above: Window,
-    pub detail: ::std::os::raw::c_int,
-    pub value_mask: ::std::os::raw::c_ulong,
+    pub detail: libc::c_int,
+    pub value_mask: libc::c_ulong,
 }
 #[test]
 fn bindgen_test_layout_XConfigureRequestEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XConfigureRequestEvent>(),
+        ::core::mem::size_of::<XConfigureRequestEvent>(),
         96usize,
         concat!("Size of: ", stringify!(XConfigureRequestEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XConfigureRequestEvent>(),
+        ::core::mem::align_of::<XConfigureRequestEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XConfigureRequestEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureRequestEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureRequestEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -23094,7 +22753,7 @@ fn bindgen_test_layout_XConfigureRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureRequestEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureRequestEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -23105,7 +22764,7 @@ fn bindgen_test_layout_XConfigureRequestEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XConfigureRequestEvent>())).send_event as *const _ as usize
+            &(*(::core::ptr::null::<XConfigureRequestEvent>())).send_event as *const _ as usize
         },
         16usize,
         concat!(
@@ -23116,7 +22775,7 @@ fn bindgen_test_layout_XConfigureRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureRequestEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureRequestEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -23126,7 +22785,7 @@ fn bindgen_test_layout_XConfigureRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureRequestEvent>())).parent as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureRequestEvent>())).parent as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -23136,7 +22795,7 @@ fn bindgen_test_layout_XConfigureRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureRequestEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureRequestEvent>())).window as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -23146,7 +22805,7 @@ fn bindgen_test_layout_XConfigureRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureRequestEvent>())).x as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureRequestEvent>())).x as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -23156,7 +22815,7 @@ fn bindgen_test_layout_XConfigureRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureRequestEvent>())).y as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureRequestEvent>())).y as *const _ as usize },
         52usize,
         concat!(
             "Offset of field: ",
@@ -23166,7 +22825,7 @@ fn bindgen_test_layout_XConfigureRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureRequestEvent>())).width as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureRequestEvent>())).width as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -23176,7 +22835,7 @@ fn bindgen_test_layout_XConfigureRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureRequestEvent>())).height as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureRequestEvent>())).height as *const _ as usize },
         60usize,
         concat!(
             "Offset of field: ",
@@ -23187,7 +22846,7 @@ fn bindgen_test_layout_XConfigureRequestEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XConfigureRequestEvent>())).border_width as *const _ as usize
+            &(*(::core::ptr::null::<XConfigureRequestEvent>())).border_width as *const _ as usize
         },
         64usize,
         concat!(
@@ -23198,7 +22857,7 @@ fn bindgen_test_layout_XConfigureRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureRequestEvent>())).above as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureRequestEvent>())).above as *const _ as usize },
         72usize,
         concat!(
             "Offset of field: ",
@@ -23208,7 +22867,7 @@ fn bindgen_test_layout_XConfigureRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XConfigureRequestEvent>())).detail as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XConfigureRequestEvent>())).detail as *const _ as usize },
         80usize,
         concat!(
             "Offset of field: ",
@@ -23219,7 +22878,7 @@ fn bindgen_test_layout_XConfigureRequestEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XConfigureRequestEvent>())).value_mask as *const _ as usize
+            &(*(::core::ptr::null::<XConfigureRequestEvent>())).value_mask as *const _ as usize
         },
         88usize,
         concat!(
@@ -23231,30 +22890,30 @@ fn bindgen_test_layout_XConfigureRequestEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XCirculateEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub event: Window,
     pub window: Window,
-    pub place: ::std::os::raw::c_int,
+    pub place: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XCirculateEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XCirculateEvent>(),
+        ::core::mem::size_of::<XCirculateEvent>(),
         56usize,
         concat!("Size of: ", stringify!(XCirculateEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XCirculateEvent>(),
+        ::core::mem::align_of::<XCirculateEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XCirculateEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCirculateEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCirculateEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -23264,7 +22923,7 @@ fn bindgen_test_layout_XCirculateEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCirculateEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCirculateEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -23274,7 +22933,7 @@ fn bindgen_test_layout_XCirculateEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCirculateEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCirculateEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -23284,7 +22943,7 @@ fn bindgen_test_layout_XCirculateEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCirculateEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCirculateEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -23294,7 +22953,7 @@ fn bindgen_test_layout_XCirculateEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCirculateEvent>())).event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCirculateEvent>())).event as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -23304,7 +22963,7 @@ fn bindgen_test_layout_XCirculateEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCirculateEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCirculateEvent>())).window as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -23314,7 +22973,7 @@ fn bindgen_test_layout_XCirculateEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCirculateEvent>())).place as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCirculateEvent>())).place as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -23325,30 +22984,30 @@ fn bindgen_test_layout_XCirculateEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XCirculateRequestEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub parent: Window,
     pub window: Window,
-    pub place: ::std::os::raw::c_int,
+    pub place: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XCirculateRequestEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XCirculateRequestEvent>(),
+        ::core::mem::size_of::<XCirculateRequestEvent>(),
         56usize,
         concat!("Size of: ", stringify!(XCirculateRequestEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XCirculateRequestEvent>(),
+        ::core::mem::align_of::<XCirculateRequestEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XCirculateRequestEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCirculateRequestEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCirculateRequestEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -23358,7 +23017,7 @@ fn bindgen_test_layout_XCirculateRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCirculateRequestEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCirculateRequestEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -23369,7 +23028,7 @@ fn bindgen_test_layout_XCirculateRequestEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XCirculateRequestEvent>())).send_event as *const _ as usize
+            &(*(::core::ptr::null::<XCirculateRequestEvent>())).send_event as *const _ as usize
         },
         16usize,
         concat!(
@@ -23380,7 +23039,7 @@ fn bindgen_test_layout_XCirculateRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCirculateRequestEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCirculateRequestEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -23390,7 +23049,7 @@ fn bindgen_test_layout_XCirculateRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCirculateRequestEvent>())).parent as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCirculateRequestEvent>())).parent as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -23400,7 +23059,7 @@ fn bindgen_test_layout_XCirculateRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCirculateRequestEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCirculateRequestEvent>())).window as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -23410,7 +23069,7 @@ fn bindgen_test_layout_XCirculateRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCirculateRequestEvent>())).place as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCirculateRequestEvent>())).place as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -23421,31 +23080,31 @@ fn bindgen_test_layout_XCirculateRequestEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XPropertyEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub window: Window,
     pub atom: Atom,
     pub time: Time,
-    pub state: ::std::os::raw::c_int,
+    pub state: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XPropertyEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XPropertyEvent>(),
+        ::core::mem::size_of::<XPropertyEvent>(),
         64usize,
         concat!("Size of: ", stringify!(XPropertyEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XPropertyEvent>(),
+        ::core::mem::align_of::<XPropertyEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XPropertyEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XPropertyEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XPropertyEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -23455,7 +23114,7 @@ fn bindgen_test_layout_XPropertyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XPropertyEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XPropertyEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -23465,7 +23124,7 @@ fn bindgen_test_layout_XPropertyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XPropertyEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XPropertyEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -23475,7 +23134,7 @@ fn bindgen_test_layout_XPropertyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XPropertyEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XPropertyEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -23485,7 +23144,7 @@ fn bindgen_test_layout_XPropertyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XPropertyEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XPropertyEvent>())).window as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -23495,7 +23154,7 @@ fn bindgen_test_layout_XPropertyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XPropertyEvent>())).atom as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XPropertyEvent>())).atom as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -23505,7 +23164,7 @@ fn bindgen_test_layout_XPropertyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XPropertyEvent>())).time as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XPropertyEvent>())).time as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -23515,7 +23174,7 @@ fn bindgen_test_layout_XPropertyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XPropertyEvent>())).state as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XPropertyEvent>())).state as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -23526,11 +23185,11 @@ fn bindgen_test_layout_XPropertyEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XSelectionClearEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub window: Window,
     pub selection: Atom,
@@ -23539,17 +23198,17 @@ pub struct XSelectionClearEvent {
 #[test]
 fn bindgen_test_layout_XSelectionClearEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XSelectionClearEvent>(),
+        ::core::mem::size_of::<XSelectionClearEvent>(),
         56usize,
         concat!("Size of: ", stringify!(XSelectionClearEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XSelectionClearEvent>(),
+        ::core::mem::align_of::<XSelectionClearEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XSelectionClearEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionClearEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionClearEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -23559,7 +23218,7 @@ fn bindgen_test_layout_XSelectionClearEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionClearEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionClearEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -23569,7 +23228,9 @@ fn bindgen_test_layout_XSelectionClearEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionClearEvent>())).send_event as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<XSelectionClearEvent>())).send_event as *const _ as usize
+        },
         16usize,
         concat!(
             "Offset of field: ",
@@ -23579,7 +23240,7 @@ fn bindgen_test_layout_XSelectionClearEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionClearEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionClearEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -23589,7 +23250,7 @@ fn bindgen_test_layout_XSelectionClearEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionClearEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionClearEvent>())).window as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -23599,7 +23260,7 @@ fn bindgen_test_layout_XSelectionClearEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionClearEvent>())).selection as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionClearEvent>())).selection as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -23609,7 +23270,7 @@ fn bindgen_test_layout_XSelectionClearEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionClearEvent>())).time as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionClearEvent>())).time as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -23620,11 +23281,11 @@ fn bindgen_test_layout_XSelectionClearEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XSelectionRequestEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub owner: Window,
     pub requestor: Window,
@@ -23636,17 +23297,17 @@ pub struct XSelectionRequestEvent {
 #[test]
 fn bindgen_test_layout_XSelectionRequestEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XSelectionRequestEvent>(),
+        ::core::mem::size_of::<XSelectionRequestEvent>(),
         80usize,
         concat!("Size of: ", stringify!(XSelectionRequestEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XSelectionRequestEvent>(),
+        ::core::mem::align_of::<XSelectionRequestEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XSelectionRequestEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionRequestEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionRequestEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -23656,7 +23317,7 @@ fn bindgen_test_layout_XSelectionRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionRequestEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionRequestEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -23667,7 +23328,7 @@ fn bindgen_test_layout_XSelectionRequestEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XSelectionRequestEvent>())).send_event as *const _ as usize
+            &(*(::core::ptr::null::<XSelectionRequestEvent>())).send_event as *const _ as usize
         },
         16usize,
         concat!(
@@ -23678,7 +23339,7 @@ fn bindgen_test_layout_XSelectionRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionRequestEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionRequestEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -23688,7 +23349,7 @@ fn bindgen_test_layout_XSelectionRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionRequestEvent>())).owner as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionRequestEvent>())).owner as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -23699,7 +23360,7 @@ fn bindgen_test_layout_XSelectionRequestEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XSelectionRequestEvent>())).requestor as *const _ as usize
+            &(*(::core::ptr::null::<XSelectionRequestEvent>())).requestor as *const _ as usize
         },
         40usize,
         concat!(
@@ -23711,7 +23372,7 @@ fn bindgen_test_layout_XSelectionRequestEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XSelectionRequestEvent>())).selection as *const _ as usize
+            &(*(::core::ptr::null::<XSelectionRequestEvent>())).selection as *const _ as usize
         },
         48usize,
         concat!(
@@ -23722,7 +23383,7 @@ fn bindgen_test_layout_XSelectionRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionRequestEvent>())).target as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionRequestEvent>())).target as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -23732,7 +23393,9 @@ fn bindgen_test_layout_XSelectionRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionRequestEvent>())).property as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<XSelectionRequestEvent>())).property as *const _ as usize
+        },
         64usize,
         concat!(
             "Offset of field: ",
@@ -23742,7 +23405,7 @@ fn bindgen_test_layout_XSelectionRequestEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionRequestEvent>())).time as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionRequestEvent>())).time as *const _ as usize },
         72usize,
         concat!(
             "Offset of field: ",
@@ -23753,11 +23416,11 @@ fn bindgen_test_layout_XSelectionRequestEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XSelectionEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub requestor: Window,
     pub selection: Atom,
@@ -23768,17 +23431,17 @@ pub struct XSelectionEvent {
 #[test]
 fn bindgen_test_layout_XSelectionEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XSelectionEvent>(),
+        ::core::mem::size_of::<XSelectionEvent>(),
         72usize,
         concat!("Size of: ", stringify!(XSelectionEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XSelectionEvent>(),
+        ::core::mem::align_of::<XSelectionEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XSelectionEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -23788,7 +23451,7 @@ fn bindgen_test_layout_XSelectionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -23798,7 +23461,7 @@ fn bindgen_test_layout_XSelectionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -23808,7 +23471,7 @@ fn bindgen_test_layout_XSelectionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -23818,7 +23481,7 @@ fn bindgen_test_layout_XSelectionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionEvent>())).requestor as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionEvent>())).requestor as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -23828,7 +23491,7 @@ fn bindgen_test_layout_XSelectionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionEvent>())).selection as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionEvent>())).selection as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -23838,7 +23501,7 @@ fn bindgen_test_layout_XSelectionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionEvent>())).target as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionEvent>())).target as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -23848,7 +23511,7 @@ fn bindgen_test_layout_XSelectionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionEvent>())).property as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionEvent>())).property as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -23858,7 +23521,7 @@ fn bindgen_test_layout_XSelectionEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XSelectionEvent>())).time as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XSelectionEvent>())).time as *const _ as usize },
         64usize,
         concat!(
             "Offset of field: ",
@@ -23869,31 +23532,31 @@ fn bindgen_test_layout_XSelectionEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XColormapEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub window: Window,
     pub colormap: Colormap,
-    pub new: ::std::os::raw::c_int,
-    pub state: ::std::os::raw::c_int,
+    pub new: libc::c_int,
+    pub state: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XColormapEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XColormapEvent>(),
+        ::core::mem::size_of::<XColormapEvent>(),
         56usize,
         concat!("Size of: ", stringify!(XColormapEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XColormapEvent>(),
+        ::core::mem::align_of::<XColormapEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XColormapEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XColormapEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XColormapEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -23903,7 +23566,7 @@ fn bindgen_test_layout_XColormapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XColormapEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XColormapEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -23913,7 +23576,7 @@ fn bindgen_test_layout_XColormapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XColormapEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XColormapEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -23923,7 +23586,7 @@ fn bindgen_test_layout_XColormapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XColormapEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XColormapEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -23933,7 +23596,7 @@ fn bindgen_test_layout_XColormapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XColormapEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XColormapEvent>())).window as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -23943,7 +23606,7 @@ fn bindgen_test_layout_XColormapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XColormapEvent>())).colormap as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XColormapEvent>())).colormap as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -23953,7 +23616,7 @@ fn bindgen_test_layout_XColormapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XColormapEvent>())).new as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XColormapEvent>())).new as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -23963,7 +23626,7 @@ fn bindgen_test_layout_XColormapEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XColormapEvent>())).state as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XColormapEvent>())).state as *const _ as usize },
         52usize,
         concat!(
             "Offset of field: ",
@@ -23976,32 +23639,32 @@ fn bindgen_test_layout_XColormapEvent() {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct XClientMessageEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub window: Window,
     pub message_type: Atom,
-    pub format: ::std::os::raw::c_int,
+    pub format: libc::c_int,
     pub data: XClientMessageEvent__bindgen_ty_1,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union XClientMessageEvent__bindgen_ty_1 {
-    pub b: [::std::os::raw::c_char; 20usize],
-    pub s: [::std::os::raw::c_short; 10usize],
-    pub l: [::std::os::raw::c_long; 5usize],
+    pub b: [libc::c_char; 20usize],
+    pub s: [libc::c_short; 10usize],
+    pub l: [libc::c_long; 5usize],
     _bindgen_union_align: [u64; 5usize],
 }
 #[test]
 fn bindgen_test_layout_XClientMessageEvent__bindgen_ty_1() {
     assert_eq!(
-        ::std::mem::size_of::<XClientMessageEvent__bindgen_ty_1>(),
+        ::core::mem::size_of::<XClientMessageEvent__bindgen_ty_1>(),
         40usize,
         concat!("Size of: ", stringify!(XClientMessageEvent__bindgen_ty_1))
     );
     assert_eq!(
-        ::std::mem::align_of::<XClientMessageEvent__bindgen_ty_1>(),
+        ::core::mem::align_of::<XClientMessageEvent__bindgen_ty_1>(),
         8usize,
         concat!(
             "Alignment of ",
@@ -24010,7 +23673,7 @@ fn bindgen_test_layout_XClientMessageEvent__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XClientMessageEvent__bindgen_ty_1>())).b as *const _ as usize
+            &(*(::core::ptr::null::<XClientMessageEvent__bindgen_ty_1>())).b as *const _ as usize
         },
         0usize,
         concat!(
@@ -24022,7 +23685,7 @@ fn bindgen_test_layout_XClientMessageEvent__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XClientMessageEvent__bindgen_ty_1>())).s as *const _ as usize
+            &(*(::core::ptr::null::<XClientMessageEvent__bindgen_ty_1>())).s as *const _ as usize
         },
         0usize,
         concat!(
@@ -24034,7 +23697,7 @@ fn bindgen_test_layout_XClientMessageEvent__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XClientMessageEvent__bindgen_ty_1>())).l as *const _ as usize
+            &(*(::core::ptr::null::<XClientMessageEvent__bindgen_ty_1>())).l as *const _ as usize
         },
         0usize,
         concat!(
@@ -24048,17 +23711,17 @@ fn bindgen_test_layout_XClientMessageEvent__bindgen_ty_1() {
 #[test]
 fn bindgen_test_layout_XClientMessageEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XClientMessageEvent>(),
+        ::core::mem::size_of::<XClientMessageEvent>(),
         96usize,
         concat!("Size of: ", stringify!(XClientMessageEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XClientMessageEvent>(),
+        ::core::mem::align_of::<XClientMessageEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XClientMessageEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XClientMessageEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XClientMessageEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24068,7 +23731,7 @@ fn bindgen_test_layout_XClientMessageEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XClientMessageEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XClientMessageEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -24078,7 +23741,7 @@ fn bindgen_test_layout_XClientMessageEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XClientMessageEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XClientMessageEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -24088,7 +23751,7 @@ fn bindgen_test_layout_XClientMessageEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XClientMessageEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XClientMessageEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -24098,7 +23761,7 @@ fn bindgen_test_layout_XClientMessageEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XClientMessageEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XClientMessageEvent>())).window as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -24109,7 +23772,7 @@ fn bindgen_test_layout_XClientMessageEvent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XClientMessageEvent>())).message_type as *const _ as usize
+            &(*(::core::ptr::null::<XClientMessageEvent>())).message_type as *const _ as usize
         },
         40usize,
         concat!(
@@ -24120,7 +23783,7 @@ fn bindgen_test_layout_XClientMessageEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XClientMessageEvent>())).format as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XClientMessageEvent>())).format as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -24130,7 +23793,7 @@ fn bindgen_test_layout_XClientMessageEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XClientMessageEvent>())).data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XClientMessageEvent>())).data as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -24141,31 +23804,31 @@ fn bindgen_test_layout_XClientMessageEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XMappingEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub window: Window,
-    pub request: ::std::os::raw::c_int,
-    pub first_keycode: ::std::os::raw::c_int,
-    pub count: ::std::os::raw::c_int,
+    pub request: libc::c_int,
+    pub first_keycode: libc::c_int,
+    pub count: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XMappingEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XMappingEvent>(),
+        ::core::mem::size_of::<XMappingEvent>(),
         56usize,
         concat!("Size of: ", stringify!(XMappingEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XMappingEvent>(),
+        ::core::mem::align_of::<XMappingEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XMappingEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMappingEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMappingEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24175,7 +23838,7 @@ fn bindgen_test_layout_XMappingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMappingEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMappingEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -24185,7 +23848,7 @@ fn bindgen_test_layout_XMappingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMappingEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMappingEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -24195,7 +23858,7 @@ fn bindgen_test_layout_XMappingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMappingEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMappingEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -24205,7 +23868,7 @@ fn bindgen_test_layout_XMappingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMappingEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMappingEvent>())).window as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -24215,7 +23878,7 @@ fn bindgen_test_layout_XMappingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMappingEvent>())).request as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMappingEvent>())).request as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -24225,7 +23888,7 @@ fn bindgen_test_layout_XMappingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMappingEvent>())).first_keycode as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMappingEvent>())).first_keycode as *const _ as usize },
         44usize,
         concat!(
             "Offset of field: ",
@@ -24235,7 +23898,7 @@ fn bindgen_test_layout_XMappingEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XMappingEvent>())).count as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XMappingEvent>())).count as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -24246,30 +23909,30 @@ fn bindgen_test_layout_XMappingEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XErrorEvent {
-    pub type_: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
     pub display: *mut Display,
     pub resourceid: XID,
-    pub serial: ::std::os::raw::c_ulong,
-    pub error_code: ::std::os::raw::c_uchar,
-    pub request_code: ::std::os::raw::c_uchar,
-    pub minor_code: ::std::os::raw::c_uchar,
+    pub serial: libc::c_ulong,
+    pub error_code: libc::c_uchar,
+    pub request_code: libc::c_uchar,
+    pub minor_code: libc::c_uchar,
 }
 #[test]
 fn bindgen_test_layout_XErrorEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XErrorEvent>(),
+        ::core::mem::size_of::<XErrorEvent>(),
         40usize,
         concat!("Size of: ", stringify!(XErrorEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XErrorEvent>(),
+        ::core::mem::align_of::<XErrorEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XErrorEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XErrorEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XErrorEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24279,7 +23942,7 @@ fn bindgen_test_layout_XErrorEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XErrorEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XErrorEvent>())).display as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -24289,7 +23952,7 @@ fn bindgen_test_layout_XErrorEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XErrorEvent>())).resourceid as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XErrorEvent>())).resourceid as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -24299,7 +23962,7 @@ fn bindgen_test_layout_XErrorEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XErrorEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XErrorEvent>())).serial as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -24309,7 +23972,7 @@ fn bindgen_test_layout_XErrorEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XErrorEvent>())).error_code as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XErrorEvent>())).error_code as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -24319,7 +23982,7 @@ fn bindgen_test_layout_XErrorEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XErrorEvent>())).request_code as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XErrorEvent>())).request_code as *const _ as usize },
         33usize,
         concat!(
             "Offset of field: ",
@@ -24329,7 +23992,7 @@ fn bindgen_test_layout_XErrorEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XErrorEvent>())).minor_code as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XErrorEvent>())).minor_code as *const _ as usize },
         34usize,
         concat!(
             "Offset of field: ",
@@ -24340,28 +24003,28 @@ fn bindgen_test_layout_XErrorEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XAnyEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
     pub window: Window,
 }
 #[test]
 fn bindgen_test_layout_XAnyEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XAnyEvent>(),
+        ::core::mem::size_of::<XAnyEvent>(),
         40usize,
         concat!("Size of: ", stringify!(XAnyEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XAnyEvent>(),
+        ::core::mem::align_of::<XAnyEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XAnyEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XAnyEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XAnyEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24371,7 +24034,7 @@ fn bindgen_test_layout_XAnyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XAnyEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XAnyEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -24381,7 +24044,7 @@ fn bindgen_test_layout_XAnyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XAnyEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XAnyEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -24391,7 +24054,7 @@ fn bindgen_test_layout_XAnyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XAnyEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XAnyEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -24401,7 +24064,7 @@ fn bindgen_test_layout_XAnyEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XAnyEvent>())).window as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XAnyEvent>())).window as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -24412,29 +24075,29 @@ fn bindgen_test_layout_XAnyEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XGenericEvent {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
-    pub extension: ::std::os::raw::c_int,
-    pub evtype: ::std::os::raw::c_int,
+    pub extension: libc::c_int,
+    pub evtype: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XGenericEvent() {
     assert_eq!(
-        ::std::mem::size_of::<XGenericEvent>(),
+        ::core::mem::size_of::<XGenericEvent>(),
         40usize,
         concat!("Size of: ", stringify!(XGenericEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<XGenericEvent>(),
+        ::core::mem::align_of::<XGenericEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(XGenericEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGenericEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGenericEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24444,7 +24107,7 @@ fn bindgen_test_layout_XGenericEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGenericEvent>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGenericEvent>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -24454,7 +24117,7 @@ fn bindgen_test_layout_XGenericEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGenericEvent>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGenericEvent>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -24464,7 +24127,7 @@ fn bindgen_test_layout_XGenericEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGenericEvent>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGenericEvent>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -24474,7 +24137,7 @@ fn bindgen_test_layout_XGenericEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGenericEvent>())).extension as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGenericEvent>())).extension as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -24484,7 +24147,7 @@ fn bindgen_test_layout_XGenericEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGenericEvent>())).evtype as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGenericEvent>())).evtype as *const _ as usize },
         36usize,
         concat!(
             "Offset of field: ",
@@ -24495,31 +24158,31 @@ fn bindgen_test_layout_XGenericEvent() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XGenericEventCookie {
-    pub type_: ::std::os::raw::c_int,
-    pub serial: ::std::os::raw::c_ulong,
-    pub send_event: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
+    pub serial: libc::c_ulong,
+    pub send_event: libc::c_int,
     pub display: *mut Display,
-    pub extension: ::std::os::raw::c_int,
-    pub evtype: ::std::os::raw::c_int,
-    pub cookie: ::std::os::raw::c_uint,
-    pub data: *mut ::std::os::raw::c_void,
+    pub extension: libc::c_int,
+    pub evtype: libc::c_int,
+    pub cookie: libc::c_uint,
+    pub data: *mut libc::c_void,
 }
 #[test]
 fn bindgen_test_layout_XGenericEventCookie() {
     assert_eq!(
-        ::std::mem::size_of::<XGenericEventCookie>(),
+        ::core::mem::size_of::<XGenericEventCookie>(),
         56usize,
         concat!("Size of: ", stringify!(XGenericEventCookie))
     );
     assert_eq!(
-        ::std::mem::align_of::<XGenericEventCookie>(),
+        ::core::mem::align_of::<XGenericEventCookie>(),
         8usize,
         concat!("Alignment of ", stringify!(XGenericEventCookie))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGenericEventCookie>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGenericEventCookie>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24529,7 +24192,7 @@ fn bindgen_test_layout_XGenericEventCookie() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGenericEventCookie>())).serial as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGenericEventCookie>())).serial as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -24539,7 +24202,7 @@ fn bindgen_test_layout_XGenericEventCookie() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGenericEventCookie>())).send_event as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGenericEventCookie>())).send_event as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -24549,7 +24212,7 @@ fn bindgen_test_layout_XGenericEventCookie() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGenericEventCookie>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGenericEventCookie>())).display as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -24559,7 +24222,7 @@ fn bindgen_test_layout_XGenericEventCookie() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGenericEventCookie>())).extension as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGenericEventCookie>())).extension as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -24569,7 +24232,7 @@ fn bindgen_test_layout_XGenericEventCookie() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGenericEventCookie>())).evtype as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGenericEventCookie>())).evtype as *const _ as usize },
         36usize,
         concat!(
             "Offset of field: ",
@@ -24579,7 +24242,7 @@ fn bindgen_test_layout_XGenericEventCookie() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGenericEventCookie>())).cookie as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGenericEventCookie>())).cookie as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -24589,7 +24252,7 @@ fn bindgen_test_layout_XGenericEventCookie() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XGenericEventCookie>())).data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XGenericEventCookie>())).data as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -24602,7 +24265,7 @@ fn bindgen_test_layout_XGenericEventCookie() {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union _XEvent {
-    pub type_: ::std::os::raw::c_int,
+    pub type_: libc::c_int,
     pub xany: XAnyEvent,
     pub xkey: XKeyEvent,
     pub xbutton: XButtonEvent,
@@ -24636,23 +24299,23 @@ pub union _XEvent {
     pub xkeymap: XKeymapEvent,
     pub xgeneric: XGenericEvent,
     pub xcookie: XGenericEventCookie,
-    pub pad: [::std::os::raw::c_long; 24usize],
+    pub pad: [libc::c_long; 24usize],
     _bindgen_union_align: [u64; 24usize],
 }
 #[test]
 fn bindgen_test_layout__XEvent() {
     assert_eq!(
-        ::std::mem::size_of::<_XEvent>(),
+        ::core::mem::size_of::<_XEvent>(),
         192usize,
         concat!("Size of: ", stringify!(_XEvent))
     );
     assert_eq!(
-        ::std::mem::align_of::<_XEvent>(),
+        ::core::mem::align_of::<_XEvent>(),
         8usize,
         concat!("Alignment of ", stringify!(_XEvent))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).type_ as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24662,7 +24325,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xany as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xany as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24672,7 +24335,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xkey as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xkey as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24682,7 +24345,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xbutton as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xbutton as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24692,7 +24355,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xmotion as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xmotion as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24702,7 +24365,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xcrossing as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xcrossing as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24712,7 +24375,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xfocus as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xfocus as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24722,7 +24385,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xexpose as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xexpose as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24732,7 +24395,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xgraphicsexpose as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xgraphicsexpose as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24742,7 +24405,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xnoexpose as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xnoexpose as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24752,7 +24415,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xvisibility as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xvisibility as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24762,7 +24425,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xcreatewindow as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xcreatewindow as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24772,7 +24435,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xdestroywindow as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xdestroywindow as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24782,7 +24445,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xunmap as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xunmap as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24792,7 +24455,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xmap as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xmap as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24802,7 +24465,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xmaprequest as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xmaprequest as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24812,7 +24475,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xreparent as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xreparent as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24822,7 +24485,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xconfigure as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xconfigure as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24832,7 +24495,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xgravity as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xgravity as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24842,7 +24505,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xresizerequest as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xresizerequest as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24852,7 +24515,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xconfigurerequest as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xconfigurerequest as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24862,7 +24525,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xcirculate as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xcirculate as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24872,7 +24535,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xcirculaterequest as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xcirculaterequest as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24882,7 +24545,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xproperty as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xproperty as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24892,7 +24555,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xselectionclear as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xselectionclear as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24902,7 +24565,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xselectionrequest as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xselectionrequest as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24912,7 +24575,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xselection as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xselection as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24922,7 +24585,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xcolormap as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xcolormap as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24932,7 +24595,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xclient as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xclient as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24942,7 +24605,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xmapping as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xmapping as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24952,7 +24615,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xerror as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xerror as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24962,7 +24625,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xkeymap as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xkeymap as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24972,7 +24635,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xgeneric as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xgeneric as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24982,7 +24645,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).xcookie as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).xcookie as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -24992,7 +24655,7 @@ fn bindgen_test_layout__XEvent() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XEvent>())).pad as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XEvent>())).pad as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25004,29 +24667,29 @@ fn bindgen_test_layout__XEvent() {
 }
 pub type XEvent = _XEvent;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XCharStruct {
-    pub lbearing: ::std::os::raw::c_short,
-    pub rbearing: ::std::os::raw::c_short,
-    pub width: ::std::os::raw::c_short,
-    pub ascent: ::std::os::raw::c_short,
-    pub descent: ::std::os::raw::c_short,
-    pub attributes: ::std::os::raw::c_ushort,
+    pub lbearing: libc::c_short,
+    pub rbearing: libc::c_short,
+    pub width: libc::c_short,
+    pub ascent: libc::c_short,
+    pub descent: libc::c_short,
+    pub attributes: libc::c_ushort,
 }
 #[test]
 fn bindgen_test_layout_XCharStruct() {
     assert_eq!(
-        ::std::mem::size_of::<XCharStruct>(),
+        ::core::mem::size_of::<XCharStruct>(),
         12usize,
         concat!("Size of: ", stringify!(XCharStruct))
     );
     assert_eq!(
-        ::std::mem::align_of::<XCharStruct>(),
+        ::core::mem::align_of::<XCharStruct>(),
         2usize,
         concat!("Alignment of ", stringify!(XCharStruct))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCharStruct>())).lbearing as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCharStruct>())).lbearing as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25036,7 +24699,7 @@ fn bindgen_test_layout_XCharStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCharStruct>())).rbearing as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCharStruct>())).rbearing as *const _ as usize },
         2usize,
         concat!(
             "Offset of field: ",
@@ -25046,7 +24709,7 @@ fn bindgen_test_layout_XCharStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCharStruct>())).width as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCharStruct>())).width as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -25056,7 +24719,7 @@ fn bindgen_test_layout_XCharStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCharStruct>())).ascent as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCharStruct>())).ascent as *const _ as usize },
         6usize,
         concat!(
             "Offset of field: ",
@@ -25066,7 +24729,7 @@ fn bindgen_test_layout_XCharStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCharStruct>())).descent as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCharStruct>())).descent as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -25076,7 +24739,7 @@ fn bindgen_test_layout_XCharStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XCharStruct>())).attributes as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XCharStruct>())).attributes as *const _ as usize },
         10usize,
         concat!(
             "Offset of field: ",
@@ -25087,25 +24750,25 @@ fn bindgen_test_layout_XCharStruct() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XFontProp {
     pub name: Atom,
-    pub card32: ::std::os::raw::c_ulong,
+    pub card32: libc::c_ulong,
 }
 #[test]
 fn bindgen_test_layout_XFontProp() {
     assert_eq!(
-        ::std::mem::size_of::<XFontProp>(),
+        ::core::mem::size_of::<XFontProp>(),
         16usize,
         concat!("Size of: ", stringify!(XFontProp))
     );
     assert_eq!(
-        ::std::mem::align_of::<XFontProp>(),
+        ::core::mem::align_of::<XFontProp>(),
         8usize,
         concat!("Alignment of ", stringify!(XFontProp))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFontProp>())).name as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFontProp>())).name as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25115,7 +24778,7 @@ fn bindgen_test_layout_XFontProp() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFontProp>())).card32 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFontProp>())).card32 as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -25126,39 +24789,39 @@ fn bindgen_test_layout_XFontProp() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XFontStruct {
     pub ext_data: *mut XExtData,
     pub fid: Font,
-    pub direction: ::std::os::raw::c_uint,
-    pub min_char_or_byte2: ::std::os::raw::c_uint,
-    pub max_char_or_byte2: ::std::os::raw::c_uint,
-    pub min_byte1: ::std::os::raw::c_uint,
-    pub max_byte1: ::std::os::raw::c_uint,
-    pub all_chars_exist: ::std::os::raw::c_int,
-    pub default_char: ::std::os::raw::c_uint,
-    pub n_properties: ::std::os::raw::c_int,
+    pub direction: libc::c_uint,
+    pub min_char_or_byte2: libc::c_uint,
+    pub max_char_or_byte2: libc::c_uint,
+    pub min_byte1: libc::c_uint,
+    pub max_byte1: libc::c_uint,
+    pub all_chars_exist: libc::c_int,
+    pub default_char: libc::c_uint,
+    pub n_properties: libc::c_int,
     pub properties: *mut XFontProp,
     pub min_bounds: XCharStruct,
     pub max_bounds: XCharStruct,
     pub per_char: *mut XCharStruct,
-    pub ascent: ::std::os::raw::c_int,
-    pub descent: ::std::os::raw::c_int,
+    pub ascent: libc::c_int,
+    pub descent: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_XFontStruct() {
     assert_eq!(
-        ::std::mem::size_of::<XFontStruct>(),
+        ::core::mem::size_of::<XFontStruct>(),
         96usize,
         concat!("Size of: ", stringify!(XFontStruct))
     );
     assert_eq!(
-        ::std::mem::align_of::<XFontStruct>(),
+        ::core::mem::align_of::<XFontStruct>(),
         8usize,
         concat!("Alignment of ", stringify!(XFontStruct))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFontStruct>())).ext_data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFontStruct>())).ext_data as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25168,7 +24831,7 @@ fn bindgen_test_layout_XFontStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFontStruct>())).fid as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFontStruct>())).fid as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -25178,7 +24841,7 @@ fn bindgen_test_layout_XFontStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFontStruct>())).direction as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFontStruct>())).direction as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -25188,7 +24851,7 @@ fn bindgen_test_layout_XFontStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFontStruct>())).min_char_or_byte2 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFontStruct>())).min_char_or_byte2 as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -25198,7 +24861,7 @@ fn bindgen_test_layout_XFontStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFontStruct>())).max_char_or_byte2 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFontStruct>())).max_char_or_byte2 as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -25208,7 +24871,7 @@ fn bindgen_test_layout_XFontStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFontStruct>())).min_byte1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFontStruct>())).min_byte1 as *const _ as usize },
         28usize,
         concat!(
             "Offset of field: ",
@@ -25218,7 +24881,7 @@ fn bindgen_test_layout_XFontStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFontStruct>())).max_byte1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFontStruct>())).max_byte1 as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -25228,7 +24891,7 @@ fn bindgen_test_layout_XFontStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFontStruct>())).all_chars_exist as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFontStruct>())).all_chars_exist as *const _ as usize },
         36usize,
         concat!(
             "Offset of field: ",
@@ -25238,7 +24901,7 @@ fn bindgen_test_layout_XFontStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFontStruct>())).default_char as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFontStruct>())).default_char as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -25248,7 +24911,7 @@ fn bindgen_test_layout_XFontStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFontStruct>())).n_properties as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFontStruct>())).n_properties as *const _ as usize },
         44usize,
         concat!(
             "Offset of field: ",
@@ -25258,7 +24921,7 @@ fn bindgen_test_layout_XFontStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFontStruct>())).properties as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFontStruct>())).properties as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -25268,7 +24931,7 @@ fn bindgen_test_layout_XFontStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFontStruct>())).min_bounds as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFontStruct>())).min_bounds as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -25278,7 +24941,7 @@ fn bindgen_test_layout_XFontStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFontStruct>())).max_bounds as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFontStruct>())).max_bounds as *const _ as usize },
         68usize,
         concat!(
             "Offset of field: ",
@@ -25288,7 +24951,7 @@ fn bindgen_test_layout_XFontStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFontStruct>())).per_char as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFontStruct>())).per_char as *const _ as usize },
         80usize,
         concat!(
             "Offset of field: ",
@@ -25298,7 +24961,7 @@ fn bindgen_test_layout_XFontStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFontStruct>())).ascent as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFontStruct>())).ascent as *const _ as usize },
         88usize,
         concat!(
             "Offset of field: ",
@@ -25308,7 +24971,7 @@ fn bindgen_test_layout_XFontStruct() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFontStruct>())).descent as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFontStruct>())).descent as *const _ as usize },
         92usize,
         concat!(
             "Offset of field: ",
@@ -25319,27 +24982,27 @@ fn bindgen_test_layout_XFontStruct() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XTextItem {
-    pub chars: *mut ::std::os::raw::c_char,
-    pub nchars: ::std::os::raw::c_int,
-    pub delta: ::std::os::raw::c_int,
+    pub chars: *mut libc::c_char,
+    pub nchars: libc::c_int,
+    pub delta: libc::c_int,
     pub font: Font,
 }
 #[test]
 fn bindgen_test_layout_XTextItem() {
     assert_eq!(
-        ::std::mem::size_of::<XTextItem>(),
+        ::core::mem::size_of::<XTextItem>(),
         24usize,
         concat!("Size of: ", stringify!(XTextItem))
     );
     assert_eq!(
-        ::std::mem::align_of::<XTextItem>(),
+        ::core::mem::align_of::<XTextItem>(),
         8usize,
         concat!("Alignment of ", stringify!(XTextItem))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XTextItem>())).chars as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XTextItem>())).chars as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25349,7 +25012,7 @@ fn bindgen_test_layout_XTextItem() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XTextItem>())).nchars as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XTextItem>())).nchars as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -25359,7 +25022,7 @@ fn bindgen_test_layout_XTextItem() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XTextItem>())).delta as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XTextItem>())).delta as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -25369,7 +25032,7 @@ fn bindgen_test_layout_XTextItem() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XTextItem>())).font as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XTextItem>())).font as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -25380,25 +25043,25 @@ fn bindgen_test_layout_XTextItem() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XChar2b {
-    pub byte1: ::std::os::raw::c_uchar,
-    pub byte2: ::std::os::raw::c_uchar,
+    pub byte1: libc::c_uchar,
+    pub byte2: libc::c_uchar,
 }
 #[test]
 fn bindgen_test_layout_XChar2b() {
     assert_eq!(
-        ::std::mem::size_of::<XChar2b>(),
+        ::core::mem::size_of::<XChar2b>(),
         2usize,
         concat!("Size of: ", stringify!(XChar2b))
     );
     assert_eq!(
-        ::std::mem::align_of::<XChar2b>(),
+        ::core::mem::align_of::<XChar2b>(),
         1usize,
         concat!("Alignment of ", stringify!(XChar2b))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XChar2b>())).byte1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XChar2b>())).byte1 as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25408,7 +25071,7 @@ fn bindgen_test_layout_XChar2b() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XChar2b>())).byte2 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XChar2b>())).byte2 as *const _ as usize },
         1usize,
         concat!(
             "Offset of field: ",
@@ -25419,27 +25082,27 @@ fn bindgen_test_layout_XChar2b() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XTextItem16 {
     pub chars: *mut XChar2b,
-    pub nchars: ::std::os::raw::c_int,
-    pub delta: ::std::os::raw::c_int,
+    pub nchars: libc::c_int,
+    pub delta: libc::c_int,
     pub font: Font,
 }
 #[test]
 fn bindgen_test_layout_XTextItem16() {
     assert_eq!(
-        ::std::mem::size_of::<XTextItem16>(),
+        ::core::mem::size_of::<XTextItem16>(),
         24usize,
         concat!("Size of: ", stringify!(XTextItem16))
     );
     assert_eq!(
-        ::std::mem::align_of::<XTextItem16>(),
+        ::core::mem::align_of::<XTextItem16>(),
         8usize,
         concat!("Alignment of ", stringify!(XTextItem16))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XTextItem16>())).chars as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XTextItem16>())).chars as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25449,7 +25112,7 @@ fn bindgen_test_layout_XTextItem16() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XTextItem16>())).nchars as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XTextItem16>())).nchars as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -25459,7 +25122,7 @@ fn bindgen_test_layout_XTextItem16() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XTextItem16>())).delta as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XTextItem16>())).delta as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -25469,7 +25132,7 @@ fn bindgen_test_layout_XTextItem16() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XTextItem16>())).font as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XTextItem16>())).font as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -25493,17 +25156,17 @@ pub union XEDataObject {
 #[test]
 fn bindgen_test_layout_XEDataObject() {
     assert_eq!(
-        ::std::mem::size_of::<XEDataObject>(),
+        ::core::mem::size_of::<XEDataObject>(),
         8usize,
         concat!("Size of: ", stringify!(XEDataObject))
     );
     assert_eq!(
-        ::std::mem::align_of::<XEDataObject>(),
+        ::core::mem::align_of::<XEDataObject>(),
         8usize,
         concat!("Alignment of ", stringify!(XEDataObject))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XEDataObject>())).display as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XEDataObject>())).display as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25513,7 +25176,7 @@ fn bindgen_test_layout_XEDataObject() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XEDataObject>())).gc as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XEDataObject>())).gc as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25523,7 +25186,7 @@ fn bindgen_test_layout_XEDataObject() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XEDataObject>())).visual as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XEDataObject>())).visual as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25533,7 +25196,7 @@ fn bindgen_test_layout_XEDataObject() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XEDataObject>())).screen as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XEDataObject>())).screen as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25543,7 +25206,7 @@ fn bindgen_test_layout_XEDataObject() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XEDataObject>())).pixmap_format as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XEDataObject>())).pixmap_format as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25553,7 +25216,7 @@ fn bindgen_test_layout_XEDataObject() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XEDataObject>())).font as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XEDataObject>())).font as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25564,7 +25227,7 @@ fn bindgen_test_layout_XEDataObject() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XFontSetExtents {
     pub max_ink_extent: XRectangle,
     pub max_logical_extent: XRectangle,
@@ -25572,17 +25235,17 @@ pub struct XFontSetExtents {
 #[test]
 fn bindgen_test_layout_XFontSetExtents() {
     assert_eq!(
-        ::std::mem::size_of::<XFontSetExtents>(),
+        ::core::mem::size_of::<XFontSetExtents>(),
         16usize,
         concat!("Size of: ", stringify!(XFontSetExtents))
     );
     assert_eq!(
-        ::std::mem::align_of::<XFontSetExtents>(),
+        ::core::mem::align_of::<XFontSetExtents>(),
         2usize,
         concat!("Alignment of ", stringify!(XFontSetExtents))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XFontSetExtents>())).max_ink_extent as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XFontSetExtents>())).max_ink_extent as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25593,7 +25256,7 @@ fn bindgen_test_layout_XFontSetExtents() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<XFontSetExtents>())).max_logical_extent as *const _ as usize
+            &(*(::core::ptr::null::<XFontSetExtents>())).max_logical_extent as *const _ as usize
         },
         8usize,
         concat!(
@@ -25605,40 +25268,40 @@ fn bindgen_test_layout_XFontSetExtents() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _XOM {
     _unused: [u8; 0],
 }
 pub type XOM = *mut _XOM;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _XOC {
     _unused: [u8; 0],
 }
 pub type XOC = *mut _XOC;
 pub type XFontSet = *mut _XOC;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XmbTextItem {
-    pub chars: *mut ::std::os::raw::c_char,
-    pub nchars: ::std::os::raw::c_int,
-    pub delta: ::std::os::raw::c_int,
+    pub chars: *mut libc::c_char,
+    pub nchars: libc::c_int,
+    pub delta: libc::c_int,
     pub font_set: XFontSet,
 }
 #[test]
 fn bindgen_test_layout_XmbTextItem() {
     assert_eq!(
-        ::std::mem::size_of::<XmbTextItem>(),
+        ::core::mem::size_of::<XmbTextItem>(),
         24usize,
         concat!("Size of: ", stringify!(XmbTextItem))
     );
     assert_eq!(
-        ::std::mem::align_of::<XmbTextItem>(),
+        ::core::mem::align_of::<XmbTextItem>(),
         8usize,
         concat!("Alignment of ", stringify!(XmbTextItem))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XmbTextItem>())).chars as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XmbTextItem>())).chars as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25648,7 +25311,7 @@ fn bindgen_test_layout_XmbTextItem() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XmbTextItem>())).nchars as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XmbTextItem>())).nchars as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -25658,7 +25321,7 @@ fn bindgen_test_layout_XmbTextItem() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XmbTextItem>())).delta as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XmbTextItem>())).delta as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -25668,7 +25331,7 @@ fn bindgen_test_layout_XmbTextItem() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XmbTextItem>())).font_set as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XmbTextItem>())).font_set as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -25679,27 +25342,27 @@ fn bindgen_test_layout_XmbTextItem() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XwcTextItem {
     pub chars: *mut wchar_t,
-    pub nchars: ::std::os::raw::c_int,
-    pub delta: ::std::os::raw::c_int,
+    pub nchars: libc::c_int,
+    pub delta: libc::c_int,
     pub font_set: XFontSet,
 }
 #[test]
 fn bindgen_test_layout_XwcTextItem() {
     assert_eq!(
-        ::std::mem::size_of::<XwcTextItem>(),
+        ::core::mem::size_of::<XwcTextItem>(),
         24usize,
         concat!("Size of: ", stringify!(XwcTextItem))
     );
     assert_eq!(
-        ::std::mem::align_of::<XwcTextItem>(),
+        ::core::mem::align_of::<XwcTextItem>(),
         8usize,
         concat!("Alignment of ", stringify!(XwcTextItem))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XwcTextItem>())).chars as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XwcTextItem>())).chars as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25709,7 +25372,7 @@ fn bindgen_test_layout_XwcTextItem() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XwcTextItem>())).nchars as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XwcTextItem>())).nchars as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -25719,7 +25382,7 @@ fn bindgen_test_layout_XwcTextItem() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XwcTextItem>())).delta as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XwcTextItem>())).delta as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -25729,7 +25392,7 @@ fn bindgen_test_layout_XwcTextItem() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XwcTextItem>())).font_set as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XwcTextItem>())).font_set as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -25740,25 +25403,25 @@ fn bindgen_test_layout_XwcTextItem() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XOMCharSetList {
-    pub charset_count: ::std::os::raw::c_int,
-    pub charset_list: *mut *mut ::std::os::raw::c_char,
+    pub charset_count: libc::c_int,
+    pub charset_list: *mut *mut libc::c_char,
 }
 #[test]
 fn bindgen_test_layout_XOMCharSetList() {
     assert_eq!(
-        ::std::mem::size_of::<XOMCharSetList>(),
+        ::core::mem::size_of::<XOMCharSetList>(),
         16usize,
         concat!("Size of: ", stringify!(XOMCharSetList))
     );
     assert_eq!(
-        ::std::mem::align_of::<XOMCharSetList>(),
+        ::core::mem::align_of::<XOMCharSetList>(),
         8usize,
         concat!("Alignment of ", stringify!(XOMCharSetList))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XOMCharSetList>())).charset_count as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XOMCharSetList>())).charset_count as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25768,7 +25431,7 @@ fn bindgen_test_layout_XOMCharSetList() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XOMCharSetList>())).charset_list as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XOMCharSetList>())).charset_list as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -25788,25 +25451,25 @@ pub enum XOrientation {
     XOMOrientation_Context = 4,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XOMOrientation {
-    pub num_orientation: ::std::os::raw::c_int,
+    pub num_orientation: libc::c_int,
     pub orientation: *mut XOrientation,
 }
 #[test]
 fn bindgen_test_layout_XOMOrientation() {
     assert_eq!(
-        ::std::mem::size_of::<XOMOrientation>(),
+        ::core::mem::size_of::<XOMOrientation>(),
         16usize,
         concat!("Size of: ", stringify!(XOMOrientation))
     );
     assert_eq!(
-        ::std::mem::align_of::<XOMOrientation>(),
+        ::core::mem::align_of::<XOMOrientation>(),
         8usize,
         concat!("Alignment of ", stringify!(XOMOrientation))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XOMOrientation>())).num_orientation as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XOMOrientation>())).num_orientation as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25816,7 +25479,7 @@ fn bindgen_test_layout_XOMOrientation() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XOMOrientation>())).orientation as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XOMOrientation>())).orientation as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -25827,26 +25490,26 @@ fn bindgen_test_layout_XOMOrientation() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XOMFontInfo {
-    pub num_font: ::std::os::raw::c_int,
+    pub num_font: libc::c_int,
     pub font_struct_list: *mut *mut XFontStruct,
-    pub font_name_list: *mut *mut ::std::os::raw::c_char,
+    pub font_name_list: *mut *mut libc::c_char,
 }
 #[test]
 fn bindgen_test_layout_XOMFontInfo() {
     assert_eq!(
-        ::std::mem::size_of::<XOMFontInfo>(),
+        ::core::mem::size_of::<XOMFontInfo>(),
         24usize,
         concat!("Size of: ", stringify!(XOMFontInfo))
     );
     assert_eq!(
-        ::std::mem::align_of::<XOMFontInfo>(),
+        ::core::mem::align_of::<XOMFontInfo>(),
         8usize,
         concat!("Alignment of ", stringify!(XOMFontInfo))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XOMFontInfo>())).num_font as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XOMFontInfo>())).num_font as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25856,7 +25519,7 @@ fn bindgen_test_layout_XOMFontInfo() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XOMFontInfo>())).font_struct_list as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XOMFontInfo>())).font_struct_list as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -25866,7 +25529,7 @@ fn bindgen_test_layout_XOMFontInfo() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XOMFontInfo>())).font_name_list as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XOMFontInfo>())).font_name_list as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -25877,45 +25540,46 @@ fn bindgen_test_layout_XOMFontInfo() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _XIM {
     _unused: [u8; 0],
 }
 pub type XIM = *mut _XIM;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _XIC {
     _unused: [u8; 0],
 }
 pub type XIC = *mut _XIC;
 pub type XIMProc =
-    ::std::option::Option<unsafe extern "C" fn(arg1: XIM, arg2: XPointer, arg3: XPointer)>;
-pub type XICProc = ::std::option::Option<
-    unsafe extern "C" fn(arg1: XIC, arg2: XPointer, arg3: XPointer) -> ::std::os::raw::c_int,
+    ::core::option::Option<unsafe extern "C" fn(arg1: XIM, arg2: XPointer, arg3: XPointer)>;
+pub type XICProc = ::core::option::Option<
+    unsafe extern "C" fn(arg1: XIC, arg2: XPointer, arg3: XPointer) -> libc::c_int,
 >;
-pub type XIDProc =
-    ::std::option::Option<unsafe extern "C" fn(arg1: *mut Display, arg2: XPointer, arg3: XPointer)>;
-pub type XIMStyle = ::std::os::raw::c_ulong;
+pub type XIDProc = ::core::option::Option<
+    unsafe extern "C" fn(arg1: *mut Display, arg2: XPointer, arg3: XPointer),
+>;
+pub type XIMStyle = libc::c_ulong;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XIMStyles {
-    pub count_styles: ::std::os::raw::c_ushort,
+    pub count_styles: libc::c_ushort,
     pub supported_styles: *mut XIMStyle,
 }
 #[test]
 fn bindgen_test_layout_XIMStyles() {
     assert_eq!(
-        ::std::mem::size_of::<XIMStyles>(),
+        ::core::mem::size_of::<XIMStyles>(),
         16usize,
         concat!("Size of: ", stringify!(XIMStyles))
     );
     assert_eq!(
-        ::std::mem::align_of::<XIMStyles>(),
+        ::core::mem::align_of::<XIMStyles>(),
         8usize,
         concat!("Alignment of ", stringify!(XIMStyles))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XIMStyles>())).count_styles as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XIMStyles>())).count_styles as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25925,7 +25589,7 @@ fn bindgen_test_layout_XIMStyles() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XIMStyles>())).supported_styles as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XIMStyles>())).supported_styles as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -25935,9 +25599,9 @@ fn bindgen_test_layout_XIMStyles() {
         )
     );
 }
-pub type XVaNestedList = *mut ::std::os::raw::c_void;
+pub type XVaNestedList = *mut libc::c_void;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XIMCallback {
     pub client_data: XPointer,
     pub callback: XIMProc,
@@ -25945,17 +25609,17 @@ pub struct XIMCallback {
 #[test]
 fn bindgen_test_layout_XIMCallback() {
     assert_eq!(
-        ::std::mem::size_of::<XIMCallback>(),
+        ::core::mem::size_of::<XIMCallback>(),
         16usize,
         concat!("Size of: ", stringify!(XIMCallback))
     );
     assert_eq!(
-        ::std::mem::align_of::<XIMCallback>(),
+        ::core::mem::align_of::<XIMCallback>(),
         8usize,
         concat!("Alignment of ", stringify!(XIMCallback))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XIMCallback>())).client_data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XIMCallback>())).client_data as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -25965,7 +25629,7 @@ fn bindgen_test_layout_XIMCallback() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XIMCallback>())).callback as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XIMCallback>())).callback as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -25976,7 +25640,7 @@ fn bindgen_test_layout_XIMCallback() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XICCallback {
     pub client_data: XPointer,
     pub callback: XICProc,
@@ -25984,17 +25648,17 @@ pub struct XICCallback {
 #[test]
 fn bindgen_test_layout_XICCallback() {
     assert_eq!(
-        ::std::mem::size_of::<XICCallback>(),
+        ::core::mem::size_of::<XICCallback>(),
         16usize,
         concat!("Size of: ", stringify!(XICCallback))
     );
     assert_eq!(
-        ::std::mem::align_of::<XICCallback>(),
+        ::core::mem::align_of::<XICCallback>(),
         8usize,
         concat!("Alignment of ", stringify!(XICCallback))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XICCallback>())).client_data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XICCallback>())).client_data as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -26004,7 +25668,7 @@ fn bindgen_test_layout_XICCallback() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XICCallback>())).callback as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XICCallback>())).callback as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -26014,37 +25678,37 @@ fn bindgen_test_layout_XICCallback() {
         )
     );
 }
-pub type XIMFeedback = ::std::os::raw::c_ulong;
+pub type XIMFeedback = libc::c_ulong;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct _XIMText {
-    pub length: ::std::os::raw::c_ushort,
+    pub length: libc::c_ushort,
     pub feedback: *mut XIMFeedback,
-    pub encoding_is_wchar: ::std::os::raw::c_int,
+    pub encoding_is_wchar: libc::c_int,
     pub string: _XIMText__bindgen_ty_1,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union _XIMText__bindgen_ty_1 {
-    pub multi_byte: *mut ::std::os::raw::c_char,
+    pub multi_byte: *mut libc::c_char,
     pub wide_char: *mut wchar_t,
     _bindgen_union_align: u64,
 }
 #[test]
 fn bindgen_test_layout__XIMText__bindgen_ty_1() {
     assert_eq!(
-        ::std::mem::size_of::<_XIMText__bindgen_ty_1>(),
+        ::core::mem::size_of::<_XIMText__bindgen_ty_1>(),
         8usize,
         concat!("Size of: ", stringify!(_XIMText__bindgen_ty_1))
     );
     assert_eq!(
-        ::std::mem::align_of::<_XIMText__bindgen_ty_1>(),
+        ::core::mem::align_of::<_XIMText__bindgen_ty_1>(),
         8usize,
         concat!("Alignment of ", stringify!(_XIMText__bindgen_ty_1))
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMText__bindgen_ty_1>())).multi_byte as *const _ as usize
+            &(*(::core::ptr::null::<_XIMText__bindgen_ty_1>())).multi_byte as *const _ as usize
         },
         0usize,
         concat!(
@@ -26056,7 +25720,7 @@ fn bindgen_test_layout__XIMText__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMText__bindgen_ty_1>())).wide_char as *const _ as usize
+            &(*(::core::ptr::null::<_XIMText__bindgen_ty_1>())).wide_char as *const _ as usize
         },
         0usize,
         concat!(
@@ -26070,17 +25734,17 @@ fn bindgen_test_layout__XIMText__bindgen_ty_1() {
 #[test]
 fn bindgen_test_layout__XIMText() {
     assert_eq!(
-        ::std::mem::size_of::<_XIMText>(),
+        ::core::mem::size_of::<_XIMText>(),
         32usize,
         concat!("Size of: ", stringify!(_XIMText))
     );
     assert_eq!(
-        ::std::mem::align_of::<_XIMText>(),
+        ::core::mem::align_of::<_XIMText>(),
         8usize,
         concat!("Alignment of ", stringify!(_XIMText))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XIMText>())).length as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XIMText>())).length as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -26090,7 +25754,7 @@ fn bindgen_test_layout__XIMText() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XIMText>())).feedback as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XIMText>())).feedback as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -26100,7 +25764,7 @@ fn bindgen_test_layout__XIMText() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XIMText>())).encoding_is_wchar as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XIMText>())).encoding_is_wchar as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -26110,7 +25774,7 @@ fn bindgen_test_layout__XIMText() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XIMText>())).string as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XIMText>())).string as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -26121,16 +25785,16 @@ fn bindgen_test_layout__XIMText() {
     );
 }
 pub type XIMText = _XIMText;
-pub type XIMPreeditState = ::std::os::raw::c_ulong;
+pub type XIMPreeditState = libc::c_ulong;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _XIMPreeditStateNotifyCallbackStruct {
     pub state: XIMPreeditState,
 }
 #[test]
 fn bindgen_test_layout__XIMPreeditStateNotifyCallbackStruct() {
     assert_eq!(
-        ::std::mem::size_of::<_XIMPreeditStateNotifyCallbackStruct>(),
+        ::core::mem::size_of::<_XIMPreeditStateNotifyCallbackStruct>(),
         8usize,
         concat!(
             "Size of: ",
@@ -26138,7 +25802,7 @@ fn bindgen_test_layout__XIMPreeditStateNotifyCallbackStruct() {
         )
     );
     assert_eq!(
-        ::std::mem::align_of::<_XIMPreeditStateNotifyCallbackStruct>(),
+        ::core::mem::align_of::<_XIMPreeditStateNotifyCallbackStruct>(),
         8usize,
         concat!(
             "Alignment of ",
@@ -26147,7 +25811,7 @@ fn bindgen_test_layout__XIMPreeditStateNotifyCallbackStruct() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMPreeditStateNotifyCallbackStruct>())).state as *const _
+            &(*(::core::ptr::null::<_XIMPreeditStateNotifyCallbackStruct>())).state as *const _
                 as usize
         },
         0usize,
@@ -26160,27 +25824,27 @@ fn bindgen_test_layout__XIMPreeditStateNotifyCallbackStruct() {
     );
 }
 pub type XIMPreeditStateNotifyCallbackStruct = _XIMPreeditStateNotifyCallbackStruct;
-pub type XIMResetState = ::std::os::raw::c_ulong;
-pub type XIMStringConversionFeedback = ::std::os::raw::c_ulong;
+pub type XIMResetState = libc::c_ulong;
+pub type XIMStringConversionFeedback = libc::c_ulong;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct _XIMStringConversionText {
-    pub length: ::std::os::raw::c_ushort,
+    pub length: libc::c_ushort,
     pub feedback: *mut XIMStringConversionFeedback,
-    pub encoding_is_wchar: ::std::os::raw::c_int,
+    pub encoding_is_wchar: libc::c_int,
     pub string: _XIMStringConversionText__bindgen_ty_1,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union _XIMStringConversionText__bindgen_ty_1 {
-    pub mbs: *mut ::std::os::raw::c_char,
+    pub mbs: *mut libc::c_char,
     pub wcs: *mut wchar_t,
     _bindgen_union_align: u64,
 }
 #[test]
 fn bindgen_test_layout__XIMStringConversionText__bindgen_ty_1() {
     assert_eq!(
-        ::std::mem::size_of::<_XIMStringConversionText__bindgen_ty_1>(),
+        ::core::mem::size_of::<_XIMStringConversionText__bindgen_ty_1>(),
         8usize,
         concat!(
             "Size of: ",
@@ -26188,7 +25852,7 @@ fn bindgen_test_layout__XIMStringConversionText__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        ::std::mem::align_of::<_XIMStringConversionText__bindgen_ty_1>(),
+        ::core::mem::align_of::<_XIMStringConversionText__bindgen_ty_1>(),
         8usize,
         concat!(
             "Alignment of ",
@@ -26197,7 +25861,7 @@ fn bindgen_test_layout__XIMStringConversionText__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMStringConversionText__bindgen_ty_1>())).mbs as *const _
+            &(*(::core::ptr::null::<_XIMStringConversionText__bindgen_ty_1>())).mbs as *const _
                 as usize
         },
         0usize,
@@ -26210,7 +25874,7 @@ fn bindgen_test_layout__XIMStringConversionText__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMStringConversionText__bindgen_ty_1>())).wcs as *const _
+            &(*(::core::ptr::null::<_XIMStringConversionText__bindgen_ty_1>())).wcs as *const _
                 as usize
         },
         0usize,
@@ -26225,17 +25889,19 @@ fn bindgen_test_layout__XIMStringConversionText__bindgen_ty_1() {
 #[test]
 fn bindgen_test_layout__XIMStringConversionText() {
     assert_eq!(
-        ::std::mem::size_of::<_XIMStringConversionText>(),
+        ::core::mem::size_of::<_XIMStringConversionText>(),
         32usize,
         concat!("Size of: ", stringify!(_XIMStringConversionText))
     );
     assert_eq!(
-        ::std::mem::align_of::<_XIMStringConversionText>(),
+        ::core::mem::align_of::<_XIMStringConversionText>(),
         8usize,
         concat!("Alignment of ", stringify!(_XIMStringConversionText))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XIMStringConversionText>())).length as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<_XIMStringConversionText>())).length as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -26246,7 +25912,7 @@ fn bindgen_test_layout__XIMStringConversionText() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMStringConversionText>())).feedback as *const _ as usize
+            &(*(::core::ptr::null::<_XIMStringConversionText>())).feedback as *const _ as usize
         },
         8usize,
         concat!(
@@ -26258,7 +25924,7 @@ fn bindgen_test_layout__XIMStringConversionText() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMStringConversionText>())).encoding_is_wchar as *const _
+            &(*(::core::ptr::null::<_XIMStringConversionText>())).encoding_is_wchar as *const _
                 as usize
         },
         16usize,
@@ -26270,7 +25936,9 @@ fn bindgen_test_layout__XIMStringConversionText() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XIMStringConversionText>())).string as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<_XIMStringConversionText>())).string as *const _ as usize
+        },
         24usize,
         concat!(
             "Offset of field: ",
@@ -26281,9 +25949,9 @@ fn bindgen_test_layout__XIMStringConversionText() {
     );
 }
 pub type XIMStringConversionText = _XIMStringConversionText;
-pub type XIMStringConversionPosition = ::std::os::raw::c_ushort;
-pub type XIMStringConversionType = ::std::os::raw::c_ushort;
-pub type XIMStringConversionOperation = ::std::os::raw::c_ushort;
+pub type XIMStringConversionPosition = libc::c_ushort;
+pub type XIMStringConversionType = libc::c_ushort;
+pub type XIMStringConversionOperation = libc::c_ushort;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum XIMCaretDirection {
@@ -26301,23 +25969,23 @@ pub enum XIMCaretDirection {
     XIMDontChange = 11,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _XIMStringConversionCallbackStruct {
     pub position: XIMStringConversionPosition,
     pub direction: XIMCaretDirection,
     pub operation: XIMStringConversionOperation,
-    pub factor: ::std::os::raw::c_ushort,
+    pub factor: libc::c_ushort,
     pub text: *mut XIMStringConversionText,
 }
 #[test]
 fn bindgen_test_layout__XIMStringConversionCallbackStruct() {
     assert_eq!(
-        ::std::mem::size_of::<_XIMStringConversionCallbackStruct>(),
+        ::core::mem::size_of::<_XIMStringConversionCallbackStruct>(),
         24usize,
         concat!("Size of: ", stringify!(_XIMStringConversionCallbackStruct))
     );
     assert_eq!(
-        ::std::mem::align_of::<_XIMStringConversionCallbackStruct>(),
+        ::core::mem::align_of::<_XIMStringConversionCallbackStruct>(),
         8usize,
         concat!(
             "Alignment of ",
@@ -26326,7 +25994,7 @@ fn bindgen_test_layout__XIMStringConversionCallbackStruct() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMStringConversionCallbackStruct>())).position as *const _
+            &(*(::core::ptr::null::<_XIMStringConversionCallbackStruct>())).position as *const _
                 as usize
         },
         0usize,
@@ -26339,7 +26007,7 @@ fn bindgen_test_layout__XIMStringConversionCallbackStruct() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMStringConversionCallbackStruct>())).direction as *const _
+            &(*(::core::ptr::null::<_XIMStringConversionCallbackStruct>())).direction as *const _
                 as usize
         },
         4usize,
@@ -26352,7 +26020,7 @@ fn bindgen_test_layout__XIMStringConversionCallbackStruct() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMStringConversionCallbackStruct>())).operation as *const _
+            &(*(::core::ptr::null::<_XIMStringConversionCallbackStruct>())).operation as *const _
                 as usize
         },
         8usize,
@@ -26365,7 +26033,7 @@ fn bindgen_test_layout__XIMStringConversionCallbackStruct() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMStringConversionCallbackStruct>())).factor as *const _
+            &(*(::core::ptr::null::<_XIMStringConversionCallbackStruct>())).factor as *const _
                 as usize
         },
         10usize,
@@ -26378,7 +26046,8 @@ fn bindgen_test_layout__XIMStringConversionCallbackStruct() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMStringConversionCallbackStruct>())).text as *const _ as usize
+            &(*(::core::ptr::null::<_XIMStringConversionCallbackStruct>())).text as *const _
+                as usize
         },
         16usize,
         concat!(
@@ -26391,28 +26060,28 @@ fn bindgen_test_layout__XIMStringConversionCallbackStruct() {
 }
 pub type XIMStringConversionCallbackStruct = _XIMStringConversionCallbackStruct;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _XIMPreeditDrawCallbackStruct {
-    pub caret: ::std::os::raw::c_int,
-    pub chg_first: ::std::os::raw::c_int,
-    pub chg_length: ::std::os::raw::c_int,
+    pub caret: libc::c_int,
+    pub chg_first: libc::c_int,
+    pub chg_length: libc::c_int,
     pub text: *mut XIMText,
 }
 #[test]
 fn bindgen_test_layout__XIMPreeditDrawCallbackStruct() {
     assert_eq!(
-        ::std::mem::size_of::<_XIMPreeditDrawCallbackStruct>(),
+        ::core::mem::size_of::<_XIMPreeditDrawCallbackStruct>(),
         24usize,
         concat!("Size of: ", stringify!(_XIMPreeditDrawCallbackStruct))
     );
     assert_eq!(
-        ::std::mem::align_of::<_XIMPreeditDrawCallbackStruct>(),
+        ::core::mem::align_of::<_XIMPreeditDrawCallbackStruct>(),
         8usize,
         concat!("Alignment of ", stringify!(_XIMPreeditDrawCallbackStruct))
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMPreeditDrawCallbackStruct>())).caret as *const _ as usize
+            &(*(::core::ptr::null::<_XIMPreeditDrawCallbackStruct>())).caret as *const _ as usize
         },
         0usize,
         concat!(
@@ -26424,7 +26093,8 @@ fn bindgen_test_layout__XIMPreeditDrawCallbackStruct() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMPreeditDrawCallbackStruct>())).chg_first as *const _ as usize
+            &(*(::core::ptr::null::<_XIMPreeditDrawCallbackStruct>())).chg_first as *const _
+                as usize
         },
         4usize,
         concat!(
@@ -26436,7 +26106,7 @@ fn bindgen_test_layout__XIMPreeditDrawCallbackStruct() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMPreeditDrawCallbackStruct>())).chg_length as *const _
+            &(*(::core::ptr::null::<_XIMPreeditDrawCallbackStruct>())).chg_length as *const _
                 as usize
         },
         8usize,
@@ -26449,7 +26119,7 @@ fn bindgen_test_layout__XIMPreeditDrawCallbackStruct() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMPreeditDrawCallbackStruct>())).text as *const _ as usize
+            &(*(::core::ptr::null::<_XIMPreeditDrawCallbackStruct>())).text as *const _ as usize
         },
         16usize,
         concat!(
@@ -26469,27 +26139,28 @@ pub enum XIMCaretStyle {
     XIMIsSecondary = 2,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _XIMPreeditCaretCallbackStruct {
-    pub position: ::std::os::raw::c_int,
+    pub position: libc::c_int,
     pub direction: XIMCaretDirection,
     pub style: XIMCaretStyle,
 }
 #[test]
 fn bindgen_test_layout__XIMPreeditCaretCallbackStruct() {
     assert_eq!(
-        ::std::mem::size_of::<_XIMPreeditCaretCallbackStruct>(),
+        ::core::mem::size_of::<_XIMPreeditCaretCallbackStruct>(),
         12usize,
         concat!("Size of: ", stringify!(_XIMPreeditCaretCallbackStruct))
     );
     assert_eq!(
-        ::std::mem::align_of::<_XIMPreeditCaretCallbackStruct>(),
+        ::core::mem::align_of::<_XIMPreeditCaretCallbackStruct>(),
         4usize,
         concat!("Alignment of ", stringify!(_XIMPreeditCaretCallbackStruct))
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMPreeditCaretCallbackStruct>())).position as *const _ as usize
+            &(*(::core::ptr::null::<_XIMPreeditCaretCallbackStruct>())).position as *const _
+                as usize
         },
         0usize,
         concat!(
@@ -26501,7 +26172,7 @@ fn bindgen_test_layout__XIMPreeditCaretCallbackStruct() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMPreeditCaretCallbackStruct>())).direction as *const _
+            &(*(::core::ptr::null::<_XIMPreeditCaretCallbackStruct>())).direction as *const _
                 as usize
         },
         4usize,
@@ -26514,7 +26185,7 @@ fn bindgen_test_layout__XIMPreeditCaretCallbackStruct() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMPreeditCaretCallbackStruct>())).style as *const _ as usize
+            &(*(::core::ptr::null::<_XIMPreeditCaretCallbackStruct>())).style as *const _ as usize
         },
         8usize,
         concat!(
@@ -26548,7 +26219,7 @@ pub union _XIMStatusDrawCallbackStruct__bindgen_ty_1 {
 #[test]
 fn bindgen_test_layout__XIMStatusDrawCallbackStruct__bindgen_ty_1() {
     assert_eq!(
-        ::std::mem::size_of::<_XIMStatusDrawCallbackStruct__bindgen_ty_1>(),
+        ::core::mem::size_of::<_XIMStatusDrawCallbackStruct__bindgen_ty_1>(),
         8usize,
         concat!(
             "Size of: ",
@@ -26556,7 +26227,7 @@ fn bindgen_test_layout__XIMStatusDrawCallbackStruct__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        ::std::mem::align_of::<_XIMStatusDrawCallbackStruct__bindgen_ty_1>(),
+        ::core::mem::align_of::<_XIMStatusDrawCallbackStruct__bindgen_ty_1>(),
         8usize,
         concat!(
             "Alignment of ",
@@ -26565,7 +26236,7 @@ fn bindgen_test_layout__XIMStatusDrawCallbackStruct__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMStatusDrawCallbackStruct__bindgen_ty_1>())).text as *const _
+            &(*(::core::ptr::null::<_XIMStatusDrawCallbackStruct__bindgen_ty_1>())).text as *const _
                 as usize
         },
         0usize,
@@ -26578,7 +26249,7 @@ fn bindgen_test_layout__XIMStatusDrawCallbackStruct__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMStatusDrawCallbackStruct__bindgen_ty_1>())).bitmap
+            &(*(::core::ptr::null::<_XIMStatusDrawCallbackStruct__bindgen_ty_1>())).bitmap
                 as *const _ as usize
         },
         0usize,
@@ -26593,18 +26264,18 @@ fn bindgen_test_layout__XIMStatusDrawCallbackStruct__bindgen_ty_1() {
 #[test]
 fn bindgen_test_layout__XIMStatusDrawCallbackStruct() {
     assert_eq!(
-        ::std::mem::size_of::<_XIMStatusDrawCallbackStruct>(),
+        ::core::mem::size_of::<_XIMStatusDrawCallbackStruct>(),
         16usize,
         concat!("Size of: ", stringify!(_XIMStatusDrawCallbackStruct))
     );
     assert_eq!(
-        ::std::mem::align_of::<_XIMStatusDrawCallbackStruct>(),
+        ::core::mem::align_of::<_XIMStatusDrawCallbackStruct>(),
         8usize,
         concat!("Alignment of ", stringify!(_XIMStatusDrawCallbackStruct))
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMStatusDrawCallbackStruct>())).type_ as *const _ as usize
+            &(*(::core::ptr::null::<_XIMStatusDrawCallbackStruct>())).type_ as *const _ as usize
         },
         0usize,
         concat!(
@@ -26616,7 +26287,7 @@ fn bindgen_test_layout__XIMStatusDrawCallbackStruct() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_XIMStatusDrawCallbackStruct>())).data as *const _ as usize
+            &(*(::core::ptr::null::<_XIMStatusDrawCallbackStruct>())).data as *const _ as usize
         },
         8usize,
         concat!(
@@ -26629,26 +26300,26 @@ fn bindgen_test_layout__XIMStatusDrawCallbackStruct() {
 }
 pub type XIMStatusDrawCallbackStruct = _XIMStatusDrawCallbackStruct;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _XIMHotKeyTrigger {
     pub keysym: KeySym,
-    pub modifier: ::std::os::raw::c_int,
-    pub modifier_mask: ::std::os::raw::c_int,
+    pub modifier: libc::c_int,
+    pub modifier_mask: libc::c_int,
 }
 #[test]
 fn bindgen_test_layout__XIMHotKeyTrigger() {
     assert_eq!(
-        ::std::mem::size_of::<_XIMHotKeyTrigger>(),
+        ::core::mem::size_of::<_XIMHotKeyTrigger>(),
         16usize,
         concat!("Size of: ", stringify!(_XIMHotKeyTrigger))
     );
     assert_eq!(
-        ::std::mem::align_of::<_XIMHotKeyTrigger>(),
+        ::core::mem::align_of::<_XIMHotKeyTrigger>(),
         8usize,
         concat!("Alignment of ", stringify!(_XIMHotKeyTrigger))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XIMHotKeyTrigger>())).keysym as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XIMHotKeyTrigger>())).keysym as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -26658,7 +26329,7 @@ fn bindgen_test_layout__XIMHotKeyTrigger() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XIMHotKeyTrigger>())).modifier as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XIMHotKeyTrigger>())).modifier as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -26668,7 +26339,9 @@ fn bindgen_test_layout__XIMHotKeyTrigger() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XIMHotKeyTrigger>())).modifier_mask as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<_XIMHotKeyTrigger>())).modifier_mask as *const _ as usize
+        },
         12usize,
         concat!(
             "Offset of field: ",
@@ -26680,25 +26353,25 @@ fn bindgen_test_layout__XIMHotKeyTrigger() {
 }
 pub type XIMHotKeyTrigger = _XIMHotKeyTrigger;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _XIMHotKeyTriggers {
-    pub num_hot_key: ::std::os::raw::c_int,
+    pub num_hot_key: libc::c_int,
     pub key: *mut XIMHotKeyTrigger,
 }
 #[test]
 fn bindgen_test_layout__XIMHotKeyTriggers() {
     assert_eq!(
-        ::std::mem::size_of::<_XIMHotKeyTriggers>(),
+        ::core::mem::size_of::<_XIMHotKeyTriggers>(),
         16usize,
         concat!("Size of: ", stringify!(_XIMHotKeyTriggers))
     );
     assert_eq!(
-        ::std::mem::align_of::<_XIMHotKeyTriggers>(),
+        ::core::mem::align_of::<_XIMHotKeyTriggers>(),
         8usize,
         concat!("Alignment of ", stringify!(_XIMHotKeyTriggers))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XIMHotKeyTriggers>())).num_hot_key as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XIMHotKeyTriggers>())).num_hot_key as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -26708,7 +26381,7 @@ fn bindgen_test_layout__XIMHotKeyTriggers() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<_XIMHotKeyTriggers>())).key as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_XIMHotKeyTriggers>())).key as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -26719,27 +26392,27 @@ fn bindgen_test_layout__XIMHotKeyTriggers() {
     );
 }
 pub type XIMHotKeyTriggers = _XIMHotKeyTriggers;
-pub type XIMHotKeyState = ::std::os::raw::c_ulong;
+pub type XIMHotKeyState = libc::c_ulong;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct XIMValuesList {
-    pub count_values: ::std::os::raw::c_ushort,
-    pub supported_values: *mut *mut ::std::os::raw::c_char,
+    pub count_values: libc::c_ushort,
+    pub supported_values: *mut *mut libc::c_char,
 }
 #[test]
 fn bindgen_test_layout_XIMValuesList() {
     assert_eq!(
-        ::std::mem::size_of::<XIMValuesList>(),
+        ::core::mem::size_of::<XIMValuesList>(),
         16usize,
         concat!("Size of: ", stringify!(XIMValuesList))
     );
     assert_eq!(
-        ::std::mem::align_of::<XIMValuesList>(),
+        ::core::mem::align_of::<XIMValuesList>(),
         8usize,
         concat!("Alignment of ", stringify!(XIMValuesList))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XIMValuesList>())).count_values as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XIMValuesList>())).count_values as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -26749,7 +26422,7 @@ fn bindgen_test_layout_XIMValuesList() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<XIMValuesList>())).supported_values as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<XIMValuesList>())).supported_values as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -26761,13 +26434,10 @@ fn bindgen_test_layout_XIMValuesList() {
 }
 extern "C" {
     #[link_name = "\u{1}_Xdebug"]
-    pub static mut _Xdebug: ::std::os::raw::c_int;
+    pub static mut _Xdebug: libc::c_int;
 }
 extern "C" {
-    pub fn XLoadQueryFont(
-        arg1: *mut Display,
-        arg2: *const ::std::os::raw::c_char,
-    ) -> *mut XFontStruct;
+    pub fn XLoadQueryFont(arg1: *mut Display, arg2: *const libc::c_char) -> *mut XFontStruct;
 }
 extern "C" {
     pub fn XQueryFont(arg1: *mut Display, arg2: XID) -> *mut XFontStruct;
@@ -26778,14 +26448,14 @@ extern "C" {
         arg2: Window,
         arg3: Time,
         arg4: Time,
-        arg5: *mut ::std::os::raw::c_int,
+        arg5: *mut libc::c_int,
     ) -> *mut XTimeCoord;
 }
 extern "C" {
     pub fn XDeleteModifiermapEntry(
         arg1: *mut XModifierKeymap,
         arg2: KeyCode,
-        arg3: ::std::os::raw::c_int,
+        arg3: libc::c_int,
     ) -> *mut XModifierKeymap;
 }
 extern "C" {
@@ -26795,140 +26465,126 @@ extern "C" {
     pub fn XInsertModifiermapEntry(
         arg1: *mut XModifierKeymap,
         arg2: KeyCode,
-        arg3: ::std::os::raw::c_int,
+        arg3: libc::c_int,
     ) -> *mut XModifierKeymap;
 }
 extern "C" {
-    pub fn XNewModifiermap(arg1: ::std::os::raw::c_int) -> *mut XModifierKeymap;
+    pub fn XNewModifiermap(arg1: libc::c_int) -> *mut XModifierKeymap;
 }
 extern "C" {
     pub fn XCreateImage(
         arg1: *mut Display,
         arg2: *mut Visual,
-        arg3: ::std::os::raw::c_uint,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
-        arg6: *mut ::std::os::raw::c_char,
-        arg7: ::std::os::raw::c_uint,
-        arg8: ::std::os::raw::c_uint,
-        arg9: ::std::os::raw::c_int,
-        arg10: ::std::os::raw::c_int,
+        arg3: libc::c_uint,
+        arg4: libc::c_int,
+        arg5: libc::c_int,
+        arg6: *mut libc::c_char,
+        arg7: libc::c_uint,
+        arg8: libc::c_uint,
+        arg9: libc::c_int,
+        arg10: libc::c_int,
     ) -> *mut XImage;
 }
 extern "C" {
-    pub fn XInitImage(arg1: *mut XImage) -> ::std::os::raw::c_int;
+    pub fn XInitImage(arg1: *mut XImage) -> libc::c_int;
 }
 extern "C" {
     pub fn XGetImage(
         arg1: *mut Display,
         arg2: Drawable,
-        arg3: ::std::os::raw::c_int,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_uint,
-        arg6: ::std::os::raw::c_uint,
-        arg7: ::std::os::raw::c_ulong,
-        arg8: ::std::os::raw::c_int,
+        arg3: libc::c_int,
+        arg4: libc::c_int,
+        arg5: libc::c_uint,
+        arg6: libc::c_uint,
+        arg7: libc::c_ulong,
+        arg8: libc::c_int,
     ) -> *mut XImage;
 }
 extern "C" {
     pub fn XGetSubImage(
         arg1: *mut Display,
         arg2: Drawable,
-        arg3: ::std::os::raw::c_int,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_uint,
-        arg6: ::std::os::raw::c_uint,
-        arg7: ::std::os::raw::c_ulong,
-        arg8: ::std::os::raw::c_int,
+        arg3: libc::c_int,
+        arg4: libc::c_int,
+        arg5: libc::c_uint,
+        arg6: libc::c_uint,
+        arg7: libc::c_ulong,
+        arg8: libc::c_int,
         arg9: *mut XImage,
-        arg10: ::std::os::raw::c_int,
-        arg11: ::std::os::raw::c_int,
+        arg10: libc::c_int,
+        arg11: libc::c_int,
     ) -> *mut XImage;
 }
 extern "C" {
-    pub fn XOpenDisplay(arg1: *const ::std::os::raw::c_char) -> *mut Display;
+    pub fn XOpenDisplay(arg1: *const libc::c_char) -> *mut Display;
 }
 extern "C" {
     pub fn XrmInitialize();
 }
 extern "C" {
-    pub fn XFetchBytes(
-        arg1: *mut Display,
-        arg2: *mut ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
+    pub fn XFetchBytes(arg1: *mut Display, arg2: *mut libc::c_int) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn XFetchBuffer(
         arg1: *mut Display,
-        arg2: *mut ::std::os::raw::c_int,
-        arg3: ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
+        arg2: *mut libc::c_int,
+        arg3: libc::c_int,
+    ) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn XGetAtomName(arg1: *mut Display, arg2: Atom) -> *mut ::std::os::raw::c_char;
+    pub fn XGetAtomName(arg1: *mut Display, arg2: Atom) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn XGetAtomNames(
         arg1: *mut Display,
         arg2: *mut Atom,
-        arg3: ::std::os::raw::c_int,
-        arg4: *mut *mut ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_int,
+        arg4: *mut *mut libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XGetDefault(
         arg1: *mut Display,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: *const ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_char;
+        arg2: *const libc::c_char,
+        arg3: *const libc::c_char,
+    ) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn XDisplayName(arg1: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+    pub fn XDisplayName(arg1: *const libc::c_char) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn XKeysymToString(arg1: KeySym) -> *mut ::std::os::raw::c_char;
+    pub fn XKeysymToString(arg1: KeySym) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn XSynchronize(
         arg1: *mut Display,
-        arg2: ::std::os::raw::c_int,
-    ) -> ::std::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut Display,
-            arg2: ::std::os::raw::c_int,
-        ) -> ::std::os::raw::c_int,
+        arg2: libc::c_int,
+    ) -> ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut Display, arg2: libc::c_int) -> libc::c_int,
     >;
 }
 extern "C" {
     pub fn XSetAfterFunction(
         arg1: *mut Display,
-        arg2: ::std::option::Option<
-            unsafe extern "C" fn(arg1: *mut Display) -> ::std::os::raw::c_int,
-        >,
-    ) -> ::std::option::Option<
+        arg2: ::core::option::Option<unsafe extern "C" fn(arg1: *mut Display) -> libc::c_int>,
+    ) -> ::core::option::Option<
         unsafe extern "C" fn(
             arg1: *mut Display,
-            arg2: ::std::option::Option<
-                unsafe extern "C" fn(arg1: *mut Display) -> ::std::os::raw::c_int,
-            >,
-        ) -> ::std::os::raw::c_int,
+            arg2: ::core::option::Option<unsafe extern "C" fn(arg1: *mut Display) -> libc::c_int>,
+        ) -> libc::c_int,
     >;
 }
 extern "C" {
-    pub fn XInternAtom(
-        arg1: *mut Display,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
-    ) -> Atom;
+    pub fn XInternAtom(arg1: *mut Display, arg2: *const libc::c_char, arg3: libc::c_int) -> Atom;
 }
 extern "C" {
     pub fn XInternAtoms(
         arg1: *mut Display,
-        arg2: *mut *mut ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
-        arg4: ::std::os::raw::c_int,
+        arg2: *mut *mut libc::c_char,
+        arg3: libc::c_int,
+        arg4: libc::c_int,
         arg5: *mut Atom,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XCopyColormapAndFree(arg1: *mut Display, arg2: Colormap) -> Colormap;
@@ -26938,7 +26594,7 @@ extern "C" {
         arg1: *mut Display,
         arg2: Window,
         arg3: *mut Visual,
-        arg4: ::std::os::raw::c_int,
+        arg4: libc::c_int,
     ) -> Colormap;
 }
 extern "C" {
@@ -26948,8 +26604,8 @@ extern "C" {
         arg3: Pixmap,
         arg4: *mut XColor,
         arg5: *mut XColor,
-        arg6: ::std::os::raw::c_uint,
-        arg7: ::std::os::raw::c_uint,
+        arg6: libc::c_uint,
+        arg7: libc::c_uint,
     ) -> Cursor;
 }
 extern "C" {
@@ -26957,23 +26613,23 @@ extern "C" {
         arg1: *mut Display,
         arg2: Font,
         arg3: Font,
-        arg4: ::std::os::raw::c_uint,
-        arg5: ::std::os::raw::c_uint,
+        arg4: libc::c_uint,
+        arg5: libc::c_uint,
         arg6: *const XColor,
         arg7: *const XColor,
     ) -> Cursor;
 }
 extern "C" {
-    pub fn XCreateFontCursor(arg1: *mut Display, arg2: ::std::os::raw::c_uint) -> Cursor;
+    pub fn XCreateFontCursor(arg1: *mut Display, arg2: libc::c_uint) -> Cursor;
 }
 extern "C" {
-    pub fn XLoadFont(arg1: *mut Display, arg2: *const ::std::os::raw::c_char) -> Font;
+    pub fn XLoadFont(arg1: *mut Display, arg2: *const libc::c_char) -> Font;
 }
 extern "C" {
     pub fn XCreateGC(
         arg1: *mut Display,
         arg2: Drawable,
-        arg3: ::std::os::raw::c_ulong,
+        arg3: libc::c_ulong,
         arg4: *mut XGCValues,
     ) -> GC;
 }
@@ -26987,43 +26643,43 @@ extern "C" {
     pub fn XCreatePixmap(
         arg1: *mut Display,
         arg2: Drawable,
-        arg3: ::std::os::raw::c_uint,
-        arg4: ::std::os::raw::c_uint,
-        arg5: ::std::os::raw::c_uint,
+        arg3: libc::c_uint,
+        arg4: libc::c_uint,
+        arg5: libc::c_uint,
     ) -> Pixmap;
 }
 extern "C" {
     pub fn XCreateBitmapFromData(
         arg1: *mut Display,
         arg2: Drawable,
-        arg3: *const ::std::os::raw::c_char,
-        arg4: ::std::os::raw::c_uint,
-        arg5: ::std::os::raw::c_uint,
+        arg3: *const libc::c_char,
+        arg4: libc::c_uint,
+        arg5: libc::c_uint,
     ) -> Pixmap;
 }
 extern "C" {
     pub fn XCreatePixmapFromBitmapData(
         arg1: *mut Display,
         arg2: Drawable,
-        arg3: *mut ::std::os::raw::c_char,
-        arg4: ::std::os::raw::c_uint,
-        arg5: ::std::os::raw::c_uint,
-        arg6: ::std::os::raw::c_ulong,
-        arg7: ::std::os::raw::c_ulong,
-        arg8: ::std::os::raw::c_uint,
+        arg3: *mut libc::c_char,
+        arg4: libc::c_uint,
+        arg5: libc::c_uint,
+        arg6: libc::c_ulong,
+        arg7: libc::c_ulong,
+        arg8: libc::c_uint,
     ) -> Pixmap;
 }
 extern "C" {
     pub fn XCreateSimpleWindow(
         arg1: *mut Display,
         arg2: Window,
-        arg3: ::std::os::raw::c_int,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_uint,
-        arg6: ::std::os::raw::c_uint,
-        arg7: ::std::os::raw::c_uint,
-        arg8: ::std::os::raw::c_ulong,
-        arg9: ::std::os::raw::c_ulong,
+        arg3: libc::c_int,
+        arg4: libc::c_int,
+        arg5: libc::c_uint,
+        arg6: libc::c_uint,
+        arg7: libc::c_uint,
+        arg8: libc::c_ulong,
+        arg9: libc::c_ulong,
     ) -> Window;
 }
 extern "C" {
@@ -27033,15 +26689,15 @@ extern "C" {
     pub fn XCreateWindow(
         arg1: *mut Display,
         arg2: Window,
-        arg3: ::std::os::raw::c_int,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_uint,
-        arg6: ::std::os::raw::c_uint,
-        arg7: ::std::os::raw::c_uint,
-        arg8: ::std::os::raw::c_int,
-        arg9: ::std::os::raw::c_uint,
+        arg3: libc::c_int,
+        arg4: libc::c_int,
+        arg5: libc::c_uint,
+        arg6: libc::c_uint,
+        arg7: libc::c_uint,
+        arg8: libc::c_int,
+        arg9: libc::c_uint,
         arg10: *mut Visual,
-        arg11: ::std::os::raw::c_ulong,
+        arg11: libc::c_ulong,
         arg12: *mut XSetWindowAttributes,
     ) -> Window;
 }
@@ -27049,93 +26705,79 @@ extern "C" {
     pub fn XListInstalledColormaps(
         arg1: *mut Display,
         arg2: Window,
-        arg3: *mut ::std::os::raw::c_int,
+        arg3: *mut libc::c_int,
     ) -> *mut Colormap;
 }
 extern "C" {
     pub fn XListFonts(
         arg1: *mut Display,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
-        arg4: *mut ::std::os::raw::c_int,
-    ) -> *mut *mut ::std::os::raw::c_char;
+        arg2: *const libc::c_char,
+        arg3: libc::c_int,
+        arg4: *mut libc::c_int,
+    ) -> *mut *mut libc::c_char;
 }
 extern "C" {
     pub fn XListFontsWithInfo(
         arg1: *mut Display,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
-        arg4: *mut ::std::os::raw::c_int,
+        arg2: *const libc::c_char,
+        arg3: libc::c_int,
+        arg4: *mut libc::c_int,
         arg5: *mut *mut XFontStruct,
-    ) -> *mut *mut ::std::os::raw::c_char;
+    ) -> *mut *mut libc::c_char;
 }
 extern "C" {
-    pub fn XGetFontPath(
-        arg1: *mut Display,
-        arg2: *mut ::std::os::raw::c_int,
-    ) -> *mut *mut ::std::os::raw::c_char;
+    pub fn XGetFontPath(arg1: *mut Display, arg2: *mut libc::c_int) -> *mut *mut libc::c_char;
 }
 extern "C" {
-    pub fn XListExtensions(
-        arg1: *mut Display,
-        arg2: *mut ::std::os::raw::c_int,
-    ) -> *mut *mut ::std::os::raw::c_char;
+    pub fn XListExtensions(arg1: *mut Display, arg2: *mut libc::c_int) -> *mut *mut libc::c_char;
 }
 extern "C" {
-    pub fn XListProperties(
-        arg1: *mut Display,
-        arg2: Window,
-        arg3: *mut ::std::os::raw::c_int,
-    ) -> *mut Atom;
+    pub fn XListProperties(arg1: *mut Display, arg2: Window, arg3: *mut libc::c_int) -> *mut Atom;
 }
 extern "C" {
     pub fn XListHosts(
         arg1: *mut Display,
-        arg2: *mut ::std::os::raw::c_int,
-        arg3: *mut ::std::os::raw::c_int,
+        arg2: *mut libc::c_int,
+        arg3: *mut libc::c_int,
     ) -> *mut XHostAddress;
 }
 extern "C" {
-    pub fn XKeycodeToKeysym(
-        arg1: *mut Display,
-        arg2: KeyCode,
-        arg3: ::std::os::raw::c_int,
-    ) -> KeySym;
+    pub fn XKeycodeToKeysym(arg1: *mut Display, arg2: KeyCode, arg3: libc::c_int) -> KeySym;
 }
 extern "C" {
-    pub fn XLookupKeysym(arg1: *mut XKeyEvent, arg2: ::std::os::raw::c_int) -> KeySym;
+    pub fn XLookupKeysym(arg1: *mut XKeyEvent, arg2: libc::c_int) -> KeySym;
 }
 extern "C" {
     pub fn XGetKeyboardMapping(
         arg1: *mut Display,
         arg2: KeyCode,
-        arg3: ::std::os::raw::c_int,
-        arg4: *mut ::std::os::raw::c_int,
+        arg3: libc::c_int,
+        arg4: *mut libc::c_int,
     ) -> *mut KeySym;
 }
 extern "C" {
-    pub fn XStringToKeysym(arg1: *const ::std::os::raw::c_char) -> KeySym;
+    pub fn XStringToKeysym(arg1: *const libc::c_char) -> KeySym;
 }
 extern "C" {
-    pub fn XMaxRequestSize(arg1: *mut Display) -> ::std::os::raw::c_long;
+    pub fn XMaxRequestSize(arg1: *mut Display) -> libc::c_long;
 }
 extern "C" {
-    pub fn XExtendedMaxRequestSize(arg1: *mut Display) -> ::std::os::raw::c_long;
+    pub fn XExtendedMaxRequestSize(arg1: *mut Display) -> libc::c_long;
 }
 extern "C" {
-    pub fn XResourceManagerString(arg1: *mut Display) -> *mut ::std::os::raw::c_char;
+    pub fn XResourceManagerString(arg1: *mut Display) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn XScreenResourceString(arg1: *mut Screen) -> *mut ::std::os::raw::c_char;
+    pub fn XScreenResourceString(arg1: *mut Screen) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn XDisplayMotionBufferSize(arg1: *mut Display) -> ::std::os::raw::c_ulong;
+    pub fn XDisplayMotionBufferSize(arg1: *mut Display) -> libc::c_ulong;
 }
 extern "C" {
     pub fn XVisualIDFromVisual(arg1: *mut Visual) -> VisualID;
 }
 extern "C" {
-    pub fn XInitThreads() -> ::std::os::raw::c_int;
+    pub fn XInitThreads() -> libc::c_int;
 }
 extern "C" {
     pub fn XLockDisplay(arg1: *mut Display);
@@ -27144,25 +26786,19 @@ extern "C" {
     pub fn XUnlockDisplay(arg1: *mut Display);
 }
 extern "C" {
-    pub fn XInitExtension(
-        arg1: *mut Display,
-        arg2: *const ::std::os::raw::c_char,
-    ) -> *mut XExtCodes;
+    pub fn XInitExtension(arg1: *mut Display, arg2: *const libc::c_char) -> *mut XExtCodes;
 }
 extern "C" {
     pub fn XAddExtension(arg1: *mut Display) -> *mut XExtCodes;
 }
 extern "C" {
-    pub fn XFindOnExtensionList(
-        arg1: *mut *mut XExtData,
-        arg2: ::std::os::raw::c_int,
-    ) -> *mut XExtData;
+    pub fn XFindOnExtensionList(arg1: *mut *mut XExtData, arg2: libc::c_int) -> *mut XExtData;
 }
 extern "C" {
     pub fn XEHeadOfExtensionList(arg1: XEDataObject) -> *mut *mut XExtData;
 }
 extern "C" {
-    pub fn XRootWindow(arg1: *mut Display, arg2: ::std::os::raw::c_int) -> Window;
+    pub fn XRootWindow(arg1: *mut Display, arg2: libc::c_int) -> Window;
 }
 extern "C" {
     pub fn XDefaultRootWindow(arg1: *mut Display) -> Window;
@@ -27171,46 +26807,46 @@ extern "C" {
     pub fn XRootWindowOfScreen(arg1: *mut Screen) -> Window;
 }
 extern "C" {
-    pub fn XDefaultVisual(arg1: *mut Display, arg2: ::std::os::raw::c_int) -> *mut Visual;
+    pub fn XDefaultVisual(arg1: *mut Display, arg2: libc::c_int) -> *mut Visual;
 }
 extern "C" {
     pub fn XDefaultVisualOfScreen(arg1: *mut Screen) -> *mut Visual;
 }
 extern "C" {
-    pub fn XDefaultGC(arg1: *mut Display, arg2: ::std::os::raw::c_int) -> GC;
+    pub fn XDefaultGC(arg1: *mut Display, arg2: libc::c_int) -> GC;
 }
 extern "C" {
     pub fn XDefaultGCOfScreen(arg1: *mut Screen) -> GC;
 }
 extern "C" {
-    pub fn XBlackPixel(arg1: *mut Display, arg2: ::std::os::raw::c_int) -> ::std::os::raw::c_ulong;
+    pub fn XBlackPixel(arg1: *mut Display, arg2: libc::c_int) -> libc::c_ulong;
 }
 extern "C" {
-    pub fn XWhitePixel(arg1: *mut Display, arg2: ::std::os::raw::c_int) -> ::std::os::raw::c_ulong;
+    pub fn XWhitePixel(arg1: *mut Display, arg2: libc::c_int) -> libc::c_ulong;
 }
 extern "C" {
-    pub fn XAllPlanes() -> ::std::os::raw::c_ulong;
+    pub fn XAllPlanes() -> libc::c_ulong;
 }
 extern "C" {
-    pub fn XBlackPixelOfScreen(arg1: *mut Screen) -> ::std::os::raw::c_ulong;
+    pub fn XBlackPixelOfScreen(arg1: *mut Screen) -> libc::c_ulong;
 }
 extern "C" {
-    pub fn XWhitePixelOfScreen(arg1: *mut Screen) -> ::std::os::raw::c_ulong;
+    pub fn XWhitePixelOfScreen(arg1: *mut Screen) -> libc::c_ulong;
 }
 extern "C" {
-    pub fn XNextRequest(arg1: *mut Display) -> ::std::os::raw::c_ulong;
+    pub fn XNextRequest(arg1: *mut Display) -> libc::c_ulong;
 }
 extern "C" {
-    pub fn XLastKnownRequestProcessed(arg1: *mut Display) -> ::std::os::raw::c_ulong;
+    pub fn XLastKnownRequestProcessed(arg1: *mut Display) -> libc::c_ulong;
 }
 extern "C" {
-    pub fn XServerVendor(arg1: *mut Display) -> *mut ::std::os::raw::c_char;
+    pub fn XServerVendor(arg1: *mut Display) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn XDisplayString(arg1: *mut Display) -> *mut ::std::os::raw::c_char;
+    pub fn XDisplayString(arg1: *mut Display) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn XDefaultColormap(arg1: *mut Display, arg2: ::std::os::raw::c_int) -> Colormap;
+    pub fn XDefaultColormap(arg1: *mut Display, arg2: libc::c_int) -> Colormap;
 }
 extern "C" {
     pub fn XDefaultColormapOfScreen(arg1: *mut Screen) -> Colormap;
@@ -27219,247 +26855,221 @@ extern "C" {
     pub fn XDisplayOfScreen(arg1: *mut Screen) -> *mut Display;
 }
 extern "C" {
-    pub fn XScreenOfDisplay(arg1: *mut Display, arg2: ::std::os::raw::c_int) -> *mut Screen;
+    pub fn XScreenOfDisplay(arg1: *mut Display, arg2: libc::c_int) -> *mut Screen;
 }
 extern "C" {
     pub fn XDefaultScreenOfDisplay(arg1: *mut Display) -> *mut Screen;
 }
 extern "C" {
-    pub fn XEventMaskOfScreen(arg1: *mut Screen) -> ::std::os::raw::c_long;
+    pub fn XEventMaskOfScreen(arg1: *mut Screen) -> libc::c_long;
 }
 extern "C" {
-    pub fn XScreenNumberOfScreen(arg1: *mut Screen) -> ::std::os::raw::c_int;
+    pub fn XScreenNumberOfScreen(arg1: *mut Screen) -> libc::c_int;
 }
-pub type XErrorHandler = ::std::option::Option<
-    unsafe extern "C" fn(arg1: *mut Display, arg2: *mut XErrorEvent) -> ::std::os::raw::c_int,
+pub type XErrorHandler = ::core::option::Option<
+    unsafe extern "C" fn(arg1: *mut Display, arg2: *mut XErrorEvent) -> libc::c_int,
 >;
 extern "C" {
     pub fn XSetErrorHandler(arg1: XErrorHandler) -> XErrorHandler;
 }
 pub type XIOErrorHandler =
-    ::std::option::Option<unsafe extern "C" fn(arg1: *mut Display) -> ::std::os::raw::c_int>;
+    ::core::option::Option<unsafe extern "C" fn(arg1: *mut Display) -> libc::c_int>;
 extern "C" {
     pub fn XSetIOErrorHandler(arg1: XIOErrorHandler) -> XIOErrorHandler;
 }
 extern "C" {
     pub fn XListPixmapFormats(
         arg1: *mut Display,
-        arg2: *mut ::std::os::raw::c_int,
+        arg2: *mut libc::c_int,
     ) -> *mut XPixmapFormatValues;
 }
 extern "C" {
     pub fn XListDepths(
         arg1: *mut Display,
-        arg2: ::std::os::raw::c_int,
-        arg3: *mut ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_int;
+        arg2: libc::c_int,
+        arg3: *mut libc::c_int,
+    ) -> *mut libc::c_int;
 }
 extern "C" {
     pub fn XReconfigureWMWindow(
         arg1: *mut Display,
         arg2: Window,
-        arg3: ::std::os::raw::c_int,
-        arg4: ::std::os::raw::c_uint,
+        arg3: libc::c_int,
+        arg4: libc::c_uint,
         arg5: *mut XWindowChanges,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XGetWMProtocols(
         arg1: *mut Display,
         arg2: Window,
         arg3: *mut *mut Atom,
-        arg4: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg4: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XSetWMProtocols(
         arg1: *mut Display,
         arg2: Window,
         arg3: *mut Atom,
-        arg4: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg4: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XIconifyWindow(
-        arg1: *mut Display,
-        arg2: Window,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn XIconifyWindow(arg1: *mut Display, arg2: Window, arg3: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn XWithdrawWindow(
-        arg1: *mut Display,
-        arg2: Window,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn XWithdrawWindow(arg1: *mut Display, arg2: Window, arg3: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     pub fn XGetCommand(
         arg1: *mut Display,
         arg2: Window,
-        arg3: *mut *mut *mut ::std::os::raw::c_char,
-        arg4: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg3: *mut *mut *mut libc::c_char,
+        arg4: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XGetWMColormapWindows(
         arg1: *mut Display,
         arg2: Window,
         arg3: *mut *mut Window,
-        arg4: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg4: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XSetWMColormapWindows(
         arg1: *mut Display,
         arg2: Window,
         arg3: *mut Window,
-        arg4: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg4: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XFreeStringList(arg1: *mut *mut ::std::os::raw::c_char);
+    pub fn XFreeStringList(arg1: *mut *mut libc::c_char);
 }
 extern "C" {
-    pub fn XSetTransientForHint(
-        arg1: *mut Display,
-        arg2: Window,
-        arg3: Window,
-    ) -> ::std::os::raw::c_int;
+    pub fn XSetTransientForHint(arg1: *mut Display, arg2: Window, arg3: Window) -> libc::c_int;
 }
 extern "C" {
-    pub fn XActivateScreenSaver(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XActivateScreenSaver(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
-    pub fn XAddHost(arg1: *mut Display, arg2: *mut XHostAddress) -> ::std::os::raw::c_int;
+    pub fn XAddHost(arg1: *mut Display, arg2: *mut XHostAddress) -> libc::c_int;
 }
 extern "C" {
-    pub fn XAddHosts(
-        arg1: *mut Display,
-        arg2: *mut XHostAddress,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn XAddHosts(arg1: *mut Display, arg2: *mut XHostAddress, arg3: libc::c_int)
+        -> libc::c_int;
 }
 extern "C" {
-    pub fn XAddToExtensionList(
-        arg1: *mut *mut _XExtData,
-        arg2: *mut XExtData,
-    ) -> ::std::os::raw::c_int;
+    pub fn XAddToExtensionList(arg1: *mut *mut _XExtData, arg2: *mut XExtData) -> libc::c_int;
 }
 extern "C" {
-    pub fn XAddToSaveSet(arg1: *mut Display, arg2: Window) -> ::std::os::raw::c_int;
+    pub fn XAddToSaveSet(arg1: *mut Display, arg2: Window) -> libc::c_int;
 }
 extern "C" {
-    pub fn XAllocColor(
-        arg1: *mut Display,
-        arg2: Colormap,
-        arg3: *mut XColor,
-    ) -> ::std::os::raw::c_int;
+    pub fn XAllocColor(arg1: *mut Display, arg2: Colormap, arg3: *mut XColor) -> libc::c_int;
 }
 extern "C" {
     pub fn XAllocColorCells(
         arg1: *mut Display,
         arg2: Colormap,
-        arg3: ::std::os::raw::c_int,
-        arg4: *mut ::std::os::raw::c_ulong,
-        arg5: ::std::os::raw::c_uint,
-        arg6: *mut ::std::os::raw::c_ulong,
-        arg7: ::std::os::raw::c_uint,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_int,
+        arg4: *mut libc::c_ulong,
+        arg5: libc::c_uint,
+        arg6: *mut libc::c_ulong,
+        arg7: libc::c_uint,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XAllocColorPlanes(
         arg1: *mut Display,
         arg2: Colormap,
-        arg3: ::std::os::raw::c_int,
-        arg4: *mut ::std::os::raw::c_ulong,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_int,
-        arg7: ::std::os::raw::c_int,
-        arg8: ::std::os::raw::c_int,
-        arg9: *mut ::std::os::raw::c_ulong,
-        arg10: *mut ::std::os::raw::c_ulong,
-        arg11: *mut ::std::os::raw::c_ulong,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_int,
+        arg4: *mut libc::c_ulong,
+        arg5: libc::c_int,
+        arg6: libc::c_int,
+        arg7: libc::c_int,
+        arg8: libc::c_int,
+        arg9: *mut libc::c_ulong,
+        arg10: *mut libc::c_ulong,
+        arg11: *mut libc::c_ulong,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XAllocNamedColor(
         arg1: *mut Display,
         arg2: Colormap,
-        arg3: *const ::std::os::raw::c_char,
+        arg3: *const libc::c_char,
         arg4: *mut XColor,
         arg5: *mut XColor,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XAllowEvents(
-        arg1: *mut Display,
-        arg2: ::std::os::raw::c_int,
-        arg3: Time,
-    ) -> ::std::os::raw::c_int;
+    pub fn XAllowEvents(arg1: *mut Display, arg2: libc::c_int, arg3: Time) -> libc::c_int;
 }
 extern "C" {
-    pub fn XAutoRepeatOff(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XAutoRepeatOff(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
-    pub fn XAutoRepeatOn(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XAutoRepeatOn(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
-    pub fn XBell(arg1: *mut Display, arg2: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn XBell(arg1: *mut Display, arg2: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn XBitmapBitOrder(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XBitmapBitOrder(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
-    pub fn XBitmapPad(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XBitmapPad(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
-    pub fn XBitmapUnit(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XBitmapUnit(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
-    pub fn XCellsOfScreen(arg1: *mut Screen) -> ::std::os::raw::c_int;
+    pub fn XCellsOfScreen(arg1: *mut Screen) -> libc::c_int;
 }
 extern "C" {
     pub fn XChangeActivePointerGrab(
         arg1: *mut Display,
-        arg2: ::std::os::raw::c_uint,
+        arg2: libc::c_uint,
         arg3: Cursor,
         arg4: Time,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XChangeGC(
         arg1: *mut Display,
         arg2: GC,
-        arg3: ::std::os::raw::c_ulong,
+        arg3: libc::c_ulong,
         arg4: *mut XGCValues,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XChangeKeyboardControl(
         arg1: *mut Display,
-        arg2: ::std::os::raw::c_ulong,
+        arg2: libc::c_ulong,
         arg3: *mut XKeyboardControl,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XChangeKeyboardMapping(
         arg1: *mut Display,
-        arg2: ::std::os::raw::c_int,
-        arg3: ::std::os::raw::c_int,
+        arg2: libc::c_int,
+        arg3: libc::c_int,
         arg4: *mut KeySym,
-        arg5: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg5: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XChangePointerControl(
         arg1: *mut Display,
-        arg2: ::std::os::raw::c_int,
-        arg3: ::std::os::raw::c_int,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg2: libc::c_int,
+        arg3: libc::c_int,
+        arg4: libc::c_int,
+        arg5: libc::c_int,
+        arg6: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XChangeProperty(
@@ -27467,111 +27077,104 @@ extern "C" {
         arg2: Window,
         arg3: Atom,
         arg4: Atom,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_int,
-        arg7: *const ::std::os::raw::c_uchar,
-        arg8: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg5: libc::c_int,
+        arg6: libc::c_int,
+        arg7: *const libc::c_uchar,
+        arg8: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XChangeSaveSet(
-        arg1: *mut Display,
-        arg2: Window,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn XChangeSaveSet(arg1: *mut Display, arg2: Window, arg3: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     pub fn XChangeWindowAttributes(
         arg1: *mut Display,
         arg2: Window,
-        arg3: ::std::os::raw::c_ulong,
+        arg3: libc::c_ulong,
         arg4: *mut XSetWindowAttributes,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XCheckIfEvent(
         arg1: *mut Display,
         arg2: *mut XEvent,
-        arg3: ::std::option::Option<
+        arg3: ::core::option::Option<
             unsafe extern "C" fn(
                 arg1: *mut Display,
                 arg2: *mut XEvent,
                 arg3: XPointer,
-            ) -> ::std::os::raw::c_int,
+            ) -> libc::c_int,
         >,
         arg4: XPointer,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XCheckMaskEvent(
         arg1: *mut Display,
-        arg2: ::std::os::raw::c_long,
+        arg2: libc::c_long,
         arg3: *mut XEvent,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XCheckTypedEvent(
         arg1: *mut Display,
-        arg2: ::std::os::raw::c_int,
+        arg2: libc::c_int,
         arg3: *mut XEvent,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XCheckTypedWindowEvent(
         arg1: *mut Display,
         arg2: Window,
-        arg3: ::std::os::raw::c_int,
+        arg3: libc::c_int,
         arg4: *mut XEvent,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XCheckWindowEvent(
         arg1: *mut Display,
         arg2: Window,
-        arg3: ::std::os::raw::c_long,
+        arg3: libc::c_long,
         arg4: *mut XEvent,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XCirculateSubwindows(
-        arg1: *mut Display,
-        arg2: Window,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn XCirculateSubwindows(arg1: *mut Display, arg2: Window, arg3: libc::c_int)
+        -> libc::c_int;
 }
 extern "C" {
-    pub fn XCirculateSubwindowsDown(arg1: *mut Display, arg2: Window) -> ::std::os::raw::c_int;
+    pub fn XCirculateSubwindowsDown(arg1: *mut Display, arg2: Window) -> libc::c_int;
 }
 extern "C" {
-    pub fn XCirculateSubwindowsUp(arg1: *mut Display, arg2: Window) -> ::std::os::raw::c_int;
+    pub fn XCirculateSubwindowsUp(arg1: *mut Display, arg2: Window) -> libc::c_int;
 }
 extern "C" {
     pub fn XClearArea(
         arg1: *mut Display,
         arg2: Window,
-        arg3: ::std::os::raw::c_int,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_uint,
-        arg6: ::std::os::raw::c_uint,
-        arg7: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_int,
+        arg4: libc::c_int,
+        arg5: libc::c_uint,
+        arg6: libc::c_uint,
+        arg7: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XClearWindow(arg1: *mut Display, arg2: Window) -> ::std::os::raw::c_int;
+    pub fn XClearWindow(arg1: *mut Display, arg2: Window) -> libc::c_int;
 }
 extern "C" {
-    pub fn XCloseDisplay(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XCloseDisplay(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
     pub fn XConfigureWindow(
         arg1: *mut Display,
         arg2: Window,
-        arg3: ::std::os::raw::c_uint,
+        arg3: libc::c_uint,
         arg4: *mut XWindowChanges,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XConnectionNumber(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XConnectionNumber(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
     pub fn XConvertSelection(
@@ -27581,7 +27184,7 @@ extern "C" {
         arg4: Atom,
         arg5: Window,
         arg6: Time,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XCopyArea(
@@ -27589,21 +27192,16 @@ extern "C" {
         arg2: Drawable,
         arg3: Drawable,
         arg4: GC,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_int,
-        arg7: ::std::os::raw::c_uint,
-        arg8: ::std::os::raw::c_uint,
-        arg9: ::std::os::raw::c_int,
-        arg10: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg5: libc::c_int,
+        arg6: libc::c_int,
+        arg7: libc::c_uint,
+        arg8: libc::c_uint,
+        arg9: libc::c_int,
+        arg10: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XCopyGC(
-        arg1: *mut Display,
-        arg2: GC,
-        arg3: ::std::os::raw::c_ulong,
-        arg4: GC,
-    ) -> ::std::os::raw::c_int;
+    pub fn XCopyGC(arg1: *mut Display, arg2: GC, arg3: libc::c_ulong, arg4: GC) -> libc::c_int;
 }
 extern "C" {
     pub fn XCopyPlane(
@@ -27611,90 +27209,82 @@ extern "C" {
         arg2: Drawable,
         arg3: Drawable,
         arg4: GC,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_int,
-        arg7: ::std::os::raw::c_uint,
-        arg8: ::std::os::raw::c_uint,
-        arg9: ::std::os::raw::c_int,
-        arg10: ::std::os::raw::c_int,
-        arg11: ::std::os::raw::c_ulong,
-    ) -> ::std::os::raw::c_int;
+        arg5: libc::c_int,
+        arg6: libc::c_int,
+        arg7: libc::c_uint,
+        arg8: libc::c_uint,
+        arg9: libc::c_int,
+        arg10: libc::c_int,
+        arg11: libc::c_ulong,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XDefaultDepth(arg1: *mut Display, arg2: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn XDefaultDepth(arg1: *mut Display, arg2: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn XDefaultDepthOfScreen(arg1: *mut Screen) -> ::std::os::raw::c_int;
+    pub fn XDefaultDepthOfScreen(arg1: *mut Screen) -> libc::c_int;
 }
 extern "C" {
-    pub fn XDefaultScreen(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XDefaultScreen(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
-    pub fn XDefineCursor(arg1: *mut Display, arg2: Window, arg3: Cursor) -> ::std::os::raw::c_int;
+    pub fn XDefineCursor(arg1: *mut Display, arg2: Window, arg3: Cursor) -> libc::c_int;
 }
 extern "C" {
-    pub fn XDeleteProperty(arg1: *mut Display, arg2: Window, arg3: Atom) -> ::std::os::raw::c_int;
+    pub fn XDeleteProperty(arg1: *mut Display, arg2: Window, arg3: Atom) -> libc::c_int;
 }
 extern "C" {
-    pub fn XDestroyWindow(arg1: *mut Display, arg2: Window) -> ::std::os::raw::c_int;
+    pub fn XDestroyWindow(arg1: *mut Display, arg2: Window) -> libc::c_int;
 }
 extern "C" {
-    pub fn XDestroySubwindows(arg1: *mut Display, arg2: Window) -> ::std::os::raw::c_int;
+    pub fn XDestroySubwindows(arg1: *mut Display, arg2: Window) -> libc::c_int;
 }
 extern "C" {
-    pub fn XDoesBackingStore(arg1: *mut Screen) -> ::std::os::raw::c_int;
+    pub fn XDoesBackingStore(arg1: *mut Screen) -> libc::c_int;
 }
 extern "C" {
-    pub fn XDoesSaveUnders(arg1: *mut Screen) -> ::std::os::raw::c_int;
+    pub fn XDoesSaveUnders(arg1: *mut Screen) -> libc::c_int;
 }
 extern "C" {
-    pub fn XDisableAccessControl(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XDisableAccessControl(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
-    pub fn XDisplayCells(arg1: *mut Display, arg2: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn XDisplayCells(arg1: *mut Display, arg2: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn XDisplayHeight(arg1: *mut Display, arg2: ::std::os::raw::c_int)
-        -> ::std::os::raw::c_int;
+    pub fn XDisplayHeight(arg1: *mut Display, arg2: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn XDisplayHeightMM(
-        arg1: *mut Display,
-        arg2: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn XDisplayHeightMM(arg1: *mut Display, arg2: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     pub fn XDisplayKeycodes(
         arg1: *mut Display,
-        arg2: *mut ::std::os::raw::c_int,
-        arg3: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg2: *mut libc::c_int,
+        arg3: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XDisplayPlanes(arg1: *mut Display, arg2: ::std::os::raw::c_int)
-        -> ::std::os::raw::c_int;
+    pub fn XDisplayPlanes(arg1: *mut Display, arg2: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn XDisplayWidth(arg1: *mut Display, arg2: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn XDisplayWidth(arg1: *mut Display, arg2: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn XDisplayWidthMM(
-        arg1: *mut Display,
-        arg2: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn XDisplayWidthMM(arg1: *mut Display, arg2: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     pub fn XDrawArc(
         arg1: *mut Display,
         arg2: Drawable,
         arg3: GC,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_uint,
-        arg7: ::std::os::raw::c_uint,
-        arg8: ::std::os::raw::c_int,
-        arg9: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg4: libc::c_int,
+        arg5: libc::c_int,
+        arg6: libc::c_uint,
+        arg7: libc::c_uint,
+        arg8: libc::c_int,
+        arg9: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XDrawArcs(
@@ -27702,41 +27292,41 @@ extern "C" {
         arg2: Drawable,
         arg3: GC,
         arg4: *mut XArc,
-        arg5: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg5: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XDrawImageString(
         arg1: *mut Display,
         arg2: Drawable,
         arg3: GC,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
-        arg6: *const ::std::os::raw::c_char,
-        arg7: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg4: libc::c_int,
+        arg5: libc::c_int,
+        arg6: *const libc::c_char,
+        arg7: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XDrawImageString16(
         arg1: *mut Display,
         arg2: Drawable,
         arg3: GC,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
+        arg4: libc::c_int,
+        arg5: libc::c_int,
         arg6: *const XChar2b,
-        arg7: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg7: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XDrawLine(
         arg1: *mut Display,
         arg2: Drawable,
         arg3: GC,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_int,
-        arg7: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg4: libc::c_int,
+        arg5: libc::c_int,
+        arg6: libc::c_int,
+        arg7: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XDrawLines(
@@ -27744,18 +27334,18 @@ extern "C" {
         arg2: Drawable,
         arg3: GC,
         arg4: *mut XPoint,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg5: libc::c_int,
+        arg6: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XDrawPoint(
         arg1: *mut Display,
         arg2: Drawable,
         arg3: GC,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg4: libc::c_int,
+        arg5: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XDrawPoints(
@@ -27763,20 +27353,20 @@ extern "C" {
         arg2: Drawable,
         arg3: GC,
         arg4: *mut XPoint,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg5: libc::c_int,
+        arg6: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XDrawRectangle(
         arg1: *mut Display,
         arg2: Drawable,
         arg3: GC,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_uint,
-        arg7: ::std::os::raw::c_uint,
-    ) -> ::std::os::raw::c_int;
+        arg4: libc::c_int,
+        arg5: libc::c_int,
+        arg6: libc::c_uint,
+        arg7: libc::c_uint,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XDrawRectangles(
@@ -27784,8 +27374,8 @@ extern "C" {
         arg2: Drawable,
         arg3: GC,
         arg4: *mut XRectangle,
-        arg5: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg5: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XDrawSegments(
@@ -27793,78 +27383,78 @@ extern "C" {
         arg2: Drawable,
         arg3: GC,
         arg4: *mut XSegment,
-        arg5: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg5: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XDrawString(
         arg1: *mut Display,
         arg2: Drawable,
         arg3: GC,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
-        arg6: *const ::std::os::raw::c_char,
-        arg7: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg4: libc::c_int,
+        arg5: libc::c_int,
+        arg6: *const libc::c_char,
+        arg7: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XDrawString16(
         arg1: *mut Display,
         arg2: Drawable,
         arg3: GC,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
+        arg4: libc::c_int,
+        arg5: libc::c_int,
         arg6: *const XChar2b,
-        arg7: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg7: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XDrawText(
         arg1: *mut Display,
         arg2: Drawable,
         arg3: GC,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
+        arg4: libc::c_int,
+        arg5: libc::c_int,
         arg6: *mut XTextItem,
-        arg7: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg7: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XDrawText16(
         arg1: *mut Display,
         arg2: Drawable,
         arg3: GC,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
+        arg4: libc::c_int,
+        arg5: libc::c_int,
         arg6: *mut XTextItem16,
-        arg7: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg7: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XEnableAccessControl(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XEnableAccessControl(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
-    pub fn XEventsQueued(arg1: *mut Display, arg2: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn XEventsQueued(arg1: *mut Display, arg2: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     pub fn XFetchName(
         arg1: *mut Display,
         arg2: Window,
-        arg3: *mut *mut ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        arg3: *mut *mut libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XFillArc(
         arg1: *mut Display,
         arg2: Drawable,
         arg3: GC,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_uint,
-        arg7: ::std::os::raw::c_uint,
-        arg8: ::std::os::raw::c_int,
-        arg9: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg4: libc::c_int,
+        arg5: libc::c_int,
+        arg6: libc::c_uint,
+        arg7: libc::c_uint,
+        arg8: libc::c_int,
+        arg9: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XFillArcs(
@@ -27872,8 +27462,8 @@ extern "C" {
         arg2: Drawable,
         arg3: GC,
         arg4: *mut XArc,
-        arg5: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg5: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XFillPolygon(
@@ -27881,21 +27471,21 @@ extern "C" {
         arg2: Drawable,
         arg3: GC,
         arg4: *mut XPoint,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_int,
-        arg7: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg5: libc::c_int,
+        arg6: libc::c_int,
+        arg7: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XFillRectangle(
         arg1: *mut Display,
         arg2: Drawable,
         arg3: GC,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_uint,
-        arg7: ::std::os::raw::c_uint,
-    ) -> ::std::os::raw::c_int;
+        arg4: libc::c_int,
+        arg5: libc::c_int,
+        arg6: libc::c_uint,
+        arg7: libc::c_uint,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XFillRectangles(
@@ -27903,390 +27493,377 @@ extern "C" {
         arg2: Drawable,
         arg3: GC,
         arg4: *mut XRectangle,
-        arg5: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg5: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XFlush(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XFlush(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
-    pub fn XForceScreenSaver(
-        arg1: *mut Display,
-        arg2: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn XForceScreenSaver(arg1: *mut Display, arg2: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn XFree(arg1: *mut ::std::os::raw::c_void) -> ::std::os::raw::c_int;
+    pub fn XFree(arg1: *mut libc::c_void) -> libc::c_int;
 }
 extern "C" {
-    pub fn XFreeColormap(arg1: *mut Display, arg2: Colormap) -> ::std::os::raw::c_int;
+    pub fn XFreeColormap(arg1: *mut Display, arg2: Colormap) -> libc::c_int;
 }
 extern "C" {
     pub fn XFreeColors(
         arg1: *mut Display,
         arg2: Colormap,
-        arg3: *mut ::std::os::raw::c_ulong,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_ulong,
-    ) -> ::std::os::raw::c_int;
+        arg3: *mut libc::c_ulong,
+        arg4: libc::c_int,
+        arg5: libc::c_ulong,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XFreeCursor(arg1: *mut Display, arg2: Cursor) -> ::std::os::raw::c_int;
+    pub fn XFreeCursor(arg1: *mut Display, arg2: Cursor) -> libc::c_int;
 }
 extern "C" {
-    pub fn XFreeExtensionList(arg1: *mut *mut ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn XFreeExtensionList(arg1: *mut *mut libc::c_char) -> libc::c_int;
 }
 extern "C" {
-    pub fn XFreeFont(arg1: *mut Display, arg2: *mut XFontStruct) -> ::std::os::raw::c_int;
+    pub fn XFreeFont(arg1: *mut Display, arg2: *mut XFontStruct) -> libc::c_int;
 }
 extern "C" {
     pub fn XFreeFontInfo(
-        arg1: *mut *mut ::std::os::raw::c_char,
+        arg1: *mut *mut libc::c_char,
         arg2: *mut XFontStruct,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XFreeFontNames(arg1: *mut *mut ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn XFreeFontNames(arg1: *mut *mut libc::c_char) -> libc::c_int;
 }
 extern "C" {
-    pub fn XFreeFontPath(arg1: *mut *mut ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn XFreeFontPath(arg1: *mut *mut libc::c_char) -> libc::c_int;
 }
 extern "C" {
-    pub fn XFreeGC(arg1: *mut Display, arg2: GC) -> ::std::os::raw::c_int;
+    pub fn XFreeGC(arg1: *mut Display, arg2: GC) -> libc::c_int;
 }
 extern "C" {
-    pub fn XFreeModifiermap(arg1: *mut XModifierKeymap) -> ::std::os::raw::c_int;
+    pub fn XFreeModifiermap(arg1: *mut XModifierKeymap) -> libc::c_int;
 }
 extern "C" {
-    pub fn XFreePixmap(arg1: *mut Display, arg2: Pixmap) -> ::std::os::raw::c_int;
+    pub fn XFreePixmap(arg1: *mut Display, arg2: Pixmap) -> libc::c_int;
 }
 extern "C" {
     pub fn XGeometry(
         arg1: *mut Display,
-        arg2: ::std::os::raw::c_int,
-        arg3: *const ::std::os::raw::c_char,
-        arg4: *const ::std::os::raw::c_char,
-        arg5: ::std::os::raw::c_uint,
-        arg6: ::std::os::raw::c_uint,
-        arg7: ::std::os::raw::c_uint,
-        arg8: ::std::os::raw::c_int,
-        arg9: ::std::os::raw::c_int,
-        arg10: *mut ::std::os::raw::c_int,
-        arg11: *mut ::std::os::raw::c_int,
-        arg12: *mut ::std::os::raw::c_int,
-        arg13: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg2: libc::c_int,
+        arg3: *const libc::c_char,
+        arg4: *const libc::c_char,
+        arg5: libc::c_uint,
+        arg6: libc::c_uint,
+        arg7: libc::c_uint,
+        arg8: libc::c_int,
+        arg9: libc::c_int,
+        arg10: *mut libc::c_int,
+        arg11: *mut libc::c_int,
+        arg12: *mut libc::c_int,
+        arg13: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XGetErrorDatabaseText(
         arg1: *mut Display,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: *const ::std::os::raw::c_char,
-        arg4: *const ::std::os::raw::c_char,
-        arg5: *mut ::std::os::raw::c_char,
-        arg6: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg2: *const libc::c_char,
+        arg3: *const libc::c_char,
+        arg4: *const libc::c_char,
+        arg5: *mut libc::c_char,
+        arg6: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XGetErrorText(
         arg1: *mut Display,
-        arg2: ::std::os::raw::c_int,
-        arg3: *mut ::std::os::raw::c_char,
-        arg4: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg2: libc::c_int,
+        arg3: *mut libc::c_char,
+        arg4: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XGetFontProperty(
         arg1: *mut XFontStruct,
         arg2: Atom,
-        arg3: *mut ::std::os::raw::c_ulong,
-    ) -> ::std::os::raw::c_int;
+        arg3: *mut libc::c_ulong,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XGetGCValues(
         arg1: *mut Display,
         arg2: GC,
-        arg3: ::std::os::raw::c_ulong,
+        arg3: libc::c_ulong,
         arg4: *mut XGCValues,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XGetGeometry(
         arg1: *mut Display,
         arg2: Drawable,
         arg3: *mut Window,
-        arg4: *mut ::std::os::raw::c_int,
-        arg5: *mut ::std::os::raw::c_int,
-        arg6: *mut ::std::os::raw::c_uint,
-        arg7: *mut ::std::os::raw::c_uint,
-        arg8: *mut ::std::os::raw::c_uint,
-        arg9: *mut ::std::os::raw::c_uint,
-    ) -> ::std::os::raw::c_int;
+        arg4: *mut libc::c_int,
+        arg5: *mut libc::c_int,
+        arg6: *mut libc::c_uint,
+        arg7: *mut libc::c_uint,
+        arg8: *mut libc::c_uint,
+        arg9: *mut libc::c_uint,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XGetIconName(
         arg1: *mut Display,
         arg2: Window,
-        arg3: *mut *mut ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        arg3: *mut *mut libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XGetInputFocus(
         arg1: *mut Display,
         arg2: *mut Window,
-        arg3: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg3: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XGetKeyboardControl(
-        arg1: *mut Display,
-        arg2: *mut XKeyboardState,
-    ) -> ::std::os::raw::c_int;
+    pub fn XGetKeyboardControl(arg1: *mut Display, arg2: *mut XKeyboardState) -> libc::c_int;
 }
 extern "C" {
     pub fn XGetPointerControl(
         arg1: *mut Display,
-        arg2: *mut ::std::os::raw::c_int,
-        arg3: *mut ::std::os::raw::c_int,
-        arg4: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg2: *mut libc::c_int,
+        arg3: *mut libc::c_int,
+        arg4: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XGetPointerMapping(
         arg1: *mut Display,
-        arg2: *mut ::std::os::raw::c_uchar,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg2: *mut libc::c_uchar,
+        arg3: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XGetScreenSaver(
         arg1: *mut Display,
-        arg2: *mut ::std::os::raw::c_int,
-        arg3: *mut ::std::os::raw::c_int,
-        arg4: *mut ::std::os::raw::c_int,
-        arg5: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg2: *mut libc::c_int,
+        arg3: *mut libc::c_int,
+        arg4: *mut libc::c_int,
+        arg5: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XGetTransientForHint(
-        arg1: *mut Display,
-        arg2: Window,
-        arg3: *mut Window,
-    ) -> ::std::os::raw::c_int;
+    pub fn XGetTransientForHint(arg1: *mut Display, arg2: Window, arg3: *mut Window)
+        -> libc::c_int;
 }
 extern "C" {
     pub fn XGetWindowProperty(
         arg1: *mut Display,
         arg2: Window,
         arg3: Atom,
-        arg4: ::std::os::raw::c_long,
-        arg5: ::std::os::raw::c_long,
-        arg6: ::std::os::raw::c_int,
+        arg4: libc::c_long,
+        arg5: libc::c_long,
+        arg6: libc::c_int,
         arg7: Atom,
         arg8: *mut Atom,
-        arg9: *mut ::std::os::raw::c_int,
-        arg10: *mut ::std::os::raw::c_ulong,
-        arg11: *mut ::std::os::raw::c_ulong,
-        arg12: *mut *mut ::std::os::raw::c_uchar,
-    ) -> ::std::os::raw::c_int;
+        arg9: *mut libc::c_int,
+        arg10: *mut libc::c_ulong,
+        arg11: *mut libc::c_ulong,
+        arg12: *mut *mut libc::c_uchar,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XGetWindowAttributes(
         arg1: *mut Display,
         arg2: Window,
         arg3: *mut XWindowAttributes,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XGrabButton(
         arg1: *mut Display,
-        arg2: ::std::os::raw::c_uint,
-        arg3: ::std::os::raw::c_uint,
+        arg2: libc::c_uint,
+        arg3: libc::c_uint,
         arg4: Window,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_uint,
-        arg7: ::std::os::raw::c_int,
-        arg8: ::std::os::raw::c_int,
+        arg5: libc::c_int,
+        arg6: libc::c_uint,
+        arg7: libc::c_int,
+        arg8: libc::c_int,
         arg9: Window,
         arg10: Cursor,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XGrabKey(
         arg1: *mut Display,
-        arg2: ::std::os::raw::c_int,
-        arg3: ::std::os::raw::c_uint,
+        arg2: libc::c_int,
+        arg3: libc::c_uint,
         arg4: Window,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_int,
-        arg7: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg5: libc::c_int,
+        arg6: libc::c_int,
+        arg7: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XGrabKeyboard(
         arg1: *mut Display,
         arg2: Window,
-        arg3: ::std::os::raw::c_int,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
+        arg3: libc::c_int,
+        arg4: libc::c_int,
+        arg5: libc::c_int,
         arg6: Time,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XGrabPointer(
         arg1: *mut Display,
         arg2: Window,
-        arg3: ::std::os::raw::c_int,
-        arg4: ::std::os::raw::c_uint,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_int,
+        arg3: libc::c_int,
+        arg4: libc::c_uint,
+        arg5: libc::c_int,
+        arg6: libc::c_int,
         arg7: Window,
         arg8: Cursor,
         arg9: Time,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XGrabServer(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XGrabServer(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
-    pub fn XHeightMMOfScreen(arg1: *mut Screen) -> ::std::os::raw::c_int;
+    pub fn XHeightMMOfScreen(arg1: *mut Screen) -> libc::c_int;
 }
 extern "C" {
-    pub fn XHeightOfScreen(arg1: *mut Screen) -> ::std::os::raw::c_int;
+    pub fn XHeightOfScreen(arg1: *mut Screen) -> libc::c_int;
 }
 extern "C" {
     pub fn XIfEvent(
         arg1: *mut Display,
         arg2: *mut XEvent,
-        arg3: ::std::option::Option<
+        arg3: ::core::option::Option<
             unsafe extern "C" fn(
                 arg1: *mut Display,
                 arg2: *mut XEvent,
                 arg3: XPointer,
-            ) -> ::std::os::raw::c_int,
+            ) -> libc::c_int,
         >,
         arg4: XPointer,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XImageByteOrder(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XImageByteOrder(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
-    pub fn XInstallColormap(arg1: *mut Display, arg2: Colormap) -> ::std::os::raw::c_int;
+    pub fn XInstallColormap(arg1: *mut Display, arg2: Colormap) -> libc::c_int;
 }
 extern "C" {
     pub fn XKeysymToKeycode(arg1: *mut Display, arg2: KeySym) -> KeyCode;
 }
 extern "C" {
-    pub fn XKillClient(arg1: *mut Display, arg2: XID) -> ::std::os::raw::c_int;
+    pub fn XKillClient(arg1: *mut Display, arg2: XID) -> libc::c_int;
 }
 extern "C" {
     pub fn XLookupColor(
         arg1: *mut Display,
         arg2: Colormap,
-        arg3: *const ::std::os::raw::c_char,
+        arg3: *const libc::c_char,
         arg4: *mut XColor,
         arg5: *mut XColor,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XLowerWindow(arg1: *mut Display, arg2: Window) -> ::std::os::raw::c_int;
+    pub fn XLowerWindow(arg1: *mut Display, arg2: Window) -> libc::c_int;
 }
 extern "C" {
-    pub fn XMapRaised(arg1: *mut Display, arg2: Window) -> ::std::os::raw::c_int;
+    pub fn XMapRaised(arg1: *mut Display, arg2: Window) -> libc::c_int;
 }
 extern "C" {
-    pub fn XMapSubwindows(arg1: *mut Display, arg2: Window) -> ::std::os::raw::c_int;
+    pub fn XMapSubwindows(arg1: *mut Display, arg2: Window) -> libc::c_int;
 }
 extern "C" {
-    pub fn XMapWindow(arg1: *mut Display, arg2: Window) -> ::std::os::raw::c_int;
+    pub fn XMapWindow(arg1: *mut Display, arg2: Window) -> libc::c_int;
 }
 extern "C" {
-    pub fn XMaskEvent(
-        arg1: *mut Display,
-        arg2: ::std::os::raw::c_long,
-        arg3: *mut XEvent,
-    ) -> ::std::os::raw::c_int;
+    pub fn XMaskEvent(arg1: *mut Display, arg2: libc::c_long, arg3: *mut XEvent) -> libc::c_int;
 }
 extern "C" {
-    pub fn XMaxCmapsOfScreen(arg1: *mut Screen) -> ::std::os::raw::c_int;
+    pub fn XMaxCmapsOfScreen(arg1: *mut Screen) -> libc::c_int;
 }
 extern "C" {
-    pub fn XMinCmapsOfScreen(arg1: *mut Screen) -> ::std::os::raw::c_int;
+    pub fn XMinCmapsOfScreen(arg1: *mut Screen) -> libc::c_int;
 }
 extern "C" {
     pub fn XMoveResizeWindow(
         arg1: *mut Display,
         arg2: Window,
-        arg3: ::std::os::raw::c_int,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_uint,
-        arg6: ::std::os::raw::c_uint,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_int,
+        arg4: libc::c_int,
+        arg5: libc::c_uint,
+        arg6: libc::c_uint,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XMoveWindow(
         arg1: *mut Display,
         arg2: Window,
-        arg3: ::std::os::raw::c_int,
-        arg4: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_int,
+        arg4: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XNextEvent(arg1: *mut Display, arg2: *mut XEvent) -> ::std::os::raw::c_int;
+    pub fn XNextEvent(arg1: *mut Display, arg2: *mut XEvent) -> libc::c_int;
 }
 extern "C" {
-    pub fn XNoOp(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XNoOp(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
     pub fn XParseColor(
         arg1: *mut Display,
         arg2: Colormap,
-        arg3: *const ::std::os::raw::c_char,
+        arg3: *const libc::c_char,
         arg4: *mut XColor,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XParseGeometry(
-        arg1: *const ::std::os::raw::c_char,
-        arg2: *mut ::std::os::raw::c_int,
-        arg3: *mut ::std::os::raw::c_int,
-        arg4: *mut ::std::os::raw::c_uint,
-        arg5: *mut ::std::os::raw::c_uint,
-    ) -> ::std::os::raw::c_int;
+        arg1: *const libc::c_char,
+        arg2: *mut libc::c_int,
+        arg3: *mut libc::c_int,
+        arg4: *mut libc::c_uint,
+        arg5: *mut libc::c_uint,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XPeekEvent(arg1: *mut Display, arg2: *mut XEvent) -> ::std::os::raw::c_int;
+    pub fn XPeekEvent(arg1: *mut Display, arg2: *mut XEvent) -> libc::c_int;
 }
 extern "C" {
     pub fn XPeekIfEvent(
         arg1: *mut Display,
         arg2: *mut XEvent,
-        arg3: ::std::option::Option<
+        arg3: ::core::option::Option<
             unsafe extern "C" fn(
                 arg1: *mut Display,
                 arg2: *mut XEvent,
                 arg3: XPointer,
-            ) -> ::std::os::raw::c_int,
+            ) -> libc::c_int,
         >,
         arg4: XPointer,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XPending(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XPending(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
-    pub fn XPlanesOfScreen(arg1: *mut Screen) -> ::std::os::raw::c_int;
+    pub fn XPlanesOfScreen(arg1: *mut Screen) -> libc::c_int;
 }
 extern "C" {
-    pub fn XProtocolRevision(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XProtocolRevision(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
-    pub fn XProtocolVersion(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XProtocolVersion(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
-    pub fn XPutBackEvent(arg1: *mut Display, arg2: *mut XEvent) -> ::std::os::raw::c_int;
+    pub fn XPutBackEvent(arg1: *mut Display, arg2: *mut XEvent) -> libc::c_int;
 }
 extern "C" {
     pub fn XPutImage(
@@ -28294,87 +27871,80 @@ extern "C" {
         arg2: Drawable,
         arg3: GC,
         arg4: *mut XImage,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_int,
-        arg7: ::std::os::raw::c_int,
-        arg8: ::std::os::raw::c_int,
-        arg9: ::std::os::raw::c_uint,
-        arg10: ::std::os::raw::c_uint,
-    ) -> ::std::os::raw::c_int;
+        arg5: libc::c_int,
+        arg6: libc::c_int,
+        arg7: libc::c_int,
+        arg8: libc::c_int,
+        arg9: libc::c_uint,
+        arg10: libc::c_uint,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XQLength(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XQLength(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
     pub fn XQueryBestCursor(
         arg1: *mut Display,
         arg2: Drawable,
-        arg3: ::std::os::raw::c_uint,
-        arg4: ::std::os::raw::c_uint,
-        arg5: *mut ::std::os::raw::c_uint,
-        arg6: *mut ::std::os::raw::c_uint,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_uint,
+        arg4: libc::c_uint,
+        arg5: *mut libc::c_uint,
+        arg6: *mut libc::c_uint,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XQueryBestSize(
         arg1: *mut Display,
-        arg2: ::std::os::raw::c_int,
+        arg2: libc::c_int,
         arg3: Drawable,
-        arg4: ::std::os::raw::c_uint,
-        arg5: ::std::os::raw::c_uint,
-        arg6: *mut ::std::os::raw::c_uint,
-        arg7: *mut ::std::os::raw::c_uint,
-    ) -> ::std::os::raw::c_int;
+        arg4: libc::c_uint,
+        arg5: libc::c_uint,
+        arg6: *mut libc::c_uint,
+        arg7: *mut libc::c_uint,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XQueryBestStipple(
         arg1: *mut Display,
         arg2: Drawable,
-        arg3: ::std::os::raw::c_uint,
-        arg4: ::std::os::raw::c_uint,
-        arg5: *mut ::std::os::raw::c_uint,
-        arg6: *mut ::std::os::raw::c_uint,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_uint,
+        arg4: libc::c_uint,
+        arg5: *mut libc::c_uint,
+        arg6: *mut libc::c_uint,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XQueryBestTile(
         arg1: *mut Display,
         arg2: Drawable,
-        arg3: ::std::os::raw::c_uint,
-        arg4: ::std::os::raw::c_uint,
-        arg5: *mut ::std::os::raw::c_uint,
-        arg6: *mut ::std::os::raw::c_uint,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_uint,
+        arg4: libc::c_uint,
+        arg5: *mut libc::c_uint,
+        arg6: *mut libc::c_uint,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XQueryColor(
-        arg1: *mut Display,
-        arg2: Colormap,
-        arg3: *mut XColor,
-    ) -> ::std::os::raw::c_int;
+    pub fn XQueryColor(arg1: *mut Display, arg2: Colormap, arg3: *mut XColor) -> libc::c_int;
 }
 extern "C" {
     pub fn XQueryColors(
         arg1: *mut Display,
         arg2: Colormap,
         arg3: *mut XColor,
-        arg4: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg4: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XQueryExtension(
         arg1: *mut Display,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: *mut ::std::os::raw::c_int,
-        arg4: *mut ::std::os::raw::c_int,
-        arg5: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg2: *const libc::c_char,
+        arg3: *mut libc::c_int,
+        arg4: *mut libc::c_int,
+        arg5: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XQueryKeymap(
-        arg1: *mut Display,
-        arg2: *mut ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+    pub fn XQueryKeymap(arg1: *mut Display, arg2: *mut libc::c_char) -> libc::c_int;
 }
 extern "C" {
     pub fn XQueryPointer(
@@ -28382,36 +27952,36 @@ extern "C" {
         arg2: Window,
         arg3: *mut Window,
         arg4: *mut Window,
-        arg5: *mut ::std::os::raw::c_int,
-        arg6: *mut ::std::os::raw::c_int,
-        arg7: *mut ::std::os::raw::c_int,
-        arg8: *mut ::std::os::raw::c_int,
-        arg9: *mut ::std::os::raw::c_uint,
-    ) -> ::std::os::raw::c_int;
+        arg5: *mut libc::c_int,
+        arg6: *mut libc::c_int,
+        arg7: *mut libc::c_int,
+        arg8: *mut libc::c_int,
+        arg9: *mut libc::c_uint,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XQueryTextExtents(
         arg1: *mut Display,
         arg2: XID,
-        arg3: *const ::std::os::raw::c_char,
-        arg4: ::std::os::raw::c_int,
-        arg5: *mut ::std::os::raw::c_int,
-        arg6: *mut ::std::os::raw::c_int,
-        arg7: *mut ::std::os::raw::c_int,
+        arg3: *const libc::c_char,
+        arg4: libc::c_int,
+        arg5: *mut libc::c_int,
+        arg6: *mut libc::c_int,
+        arg7: *mut libc::c_int,
         arg8: *mut XCharStruct,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XQueryTextExtents16(
         arg1: *mut Display,
         arg2: XID,
         arg3: *const XChar2b,
-        arg4: ::std::os::raw::c_int,
-        arg5: *mut ::std::os::raw::c_int,
-        arg6: *mut ::std::os::raw::c_int,
-        arg7: *mut ::std::os::raw::c_int,
+        arg4: libc::c_int,
+        arg5: *mut libc::c_int,
+        arg6: *mut libc::c_int,
+        arg7: *mut libc::c_int,
         arg8: *mut XCharStruct,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XQueryTree(
@@ -28420,43 +27990,43 @@ extern "C" {
         arg3: *mut Window,
         arg4: *mut Window,
         arg5: *mut *mut Window,
-        arg6: *mut ::std::os::raw::c_uint,
-    ) -> ::std::os::raw::c_int;
+        arg6: *mut libc::c_uint,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XRaiseWindow(arg1: *mut Display, arg2: Window) -> ::std::os::raw::c_int;
+    pub fn XRaiseWindow(arg1: *mut Display, arg2: Window) -> libc::c_int;
 }
 extern "C" {
     pub fn XReadBitmapFile(
         arg1: *mut Display,
         arg2: Drawable,
-        arg3: *const ::std::os::raw::c_char,
-        arg4: *mut ::std::os::raw::c_uint,
-        arg5: *mut ::std::os::raw::c_uint,
+        arg3: *const libc::c_char,
+        arg4: *mut libc::c_uint,
+        arg5: *mut libc::c_uint,
         arg6: *mut Pixmap,
-        arg7: *mut ::std::os::raw::c_int,
-        arg8: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg7: *mut libc::c_int,
+        arg8: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XReadBitmapFileData(
-        arg1: *const ::std::os::raw::c_char,
-        arg2: *mut ::std::os::raw::c_uint,
-        arg3: *mut ::std::os::raw::c_uint,
-        arg4: *mut *mut ::std::os::raw::c_uchar,
-        arg5: *mut ::std::os::raw::c_int,
-        arg6: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg1: *const libc::c_char,
+        arg2: *mut libc::c_uint,
+        arg3: *mut libc::c_uint,
+        arg4: *mut *mut libc::c_uchar,
+        arg5: *mut libc::c_int,
+        arg6: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XRebindKeysym(
         arg1: *mut Display,
         arg2: KeySym,
         arg3: *mut KeySym,
-        arg4: ::std::os::raw::c_int,
-        arg5: *const ::std::os::raw::c_uchar,
-        arg6: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg4: libc::c_int,
+        arg5: *const libc::c_uchar,
+        arg6: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XRecolorCursor(
@@ -28464,246 +28034,194 @@ extern "C" {
         arg2: Cursor,
         arg3: *mut XColor,
         arg4: *mut XColor,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XRefreshKeyboardMapping(arg1: *mut XMappingEvent) -> ::std::os::raw::c_int;
+    pub fn XRefreshKeyboardMapping(arg1: *mut XMappingEvent) -> libc::c_int;
 }
 extern "C" {
-    pub fn XRemoveFromSaveSet(arg1: *mut Display, arg2: Window) -> ::std::os::raw::c_int;
+    pub fn XRemoveFromSaveSet(arg1: *mut Display, arg2: Window) -> libc::c_int;
 }
 extern "C" {
-    pub fn XRemoveHost(arg1: *mut Display, arg2: *mut XHostAddress) -> ::std::os::raw::c_int;
+    pub fn XRemoveHost(arg1: *mut Display, arg2: *mut XHostAddress) -> libc::c_int;
 }
 extern "C" {
     pub fn XRemoveHosts(
         arg1: *mut Display,
         arg2: *mut XHostAddress,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XReparentWindow(
         arg1: *mut Display,
         arg2: Window,
         arg3: Window,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg4: libc::c_int,
+        arg5: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XResetScreenSaver(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XResetScreenSaver(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
     pub fn XResizeWindow(
         arg1: *mut Display,
         arg2: Window,
-        arg3: ::std::os::raw::c_uint,
-        arg4: ::std::os::raw::c_uint,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_uint,
+        arg4: libc::c_uint,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XRestackWindows(
-        arg1: *mut Display,
-        arg2: *mut Window,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn XRestackWindows(arg1: *mut Display, arg2: *mut Window, arg3: libc::c_int)
+        -> libc::c_int;
 }
 extern "C" {
-    pub fn XRotateBuffers(arg1: *mut Display, arg2: ::std::os::raw::c_int)
-        -> ::std::os::raw::c_int;
+    pub fn XRotateBuffers(arg1: *mut Display, arg2: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     pub fn XRotateWindowProperties(
         arg1: *mut Display,
         arg2: Window,
         arg3: *mut Atom,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg4: libc::c_int,
+        arg5: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XScreenCount(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XScreenCount(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSelectInput(
-        arg1: *mut Display,
-        arg2: Window,
-        arg3: ::std::os::raw::c_long,
-    ) -> ::std::os::raw::c_int;
+    pub fn XSelectInput(arg1: *mut Display, arg2: Window, arg3: libc::c_long) -> libc::c_int;
 }
 extern "C" {
     pub fn XSendEvent(
         arg1: *mut Display,
         arg2: Window,
-        arg3: ::std::os::raw::c_int,
-        arg4: ::std::os::raw::c_long,
+        arg3: libc::c_int,
+        arg4: libc::c_long,
         arg5: *mut XEvent,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetAccessControl(
-        arg1: *mut Display,
-        arg2: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn XSetAccessControl(arg1: *mut Display, arg2: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetArcMode(
-        arg1: *mut Display,
-        arg2: GC,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn XSetArcMode(arg1: *mut Display, arg2: GC, arg3: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetBackground(
-        arg1: *mut Display,
-        arg2: GC,
-        arg3: ::std::os::raw::c_ulong,
-    ) -> ::std::os::raw::c_int;
+    pub fn XSetBackground(arg1: *mut Display, arg2: GC, arg3: libc::c_ulong) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetClipMask(arg1: *mut Display, arg2: GC, arg3: Pixmap) -> ::std::os::raw::c_int;
+    pub fn XSetClipMask(arg1: *mut Display, arg2: GC, arg3: Pixmap) -> libc::c_int;
 }
 extern "C" {
     pub fn XSetClipOrigin(
         arg1: *mut Display,
         arg2: GC,
-        arg3: ::std::os::raw::c_int,
-        arg4: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_int,
+        arg4: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XSetClipRectangles(
         arg1: *mut Display,
         arg2: GC,
-        arg3: ::std::os::raw::c_int,
-        arg4: ::std::os::raw::c_int,
+        arg3: libc::c_int,
+        arg4: libc::c_int,
         arg5: *mut XRectangle,
-        arg6: ::std::os::raw::c_int,
-        arg7: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg6: libc::c_int,
+        arg7: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetCloseDownMode(
-        arg1: *mut Display,
-        arg2: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn XSetCloseDownMode(arg1: *mut Display, arg2: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     pub fn XSetCommand(
         arg1: *mut Display,
         arg2: Window,
-        arg3: *mut *mut ::std::os::raw::c_char,
-        arg4: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg3: *mut *mut libc::c_char,
+        arg4: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XSetDashes(
         arg1: *mut Display,
         arg2: GC,
-        arg3: ::std::os::raw::c_int,
-        arg4: *const ::std::os::raw::c_char,
-        arg5: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_int,
+        arg4: *const libc::c_char,
+        arg5: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetFillRule(
-        arg1: *mut Display,
-        arg2: GC,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn XSetFillRule(arg1: *mut Display, arg2: GC, arg3: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetFillStyle(
-        arg1: *mut Display,
-        arg2: GC,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn XSetFillStyle(arg1: *mut Display, arg2: GC, arg3: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetFont(arg1: *mut Display, arg2: GC, arg3: Font) -> ::std::os::raw::c_int;
+    pub fn XSetFont(arg1: *mut Display, arg2: GC, arg3: Font) -> libc::c_int;
 }
 extern "C" {
     pub fn XSetFontPath(
         arg1: *mut Display,
-        arg2: *mut *mut ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg2: *mut *mut libc::c_char,
+        arg3: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetForeground(
-        arg1: *mut Display,
-        arg2: GC,
-        arg3: ::std::os::raw::c_ulong,
-    ) -> ::std::os::raw::c_int;
+    pub fn XSetForeground(arg1: *mut Display, arg2: GC, arg3: libc::c_ulong) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetFunction(
-        arg1: *mut Display,
-        arg2: GC,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn XSetFunction(arg1: *mut Display, arg2: GC, arg3: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetGraphicsExposures(
-        arg1: *mut Display,
-        arg2: GC,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn XSetGraphicsExposures(arg1: *mut Display, arg2: GC, arg3: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetIconName(
-        arg1: *mut Display,
-        arg2: Window,
-        arg3: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+    pub fn XSetIconName(arg1: *mut Display, arg2: Window, arg3: *const libc::c_char)
+        -> libc::c_int;
 }
 extern "C" {
     pub fn XSetInputFocus(
         arg1: *mut Display,
         arg2: Window,
-        arg3: ::std::os::raw::c_int,
+        arg3: libc::c_int,
         arg4: Time,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XSetLineAttributes(
         arg1: *mut Display,
         arg2: GC,
-        arg3: ::std::os::raw::c_uint,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_uint,
+        arg4: libc::c_int,
+        arg5: libc::c_int,
+        arg6: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetModifierMapping(
-        arg1: *mut Display,
-        arg2: *mut XModifierKeymap,
-    ) -> ::std::os::raw::c_int;
+    pub fn XSetModifierMapping(arg1: *mut Display, arg2: *mut XModifierKeymap) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetPlaneMask(
-        arg1: *mut Display,
-        arg2: GC,
-        arg3: ::std::os::raw::c_ulong,
-    ) -> ::std::os::raw::c_int;
+    pub fn XSetPlaneMask(arg1: *mut Display, arg2: GC, arg3: libc::c_ulong) -> libc::c_int;
 }
 extern "C" {
     pub fn XSetPointerMapping(
         arg1: *mut Display,
-        arg2: *const ::std::os::raw::c_uchar,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg2: *const libc::c_uchar,
+        arg3: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XSetScreenSaver(
         arg1: *mut Display,
-        arg2: ::std::os::raw::c_int,
-        arg3: ::std::os::raw::c_int,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg2: libc::c_int,
+        arg3: libc::c_int,
+        arg4: libc::c_int,
+        arg5: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XSetSelectionOwner(
@@ -28711,287 +28229,263 @@ extern "C" {
         arg2: Atom,
         arg3: Window,
         arg4: Time,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XSetState(
         arg1: *mut Display,
         arg2: GC,
-        arg3: ::std::os::raw::c_ulong,
-        arg4: ::std::os::raw::c_ulong,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_ulong,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_ulong,
+        arg4: libc::c_ulong,
+        arg5: libc::c_int,
+        arg6: libc::c_ulong,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetStipple(arg1: *mut Display, arg2: GC, arg3: Pixmap) -> ::std::os::raw::c_int;
+    pub fn XSetStipple(arg1: *mut Display, arg2: GC, arg3: Pixmap) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetSubwindowMode(
-        arg1: *mut Display,
-        arg2: GC,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn XSetSubwindowMode(arg1: *mut Display, arg2: GC, arg3: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     pub fn XSetTSOrigin(
         arg1: *mut Display,
         arg2: GC,
-        arg3: ::std::os::raw::c_int,
-        arg4: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_int,
+        arg4: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetTile(arg1: *mut Display, arg2: GC, arg3: Pixmap) -> ::std::os::raw::c_int;
+    pub fn XSetTile(arg1: *mut Display, arg2: GC, arg3: Pixmap) -> libc::c_int;
 }
 extern "C" {
     pub fn XSetWindowBackground(
         arg1: *mut Display,
         arg2: Window,
-        arg3: ::std::os::raw::c_ulong,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_ulong,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XSetWindowBackgroundPixmap(
         arg1: *mut Display,
         arg2: Window,
         arg3: Pixmap,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetWindowBorder(
-        arg1: *mut Display,
-        arg2: Window,
-        arg3: ::std::os::raw::c_ulong,
-    ) -> ::std::os::raw::c_int;
+    pub fn XSetWindowBorder(arg1: *mut Display, arg2: Window, arg3: libc::c_ulong) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetWindowBorderPixmap(
-        arg1: *mut Display,
-        arg2: Window,
-        arg3: Pixmap,
-    ) -> ::std::os::raw::c_int;
+    pub fn XSetWindowBorderPixmap(arg1: *mut Display, arg2: Window, arg3: Pixmap) -> libc::c_int;
 }
 extern "C" {
     pub fn XSetWindowBorderWidth(
         arg1: *mut Display,
         arg2: Window,
-        arg3: ::std::os::raw::c_uint,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_uint,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetWindowColormap(
-        arg1: *mut Display,
-        arg2: Window,
-        arg3: Colormap,
-    ) -> ::std::os::raw::c_int;
+    pub fn XSetWindowColormap(arg1: *mut Display, arg2: Window, arg3: Colormap) -> libc::c_int;
 }
 extern "C" {
     pub fn XStoreBuffer(
         arg1: *mut Display,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
-        arg4: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg2: *const libc::c_char,
+        arg3: libc::c_int,
+        arg4: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XStoreBytes(
         arg1: *mut Display,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg2: *const libc::c_char,
+        arg3: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XStoreColor(
-        arg1: *mut Display,
-        arg2: Colormap,
-        arg3: *mut XColor,
-    ) -> ::std::os::raw::c_int;
+    pub fn XStoreColor(arg1: *mut Display, arg2: Colormap, arg3: *mut XColor) -> libc::c_int;
 }
 extern "C" {
     pub fn XStoreColors(
         arg1: *mut Display,
         arg2: Colormap,
         arg3: *mut XColor,
-        arg4: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg4: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XStoreName(
-        arg1: *mut Display,
-        arg2: Window,
-        arg3: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+    pub fn XStoreName(arg1: *mut Display, arg2: Window, arg3: *const libc::c_char) -> libc::c_int;
 }
 extern "C" {
     pub fn XStoreNamedColor(
         arg1: *mut Display,
         arg2: Colormap,
-        arg3: *const ::std::os::raw::c_char,
-        arg4: ::std::os::raw::c_ulong,
-        arg5: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg3: *const libc::c_char,
+        arg4: libc::c_ulong,
+        arg5: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSync(arg1: *mut Display, arg2: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn XSync(arg1: *mut Display, arg2: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     pub fn XTextExtents(
         arg1: *mut XFontStruct,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
-        arg4: *mut ::std::os::raw::c_int,
-        arg5: *mut ::std::os::raw::c_int,
-        arg6: *mut ::std::os::raw::c_int,
+        arg2: *const libc::c_char,
+        arg3: libc::c_int,
+        arg4: *mut libc::c_int,
+        arg5: *mut libc::c_int,
+        arg6: *mut libc::c_int,
         arg7: *mut XCharStruct,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XTextExtents16(
         arg1: *mut XFontStruct,
         arg2: *const XChar2b,
-        arg3: ::std::os::raw::c_int,
-        arg4: *mut ::std::os::raw::c_int,
-        arg5: *mut ::std::os::raw::c_int,
-        arg6: *mut ::std::os::raw::c_int,
+        arg3: libc::c_int,
+        arg4: *mut libc::c_int,
+        arg5: *mut libc::c_int,
+        arg6: *mut libc::c_int,
         arg7: *mut XCharStruct,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XTextWidth(
         arg1: *mut XFontStruct,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg2: *const libc::c_char,
+        arg3: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XTextWidth16(
         arg1: *mut XFontStruct,
         arg2: *const XChar2b,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XTranslateCoordinates(
         arg1: *mut Display,
         arg2: Window,
         arg3: Window,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
-        arg6: *mut ::std::os::raw::c_int,
-        arg7: *mut ::std::os::raw::c_int,
+        arg4: libc::c_int,
+        arg5: libc::c_int,
+        arg6: *mut libc::c_int,
+        arg7: *mut libc::c_int,
         arg8: *mut Window,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XUndefineCursor(arg1: *mut Display, arg2: Window) -> ::std::os::raw::c_int;
+    pub fn XUndefineCursor(arg1: *mut Display, arg2: Window) -> libc::c_int;
 }
 extern "C" {
     pub fn XUngrabButton(
         arg1: *mut Display,
-        arg2: ::std::os::raw::c_uint,
-        arg3: ::std::os::raw::c_uint,
+        arg2: libc::c_uint,
+        arg3: libc::c_uint,
         arg4: Window,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XUngrabKey(
         arg1: *mut Display,
-        arg2: ::std::os::raw::c_int,
-        arg3: ::std::os::raw::c_uint,
+        arg2: libc::c_int,
+        arg3: libc::c_uint,
         arg4: Window,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XUngrabKeyboard(arg1: *mut Display, arg2: Time) -> ::std::os::raw::c_int;
+    pub fn XUngrabKeyboard(arg1: *mut Display, arg2: Time) -> libc::c_int;
 }
 extern "C" {
-    pub fn XUngrabPointer(arg1: *mut Display, arg2: Time) -> ::std::os::raw::c_int;
+    pub fn XUngrabPointer(arg1: *mut Display, arg2: Time) -> libc::c_int;
 }
 extern "C" {
-    pub fn XUngrabServer(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XUngrabServer(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
-    pub fn XUninstallColormap(arg1: *mut Display, arg2: Colormap) -> ::std::os::raw::c_int;
+    pub fn XUninstallColormap(arg1: *mut Display, arg2: Colormap) -> libc::c_int;
 }
 extern "C" {
-    pub fn XUnloadFont(arg1: *mut Display, arg2: Font) -> ::std::os::raw::c_int;
+    pub fn XUnloadFont(arg1: *mut Display, arg2: Font) -> libc::c_int;
 }
 extern "C" {
-    pub fn XUnmapSubwindows(arg1: *mut Display, arg2: Window) -> ::std::os::raw::c_int;
+    pub fn XUnmapSubwindows(arg1: *mut Display, arg2: Window) -> libc::c_int;
 }
 extern "C" {
-    pub fn XUnmapWindow(arg1: *mut Display, arg2: Window) -> ::std::os::raw::c_int;
+    pub fn XUnmapWindow(arg1: *mut Display, arg2: Window) -> libc::c_int;
 }
 extern "C" {
-    pub fn XVendorRelease(arg1: *mut Display) -> ::std::os::raw::c_int;
+    pub fn XVendorRelease(arg1: *mut Display) -> libc::c_int;
 }
 extern "C" {
     pub fn XWarpPointer(
         arg1: *mut Display,
         arg2: Window,
         arg3: Window,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_uint,
-        arg7: ::std::os::raw::c_uint,
-        arg8: ::std::os::raw::c_int,
-        arg9: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg4: libc::c_int,
+        arg5: libc::c_int,
+        arg6: libc::c_uint,
+        arg7: libc::c_uint,
+        arg8: libc::c_int,
+        arg9: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XWidthMMOfScreen(arg1: *mut Screen) -> ::std::os::raw::c_int;
+    pub fn XWidthMMOfScreen(arg1: *mut Screen) -> libc::c_int;
 }
 extern "C" {
-    pub fn XWidthOfScreen(arg1: *mut Screen) -> ::std::os::raw::c_int;
+    pub fn XWidthOfScreen(arg1: *mut Screen) -> libc::c_int;
 }
 extern "C" {
     pub fn XWindowEvent(
         arg1: *mut Display,
         arg2: Window,
-        arg3: ::std::os::raw::c_long,
+        arg3: libc::c_long,
         arg4: *mut XEvent,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XWriteBitmapFile(
         arg1: *mut Display,
-        arg2: *const ::std::os::raw::c_char,
+        arg2: *const libc::c_char,
         arg3: Pixmap,
-        arg4: ::std::os::raw::c_uint,
-        arg5: ::std::os::raw::c_uint,
-        arg6: ::std::os::raw::c_int,
-        arg7: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg4: libc::c_uint,
+        arg5: libc::c_uint,
+        arg6: libc::c_int,
+        arg7: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSupportsLocale() -> ::std::os::raw::c_int;
+    pub fn XSupportsLocale() -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetLocaleModifiers(arg1: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+    pub fn XSetLocaleModifiers(arg1: *const libc::c_char) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn XOpenOM(
         arg1: *mut Display,
         arg2: *mut _XrmHashBucketRec,
-        arg3: *const ::std::os::raw::c_char,
-        arg4: *const ::std::os::raw::c_char,
+        arg3: *const libc::c_char,
+        arg4: *const libc::c_char,
     ) -> XOM;
 }
 extern "C" {
-    pub fn XCloseOM(arg1: XOM) -> ::std::os::raw::c_int;
+    pub fn XCloseOM(arg1: XOM) -> libc::c_int;
 }
 extern "C" {
-    pub fn XSetOMValues(arg1: XOM, ...) -> *mut ::std::os::raw::c_char;
+    pub fn XSetOMValues(arg1: XOM, ...) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn XGetOMValues(arg1: XOM, ...) -> *mut ::std::os::raw::c_char;
+    pub fn XGetOMValues(arg1: XOM, ...) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn XDisplayOfOM(arg1: XOM) -> *mut Display;
 }
 extern "C" {
-    pub fn XLocaleOfOM(arg1: XOM) -> *mut ::std::os::raw::c_char;
+    pub fn XLocaleOfOM(arg1: XOM) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn XCreateOC(arg1: XOM, ...) -> XOC;
@@ -29003,18 +28497,18 @@ extern "C" {
     pub fn XOMOfOC(arg1: XOC) -> XOM;
 }
 extern "C" {
-    pub fn XSetOCValues(arg1: XOC, ...) -> *mut ::std::os::raw::c_char;
+    pub fn XSetOCValues(arg1: XOC, ...) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn XGetOCValues(arg1: XOC, ...) -> *mut ::std::os::raw::c_char;
+    pub fn XGetOCValues(arg1: XOC, ...) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn XCreateFontSet(
         arg1: *mut Display,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: *mut *mut *mut ::std::os::raw::c_char,
-        arg4: *mut ::std::os::raw::c_int,
-        arg5: *mut *mut ::std::os::raw::c_char,
+        arg2: *const libc::c_char,
+        arg3: *mut *mut *mut libc::c_char,
+        arg4: *mut libc::c_int,
+        arg5: *mut *mut libc::c_char,
     ) -> XFontSet;
 }
 extern "C" {
@@ -29024,23 +28518,23 @@ extern "C" {
     pub fn XFontsOfFontSet(
         arg1: XFontSet,
         arg2: *mut *mut *mut XFontStruct,
-        arg3: *mut *mut *mut ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        arg3: *mut *mut *mut libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XBaseFontNameListOfFontSet(arg1: XFontSet) -> *mut ::std::os::raw::c_char;
+    pub fn XBaseFontNameListOfFontSet(arg1: XFontSet) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn XLocaleOfFontSet(arg1: XFontSet) -> *mut ::std::os::raw::c_char;
+    pub fn XLocaleOfFontSet(arg1: XFontSet) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn XContextDependentDrawing(arg1: XFontSet) -> ::std::os::raw::c_int;
+    pub fn XContextDependentDrawing(arg1: XFontSet) -> libc::c_int;
 }
 extern "C" {
-    pub fn XDirectionalDependentDrawing(arg1: XFontSet) -> ::std::os::raw::c_int;
+    pub fn XDirectionalDependentDrawing(arg1: XFontSet) -> libc::c_int;
 }
 extern "C" {
-    pub fn XContextualDrawing(arg1: XFontSet) -> ::std::os::raw::c_int;
+    pub fn XContextualDrawing(arg1: XFontSet) -> libc::c_int;
 }
 extern "C" {
     pub fn XExtentsOfFontSet(arg1: XFontSet) -> *mut XFontSetExtents;
@@ -29048,99 +28542,99 @@ extern "C" {
 extern "C" {
     pub fn XmbTextEscapement(
         arg1: XFontSet,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg2: *const libc::c_char,
+        arg3: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XwcTextEscapement(
         arg1: XFontSet,
         arg2: *const wchar_t,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg3: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn Xutf8TextEscapement(
         arg1: XFontSet,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg2: *const libc::c_char,
+        arg3: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XmbTextExtents(
         arg1: XFontSet,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
+        arg2: *const libc::c_char,
+        arg3: libc::c_int,
         arg4: *mut XRectangle,
         arg5: *mut XRectangle,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XwcTextExtents(
         arg1: XFontSet,
         arg2: *const wchar_t,
-        arg3: ::std::os::raw::c_int,
+        arg3: libc::c_int,
         arg4: *mut XRectangle,
         arg5: *mut XRectangle,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn Xutf8TextExtents(
         arg1: XFontSet,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
+        arg2: *const libc::c_char,
+        arg3: libc::c_int,
         arg4: *mut XRectangle,
         arg5: *mut XRectangle,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XmbTextPerCharExtents(
         arg1: XFontSet,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
+        arg2: *const libc::c_char,
+        arg3: libc::c_int,
         arg4: *mut XRectangle,
         arg5: *mut XRectangle,
-        arg6: ::std::os::raw::c_int,
-        arg7: *mut ::std::os::raw::c_int,
+        arg6: libc::c_int,
+        arg7: *mut libc::c_int,
         arg8: *mut XRectangle,
         arg9: *mut XRectangle,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XwcTextPerCharExtents(
         arg1: XFontSet,
         arg2: *const wchar_t,
-        arg3: ::std::os::raw::c_int,
+        arg3: libc::c_int,
         arg4: *mut XRectangle,
         arg5: *mut XRectangle,
-        arg6: ::std::os::raw::c_int,
-        arg7: *mut ::std::os::raw::c_int,
+        arg6: libc::c_int,
+        arg7: *mut libc::c_int,
         arg8: *mut XRectangle,
         arg9: *mut XRectangle,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn Xutf8TextPerCharExtents(
         arg1: XFontSet,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
+        arg2: *const libc::c_char,
+        arg3: libc::c_int,
         arg4: *mut XRectangle,
         arg5: *mut XRectangle,
-        arg6: ::std::os::raw::c_int,
-        arg7: *mut ::std::os::raw::c_int,
+        arg6: libc::c_int,
+        arg7: *mut libc::c_int,
         arg8: *mut XRectangle,
         arg9: *mut XRectangle,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XmbDrawText(
         arg1: *mut Display,
         arg2: Drawable,
         arg3: GC,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
+        arg4: libc::c_int,
+        arg5: libc::c_int,
         arg6: *mut XmbTextItem,
-        arg7: ::std::os::raw::c_int,
+        arg7: libc::c_int,
     );
 }
 extern "C" {
@@ -29148,10 +28642,10 @@ extern "C" {
         arg1: *mut Display,
         arg2: Drawable,
         arg3: GC,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
+        arg4: libc::c_int,
+        arg5: libc::c_int,
         arg6: *mut XwcTextItem,
-        arg7: ::std::os::raw::c_int,
+        arg7: libc::c_int,
     );
 }
 extern "C" {
@@ -29159,10 +28653,10 @@ extern "C" {
         arg1: *mut Display,
         arg2: Drawable,
         arg3: GC,
-        arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
+        arg4: libc::c_int,
+        arg5: libc::c_int,
         arg6: *mut XmbTextItem,
-        arg7: ::std::os::raw::c_int,
+        arg7: libc::c_int,
     );
 }
 extern "C" {
@@ -29171,10 +28665,10 @@ extern "C" {
         arg2: Drawable,
         arg3: XFontSet,
         arg4: GC,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_int,
-        arg7: *const ::std::os::raw::c_char,
-        arg8: ::std::os::raw::c_int,
+        arg5: libc::c_int,
+        arg6: libc::c_int,
+        arg7: *const libc::c_char,
+        arg8: libc::c_int,
     );
 }
 extern "C" {
@@ -29183,10 +28677,10 @@ extern "C" {
         arg2: Drawable,
         arg3: XFontSet,
         arg4: GC,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_int,
+        arg5: libc::c_int,
+        arg6: libc::c_int,
         arg7: *const wchar_t,
-        arg8: ::std::os::raw::c_int,
+        arg8: libc::c_int,
     );
 }
 extern "C" {
@@ -29195,10 +28689,10 @@ extern "C" {
         arg2: Drawable,
         arg3: XFontSet,
         arg4: GC,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_int,
-        arg7: *const ::std::os::raw::c_char,
-        arg8: ::std::os::raw::c_int,
+        arg5: libc::c_int,
+        arg6: libc::c_int,
+        arg7: *const libc::c_char,
+        arg8: libc::c_int,
     );
 }
 extern "C" {
@@ -29207,10 +28701,10 @@ extern "C" {
         arg2: Drawable,
         arg3: XFontSet,
         arg4: GC,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_int,
-        arg7: *const ::std::os::raw::c_char,
-        arg8: ::std::os::raw::c_int,
+        arg5: libc::c_int,
+        arg6: libc::c_int,
+        arg7: *const libc::c_char,
+        arg8: libc::c_int,
     );
 }
 extern "C" {
@@ -29219,10 +28713,10 @@ extern "C" {
         arg2: Drawable,
         arg3: XFontSet,
         arg4: GC,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_int,
+        arg5: libc::c_int,
+        arg6: libc::c_int,
         arg7: *const wchar_t,
-        arg8: ::std::os::raw::c_int,
+        arg8: libc::c_int,
     );
 }
 extern "C" {
@@ -29231,34 +28725,34 @@ extern "C" {
         arg2: Drawable,
         arg3: XFontSet,
         arg4: GC,
-        arg5: ::std::os::raw::c_int,
-        arg6: ::std::os::raw::c_int,
-        arg7: *const ::std::os::raw::c_char,
-        arg8: ::std::os::raw::c_int,
+        arg5: libc::c_int,
+        arg6: libc::c_int,
+        arg7: *const libc::c_char,
+        arg8: libc::c_int,
     );
 }
 extern "C" {
     pub fn XOpenIM(
         arg1: *mut Display,
         arg2: *mut _XrmHashBucketRec,
-        arg3: *mut ::std::os::raw::c_char,
-        arg4: *mut ::std::os::raw::c_char,
+        arg3: *mut libc::c_char,
+        arg4: *mut libc::c_char,
     ) -> XIM;
 }
 extern "C" {
-    pub fn XCloseIM(arg1: XIM) -> ::std::os::raw::c_int;
+    pub fn XCloseIM(arg1: XIM) -> libc::c_int;
 }
 extern "C" {
-    pub fn XGetIMValues(arg1: XIM, ...) -> *mut ::std::os::raw::c_char;
+    pub fn XGetIMValues(arg1: XIM, ...) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn XSetIMValues(arg1: XIM, ...) -> *mut ::std::os::raw::c_char;
+    pub fn XSetIMValues(arg1: XIM, ...) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn XDisplayOfIM(arg1: XIM) -> *mut Display;
 }
 extern "C" {
-    pub fn XLocaleOfIM(arg1: XIM) -> *mut ::std::os::raw::c_char;
+    pub fn XLocaleOfIM(arg1: XIM) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn XCreateIC(arg1: XIM, ...) -> XIC;
@@ -29276,128 +28770,121 @@ extern "C" {
     pub fn XwcResetIC(arg1: XIC) -> *mut wchar_t;
 }
 extern "C" {
-    pub fn XmbResetIC(arg1: XIC) -> *mut ::std::os::raw::c_char;
+    pub fn XmbResetIC(arg1: XIC) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn Xutf8ResetIC(arg1: XIC) -> *mut ::std::os::raw::c_char;
+    pub fn Xutf8ResetIC(arg1: XIC) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn XSetICValues(arg1: XIC, ...) -> *mut ::std::os::raw::c_char;
+    pub fn XSetICValues(arg1: XIC, ...) -> *mut libc::c_char;
 }
 extern "C" {
-    pub fn XGetICValues(arg1: XIC, ...) -> *mut ::std::os::raw::c_char;
+    pub fn XGetICValues(arg1: XIC, ...) -> *mut libc::c_char;
 }
 extern "C" {
     pub fn XIMOfIC(arg1: XIC) -> XIM;
 }
 extern "C" {
-    pub fn XFilterEvent(arg1: *mut XEvent, arg2: Window) -> ::std::os::raw::c_int;
+    pub fn XFilterEvent(arg1: *mut XEvent, arg2: Window) -> libc::c_int;
 }
 extern "C" {
     pub fn XmbLookupString(
         arg1: XIC,
         arg2: *mut XKeyPressedEvent,
-        arg3: *mut ::std::os::raw::c_char,
-        arg4: ::std::os::raw::c_int,
+        arg3: *mut libc::c_char,
+        arg4: libc::c_int,
         arg5: *mut KeySym,
-        arg6: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg6: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XwcLookupString(
         arg1: XIC,
         arg2: *mut XKeyPressedEvent,
         arg3: *mut wchar_t,
-        arg4: ::std::os::raw::c_int,
+        arg4: libc::c_int,
         arg5: *mut KeySym,
-        arg6: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg6: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn Xutf8LookupString(
         arg1: XIC,
         arg2: *mut XKeyPressedEvent,
-        arg3: *mut ::std::os::raw::c_char,
-        arg4: ::std::os::raw::c_int,
+        arg3: *mut libc::c_char,
+        arg4: libc::c_int,
         arg5: *mut KeySym,
-        arg6: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg6: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XVaCreateNestedList(arg1: ::std::os::raw::c_int, ...) -> XVaNestedList;
+    pub fn XVaCreateNestedList(arg1: libc::c_int, ...) -> XVaNestedList;
 }
 extern "C" {
     pub fn XRegisterIMInstantiateCallback(
         arg1: *mut Display,
         arg2: *mut _XrmHashBucketRec,
-        arg3: *mut ::std::os::raw::c_char,
-        arg4: *mut ::std::os::raw::c_char,
+        arg3: *mut libc::c_char,
+        arg4: *mut libc::c_char,
         arg5: XIDProc,
         arg6: XPointer,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XUnregisterIMInstantiateCallback(
         arg1: *mut Display,
         arg2: *mut _XrmHashBucketRec,
-        arg3: *mut ::std::os::raw::c_char,
-        arg4: *mut ::std::os::raw::c_char,
+        arg3: *mut libc::c_char,
+        arg4: *mut libc::c_char,
         arg5: XIDProc,
         arg6: XPointer,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
-pub type XConnectionWatchProc = ::std::option::Option<
+pub type XConnectionWatchProc = ::core::option::Option<
     unsafe extern "C" fn(
         arg1: *mut Display,
         arg2: XPointer,
-        arg3: ::std::os::raw::c_int,
-        arg4: ::std::os::raw::c_int,
+        arg3: libc::c_int,
+        arg4: libc::c_int,
         arg5: *mut XPointer,
     ),
 >;
 extern "C" {
     pub fn XInternalConnectionNumbers(
         arg1: *mut Display,
-        arg2: *mut *mut ::std::os::raw::c_int,
-        arg3: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        arg2: *mut *mut libc::c_int,
+        arg3: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
-    pub fn XProcessInternalConnection(arg1: *mut Display, arg2: ::std::os::raw::c_int);
+    pub fn XProcessInternalConnection(arg1: *mut Display, arg2: libc::c_int);
 }
 extern "C" {
     pub fn XAddConnectionWatch(
         arg1: *mut Display,
         arg2: XConnectionWatchProc,
         arg3: XPointer,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn XRemoveConnectionWatch(arg1: *mut Display, arg2: XConnectionWatchProc, arg3: XPointer);
 }
 extern "C" {
     pub fn XSetAuthorization(
-        arg1: *mut ::std::os::raw::c_char,
-        arg2: ::std::os::raw::c_int,
-        arg3: *mut ::std::os::raw::c_char,
-        arg4: ::std::os::raw::c_int,
+        arg1: *mut libc::c_char,
+        arg2: libc::c_int,
+        arg3: *mut libc::c_char,
+        arg4: libc::c_int,
     );
 }
 extern "C" {
-    pub fn _Xmbtowc(
-        arg1: *mut wchar_t,
-        arg2: *mut ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn _Xmbtowc(arg1: *mut wchar_t, arg2: *mut libc::c_char, arg3: libc::c_int) -> libc::c_int;
 }
 extern "C" {
-    pub fn _Xwctomb(arg1: *mut ::std::os::raw::c_char, arg2: wchar_t) -> ::std::os::raw::c_int;
+    pub fn _Xwctomb(arg1: *mut libc::c_char, arg2: wchar_t) -> libc::c_int;
 }
 extern "C" {
-    pub fn XGetEventData(
-        arg1: *mut Display,
-        arg2: *mut XGenericEventCookie,
-    ) -> ::std::os::raw::c_int;
+    pub fn XGetEventData(arg1: *mut Display, arg2: *mut XGenericEventCookie) -> libc::c_int;
 }
 extern "C" {
     pub fn XFreeEventData(arg1: *mut Display, arg2: *mut XGenericEventCookie);
@@ -29431,7 +28918,7 @@ pub struct SDL_SysWMmsg {
 #[derive(Copy, Clone)]
 pub union SDL_SysWMmsg__bindgen_ty_1 {
     pub x11: SDL_SysWMmsg__bindgen_ty_1__bindgen_ty_1,
-    pub dummy: ::std::os::raw::c_int,
+    pub dummy: libc::c_int,
     _bindgen_union_align: [u64; 24usize],
 }
 #[repr(C)]
@@ -29442,7 +28929,7 @@ pub struct SDL_SysWMmsg__bindgen_ty_1__bindgen_ty_1 {
 #[test]
 fn bindgen_test_layout_SDL_SysWMmsg__bindgen_ty_1__bindgen_ty_1() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_SysWMmsg__bindgen_ty_1__bindgen_ty_1>(),
+        ::core::mem::size_of::<SDL_SysWMmsg__bindgen_ty_1__bindgen_ty_1>(),
         192usize,
         concat!(
             "Size of: ",
@@ -29450,7 +28937,7 @@ fn bindgen_test_layout_SDL_SysWMmsg__bindgen_ty_1__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_SysWMmsg__bindgen_ty_1__bindgen_ty_1>(),
+        ::core::mem::align_of::<SDL_SysWMmsg__bindgen_ty_1__bindgen_ty_1>(),
         8usize,
         concat!(
             "Alignment of ",
@@ -29459,7 +28946,7 @@ fn bindgen_test_layout_SDL_SysWMmsg__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_SysWMmsg__bindgen_ty_1__bindgen_ty_1>())).event as *const _
+            &(*(::core::ptr::null::<SDL_SysWMmsg__bindgen_ty_1__bindgen_ty_1>())).event as *const _
                 as usize
         },
         0usize,
@@ -29474,17 +28961,17 @@ fn bindgen_test_layout_SDL_SysWMmsg__bindgen_ty_1__bindgen_ty_1() {
 #[test]
 fn bindgen_test_layout_SDL_SysWMmsg__bindgen_ty_1() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_SysWMmsg__bindgen_ty_1>(),
+        ::core::mem::size_of::<SDL_SysWMmsg__bindgen_ty_1>(),
         192usize,
         concat!("Size of: ", stringify!(SDL_SysWMmsg__bindgen_ty_1))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_SysWMmsg__bindgen_ty_1>(),
+        ::core::mem::align_of::<SDL_SysWMmsg__bindgen_ty_1>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_SysWMmsg__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_SysWMmsg__bindgen_ty_1>())).x11 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_SysWMmsg__bindgen_ty_1>())).x11 as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -29495,7 +28982,7 @@ fn bindgen_test_layout_SDL_SysWMmsg__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_SysWMmsg__bindgen_ty_1>())).dummy as *const _ as usize
+            &(*(::core::ptr::null::<SDL_SysWMmsg__bindgen_ty_1>())).dummy as *const _ as usize
         },
         0usize,
         concat!(
@@ -29509,17 +28996,17 @@ fn bindgen_test_layout_SDL_SysWMmsg__bindgen_ty_1() {
 #[test]
 fn bindgen_test_layout_SDL_SysWMmsg() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_SysWMmsg>(),
+        ::core::mem::size_of::<SDL_SysWMmsg>(),
         200usize,
         concat!("Size of: ", stringify!(SDL_SysWMmsg))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_SysWMmsg>(),
+        ::core::mem::align_of::<SDL_SysWMmsg>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_SysWMmsg))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_SysWMmsg>())).version as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_SysWMmsg>())).version as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -29529,7 +29016,7 @@ fn bindgen_test_layout_SDL_SysWMmsg() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_SysWMmsg>())).subsystem as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_SysWMmsg>())).subsystem as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -29539,7 +29026,7 @@ fn bindgen_test_layout_SDL_SysWMmsg() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_SysWMmsg>())).msg as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_SysWMmsg>())).msg as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -29569,7 +29056,7 @@ pub union SDL_SysWMinfo__bindgen_ty_1 {
     _bindgen_union_align: [u64; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1 {
     ///< The X11 display
     pub display: *mut Display,
@@ -29579,7 +29066,7 @@ pub struct SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1 {
 #[test]
 fn bindgen_test_layout_SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1>(),
+        ::core::mem::size_of::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1>(),
         16usize,
         concat!(
             "Size of: ",
@@ -29587,7 +29074,7 @@ fn bindgen_test_layout_SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1>(),
+        ::core::mem::align_of::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1>(),
         8usize,
         concat!(
             "Alignment of ",
@@ -29596,7 +29083,7 @@ fn bindgen_test_layout_SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1>())).display
+            &(*(::core::ptr::null::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1>())).display
                 as *const _ as usize
         },
         0usize,
@@ -29609,8 +29096,8 @@ fn bindgen_test_layout_SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1>())).window as *const _
-                as usize
+            &(*(::core::ptr::null::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1>())).window
+                as *const _ as usize
         },
         8usize,
         concat!(
@@ -29622,7 +29109,7 @@ fn bindgen_test_layout_SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2 {
     ///< Wayland display
     pub display: *mut wl_display,
@@ -29634,7 +29121,7 @@ pub struct SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2 {
 #[test]
 fn bindgen_test_layout_SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2>(),
+        ::core::mem::size_of::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2>(),
         24usize,
         concat!(
             "Size of: ",
@@ -29642,7 +29129,7 @@ fn bindgen_test_layout_SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2() {
         )
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2>(),
+        ::core::mem::align_of::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2>(),
         8usize,
         concat!(
             "Alignment of ",
@@ -29651,7 +29138,7 @@ fn bindgen_test_layout_SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2>())).display
+            &(*(::core::ptr::null::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2>())).display
                 as *const _ as usize
         },
         0usize,
@@ -29664,7 +29151,7 @@ fn bindgen_test_layout_SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2>())).surface
+            &(*(::core::ptr::null::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2>())).surface
                 as *const _ as usize
         },
         8usize,
@@ -29677,7 +29164,7 @@ fn bindgen_test_layout_SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2>())).shell_surface
+            &(*(::core::ptr::null::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2>())).shell_surface
                 as *const _ as usize
         },
         16usize,
@@ -29692,17 +29179,19 @@ fn bindgen_test_layout_SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2() {
 #[test]
 fn bindgen_test_layout_SDL_SysWMinfo__bindgen_ty_1() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_SysWMinfo__bindgen_ty_1>(),
+        ::core::mem::size_of::<SDL_SysWMinfo__bindgen_ty_1>(),
         64usize,
         concat!("Size of: ", stringify!(SDL_SysWMinfo__bindgen_ty_1))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_SysWMinfo__bindgen_ty_1>(),
+        ::core::mem::align_of::<SDL_SysWMinfo__bindgen_ty_1>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_SysWMinfo__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_SysWMinfo__bindgen_ty_1>())).x11 as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<SDL_SysWMinfo__bindgen_ty_1>())).x11 as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -29712,7 +29201,7 @@ fn bindgen_test_layout_SDL_SysWMinfo__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_SysWMinfo__bindgen_ty_1>())).wl as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_SysWMinfo__bindgen_ty_1>())).wl as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -29723,7 +29212,7 @@ fn bindgen_test_layout_SDL_SysWMinfo__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SDL_SysWMinfo__bindgen_ty_1>())).dummy as *const _ as usize
+            &(*(::core::ptr::null::<SDL_SysWMinfo__bindgen_ty_1>())).dummy as *const _ as usize
         },
         0usize,
         concat!(
@@ -29737,17 +29226,17 @@ fn bindgen_test_layout_SDL_SysWMinfo__bindgen_ty_1() {
 #[test]
 fn bindgen_test_layout_SDL_SysWMinfo() {
     assert_eq!(
-        ::std::mem::size_of::<SDL_SysWMinfo>(),
+        ::core::mem::size_of::<SDL_SysWMinfo>(),
         72usize,
         concat!("Size of: ", stringify!(SDL_SysWMinfo))
     );
     assert_eq!(
-        ::std::mem::align_of::<SDL_SysWMinfo>(),
+        ::core::mem::align_of::<SDL_SysWMinfo>(),
         8usize,
         concat!("Alignment of ", stringify!(SDL_SysWMinfo))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_SysWMinfo>())).version as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_SysWMinfo>())).version as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -29757,7 +29246,7 @@ fn bindgen_test_layout_SDL_SysWMinfo() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_SysWMinfo>())).subsystem as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_SysWMinfo>())).subsystem as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -29767,7 +29256,7 @@ fn bindgen_test_layout_SDL_SysWMinfo() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<SDL_SysWMinfo>())).info as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_SysWMinfo>())).info as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -29796,12 +29285,12 @@ extern "C" {
     pub fn SDL_GetWindowWMInfo(window: *mut SDL_Window, info: *mut SDL_SysWMinfo) -> SDL_bool;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct VkInstance_T {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct VkSurfaceKHR_T {
     _unused: [u8; 0],
 }
@@ -29854,14 +29343,14 @@ extern "C" {
     ///
     ///  \sa SDL_Vulkan_GetVkGetInstanceProcAddr()
     ///  \sa SDL_Vulkan_UnloadLibrary()
-    pub fn SDL_Vulkan_LoadLibrary(path: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn SDL_Vulkan_LoadLibrary(path: *const libc::c_char) -> libc::c_int;
 }
 extern "C" {
     ///  \brief Get the address of the \c vkGetInstanceProcAddr function.
     ///
     ///  \note This should be called after either calling SDL_Vulkan_LoadLibrary
     ///        or creating an SDL_Window with the SDL_WINDOW_VULKAN flag.
-    pub fn SDL_Vulkan_GetVkGetInstanceProcAddr() -> *mut ::std::os::raw::c_void;
+    pub fn SDL_Vulkan_GetVkGetInstanceProcAddr() -> *mut libc::c_void;
 }
 extern "C" {
     ///  \brief Unload the Vulkan loader library previously loaded by
@@ -29944,8 +29433,8 @@ extern "C" {
     ///  \sa SDL_Vulkan_CreateSurface()
     pub fn SDL_Vulkan_GetInstanceExtensions(
         window: *mut SDL_Window,
-        pCount: *mut ::std::os::raw::c_uint,
-        pNames: *mut *const ::std::os::raw::c_char,
+        pCount: *mut libc::c_uint,
+        pNames: *mut *const libc::c_char,
     ) -> SDL_bool;
 }
 extern "C" {
@@ -30004,8 +29493,8 @@ extern "C" {
     ///  \sa SDL_CreateWindow()
     pub fn SDL_Vulkan_GetDrawableSize(
         window: *mut SDL_Window,
-        w: *mut ::std::os::raw::c_int,
-        h: *mut ::std::os::raw::c_int,
+        w: *mut libc::c_int,
+        h: *mut libc::c_int,
     );
 }
 /// <div rustbindgen replaces="VkInstance"></div>
@@ -30014,27 +29503,27 @@ pub type VkInstance = usize;
 pub type VkSurfaceKHR = u64;
 pub type __builtin_va_list = [__va_list_tag; 1usize];
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct __va_list_tag {
-    pub gp_offset: ::std::os::raw::c_uint,
-    pub fp_offset: ::std::os::raw::c_uint,
-    pub overflow_arg_area: *mut ::std::os::raw::c_void,
-    pub reg_save_area: *mut ::std::os::raw::c_void,
+    pub gp_offset: libc::c_uint,
+    pub fp_offset: libc::c_uint,
+    pub overflow_arg_area: *mut libc::c_void,
+    pub reg_save_area: *mut libc::c_void,
 }
 #[test]
 fn bindgen_test_layout___va_list_tag() {
     assert_eq!(
-        ::std::mem::size_of::<__va_list_tag>(),
+        ::core::mem::size_of::<__va_list_tag>(),
         24usize,
         concat!("Size of: ", stringify!(__va_list_tag))
     );
     assert_eq!(
-        ::std::mem::align_of::<__va_list_tag>(),
+        ::core::mem::align_of::<__va_list_tag>(),
         8usize,
         concat!("Alignment of ", stringify!(__va_list_tag))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__va_list_tag>())).gp_offset as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__va_list_tag>())).gp_offset as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -30044,7 +29533,7 @@ fn bindgen_test_layout___va_list_tag() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__va_list_tag>())).fp_offset as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__va_list_tag>())).fp_offset as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -30054,7 +29543,9 @@ fn bindgen_test_layout___va_list_tag() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__va_list_tag>())).overflow_arg_area as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<__va_list_tag>())).overflow_arg_area as *const _ as usize
+        },
         8usize,
         concat!(
             "Offset of field: ",
@@ -30064,7 +29555,7 @@ fn bindgen_test_layout___va_list_tag() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<__va_list_tag>())).reg_save_area as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<__va_list_tag>())).reg_save_area as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -30076,25 +29567,25 @@ fn bindgen_test_layout___va_list_tag() {
 }
 ///< Private
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct SDL_BlitMap {
     pub _address: u8,
 }
 ///< Wayland display
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wl_display {
     pub _address: u8,
 }
 ///< Wayland surface
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wl_surface {
     pub _address: u8,
 }
 ///< Wayland shell_surface (window manager handle)
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wl_shell_surface {
     pub _address: u8,
 }
