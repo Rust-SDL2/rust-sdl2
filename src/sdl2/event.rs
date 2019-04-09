@@ -1278,7 +1278,7 @@ impl Event {
                     window_id: event.windowID,
                     keycode: Keycode::from_i32(event.keysym.sym as i32),
                     scancode: Scancode::from_i32(event.keysym.scancode as i32),
-                    keymod: Event::unwrap_keymod(keyboard::Mod::from_bits(event.keysym.mod_)),
+                    keymod: keyboard::Mod::from_bits_truncate(event.keysym.mod_),
                     repeat: event.repeat != 0
                 }
             }
@@ -1290,7 +1290,7 @@ impl Event {
                     window_id: event.windowID,
                     keycode: Keycode::from_i32(event.keysym.sym as i32),
                     scancode: Scancode::from_i32(event.keysym.scancode as i32),
-                    keymod: keyboard::Mod::from_bits(event.keysym.mod_).unwrap(),
+                    keymod: keyboard::Mod::from_bits_truncate(event.keysym.mod_),
                     repeat: event.repeat != 0
                 }
             }
@@ -1619,6 +1619,7 @@ impl Event {
         }}                      // close unsafe & match
     }
 
+    #[deprecated(since = "0.32.3", note = "This method has been made public accidentally")]
     pub fn unwrap_keymod(keymod_option: Option<keyboard::Mod>) -> keyboard::Mod {
         match keymod_option {
             None => keyboard::Mod::empty(),
@@ -2042,6 +2043,47 @@ mod test {
             let e2 = Event::from_ll(e.clone().to_ll().unwrap());
             assert_eq!(e, e2);
         }
+    }
 
+    #[test]
+    fn test_from_ll_keymod_keydown_unknown_bits() {
+        let mut raw_event = Event::KeyDown {
+            timestamp: 0,
+            window_id: 1,
+            keycode: None,
+            scancode: Some(Scancode::Q),
+            keymod: Mod::empty(),
+            repeat: false,
+        }.to_ll().unwrap();
+
+        // Simulate SDL setting bits unknown to us, see PR #780
+        unsafe { raw_event.key.keysym.mod_ = 0xffff; }
+
+        if let Event::KeyDown { keymod, .. } = Event::from_ll(raw_event) {
+            assert_eq!(keymod, Mod::all());
+        } else {
+            panic!()
+        }
+    }
+
+    #[test]
+    fn test_from_ll_keymod_keyup_unknown_bits() {
+        let mut raw_event = Event::KeyUp {
+            timestamp: 0,
+            window_id: 1,
+            keycode: None,
+            scancode: Some(Scancode::Q),
+            keymod: Mod::empty(),
+            repeat: false,
+        }.to_ll().unwrap();
+
+        // Simulate SDL setting bits unknown to us, see PR #780
+        unsafe { raw_event.key.keysym.mod_ = 0xffff; }
+
+        if let Event::KeyUp { keymod, .. } = Event::from_ll(raw_event) {
+            assert_eq!(keymod, Mod::all());
+        } else {
+            panic!()
+        }
     }
 }
