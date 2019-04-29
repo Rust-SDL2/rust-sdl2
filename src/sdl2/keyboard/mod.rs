@@ -1,6 +1,8 @@
 use crate::EventPump;
 use crate::rect::Rect;
 use crate::video::Window;
+
+use std::fmt;
 use std::mem::transmute;
 
 use crate::sys;
@@ -25,6 +27,12 @@ bitflags! {
         const CAPSMOD = 0x2000;
         const MODEMOD = 0x4000;
         const RESERVEDMOD = 0x8000;
+    }
+}
+
+impl fmt::Display for Mod {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:04x}", *self)
     }
 }
 
