@@ -57,11 +57,11 @@ fn download_to(url: &str, dest: &str) {
     if cfg!(windows) {
         run_command("powershell", &[
             "-NoProfile", "-NonInteractive",
-            "-Command", "& {
+            "-Command", &format!("& {{
                 $client = New-Object System.Net.WebClient
-                $client.DownloadFile($args[0], $args[1])
-                if (!$?) { Exit 1 }
-            }", url, dest
+                $client.DownloadFile(\"{0}\", \"{1}\")
+                if (!$?) {{ Exit 1 }}
+            }}", url, dest).as_str()
         ]);
     } else {
         run_command("curl", &[url, "-o", dest]);
