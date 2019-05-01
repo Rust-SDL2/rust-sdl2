@@ -14,7 +14,6 @@ use ::get_error;
 use ::pixels::Color;
 use ::rwops::RWops;
 
-// Absolute paths are a workaround for https://github.com/rust-lang-nursery/bitflags/issues/39 .
 bitflags! {
     /// The styling of a font.
     pub struct FontStyle: i32 {
