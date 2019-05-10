@@ -1457,9 +1457,9 @@ impl Window {
 
     #[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
     pub fn gamma_ramp(&self) -> Result<(Vec<u16>, Vec<u16>, Vec<u16>), String> {
-        let mut red: Vec<u16> = Vec::with_capacity(256);
-        let mut green: Vec<u16> = Vec::with_capacity(256);
-        let mut blue: Vec<u16> = Vec::with_capacity(256);
+        let mut red: Vec<u16> = vec![0; 256];
+        let mut green: Vec<u16> = vec![0; 256];
+        let mut blue: Vec<u16> = vec![0; 256];
         let result = unsafe {
             sys::SDL_GetWindowGammaRamp(
                 self.context.raw, red.as_mut_ptr(), green.as_mut_ptr(),
