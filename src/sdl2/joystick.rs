@@ -1,4 +1,5 @@
 use crate::sys;
+use crate::sys::SDL_JoystickPowerLevel;
 
 use crate::JoystickSubsystem;
 use crate::get_error;
@@ -93,35 +94,35 @@ impl JoystickSubsystem {
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(i32)]
 pub enum PowerLevel {
-    Unknown = sys::SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_UNKNOWN as i32,
-    Empty   = sys::SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_EMPTY as i32,
-    Low     = sys::SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_LOW as i32,
-    Medium  = sys::SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_MEDIUM as i32,
-    Full    = sys::SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_FULL as i32,
-    Wired   = sys::SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_WIRED as i32,
+    Unknown = SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_UNKNOWN as i32,
+    Empty   = SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_EMPTY as i32,
+    Low     = SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_LOW as i32,
+    Medium  = SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_MEDIUM as i32,
+    Full    = SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_FULL as i32,
+    Wired   = SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_WIRED as i32,
 }
 
 impl PowerLevel {
-    pub fn from_ll(raw: sys::SDL_JoystickPowerLevel) -> PowerLevel {
+    pub fn from_ll(raw: SDL_JoystickPowerLevel) -> PowerLevel {
         match raw {
-            sys::SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_UNKNOWN => PowerLevel::Unknown,
-            sys::SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_EMPTY   => PowerLevel::Empty,
-            sys::SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_LOW     => PowerLevel::Low,
-            sys::SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_MEDIUM  => PowerLevel::Medium,
-            sys::SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_FULL    => PowerLevel::Full,
-            sys::SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_WIRED   => PowerLevel::Wired,
+            SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_UNKNOWN => PowerLevel::Unknown,
+            SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_EMPTY   => PowerLevel::Empty,
+            SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_LOW     => PowerLevel::Low,
+            SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_MEDIUM  => PowerLevel::Medium,
+            SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_FULL    => PowerLevel::Full,
+            SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_WIRED   => PowerLevel::Wired,
             _  => panic!("Unexpected power level: {:?}", raw),
         }
     }
 
-    pub fn to_ll(&self) -> sys::SDL_JoystickPowerLevel {
+    pub fn to_ll(&self) -> SDL_JoystickPowerLevel {
         match *self {
-            PowerLevel::Unknown => sys::SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_UNKNOWN,
-            PowerLevel::Empty   => sys::SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_EMPTY,
-            PowerLevel::Low     => sys::SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_LOW,
-            PowerLevel::Medium  => sys::SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_MEDIUM,
-            PowerLevel::Full    => sys::SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_FULL,
-            PowerLevel::Wired   => sys::SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_WIRED,
+            PowerLevel::Unknown => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_UNKNOWN,
+            PowerLevel::Empty   => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_EMPTY,
+            PowerLevel::Low     => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_LOW,
+            PowerLevel::Medium  => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_MEDIUM,
+            PowerLevel::Full    => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_FULL,
+            PowerLevel::Wired   => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_WIRED,
         }
 
     }
@@ -185,7 +186,7 @@ impl Joystick {
 
         let state = PowerLevel::from_ll(result);
 
-        if result != sys::SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_UNKNOWN {
+        if result != SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_UNKNOWN {
             Ok(state)
         } else {
             let err = get_error();

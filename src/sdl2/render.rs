@@ -53,6 +53,8 @@ use std::mem::{transmute, uninitialized};
 use libc::c_void;
 
 use crate::sys;
+use crate::sys::SDL_TextureAccess;
+use crate::sys::SDL_BlendMode;
 
 /// Contains the description of an error returned by SDL
 #[derive(Debug)]
@@ -102,9 +104,9 @@ impl Error for TargetRenderError {
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(i32)]
 pub enum TextureAccess {
-    Static = sys::SDL_TextureAccess::SDL_TEXTUREACCESS_STATIC as i32,
-    Streaming = sys::SDL_TextureAccess::SDL_TEXTUREACCESS_STREAMING as i32,
-    Target = sys::SDL_TextureAccess::SDL_TEXTUREACCESS_TARGET as i32,
+    Static = SDL_TextureAccess::SDL_TEXTUREACCESS_STATIC as i32,
+    Streaming = SDL_TextureAccess::SDL_TEXTUREACCESS_STREAMING as i32,
+    Target = SDL_TextureAccess::SDL_TEXTUREACCESS_TARGET as i32,
 }
 
 impl FromPrimitive for TextureAccess {
@@ -112,10 +114,10 @@ impl FromPrimitive for TextureAccess {
         use self::TextureAccess::*;
         let n = n as u32;
 
-        Some(match unsafe { transmute::<u32, sys::SDL_TextureAccess>(n) } {
-                 sys::SDL_TextureAccess::SDL_TEXTUREACCESS_STATIC => Static,
-                 sys::SDL_TextureAccess::SDL_TEXTUREACCESS_STREAMING => Streaming,
-                 sys::SDL_TextureAccess::SDL_TEXTUREACCESS_TARGET => Target,
+        Some(match unsafe { transmute::<u32, SDL_TextureAccess>(n) } {
+                 SDL_TextureAccess::SDL_TEXTUREACCESS_STATIC => Static,
+                 SDL_TextureAccess::SDL_TEXTUREACCESS_STREAMING => Streaming,
+                 SDL_TextureAccess::SDL_TEXTUREACCESS_TARGET => Target,
              })
     }
 
@@ -138,11 +140,11 @@ pub struct RendererInfo {
 #[repr(i32)]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum BlendMode {
-    None = sys::SDL_BlendMode::SDL_BLENDMODE_NONE as i32,
-    Blend = sys::SDL_BlendMode::SDL_BLENDMODE_BLEND as i32,
-    Add = sys::SDL_BlendMode::SDL_BLENDMODE_ADD as i32,
-    Mod = sys::SDL_BlendMode::SDL_BLENDMODE_MOD as i32,
-    Invalid = sys::SDL_BlendMode::SDL_BLENDMODE_INVALID as i32,
+    None = SDL_BlendMode::SDL_BLENDMODE_NONE as i32,
+    Blend = SDL_BlendMode::SDL_BLENDMODE_BLEND as i32,
+    Add = SDL_BlendMode::SDL_BLENDMODE_ADD as i32,
+    Mod = SDL_BlendMode::SDL_BLENDMODE_MOD as i32,
+    Invalid = SDL_BlendMode::SDL_BLENDMODE_INVALID as i32,
 }
 
 impl FromPrimitive for BlendMode {
@@ -150,12 +152,12 @@ impl FromPrimitive for BlendMode {
         use self::BlendMode::*;
         let n = n as u32;
 
-        Some(match unsafe { transmute::<u32, sys::SDL_BlendMode>(n) } {
-                 sys::SDL_BlendMode::SDL_BLENDMODE_NONE => None,
-                 sys::SDL_BlendMode::SDL_BLENDMODE_BLEND => Blend,
-                 sys::SDL_BlendMode::SDL_BLENDMODE_ADD => Add,
-                 sys::SDL_BlendMode::SDL_BLENDMODE_MOD => Mod,
-                 sys::SDL_BlendMode::SDL_BLENDMODE_INVALID => Invalid,
+        Some(match unsafe { transmute::<u32, SDL_BlendMode>(n) } {
+                 SDL_BlendMode::SDL_BLENDMODE_NONE => None,
+                 SDL_BlendMode::SDL_BLENDMODE_BLEND => Blend,
+                 SDL_BlendMode::SDL_BLENDMODE_ADD => Add,
+                 SDL_BlendMode::SDL_BLENDMODE_MOD => Mod,
+                 SDL_BlendMode::SDL_BLENDMODE_INVALID => Invalid,
              })
     }
 
@@ -937,7 +939,7 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Gets the blend mode used for drawing operations.
     pub fn blend_mode(&self) -> BlendMode {
-        let mut blend: sys::SDL_BlendMode;
+        let mut blend: SDL_BlendMode;
         unsafe { blend = uninitialized(); }
         let ret = unsafe { sys::SDL_GetRenderDrawBlendMode(self.context.raw, &mut blend) };
         // Should only fail on an invalid renderer
@@ -1737,7 +1739,7 @@ impl InternalTexture {
     }
 
     pub fn blend_mode(&self) -> BlendMode {
-        let mut blend: sys::SDL_BlendMode;
+        let mut blend: SDL_BlendMode;
         unsafe { blend = uninitialized(); }
         let ret = unsafe { sys::SDL_GetTextureBlendMode(self.raw, &mut blend) };
 

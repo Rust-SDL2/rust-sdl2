@@ -29,15 +29,16 @@ use rwops::RWops;
 use version::Version;
 use get_error;
 use sys;
+use sys::image;
 
 /// InitFlags are passed to init() to control which subsystem
 /// functionality to load.
 bitflags! {
     pub struct InitFlag : u32 {
-        const JPG  = sys::image::IMG_InitFlags_IMG_INIT_JPG as u32;
-        const PNG  = sys::image::IMG_InitFlags_IMG_INIT_PNG as u32;
-        const TIF  = sys::image::IMG_InitFlags_IMG_INIT_TIF as u32;
-        const WEBP = sys::image::IMG_InitFlags_IMG_INIT_WEBP as u32;
+        const JPG  = image::IMG_InitFlags_IMG_INIT_JPG as u32;
+        const PNG  = image::IMG_InitFlags_IMG_INIT_PNG as u32;
+        const TIF  = image::IMG_InitFlags_IMG_INIT_TIF as u32;
+        const WEBP = image::IMG_InitFlags_IMG_INIT_WEBP as u32;
     }
 }
 
@@ -81,7 +82,7 @@ impl<'a> LoadSurface for Surface<'a> {
         //! Loads an SDL Surface from a file
         unsafe {
             let c_filename = CString::new(filename.as_ref().to_str().unwrap()).unwrap();
-            let raw = sys::image::IMG_Load(c_filename.as_ptr() as *const _);
+            let raw = image::IMG_Load(c_filename.as_ptr() as *const _);
             if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
@@ -93,7 +94,7 @@ impl<'a> LoadSurface for Surface<'a> {
     fn from_xpm_array(xpm: *const *const i8) -> Result<Surface<'a>, String> {
         //! Loads an SDL Surface from XPM data
         unsafe {
-            let raw = sys::image::IMG_ReadXPMFromArray(xpm as *mut *mut c_char);
+            let raw = image::IMG_ReadXPMFromArray(xpm as *mut *mut c_char);
             if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
@@ -108,7 +109,7 @@ impl<'a> SaveSurface for Surface<'a> {
         //! Saves an SDL Surface to a file
         unsafe {
             let c_filename = CString::new(filename.as_ref().to_str().unwrap()).unwrap();
-            let status = sys::image::IMG_SavePNG(self.raw(), c_filename.as_ptr() as *const _);
+            let status = image::IMG_SavePNG(self.raw(), c_filename.as_ptr() as *const _);
             if status != 0 {
                 Err(get_error())
             } else {
@@ -120,7 +121,7 @@ impl<'a> SaveSurface for Surface<'a> {
     fn save_rw(&self, dst: &mut RWops) -> Result<(), String> {
         //! Saves an SDL Surface to an RWops
         unsafe {
-            let status = sys::image::IMG_SavePNG_RW(self.raw(), dst.raw(), 0);
+            let status = image::IMG_SavePNG_RW(self.raw(), dst.raw(), 0);
 
             if status != 0 {
                 Err(get_error())
@@ -141,7 +142,7 @@ impl<T> LoadTexture for TextureCreator<T> {
         //! Loads an SDL Texture from a file
         unsafe {
             let c_filename = CString::new(filename.as_ref().to_str().unwrap()).unwrap();
-            let raw = sys::image::IMG_LoadTexture(self.raw(), c_filename.as_ptr() as *const _);
+            let raw = image::IMG_LoadTexture(self.raw(), c_filename.as_ptr() as *const _);
             if (raw as *mut ()).is_null() {
                 Err(get_error())
             } else {
@@ -158,7 +159,7 @@ pub struct Sdl2ImageContext;
 impl Drop for Sdl2ImageContext {
     fn drop(&mut self) {
         unsafe {
-            sys::image::IMG_Quit();
+            image::IMG_Quit();
         }
     }
 }
@@ -167,7 +168,7 @@ impl Drop for Sdl2ImageContext {
 /// If not every flag is set it returns an error
 pub fn init(flags: InitFlag) -> Result<Sdl2ImageContext, String> {
     let return_flags = unsafe {
-        let used = sys::image::IMG_Init(flags.bits() as c_int);
+        let used = image::IMG_Init(flags.bits() as c_int);
         InitFlag::from_bits_truncate(used as u32)
     };
     if !flags.intersects(return_flags) {
@@ -186,7 +187,7 @@ pub fn init(flags: InitFlag) -> Result<Sdl2ImageContext, String> {
 
 /// Returns the version of the dynamically linked `SDL_image` library
 pub fn get_linked_version() -> Version {
-    unsafe { Version::from_ll(*sys::image::IMG_Linked_Version()) }
+    unsafe { Version::from_ll(*image::IMG_Linked_Version()) }
 }
 
 #[inline]
@@ -238,118 +239,118 @@ pub trait ImageRWops {
 
 impl<'a> ImageRWops for RWops<'a> {
     fn load(&self) -> Result<Surface, String> {
-        let raw = unsafe { sys::image::IMG_Load_RW(self.raw(), 0) };
+        let raw = unsafe { image::IMG_Load_RW(self.raw(), 0) };
         to_surface_result(raw)
     }
     fn load_typed(&self, _type: &str) -> Result<Surface, String> {
         let raw = unsafe {
             let c_type = CString::new(_type.as_bytes()).unwrap();
-            sys::image::IMG_LoadTyped_RW(self.raw(), 0, c_type.as_ptr() as *const _)
+            image::IMG_LoadTyped_RW(self.raw(), 0, c_type.as_ptr() as *const _)
         };
         to_surface_result(raw)
     }
 
     fn load_cur(&self) -> Result<Surface, String> {
-        let raw = unsafe { sys::image::IMG_LoadCUR_RW(self.raw()) };
+        let raw = unsafe { image::IMG_LoadCUR_RW(self.raw()) };
         to_surface_result(raw)
     }
     fn load_ico(&self) -> Result<Surface, String> {
-        let raw = unsafe { sys::image::IMG_LoadICO_RW(self.raw()) };
+        let raw = unsafe { image::IMG_LoadICO_RW(self.raw()) };
         to_surface_result(raw)
     }
     fn load_bmp(&self) -> Result<Surface, String> {
-        let raw = unsafe { sys::image::IMG_LoadBMP_RW(self.raw()) };
+        let raw = unsafe { image::IMG_LoadBMP_RW(self.raw()) };
         to_surface_result(raw)
     }
     fn load_pnm(&self) -> Result<Surface, String> {
-        let raw = unsafe { sys::image::IMG_LoadPNM_RW(self.raw()) };
+        let raw = unsafe { image::IMG_LoadPNM_RW(self.raw()) };
         to_surface_result(raw)
     }
     fn load_xpm(&self) -> Result<Surface, String> {
-        let raw = unsafe { sys::image::IMG_LoadXPM_RW(self.raw()) };
+        let raw = unsafe { image::IMG_LoadXPM_RW(self.raw()) };
         to_surface_result(raw)
     }
     fn load_xcf(&self) -> Result<Surface, String> {
-        let raw = unsafe { sys::image::IMG_LoadXCF_RW(self.raw()) };
+        let raw = unsafe { image::IMG_LoadXCF_RW(self.raw()) };
         to_surface_result(raw)
     }
     fn load_pcx(&self) -> Result<Surface, String> {
-        let raw = unsafe { sys::image::IMG_LoadPCX_RW(self.raw()) };
+        let raw = unsafe { image::IMG_LoadPCX_RW(self.raw()) };
         to_surface_result(raw)
     }
     fn load_gif(&self) -> Result<Surface, String> {
-        let raw = unsafe { sys::image::IMG_LoadGIF_RW(self.raw()) };
+        let raw = unsafe { image::IMG_LoadGIF_RW(self.raw()) };
         to_surface_result(raw)
     }
     fn load_jpg(&self) -> Result<Surface, String> {
-        let raw = unsafe { sys::image::IMG_LoadJPG_RW(self.raw()) };
+        let raw = unsafe { image::IMG_LoadJPG_RW(self.raw()) };
         to_surface_result(raw)
     }
     fn load_tif(&self) -> Result<Surface, String> {
-        let raw = unsafe { sys::image::IMG_LoadTIF_RW(self.raw()) };
+        let raw = unsafe { image::IMG_LoadTIF_RW(self.raw()) };
         to_surface_result(raw)
     }
     fn load_png(&self) -> Result<Surface, String> {
-        let raw = unsafe { sys::image::IMG_LoadPNG_RW(self.raw()) };
+        let raw = unsafe { image::IMG_LoadPNG_RW(self.raw()) };
         to_surface_result(raw)
     }
     fn load_tga(&self) -> Result<Surface, String> {
-        let raw = unsafe { sys::image::IMG_LoadTGA_RW(self.raw()) };
+        let raw = unsafe { image::IMG_LoadTGA_RW(self.raw()) };
         to_surface_result(raw)
     }
     fn load_lbm(&self) -> Result<Surface, String> {
-        let raw = unsafe { sys::image::IMG_LoadLBM_RW(self.raw()) };
+        let raw = unsafe { image::IMG_LoadLBM_RW(self.raw()) };
         to_surface_result(raw)
     }
     fn load_xv(&self) -> Result<Surface, String> {
-        let raw = unsafe { sys::image::IMG_LoadXV_RW(self.raw()) };
+        let raw = unsafe { image::IMG_LoadXV_RW(self.raw()) };
         to_surface_result(raw)
     }
     fn load_webp(&self) -> Result<Surface, String> {
-        let raw = unsafe { sys::image::IMG_LoadWEBP_RW(self.raw()) };
+        let raw = unsafe { image::IMG_LoadWEBP_RW(self.raw()) };
         to_surface_result(raw)
     }
 
     fn is_cur(&self) -> bool {
-        unsafe { sys::image::IMG_isCUR(self.raw()) == 1 }
+        unsafe { image::IMG_isCUR(self.raw()) == 1 }
     }
     fn is_ico(&self) -> bool {
-        unsafe { sys::image::IMG_isICO(self.raw()) == 1 }
+        unsafe { image::IMG_isICO(self.raw()) == 1 }
     }
     fn is_bmp(&self) -> bool {
-        unsafe { sys::image::IMG_isBMP(self.raw()) == 1 }
+        unsafe { image::IMG_isBMP(self.raw()) == 1 }
     }
     fn is_pnm(&self) -> bool {
-        unsafe { sys::image::IMG_isPNM(self.raw()) == 1 }
+        unsafe { image::IMG_isPNM(self.raw()) == 1 }
     }
     fn is_xpm(&self) -> bool {
-        unsafe { sys::image::IMG_isXPM(self.raw()) == 1 }
+        unsafe { image::IMG_isXPM(self.raw()) == 1 }
     }
     fn is_xcf(&self) -> bool {
-        unsafe { sys::image::IMG_isXCF(self.raw()) == 1 }
+        unsafe { image::IMG_isXCF(self.raw()) == 1 }
     }
     fn is_pcx(&self) -> bool {
-        unsafe { sys::image::IMG_isPCX(self.raw()) == 1 }
+        unsafe { image::IMG_isPCX(self.raw()) == 1 }
     }
     fn is_gif(&self) -> bool {
-        unsafe { sys::image::IMG_isGIF(self.raw()) == 1 }
+        unsafe { image::IMG_isGIF(self.raw()) == 1 }
     }
     fn is_jpg(&self) -> bool {
-        unsafe { sys::image::IMG_isJPG(self.raw()) == 1 }
+        unsafe { image::IMG_isJPG(self.raw()) == 1 }
     }
     fn is_tif(&self) -> bool {
-        unsafe { sys::image::IMG_isTIF(self.raw()) == 1 }
+        unsafe { image::IMG_isTIF(self.raw()) == 1 }
     }
     fn is_png(&self) -> bool {
-        unsafe { sys::image::IMG_isPNG(self.raw()) == 1 }
+        unsafe { image::IMG_isPNG(self.raw()) == 1 }
     }
     fn is_lbm(&self) -> bool {
-        unsafe { sys::image::IMG_isLBM(self.raw()) == 1 }
+        unsafe { image::IMG_isLBM(self.raw()) == 1 }
     }
     fn is_xv(&self) -> bool {
-        unsafe { sys::image::IMG_isXV(self.raw()) == 1 }
+        unsafe { image::IMG_isXV(self.raw()) == 1 }
     }
     fn is_webp(&self) -> bool {
-        unsafe { sys::image::IMG_isWEBP(self.raw()) == 1 }
+        unsafe { image::IMG_isWEBP(self.raw()) == 1 }
     }
 }

@@ -66,6 +66,7 @@ use crate::get_error;
 use crate::rwops::RWops;
 
 use crate::sys;
+use crate::sys::SDL_AudioStatus;
 
 impl AudioSubsystem {
     /// Opens a new audio device given the desired parameters and callback.
@@ -199,18 +200,18 @@ impl AudioFormat {
 #[repr(i32)]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum AudioStatus {
-    Stopped = sys::SDL_AudioStatus::SDL_AUDIO_STOPPED as i32,
-    Playing = sys::SDL_AudioStatus::SDL_AUDIO_PLAYING as i32,
-    Paused  = sys::SDL_AudioStatus::SDL_AUDIO_PAUSED  as i32,
+    Stopped = SDL_AudioStatus::SDL_AUDIO_STOPPED as i32,
+    Playing = SDL_AudioStatus::SDL_AUDIO_PLAYING as i32,
+    Paused  = SDL_AudioStatus::SDL_AUDIO_PAUSED  as i32,
 }
 
 impl FromPrimitive for AudioStatus {
     fn from_i64(n: i64) -> Option<AudioStatus> {
         use self::AudioStatus::*;
 
-        const STOPPED: i64 = sys::SDL_AudioStatus::SDL_AUDIO_STOPPED as i64;
-        const PLAYING: i64 = sys::SDL_AudioStatus::SDL_AUDIO_PLAYING as i64;
-        const PAUSED: i64 = sys::SDL_AudioStatus::SDL_AUDIO_PAUSED as i64;
+        const STOPPED: i64 = SDL_AudioStatus::SDL_AUDIO_STOPPED as i64;
+        const PLAYING: i64 = SDL_AudioStatus::SDL_AUDIO_PLAYING as i64;
+        const PAUSED: i64 = SDL_AudioStatus::SDL_AUDIO_PAUSED as i64;
 
         Some(match n {
             STOPPED => Stopped,

@@ -7,7 +7,6 @@ use std::ffi::NulError;
 use std::fmt;
 use std::marker::PhantomData;
 use ::surface::Surface;
-use sys;
 use sys::ttf;
 use sys::SDL_Surface;
 use ::get_error;
