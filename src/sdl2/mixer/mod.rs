@@ -806,7 +806,7 @@ impl<'a> Music<'a> {
         }
     }
 
-    /// Play the loaded music loop times through from start to finish.
+    /// Play the loaded music loop times through from start to finish. Pass -1 to loop forever.
     pub fn play(&self, loops: i32) -> Result<(), String> {
         let ret = unsafe { sys::mixer::Mix_PlayMusic(self.raw, loops as c_int) };
         if ret == -1 {
