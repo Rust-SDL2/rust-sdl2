@@ -38,7 +38,7 @@ impl Palette {
             Err(get_error())
         } else {
             Ok(Palette {
-                raw: raw,
+                raw,
             })
         }
     }
@@ -107,13 +107,13 @@ impl Color {
     #[inline]
     #[allow(non_snake_case)]
     pub fn RGB(r: u8, g: u8, b: u8) -> Color {
-        Color { r: r, g: g, b: b, a: 0xff }
+        Color { r, g, b, a: 0xff }
     }
 
     #[inline]
     #[allow(non_snake_case)]
     pub fn RGBA(r: u8, g: u8, b: u8, a: u8) -> Color {
-        Color { r: r, g: g, b: b, a: a }
+        Color { r, g, b, a }
     }
 
     pub fn to_u32(&self, format: &PixelFormat) -> u32 {
@@ -283,10 +283,10 @@ impl PixelFormatEnum {
         } else {
             Ok(PixelMasks {
                 bpp: bpp as u8,
-                rmask: rmask,
-                gmask: gmask,
-                bmask: bmask,
-                amask: amask
+                rmask,
+                gmask,
+                bmask,
+                amask
             })
         }
     }

@@ -49,7 +49,7 @@ impl Cursor {
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(Cursor{ raw: raw })
+                Ok(Cursor{ raw })
             }
         }
     }
@@ -62,7 +62,7 @@ impl Cursor {
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(Cursor{ raw: raw })
+                Ok(Cursor{ raw })
             }
         }
     }
@@ -74,7 +74,7 @@ impl Cursor {
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(Cursor{ raw: raw })
+                Ok(Cursor{ raw })
             }
         }
     }
@@ -168,7 +168,7 @@ impl MouseState {
         };
 
         MouseState {
-            mouse_state: mouse_state,
+            mouse_state,
             x: x as i32,
             y: y as i32
         }

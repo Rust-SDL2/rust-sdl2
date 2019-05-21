@@ -115,7 +115,7 @@ impl Rect {
             w: clamp_size(width) as i32,
             h: clamp_size(height) as i32,
         };
-        Rect { raw: raw }
+        Rect { raw }
     }
 
     /// Creates a new rectangle centered on the given position.
@@ -136,7 +136,7 @@ impl Rect {
             w: clamp_size(width) as i32,
             h: clamp_size(height) as i32,
         };
-        let mut rect = Rect { raw: raw };
+        let mut rect = Rect { raw };
         rect.center_on(center.into());
         rect
     }
