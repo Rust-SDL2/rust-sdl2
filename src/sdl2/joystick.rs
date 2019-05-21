@@ -62,7 +62,7 @@ impl JoystickSubsystem {
 
         let raw = unsafe { sys::SDL_JoystickGetDeviceGUID(joystick_index) };
 
-        let guid = Guid { raw: raw };
+        let guid = Guid { raw };
 
         if guid.is_zero() {
             Err(SdlError(get_error()))
@@ -167,7 +167,7 @@ impl Joystick {
     pub fn guid(&self) -> Guid {
         let raw = unsafe { sys::SDL_JoystickGetGUID(self.raw) };
 
-        let guid = Guid { raw: raw };
+        let guid = Guid { raw };
 
         if guid.is_zero() {
             // Should only fail if the joystick is NULL.
@@ -408,7 +408,7 @@ impl Guid {
 
         let raw = unsafe { sys::SDL_JoystickGetGUIDFromString(guid.as_ptr() as *const c_char) };
 
-        Ok(Guid { raw: raw })
+        Ok(Guid { raw })
     }
 
     /// Return `true` if GUID is full 0s

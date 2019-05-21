@@ -181,9 +181,9 @@ impl RendererInfo {
         let name = CStr::from_ptr(info.name as *const _).to_str().unwrap();
 
         RendererInfo {
-            name: name,
+            name,
             flags: info.flags,
-            texture_formats: texture_formats,
+            texture_formats,
             max_texture_width: info.max_texture_width as u32,
             max_texture_height: info.max_texture_height as u32,
         }
@@ -227,7 +227,7 @@ impl<T> RendererContext<T> {
 
     pub unsafe fn from_ll(raw: *mut sys::SDL_Renderer, target: Rc<T>) -> Self {
         RendererContext {
-            raw: raw,
+            raw,
             _target: target,
         }
     }
@@ -344,8 +344,8 @@ impl<'s> Canvas<Surface<'s>> {
             let default_pixel_format = surface.pixel_format_enum();
             Ok(Canvas {
                    target: surface,
-                   context: context,
-                   default_pixel_format: default_pixel_format,
+                   context,
+                   default_pixel_format,
                })
         } else {
             Err(get_error())
@@ -409,7 +409,7 @@ impl Canvas<Window> {
     pub fn into_window(self) -> Window {
         self.target
     }
-    
+
     #[inline]
     pub fn default_pixel_format(&self) -> PixelFormatEnum {
         self.window().window_pixel_format()
@@ -590,7 +590,7 @@ impl<T: RenderTarget> Canvas<T> {
             Err(TargetRenderError::NotSupported)
         }
     }
-    
+
     #[cfg(feature = "unsafe_textures")]
     pub fn with_multiple_texture_canvas<'a : 's, 's, I, F, U: 's>(&mut self, textures: I, mut f: F)
         -> Result<(), TargetRenderError>
@@ -642,7 +642,7 @@ impl CanvasBuilder {
     /// Initializes a new `CanvasBuilder`.
     pub fn new(window: Window) -> CanvasBuilder {
         CanvasBuilder {
-            window: window,
+            window,
             // -1 means to initialize the first rendering driver supporting the
             // renderer flags
             index: None,
@@ -667,9 +667,9 @@ impl CanvasBuilder {
             let context = Rc::new(unsafe { RendererContext::from_ll(raw, self.window.context()) });
             let default_pixel_format = self.window.window_pixel_format();
             Ok(Canvas {
-                   context: context,
+                   context,
                    target: self.window,
-                   default_pixel_format: default_pixel_format,
+                   default_pixel_format,
                })
         }
     }
@@ -883,16 +883,16 @@ impl<T> TextureCreator<T> {
     #[inline]
     pub unsafe fn raw_create_texture(&self, raw: *mut sys::SDL_Texture) -> Texture {
         Texture {
-            raw: raw,
+            raw,
             _marker: PhantomData,
         }
     }
-    
+
     /// Create a texture from its raw `SDL_Texture`. Should be used with care.
     #[cfg(feature = "unsafe_textures")]
     pub unsafe fn raw_create_texture(&self, raw: *mut sys::SDL_Texture) -> Texture {
         Texture {
-            raw: raw,
+            raw,
         }
     }
 }
@@ -1428,7 +1428,7 @@ impl<T: RenderTarget> Canvas<T> {
             unsafe { Ok(self.raw_create_texture(result)) }
         }
     }
-    
+
     #[cfg(feature = "unsafe_textures")]
     /// Create a texture from its raw `SDL_Texture`. Should be used with care.
     ///
@@ -1437,7 +1437,7 @@ impl<T: RenderTarget> Canvas<T> {
     /// Note that this method is only accessible in Canvas with the `unsafe_textures` feature.
     pub unsafe fn raw_create_texture(&self, raw: *mut sys::SDL_Texture) -> Texture {
         Texture {
-            raw: raw,
+            raw,
         }
     }
 }
@@ -1875,7 +1875,7 @@ impl InternalTexture {
                            plane: "y",
                            length: y_plane.len(),
                            pitch: y_pitch,
-                           height: height,
+                           height,
                        });
         }
         if u_plane.len() != (u_pitch * height / 2) {
@@ -2029,7 +2029,7 @@ impl<'r> Texture<'r> {
     pub fn set_color_mod(&mut self, red: u8, green: u8, blue: u8) {
         InternalTexture{ raw: self.raw }.set_color_mod(red, green, blue)
     }
-  
+
     /// Gets the additional color value multiplied into render copy operations.
     #[inline]
     pub fn color_mod(&self) -> (u8, u8, u8) {
@@ -2108,7 +2108,7 @@ impl<'r> Texture<'r> {
     {
         InternalTexture { raw: self.raw }.with_lock(rect, func)
     }
-    
+
     /// Binds an OpenGL/ES/ES2 texture to the current
     /// context for use with when rendering OpenGL primitives directly.
     #[inline]
@@ -2226,7 +2226,7 @@ impl<> Texture<> {
     {
         InternalTexture { raw: self.raw }.with_lock(rect, func)
     }
-    
+
     /// Binds an OpenGL/ES/ES2 texture to the current
     /// context for use with when rendering OpenGL primitives directly.
     #[inline]

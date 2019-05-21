@@ -302,8 +302,8 @@ impl AudioSpecWAV {
                     freq: desired.freq,
                     format: AudioFormat::from_ll(desired.format).unwrap(),
                     channels: desired.channels,
-                    audio_buf: audio_buf,
-                    audio_len: audio_len
+                    audio_buf,
+                    audio_len
                 })
             }
         }
@@ -544,9 +544,9 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
 
                     Ok(AudioQueue {
                         subsystem: a.clone(),
-                        device_id: device_id,
+                        device_id,
                         phantom: PhantomData::default(),
-                        spec: spec,
+                        spec,
                     })
                 }
             }
@@ -637,9 +637,9 @@ impl<CB: AudioCallback> AudioDevice<CB> {
 
                     Ok(AudioDevice {
                         subsystem: a.clone(),
-                        device_id: device_id,
-                        userdata: userdata,
-                        spec: spec,
+                        device_id,
+                        userdata,
+                        spec,
                     })
                 }
             }
@@ -748,7 +748,7 @@ impl AudioCVT {
                                             src_format.to_ll(), src_channels, src_rate as c_int,
                                             dst_format.to_ll(), dst_channels, dst_rate as c_int);
             if ret == 1 || ret == 0 {
-                Ok(AudioCVT { raw: raw })
+                Ok(AudioCVT { raw })
             } else {
                 Err(get_error())
             }

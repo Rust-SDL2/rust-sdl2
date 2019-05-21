@@ -50,7 +50,7 @@ impl<'a> KeyboardState<'a> {
         };
 
         KeyboardState {
-            keyboard_state: keyboard_state
+            keyboard_state
         }
     }
 
