@@ -6,7 +6,7 @@ use std::path::Path;
 use ::get_error;
 use ::rwops::RWops;
 use ::version::Version;
-use sys;
+use sys::ttf;
 
 use super::font::{
     internal_load_font,
@@ -22,7 +22,7 @@ pub struct Sdl2TtfContext;
 // Clean up the context once it goes out of scope
 impl Drop for Sdl2TtfContext {
     fn drop(&mut self) {
-        unsafe { sys::ttf::TTF_Quit(); }
+        unsafe { ttf::TTF_Quit(); }
     }
 }
 
@@ -44,7 +44,7 @@ impl Sdl2TtfContext {
     pub fn load_font_from_rwops<'ttf,'r>(&'ttf self, rwops: RWops<'r>, point_size: u16)
             -> Result<Font<'ttf,'r>, String> {
         let raw = unsafe {
-            sys::ttf::TTF_OpenFontRW(rwops.raw(), 0, point_size as c_int)
+            ttf::TTF_OpenFontRW(rwops.raw(), 0, point_size as c_int)
         };
         if (raw as *mut ()).is_null() {
             Err(get_error())
@@ -58,7 +58,7 @@ impl Sdl2TtfContext {
     pub fn load_font_at_index_from_rwops<'ttf,'r>(&'ttf self, rwops: RWops<'r>, index: u32,
             point_size: u16) -> Result<Font<'ttf,'r>, String> {
         let raw = unsafe {
-            sys::ttf::TTF_OpenFontIndexRW(rwops.raw(), 0, point_size as c_int,
+            ttf::TTF_OpenFontIndexRW(rwops.raw(), 0, point_size as c_int,
                 index as c_long)
         };
         if (raw as *mut ()).is_null() {
@@ -72,7 +72,7 @@ impl Sdl2TtfContext {
 /// Returns the version of the dynamically linked `SDL_TTF` library
 pub fn get_linked_version() -> Version {
     unsafe {
-        Version::from_ll(*sys::ttf::TTF_Linked_Version())
+        Version::from_ll(*ttf::TTF_Linked_Version())
     }
 }
 
@@ -118,9 +118,9 @@ impl fmt::Display for InitError {
 /// clean up the library once it goes out of scope.
 pub fn init() -> Result<Sdl2TtfContext, InitError> {
     unsafe {
-        if sys::ttf::TTF_WasInit() == 1 {
+        if ttf::TTF_WasInit() == 1 {
             Err(InitError::AlreadyInitializedError)
-        } else if sys::ttf::TTF_Init() == 0 {
+        } else if ttf::TTF_Init() == 0 {
             Ok(Sdl2TtfContext)
         } else {
             Err(InitError::InitializationError(
@@ -133,6 +133,6 @@ pub fn init() -> Result<Sdl2TtfContext, InitError> {
 /// Returns whether library has been initialized already.
 pub fn has_been_initialized() -> bool {
     unsafe {
-        sys::ttf::TTF_WasInit() == 1
+        ttf::TTF_WasInit() == 1
     }
 }
