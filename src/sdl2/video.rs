@@ -1225,6 +1225,16 @@ impl Window {
         }
     }
 
+    /// Use this function to set the icon for a window.
+    ///
+    /// # Example:
+    /// ```compile_fail
+    /// // requires "--features 'image'"
+    /// use sdl2::surface::Surface;
+    ///
+    /// let window_icon = Surface::from_file("/path/to/icon.png")?;
+    /// window.set_icon(window_icon);
+    /// ```
     pub fn set_icon<S: AsRef<SurfaceRef>>(&mut self, icon: S) {
         unsafe {
             sys::SDL_SetWindowIcon(self.context.raw, icon.as_ref().raw())
