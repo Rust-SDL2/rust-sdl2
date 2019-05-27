@@ -301,7 +301,7 @@ fn link_sdl2(target_os: &str) {
         if cfg!(feature = "bundled") || cfg!(not(feature = "use-pkgconfig")) { 
             if cfg!(feature = "use_mac_framework") && target_os == "darwin" {
                 println!("cargo:rustc-flags=-l framework=SDL2");
-            } else {
+            } else if target_os != "emscripten" {
                 println!("cargo:rustc-flags=-l SDL2");
             }
         }
