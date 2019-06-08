@@ -5,6 +5,7 @@ use self::rand::distributions::{Distribution, Standard};
 use libc::uint32_t;
 use num::FromPrimitive;
 use std::mem::transmute;
+use std::convert::TryFrom;
 use crate::sys;
 
 use crate::get_error;
@@ -458,6 +459,21 @@ impl FromPrimitive for PixelFormatEnum {
     }
 
     fn from_u64(n: u64) -> Option<PixelFormatEnum> { FromPrimitive::from_i64(n as i64) }
+}
+
+impl TryFrom<PixelFormatEnum> for PixelFormat {
+    type Error = String;
+
+    fn try_from(pfe: PixelFormatEnum) -> Result<Self, Self::Error> {
+        unsafe {
+            let pf_ptr = sys::SDL_AllocFormat(pfe as u32);
+            if pf_ptr.is_null() {
+                Err(get_error())
+            } else {
+                Ok(PixelFormat::from_ll(pf_ptr))
+            }
+        }
+    }
 }
 
 
