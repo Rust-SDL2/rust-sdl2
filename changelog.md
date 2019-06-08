@@ -1,6 +1,11 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
+### v0.32.2
+
+[PR #898](https://github.com/Rust-SDL2/rust-sdl2/pull/898):
+Implements `TryFrom<PixelFormatEnum>` for `PixelFormat`
+
 ### v0.32.1
 
 [PR #868](https://github.com/Rust-SDL2/rust-sdl2/pull/868):
