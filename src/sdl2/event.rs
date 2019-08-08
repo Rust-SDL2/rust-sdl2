@@ -557,7 +557,7 @@ pub enum Event {
     JoyDeviceAdded {
         timestamp: u32,
         /// The newly added joystick's `joystick_index`
-        which: u32
+        which: i32
     },
     JoyDeviceRemoved {
         timestamp: u32,
@@ -589,7 +589,7 @@ pub enum Event {
     ControllerDeviceAdded {
         timestamp: u32,
         /// The newly added controller's `joystick_index`
-        which: u32
+        which: i32
     },
     ControllerDeviceRemoved {
         timestamp: u32,
@@ -1405,7 +1405,7 @@ impl Event {
                 let event = raw.jdevice;
                 Event::JoyDeviceAdded {
                     timestamp: event.timestamp,
-                    which: event.which as u32
+                    which: event.which as i32
                 }
             }
             EventType::JoyDeviceRemoved => {
@@ -1451,7 +1451,7 @@ impl Event {
                 let event = raw.cdevice;
                 Event::ControllerDeviceAdded {
                     timestamp: event.timestamp,
-                    which: event.which as u32
+                    which: event.which as i32
                 }
             }
             EventType::ControllerDeviceRemoved => {
