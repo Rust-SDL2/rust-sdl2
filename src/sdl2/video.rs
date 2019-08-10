@@ -1139,6 +1139,33 @@ impl Window {
         }
         Ok(names.iter().map(|&val| unsafe { CStr::from_ptr(val) }.to_str().unwrap()).collect())
     }
+	
+    /// Get the names of the Vulkan instance extensions needed to create a surface with.
+    ///
+    /// Pass &[] to `data` if you only wish to query size.
+    ///
+    /// If you want the function to write to `data`, the length of the `data` MUST be equal or greater than `extension_count`.
+    ///
+    /// Returns true on successful
+    pub fn vulkan_instance_extensions_raw(&self, extension_count: &mut u32, data: &mut [*const c_char]) -> bool {
+        if unsafe { sys::SDL_Vulkan_GetInstanceExtensions(self.context.raw, extension_count, ptr::null_mut()) } == sys::SDL_bool::SDL_FALSE {
+            return false;
+        }
+
+        if data.len() == 0 {
+            return true;
+        }
+
+        if data.len() < *extension_count as usize {
+            return false;
+        }
+
+        if unsafe { sys::SDL_Vulkan_GetInstanceExtensions(self.context.raw, extension_count, data.as_mut_ptr()) } == sys::SDL_bool::SDL_FALSE {
+            return false;
+        }
+
+        true
+    }
 
     /// Create a Vulkan rendering surface for a window.
     ///
