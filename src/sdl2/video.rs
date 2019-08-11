@@ -1146,25 +1146,25 @@ impl Window {
     ///
     /// If you want the function to write to `data`, the length of the `data` MUST be equal or greater than `extension_count`.
     ///
-    /// Returns `true` on successful
-    pub fn vulkan_instance_extensions_raw(&self, extension_count: &mut u32, data: &mut [*const c_char]) -> bool {
+    /// Returns Ok on success
+    pub fn vulkan_instance_extensions_raw(&self, extension_count: &mut u32, data: &mut [*const c_char]) -> Result<(), String> {
         if unsafe { sys::SDL_Vulkan_GetInstanceExtensions(self.context.raw, extension_count, ptr::null_mut()) } == sys::SDL_bool::SDL_FALSE {
-            return false;
+            return Err(get_error());
         }
 
-        if data.len() == 0 {
-            return true;
+        if data.is_empty() {
+            return Ok(());
         }
 
         if data.len() < *extension_count as usize {
-            return false;
+            return Err(get_error());
         }
 
         if unsafe { sys::SDL_Vulkan_GetInstanceExtensions(self.context.raw, extension_count, data.as_mut_ptr()) } == sys::SDL_bool::SDL_FALSE {
-            return false;
+            return Err(get_error());
         }
 
-        true
+        Ok(())
     }
 
     /// Create a Vulkan rendering surface for a window.
