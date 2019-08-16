@@ -443,7 +443,7 @@ fn copy_dynamic_libraries(sdl2_compiled_path: &PathBuf, target_os: &str) {
     // copy sdl2.dll out of its build tree and down to the top level cargo
     // binary output directory.
     if target_os.contains("windows") {
-        let sdl2_dll_name = "sdl2.dll";
+        let sdl2_dll_name = "SDL2.dll";
         let sdl2_bin_path = sdl2_compiled_path.join("bin");
         let target_path = find_cargo_target_dir();
 
