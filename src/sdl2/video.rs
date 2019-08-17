@@ -620,10 +620,11 @@ impl VideoSubsystem {
     }
 
     pub fn display_bounds(&self, display_index: i32) -> Result<Rect, String> {
-        let mut out = unsafe { mem::uninitialized() };
-        let result = unsafe { sys::SDL_GetDisplayBounds(display_index as c_int, &mut out) == 0 };
+        let mut out = mem::MaybeUninit::uninit();
+        let result = unsafe { sys::SDL_GetDisplayBounds(display_index as c_int, out.as_mut_ptr()) == 0 };
 
         if result {
+            let out = unsafe { out.assume_init() };
             Ok(Rect::from_ll(out))
         } else {
             Err(get_error())
@@ -640,10 +641,11 @@ impl VideoSubsystem {
     }
 
     pub fn display_mode(&self, display_index: i32, mode_index: i32) -> Result<DisplayMode, String> {
-        let mut dm = unsafe { mem::uninitialized() };
-        let result = unsafe { sys::SDL_GetDisplayMode(display_index as c_int, mode_index as c_int, &mut dm) == 0};
+        let mut dm = mem::MaybeUninit::uninit();
+        let result = unsafe { sys::SDL_GetDisplayMode(display_index as c_int, mode_index as c_int, dm.as_mut_ptr()) == 0};
 
         if result {
+            let dm = unsafe { dm.assume_init() };
             Ok(DisplayMode::from_ll(&dm))
         } else {
             Err(get_error())
@@ -651,10 +653,11 @@ impl VideoSubsystem {
     }
 
     pub fn desktop_display_mode(&self, display_index: i32) -> Result<DisplayMode, String> {
-        let mut dm = unsafe { mem::uninitialized() };
-        let result = unsafe { sys::SDL_GetDesktopDisplayMode(display_index as c_int, &mut dm) == 0};
+        let mut dm = mem::MaybeUninit::uninit();
+        let result = unsafe { sys::SDL_GetDesktopDisplayMode(display_index as c_int, dm.as_mut_ptr()) == 0};
 
         if result {
+            let dm = unsafe { dm.assume_init() };
             Ok(DisplayMode::from_ll(&dm))
         } else {
             Err(get_error())
@@ -662,10 +665,11 @@ impl VideoSubsystem {
     }
 
     pub fn current_display_mode(&self, display_index: i32) -> Result<DisplayMode, String> {
-        let mut dm = unsafe { mem::uninitialized() };
-        let result = unsafe { sys::SDL_GetCurrentDisplayMode(display_index as c_int, &mut dm) == 0};
+        let mut dm = mem::MaybeUninit::uninit();
+        let result = unsafe { sys::SDL_GetCurrentDisplayMode(display_index as c_int, dm.as_mut_ptr()) == 0};
 
         if result {
+            let dm = unsafe { dm.assume_init() };
             Ok(DisplayMode::from_ll(&dm))
         } else {
             Err(get_error())
@@ -674,13 +678,14 @@ impl VideoSubsystem {
 
     pub fn closest_display_mode(&self, display_index: i32, mode: &DisplayMode) -> Result<DisplayMode, String> {
         let input = mode.to_ll();
-        let mut dm = unsafe { mem::uninitialized() };
+        let mut dm = mem::MaybeUninit::uninit();
 
-        let result = unsafe { sys::SDL_GetClosestDisplayMode(display_index as c_int, &input, &mut dm) };
+        let result = unsafe { sys::SDL_GetClosestDisplayMode(display_index as c_int, &input, dm.as_mut_ptr()) };
 
         if result.is_null() {
             Err(get_error())
         } else {
+            let dm = unsafe { dm.assume_init() };
             Ok(DisplayMode::from_ll(&dm))
         }
     }
@@ -1183,16 +1188,17 @@ impl Window {
     }
 
     pub fn display_mode(&self) -> Result<DisplayMode, String> {
-        let mut dm = unsafe { mem::uninitialized() };
+        let mut dm = mem::MaybeUninit::uninit();
 
         let result = unsafe {
             sys::SDL_GetWindowDisplayMode(
                 self.context.raw,
-                &mut dm
+                dm.as_mut_ptr(),
             ) == 0
         };
 
         if result {
+            let dm = unsafe { dm.assume_init() };
             Ok(DisplayMode::from_ll(&dm))
         } else {
             Err(get_error())

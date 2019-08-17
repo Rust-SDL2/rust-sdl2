@@ -452,9 +452,7 @@ impl Rect {
             return None;
         }
 
-        let mut out = unsafe {
-            mem::uninitialized()
-        };
+        let mut out = mem::MaybeUninit::uninit();
 
         let clip_ptr = match clipping_rect.as_ref() {
             Some(r) => r.raw(),
@@ -466,11 +464,13 @@ impl Rect {
                 Point::raw_slice(points),
                 points.len() as i32,
                 clip_ptr,
-                &mut out
+                out.as_mut_ptr()
             ) != sys::SDL_bool::SDL_FALSE
         };
 
         if result {
+            let out = unsafe { out.assume_init() };
+
             // Return an error if the dimensions are too large.
             Some(Rect::from_ll(out))
         } else {
@@ -517,13 +517,14 @@ impl Rect {
     /// assert_eq!(rect.intersection(Rect::new(5, 0, 5, 5)), None);
     /// ```
     pub fn intersection(&self, other: Rect) -> Option<Rect> {
-        let mut out = unsafe { mem::uninitialized() };
+        let mut out = mem::MaybeUninit::uninit();
 
         let success = unsafe {
-            sys::SDL_IntersectRect(self.raw(), other.raw(), &mut out) != sys::SDL_bool::SDL_FALSE
+            sys::SDL_IntersectRect(self.raw(), other.raw(), out.as_mut_ptr()) != sys::SDL_bool::SDL_FALSE
         };
 
         if success {
+            let out = unsafe { out.assume_init() };
             Some(Rect::from_ll(out))
         } else {
             None
@@ -545,15 +546,15 @@ impl Rect {
     /// assert_eq!(rect.union(Rect::new(5, 0, 5, 5)), Rect::new(0, 0, 10, 5));
     /// ```
     pub fn union(&self, other: Rect) -> Rect {
-        let mut out = unsafe {
-            mem::uninitialized()
-        };
+        let mut out = mem::MaybeUninit::uninit();
 
         unsafe {
             // If `self` and `other` are both empty, `out` remains uninitialized.
             // Because empty rectangles aren't allowed in Rect, we don't need to worry about this.
-            sys::SDL_UnionRect(self.raw(), other.raw(), &mut out)
+            sys::SDL_UnionRect(self.raw(), other.raw(), out.as_mut_ptr())
         };
+
+        let out = unsafe { out.assume_init() };
 
         Rect::from_ll(out)
     }
