@@ -27,6 +27,7 @@ use std::ffi::{CString, CStr};
 use std::str::from_utf8;
 use std::borrow::ToOwned;
 use std::path::Path;
+use std::mem::forget;
 use libc::c_void;
 use libc::{c_int, uint16_t, c_double, c_uint};
 use ::get_error;
@@ -267,6 +268,8 @@ pub trait LoaderRWops<'a> {
     fn load_wav(&self) -> Result<Chunk, String>;
 
     fn load_music(&'a self) -> Result<Music<'a>, String>;
+
+    fn load_music_owned(self) -> Result<Music<'static>, String>;
 }
 
 impl<'a> LoaderRWops<'a> for RWops<'a> {
@@ -297,6 +300,22 @@ impl<'a> LoaderRWops<'a> for RWops<'a> {
         }
     }
 
+    fn load_music_owned(self) -> Result<Music<'static>, String> {
+        let raw = unsafe { mixer::Mix_LoadMUS_RW(self.raw(), 1) };
+
+        // Skipping Drop trait SDL2_Mixer now owns the data in the RWops
+        forget(self);
+
+        if raw.is_null() {
+            Err(get_error())
+        } else {
+            Ok(Music {
+                raw: raw,
+                owned: true,
+                _marker: PhantomData,
+            })
+        }
+    }
 }
 
 
@@ -769,6 +788,7 @@ impl<'a> Music<'a> {
     }
 
     /// Load music from a static byte buffer.
+    #[deprecated(since = "0.33.0", note = "use `LoaderRWops::load_music_owned()` instead")]
     pub fn from_static_bytes(buf: &'static [u8]) -> Result<Music<'static>, String> {
         let rw = unsafe {
             sys::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int)
