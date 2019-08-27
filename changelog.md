@@ -1,6 +1,10 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
+### v0.32.1
+[PR #907](https://github.com/Rust-SDL2/rust-sdl2/pull/907)
+Changed the data type to i32 for the `which` field for the events `ControllerDeviceAdded` and `JoyDeviceAdded`.
+
 ### v0.32.2
 
 [PR #898](https://github.com/Rust-SDL2/rust-sdl2/pull/898):
