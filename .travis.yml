@@ -17,7 +17,14 @@ env:
     - secure: MJhmVnQ2IM7+sVmc3vU4ndKOcQgLLeHUPW3qaQBQHKQmvoswCwQK60N17uSgWn1Ln8teqvSRHq4KclIjdMHI+VuQXJHQKHDgjcYbHxwmc3AM1Whnp0XB44ksKUmD109BGWSfZQxzF+6dA+YNOQ+mti+bpydMu8n2FMVjA/SXwQ8=
 
 install:
-  - if [[ $CI_BUILD_FEATURES != *"bundled"* ]]; then bash scripts/travis-install-sdl2.sh; fi
+  - |
+    if [[ $CI_BUILD_FEATURES != *"bundled"* ]]; then
+      if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        sudo apt-get update
+        sudo apt-get install --assume-yes libgl1-mesa-dev
+      fi
+      bash scripts/travis-install-sdl2.sh
+    fi
 
 before_script:
   - shopt -s expand_aliases
