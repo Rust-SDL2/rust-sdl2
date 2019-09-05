@@ -489,7 +489,11 @@ impl HatState {
             6  => HatState::RightDown,
             9  => HatState::LeftUp,
             12 => HatState::LeftDown,
-            _  => panic!("Unexpected hat position: {}", raw),
+
+            // The Xinput driver on Windows can report hat states on certain hardware that don't
+            // make any sense from a gameplay perspective, and so aren't worth putting in the
+            // HatState enumeration.
+            _  => HatState::Centered,
         }
     }
 
