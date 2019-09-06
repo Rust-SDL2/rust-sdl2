@@ -28,6 +28,7 @@ use crate::keyboard::Scancode;
 use crate::get_error;
 
 use crate::sys;
+use crate::sys::SDL_EventType;
 
 struct CustomEventTypeMaps {
     sdl_id_to_type_id: HashMap<u32, ::std::any::TypeId>,
@@ -91,8 +92,8 @@ impl crate::EventSubsystem {
                     events_ptr,
                     max_amount as c_int,
                     sys::SDL_eventaction::SDL_PEEKEVENT,
-                    sys::SDL_EventType::SDL_FIRSTEVENT as u32,
-                    sys::SDL_EventType::SDL_LASTEVENT as u32
+                    SDL_EventType::SDL_FIRSTEVENT as u32,
+                    SDL_EventType::SDL_LASTEVENT as u32
                 )
             };
 
@@ -264,56 +265,56 @@ impl crate::EventSubsystem {
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(u32)]
 pub enum EventType {
-    First = sys::SDL_EventType::SDL_FIRSTEVENT as u32,
+    First = SDL_EventType::SDL_FIRSTEVENT as u32,
 
-    Quit = sys::SDL_EventType::SDL_QUIT as u32,
-    AppTerminating = sys::SDL_EventType::SDL_APP_TERMINATING as u32,
-    AppLowMemory = sys::SDL_EventType::SDL_APP_LOWMEMORY as u32,
-    AppWillEnterBackground = sys::SDL_EventType::SDL_APP_WILLENTERBACKGROUND as u32,
-    AppDidEnterBackground = sys::SDL_EventType::SDL_APP_DIDENTERBACKGROUND as u32,
-    AppWillEnterForeground = sys::SDL_EventType::SDL_APP_WILLENTERFOREGROUND as u32,
-    AppDidEnterForeground = sys::SDL_EventType::SDL_APP_DIDENTERFOREGROUND as u32,
+    Quit = SDL_EventType::SDL_QUIT as u32,
+    AppTerminating = SDL_EventType::SDL_APP_TERMINATING as u32,
+    AppLowMemory = SDL_EventType::SDL_APP_LOWMEMORY as u32,
+    AppWillEnterBackground = SDL_EventType::SDL_APP_WILLENTERBACKGROUND as u32,
+    AppDidEnterBackground = SDL_EventType::SDL_APP_DIDENTERBACKGROUND as u32,
+    AppWillEnterForeground = SDL_EventType::SDL_APP_WILLENTERFOREGROUND as u32,
+    AppDidEnterForeground = SDL_EventType::SDL_APP_DIDENTERFOREGROUND as u32,
 
-    Window = sys::SDL_EventType::SDL_WINDOWEVENT as u32,
+    Window = SDL_EventType::SDL_WINDOWEVENT as u32,
     // TODO: SysWM = sys::SDL_SYSWMEVENT as u32,
 
-    KeyDown = sys::SDL_EventType::SDL_KEYDOWN as u32,
-    KeyUp = sys::SDL_EventType::SDL_KEYUP as u32,
-    TextEditing = sys::SDL_EventType::SDL_TEXTEDITING as u32,
-    TextInput = sys::SDL_EventType::SDL_TEXTINPUT as u32,
+    KeyDown = SDL_EventType::SDL_KEYDOWN as u32,
+    KeyUp = SDL_EventType::SDL_KEYUP as u32,
+    TextEditing = SDL_EventType::SDL_TEXTEDITING as u32,
+    TextInput = SDL_EventType::SDL_TEXTINPUT as u32,
 
-    MouseMotion = sys::SDL_EventType::SDL_MOUSEMOTION as u32,
-    MouseButtonDown = sys::SDL_EventType::SDL_MOUSEBUTTONDOWN as u32,
-    MouseButtonUp = sys::SDL_EventType::SDL_MOUSEBUTTONUP as u32,
-    MouseWheel = sys::SDL_EventType::SDL_MOUSEWHEEL as u32,
+    MouseMotion = SDL_EventType::SDL_MOUSEMOTION as u32,
+    MouseButtonDown = SDL_EventType::SDL_MOUSEBUTTONDOWN as u32,
+    MouseButtonUp = SDL_EventType::SDL_MOUSEBUTTONUP as u32,
+    MouseWheel = SDL_EventType::SDL_MOUSEWHEEL as u32,
 
-    JoyAxisMotion = sys::SDL_EventType::SDL_JOYAXISMOTION as u32,
-    JoyBallMotion = sys::SDL_EventType::SDL_JOYBALLMOTION as u32,
-    JoyHatMotion = sys::SDL_EventType::SDL_JOYHATMOTION as u32,
-    JoyButtonDown = sys::SDL_EventType::SDL_JOYBUTTONDOWN as u32,
-    JoyButtonUp = sys::SDL_EventType::SDL_JOYBUTTONUP as u32,
-    JoyDeviceAdded = sys::SDL_EventType::SDL_JOYDEVICEADDED as u32,
-    JoyDeviceRemoved = sys::SDL_EventType::SDL_JOYDEVICEREMOVED as u32,
+    JoyAxisMotion = SDL_EventType::SDL_JOYAXISMOTION as u32,
+    JoyBallMotion = SDL_EventType::SDL_JOYBALLMOTION as u32,
+    JoyHatMotion = SDL_EventType::SDL_JOYHATMOTION as u32,
+    JoyButtonDown = SDL_EventType::SDL_JOYBUTTONDOWN as u32,
+    JoyButtonUp = SDL_EventType::SDL_JOYBUTTONUP as u32,
+    JoyDeviceAdded = SDL_EventType::SDL_JOYDEVICEADDED as u32,
+    JoyDeviceRemoved = SDL_EventType::SDL_JOYDEVICEREMOVED as u32,
 
-    ControllerAxisMotion = sys::SDL_EventType::SDL_CONTROLLERAXISMOTION as u32,
-    ControllerButtonDown = sys::SDL_EventType::SDL_CONTROLLERBUTTONDOWN as u32,
-    ControllerButtonUp = sys::SDL_EventType::SDL_CONTROLLERBUTTONUP as u32,
-    ControllerDeviceAdded = sys::SDL_EventType::SDL_CONTROLLERDEVICEADDED as u32,
-    ControllerDeviceRemoved = sys::SDL_EventType::SDL_CONTROLLERDEVICEREMOVED as u32,
-    ControllerDeviceRemapped = sys::SDL_EventType::SDL_CONTROLLERDEVICEREMAPPED as u32,
+    ControllerAxisMotion = SDL_EventType::SDL_CONTROLLERAXISMOTION as u32,
+    ControllerButtonDown = SDL_EventType::SDL_CONTROLLERBUTTONDOWN as u32,
+    ControllerButtonUp = SDL_EventType::SDL_CONTROLLERBUTTONUP as u32,
+    ControllerDeviceAdded = SDL_EventType::SDL_CONTROLLERDEVICEADDED as u32,
+    ControllerDeviceRemoved = SDL_EventType::SDL_CONTROLLERDEVICEREMOVED as u32,
+    ControllerDeviceRemapped = SDL_EventType::SDL_CONTROLLERDEVICEREMAPPED as u32,
 
-    FingerDown = sys::SDL_EventType::SDL_FINGERDOWN as u32,
-    FingerUp = sys::SDL_EventType::SDL_FINGERUP as u32,
-    FingerMotion = sys::SDL_EventType::SDL_FINGERMOTION as u32,
-    DollarGesture = sys::SDL_EventType::SDL_DOLLARGESTURE as u32,
-    DollarRecord = sys::SDL_EventType::SDL_DOLLARRECORD as u32,
-    MultiGesture = sys::SDL_EventType::SDL_MULTIGESTURE as u32,
+    FingerDown = SDL_EventType::SDL_FINGERDOWN as u32,
+    FingerUp = SDL_EventType::SDL_FINGERUP as u32,
+    FingerMotion = SDL_EventType::SDL_FINGERMOTION as u32,
+    DollarGesture = SDL_EventType::SDL_DOLLARGESTURE as u32,
+    DollarRecord = SDL_EventType::SDL_DOLLARRECORD as u32,
+    MultiGesture = SDL_EventType::SDL_MULTIGESTURE as u32,
 
-    ClipboardUpdate = sys::SDL_EventType::SDL_CLIPBOARDUPDATE as u32,
-    DropFile = sys::SDL_EventType::SDL_DROPFILE as u32,
+    ClipboardUpdate = SDL_EventType::SDL_CLIPBOARDUPDATE as u32,
+    DropFile = SDL_EventType::SDL_DROPFILE as u32,
 
-    User = sys::SDL_EventType::SDL_USEREVENT as u32,
-    Last = sys::SDL_EventType::SDL_LASTEVENT as u32,
+    User = SDL_EventType::SDL_USEREVENT as u32,
+    Last = SDL_EventType::SDL_LASTEVENT as u32,
 }
 
 impl FromPrimitive for EventType {
@@ -735,7 +736,7 @@ where S: Into<Option<Scancode>>,
         .unwrap_or(sys::SDLK_UNKNOWN as i32);
     let keymod = keymod.bits() as u16;
     sys::SDL_Keysym {
-        scancode: scancode,
+        scancode,
         sym: keycode,
         mod_: keymod,
         unused: 0,
@@ -752,11 +753,11 @@ impl Event {
             Event::User { window_id, type_, code, data1, data2, timestamp} => {
                 let event = sys::SDL_UserEvent {
                     type_: type_ as uint32_t,
-                    timestamp: timestamp,
+                    timestamp,
                     windowID: window_id,
                     code: code as i32,
-                    data1: data1,
-                    data2: data2
+                    data1,
+                    data2
                 };
                 unsafe {
                     ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_UserEvent, 1);
@@ -766,8 +767,8 @@ impl Event {
 
             Event::Quit{timestamp} => {
                 let event = sys::SDL_QuitEvent {
-                    type_: sys::SDL_EventType::SDL_QUIT as u32,
-                    timestamp: timestamp,
+                    type_: SDL_EventType::SDL_QUIT as u32,
+                    timestamp,
                 };
                 unsafe {
                     ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_QuitEvent, 1);
@@ -782,15 +783,15 @@ impl Event {
             } => {
                 let (win_event_id, data1, data2) = win_event.to_ll();
                 let event = sys::SDL_WindowEvent {
-                    type_: sys::SDL_EventType::SDL_WINDOWEVENT as u32,
-                    timestamp: timestamp,
+                    type_: SDL_EventType::SDL_WINDOWEVENT as u32,
+                    timestamp,
                     windowID: window_id,
                     event: win_event_id,
                     padding1: 0,
                     padding2: 0,
                     padding3: 0,
-                    data1: data1,
-                    data2: data2,
+                    data1,
+                    data2,
                 };
                 unsafe {
                     ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_WindowEvent, 1);
@@ -808,14 +809,14 @@ impl Event {
             } => {
                 let keysym = mk_keysym(scancode, keycode, keymod);
                 let event = sys::SDL_KeyboardEvent{
-                    type_: sys::SDL_EventType::SDL_KEYDOWN as u32,
-                    timestamp: timestamp,
+                    type_: SDL_EventType::SDL_KEYDOWN as u32,
+                    timestamp,
                     windowID: window_id,
                     state: sys::SDL_PRESSED as u8,
                     repeat: repeat as u8,
                     padding2: 0,
                     padding3: 0,
-                    keysym: keysym,
+                    keysym,
                 };
                 unsafe {
                     ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_KeyboardEvent, 1);
@@ -832,14 +833,14 @@ impl Event {
             } => {
                 let keysym = mk_keysym(scancode, keycode, keymod);
                 let event = sys::SDL_KeyboardEvent{
-                    type_: sys::SDL_EventType::SDL_KEYUP as u32,
-                    timestamp: timestamp,
+                    type_: SDL_EventType::SDL_KEYUP as u32,
+                    timestamp,
                     windowID: window_id,
                     state: sys::SDL_RELEASED as u8,
                     repeat: repeat as u8,
                     padding2: 0,
                     padding3: 0,
-                    keysym: keysym,
+                    keysym,
                 };
                 unsafe {
                     ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_KeyboardEvent, 1);
@@ -858,15 +859,15 @@ impl Event {
             } => {
                 let state = mousestate.to_sdl_state();
                 let event = sys::SDL_MouseMotionEvent {
-                    type_: sys::SDL_EventType::SDL_MOUSEMOTION as u32,
-                    timestamp: timestamp,
+                    type_: SDL_EventType::SDL_MOUSEMOTION as u32,
+                    timestamp,
                     windowID: window_id,
-                    which: which,
-                    state: state,
-                    x: x,
-                    y: y,
-                    xrel: xrel,
-                    yrel: yrel,
+                    which,
+                    state,
+                    x,
+                    y,
+                    xrel,
+                    yrel,
                 };
                 unsafe {
                     ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_MouseMotionEvent, 1);
@@ -884,16 +885,16 @@ impl Event {
                 y
             } => {
                 let event = sys::SDL_MouseButtonEvent {
-                    type_: sys::SDL_EventType::SDL_MOUSEBUTTONDOWN as u32,
-                    timestamp: timestamp,
+                    type_: SDL_EventType::SDL_MOUSEBUTTONDOWN as u32,
+                    timestamp,
                     windowID: window_id,
-                    which: which,
+                    which,
                     button: mouse_btn as u8,
                     state: sys::SDL_PRESSED as u8,
-                    clicks: clicks,
+                    clicks,
                     padding1: 0,
-                    x: x,
-                    y: y
+                    x,
+                    y
                 };
                 unsafe {
                     ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_MouseButtonEvent, 1);
@@ -910,16 +911,16 @@ impl Event {
                 y
             } => {
                 let event = sys::SDL_MouseButtonEvent {
-                    type_: sys::SDL_EventType::SDL_MOUSEBUTTONUP as u32,
-                    timestamp: timestamp,
+                    type_: SDL_EventType::SDL_MOUSEBUTTONUP as u32,
+                    timestamp,
                     windowID: window_id,
-                    which: which,
+                    which,
                     button: mouse_btn as u8,
                     state: sys::SDL_RELEASED as u8,
-                    clicks: clicks,
+                    clicks,
                     padding1: 0,
-                    x: x,
-                    y: y
+                    x,
+                    y
                 };
                 unsafe {
                     ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_MouseButtonEvent, 1);
@@ -936,12 +937,12 @@ impl Event {
                 direction,
             } => {
                 let event = sys::SDL_MouseWheelEvent {
-                    type_: sys::SDL_EventType::SDL_MOUSEWHEEL as u32,
-                    timestamp: timestamp,
+                    type_: SDL_EventType::SDL_MOUSEWHEEL as u32,
+                    timestamp,
                     windowID: window_id,
-                    which: which,
-                    x: x,
-                    y: y,
+                    which,
+                    x,
+                    y,
                     direction : direction.to_ll(),
                 };
                 unsafe {
@@ -956,11 +957,11 @@ impl Event {
                 value
             } => {
                 let event = sys::SDL_JoyAxisEvent {
-                    type_: sys::SDL_EventType::SDL_JOYAXISMOTION as u32,
-                    timestamp: timestamp,
-                    which: which,
+                    type_: SDL_EventType::SDL_JOYAXISMOTION as u32,
+                    timestamp,
+                    which,
                     axis: axis_idx,
-                    value: value,
+                    value,
                     padding1: 0,
                     padding2: 0,
                     padding3: 0,
@@ -980,12 +981,12 @@ impl Event {
                 yrel
             } => {
                 let event = sys::SDL_JoyBallEvent {
-                    type_: sys::SDL_EventType::SDL_JOYBALLMOTION as u32,
-                    timestamp: timestamp,
-                    which: which,
+                    type_: SDL_EventType::SDL_JOYBALLMOTION as u32,
+                    timestamp,
+                    which,
                     ball: ball_idx,
-                    xrel: xrel,
-                    yrel: yrel,
+                    xrel,
+                    yrel,
                     padding1: 0,
                     padding2: 0,
                     padding3: 0
@@ -1004,9 +1005,9 @@ impl Event {
             } => {
                 let hatvalue = state.to_raw();
                 let event = sys::SDL_JoyHatEvent {
-                    type_: sys::SDL_EventType::SDL_JOYHATMOTION as u32,
-                    timestamp: timestamp,
-                    which: which,
+                    type_: SDL_EventType::SDL_JOYHATMOTION as u32,
+                    timestamp,
+                    which,
                     hat: hat_idx,
                     value: hatvalue,
                     padding1: 0,
@@ -1024,9 +1025,9 @@ impl Event {
                 button_idx
             } => {
                 let event = sys::SDL_JoyButtonEvent {
-                    type_: sys::SDL_EventType::SDL_JOYBUTTONDOWN as u32,
-                    timestamp: timestamp,
-                    which: which,
+                    type_: SDL_EventType::SDL_JOYBUTTONDOWN as u32,
+                    timestamp,
+                    which,
                     button: button_idx,
                     state: sys::SDL_PRESSED as u8,
                     padding1: 0,
@@ -1045,9 +1046,9 @@ impl Event {
                 button_idx,
             } => {
                 let event = sys::SDL_JoyButtonEvent {
-                    type_: sys::SDL_EventType::SDL_JOYBUTTONUP as u32,
-                    timestamp: timestamp,
-                    which: which,
+                    type_: SDL_EventType::SDL_JOYBUTTONUP as u32,
+                    timestamp,
+                    which,
                     button: button_idx,
                     state: sys::SDL_RELEASED as u8,
                     padding1: 0,
@@ -1065,8 +1066,8 @@ impl Event {
                 which,
             } => {
                 let event = sys::SDL_JoyDeviceEvent {
-                    type_: sys::SDL_EventType::SDL_JOYDEVICEADDED as u32,
-                    timestamp: timestamp,
+                    type_: SDL_EventType::SDL_JOYDEVICEADDED as u32,
+                    timestamp,
                     which: which as i32,
                 };
                 unsafe {
@@ -1080,9 +1081,9 @@ impl Event {
                 which,
             } => {
                 let event = sys::SDL_JoyDeviceEvent {
-                    type_: sys::SDL_EventType::SDL_JOYDEVICEREMOVED as u32,
-                    timestamp: timestamp,
-                    which: which,
+                    type_: SDL_EventType::SDL_JOYDEVICEREMOVED as u32,
+                    timestamp,
+                    which,
                 };
                 unsafe {
                     ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_JoyDeviceEvent, 1);
@@ -1098,11 +1099,11 @@ impl Event {
             } => {
                 let axisval = axis.to_ll();
                 let event = sys::SDL_ControllerAxisEvent {
-                    type_: sys::SDL_EventType::SDL_CONTROLLERAXISMOTION as u32,
-                    timestamp: timestamp,
-                    which: which,
+                    type_: SDL_EventType::SDL_CONTROLLERAXISMOTION as u32,
+                    timestamp,
+                    which,
                     axis: axisval as u8,
-                    value: value,
+                    value,
                     padding1: 0,
                     padding2: 0,
                     padding3: 0,
@@ -1120,9 +1121,9 @@ impl Event {
             } => {
                 let buttonval = button.to_ll();
                 let event = sys::SDL_ControllerButtonEvent {
-                    type_: sys::SDL_EventType::SDL_CONTROLLERBUTTONDOWN as u32,
-                    timestamp: timestamp,
-                    which: which,
+                    type_: SDL_EventType::SDL_CONTROLLERBUTTONDOWN as u32,
+                    timestamp,
+                    which,
                     // This conversion turns an i32 into a u8; signed-to-unsigned conversions
                     // are a bit of a code smell, but that appears to be how SDL defines it.
                     button: buttonval as u8,
@@ -1143,9 +1144,9 @@ impl Event {
             } => {
                 let buttonval = button.to_ll();
                 let event = sys::SDL_ControllerButtonEvent {
-                    type_: sys::SDL_EventType::SDL_CONTROLLERBUTTONUP as u32,
-                    timestamp: timestamp,
-                    which: which,
+                    type_: SDL_EventType::SDL_CONTROLLERBUTTONUP as u32,
+                    timestamp,
+                    which,
                     button: buttonval as u8,
                     state: sys::SDL_RELEASED as u8,
                     padding1: 0,
@@ -1162,8 +1163,8 @@ impl Event {
                 which,
             } => {
                 let event = sys::SDL_ControllerDeviceEvent {
-                    type_: sys::SDL_EventType::SDL_CONTROLLERDEVICEADDED as u32,
-                    timestamp: timestamp,
+                    type_: SDL_EventType::SDL_CONTROLLERDEVICEADDED as u32,
+                    timestamp,
                     which: which as i32,
                 };
                 unsafe {
@@ -1178,9 +1179,9 @@ impl Event {
                 which,
             } => {
                 let event = sys::SDL_ControllerDeviceEvent {
-                    type_: sys::SDL_EventType::SDL_CONTROLLERDEVICEREMOVED as u32,
-                    timestamp: timestamp,
-                    which: which,
+                    type_: SDL_EventType::SDL_CONTROLLERDEVICEREMOVED as u32,
+                    timestamp,
+                    which,
                 };
                 unsafe {
                     ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_ControllerDeviceEvent, 1);
@@ -1194,9 +1195,9 @@ impl Event {
                 which,
             } => {
                 let event = sys::SDL_ControllerDeviceEvent {
-                    type_: sys::SDL_EventType::SDL_CONTROLLERDEVICEREMAPPED as u32,
-                    timestamp: timestamp,
-                    which: which,
+                    type_: SDL_EventType::SDL_CONTROLLERDEVICEREMAPPED as u32,
+                    timestamp,
+                    which,
                 };
                 unsafe {
                     ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_ControllerDeviceEvent, 1);
@@ -1306,7 +1307,7 @@ impl Event {
                 Event::TextEditing {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
-                    text: text,
+                    text,
                     start: event.start,
                     length: event.length
                 }
@@ -1323,7 +1324,7 @@ impl Event {
                 Event::TextInput {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
-                    text: text
+                    text
                 }
             }
 
@@ -1446,7 +1447,7 @@ impl Event {
                 Event::ControllerAxisMotion {
                     timestamp: event.timestamp,
                     which: event.which,
-                    axis: axis,
+                    axis,
                     value: event.value
                 }
             }
@@ -1457,7 +1458,7 @@ impl Event {
                 Event::ControllerButtonDown {
                     timestamp: event.timestamp,
                     which: event.which,
-                    button: button
+                    button
                 }
             }
             EventType::ControllerButtonUp => {
@@ -1467,7 +1468,7 @@ impl Event {
                 Event::ControllerButtonUp {
                     timestamp: event.timestamp,
                     which: event.which,
-                    button: button
+                    button
                 }
             }
             EventType::ControllerDeviceAdded => {
@@ -1766,7 +1767,7 @@ impl crate::EventPump {
     pub fn wait_timeout_iter(&mut self, timeout: u32) -> EventWaitTimeoutIterator {
         EventWaitTimeoutIterator {
             _marker: PhantomData,
-            timeout: timeout
+            timeout
         }
     }
 

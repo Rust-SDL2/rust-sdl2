@@ -53,6 +53,8 @@ use std::mem::{transmute, uninitialized};
 use libc::c_void;
 
 use crate::sys;
+use crate::sys::SDL_TextureAccess;
+use crate::sys::SDL_BlendMode;
 
 /// Contains the description of an error returned by SDL
 #[derive(Debug)]
@@ -102,9 +104,9 @@ impl Error for TargetRenderError {
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(i32)]
 pub enum TextureAccess {
-    Static = sys::SDL_TextureAccess::SDL_TEXTUREACCESS_STATIC as i32,
-    Streaming = sys::SDL_TextureAccess::SDL_TEXTUREACCESS_STREAMING as i32,
-    Target = sys::SDL_TextureAccess::SDL_TEXTUREACCESS_TARGET as i32,
+    Static = SDL_TextureAccess::SDL_TEXTUREACCESS_STATIC as i32,
+    Streaming = SDL_TextureAccess::SDL_TEXTUREACCESS_STREAMING as i32,
+    Target = SDL_TextureAccess::SDL_TEXTUREACCESS_TARGET as i32,
 }
 
 impl FromPrimitive for TextureAccess {
@@ -112,10 +114,10 @@ impl FromPrimitive for TextureAccess {
         use self::TextureAccess::*;
         let n = n as u32;
 
-        Some(match unsafe { transmute::<u32, sys::SDL_TextureAccess>(n) } {
-                 sys::SDL_TextureAccess::SDL_TEXTUREACCESS_STATIC => Static,
-                 sys::SDL_TextureAccess::SDL_TEXTUREACCESS_STREAMING => Streaming,
-                 sys::SDL_TextureAccess::SDL_TEXTUREACCESS_TARGET => Target,
+        Some(match unsafe { transmute::<u32, SDL_TextureAccess>(n) } {
+                 SDL_TextureAccess::SDL_TEXTUREACCESS_STATIC => Static,
+                 SDL_TextureAccess::SDL_TEXTUREACCESS_STREAMING => Streaming,
+                 SDL_TextureAccess::SDL_TEXTUREACCESS_TARGET => Target,
              })
     }
 
@@ -138,11 +140,11 @@ pub struct RendererInfo {
 #[repr(i32)]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum BlendMode {
-    None = sys::SDL_BlendMode::SDL_BLENDMODE_NONE as i32,
-    Blend = sys::SDL_BlendMode::SDL_BLENDMODE_BLEND as i32,
-    Add = sys::SDL_BlendMode::SDL_BLENDMODE_ADD as i32,
-    Mod = sys::SDL_BlendMode::SDL_BLENDMODE_MOD as i32,
-    Invalid = sys::SDL_BlendMode::SDL_BLENDMODE_INVALID as i32,
+    None = SDL_BlendMode::SDL_BLENDMODE_NONE as i32,
+    Blend = SDL_BlendMode::SDL_BLENDMODE_BLEND as i32,
+    Add = SDL_BlendMode::SDL_BLENDMODE_ADD as i32,
+    Mod = SDL_BlendMode::SDL_BLENDMODE_MOD as i32,
+    Invalid = SDL_BlendMode::SDL_BLENDMODE_INVALID as i32,
 }
 
 impl FromPrimitive for BlendMode {
@@ -150,12 +152,12 @@ impl FromPrimitive for BlendMode {
         use self::BlendMode::*;
         let n = n as u32;
 
-        Some(match unsafe { transmute::<u32, sys::SDL_BlendMode>(n) } {
-                 sys::SDL_BlendMode::SDL_BLENDMODE_NONE => None,
-                 sys::SDL_BlendMode::SDL_BLENDMODE_BLEND => Blend,
-                 sys::SDL_BlendMode::SDL_BLENDMODE_ADD => Add,
-                 sys::SDL_BlendMode::SDL_BLENDMODE_MOD => Mod,
-                 sys::SDL_BlendMode::SDL_BLENDMODE_INVALID => Invalid,
+        Some(match unsafe { transmute::<u32, SDL_BlendMode>(n) } {
+                 SDL_BlendMode::SDL_BLENDMODE_NONE => None,
+                 SDL_BlendMode::SDL_BLENDMODE_BLEND => Blend,
+                 SDL_BlendMode::SDL_BLENDMODE_ADD => Add,
+                 SDL_BlendMode::SDL_BLENDMODE_MOD => Mod,
+                 SDL_BlendMode::SDL_BLENDMODE_INVALID => Invalid,
              })
     }
 
@@ -179,9 +181,9 @@ impl RendererInfo {
         let name = CStr::from_ptr(info.name as *const _).to_str().unwrap();
 
         RendererInfo {
-            name: name,
+            name,
             flags: info.flags,
-            texture_formats: texture_formats,
+            texture_formats,
             max_texture_width: info.max_texture_width as u32,
             max_texture_height: info.max_texture_height as u32,
         }
@@ -225,7 +227,7 @@ impl<T> RendererContext<T> {
 
     pub unsafe fn from_ll(raw: *mut sys::SDL_Renderer, target: Rc<T>) -> Self {
         RendererContext {
-            raw: raw,
+            raw,
             _target: target,
         }
     }
@@ -342,8 +344,8 @@ impl<'s> Canvas<Surface<'s>> {
             let default_pixel_format = surface.pixel_format_enum();
             Ok(Canvas {
                    target: surface,
-                   context: context,
-                   default_pixel_format: default_pixel_format,
+                   context,
+                   default_pixel_format,
                })
         } else {
             Err(get_error())
@@ -407,7 +409,7 @@ impl Canvas<Window> {
     pub fn into_window(self) -> Window {
         self.target
     }
-    
+
     #[inline]
     pub fn default_pixel_format(&self) -> PixelFormatEnum {
         self.window().window_pixel_format()
@@ -588,7 +590,7 @@ impl<T: RenderTarget> Canvas<T> {
             Err(TargetRenderError::NotSupported)
         }
     }
-    
+
     #[cfg(feature = "unsafe_textures")]
     pub fn with_multiple_texture_canvas<'a : 's, 's, I, F, U: 's>(&mut self, textures: I, mut f: F)
         -> Result<(), TargetRenderError>
@@ -640,7 +642,7 @@ impl CanvasBuilder {
     /// Initializes a new `CanvasBuilder`.
     pub fn new(window: Window) -> CanvasBuilder {
         CanvasBuilder {
-            window: window,
+            window,
             // -1 means to initialize the first rendering driver supporting the
             // renderer flags
             index: None,
@@ -665,9 +667,9 @@ impl CanvasBuilder {
             let context = Rc::new(unsafe { RendererContext::from_ll(raw, self.window.context()) });
             let default_pixel_format = self.window.window_pixel_format();
             Ok(Canvas {
-                   context: context,
+                   context,
                    target: self.window,
-                   default_pixel_format: default_pixel_format,
+                   default_pixel_format,
                })
         }
     }
@@ -881,16 +883,16 @@ impl<T> TextureCreator<T> {
     #[inline]
     pub unsafe fn raw_create_texture(&self, raw: *mut sys::SDL_Texture) -> Texture {
         Texture {
-            raw: raw,
+            raw,
             _marker: PhantomData,
         }
     }
-    
+
     /// Create a texture from its raw `SDL_Texture`. Should be used with care.
     #[cfg(feature = "unsafe_textures")]
     pub unsafe fn raw_create_texture(&self, raw: *mut sys::SDL_Texture) -> Texture {
         Texture {
-            raw: raw,
+            raw,
         }
     }
 }
@@ -937,7 +939,7 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Gets the blend mode used for drawing operations.
     pub fn blend_mode(&self) -> BlendMode {
-        let mut blend: sys::SDL_BlendMode;
+        let mut blend: SDL_BlendMode;
         unsafe { blend = uninitialized(); }
         let ret = unsafe { sys::SDL_GetRenderDrawBlendMode(self.context.raw, &mut blend) };
         // Should only fail on an invalid renderer
@@ -1426,7 +1428,7 @@ impl<T: RenderTarget> Canvas<T> {
             unsafe { Ok(self.raw_create_texture(result)) }
         }
     }
-    
+
     #[cfg(feature = "unsafe_textures")]
     /// Create a texture from its raw `SDL_Texture`. Should be used with care.
     ///
@@ -1435,7 +1437,7 @@ impl<T: RenderTarget> Canvas<T> {
     /// Note that this method is only accessible in Canvas with the `unsafe_textures` feature.
     pub unsafe fn raw_create_texture(&self, raw: *mut sys::SDL_Texture) -> Texture {
         Texture {
-            raw: raw,
+            raw,
         }
     }
 }
@@ -1737,7 +1739,7 @@ impl InternalTexture {
     }
 
     pub fn blend_mode(&self) -> BlendMode {
-        let mut blend: sys::SDL_BlendMode;
+        let mut blend: SDL_BlendMode;
         unsafe { blend = uninitialized(); }
         let ret = unsafe { sys::SDL_GetTextureBlendMode(self.raw, &mut blend) };
 
@@ -1873,7 +1875,7 @@ impl InternalTexture {
                            plane: "y",
                            length: y_plane.len(),
                            pitch: y_pitch,
-                           height: height,
+                           height,
                        });
         }
         if u_plane.len() != (u_pitch * height / 2) {
@@ -2027,7 +2029,7 @@ impl<'r> Texture<'r> {
     pub fn set_color_mod(&mut self, red: u8, green: u8, blue: u8) {
         InternalTexture{ raw: self.raw }.set_color_mod(red, green, blue)
     }
-  
+
     /// Gets the additional color value multiplied into render copy operations.
     #[inline]
     pub fn color_mod(&self) -> (u8, u8, u8) {
@@ -2106,7 +2108,7 @@ impl<'r> Texture<'r> {
     {
         InternalTexture { raw: self.raw }.with_lock(rect, func)
     }
-    
+
     /// Binds an OpenGL/ES/ES2 texture to the current
     /// context for use with when rendering OpenGL primitives directly.
     #[inline]
@@ -2224,7 +2226,7 @@ impl<> Texture<> {
     {
         InternalTexture { raw: self.raw }.with_lock(rect, func)
     }
-    
+
     /// Binds an OpenGL/ES/ES2 texture to the current
     /// context for use with when rendering OpenGL primitives directly.
     #[inline]

@@ -5,6 +5,7 @@ use crate::EventPump;
 use std::mem::transmute;
 
 use crate::sys;
+use crate::sys::SDL_SystemCursor;
 
 mod relative;
 pub use self::relative::RelativeMouseState;
@@ -12,18 +13,18 @@ pub use self::relative::RelativeMouseState;
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(u32)]
 pub enum SystemCursor {
-    Arrow = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_ARROW as u32,
-    IBeam = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_IBEAM as u32,
-    Wait = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_WAIT as u32,
-    Crosshair = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_CROSSHAIR as u32,
-    WaitArrow = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_WAITARROW as u32,
-    SizeNWSE = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_SIZENWSE as u32,
-    SizeNESW = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_SIZENESW as u32,
-    SizeWE = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_SIZEWE as u32,
-    SizeNS = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_SIZENS as u32,
-    SizeAll = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_SIZEALL as u32,
-    No = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_NO as u32,
-    Hand = sys::SDL_SystemCursor::SDL_SYSTEM_CURSOR_HAND as u32,
+    Arrow = SDL_SystemCursor::SDL_SYSTEM_CURSOR_ARROW as u32,
+    IBeam = SDL_SystemCursor::SDL_SYSTEM_CURSOR_IBEAM as u32,
+    Wait = SDL_SystemCursor::SDL_SYSTEM_CURSOR_WAIT as u32,
+    Crosshair = SDL_SystemCursor::SDL_SYSTEM_CURSOR_CROSSHAIR as u32,
+    WaitArrow = SDL_SystemCursor::SDL_SYSTEM_CURSOR_WAITARROW as u32,
+    SizeNWSE = SDL_SystemCursor::SDL_SYSTEM_CURSOR_SIZENWSE as u32,
+    SizeNESW = SDL_SystemCursor::SDL_SYSTEM_CURSOR_SIZENESW as u32,
+    SizeWE = SDL_SystemCursor::SDL_SYSTEM_CURSOR_SIZEWE as u32,
+    SizeNS = SDL_SystemCursor::SDL_SYSTEM_CURSOR_SIZENS as u32,
+    SizeAll = SDL_SystemCursor::SDL_SYSTEM_CURSOR_SIZEALL as u32,
+    No = SDL_SystemCursor::SDL_SYSTEM_CURSOR_NO as u32,
+    Hand = SDL_SystemCursor::SDL_SYSTEM_CURSOR_HAND as u32,
 }
 
 pub struct Cursor {
@@ -48,7 +49,7 @@ impl Cursor {
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(Cursor{ raw: raw })
+                Ok(Cursor{ raw })
             }
         }
     }
@@ -61,7 +62,7 @@ impl Cursor {
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(Cursor{ raw: raw })
+                Ok(Cursor{ raw })
             }
         }
     }
@@ -73,7 +74,7 @@ impl Cursor {
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(Cursor{ raw: raw })
+                Ok(Cursor{ raw })
             }
         }
     }
@@ -167,7 +168,7 @@ impl MouseState {
         };
 
         MouseState {
-            mouse_state: mouse_state,
+            mouse_state,
             x: x as i32,
             y: y as i32
         }

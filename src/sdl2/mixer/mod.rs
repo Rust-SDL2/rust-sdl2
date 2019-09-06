@@ -33,6 +33,7 @@ use ::get_error;
 use ::rwops::RWops;
 use ::version::Version;
 use sys;
+use sys::mixer;
 
 // This comes from SDL_audio.h
 #[allow(non_camel_case_types)]
@@ -92,16 +93,16 @@ pub const MAX_VOLUME: i32 = 128;
 /// Returns the version of the dynamically linked `SDL_mixer` library
 pub fn get_linked_version() -> Version {
 
-    unsafe { Version::from_ll(*sys::mixer::Mix_Linked_Version()) }
+    unsafe { Version::from_ll(*mixer::Mix_Linked_Version()) }
 }
 
 bitflags!(
     pub struct InitFlag : u32 {
-        const FLAC = sys::mixer::MIX_InitFlags_MIX_INIT_FLAC as u32;
-        const MOD  = sys::mixer::MIX_InitFlags_MIX_INIT_MOD as u32;
-        const MP3  = sys::mixer::MIX_InitFlags_MIX_INIT_MP3 as u32;
-        const OGG  = sys::mixer::MIX_InitFlags_MIX_INIT_OGG as u32;
-        const MID  = sys::mixer::MIX_InitFlags_MIX_INIT_MID as u32;
+        const FLAC = mixer::MIX_InitFlags_MIX_INIT_FLAC as u32;
+        const MOD  = mixer::MIX_InitFlags_MIX_INIT_MOD as u32;
+        const MP3  = mixer::MIX_InitFlags_MIX_INIT_MP3 as u32;
+        const OGG  = mixer::MIX_InitFlags_MIX_INIT_OGG as u32;
+        const MID  = mixer::MIX_InitFlags_MIX_INIT_MID as u32;
     }
 );
 
@@ -134,7 +135,7 @@ pub struct Sdl2MixerContext;
 impl Drop for Sdl2MixerContext {
     fn drop(&mut self) {
         unsafe {
-            sys::mixer::Mix_Quit();
+            mixer::Mix_Quit();
         }
     }
 }
@@ -143,7 +144,7 @@ impl Drop for Sdl2MixerContext {
 /// one or more flags from `InitFlag`.
 pub fn init(flags: InitFlag) -> Result<Sdl2MixerContext, String> {
     let return_flags = unsafe {
-        let ret = sys::mixer::Mix_Init(flags.bits() as c_int);
+        let ret = mixer::Mix_Init(flags.bits() as c_int);
         InitFlag::from_bits_truncate(ret as u32)
     };
     // Check if all init flags were set
@@ -175,7 +176,7 @@ pub fn open_audio(frequency: i32,
                   chunksize: i32)
                   -> Result<(), String> {
     let ret = unsafe {
-        sys::mixer::Mix_OpenAudio(frequency as c_int,
+        mixer::Mix_OpenAudio(frequency as c_int,
                            format,
                            channels as c_int,
                            chunksize as c_int)
@@ -189,7 +190,7 @@ pub fn open_audio(frequency: i32,
 
 /// Shutdown and cleanup the mixer API.
 pub fn close_audio() {
-    unsafe { sys::mixer::Mix_CloseAudio() }
+    unsafe { mixer::Mix_CloseAudio() }
 }
 
 /// Get the actual audio format in use by the opened audio device.
@@ -197,7 +198,7 @@ pub fn query_spec() -> Result<(i32, AudioFormat, i32), String> {
     let mut frequency: c_int = 0;
     let mut format: uint16_t = 0;
     let mut channels: c_int = 0;
-    let ret = unsafe { sys::mixer::Mix_QuerySpec(&mut frequency, &mut format, &mut channels) };
+    let ret = unsafe { mixer::Mix_QuerySpec(&mut frequency, &mut format, &mut channels) };
     if ret == 0 {
         Err(get_error())
     } else {
@@ -209,13 +210,13 @@ pub fn query_spec() -> Result<(i32, AudioFormat, i32), String> {
 
 /// Get the number of sample chunk decoders available from the `Mix_GetChunkDecoder` function.
 pub fn get_chunk_decoders_number() -> i32 {
-    unsafe { sys::mixer::Mix_GetNumChunkDecoders() as i32 }
+    unsafe { mixer::Mix_GetNumChunkDecoders() as i32 }
 }
 
 /// Get the name of the indexed sample chunk decoder.
 pub fn get_chunk_decoder(index: i32) -> String {
     unsafe {
-        let name = sys::mixer::Mix_GetChunkDecoder(index as c_int);
+        let name = mixer::Mix_GetChunkDecoder(index as c_int);
         from_utf8(CStr::from_ptr(name).to_bytes()).unwrap().to_owned()
     }
 }
@@ -223,14 +224,14 @@ pub fn get_chunk_decoder(index: i32) -> String {
 /// The internal format for an audio chunk.
 #[derive(PartialEq)]
 pub struct Chunk {
-    pub raw: *mut sys::mixer::Mix_Chunk,
+    pub raw: *mut mixer::Mix_Chunk,
     pub owned: bool,
 }
 
 impl Drop for Chunk {
     fn drop(&mut self) {
         if self.owned {
-            unsafe { sys::mixer::Mix_FreeChunk(self.raw) }
+            unsafe { mixer::Mix_FreeChunk(self.raw) }
         }
     }
 }
@@ -238,7 +239,7 @@ impl Drop for Chunk {
 impl Chunk {
     /// Load file for use as a sample.
     pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Chunk, String> {
-        let raw = unsafe { sys::mixer::Mix_LoadWAV_RW(try!(RWops::from_file(path, "rb")).raw(), 0) };
+        let raw = unsafe { mixer::Mix_LoadWAV_RW(try!(RWops::from_file(path, "rb")).raw(), 0) };
         if raw.is_null() {
             Err(get_error())
         } else {
@@ -251,12 +252,12 @@ impl Chunk {
 
     /// Set chunk->volume to volume.
     pub fn set_volume(&mut self, volume: i32) -> i32 {
-        unsafe { sys::mixer::Mix_VolumeChunk(self.raw, volume as c_int) as i32 }
+        unsafe { mixer::Mix_VolumeChunk(self.raw, volume as c_int) as i32 }
     }
 
     /// current volume for the chunk.
     pub fn get_volume(&self) -> i32 {
-        unsafe { sys::mixer::Mix_VolumeChunk(self.raw, -1) as i32 }
+        unsafe { mixer::Mix_VolumeChunk(self.raw, -1) as i32 }
     }
 }
 
@@ -271,7 +272,7 @@ pub trait LoaderRWops<'a> {
 impl<'a> LoaderRWops<'a> for RWops<'a> {
     /// Load src for use as a sample.
     fn load_wav(&self) -> Result<Chunk, String> {
-        let raw = unsafe { sys::mixer::Mix_LoadWAV_RW(self.raw(), 0) };
+        let raw = unsafe { mixer::Mix_LoadWAV_RW(self.raw(), 0) };
         if raw.is_null() {
             Err(get_error())
         } else {
@@ -284,7 +285,7 @@ impl<'a> LoaderRWops<'a> for RWops<'a> {
 
     /// Load src for use as music.
     fn load_music(&self) -> Result<Music<'a>, String> {
-        let raw = unsafe { sys::mixer::Mix_LoadMUS_RW(self.raw(), 0) };
+        let raw = unsafe { mixer::Mix_LoadMUS_RW(self.raw(), 0) };
         if raw.is_null() {
             Err(get_error())
         } else {
@@ -305,9 +306,9 @@ impl<'a> LoaderRWops<'a> for RWops<'a> {
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Hash)]
 pub enum Fading {
-    NoFading = sys::mixer::Mix_Fading_MIX_NO_FADING as i32,
-    FadingOut = sys::mixer::Mix_Fading_MIX_FADING_OUT as i32,
-    FadingIn = sys::mixer::Mix_Fading_MIX_FADING_IN as i32,
+    NoFading = mixer::Mix_Fading_MIX_NO_FADING as i32,
+    FadingOut = mixer::Mix_Fading_MIX_FADING_OUT as i32,
+    FadingIn = mixer::Mix_Fading_MIX_FADING_IN as i32,
 }
 
 /// Sound effect channel.
@@ -322,7 +323,7 @@ pub fn channel(chan: i32) -> Channel {
 
 /// Set the number of channels being mixed.
 pub fn allocate_channels(numchans: i32) -> i32 {
-    unsafe { sys::mixer::Mix_AllocateChannels(numchans as c_int) as i32 }
+    unsafe { mixer::Mix_AllocateChannels(numchans as c_int) as i32 }
 }
 
 static mut CHANNEL_FINISHED_CALLBACK: Option<fn(Channel)> = None;
@@ -340,7 +341,7 @@ extern "C" fn c_channel_finished_callback(ch: c_int) {
 pub fn set_channel_finished(f: fn(Channel)) {
     unsafe {
         CHANNEL_FINISHED_CALLBACK = Some(f);
-        sys::mixer::Mix_ChannelFinished(Some(c_channel_finished_callback as extern "C" fn(ch: c_int)));
+        mixer::Mix_ChannelFinished(Some(c_channel_finished_callback as extern "C" fn(ch: c_int)));
     }
 }
 
@@ -348,7 +349,7 @@ pub fn set_channel_finished(f: fn(Channel)) {
 /// halted.
 pub fn unset_channel_finished() {
     unsafe {
-        sys::mixer::Mix_ChannelFinished(None);
+        mixer::Mix_ChannelFinished(None);
         CHANNEL_FINISHED_CALLBACK = None;
     }
 }
@@ -367,13 +368,13 @@ impl Channel {
     /// Set the volume for any allocated channel.
     pub fn set_volume(self, volume: i32) -> i32 {
         let Channel(ch) = self;
-        unsafe { sys::mixer::Mix_Volume(ch as c_int, volume as c_int) as i32 }
+        unsafe { mixer::Mix_Volume(ch as c_int, volume as c_int) as i32 }
     }
 
     /// Returns the channels volume on scale of 0 to 128.
     pub fn get_volume(self) -> i32 {
         let Channel(ch) = self;
-        unsafe { sys::mixer::Mix_Volume(ch as c_int, -1) as i32 }
+        unsafe { mixer::Mix_Volume(ch as c_int, -1) as i32 }
     }
 
     /// Play chunk on channel, or if channel is -1, pick the first free unreserved channel.
@@ -384,7 +385,7 @@ impl Channel {
     pub fn play_timed(self, chunk: &Chunk, loops: i32, ticks: i32) -> Result<Channel, String> {
         let Channel(ch) = self;
         let ret = unsafe {
-            sys::mixer::Mix_PlayChannelTimed(ch as c_int, chunk.raw, loops as c_int, ticks as c_int)
+            mixer::Mix_PlayChannelTimed(ch as c_int, chunk.raw, loops as c_int, ticks as c_int)
         };
         if ret == -1 {
             Err(get_error())
@@ -406,7 +407,7 @@ impl Channel {
                          -> Result<Channel, String> {
         let Channel(ch) = self;
         let ret = unsafe {
-            sys::mixer::Mix_FadeInChannelTimed(ch as c_int,
+            mixer::Mix_FadeInChannelTimed(ch as c_int,
                                         chunk.raw,
                                         loops as c_int,
                                         ms as c_int,
@@ -423,7 +424,7 @@ impl Channel {
     pub fn pause(self) {
         let Channel(ch) = self;
         unsafe {
-            sys::mixer::Mix_Pause(ch as c_int);
+            mixer::Mix_Pause(ch as c_int);
         }
     }
 
@@ -431,7 +432,7 @@ impl Channel {
     pub fn resume(self) {
         let Channel(ch) = self;
         unsafe {
-            sys::mixer::Mix_Resume(ch as c_int);
+            mixer::Mix_Resume(ch as c_int);
         }
     }
 
@@ -439,49 +440,49 @@ impl Channel {
     pub fn halt(self) {
         let Channel(ch) = self;
         unsafe {
-            sys::mixer::Mix_HaltChannel(ch as c_int);
+            mixer::Mix_HaltChannel(ch as c_int);
         }
     }
 
     /// Halt channel playback, after ticks milliseconds.
     pub fn expire(self, ticks: i32) -> i32 {
         let Channel(ch) = self;
-        unsafe { sys::mixer::Mix_ExpireChannel(ch as c_int, ticks as c_int) as i32 }
+        unsafe { mixer::Mix_ExpireChannel(ch as c_int, ticks as c_int) as i32 }
     }
 
     /// Gradually fade out which channel over ms milliseconds starting from now.
     pub fn fade_out(self, ms: i32) -> i32 {
         let Channel(ch) = self;
-        unsafe { sys::mixer::Mix_FadeOutChannel(ch as c_int, ms as c_int) as i32 }
+        unsafe { mixer::Mix_FadeOutChannel(ch as c_int, ms as c_int) as i32 }
     }
 
     /// if channel is playing, or not.
     pub fn is_playing(self) -> bool {
         let Channel(ch) = self;
-        unsafe { sys::mixer::Mix_Playing(ch as c_int) != 0 }
+        unsafe { mixer::Mix_Playing(ch as c_int) != 0 }
     }
 
     ///  if channel is paused, or not.
     pub fn is_paused(self) -> bool {
         let Channel(ch) = self;
-        unsafe { sys::mixer::Mix_Paused(ch as c_int) != 0 }
+        unsafe { mixer::Mix_Paused(ch as c_int) != 0 }
     }
 
     /// if channel is fading in, out, or not
     pub fn get_fading(self) -> Fading {
         let Channel(ch) = self;
-        let ret = unsafe { sys::mixer::Mix_FadingChannel(ch as c_int) as c_uint };
+        let ret = unsafe { mixer::Mix_FadingChannel(ch as c_int) as c_uint };
         match ret {
-            sys::mixer::Mix_Fading_MIX_FADING_OUT    => Fading::FadingOut,
-            sys::mixer::Mix_Fading_MIX_FADING_IN     => Fading::FadingIn,
-            sys::mixer::Mix_Fading_MIX_NO_FADING | _ => Fading::NoFading
+            mixer::Mix_Fading_MIX_FADING_OUT    => Fading::FadingOut,
+            mixer::Mix_Fading_MIX_FADING_IN     => Fading::FadingIn,
+            mixer::Mix_Fading_MIX_NO_FADING | _ => Fading::NoFading
         }
     }
 
     /// Get the most recent sample chunk pointer played on channel.
     pub fn get_chunk(self) -> Option<Chunk> {
         let Channel(ch) = self;
-        let raw = unsafe { sys::mixer::Mix_GetChunk(ch as c_int) };
+        let raw = unsafe { mixer::Mix_GetChunk(ch as c_int) };
         if raw.is_null() {
             None
         } else {
@@ -495,7 +496,7 @@ impl Channel {
     /// This removes all effects registered to channel.
     pub fn unregister_all_effects(self) -> Result<(), String> {
         let Channel(ch) = self;
-        let ret = unsafe { sys::mixer::Mix_UnregisterAllEffects(ch as c_int) };
+        let ret = unsafe { mixer::Mix_UnregisterAllEffects(ch as c_int) };
         if ret == 0 {
             Err(get_error())
         } else {
@@ -507,7 +508,7 @@ impl Channel {
     /// They range from 0 (silence) to 255 (loud).
     pub fn set_panning(self, left: u8, right: u8) -> Result<(), String> {
         let Channel(ch) = self;
-        let ret = unsafe { sys::mixer::Mix_SetPanning(ch as c_int, left, right) };
+        let ret = unsafe { mixer::Mix_SetPanning(ch as c_int, left, right) };
         if ret == 0 {
             Err(get_error())
         } else {
@@ -518,7 +519,7 @@ impl Channel {
     /// Unregisters panning effect.
     pub fn unset_panning(self) -> Result<(), String> {
         let Channel(ch) = self;
-        let ret = unsafe { sys::mixer::Mix_SetPanning(ch as c_int, 255, 255) };
+        let ret = unsafe { mixer::Mix_SetPanning(ch as c_int, 255, 255) };
         if ret == 0 {
             Err(get_error())
         } else {
@@ -530,7 +531,7 @@ impl Channel {
     /// distance ranges from 0 (close/loud) to 255 (far/quiet).
     pub fn set_distance(self, distance: u8) -> Result<(), String> {
         let Channel(ch) = self;
-        let ret = unsafe { sys::mixer::Mix_SetDistance(ch as c_int, distance) };
+        let ret = unsafe { mixer::Mix_SetDistance(ch as c_int, distance) };
         if ret == 0 {
             Err(get_error())
         } else {
@@ -541,7 +542,7 @@ impl Channel {
     /// Unregisters distance effect.
     pub fn unset_distance(self) -> Result<(), String> {
         let Channel(ch) = self;
-        let ret = unsafe { sys::mixer::Mix_SetDistance(ch as c_int, 0) };
+        let ret = unsafe { mixer::Mix_SetDistance(ch as c_int, 0) };
         if ret == 0 {
             Err(get_error())
         } else {
@@ -554,7 +555,7 @@ impl Channel {
     /// distance ranges from 0 (close/loud) to 255 (far/quiet).
     pub fn set_position(self, angle: i16, distance: u8) -> Result<(), String> {
         let Channel(ch) = self;
-        let ret = unsafe { sys::mixer::Mix_SetPosition(ch as c_int, angle, distance) };
+        let ret = unsafe { mixer::Mix_SetPosition(ch as c_int, angle, distance) };
         if ret == 0 {
             Err(get_error())
         } else {
@@ -565,7 +566,7 @@ impl Channel {
     /// Unregisters position effect.
     pub fn unset_position(self) -> Result<(), String> {
         let Channel(ch) = self;
-        let ret = unsafe { sys::mixer::Mix_SetPosition(ch as c_int, 0, 0) };
+        let ret = unsafe { mixer::Mix_SetPosition(ch as c_int, 0, 0) };
         if ret == 0 {
             Err(get_error())
         } else {
@@ -577,7 +578,7 @@ impl Channel {
     /// true for reverse, false to unregister effect.
     pub fn set_reverse_stereo(self, flip: bool) -> Result<(), String> {
         let Channel(ch) = self;
-        let ret = unsafe { sys::mixer::Mix_SetReverseStereo(ch as c_int, flip as c_int) };
+        let ret = unsafe { mixer::Mix_SetReverseStereo(ch as c_int, flip as c_int) };
         if ret == 0 {
             Err(get_error())
         } else {
@@ -588,12 +589,12 @@ impl Channel {
 
 /// Returns how many channels are currently playing.
 pub fn get_playing_channels_number() -> i32 {
-    unsafe { sys::mixer::Mix_Playing(-1) as i32 }
+    unsafe { mixer::Mix_Playing(-1) as i32 }
 }
 
 /// Returns how many channels are currently paused.
 pub fn get_paused_channels_number() -> i32 {
-    unsafe { sys::mixer::Mix_Paused(-1) as i32 }
+    unsafe { mixer::Mix_Paused(-1) as i32 }
 }
 
 // 4.4 Groups
@@ -601,7 +602,7 @@ pub fn get_paused_channels_number() -> i32 {
 /// Reserve num channels from being used when playing samples when
 /// passing in -1 as a channel number to playback functions.
 pub fn reserve_channels(num: i32) -> i32 {
-    unsafe { sys::mixer::Mix_ReserveChannels(num as c_int) as i32 }
+    unsafe { mixer::Mix_ReserveChannels(num as c_int) as i32 }
 }
 
 /// Sound effect channel grouping.
@@ -619,25 +620,25 @@ impl Group {
     /// or reset it's group to the default group tag (-1).
     pub fn add_channels_range(self, from: i32, to: i32) -> i32 {
         let Group(g) = self;
-        unsafe { sys::mixer::Mix_GroupChannels(from as c_int, to as c_int, g as c_int) as i32 }
+        unsafe { mixer::Mix_GroupChannels(from as c_int, to as c_int, g as c_int) as i32 }
     }
 
     /// Add which channel to group tag, or reset it's group to the default group tag
     pub fn add_channel(self, Channel(ch): Channel) -> bool {
         let Group(g) = self;
-        unsafe { sys::mixer::Mix_GroupChannel(ch as c_int, g as c_int) == 1 }
+        unsafe { mixer::Mix_GroupChannel(ch as c_int, g as c_int) == 1 }
     }
 
     /// Count the number of channels in group
     pub fn count(self) -> i32 {
         let Group(g) = self;
-        unsafe { sys::mixer::Mix_GroupCount(g as c_int) as i32 }
+        unsafe { mixer::Mix_GroupCount(g as c_int) as i32 }
     }
 
     /// Find the first available (not playing) channel in group
     pub fn find_available(self) -> Option<Channel> {
         let Group(g) = self;
-        let ret = unsafe { sys::mixer::Mix_GroupAvailable(g as c_int) as i32 };
+        let ret = unsafe { mixer::Mix_GroupAvailable(g as c_int) as i32 };
         if ret == -1 {
             None
         } else {
@@ -648,7 +649,7 @@ impl Group {
     /// Find the oldest actively playing channel in group
     pub fn find_oldest(self) -> Option<Channel> {
         let Group(g) = self;
-        let ret = unsafe { sys::mixer::Mix_GroupOldest(g as c_int) as i32 };
+        let ret = unsafe { mixer::Mix_GroupOldest(g as c_int) as i32 };
         if ret == -1 {
             None
         } else {
@@ -659,7 +660,7 @@ impl Group {
     /// Find the newest, most recently started, actively playing channel in group.
     pub fn find_newest(self) -> Option<Channel> {
         let Group(g) = self;
-        let ret = unsafe { sys::mixer::Mix_GroupNewer(g as c_int) as i32 };
+        let ret = unsafe { mixer::Mix_GroupNewer(g as c_int) as i32 };
         if ret == -1 {
             None
         } else {
@@ -671,14 +672,14 @@ impl Group {
     /// Returns the number of channels set to fade out.
     pub fn fade_out(self, ms: i32) -> i32 {
         let Group(g) = self;
-        unsafe { sys::mixer::Mix_FadeOutGroup(g as c_int, ms as c_int) as i32 }
+        unsafe { mixer::Mix_FadeOutGroup(g as c_int, ms as c_int) as i32 }
     }
 
     /// Halt playback on all channels in group.
     pub fn halt(self) {
         let Group(g) = self;
         unsafe {
-            sys::mixer::Mix_HaltGroup(g as c_int);
+            mixer::Mix_HaltGroup(g as c_int);
         }
     }
 }
@@ -687,13 +688,13 @@ impl Group {
 
 /// Get the number of music decoders available.
 pub fn get_music_decoders_number() -> i32 {
-    unsafe { sys::mixer::Mix_GetNumMusicDecoders() as i32 }
+    unsafe { mixer::Mix_GetNumMusicDecoders() as i32 }
 }
 
 /// Get the name of the indexed music decoder.
 pub fn get_music_decoder(index: i32) -> String {
     unsafe {
-        let name = sys::mixer::Mix_GetMusicDecoder(index as c_int);
+        let name = mixer::Mix_GetMusicDecoder(index as c_int);
         from_utf8(CStr::from_ptr(name).to_bytes()).unwrap().to_owned()
     }
 }
@@ -702,16 +703,16 @@ pub fn get_music_decoder(index: i32) -> String {
 #[repr(i32)]
 #[derive(Copy, Clone, PartialEq, Hash, Debug)]
 pub enum MusicType {
-    MusicNone = sys::mixer::Mix_MusicType_MUS_NONE as i32,
-    MusicCmd = sys::mixer::Mix_MusicType_MUS_CMD as i32,
-    MusicWav = sys::mixer::Mix_MusicType_MUS_WAV as i32,
-    MusicMod = sys::mixer::Mix_MusicType_MUS_MOD as i32,
-    MusicMid = sys::mixer::Mix_MusicType_MUS_MID as i32,
-    MusicOgg = sys::mixer::Mix_MusicType_MUS_OGG as i32,
-    MusicMp3 = sys::mixer::Mix_MusicType_MUS_MP3 as i32,
-    MusicMp3Mad = sys::mixer::Mix_MusicType_MUS_MP3_MAD_UNUSED as i32,
-    MusicFlac = sys::mixer::Mix_MusicType_MUS_FLAC as i32,
-    MusicModPlug = sys::mixer::Mix_MusicType_MUS_MODPLUG_UNUSED as i32,
+    MusicNone = mixer::Mix_MusicType_MUS_NONE as i32,
+    MusicCmd = mixer::Mix_MusicType_MUS_CMD as i32,
+    MusicWav = mixer::Mix_MusicType_MUS_WAV as i32,
+    MusicMod = mixer::Mix_MusicType_MUS_MOD as i32,
+    MusicMid = mixer::Mix_MusicType_MUS_MID as i32,
+    MusicOgg = mixer::Mix_MusicType_MUS_OGG as i32,
+    MusicMp3 = mixer::Mix_MusicType_MUS_MP3 as i32,
+    MusicMp3Mad = mixer::Mix_MusicType_MUS_MP3_MAD_UNUSED as i32,
+    MusicFlac = mixer::Mix_MusicType_MUS_FLAC as i32,
+    MusicModPlug = mixer::Mix_MusicType_MUS_MODPLUG_UNUSED as i32,
 }
 
 // hooks
@@ -729,7 +730,7 @@ extern "C" fn c_music_finished_hook() {
 /// This is an opaque data type used for Music data.
 #[derive(PartialEq)]
 pub struct Music<'a> {
-    pub raw: *mut sys::mixer::Mix_Music,
+    pub raw: *mut mixer::Mix_Music,
     pub owned: bool,
     _marker: PhantomData<&'a ()>
 }
@@ -737,7 +738,7 @@ pub struct Music<'a> {
 impl<'a> Drop for Music<'a> {
     fn drop(&mut self) {
         if self.owned {
-            unsafe { sys::mixer::Mix_FreeMusic(self.raw) };
+            unsafe { mixer::Mix_FreeMusic(self.raw) };
         }
     }
 }
@@ -754,7 +755,7 @@ impl<'a> Music<'a> {
     pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Music<'static>, String> {
         let raw = unsafe {
             let c_path = CString::new(path.as_ref().to_str().unwrap()).unwrap();
-            sys::mixer::Mix_LoadMUS(c_path.as_ptr())
+            mixer::Mix_LoadMUS(c_path.as_ptr())
         };
         if raw.is_null() {
             Err(get_error())
@@ -777,7 +778,7 @@ impl<'a> Music<'a> {
             return Err(get_error());
         }
 
-        let raw = unsafe { sys::mixer::Mix_LoadMUS_RW(rw, 0) };
+        let raw = unsafe { mixer::Mix_LoadMUS_RW(rw, 0) };
         if raw.is_null() {
             Err(get_error())
         } else {
@@ -791,24 +792,24 @@ impl<'a> Music<'a> {
 
     /// The file format encoding of the music.
     pub fn get_type(&self) -> MusicType {
-        let ret = unsafe { sys::mixer::Mix_GetMusicType(self.raw) as i32 } as c_uint;
+        let ret = unsafe { mixer::Mix_GetMusicType(self.raw) as i32 } as c_uint;
         match ret {
-            sys::mixer::Mix_MusicType_MUS_CMD      => MusicType::MusicCmd,
-            sys::mixer::Mix_MusicType_MUS_WAV      => MusicType::MusicWav,
-            sys::mixer::Mix_MusicType_MUS_MOD      => MusicType::MusicMod,
-            sys::mixer::Mix_MusicType_MUS_MID      => MusicType::MusicMid,
-            sys::mixer::Mix_MusicType_MUS_OGG      => MusicType::MusicOgg,
-            sys::mixer::Mix_MusicType_MUS_MP3      => MusicType::MusicMp3,
-            sys::mixer::Mix_MusicType_MUS_MP3_MAD_UNUSED  => MusicType::MusicMp3Mad,
-            sys::mixer::Mix_MusicType_MUS_FLAC     => MusicType::MusicFlac,
-            sys::mixer::Mix_MusicType_MUS_MODPLUG_UNUSED  => MusicType::MusicModPlug,
-            sys::mixer::Mix_MusicType_MUS_NONE | _ => MusicType::MusicNone
+            mixer::Mix_MusicType_MUS_CMD      => MusicType::MusicCmd,
+            mixer::Mix_MusicType_MUS_WAV      => MusicType::MusicWav,
+            mixer::Mix_MusicType_MUS_MOD      => MusicType::MusicMod,
+            mixer::Mix_MusicType_MUS_MID      => MusicType::MusicMid,
+            mixer::Mix_MusicType_MUS_OGG      => MusicType::MusicOgg,
+            mixer::Mix_MusicType_MUS_MP3      => MusicType::MusicMp3,
+            mixer::Mix_MusicType_MUS_MP3_MAD_UNUSED  => MusicType::MusicMp3Mad,
+            mixer::Mix_MusicType_MUS_FLAC     => MusicType::MusicFlac,
+            mixer::Mix_MusicType_MUS_MODPLUG_UNUSED  => MusicType::MusicModPlug,
+            mixer::Mix_MusicType_MUS_NONE | _ => MusicType::MusicNone
         }
     }
 
-    /// Play the loaded music loop times through from start to finish.
+    /// Play the loaded music loop times through from start to finish. Pass -1 to loop forever.
     pub fn play(&self, loops: i32) -> Result<(), String> {
-        let ret = unsafe { sys::mixer::Mix_PlayMusic(self.raw, loops as c_int) };
+        let ret = unsafe { mixer::Mix_PlayMusic(self.raw, loops as c_int) };
         if ret == -1 {
             Err(get_error())
         } else {
@@ -819,7 +820,7 @@ impl<'a> Music<'a> {
     /// Fade in over ms milliseconds of time, the loaded music,
     /// playing it loop times through from start to finish.
     pub fn fade_in(&self, loops: i32, ms: i32) -> Result<(), String> {
-        let ret = unsafe { sys::mixer::Mix_FadeInMusic(self.raw, loops as c_int, ms as c_int) };
+        let ret = unsafe { mixer::Mix_FadeInMusic(self.raw, loops as c_int, ms as c_int) };
         if ret == -1 {
             Err(get_error())
         } else {
@@ -830,7 +831,7 @@ impl<'a> Music<'a> {
     /// Fade in over ms milliseconds of time, from position.
     pub fn fade_in_from_pos(&self, loops: i32, ms: i32, position: f64) -> Result<(), String> {
         let ret = unsafe {
-            sys::mixer::Mix_FadeInMusicPos(self.raw, loops as c_int, ms as c_int, position as c_double)
+            mixer::Mix_FadeInMusicPos(self.raw, loops as c_int, ms as c_int, position as c_double)
         };
         if ret == -1 {
             Err(get_error())
@@ -842,40 +843,40 @@ impl<'a> Music<'a> {
     // FIXME: make these class method?
     /// Returns current volume
     pub fn get_volume() -> i32 {
-        unsafe { sys::mixer::Mix_VolumeMusic(-1) as i32 }
+        unsafe { mixer::Mix_VolumeMusic(-1) as i32 }
     }
 
     /// Set the volume on a scale of 0 to 128.
     /// Values greater than 128 will use 128.
     pub fn set_volume(volume: i32) {
         // This shouldn't return anything. Use get_volume instead
-        let _ = unsafe { sys::mixer::Mix_VolumeMusic(volume as c_int) as i32 };
+        let _ = unsafe { mixer::Mix_VolumeMusic(volume as c_int) as i32 };
     }
 
     /// Pause the music playback.
     pub fn pause() {
         unsafe {
-            sys::mixer::Mix_PauseMusic();
+            mixer::Mix_PauseMusic();
         }
     }
 
     /// Unpause the music.
     pub fn resume() {
         unsafe {
-            sys::mixer::Mix_ResumeMusic();
+            mixer::Mix_ResumeMusic();
         }
     }
 
     /// Rewind the music to the start.
     pub fn rewind() {
         unsafe {
-            sys::mixer::Mix_RewindMusic();
+            mixer::Mix_RewindMusic();
         }
     }
 
     /// Set the position of the currently playing music.
     pub fn set_pos(position: f64) -> Result<(), String> {
-        let ret = unsafe { sys::mixer::Mix_SetMusicPosition(position as c_double) };
+        let ret = unsafe { mixer::Mix_SetMusicPosition(position as c_double) };
         if ret == -1 {
             Err(get_error())
         } else {
@@ -887,7 +888,7 @@ impl<'a> Music<'a> {
     pub fn set_command(command: &str) -> Result<(), String> {
         let ret = unsafe {
             let c_command = CString::new(command).unwrap();
-            sys::mixer::Mix_SetMusicCMD(c_command.as_ptr())
+            mixer::Mix_SetMusicCMD(c_command.as_ptr())
         };
         if ret == -1 {
             Err(get_error())
@@ -899,13 +900,13 @@ impl<'a> Music<'a> {
     /// Halt playback of music.
     pub fn halt() {
         unsafe {
-            sys::mixer::Mix_HaltMusic();
+            mixer::Mix_HaltMusic();
         }
     }
 
     /// Gradually fade out the music over ms milliseconds starting from now.
     pub fn fade_out(ms: i32) -> Result<(), String> {
-        let ret = unsafe { sys::mixer::Mix_FadeOutMusic(ms as c_int) };
+        let ret = unsafe { mixer::Mix_FadeOutMusic(ms as c_int) };
         if ret == -1 {
             Err(get_error())
         } else {
@@ -930,14 +931,14 @@ impl<'a> Music<'a> {
     pub fn hook_finished(f: fn()) {
         unsafe {
             MUSIC_FINISHED_HOOK = Some(f);
-            sys::mixer::Mix_HookMusicFinished(Some(c_music_finished_hook as extern "C" fn()));
+            mixer::Mix_HookMusicFinished(Some(c_music_finished_hook as extern "C" fn()));
         }
     }
 
     /// A previously set up function would no longer be called when music playback is halted.
     pub fn unhook_finished() {
         unsafe {
-            sys::mixer::Mix_HookMusicFinished(None);
+            mixer::Mix_HookMusicFinished(None);
             // unset from c, then rust, to avoid race condition
             MUSIC_FINISHED_HOOK = None;
         }
@@ -945,21 +946,21 @@ impl<'a> Music<'a> {
 
     /// If music is actively playing, or not.
     pub fn is_playing() -> bool {
-        unsafe { sys::mixer::Mix_PlayingMusic() == 1 }
+        unsafe { mixer::Mix_PlayingMusic() == 1 }
     }
 
     /// If music is paused, or not.
     pub fn is_paused() -> bool {
-        unsafe { sys::mixer::Mix_PausedMusic() == 1 }
+        unsafe { mixer::Mix_PausedMusic() == 1 }
     }
 
     /// If music is fading, or not.
     pub fn get_fading() -> Fading {
-        let ret = unsafe { sys::mixer::Mix_FadingMusic() as i32 } as c_uint;
+        let ret = unsafe { mixer::Mix_FadingMusic() as i32 } as c_uint;
         match ret {
-            sys::mixer::Mix_Fading_MIX_FADING_OUT    => Fading::FadingOut,
-            sys::mixer::Mix_Fading_MIX_FADING_IN     => Fading::FadingIn,
-            sys::mixer::Mix_Fading_MIX_NO_FADING | _ => Fading::NoFading
+            mixer::Mix_Fading_MIX_FADING_OUT    => Fading::FadingOut,
+            mixer::Mix_Fading_MIX_FADING_IN     => Fading::FadingIn,
+            mixer::Mix_Fading_MIX_NO_FADING | _ => Fading::NoFading
         }
     }
 }

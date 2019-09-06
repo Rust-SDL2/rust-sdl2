@@ -99,7 +99,7 @@ impl<'a> AsMut<SurfaceRef> for Surface<'a> {
 impl<'a> Surface<'a> {
     pub unsafe fn from_ll<'b>(raw: *mut sys::SDL_Surface) -> Surface<'b> {
         let context = SurfaceContext {
-            raw: raw,
+            raw,
             _marker: PhantomData,
         };
         Surface { context: Rc::new(context) }

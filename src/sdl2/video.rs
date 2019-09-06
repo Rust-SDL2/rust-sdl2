@@ -409,7 +409,7 @@ pub mod gl_attr {
         let flags = gl_get_attribute!(SDL_GL_CONTEXT_FLAGS);
 
         ContextFlags {
-            flags: flags
+            flags
         }
     }
 
@@ -427,10 +427,10 @@ pub struct DisplayMode {
 impl DisplayMode {
     pub fn new(format: PixelFormatEnum, w: i32, h: i32, refresh_rate: i32) -> DisplayMode {
         DisplayMode {
-            format: format,
-            w: w,
-            h: h,
-            refresh_rate: refresh_rate
+            format,
+            w,
+            h,
+            refresh_rate
         }
     }
 
@@ -529,7 +529,7 @@ impl WindowContext {
     pub unsafe fn from_ll(subsystem: VideoSubsystem, raw: *mut sys::SDL_Window) -> WindowContext {
         WindowContext {
             subsystem: subsystem.clone(),
-            raw: raw,
+            raw,
         }
     }
 }
@@ -919,8 +919,8 @@ impl WindowBuilder {
     pub fn new(v: &VideoSubsystem, title: &str, width: u32, height: u32) -> WindowBuilder {
         WindowBuilder {
             title: title.to_owned(),
-            width: width,
-            height: height,
+            width,
+            height,
             x: WindowPos::Undefined,
             y: WindowPos::Undefined,
             window_flags: 0,
@@ -1072,7 +1072,7 @@ impl Window {
     #[inline]
     /// Create a new `Window` without taking ownership of the `WindowContext`
     pub unsafe fn from_ref(context: Rc<WindowContext>) -> Window {
-        Window { context: context }
+        Window { context }
     }
 
     #[inline]
@@ -1225,6 +1225,16 @@ impl Window {
         }
     }
 
+    /// Use this function to set the icon for a window.
+    ///
+    /// # Example:
+    /// ```compile_fail
+    /// // requires "--features 'image'"
+    /// use sdl2::surface::Surface;
+    ///
+    /// let window_icon = Surface::from_file("/path/to/icon.png")?;
+    /// window.set_icon(window_icon);
+    /// ```
     pub fn set_icon<S: AsRef<SurfaceRef>>(&mut self, icon: S) {
         unsafe {
             sys::SDL_SetWindowIcon(self.context.raw, icon.as_ref().raw())
@@ -1248,7 +1258,7 @@ impl Window {
         unsafe { sys::SDL_GetWindowPosition(self.context.raw, &mut x, &mut y) };
         (x as i32, y as i32)
     }
-    
+
     /// Use this function to get the size of a window's borders (decorations) around the client area.
     ///
     /// # Remarks
@@ -1457,9 +1467,9 @@ impl Window {
 
     #[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
     pub fn gamma_ramp(&self) -> Result<(Vec<u16>, Vec<u16>, Vec<u16>), String> {
-        let mut red: Vec<u16> = Vec::with_capacity(256);
-        let mut green: Vec<u16> = Vec::with_capacity(256);
-        let mut blue: Vec<u16> = Vec::with_capacity(256);
+        let mut red: Vec<u16> = vec![0; 256];
+        let mut green: Vec<u16> = vec![0; 256];
+        let mut blue: Vec<u16> = vec![0; 256];
         let result = unsafe {
             sys::SDL_GetWindowGammaRamp(
                 self.context.raw, red.as_mut_ptr(), green.as_mut_ptr(),

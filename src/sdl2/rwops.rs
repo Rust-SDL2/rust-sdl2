@@ -20,7 +20,7 @@ impl<'a> RWops<'a> {
 
     pub unsafe fn from_ll<'b>(raw: *mut sys::SDL_RWops) -> RWops<'b> {
         RWops {
-            raw: raw,
+            raw,
             _marker: PhantomData
         }
     }
@@ -37,7 +37,7 @@ impl<'a> RWops<'a> {
             Err(get_error())
         } else {
             Ok(RWops {
-                raw: raw,
+                raw,
                 _marker: PhantomData
             })
         }
@@ -55,7 +55,7 @@ impl<'a> RWops<'a> {
             Err(get_error())
         } else {
             Ok(RWops {
-                raw: raw,
+                raw,
                 _marker: PhantomData
             })
         }
@@ -88,7 +88,7 @@ impl<'a> RWops<'a> {
             Err(get_error())
         } else {
             Ok(RWops {
-                raw: raw,
+                raw,
                 _marker: PhantomData
             })
         }

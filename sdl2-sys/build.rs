@@ -57,11 +57,11 @@ fn download_to(url: &str, dest: &str) {
     if cfg!(windows) {
         run_command("powershell", &[
             "-NoProfile", "-NonInteractive",
-            "-Command", "& {
+            "-Command", &format!("& {{
                 $client = New-Object System.Net.WebClient
-                $client.DownloadFile($args[0], $args[1])
-                if (!$?) { Exit 1 }
-            }", url, dest
+                $client.DownloadFile(\"{0}\", \"{1}\")
+                if (!$?) {{ Exit 1 }}
+            }}", url, dest).as_str()
         ]);
     } else {
         run_command("curl", &[url, "-o", dest]);
@@ -301,7 +301,7 @@ fn link_sdl2(target_os: &str) {
         if cfg!(feature = "bundled") || cfg!(not(feature = "use-pkgconfig")) { 
             if cfg!(feature = "use_mac_framework") && target_os == "darwin" {
                 println!("cargo:rustc-flags=-l framework=SDL2");
-            } else {
+            } else if target_os != "emscripten" {
                 println!("cargo:rustc-flags=-l SDL2");
             }
         }

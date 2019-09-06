@@ -1,6 +1,8 @@
 use crate::EventPump;
 use crate::rect::Rect;
 use crate::video::Window;
+
+use std::fmt;
 use std::mem::transmute;
 
 use crate::sys;
@@ -28,6 +30,12 @@ bitflags! {
     }
 }
 
+impl fmt::Display for Mod {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:04x}", *self)
+    }
+}
+
 pub struct KeyboardState<'a> {
     keyboard_state: &'a [u8]
 }
@@ -42,7 +50,7 @@ impl<'a> KeyboardState<'a> {
         };
 
         KeyboardState {
-            keyboard_state: keyboard_state
+            keyboard_state
         }
     }
 

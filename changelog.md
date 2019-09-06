@@ -6,6 +6,11 @@ when upgrading from a version of rust-sdl2 to another.
 [PR #882](https://github.com/Rust-SDL2/rust-sdl2/pull/882)
 Ignore unknown bits in `SDL_Keysym`'s `mod` field (key modifiers) when constructing `Event::KeyDown` and `Event::KeyUp`. Deprecate `sdl2::event::Event::unwrap_keymod`, which had been made public accidentally.
 
+### v0.32.2
+
+[PR #898](https://github.com/Rust-SDL2/rust-sdl2/pull/898):
+Implements `TryFrom<PixelFormatEnum>` for `PixelFormat`
+
 ### v0.32.1
 
 [PR #868](https://github.com/Rust-SDL2/rust-sdl2/pull/868):

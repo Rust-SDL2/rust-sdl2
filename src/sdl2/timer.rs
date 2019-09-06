@@ -54,7 +54,7 @@ impl TimerSubsystem {
     }
 }
 
-pub type TimerCallback<'a> = Box<FnMut() -> u32+'a+Sync>;
+pub type TimerCallback<'a> = Box<dyn FnMut() -> u32+'a+Sync>;
 
 pub struct Timer<'b, 'a> {
     callback: Option<Box<TimerCallback<'a>>>,
@@ -82,7 +82,7 @@ impl<'b, 'a> Drop for Timer<'b, 'a> {
 
 extern "C" fn c_timer_callback(_interval: u32, param: *mut c_void) -> uint32_t {
     unsafe {
-        let f: *mut Box<Fn() -> u32> = mem::transmute(param);
+        let f: *mut Box<dyn Fn() -> u32> = mem::transmute(param);
         (*f)() as uint32_t
     }
 }
