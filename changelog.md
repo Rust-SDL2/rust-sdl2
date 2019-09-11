@@ -3,6 +3,9 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### v0.32.3 (unreleased)
 
+[PR #907](https://github.com/Rust-SDL2/rust-sdl2/pull/907)
+Changed the data type to i32 for the `which` field for the events `ControllerDeviceAdded` and `JoyDeviceAdded`.
+
 [PR #882](https://github.com/Rust-SDL2/rust-sdl2/pull/882)
 Ignore unknown bits in `SDL_Keysym`'s `mod` field (key modifiers) when constructing `Event::KeyDown` and `Event::KeyUp`. Deprecate `sdl2::event::Event::unwrap_keymod`, which had been made public accidentally.
 
