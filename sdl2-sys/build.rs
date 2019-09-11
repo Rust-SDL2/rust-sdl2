@@ -309,16 +309,8 @@ fn link_sdl2(target_os: &str) {
 
     #[cfg(feature = "static-link")] {
         if cfg!(feature = "bundled") || cfg!(feature = "use-pkgconfig") == false { 
-            if target_os == "darwin" {
-                println!("cargo:rustc-link-lib=static=libSDL2main");
-                println!("cargo:rustc-link-lib=static=libSDL2");
-            }
-            else {
-                println!("cargo:rustc-link-lib=static=SDL2main");
-                println!("cargo:rustc-link-lib=static=SDL2");        
-            }
-
-            
+            println!("cargo:rustc-link-lib=static=SDL2main");
+            println!("cargo:rustc-link-lib=static=SDL2");
         }
 
         // Also linked to any required libraries for each supported platform
