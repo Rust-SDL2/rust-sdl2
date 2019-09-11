@@ -49,7 +49,7 @@ use std::ffi::CStr;
 use num::FromPrimitive;
 use std::vec::Vec;
 use crate::common::{validate_int, IntegerOrSdlError};
-use std::mem::{transmute, uninitialized};
+use std::mem::{transmute, MaybeUninit};
 use libc::c_void;
 
 use crate::sys;
@@ -209,12 +209,15 @@ impl<T> Drop for RendererContext<T> {
 impl<T> RendererContext<T> {
     /// Gets information about the rendering context.
     pub fn info(&self) -> RendererInfo {
-        unsafe {
-            let mut renderer_info_raw = mem::uninitialized();
-            if sys::SDL_GetRendererInfo(self.raw, &mut renderer_info_raw) != 0 {
-                // Should only fail on an invalid renderer
-                panic!();
-            } else {
+        let mut renderer_info_raw = mem::MaybeUninit::uninit();
+        let result = unsafe { sys::SDL_GetRendererInfo(self.raw, renderer_info_raw.as_mut_ptr()) != 0 };
+
+        if result {
+            // Should only fail on an invalid renderer
+            panic!();
+        } else {
+            unsafe { 
+                let renderer_info_raw = renderer_info_raw.assume_init();
                 RendererInfo::from_ll(&renderer_info_raw)
             }
         }
@@ -939,13 +942,14 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Gets the blend mode used for drawing operations.
     pub fn blend_mode(&self) -> BlendMode {
-        let mut blend: SDL_BlendMode;
-        unsafe { blend = uninitialized(); }
-        let ret = unsafe { sys::SDL_GetRenderDrawBlendMode(self.context.raw, &mut blend) };
+        let mut blend: MaybeUninit<SDL_BlendMode> = mem::MaybeUninit::uninit();
+        let ret = unsafe { sys::SDL_GetRenderDrawBlendMode(self.context.raw, blend.as_mut_ptr()) };
         // Should only fail on an invalid renderer
         if ret != 0 {
             panic!(get_error())
         } else {
+            let blend = unsafe { blend.assume_init() };
+
             FromPrimitive::from_i64(blend as i64).unwrap()
         }
     }
@@ -1020,8 +1024,9 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Gets the drawing area for the current target.
     pub fn viewport(&self) -> Rect {
-        let mut rect = unsafe { mem::uninitialized() };
-        unsafe { sys::SDL_RenderGetViewport(self.context.raw, &mut rect) };
+        let mut rect = mem::MaybeUninit::uninit();
+        unsafe { sys::SDL_RenderGetViewport(self.context.raw, rect.as_mut_ptr()) };
+        let rect = unsafe { rect.assume_init() };
         Rect::from_ll(rect)
     }
 
@@ -1045,8 +1050,9 @@ impl<T: RenderTarget> Canvas<T> {
     ///
     /// Returns `None` if clipping is disabled.
     pub fn clip_rect(&self) -> Option<Rect> {
-        let mut raw = unsafe { mem::uninitialized() };
-        unsafe { sys::SDL_RenderGetClipRect(self.context.raw, &mut raw) };
+        let mut raw = mem::MaybeUninit::uninit();
+        unsafe { sys::SDL_RenderGetClipRect(self.context.raw, raw.as_mut_ptr()) };
+        let raw = unsafe { raw.assume_init() };
         if raw.w == 0 || raw.h == 0 {
             None
         } else {
@@ -1739,14 +1745,14 @@ impl InternalTexture {
     }
 
     pub fn blend_mode(&self) -> BlendMode {
-        let mut blend: SDL_BlendMode;
-        unsafe { blend = uninitialized(); }
-        let ret = unsafe { sys::SDL_GetTextureBlendMode(self.raw, &mut blend) };
+        let mut blend: MaybeUninit<SDL_BlendMode> = mem::MaybeUninit::uninit();
+        let ret = unsafe { sys::SDL_GetTextureBlendMode(self.raw, blend.as_mut_ptr()) };
 
         // Should only fail on an invalid texture
         if ret != 0 {
             panic!(get_error())
         } else {
+            let blend = unsafe { blend.assume_init() };
             FromPrimitive::from_i64(blend as i64).unwrap()
         }
     }
@@ -2266,12 +2272,14 @@ impl Iterator for DriverIterator {
         if self.index >= self.length {
             None
         } else {
-            let mut out = unsafe { mem::uninitialized() };
-            let result = unsafe { sys::SDL_GetRenderDriverInfo(self.index, &mut out) == 0 };
+            let mut out = mem::MaybeUninit::uninit();
+            let result = unsafe { sys::SDL_GetRenderDriverInfo(self.index, out.as_mut_ptr()) == 0 };
             assert!(result, 0);
             self.index += 1;
 
-            unsafe { Some(RendererInfo::from_ll(&out)) }
+            unsafe {
+                Some(RendererInfo::from_ll(&out.assume_init()))
+            }
         }
     }
 

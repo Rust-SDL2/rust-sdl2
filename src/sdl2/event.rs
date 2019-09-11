@@ -724,7 +724,7 @@ where S: Into<Option<Scancode>>,
 // but Event::User's raw pointers kind of removes that possibility.
 impl Event {
     fn to_ll(&self) -> Option<sys::SDL_Event> {
-        let mut ret = unsafe { mem::uninitialized() };
+        let mut ret = mem::MaybeUninit::uninit();
         match *self {
             Event::User { window_id, type_, code, data1, data2, timestamp} => {
                 let event = sys::SDL_UserEvent {
@@ -736,9 +736,9 @@ impl Event {
                     data2
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_UserEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_UserEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
             },
 
             Event::Quit{timestamp} => {
@@ -747,9 +747,9 @@ impl Event {
                     timestamp,
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_QuitEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_QuitEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
             },
 
             Event::Window{
@@ -770,9 +770,9 @@ impl Event {
                     data2,
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_WindowEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_WindowEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
             },
 
             Event::KeyDown{
@@ -795,9 +795,9 @@ impl Event {
                     keysym,
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_KeyboardEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_KeyboardEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
             },
             Event::KeyUp {
                 timestamp,
@@ -819,9 +819,9 @@ impl Event {
                     keysym,
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_KeyboardEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_KeyboardEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
             },
             Event::MouseMotion{
                 timestamp,
@@ -846,9 +846,9 @@ impl Event {
                     yrel,
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_MouseMotionEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_MouseMotionEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
 
             },
             Event::MouseButtonDown{
@@ -873,9 +873,9 @@ impl Event {
                     y
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_MouseButtonEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_MouseButtonEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
             },
             Event::MouseButtonUp{
                 timestamp,
@@ -899,9 +899,9 @@ impl Event {
                     y
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_MouseButtonEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_MouseButtonEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
             },
 
             Event::MouseWheel{
@@ -922,9 +922,9 @@ impl Event {
                     direction : direction.to_ll(),
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_MouseWheelEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_MouseWheelEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
             },
             Event::JoyAxisMotion{
                 timestamp,
@@ -944,9 +944,9 @@ impl Event {
                     padding4: 0
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_JoyAxisEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_JoyAxisEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
 
             },
             Event::JoyBallMotion{
@@ -968,9 +968,9 @@ impl Event {
                     padding3: 0
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_JoyBallEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_JoyBallEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
 
             },
             Event::JoyHatMotion{
@@ -990,9 +990,9 @@ impl Event {
                     padding2: 0
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_JoyHatEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_JoyHatEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
 
             },
             Event::JoyButtonDown{
@@ -1010,9 +1010,9 @@ impl Event {
                     padding2: 0,
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_JoyButtonEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_JoyButtonEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
 
             },
 
@@ -1031,9 +1031,9 @@ impl Event {
                     padding2: 0,
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_JoyButtonEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_JoyButtonEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
 
             },
 
@@ -1047,9 +1047,9 @@ impl Event {
                     which: which as i32,
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_JoyDeviceEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_JoyDeviceEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
             },
 
             Event::JoyDeviceRemoved{
@@ -1062,9 +1062,9 @@ impl Event {
                     which,
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_JoyDeviceEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_JoyDeviceEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
 
             },
             Event::ControllerAxisMotion{
@@ -1086,9 +1086,9 @@ impl Event {
                     padding4: 0,
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_ControllerAxisEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_ControllerAxisEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
             },
             Event::ControllerButtonDown{
                 timestamp,
@@ -1108,9 +1108,9 @@ impl Event {
                     padding2: 0,
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_ControllerButtonEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_ControllerButtonEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
             },
 
             Event::ControllerButtonUp{
@@ -1129,9 +1129,9 @@ impl Event {
                     padding2: 0,
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_ControllerButtonEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_ControllerButtonEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
             },
 
             Event::ControllerDeviceAdded{
@@ -1144,9 +1144,9 @@ impl Event {
                     which: which as i32,
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_ControllerDeviceEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_ControllerDeviceEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
 
             },
 
@@ -1160,9 +1160,9 @@ impl Event {
                     which,
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_ControllerDeviceEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_ControllerDeviceEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
 
             },
 
@@ -1176,9 +1176,9 @@ impl Event {
                     which,
                 };
                 unsafe {
-                    ptr::copy(&event, &mut ret as *mut sys::SDL_Event as *mut sys::SDL_ControllerDeviceEvent, 1);
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_ControllerDeviceEvent, 1);
+                    Some(ret.assume_init())
                 }
-                Some(ret)
 
             },
 
@@ -1255,7 +1255,7 @@ impl Event {
                     window_id: event.windowID,
                     keycode: Keycode::from_i32(event.keysym.sym as i32),
                     scancode: Scancode::from_i32(event.keysym.scancode as i32),
-                    keymod: Event::unwrap_keymod(keyboard::Mod::from_bits(event.keysym.mod_)),
+                    keymod: keyboard::Mod::from_bits_truncate(event.keysym.mod_),
                     repeat: event.repeat != 0
                 }
             }
@@ -1267,7 +1267,7 @@ impl Event {
                     window_id: event.windowID,
                     keycode: Keycode::from_i32(event.keysym.sym as i32),
                     scancode: Scancode::from_i32(event.keysym.scancode as i32),
-                    keymod: keyboard::Mod::from_bits(event.keysym.mod_).unwrap(),
+                    keymod: keyboard::Mod::from_bits_truncate(event.keysym.mod_),
                     repeat: event.repeat != 0
                 }
             }
@@ -1596,6 +1596,7 @@ impl Event {
         }}                      // close unsafe & match
     }
 
+    #[deprecated(since = "0.32.3", note = "This method has been made public accidentally")]
     pub fn unwrap_keymod(keymod_option: Option<keyboard::Mod>) -> keyboard::Mod {
         match keymod_option {
             None => keyboard::Mod::empty(),
@@ -1637,26 +1638,26 @@ impl Event {
 }
 
 unsafe fn poll_event() -> Option<Event> {
-    let mut raw = mem::uninitialized();
-    let has_pending = sys::SDL_PollEvent(&mut raw) == 1;
+    let mut raw = mem::MaybeUninit::uninit();
+    let has_pending = sys::SDL_PollEvent(raw.as_mut_ptr()) == 1;
 
-    if has_pending { Some(Event::from_ll(raw)) }
+    if has_pending { Some(Event::from_ll(raw.assume_init())) }
     else { None }
 }
 
 unsafe fn wait_event() -> Event {
-    let mut raw = mem::uninitialized();
-    let success = sys::SDL_WaitEvent(&mut raw) == 1;
+    let mut raw = mem::MaybeUninit::uninit();
+    let success = sys::SDL_WaitEvent(raw.as_mut_ptr()) == 1;
 
-    if success { Event::from_ll(raw) }
+    if success { Event::from_ll(raw.assume_init()) }
     else { panic!(get_error()) }
 }
 
 unsafe fn wait_event_timeout(timeout: u32) -> Option<Event> {
-    let mut raw = mem::uninitialized();
-    let success = sys::SDL_WaitEventTimeout(&mut raw, timeout as c_int) == 1;
+    let mut raw = mem::MaybeUninit::uninit();
+    let success = sys::SDL_WaitEventTimeout(raw.as_mut_ptr(), timeout as c_int) == 1;
 
-    if success { Some(Event::from_ll(raw)) }
+    if success { Some(Event::from_ll(raw.assume_init())) }
     else { None }
 }
 
@@ -2019,7 +2020,48 @@ mod test {
             let e2 = Event::from_ll(e.clone().to_ll().unwrap());
             assert_eq!(e, e2);
         }
+    }
 
+    #[test]
+    fn test_from_ll_keymod_keydown_unknown_bits() {
+        let mut raw_event = Event::KeyDown {
+            timestamp: 0,
+            window_id: 1,
+            keycode: None,
+            scancode: Some(Scancode::Q),
+            keymod: Mod::empty(),
+            repeat: false,
+        }.to_ll().unwrap();
+
+        // Simulate SDL setting bits unknown to us, see PR #780
+        unsafe { raw_event.key.keysym.mod_ = 0xffff; }
+
+        if let Event::KeyDown { keymod, .. } = Event::from_ll(raw_event) {
+            assert_eq!(keymod, Mod::all());
+        } else {
+            panic!()
+        }
+    }
+
+    #[test]
+    fn test_from_ll_keymod_keyup_unknown_bits() {
+        let mut raw_event = Event::KeyUp {
+            timestamp: 0,
+            window_id: 1,
+            keycode: None,
+            scancode: Some(Scancode::Q),
+            keymod: Mod::empty(),
+            repeat: false,
+        }.to_ll().unwrap();
+
+        // Simulate SDL setting bits unknown to us, see PR #780
+        unsafe { raw_event.key.keysym.mod_ = 0xffff; }
+
+        if let Event::KeyUp { keymod, .. } = Event::from_ll(raw_event) {
+            assert_eq!(keymod, Mod::all());
+        } else {
+            panic!()
+        }
     }
 }
 

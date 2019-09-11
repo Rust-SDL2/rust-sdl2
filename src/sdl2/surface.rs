@@ -520,10 +520,12 @@ impl SurfaceRef {
     ///
     /// Returns `None` if clipping is disabled.
     pub fn clip_rect(&self) -> Option<Rect> {
-        let mut raw = unsafe { mem::uninitialized() };
+        let mut raw = mem::MaybeUninit::uninit();
         unsafe {
-            sys::SDL_GetClipRect(self.raw(), &mut raw)
+            sys::SDL_GetClipRect(self.raw(), raw.as_mut_ptr())
         };
+        let raw = unsafe { raw.assume_init() };
+
         if raw.w == 0 || raw.h == 0 {
             None
         } else {
