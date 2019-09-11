@@ -287,17 +287,18 @@ impl AudioSpecWAV {
 
     /// Loads a WAVE from the data source.
     pub fn load_wav_rw(src: &mut RWops) -> Result<AudioSpecWAV, String> {
-        use std::mem::uninitialized;
+        use std::mem::MaybeUninit;
         use std::ptr::null_mut;
 
-        let mut desired = unsafe { uninitialized::<sys::SDL_AudioSpec>() };
+        let mut desired = MaybeUninit::uninit();
         let mut audio_buf: *mut u8 = null_mut();
         let mut audio_len: u32 = 0;
         unsafe {
-            let ret = sys::SDL_LoadWAV_RW(src.raw(), 0, &mut desired, &mut audio_buf, &mut audio_len);
+            let ret = sys::SDL_LoadWAV_RW(src.raw(), 0, desired.as_mut_ptr(), &mut audio_buf, &mut audio_len);
             if ret.is_null() {
                 Err(get_error())
             } else {
+                let desired = desired.assume_init();
                 Ok(AudioSpecWAV {
                     freq: desired.freq,
                     format: AudioFormat::from_ll(desired.format).unwrap(),
@@ -519,9 +520,11 @@ pub struct AudioQueue<Channel: AudioFormatNum> {
 impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
     /// Opens a new audio device given the desired parameters and callback.
     pub fn open_queue<D: Into<Option<&'a str>>>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired) -> Result<AudioQueue<Channel>, String> {
+        use std::mem::MaybeUninit;
+
         let desired = AudioSpecDesired::convert_queue_to_ll::<Channel, Option<i32>, Option<u8>, Option<u16>>(spec.freq, spec.channels, spec.samples);
 
-        let mut obtained = unsafe { mem::uninitialized::<sys::SDL_AudioSpec>() };
+        let mut obtained = MaybeUninit::uninit();
         unsafe {
             let device = match device.into() {
                 Some(device) => Some(CString::new(device).unwrap()),
@@ -532,13 +535,14 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
             let iscapture_flag = 0;
             let device_id = sys::SDL_OpenAudioDevice(
                 device_ptr as *const c_char, iscapture_flag, &desired,
-                &mut obtained, 0
+                obtained.as_mut_ptr(), 0
             );
             match device_id {
                 0 => {
                     Err(get_error())
                 },
                 id => {
+                    let obtained = obtained.assume_init();
                     let device_id = AudioDeviceID::PlaybackDevice(id);
                     let spec = AudioSpec::convert_from_ll(obtained);
 
@@ -608,11 +612,12 @@ impl<CB: AudioCallback> AudioDevice<CB> {
         F: FnOnce(AudioSpec) -> CB,
         D: Into<Option<&'a str>>,
     {
+        use std::mem::MaybeUninit;
 
         let mut userdata: Box<Option<CB>> = Box::new(None);
         let desired = AudioSpecDesired::convert_to_ll(spec.freq, spec.channels, spec.samples, &mut *userdata);
 
-        let mut obtained = unsafe { mem::uninitialized::<sys::SDL_AudioSpec>() };
+        let mut obtained = MaybeUninit::uninit();
         unsafe {
             let device = match device.into() {
                 Some(device) => Some(CString::new(device).unwrap()),
@@ -623,13 +628,14 @@ impl<CB: AudioCallback> AudioDevice<CB> {
             let iscapture_flag = if capture { 1 } else { 0 };
             let device_id = sys::SDL_OpenAudioDevice(
                 device_ptr as *const c_char, iscapture_flag, &desired,
-                &mut obtained, 0
+                obtained.as_mut_ptr(), 0
             );
             match device_id {
                 0 => {
                     Err(get_error())
                 },
                 id => {
+                    let obtained = obtained.assume_init();
                     let device_id = AudioDeviceID::PlaybackDevice(id);
                     let spec = AudioSpec::convert_from_ll(obtained);
 
@@ -741,13 +747,16 @@ impl AudioCVT {
     pub fn new(src_format: AudioFormat, src_channels: u8, src_rate: i32,
                dst_format: AudioFormat, dst_channels: u8, dst_rate: i32) -> Result<AudioCVT, String>
     {
-        use std::mem;
+        use std::mem::MaybeUninit;
+
+        let mut raw: MaybeUninit<sys::SDL_AudioCVT> = mem::MaybeUninit::uninit();
+
         unsafe {
-            let mut raw: sys::SDL_AudioCVT = mem::uninitialized();
-            let ret = sys::SDL_BuildAudioCVT(&mut raw,
+            let ret = sys::SDL_BuildAudioCVT(raw.as_mut_ptr(),
                                             src_format.to_ll(), src_channels, src_rate as c_int,
                                             dst_format.to_ll(), dst_channels, dst_rate as c_int);
             if ret == 1 || ret == 0 {
+                let raw = raw.assume_init();
                 Ok(AudioCVT { raw })
             } else {
                 Err(get_error())
