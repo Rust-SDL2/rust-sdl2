@@ -1,4 +1,4 @@
-use libc::{c_int, c_uint, c_float, uint32_t, c_char};
+use libc::{c_int, c_uint, c_float, c_char};
 use std::ffi::{CStr, CString, NulError};
 use std::{mem, ptr, fmt};
 use std::rc::Rc;
@@ -445,7 +445,7 @@ impl DisplayMode {
 
     pub fn to_ll(&self) -> sys::SDL_DisplayMode {
         sys::SDL_DisplayMode {
-            format: self.format as uint32_t,
+            format: self.format as u32,
             w: self.w as c_int,
             h: self.h as c_int,
             refresh_rate: self.refresh_rate as c_int,
@@ -1216,7 +1216,7 @@ impl Window {
     }
 
     pub fn set_title(&mut self, title: &str) -> Result<(), NulError> {
-        let title = r#try!(CString::new(title));
+        let title = CString::new(title)?;
         Ok(unsafe {
             sys::SDL_SetWindowTitle(self.context.raw, title.as_ptr() as *const c_char);
         })
@@ -1284,8 +1284,8 @@ impl Window {
 
     pub fn set_size(&mut self, width: u32, height: u32)
             -> Result<(), IntegerOrSdlError> {
-        let w = r#try!(validate_int(width, "width"));
-        let h = r#try!(validate_int(height, "height"));
+        let w = validate_int(width, "width")?;
+        let h = validate_int(height, "height")?;
         Ok(unsafe {
             sys::SDL_SetWindowSize(self.context.raw, w, h)
         })
@@ -1314,8 +1314,8 @@ impl Window {
 
     pub fn set_minimum_size(&mut self, width: u32, height: u32)
             -> Result<(), IntegerOrSdlError> {
-        let w = r#try!(validate_int(width, "width"));
-        let h = r#try!(validate_int(height, "height"));
+        let w = validate_int(width, "width")?;
+        let h = validate_int(height, "height")?;
         Ok(unsafe {
             sys::SDL_SetWindowMinimumSize(self.context.raw, w, h)
         })
@@ -1330,8 +1330,8 @@ impl Window {
 
     pub fn set_maximum_size(&mut self, width: u32, height: u32)
             -> Result<(), IntegerOrSdlError> {
-        let w = r#try!(validate_int(width, "width"));
-        let h = r#try!(validate_int(height, "height"));
+        let w = validate_int(width, "width")?;
+        let h = validate_int(height, "height")?;
         Ok(unsafe {
             sys::SDL_SetWindowMaximumSize(self.context.raw, w, h)
         })
@@ -1387,7 +1387,7 @@ impl Window {
             -> Result<(), String> {
         unsafe {
             let result = sys::SDL_SetWindowFullscreen(
-                self.context.raw, fullscreen_type as uint32_t
+                self.context.raw, fullscreen_type as u32
             );
             if result == 0 {
                 Ok(())

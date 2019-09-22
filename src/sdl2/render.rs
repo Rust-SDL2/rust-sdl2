@@ -42,7 +42,7 @@ use std::mem;
 use std::ops::Deref;
 use std::ptr;
 use std::rc::Rc;
-use libc::{c_int, uint32_t, c_double};
+use libc::{c_int, c_double};
 use crate::rect::Point;
 use crate::rect::Rect;
 use std::ffi::CStr;
@@ -660,7 +660,7 @@ impl CanvasBuilder {
         use crate::common::IntegerOrSdlError::*;
         let index = match self.index {
             None => -1,
-            Some(index) => r#try!(validate_int(index, "index")),
+            Some(index) => validate_int(index, "index")?,
         };
         let raw = unsafe { sys::SDL_CreateRenderer(self.window.raw(), index, self.renderer_flags) };
 
@@ -783,7 +783,7 @@ fn ll_create_texture(context: *mut sys::SDL_Renderer,
     };
 
     Ok(unsafe {
-        sys::SDL_CreateTexture(context, pixel_format as uint32_t, access as c_int, w, h)
+        sys::SDL_CreateTexture(context, pixel_format as u32, access as c_int, w, h)
     })
 }
 
@@ -991,8 +991,8 @@ impl<T: RenderTarget> Canvas<T> {
     /// Sets a device independent resolution for rendering.
     pub fn set_logical_size(&mut self, width: u32, height: u32) -> Result<(), IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
-        let width = r#try!(validate_int(width, "width"));
-        let height = r#try!(validate_int(height, "height"));
+        let width = validate_int(width, "width")?;
+        let height = validate_int(height, "height")?;
         let result = unsafe { sys::SDL_RenderSetLogicalSize(self.context.raw, width, height) };
         match result {
             0 => Ok(()),
@@ -1297,7 +1297,7 @@ impl<T: RenderTarget> Canvas<T> {
             let (actual_rect, w, h) = match rect {
                 Some(ref rect) => (rect.raw(), rect.width() as usize, rect.height() as usize),
                 None => {
-                    let (w, h) = r#try!(self.output_size());
+                    let (w, h) = self.output_size()?;
                     (ptr::null(), w as usize, h as usize)
                 }
             };
@@ -1311,7 +1311,7 @@ impl<T: RenderTarget> Canvas<T> {
             let ret = {
                 sys::SDL_RenderReadPixels(self.context.raw,
                                          actual_rect,
-                                         format as uint32_t,
+                                         format as u32,
                                          pixels.as_mut_ptr() as *mut c_void,
                                          pitch as c_int)
             };

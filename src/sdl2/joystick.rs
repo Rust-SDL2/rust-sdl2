@@ -25,7 +25,7 @@ impl JoystickSubsystem {
     pub fn open(&self, joystick_index: u32)
             -> Result<Joystick, IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
-        let joystick_index = r#try!(validate_int(joystick_index, "joystick_index"));
+        let joystick_index = validate_int(joystick_index, "joystick_index")?;
 
         let joystick = unsafe { sys::SDL_JoystickOpen(joystick_index) };
 
@@ -42,7 +42,7 @@ impl JoystickSubsystem {
     /// Return the name of the joystick at index `joystick_index`.
     pub fn name_for_index(&self, joystick_index: u32) -> Result<String, IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
-        let joystick_index = r#try!(validate_int(joystick_index, "joystick_index"));
+        let joystick_index = validate_int(joystick_index, "joystick_index")?;
 
         let c_str = unsafe { sys::SDL_JoystickNameForIndex(joystick_index) };
 
@@ -58,7 +58,7 @@ impl JoystickSubsystem {
     /// Get the GUID for the joystick at index `joystick_index`
     pub fn device_guid(&self, joystick_index: u32) -> Result<Guid, IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
-        let joystick_index = r#try!(validate_int(joystick_index, "joystick_index"));
+        let joystick_index = validate_int(joystick_index, "joystick_index")?;
 
         let raw = unsafe { sys::SDL_JoystickGetDeviceGUID(joystick_index) };
 
@@ -222,7 +222,7 @@ impl Joystick {
         // get_error() returns a non-empty string.
         clear_error();
 
-        let axis = r#try!(validate_int(axis, "axis"));
+        let axis = validate_int(axis, "axis")?;
         let pos = unsafe { sys::SDL_JoystickGetAxis(self.raw, axis) };
 
         if pos != 0 {
@@ -259,7 +259,7 @@ impl Joystick {
         // error...
         clear_error();
 
-        let button = r#try!(validate_int(button, "button"));
+        let button = validate_int(button, "button")?;
         let pressed = unsafe { sys::SDL_JoystickGetButton(self.raw, button) };
 
         match pressed {
@@ -298,7 +298,7 @@ impl Joystick {
         let mut dx = 0;
         let mut dy = 0;
 
-        let ball = r#try!(validate_int(ball, "ball"));
+        let ball = validate_int(ball, "ball")?;
         let result = unsafe { sys::SDL_JoystickGetBall(self.raw, ball, &mut dx, &mut dy) };
 
         if result == 0 {
@@ -328,7 +328,7 @@ impl Joystick {
         // have to use the same hack as `axis`...
         clear_error();
 
-        let hat = r#try!(validate_int(hat, "hat"));
+        let hat = validate_int(hat, "hat")?;
         let result = unsafe { sys::SDL_JoystickGetHat(self.raw, hat) };
 
         let state = HatState::from_raw(result as u8);
@@ -404,7 +404,7 @@ impl Eq for Guid {}
 impl Guid {
     /// Create a GUID from a string representation.
     pub fn from_string(guid: &str) -> Result<Guid, NulError> {
-        let guid = r#try!(CString::new(guid));
+        let guid = CString::new(guid)?;
 
         let raw = unsafe { sys::SDL_JoystickGetGUIDFromString(guid.as_ptr() as *const c_char) };
 
