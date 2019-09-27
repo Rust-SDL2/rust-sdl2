@@ -6,12 +6,14 @@ use std::error::Error;
 use std::ffi::NulError;
 use std::fmt;
 use std::marker::PhantomData;
+use std::rc::Rc;
 use ::surface::Surface;
 use sys::ttf;
 use sys::SDL_Surface;
 use ::get_error;
 use ::pixels::Color;
 use ::rwops::RWops;
+use ::ttf::Sdl2TtfContext;
 
 bitflags! {
     /// The styling of a font.
@@ -129,7 +131,7 @@ impl<'a> RenderableText<'a> {
 #[must_use]
 pub struct PartialRendering<'f, 'text> {
     text: RenderableText<'text>,
-    font: &'f Font<'f, 'f>,
+    font: &'f Font<'f>,
 }
 
 /// Converts the given raw pointer to a surface.
@@ -236,7 +238,9 @@ impl<'f,'text> PartialRendering<'f,'text> {
 }
 
 /// A loaded TTF font.
-pub struct Font<'ttf_module,'rwops> {
+pub struct Font<'rwops> {
+    #[allow(unused)]
+    context: Sdl2TtfContext,
     raw: *mut ttf::TTF_Font,
     // RWops is only stored here because it must not outlive
     // the Font struct, and this RWops should not be used by
@@ -246,13 +250,9 @@ pub struct Font<'ttf_module,'rwops> {
     // side
     #[allow(dead_code)]
     rwops: Option<RWops<'rwops>>,
-    #[allow(dead_code)]
-    _marker: PhantomData<&'ttf_module ()>,
 }
 
-
-
-impl<'ttf,'r> Drop for Font<'ttf,'r> {
+impl<'r> Drop for Font<'r> {
     fn drop(&mut self) {
         unsafe {
             // avoid close font after quit()
@@ -264,28 +264,28 @@ impl<'ttf,'r> Drop for Font<'ttf,'r> {
 }
 
 /// Internally used to load a font (for internal visibility).
-pub fn internal_load_font<'ttf,P:AsRef<Path>>(path: P, ptsize: u16) -> Result<Font<'ttf,'static>, String> {
+pub fn internal_load_font<P:AsRef<Path>>(context: Sdl2TtfContext, path: P, ptsize: u16) -> Result<Font<'static>, String> {
     unsafe {
         let cstring = CString::new(path.as_ref().to_str().unwrap()).unwrap();
         let raw = ttf::TTF_OpenFont(cstring.as_ptr(), ptsize as c_int);
         if raw.is_null() {
             Err(get_error())
         } else {
-            Ok(Font { raw: raw, rwops: None, _marker: PhantomData })
+            Ok(Font { context, raw: raw, rwops: None })
         }
     }
 }
 
 /// Internally used to load a font (for internal visibility).
-pub fn internal_load_font_from_ll<'ttf,'r, R>(raw: *mut ttf::TTF_Font, rwops: R)
-        -> Font<'ttf,'r>
+pub fn internal_load_font_from_ll<'r, R>(context: Sdl2TtfContext, raw: *mut ttf::TTF_Font, rwops: R)
+        -> Font<'r>
 where R: Into<Option<RWops<'r>>> {
-    Font { raw: raw, rwops: rwops.into(), _marker: PhantomData }
+    Font { context, raw: raw, rwops: rwops.into() }
 }
 
 /// Internally used to load a font (for internal visibility).
-pub fn internal_load_font_at_index<'ttf,P: AsRef<Path>>(path: P, index: u32, ptsize: u16)
-        -> Result<Font<'ttf, 'static>, String> {
+pub fn internal_load_font_at_index<P: AsRef<Path>>(context: Sdl2TtfContext, path: P, index: u32, ptsize: u16)
+        -> Result<Font<'static>, String> {
     unsafe {
         let cstring = CString::new(path.as_ref().to_str().unwrap().as_bytes())
             .unwrap();
@@ -294,12 +294,12 @@ pub fn internal_load_font_at_index<'ttf,P: AsRef<Path>>(path: P, index: u32, pts
         if raw.is_null() {
             Err(get_error())
         } else {
-            Ok(Font { raw: raw, rwops: None, _marker: PhantomData})
+            Ok(Font { context, raw: raw, rwops: None })
         }
     }
 }
 
-impl<'ttf,'r> Font<'ttf,'r> {
+impl<'r> Font<'r> {
     /// Returns the underlying C font object.
     unsafe fn raw(&self) -> *mut ttf::TTF_Font {
         self.raw
