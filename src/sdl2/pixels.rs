@@ -2,7 +2,6 @@ extern crate rand;
 use self::rand::Rng;
 use self::rand::distributions::{Distribution, Standard};
 
-use libc::uint32_t;
 use num::FromPrimitive;
 use std::mem::transmute;
 use std::convert::TryFrom;
@@ -46,7 +45,7 @@ impl Palette {
 
     /// Creates a palette from the provided colors
     pub fn with_colors(colors: &[Color]) -> Result<Self, String> {
-        let pal = r#try!(Self::new(colors.len()));
+        let pal = Self::new(colors.len())?;
 
         // Already validated, so don't check again
         let ncolors = colors.len() as ::libc::c_int;
@@ -391,12 +390,6 @@ impl PixelFormatEnum {
             RGBA4444 | RGBA5551 | RGBA8888 => true,
             _ => false
         }
-    }
-}
-
-impl Into<uint32_t> for PixelFormatEnum {
-    fn into(self) -> uint32_t {
-        self as uint32_t
     }
 }
 

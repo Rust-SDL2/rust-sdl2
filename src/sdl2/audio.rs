@@ -54,7 +54,7 @@
 
 use std::ffi::{CStr, CString};
 use num::FromPrimitive;
-use libc::{c_int, c_void, uint8_t, c_char};
+use libc::{c_int, c_void, c_char};
 use std::ops::{Deref, DerefMut};
 use std::path::Path;
 use std::marker::PhantomData;
@@ -281,7 +281,7 @@ pub struct AudioSpecWAV {
 impl AudioSpecWAV {
     /// Loads a WAVE from the file path.
     pub fn load_wav<P: AsRef<Path>>(path: P) -> Result<AudioSpecWAV, String> {
-        let mut file = r#try!(RWops::from_file(path, "rb"));
+        let mut file = RWops::from_file(path, "rb")?;
         AudioSpecWAV::load_wav_rw(&mut file)
     }
 
@@ -373,7 +373,7 @@ impl AudioFormatNum for f32 {
 }
 
 extern "C" fn audio_callback_marshall<CB: AudioCallback>
-(userdata: *mut c_void, stream: *mut uint8_t, len: c_int) {
+(userdata: *mut c_void, stream: *mut u8, len: c_int) {
     use std::slice::from_raw_parts_mut;
     use std::mem::size_of;
     unsafe {
@@ -429,7 +429,7 @@ impl AudioSpecDesired {
             callback: Some(audio_callback_marshall::<CB>
                     as extern "C" fn
                         (arg1: *mut c_void,
-                            arg2: *mut uint8_t,
+                            arg2: *mut u8,
                             arg3: c_int)),
             userdata: userdata as *mut _,
         }

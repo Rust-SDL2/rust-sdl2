@@ -1,4 +1,3 @@
-use libc::uint32_t;
 use libc::c_void;
 use std::marker::PhantomData;
 use std::mem;
@@ -80,10 +79,10 @@ impl<'b, 'a> Drop for Timer<'b, 'a> {
     }
 }
 
-extern "C" fn c_timer_callback(_interval: u32, param: *mut c_void) -> uint32_t {
+extern "C" fn c_timer_callback(_interval: u32, param: *mut c_void) -> u32 {
     unsafe {
         let f: *mut Box<dyn Fn() -> u32> = mem::transmute(param);
-        (*f)() as uint32_t
+        (*f)()
     }
 }
 

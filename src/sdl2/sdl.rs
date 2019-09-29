@@ -2,7 +2,7 @@ use std::error;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt;
 use std::rc::Rc;
-use libc::{c_char, uint32_t};
+use libc::c_char;
 use std::mem::transmute;
 
 use crate::sys;
@@ -227,7 +227,7 @@ macro_rules! subsystem {
 #[derive(Debug, Clone)]
 struct SubsystemDrop {
     _sdldrop: Rc<SdlDrop>,
-    flag: uint32_t
+    flag: u32
 }
 
 impl Drop for SubsystemDrop {
@@ -327,7 +327,7 @@ pub fn get_error() -> String {
 }
 
 pub fn set_error(err: &str) -> Result<(), NulError> {
-    let c_string = r#try!(CString::new(err));
+    let c_string = CString::new(err)?;
     Ok(unsafe {
         sys::SDL_SetError(c_string.as_ptr() as *const c_char);
     })

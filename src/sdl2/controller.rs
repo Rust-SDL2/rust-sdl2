@@ -74,7 +74,7 @@ impl GameControllerSubsystem {
     /// be retrieved using the `SDL_NumJoysticks` function.
     pub fn open(&self, joystick_index: u32) -> Result<GameController, IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
-        let joystick_index = r#try!(validate_int(joystick_index, "joystick_index"));
+        let joystick_index = validate_int(joystick_index, "joystick_index")?;
         let controller = unsafe { sys::SDL_GameControllerOpen(joystick_index) };
 
         if controller.is_null() {
@@ -90,7 +90,7 @@ impl GameControllerSubsystem {
     /// Return the name of the controller at index `joystick_index`.
     pub fn name_for_index(&self, joystick_index: u32) -> Result<String, IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
-        let joystick_index = r#try!(validate_int(joystick_index, "joystick_index"));
+        let joystick_index = validate_int(joystick_index, "joystick_index")?;
         let c_str = unsafe { sys::SDL_GameControllerNameForIndex(joystick_index) };
 
         if c_str.is_null() {

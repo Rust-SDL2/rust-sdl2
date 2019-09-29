@@ -4,7 +4,7 @@ Event Handling
 
 use std::ffi::CStr;
 use std::mem;
-use libc::{c_int, uint32_t};
+use libc::c_int;
 use num::FromPrimitive;
 use std::ptr;
 use std::borrow::ToOwned;
@@ -51,7 +51,7 @@ lazy_static! {
 impl crate::EventSubsystem {
     /// Removes all events in the event queue that match the specified event type.
     pub fn flush_event(&self, event_type: EventType) {
-        unsafe { sys::SDL_FlushEvent(event_type as uint32_t) };
+        unsafe { sys::SDL_FlushEvent(event_type as u32) };
     }
 
     /// Removes all events in the event queue that match the specified type range.
@@ -145,7 +145,7 @@ impl crate::EventSubsystem {
     /// ```
     #[inline(always)]
     pub unsafe fn register_event(&self) -> Result<u32, String> {
-        Ok(*r#try!(self.register_events(1)).first().unwrap())
+        Ok(*self.register_events(1)?.first().unwrap())
     }
 
     /// Registers custom SDL events.
@@ -177,7 +177,7 @@ impl crate::EventSubsystem {
     pub fn register_custom_event<T: ::std::any::Any>(&self)
             -> Result<(), String> {
         use ::std::any::TypeId;
-        let event_id = *r#try!(unsafe { self.register_events(1) }).first().unwrap();
+        let event_id = *(unsafe { self.register_events(1) })?.first().unwrap();
         let mut cet = CUSTOM_EVENT_TYPES.lock().unwrap();
         let type_id = TypeId::of::<Box<T>>();
 
@@ -728,7 +728,7 @@ impl Event {
         match *self {
             Event::User { window_id, type_, code, data1, data2, timestamp} => {
                 let event = sys::SDL_UserEvent {
-                    type_: type_ as uint32_t,
+                    type_: type_ as u32,
                     timestamp,
                     windowID: window_id,
                     code: code as i32,
@@ -2034,7 +2034,7 @@ mod test {
         }.to_ll().unwrap();
 
         // Simulate SDL setting bits unknown to us, see PR #780
-        unsafe { raw_event.key.keysym.mod_ = 0xffff; }
+        raw_event.key.keysym.mod_ = 0xffff;
 
         if let Event::KeyDown { keymod, .. } = Event::from_ll(raw_event) {
             assert_eq!(keymod, Mod::all());
@@ -2055,7 +2055,7 @@ mod test {
         }.to_ll().unwrap();
 
         // Simulate SDL setting bits unknown to us, see PR #780
-        unsafe { raw_event.key.keysym.mod_ = 0xffff; }
+        raw_event.key.keysym.mod_ = 0xffff;
 
         if let Event::KeyUp { keymod, .. } = Event::from_ll(raw_event) {
             assert_eq!(keymod, Mod::all());
@@ -2140,7 +2140,7 @@ impl EventSender {
            data2: ::std::ptr::null_mut()
         };
 
-        r#try!(self.push_event(event));
+        self.push_event(event)?;
 
         Ok(())
     }
