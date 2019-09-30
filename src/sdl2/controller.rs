@@ -224,8 +224,8 @@ impl Axis {
         })
     }
 
-    pub fn to_ll(&self) -> sys::SDL_GameControllerAxis {
-        match *self {
+    pub fn to_ll(self) -> sys::SDL_GameControllerAxis {
+        match self {
             Axis::LeftX => sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTX,
             Axis::LeftY => sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTY,
             Axis::RightX => sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_RIGHTX,
@@ -302,8 +302,8 @@ impl Button {
         })
     }
 
-    pub fn to_ll(&self) -> sys::SDL_GameControllerButton {
-        match *self {
+    pub fn to_ll(self) -> sys::SDL_GameControllerButton {
+        match self {
             Button::A             => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A,
             Button::B             => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_B,
             Button::X             => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_X,

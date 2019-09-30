@@ -430,9 +430,7 @@ impl Rect {
     }
 
     pub fn raw_slice(slice: &[Rect]) -> *const sys::SDL_Rect {
-        unsafe {
-            mem::transmute(slice.as_ptr())
-        }
+        slice.as_ptr() as *const sys::SDL_Rect
     }
 
     pub fn from_ll(raw: sys::SDL_Rect) -> Rect {
@@ -626,7 +624,7 @@ impl Into<(i32, i32, u32, u32)> for Rect {
 
 impl From<sys::SDL_Rect> for Rect {
     fn from(raw: sys::SDL_Rect) -> Rect {
-        Rect { raw: raw }
+        Rect { raw }
     }
 }
 
@@ -768,18 +766,16 @@ impl Point {
     }
 
     pub fn raw_slice(slice: &[Point]) -> *const sys::SDL_Point {
-        unsafe {
-            mem::transmute(slice.as_ptr())
-        }
+        slice.as_ptr() as *const sys::SDL_Point
     }
 
-    pub fn raw(&self) -> *const sys::SDL_Point {
+    pub fn raw(self) -> *const sys::SDL_Point {
         &self.raw
     }
 
     /// Returns a new point by shifting this point's coordinates by the given
     /// x and y values.
-    pub fn offset(&self, x: i32, y: i32) -> Point {
+    pub fn offset(self, x: i32, y: i32) -> Point {
         let x = match self.raw.x.checked_add(x) {
             Some(val) => val,
             None => {
@@ -805,18 +801,18 @@ impl Point {
 
     /// Returns a new point by multiplying this point's coordinates by the
     /// given scale factor.
-    pub fn scale(&self, f: i32) -> Point {
+    pub fn scale(self, f: i32) -> Point {
         Point::new(clamped_mul(self.raw.x, f),
                    clamped_mul(self.raw.y, f))
     }
 
     /// Returns the x-coordinate of this point.
-    pub fn x(&self) -> i32 {
+    pub fn x(self) -> i32 {
         self.raw.x
     }
 
     /// Returns the y-coordinate of this point.
-    pub fn y(&self) -> i32 {
+    pub fn y(self) -> i32 {
         self.raw.y
     }
 }

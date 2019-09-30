@@ -1217,9 +1217,10 @@ impl Window {
 
     pub fn set_title(&mut self, title: &str) -> Result<(), NulError> {
         let title = CString::new(title)?;
-        Ok(unsafe {
+        unsafe {
             sys::SDL_SetWindowTitle(self.context.raw, title.as_ptr() as *const c_char);
-        })
+        }
+        Ok(())
     }
 
     pub fn title(&self) -> &str {
@@ -1286,9 +1287,10 @@ impl Window {
             -> Result<(), IntegerOrSdlError> {
         let w = validate_int(width, "width")?;
         let h = validate_int(height, "height")?;
-        Ok(unsafe {
-            sys::SDL_SetWindowSize(self.context.raw, w, h)
-        })
+        unsafe {
+            sys::SDL_SetWindowSize(self.context.raw, w, h);
+        }
+        Ok(())
     }
 
     pub fn size(&self) -> (u32, u32) {
@@ -1316,9 +1318,10 @@ impl Window {
             -> Result<(), IntegerOrSdlError> {
         let w = validate_int(width, "width")?;
         let h = validate_int(height, "height")?;
-        Ok(unsafe {
-            sys::SDL_SetWindowMinimumSize(self.context.raw, w, h)
-        })
+        unsafe {
+            sys::SDL_SetWindowMinimumSize(self.context.raw, w, h);
+        }
+        Ok(())
     }
 
     pub fn minimum_size(&self) -> (u32, u32) {
@@ -1332,9 +1335,10 @@ impl Window {
             -> Result<(), IntegerOrSdlError> {
         let w = validate_int(width, "width")?;
         let h = validate_int(height, "height")?;
-        Ok(unsafe {
-            sys::SDL_SetWindowMaximumSize(self.context.raw, w, h)
-        })
+        unsafe {
+            sys::SDL_SetWindowMaximumSize(self.context.raw, w, h);
+        }
+        Ok(())
     }
 
     pub fn maximum_size(&self) -> (u32, u32) {
@@ -1471,7 +1475,7 @@ impl Window {
         }
     }
 
-    #[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
+    #[allow(clippy::type_complexity)]
     pub fn gamma_ramp(&self) -> Result<(Vec<u16>, Vec<u16>, Vec<u16>), String> {
         let mut red: Vec<u16> = vec![0; 256];
         let mut green: Vec<u16> = vec![0; 256];

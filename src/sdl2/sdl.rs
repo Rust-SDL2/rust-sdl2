@@ -203,14 +203,16 @@ macro_rules! subsystem {
         }
         unsafe impl Sync for $name {}
 
-        impl $name {
+        impl std::clone::Clone for $name {
             #[inline]
-            pub fn clone(&self) -> $name {
+            fn clone(&self) -> $name {
                 $name {
                     _subsystem_drop: self._subsystem_drop.clone()
                 }
             }
+        }
 
+        impl $name {
             /// Obtain an SDL context.
             #[inline]
             pub fn sdl(&self) -> Sdl {
@@ -328,9 +330,10 @@ pub fn get_error() -> String {
 
 pub fn set_error(err: &str) -> Result<(), NulError> {
     let c_string = CString::new(err)?;
-    Ok(unsafe {
+    unsafe {
         sys::SDL_SetError(c_string.as_ptr() as *const c_char);
-    })
+    }
+    Ok(())
 }
 
 pub fn set_error_from_code(err: Error) {

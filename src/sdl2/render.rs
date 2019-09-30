@@ -508,10 +508,10 @@ impl<T: RenderTarget> Canvas<T> {
         if self.render_target_supported() {
             let target = unsafe { self.get_raw_target() };
             unsafe { self.set_raw_target(texture.raw) }
-                .map_err(|e| TargetRenderError::SdlError(e))?;
+                .map_err(TargetRenderError::SdlError)?;
             f(self);
             unsafe { self.set_raw_target(target) }
-                .map_err(|e| TargetRenderError::SdlError(e))?;
+                .map_err(TargetRenderError::SdlError)?;
             Ok(())
         } else {
             Err(TargetRenderError::NotSupported)
@@ -582,12 +582,12 @@ impl<T: RenderTarget> Canvas<T> {
             let target = unsafe { self.get_raw_target() };
             for &(ref texture, ref user_context) in textures {
                 unsafe { self.set_raw_target(texture.raw) }
-                    .map_err(|e| TargetRenderError::SdlError(e))?;
+                    .map_err(TargetRenderError::SdlError)?;
                 f(self, user_context);
             }
             // reset the target to its source
             unsafe { self.set_raw_target(target) }
-                .map_err(|e| TargetRenderError::SdlError(e))?;
+                .map_err(TargetRenderError::SdlError)?;
             Ok(())
         } else {
             Err(TargetRenderError::NotSupported)
@@ -1778,19 +1778,16 @@ impl InternalTexture {
         match format {
             PixelFormatEnum::YV12 |
             PixelFormatEnum::IYUV => {
-                match rect {
-                    Some(r) => {
-                        if r.x() % 2 != 0 {
-                            return Err(XMustBeMultipleOfTwoForFormat(r.x(), format));
-                        } else if r.y() % 2 != 0 {
-                            return Err(YMustBeMultipleOfTwoForFormat(r.y(), format));
-                        } else if r.width() % 2 != 0 {
-                            return Err(WidthMustBeMultipleOfTwoForFormat(r.width(), format));
-                        } else if r.height() % 2 != 0 {
-                            return Err(HeightMustBeMultipleOfTwoForFormat(r.height(), format));
-                        }
+                if let Some(r) = rect {
+                    if r.x() % 2 != 0 {
+                        return Err(XMustBeMultipleOfTwoForFormat(r.x(), format));
+                    } else if r.y() % 2 != 0 {
+                        return Err(YMustBeMultipleOfTwoForFormat(r.y(), format));
+                    } else if r.width() % 2 != 0 {
+                        return Err(WidthMustBeMultipleOfTwoForFormat(r.width(), format));
+                    } else if r.height() % 2 != 0 {
+                        return Err(HeightMustBeMultipleOfTwoForFormat(r.height(), format));
                     }
-                    _ => {}
                 };
                 if pitch % 2 != 0 {
                     return Err(PitchMustBeMultipleOfTwoForFormat(pitch, format));
@@ -1838,19 +1835,16 @@ impl InternalTexture {
             None => ptr::null(),
         };
 
-        match rect {
-            Some(ref r) => {
-                if r.x() % 2 != 0 {
-                    return Err(XMustBeMultipleOfTwoForFormat(r.x()));
-                } else if r.y() % 2 != 0 {
-                    return Err(YMustBeMultipleOfTwoForFormat(r.y()));
-                } else if r.width() % 2 != 0 {
-                    return Err(WidthMustBeMultipleOfTwoForFormat(r.width()));
-                } else if r.height() % 2 != 0 {
-                    return Err(HeightMustBeMultipleOfTwoForFormat(r.height()));
-                }
+        if let Some(ref r) = rect {
+            if r.x() % 2 != 0 {
+                return Err(XMustBeMultipleOfTwoForFormat(r.x()));
+            } else if r.y() % 2 != 0 {
+                return Err(YMustBeMultipleOfTwoForFormat(r.y()));
+            } else if r.width() % 2 != 0 {
+                return Err(WidthMustBeMultipleOfTwoForFormat(r.width()));
+            } else if r.height() % 2 != 0 {
+                return Err(HeightMustBeMultipleOfTwoForFormat(r.height()));
             }
-            _ => {}
         };
 
         // If the destination rectangle lies outside the texture boundaries,
