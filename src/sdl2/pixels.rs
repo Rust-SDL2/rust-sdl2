@@ -116,7 +116,7 @@ impl Color {
         Color { r, g, b, a }
     }
 
-    pub fn to_u32(&self, format: &PixelFormat) -> u32 {
+    pub fn to_u32(self, format: &PixelFormat) -> u32 {
         unsafe { sys::SDL_MapRGBA(format.raw, self.r, self.g, self.b, self.a) }
     }
 
@@ -130,18 +130,18 @@ impl Color {
     }
 
     #[inline]
-    pub fn rgb(&self) -> (u8, u8, u8) {
+    pub fn rgb(self) -> (u8, u8, u8) {
         (self.r, self.g, self.b)
     }
 
     #[inline]
-    pub fn rgba(&self) -> (u8, u8, u8, u8) {
+    pub fn rgba(self) -> (u8, u8, u8, u8) {
         (self.r, self.g, self.b, self.a)
     }
 
     // Implemented manually and kept private, because reasons
     #[inline]
-    fn raw(&self) -> sys::SDL_Color {
+    fn raw(self) -> sys::SDL_Color {
         sys::SDL_Color { r: self.r, g: self.g, b: self.b, a: self.a }
     }
 }
@@ -293,8 +293,8 @@ impl PixelFormatEnum {
 
     /// Calculates the total byte size of an image buffer, given its pitch
     /// and height.
-    pub fn byte_size_from_pitch_and_height(&self, pitch: usize, height: usize) -> usize {
-        match *self {
+    pub fn byte_size_from_pitch_and_height(self, pitch: usize, height: usize) -> usize {
+        match self {
             PixelFormatEnum::YV12 | PixelFormatEnum::IYUV => {
                 // YUV is 4:2:0.
                 // `pitch` is the width of the Y component, and
@@ -306,9 +306,9 @@ impl PixelFormatEnum {
         }
     }
 
-    #[cfg_attr(feature = "cargo-clippy", allow(match_same_arms))]
-    pub fn byte_size_of_pixels(&self, num_of_pixels: usize) -> usize {
-        match *self {
+    #[allow(clippy::match_same_arms)]
+    pub fn byte_size_of_pixels(self, num_of_pixels: usize) -> usize {
+        match self {
             PixelFormatEnum::RGB332
                 => num_of_pixels,
             PixelFormatEnum::RGB444 | PixelFormatEnum::RGB555 |
@@ -340,13 +340,13 @@ impl PixelFormatEnum {
             PixelFormatEnum::Unknown | PixelFormatEnum::Index1LSB |
             PixelFormatEnum::Index1MSB | PixelFormatEnum::Index4LSB |
             PixelFormatEnum::Index4MSB
-                => panic!("not supported format: {:?}", *self),
+                => panic!("not supported format: {:?}", self),
         }
     }
 
-    #[cfg_attr(feature = "cargo-clippy", allow(match_same_arms))]
-    pub fn byte_size_per_pixel(&self) -> usize {
-        match *self {
+    #[allow(clippy::match_same_arms)]
+    pub fn byte_size_per_pixel(self) -> usize {
+        match self {
             PixelFormatEnum::RGB332
                 => 1,
             PixelFormatEnum::RGB444 | PixelFormatEnum::RGB555 |
@@ -377,13 +377,13 @@ impl PixelFormatEnum {
             PixelFormatEnum::Unknown | PixelFormatEnum::Index1LSB |
             PixelFormatEnum::Index1MSB | PixelFormatEnum::Index4LSB |
             PixelFormatEnum::Index4MSB
-                => panic!("not supported format: {:?}", *self),
+                => panic!("not supported format: {:?}", self),
         }
     }
 
-    pub fn supports_alpha(&self) -> bool {
+    pub fn supports_alpha(self) -> bool {
         use crate::pixels::PixelFormatEnum::*;
-        match *self {
+        match self {
             ARGB4444 | ARGB1555 | ARGB8888 | ARGB2101010 |
             ABGR4444 | ABGR1555 | ABGR8888 |
             BGRA4444 | BGRA5551 | BGRA8888 |
@@ -396,7 +396,7 @@ impl PixelFormatEnum {
 impl From<PixelFormat> for PixelFormatEnum {
     fn from(pf: PixelFormat) -> PixelFormatEnum {
         unsafe {
-            let ref sdl_pf = *pf.raw;
+            let sdl_pf = *pf.raw;
             match PixelFormatEnum::from_u64(sdl_pf.format as u64) {
                 Some(pfe) => pfe,
                 None => panic!("Unknown pixel format: {:?}", sdl_pf.format)

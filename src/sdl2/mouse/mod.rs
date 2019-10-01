@@ -118,8 +118,8 @@ impl MouseWheelDirection {
         }
     }
     #[inline]
-    pub fn to_ll(&self) -> u32 {
-        match *self {
+    pub fn to_ll(self) -> u32 {
+        match self {
             MouseWheelDirection::Normal => 0,
             MouseWheelDirection::Flipped => 1,
             MouseWheelDirection::Unknown(direction) => direction,

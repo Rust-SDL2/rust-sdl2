@@ -439,7 +439,7 @@ impl SurfaceRef {
         }
     }
 
-    #[cfg_attr(feature = "cargo-clippy", allow(clone_on_copy))]
+    #[allow(clippy::clone_on_copy)]
     pub fn fill_rects(&mut self, rects: &[Rect], color: pixels::Color) -> Result<(), String>
     {
         for rect in rects.iter() {

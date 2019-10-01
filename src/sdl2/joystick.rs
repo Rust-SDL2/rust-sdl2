@@ -115,8 +115,8 @@ impl PowerLevel {
         }
     }
 
-    pub fn to_ll(&self) -> SDL_JoystickPowerLevel {
-        match *self {
+    pub fn to_ll(self) -> SDL_JoystickPowerLevel {
+        match self {
             PowerLevel::Unknown => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_UNKNOWN,
             PowerLevel::Empty   => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_EMPTY,
             PowerLevel::Low     => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_LOW,
@@ -497,8 +497,8 @@ impl HatState {
         }
     }
 
-    pub fn to_raw(&self) -> u8 {
-        match *self {
+    pub fn to_raw(self) -> u8 {
+        match self {
             HatState::Centered => 0,
             HatState::Up => 1,
             HatState::Right => 2,

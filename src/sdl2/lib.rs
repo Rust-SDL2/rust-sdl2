@@ -48,7 +48,7 @@
 #![crate_name = "sdl2"]
 #![crate_type = "lib"]
 
-#![cfg_attr(feature = "cargo-clippy", allow(cast_lossless, transmute_ptr_to_ref))]
+#![allow(clippy::cast_lossless, clippy::transmute_ptr_to_ref)]
 
 extern crate num;
 pub extern crate libc;

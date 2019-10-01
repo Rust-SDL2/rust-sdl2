@@ -380,7 +380,7 @@ pub enum WindowEvent {
 }
 
 impl WindowEvent {
-    #[cfg_attr(feature = "cargo-clippy", allow(match_same_arms))]
+    #[allow(clippy::match_same_arms)]
     fn from_ll(id: u8, data1: i32, data2: i32) -> WindowEvent {
         match id {
             0  => WindowEvent::None,
