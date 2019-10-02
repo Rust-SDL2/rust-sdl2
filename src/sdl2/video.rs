@@ -1251,6 +1251,14 @@ impl Window {
     //pub fn SDL_GetWindowData(window: *SDL_Window, name: *c_char) -> *c_void;
 
     pub fn set_position(&mut self, x: WindowPos, y: WindowPos) {
+        if cfg!(target_os="macos") {
+            let _x = to_ll_windowpos(x);
+            let _y = to_ll_windowpos(y);
+            assert!(
+                _x >= -16_000 && _x <= 16_000 && _y >= 16_000 && _y <= 16_000,
+                "the window server limits window position coordinates to ±16,000."
+            );
+        }
         unsafe {
             sys::SDL_SetWindowPosition(
                 self.context.raw, to_ll_windowpos(x), to_ll_windowpos(y)
@@ -1286,6 +1294,12 @@ impl Window {
             -> Result<(), IntegerOrSdlError> {
         let w = r#try!(validate_int(width, "width"));
         let h = r#try!(validate_int(height, "height"));
+        if cfg!(target_os="macos") {
+            assert!(
+                w <= 10_000 && h <= 10_000,
+                "the window server limits window sizes to 10,000."
+            );
+        }
         Ok(unsafe {
             sys::SDL_SetWindowSize(self.context.raw, w, h)
         })
@@ -1316,6 +1330,12 @@ impl Window {
             -> Result<(), IntegerOrSdlError> {
         let w = r#try!(validate_int(width, "width"));
         let h = r#try!(validate_int(height, "height"));
+        if cfg!(target_os="macos") {
+            assert!(
+                w <= 10_000 && h <= 10_000,
+                "the window server limits window sizes to 10,000."
+            );
+        }
         Ok(unsafe {
             sys::SDL_SetWindowMinimumSize(self.context.raw, w, h)
         })
@@ -1332,6 +1352,12 @@ impl Window {
             -> Result<(), IntegerOrSdlError> {
         let w = r#try!(validate_int(width, "width"));
         let h = r#try!(validate_int(height, "height"));
+        if cfg!(target_os="macos") {
+            assert!(
+                w <= 10_000 && h <= 10_000,
+                "the window server limits window sizes to 10,000."
+            );
+        }
         Ok(unsafe {
             sys::SDL_SetWindowMaximumSize(self.context.raw, w, h)
         })
