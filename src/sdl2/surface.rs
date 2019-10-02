@@ -545,6 +545,18 @@ impl SurfaceRef {
         }
     }
 
+    /// Copies the surface into a new one of a specified pixel format.
+    pub fn convert_format(&self, format: pixels::PixelFormatEnum) -> Result<Surface<'static>, String> {
+        // SDL_ConvertSurfaceFormat takes a flag as the last parameter, which should be 0 by the docs.
+        let surface_ptr = unsafe { sys::SDL_ConvertSurfaceFormat(self.raw(), format as u32, 0u32) };
+
+        if surface_ptr.is_null() {
+            Err(get_error())
+        } else {
+            unsafe { Ok(Surface::from_ll(surface_ptr)) }
+        }
+    }
+
     // Note: There's no need to implement SDL_ConvertSurfaceFormat, as it
     // does the same thing as SDL_ConvertSurface but with a slightly different
     // function signature.
