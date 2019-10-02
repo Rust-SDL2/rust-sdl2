@@ -557,10 +557,6 @@ impl SurfaceRef {
         }
     }
 
-    // Note: There's no need to implement SDL_ConvertSurfaceFormat, as it
-    // does the same thing as SDL_ConvertSurface but with a slightly different
-    // function signature.
-
     /// Performs surface blitting (surface copying).
     ///
     /// Returns the final blit rectangle, if a `dst_rect` was provided.
