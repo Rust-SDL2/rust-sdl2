@@ -70,6 +70,10 @@ use crate::sys::SDL_AudioStatus;
 
 impl AudioSubsystem {
     /// Opens a new audio device given the desired parameters and callback.
+    ///
+    /// If you want to modify the callback-owned data at a later point (for example to update
+    /// its data buffer) you're likely to be interested in the
+    /// [AudioDevice.lock method](audio/struct.AudioDevice.html#method.lock).
     #[inline]
     pub fn open_playback<'a, CB, F, D>(&self, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
     where CB: AudioCallback, F: FnOnce(AudioSpec) -> CB, D: Into<Option<&'a str>>,
@@ -79,6 +83,10 @@ impl AudioSubsystem {
 
     /// Opens a new audio device for capture (given the desired parameters and callback).
     /// Supported since SDL 2.0.5
+    ///
+    /// If you want to modify the callback-owned data at a later point (for example to update
+    /// its data buffer) you're likely to be interested in the
+    /// [AudioDevice.lock method](audio/struct.AudioDevice.html#method.lock).
     pub fn open_capture<'a, CB, F, D>(&self, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
         where CB: AudioCallback, F: FnOnce(AudioSpec) -> CB, D: Into<Option<&'a str>>,
     {
@@ -653,6 +661,9 @@ impl<CB: AudioCallback> AudioDevice<CB> {
     }
 
     /// Opens a new audio device for playback (given the desired parameters and callback).
+    ///
+    /// If you want to modify the callback-owned data at a later point (for example to update
+    /// its data buffer) you're likely to be interested in the [lock method](#method.lock).
     pub fn open_playback<'a, F, D>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
         where
             F: FnOnce(AudioSpec) -> CB,
@@ -663,6 +674,9 @@ impl<CB: AudioCallback> AudioDevice<CB> {
 
     /// Opens a new audio device for capture (given the desired parameters and callback).
     /// Supported since SDL 2.0.5
+    ///
+    /// If you want to modify the callback-owned data at a later point (for example to update
+    /// its data buffer) you're likely to be interested in the [lock method](#method.lock).
     pub fn open_capture<'a, F, D>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
         where
             F: FnOnce(AudioSpec) -> CB,
