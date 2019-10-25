@@ -338,38 +338,31 @@ where Self::Channel: AudioFormatNum + 'static
 /// All format types are returned as native-endian.
 pub trait AudioFormatNum {
     fn audio_format() -> AudioFormat;
-    fn zero() -> Self;
 }
 
 /// `AUDIO_S8`
 impl AudioFormatNum for i8 {
     fn audio_format() -> AudioFormat { AudioFormat::S8 }
-    fn zero() -> i8 { 0 }
 }
 /// `AUDIO_U8`
 impl AudioFormatNum for u8 {
     fn audio_format() -> AudioFormat { AudioFormat::U8 }
-    fn zero() -> u8 { 0 }
 }
 /// `AUDIO_S16`
 impl AudioFormatNum for i16 {
     fn audio_format() -> AudioFormat { AudioFormat::s16_sys() }
-    fn zero() -> i16 { 0 }
 }
 /// `AUDIO_U16`
 impl AudioFormatNum for u16 {
     fn audio_format() -> AudioFormat { AudioFormat::u16_sys() }
-    fn zero() -> u16 { 0 }
 }
 /// `AUDIO_S32`
 impl AudioFormatNum for i32 {
     fn audio_format() -> AudioFormat { AudioFormat::s32_sys() }
-    fn zero() -> i32 { 0 }
 }
 /// `AUDIO_F32`
 impl AudioFormatNum for f32 {
     fn audio_format() -> AudioFormat { AudioFormat::f32_sys() }
-    fn zero() -> f32 { 0.0 }
 }
 
 extern "C" fn audio_callback_marshall<CB: AudioCallback>
