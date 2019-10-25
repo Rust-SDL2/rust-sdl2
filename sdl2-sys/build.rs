@@ -100,8 +100,8 @@ fn download_sdl2() -> PathBuf {
     let out_dir = env::var("OUT_DIR").unwrap();
     
     let sdl2_archive_name = format!("SDL2-{}.tar.gz", LASTEST_SDL2_VERSION);
-    let sdl2_archive_url = format!("http://libsdl.org/release/{}", sdl2_archive_name);
-    
+    let sdl2_archive_url = format!("https://libsdl.org/release/{}", sdl2_archive_name);
+
     let sdl2_archive_path = Path::new(&out_dir).join(sdl2_archive_name);
     let sdl2_build_path = Path::new(&out_dir).join(format!("SDL2-{}", LASTEST_SDL2_VERSION));
 
