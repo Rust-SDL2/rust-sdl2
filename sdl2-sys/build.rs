@@ -355,7 +355,7 @@ fn link_sdl2(target_os: &str) {
                 println!("cargo:rustc-flags=-l SDL2_mixer");
             } else if target_os.contains("windows") {
                 println!("cargo:rustc-flags=-l SDL2_mixer");
-            } else if target_os.contains("macos") {
+            } else if target_os.contains("darwin") {
                 if cfg!(any(mac_framework, feature="use_mac_framework")) {
                     println!("cargo:rustc-flags=-l framework=SDL2_mixer");
                 } else {
@@ -368,7 +368,7 @@ fn link_sdl2(target_os: &str) {
                 println!("cargo:rustc-flags=-l SDL2_image");
             } else if target_os.contains("windows") {
                 println!("cargo:rustc-flags=-l SDL2_image");
-            } else if target_os.contains("macos") {
+            } else if target_os.contains("darwin") {
                 if cfg!(any(mac_framework, feature="use_mac_framework")) {
                     println!("cargo:rustc-flags=-l framework=SDL2_image");
                 } else {
@@ -381,7 +381,7 @@ fn link_sdl2(target_os: &str) {
                 println!("cargo:rustc-flags=-l SDL2_ttf");
             } else if target_os.contains("windows") {
                 println!("cargo:rustc-flags=-l SDL2_ttf");
-            } else if target_os.contains("macos") {
+            } else if target_os.contains("darwin") {
                 if cfg!(any(mac_framework, feature="use_mac_framework")) {
                     println!("cargo:rustc-flags=-l framework=SDL2_ttf");
                 } else {
@@ -394,7 +394,7 @@ fn link_sdl2(target_os: &str) {
                 println!("cargo:rustc-flags=-l SDL2_gfx");
             } else if target_os.contains("windows") {
                 println!("cargo:rustc-flags=-l SDL2_gfx");
-            } else if target_os.contains("macos") {
+            } else if target_os.contains("darwin") {
                 if cfg!(any(mac_framework, feature="use_mac_framework")) {
                     println!("cargo:rustc-flags=-l framework=SDL2_gfx");
                 } else {
