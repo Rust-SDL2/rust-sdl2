@@ -351,11 +351,11 @@ fn link_sdl2(target_os: &str) {
     // -lSDL2_mixer can find it.
     #[cfg(all(not(feature = "use-pkgconfig"), not(feature = "static-link")))] {
         if cfg!(feature = "mixer") {
-            if cfg!(any(target_os="linux", target_os="freebsd", target_os="openbsd")) {
+            if target_os.contains("linux") || target_os.contains("freebsd") || target_os.contains("openbsd") {
                 println!("cargo:rustc-flags=-l SDL2_mixer");
-            } else if cfg!(target_os="windows") {
+            } else if target_os.contains("windows") {
                 println!("cargo:rustc-flags=-l SDL2_mixer");
-            } else if cfg!(target_os="macos") {
+            } else if target_os.contains("darwin") {
                 if cfg!(any(mac_framework, feature="use_mac_framework")) {
                     println!("cargo:rustc-flags=-l framework=SDL2_mixer");
                 } else {
@@ -364,11 +364,11 @@ fn link_sdl2(target_os: &str) {
             }
         }
         if cfg!(feature = "image") {
-            if cfg!(any(target_os="linux", target_os="freebsd", target_os="openbsd")) {
+            if target_os.contains("linux") || target_os.contains("freebsd") || target_os.contains("openbsd") {
                 println!("cargo:rustc-flags=-l SDL2_image");
-            } else if cfg!(target_os="windows") {
+            } else if target_os.contains("windows") {
                 println!("cargo:rustc-flags=-l SDL2_image");
-            } else if cfg!(target_os="macos") {
+            } else if target_os.contains("darwin") {
                 if cfg!(any(mac_framework, feature="use_mac_framework")) {
                     println!("cargo:rustc-flags=-l framework=SDL2_image");
                 } else {
@@ -377,11 +377,11 @@ fn link_sdl2(target_os: &str) {
             }
         }
         if cfg!(feature = "ttf") {
-            if cfg!(any(target_os="linux", target_os="freebsd", target_os="openbsd")) {
+            if target_os.contains("linux") || target_os.contains("freebsd") || target_os.contains("openbsd") {
                 println!("cargo:rustc-flags=-l SDL2_ttf");
-            } else if cfg!(target_os="windows") {
+            } else if target_os.contains("windows") {
                 println!("cargo:rustc-flags=-l SDL2_ttf");
-            } else if cfg!(target_os="macos") {
+            } else if target_os.contains("darwin") {
                 if cfg!(any(mac_framework, feature="use_mac_framework")) {
                     println!("cargo:rustc-flags=-l framework=SDL2_ttf");
                 } else {
@@ -390,11 +390,11 @@ fn link_sdl2(target_os: &str) {
             }
         }
         if cfg!(feature = "gfx") {
-            if cfg!(any(target_os="linux", target_os="freebsd", target_os="openbsd")) {
+            if target_os.contains("linux") || target_os.contains("freebsd") || target_os.contains("openbsd") {
                 println!("cargo:rustc-flags=-l SDL2_gfx");
-            } else if cfg!(target_os="windows") {
+            } else if target_os.contains("windows") {
                 println!("cargo:rustc-flags=-l SDL2_gfx");
-            } else if cfg!(target_os="macos") {
+            } else if target_os.contains("darwin") {
                 if cfg!(any(mac_framework, feature="use_mac_framework")) {
                     println!("cargo:rustc-flags=-l framework=SDL2_gfx");
                 } else {
