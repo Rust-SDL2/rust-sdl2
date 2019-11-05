@@ -3,6 +3,9 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### v0.32.3 (unreleased)
 
+[PR #938](https://github.com/Rust-SDL2/rust-sdl2/pull/938)
+**Breaking change** Removed the `rand` crate from dependencies.
+
 [PR #907](https://github.com/Rust-SDL2/rust-sdl2/pull/907)
 Changed the data type to i32 for the `which` field for the events `ControllerDeviceAdded` and `JoyDeviceAdded`.
 

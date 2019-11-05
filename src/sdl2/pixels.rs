@@ -1,7 +1,3 @@
-extern crate rand;
-use self::rand::Rng;
-use self::rand::distributions::{Distribution, Standard};
-
 use num::FromPrimitive;
 use std::mem::transmute;
 use std::convert::TryFrom;
@@ -168,16 +164,6 @@ impl From<(u8, u8, u8)> for Color {
 impl From<(u8, u8, u8, u8)> for Color {
     fn from((r, g, b, a): (u8, u8, u8, u8)) -> Color {
         Color::RGBA(r, g, b, a)
-    }
-}
-
-impl Distribution<Color> for Standard {
-    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Color {
-        if rng.gen() {
-            Color::RGBA(rng.gen(), rng.gen(), rng.gen(), rng.gen())
-        } else {
-            Color::RGB(rng.gen(), rng.gen(), rng.gen())
-        }
     }
 }
 
