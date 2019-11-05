@@ -1,23 +1,24 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
-### v0.32.3 (unreleased)
+### v0.32.3
 
-[PR #938](https://github.com/Rust-SDL2/rust-sdl2/pull/938)
-**Breaking change** Removed the `rand` crate from dependencies.
+[PR #940](https://github.com/Rust-SDL2/rust-sdl2/pull/940):
+**Breaking change** Removed the `rand` dependency for random colors. You will have to implement your own random colors from now on.
 
-[PR #907](https://github.com/Rust-SDL2/rust-sdl2/pull/907)
+[PR #933](https://github.com/Rust-SDL2/rust-sdl2/pull/933):
+**Breaking change** Removed AudioFormatNum::zero(), use AudioFormatNum::SILENCE constant instead.
+
+[PR #907](https://github.com/Rust-SDL2/rust-sdl2/pull/907):
 Changed the data type to i32 for the `which` field for the events `ControllerDeviceAdded` and `JoyDeviceAdded`.
 
-[PR #882](https://github.com/Rust-SDL2/rust-sdl2/pull/882)
+[PR #882](https://github.com/Rust-SDL2/rust-sdl2/pull/882):
 Ignore unknown bits in `SDL_Keysym`'s `mod` field (key modifiers) when constructing `Event::KeyDown` and `Event::KeyUp`. Deprecate `sdl2::event::Event::unwrap_keymod`, which had been made public accidentally.
-
-### v0.32.2
 
 [PR #898](https://github.com/Rust-SDL2/rust-sdl2/pull/898):
 Implements `TryFrom<PixelFormatEnum>` for `PixelFormat`
 
-### v0.32.1
+### v0.32.2
 
 [PR #868](https://github.com/Rust-SDL2/rust-sdl2/pull/868):
 Added inplace operations for `rect::Point`.
