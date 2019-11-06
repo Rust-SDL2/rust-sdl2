@@ -279,6 +279,8 @@ pub enum EventType {
     ControllerDeviceRemoved = SDL_EventType::SDL_CONTROLLERDEVICEREMOVED as u32,
     ControllerDeviceRemapped = SDL_EventType::SDL_CONTROLLERDEVICEREMAPPED as u32,
 
+
+
     FingerDown = SDL_EventType::SDL_FINGERDOWN as u32,
     FingerUp = SDL_EventType::SDL_FINGERUP as u32,
     FingerMotion = SDL_EventType::SDL_FINGERMOTION as u32,
@@ -288,6 +290,15 @@ pub enum EventType {
 
     ClipboardUpdate = SDL_EventType::SDL_CLIPBOARDUPDATE as u32,
     DropFile = SDL_EventType::SDL_DROPFILE as u32,
+    DropText = SDL_EventType::SDL_DROPTEXT as u32,
+    DropBegin = SDL_EventType::SDL_DROPBEGIN as u32,
+    DropComplete = SDL_EventType::SDL_DROPCOMPLETE as u32,
+
+    AudioDeviceAdded = SDL_EventType::SDL_AUDIODEVICEADDED as u32,
+    AudioDeviceRemoved = SDL_EventType::SDL_AUDIODEVICEREMOVED as u32,
+    
+    RenderTargetsReset = SDL_EventType::SDL_RENDER_TARGETS_RESET as u32,
+    RenderDeviceReset = SDL_EventType::SDL_RENDER_DEVICE_RESET as u32,
 
     User = SDL_EventType::SDL_USEREVENT as u32,
     Last = SDL_EventType::SDL_LASTEVENT as u32,
@@ -346,6 +357,15 @@ impl FromPrimitive for EventType {
 
             SDL_CLIPBOARDUPDATE => ClipboardUpdate,
             SDL_DROPFILE => DropFile,
+            SDL_DROPTEXT => DropText,
+            SDL_DROPBEGIN => DropBegin,
+            SDL_DROPCOMPLETE => DropComplete,
+
+            SDL_AUDIODEVICEADDED => AudioDeviceAdded,
+            SDL_AUDIODEVICEREMOVED => AudioDeviceRemoved,
+
+            SDL_RENDER_TARGETS_RESET => RenderTargetsReset,
+            SDL_RENDER_DEVICE_RESET => RenderDeviceReset,
 
             SDL_USEREVENT => User,
             SDL_LASTEVENT => Last,
@@ -670,6 +690,37 @@ pub enum Event {
         timestamp: u32,
         window_id: u32,
         filename: String
+    },
+    DropText {
+        timestamp: u32,
+        window_id: u32,
+        filename: String
+    },
+    DropBegin {
+        timestamp: u32,
+        window_id: u32,
+    },
+    DropComplete {
+        timestamp: u32,
+        window_id: u32,
+    },
+
+    AudioDeviceAdded {
+        timestamp: u32,
+        which: u32,
+        iscapture: bool,
+    },
+    AudioDeviceRemoved {
+        timestamp: u32,
+        which: u32,
+        iscapture: bool,
+    },
+
+    RenderTargetsReset {
+        timestamp: u32,
+    },
+    RenderDeviceReset {
+        timestamp: u32,
     },
 
     User {
@@ -1563,7 +1614,65 @@ impl Event {
                     window_id: event.windowID,
                     filename: text
                 }
-            }
+            },
+            EventType::DropText => {
+                let event = raw.drop;
+
+                let buf = CStr::from_ptr(event.file as *const _).to_bytes();
+                let text = String::from_utf8_lossy(buf).to_string();
+                sys::SDL_free(event.file as *mut c_void);
+
+                Event::DropText {
+                    timestamp: event.timestamp,
+                    window_id: event.windowID,
+                    filename: text
+                }
+            },
+            EventType::DropBegin => {
+                let event = raw.drop;
+
+                Event::DropBegin {
+                    timestamp: event.timestamp,
+                    window_id: event.windowID,
+                }
+            },
+            EventType::DropComplete => {
+                let event = raw.drop;
+
+                Event::DropComplete {
+                    timestamp: event.timestamp,
+                    window_id: event.windowID,
+                }
+            },
+            EventType::AudioDeviceAdded => {
+                let event = raw.adevice;
+                Event::AudioDeviceAdded {
+                    timestamp: event.timestamp,
+                    which: event.which,
+                    // zero if an audio output device, non-zero if an audio capture device
+                    iscapture: event.iscapture != 0,
+                }
+            },
+            EventType::AudioDeviceRemoved => {
+                let event = raw.adevice;
+                Event::AudioDeviceRemoved {
+                    timestamp: event.timestamp,
+                    which: event.which,
+                    // zero if an audio output device, non-zero if an audio capture device
+                    iscapture: event.iscapture != 0,
+                }
+            },
+
+            EventType::RenderTargetsReset => {
+                Event::RenderTargetsReset {
+                    timestamp: raw.common.timestamp
+                }
+            },
+            EventType::RenderDeviceReset => {
+                Event::RenderDeviceReset {
+                    timestamp: raw.common.timestamp
+                }
+            },
 
             EventType::First => panic!("Unused event, EventType::First, was encountered"),
             EventType::Last => panic!("Unusable event, EventType::Last, was encountered"),
@@ -1596,7 +1705,7 @@ impl Event {
         }}                      // close unsafe & match
     }
 
-    #[deprecated(since = "0.32.3", note = "This method has been made public accidentally")]
+    #[deprecated(since = "0.33.0", note = "This method has been made public accidentally")]
     pub fn unwrap_keymod(keymod_option: Option<keyboard::Mod>) -> keyboard::Mod {
         match keymod_option {
             None => keyboard::Mod::empty(),

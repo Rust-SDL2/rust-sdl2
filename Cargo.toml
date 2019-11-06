@@ -122,6 +122,9 @@ name = "relative-mouse-state"
 name = "renderer-target"
 
 [[example]]
+name = "events"
+
+[[example]]
 name = "renderer-texture"
 
 [[example]]
