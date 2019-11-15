@@ -9,7 +9,7 @@ use crate::sys;
 
 #[repr(i32)]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
-pub enum Error {
+pub enum ErrorCode {
     NoMemError = sys::SDL_errorcode::SDL_ENOMEM as i32,
     ReadError = sys::SDL_errorcode::SDL_EFREAD as i32,
     WriteError = sys::SDL_errorcode::SDL_EFWRITE as i32,
@@ -17,9 +17,9 @@ pub enum Error {
     UnsupportedError = sys::SDL_errorcode::SDL_UNSUPPORTED as i32
 }
 
-impl fmt::Display for Error {
+impl fmt::Display for ErrorCode {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use self::Error::*;
+        use self::ErrorCode::*;
 
         match *self {
             NoMemError => write!(f, "Out of memory"),
@@ -31,9 +31,9 @@ impl fmt::Display for Error {
     }
 }
 
-impl error::Error for Error {
+impl error::Error for ErrorCode {
     fn description(&self) -> &str {
-        use self::Error::*;
+        use self::ErrorCode::*;
 
         match *self {
             NoMemError => "out of memory",
@@ -336,7 +336,7 @@ pub fn set_error(err: &str) -> Result<(), NulError> {
     Ok(())
 }
 
-pub fn set_error_from_code(err: Error) {
+pub fn set_error_from_code(err: ErrorCode) {
     unsafe { sys::SDL_Error(transmute(err)); }
 }
 
