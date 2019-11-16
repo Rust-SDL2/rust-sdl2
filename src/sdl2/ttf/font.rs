@@ -69,7 +69,7 @@ impl error::Error for FontError {
         }
     }
 
-    fn cause(&self) -> Option<&error::Error> {
+    fn cause(&self) -> Option<&dyn error::Error> {
         match *self {
             FontError::InvalidLatin1Text(ref error) => {
                 Some(error)

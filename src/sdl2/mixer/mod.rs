@@ -28,7 +28,7 @@ use std::str::from_utf8;
 use std::borrow::ToOwned;
 use std::path::Path;
 use libc::c_void;
-use libc::{c_int, uint16_t, c_double, c_uint};
+use libc::{c_int, c_double, c_uint};
 use ::get_error;
 use ::rwops::RWops;
 use ::version::Version;
@@ -38,29 +38,27 @@ use sys::mixer;
 // This comes from SDL_audio.h
 #[allow(non_camel_case_types)]
 mod ll {
-    use libc::uint16_t;
-
-    pub const AUDIO_U8: uint16_t = 0x0008;
-    pub const AUDIO_S8: uint16_t = 0x8008;
-    pub const AUDIO_U16LSB: uint16_t = 0x0010;
-    pub const AUDIO_S16LSB: uint16_t = 0x8010;
-    pub const AUDIO_U16MSB: uint16_t = 0x1010;
-    pub const AUDIO_S16MSB: uint16_t = 0x9010;
-    pub const AUDIO_U16: uint16_t = AUDIO_U16LSB;
-    pub const AUDIO_S16: uint16_t = AUDIO_S16LSB;
-    pub const AUDIO_S32LSB: uint16_t = 0x8020;
-    pub const AUDIO_S32MSB: uint16_t = 0x9020;
-    pub const AUDIO_S32: uint16_t = AUDIO_S32LSB;
-    pub const AUDIO_F32LSB: uint16_t = 0x8120;
-    pub const AUDIO_F32MSB: uint16_t = 0x9120;
-    pub const AUDIO_F32: uint16_t = AUDIO_F32LSB;
-    pub const AUDIO_U16SYS: uint16_t = AUDIO_U16LSB;
-    pub const AUDIO_S16SYS: uint16_t = AUDIO_S16LSB;
-    pub const AUDIO_S32SYS: uint16_t = AUDIO_S32LSB;
-    pub const AUDIO_F32SYS: uint16_t = AUDIO_F32LSB;
+    pub const AUDIO_U8: u16 = 0x0008;
+    pub const AUDIO_S8: u16 = 0x8008;
+    pub const AUDIO_U16LSB: u16 = 0x0010;
+    pub const AUDIO_S16LSB: u16 = 0x8010;
+    pub const AUDIO_U16MSB: u16 = 0x1010;
+    pub const AUDIO_S16MSB: u16 = 0x9010;
+    pub const AUDIO_U16: u16 = AUDIO_U16LSB;
+    pub const AUDIO_S16: u16 = AUDIO_S16LSB;
+    pub const AUDIO_S32LSB: u16 = 0x8020;
+    pub const AUDIO_S32MSB: u16 = 0x9020;
+    pub const AUDIO_S32: u16 = AUDIO_S32LSB;
+    pub const AUDIO_F32LSB: u16 = 0x8120;
+    pub const AUDIO_F32MSB: u16 = 0x9120;
+    pub const AUDIO_F32: u16 = AUDIO_F32LSB;
+    pub const AUDIO_U16SYS: u16 = AUDIO_U16LSB;
+    pub const AUDIO_S16SYS: u16 = AUDIO_S16LSB;
+    pub const AUDIO_S32SYS: u16 = AUDIO_S32LSB;
+    pub const AUDIO_F32SYS: u16 = AUDIO_F32LSB;
 }
 
-pub type AudioFormat = uint16_t;
+pub type AudioFormat = u16;
 
 pub const AUDIO_U8: AudioFormat = ll::AUDIO_U8;
 pub const AUDIO_S8: AudioFormat = ll::AUDIO_S8;
@@ -196,7 +194,7 @@ pub fn close_audio() {
 /// Get the actual audio format in use by the opened audio device.
 pub fn query_spec() -> Result<(i32, AudioFormat, i32), String> {
     let mut frequency: c_int = 0;
-    let mut format: uint16_t = 0;
+    let mut format: u16 = 0;
     let mut channels: c_int = 0;
     let ret = unsafe { mixer::Mix_QuerySpec(&mut frequency, &mut format, &mut channels) };
     if ret == 0 {
