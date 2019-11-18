@@ -1,8 +1,8 @@
 //! Surface Rotozoomer
 
 use libc::c_int;
-use ::surface::Surface;
-use ::get_error;
+use crate::surface::Surface;
+use crate::{Error, get_error_as_error};
 pub use std::f64::consts::PI;
 use sys::gfx::rotozoom;
 
@@ -10,64 +10,64 @@ use sys::gfx::rotozoom;
 /// `RotozoomSurface` for work with rust-sdl2 Surface type
 pub trait RotozoomSurface {
     /// Rotates and zooms a surface and optional anti-aliasing.
-    fn rotozoom(&self, angle: f64, zoom: f64, smooth: bool) -> Result<Surface, String>;
+    fn rotozoom(&self, angle: f64, zoom: f64, smooth: bool) -> Result<Surface, Error>;
     /// Rotates and zooms a surface with different horizontal and vertical scaling factors and optional anti-aliasing.
-    fn rotozoom_xy(&self, angle: f64, zoomx: f64, zoomy: f64, smooth: bool) -> Result<Surface, String>;
+    fn rotozoom_xy(&self, angle: f64, zoomx: f64, zoomy: f64, smooth: bool) -> Result<Surface, Error>;
     /// Zoom a surface by independent horizontal and vertical factors with optional smoothing.
-    fn zoom(&self, zoomx: f64, zoomy: f64, smooth: bool) -> Result<Surface, String>;
+    fn zoom(&self, zoomx: f64, zoomy: f64, smooth: bool) -> Result<Surface, Error>;
     /// Shrink a surface by an integer ratio using averaging.
-    fn shrink(&self, factorx: i32, factory: i32) -> Result<Surface, String>;
+    fn shrink(&self, factorx: i32, factory: i32) -> Result<Surface, Error>;
     /// Rotates a 8/16/24/32 bit surface in increments of 90 degrees.
-    fn rotate_90deg(&self, turns: i32) -> Result<Surface, String>;
+    fn rotate_90deg(&self, turns: i32) -> Result<Surface, Error>;
 }
 
 impl<'a> RotozoomSurface for Surface<'a> {
-    fn rotozoom(&self, angle: f64, zoom: f64, smooth: bool) -> Result<Surface, String> {
+    fn rotozoom(&self, angle: f64, zoom: f64, smooth: bool) -> Result<Surface, Error> {
         let raw = unsafe {
             rotozoom::rotozoomSurface(self.raw(), angle, zoom, smooth as c_int)
         };
         if (raw as *mut ()).is_null() {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             unsafe { Ok(Surface::from_ll(raw)) }
         }
     }
-    fn rotozoom_xy(&self, angle: f64, zoomx: f64, zoomy: f64, smooth: bool) -> Result<Surface, String> {
+    fn rotozoom_xy(&self, angle: f64, zoomx: f64, zoomy: f64, smooth: bool) -> Result<Surface, Error> {
         let raw = unsafe {
             rotozoom::rotozoomSurfaceXY(self.raw(), angle, zoomx, zoomy, smooth as c_int)
         };
         if (raw as *mut ()).is_null() {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             unsafe { Ok(Surface::from_ll(raw)) }
         }
     }
-    fn zoom(&self, zoomx: f64, zoomy: f64, smooth: bool) -> Result<Surface, String> {
+    fn zoom(&self, zoomx: f64, zoomy: f64, smooth: bool) -> Result<Surface, Error> {
         let raw = unsafe {
             rotozoom::zoomSurface(self.raw(), zoomx, zoomy, smooth as c_int)
         };
         if (raw as *mut ()).is_null() {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             unsafe { Ok(Surface::from_ll(raw)) }
         }
     }
-    fn shrink(&self, factorx: i32, factory: i32) -> Result<Surface, String> {
+    fn shrink(&self, factorx: i32, factory: i32) -> Result<Surface, Error> {
         let raw = unsafe {
             rotozoom::shrinkSurface(self.raw(), factorx as c_int, factory as c_int)
         };
         if (raw as *mut ()).is_null() {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             unsafe { Ok(Surface::from_ll(raw)) }
         }
     }
-    fn rotate_90deg(&self, turns: i32) -> Result<Surface, String> {
+    fn rotate_90deg(&self, turns: i32) -> Result<Surface, Error> {
         let raw = unsafe {
             rotozoom::rotateSurface90Degrees(self.raw(), turns as c_int)
         };
         if (raw as *mut ()).is_null() {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             unsafe { Ok(Surface::from_ll(raw)) }
         }

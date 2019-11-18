@@ -3,9 +3,9 @@ use std::error;
 use std::fmt;
 use std::os::raw::{c_int, c_long};
 use std::path::Path;
-use ::get_error;
-use ::rwops::RWops;
-use ::version::Version;
+use crate::{Error, get_error_as_error};
+use crate::rwops::RWops;
+use crate::version::Version;
 use sys::ttf;
 
 use super::font::{
@@ -28,26 +28,26 @@ impl Drop for Sdl2TtfContext {
 
 impl Sdl2TtfContext {
     /// Loads a font from the given file with the given size in points.
-    pub fn load_font<'ttf, P: AsRef<Path>>(&'ttf self, path: P, point_size: u16) -> Result<Font<'ttf,'static>, String> {
+    pub fn load_font<'ttf, P: AsRef<Path>>(&'ttf self, path: P, point_size: u16) -> Result<Font<'ttf,'static>, Error> {
         internal_load_font(path, point_size)
     }
 
     /// Loads the font at the given index of the file, with the given
     /// size in points.
     pub fn load_font_at_index<'ttf, P: AsRef<Path>>(&'ttf self, path: P, index: u32, point_size: u16)
-            -> Result<Font<'ttf,'static>, String> {
+            -> Result<Font<'ttf,'static>, Error> {
         internal_load_font_at_index(path, index, point_size)
     }
 
     /// Loads a font from the given SDL2 rwops object with the given size in
     /// points.
     pub fn load_font_from_rwops<'ttf,'r>(&'ttf self, rwops: RWops<'r>, point_size: u16)
-            -> Result<Font<'ttf,'r>, String> {
+            -> Result<Font<'ttf,'r>, Error> {
         let raw = unsafe {
             ttf::TTF_OpenFontRW(rwops.raw(), 0, point_size as c_int)
         };
         if (raw as *mut ()).is_null() {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(internal_load_font_from_ll(raw, Some(rwops)))
         }
@@ -56,13 +56,13 @@ impl Sdl2TtfContext {
     /// Loads the font at the given index of the SDL2 rwops object with
     /// the given size in points.
     pub fn load_font_at_index_from_rwops<'ttf,'r>(&'ttf self, rwops: RWops<'r>, index: u32,
-            point_size: u16) -> Result<Font<'ttf,'r>, String> {
+            point_size: u16) -> Result<Font<'ttf,'r>, Error> {
         let raw = unsafe {
             ttf::TTF_OpenFontIndexRW(rwops.raw(), 0, point_size as c_int,
                 index as c_long)
         };
         if (raw as *mut ()).is_null() {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(internal_load_font_from_ll(raw, Some(rwops)))
         }

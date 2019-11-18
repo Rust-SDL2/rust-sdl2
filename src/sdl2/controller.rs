@@ -7,7 +7,7 @@ use std::path::Path;
 use crate::rwops::RWops;
 
 use crate::GameControllerSubsystem;
-use crate::get_error;
+use crate::{Error, get_error, get_error_as_error};
 use crate::joystick;
 use crate::common::{validate_int, IntegerOrSdlError};
 use std::mem::transmute;
@@ -50,13 +50,13 @@ impl error::Error for AddMappingError {
 
 impl GameControllerSubsystem {
     /// Retrieve the total number of attached joysticks *and* controllers identified by SDL.
-    pub fn num_joysticks(&self) -> Result<u32, String> {
+    pub fn num_joysticks(&self) -> Result<u32, Error> {
         let result = unsafe { sys::SDL_NumJoysticks() };
 
         if result >= 0 {
             Ok(result as u32)
         } else {
-            Err(get_error())
+            Err(get_error_as_error())
         }
     }
 
@@ -136,7 +136,8 @@ impl GameControllerSubsystem {
     pub fn load_mappings<P: AsRef<Path>>(&self, path: P) -> Result<i32, AddMappingError> {
         use self::AddMappingError::*;
 
-        let rw = RWops::from_file(path, "r").map_err(InvalidFilePath)?;
+        let rw = RWops::from_file(path, "r")
+            .map_err(|e| InvalidFilePath(format!("{}", e)))?;
         self.load_mappings_from_rw(rw)
     }
 
@@ -148,7 +149,8 @@ impl GameControllerSubsystem {
         use self::AddMappingError::*;
 
         let mut buffer = Vec::with_capacity(1024);
-        let rw = RWops::from_read(read, &mut buffer).map_err(ReadError)?;
+        let rw = RWops::from_read(read, &mut buffer)
+            .map_err(|e| ReadError(format!("{}", e)))?;
         self.load_mappings_from_rw(rw)
     }
 
@@ -163,7 +165,7 @@ impl GameControllerSubsystem {
         }
     }
 
-    pub fn mapping_for_guid(&self, guid: joystick::Guid) -> Result<String, String> {
+    pub fn mapping_for_guid(&self, guid: joystick::Guid) -> Result<String, Error> {
         let c_str = unsafe { sys::SDL_GameControllerMappingForGUID(guid.raw()) };
 
         c_str_to_string_or_err(c_str)
@@ -455,9 +457,9 @@ fn c_str_to_string(c_str: *const c_char) -> String {
 
 /// Convert C string `c_str` to a String. Return an SDL error if
 /// `c_str` is NULL.
-fn c_str_to_string_or_err(c_str: *const c_char) -> Result<String, String> {
+fn c_str_to_string_or_err(c_str: *const c_char) -> Result<String, Error> {
     if c_str.is_null() {
-        Err(get_error())
+        Err(get_error_as_error())
     } else {
         Ok(unsafe {
             CStr::from_ptr(c_str as *const _).to_str().unwrap().to_owned()

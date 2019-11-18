@@ -33,9 +33,9 @@ use crate::surface;
 use crate::surface::{Surface, SurfaceRef, SurfaceContext};
 use crate::pixels;
 use crate::pixels::PixelFormatEnum;
-use crate::get_error;
+use crate::{Error, get_error, get_error_as_error};
 use std::fmt;
-use std::error::Error;
+use std::error::Error as StdError;
 #[cfg(not(feature = "unsafe_textures"))]
 use std::marker::PhantomData;
 use std::mem;
@@ -74,7 +74,7 @@ impl fmt::Display for SdlError {
     }
 }
 
-impl Error for SdlError {
+impl StdError for SdlError {
     fn description(&self) -> &str {
         let &SdlError(ref e) = self;
         e
@@ -91,7 +91,7 @@ impl fmt::Display for TargetRenderError {
     }
 }
 
-impl Error for TargetRenderError {
+impl StdError for TargetRenderError {
     fn description(&self) -> &str {
         use self::TargetRenderError::*;
         match *self {
@@ -339,7 +339,7 @@ impl<'s> Canvas<Surface<'s>> {
     ///
     /// This method should only fail if SDL2 is not built with rendering
     /// support, or there's an out-of-memory error.
-    pub fn from_surface(surface: surface::Surface<'s>) -> Result<Self, String> {
+    pub fn from_surface(surface: surface::Surface<'s>) -> Result<Self, Error> {
         let raw_renderer = unsafe { sys::SDL_CreateSoftwareRenderer(surface.raw()) };
         if !raw_renderer.is_null() {
             let context =
@@ -351,7 +351,7 @@ impl<'s> Canvas<Surface<'s>> {
                    default_pixel_format,
                })
         } else {
-            Err(get_error())
+            Err(get_error_as_error())
         }
     }
 
@@ -741,7 +741,7 @@ impl fmt::Display for TextureValueError {
     }
 }
 
-impl Error for TextureValueError {
+impl StdError for TextureValueError {
     fn description(&self) -> &str {
         use self::TextureValueError::*;
 
@@ -974,7 +974,7 @@ impl<T: RenderTarget> Canvas<T> {
     }
 
     /// Gets the output size of a rendering context.
-    pub fn output_size(&self) -> Result<(u32, u32), String> {
+    pub fn output_size(&self) -> Result<(u32, u32), Error> {
         let mut width = 0;
         let mut height = 0;
 
@@ -984,7 +984,7 @@ impl<T: RenderTarget> Canvas<T> {
         if result == 0 {
             Ok((width as u32, height as u32))
         } else {
-            Err(get_error())
+            Err(get_error_as_error())
         }
     }
 
@@ -1061,10 +1061,10 @@ impl<T: RenderTarget> Canvas<T> {
     }
 
     /// Sets the drawing scale for rendering on the current target.
-    pub fn set_scale(&mut self, scale_x: f32, scale_y: f32) -> Result<(), String> {
+    pub fn set_scale(&mut self, scale_x: f32, scale_y: f32) -> Result<(), Error> {
         let ret = unsafe { sys::SDL_RenderSetScale(self.context.raw, scale_x, scale_y) };
         // Should only fail on an invalid renderer
-        if ret != 0 { Err(get_error()) } else { Ok(()) }
+        if ret != 0 { Err(get_error_as_error()) } else { Ok(()) }
     }
 
     /// Gets the drawing scale for the current target.
@@ -1077,11 +1077,11 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Draws a point on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_point<P: Into<Point>>(&mut self, point: P) -> Result<(), String> {
+    pub fn draw_point<P: Into<Point>>(&mut self, point: P) -> Result<(), Error> {
         let point = point.into();
         let result = unsafe { sys::SDL_RenderDrawPoint(self.context.raw, point.x(), point.y()) };
         if result != 0 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
@@ -1089,7 +1089,7 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Draws multiple points on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_points<'a, P: Into<&'a [Point]>>(&mut self, points: P) -> Result<(), String> {
+    pub fn draw_points<'a, P: Into<&'a [Point]>>(&mut self, points: P) -> Result<(), Error> {
         let points = points.into();
         let result = unsafe {
             sys::SDL_RenderDrawPoints(self.context.raw,
@@ -1097,7 +1097,7 @@ impl<T: RenderTarget> Canvas<T> {
                                      points.len() as c_int)
         };
         if result != 0 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
@@ -1108,14 +1108,14 @@ impl<T: RenderTarget> Canvas<T> {
     pub fn draw_line<P1: Into<Point>, P2: Into<Point>>(&mut self,
                                                        start: P1,
                                                        end: P2)
-                                                       -> Result<(), String> {
+                                                       -> Result<(), Error> {
         let start = start.into();
         let end = end.into();
         let result = unsafe {
             sys::SDL_RenderDrawLine(self.context.raw, start.x(), start.y(), end.x(), end.y())
         };
         if result != 0 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
@@ -1123,7 +1123,7 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Draws a series of connected lines on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_lines<'a, P: Into<&'a [Point]>>(&mut self, points: P) -> Result<(), String> {
+    pub fn draw_lines<'a, P: Into<&'a [Point]>>(&mut self, points: P) -> Result<(), Error> {
         let points = points.into();
         let result = unsafe {
             sys::SDL_RenderDrawLines(self.context.raw,
@@ -1131,7 +1131,7 @@ impl<T: RenderTarget> Canvas<T> {
                                     points.len() as c_int)
         };
         if result != 0 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
@@ -1139,10 +1139,10 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Draws a rectangle on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_rect(&mut self, rect: Rect) -> Result<(), String> {
+    pub fn draw_rect(&mut self, rect: Rect) -> Result<(), Error> {
         let result = unsafe { sys::SDL_RenderDrawRect(self.context.raw, rect.raw()) };
         if result != 0 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
@@ -1150,14 +1150,14 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Draws some number of rectangles on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    pub fn draw_rects(&mut self, rects: &[Rect]) -> Result<(), String> {
+    pub fn draw_rects(&mut self, rects: &[Rect]) -> Result<(), Error> {
         let result = unsafe {
             sys::SDL_RenderDrawRects(self.context.raw,
                                     Rect::raw_slice(rects),
                                     rects.len() as c_int)
         };
         if result != 0 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
@@ -1167,7 +1167,7 @@ impl<T: RenderTarget> Canvas<T> {
     /// color.
     /// Passing None will fill the entire rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    pub fn fill_rect<R: Into<Option<Rect>>>(&mut self, rect: R) -> Result<(), String> {
+    pub fn fill_rect<R: Into<Option<Rect>>>(&mut self, rect: R) -> Result<(), Error> {
         let result = unsafe {
             sys::SDL_RenderFillRect(self.context.raw,
                                    rect.into()
@@ -1176,7 +1176,7 @@ impl<T: RenderTarget> Canvas<T> {
                                        .unwrap_or(ptr::null()))
         };
         if result != 0 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
@@ -1185,14 +1185,14 @@ impl<T: RenderTarget> Canvas<T> {
     /// Fills some number of rectangles on the current rendering target with
     /// the drawing color.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    pub fn fill_rects(&mut self, rects: &[Rect]) -> Result<(), String> {
+    pub fn fill_rects(&mut self, rects: &[Rect]) -> Result<(), Error> {
         let result = unsafe {
             sys::SDL_RenderFillRects(self.context.raw,
                                     Rect::raw_slice(rects),
                                     rects.len() as c_int)
         };
         if result != 0 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
@@ -1206,7 +1206,7 @@ impl<T: RenderTarget> Canvas<T> {
     ///
     /// Errors if drawing fails for any reason (e.g. driver failure),
     /// or if the provided texture does not belong to the renderer.
-    pub fn copy<R1, R2>(&mut self, texture: &Texture, src: R1, dst: R2) -> Result<(), String>
+    pub fn copy<R1, R2>(&mut self, texture: &Texture, src: R1, dst: R2) -> Result<(), Error>
         where R1: Into<Option<Rect>>,
               R2: Into<Option<Rect>>
     {
@@ -1223,7 +1223,7 @@ impl<T: RenderTarget> Canvas<T> {
                                })
         };
 
-        if ret != 0 { Err(get_error()) } else { Ok(()) }
+        if ret != 0 { Err(get_error_as_error()) } else { Ok(()) }
     }
 
     /// Copies a portion of the texture to the current rendering target,
@@ -1247,7 +1247,7 @@ impl<T: RenderTarget> Canvas<T> {
                               center: P,
                               flip_horizontal: bool,
                               flip_vertical: bool)
-                              -> Result<(), String>
+                              -> Result<(), Error>
         where R1: Into<Option<Rect>>,
               R2: Into<Option<Rect>>,
               P: Into<Option<Point>>
@@ -1282,7 +1282,7 @@ impl<T: RenderTarget> Canvas<T> {
                                  flip)
         };
 
-        if ret != 0 { Err(get_error()) } else { Ok(()) }
+        if ret != 0 { Err(get_error_as_error()) } else { Ok(()) }
     }
 
     /// Reads pixels from the current rendering target.
@@ -1291,7 +1291,7 @@ impl<T: RenderTarget> Canvas<T> {
     pub fn read_pixels<R: Into<Option<Rect>>>(&self,
                                               rect: R,
                                               format: pixels::PixelFormatEnum)
-                                              -> Result<Vec<u8>, String> {
+                                              -> Result<Vec<u8>, Error> {
         unsafe {
             let rect = rect.into();
             let (actual_rect, w, h) = match rect {
@@ -1319,7 +1319,7 @@ impl<T: RenderTarget> Canvas<T> {
             if ret == 0 {
                 Ok(pixels)
             } else {
-                Err(get_error())
+                Err(get_error_as_error())
             }
         }
     }
@@ -1582,7 +1582,7 @@ impl fmt::Display for UpdateTextureError {
     }
 }
 
-impl Error for UpdateTextureError {
+impl StdError for UpdateTextureError {
     fn description(&self) -> &str {
         use self::UpdateTextureError::*;
 
@@ -1654,7 +1654,7 @@ impl fmt::Display for UpdateTextureYUVError {
     }
 }
 
-impl Error for UpdateTextureYUVError {
+impl StdError for UpdateTextureYUVError {
     fn description(&self) -> &str {
         use self::UpdateTextureYUVError::*;
 
@@ -1940,7 +1940,7 @@ impl InternalTexture {
         }
     }
 
-    pub fn with_lock<F, R, R2>(&mut self, rect: R2, func: F) -> Result<R, String>
+    pub fn with_lock<F, R, R2>(&mut self, rect: R2, func: F) -> Result<R, Error>
         where F: FnOnce(&mut [u8], usize) -> R,
               R2: Into<Option<Rect>>
     {
@@ -1961,7 +1961,7 @@ impl InternalTexture {
                     .byte_size_from_pitch_and_height(pitch as usize, height);
                 Ok((::std::slice::from_raw_parts_mut(pixels as *mut u8, size), pitch))
             } else {
-                Err(get_error())
+                Err(get_error_as_error())
             }
         };
 
@@ -2102,7 +2102,7 @@ impl<'r> Texture<'r> {
     /// This is a write-only operation, and if you need to keep a copy of the
     /// texture data you should do that at the application level.
     #[inline]
-    pub fn with_lock<F, R, R2>(&mut self, rect: R2, func: F) -> Result<R, String>
+    pub fn with_lock<F, R, R2>(&mut self, rect: R2, func: F) -> Result<R, Error>
         where F: FnOnce(&mut [u8], usize) -> R,
               R2: Into<Option<Rect>>
     {
@@ -2220,7 +2220,7 @@ impl<> Texture<> {
     /// This is a write-only operation, and if you need to keep a copy of the
     /// texture data you should do that at the application level.
     #[inline]
-    pub fn with_lock<F, R, R2>(&mut self, rect: R2, func: F) -> Result<R, String>
+    pub fn with_lock<F, R, R2>(&mut self, rect: R2, func: F) -> Result<R, Error>
         where F: FnOnce(&mut [u8], usize) -> R,
               R2: Into<Option<Rect>>
     {

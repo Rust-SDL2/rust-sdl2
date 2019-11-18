@@ -1,7 +1,7 @@
 use std::ffi::{CString, CStr};
 use libc::c_void;
 use libc::c_char;
-use crate::get_error;
+use crate::{Error, get_error_as_error};
 
 use crate::sys;
 
@@ -29,25 +29,25 @@ impl crate::VideoSubsystem {
 }
 
 impl ClipboardUtil {
-    pub fn set_clipboard_text(&self, text: &str) -> Result<(), String> {
+    pub fn set_clipboard_text(&self, text: &str) -> Result<(), Error> {
         unsafe {
             let text = CString::new(text).unwrap();
             let result = sys::SDL_SetClipboardText(text.as_ptr() as *const c_char);
 
             if result != 0 {
-                Err(get_error())
+                Err(get_error_as_error())
             } else {
                 Ok(())
             }
         }
     }
 
-    pub fn clipboard_text(&self) -> Result<String, String> {
+    pub fn clipboard_text(&self) -> Result<String, Error> {
         unsafe {
             let buf = sys::SDL_GetClipboardText();
 
             if buf.is_null() {
-                Err(get_error())
+                Err(get_error_as_error())
             } else {
                 let s = CStr::from_ptr(buf as *const _).to_str().unwrap().to_owned();
                 sys::SDL_free(buf as *mut c_void);

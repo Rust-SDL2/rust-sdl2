@@ -3,7 +3,7 @@ use std::mem::transmute;
 use std::convert::TryFrom;
 use crate::sys;
 
-use crate::get_error;
+use crate::{Error, get_error, get_error_as_error};
 
 pub struct Palette {
     raw: *mut sys::SDL_Palette
@@ -12,7 +12,7 @@ pub struct Palette {
 impl Palette {
     #[inline]
     /// Creates a new, uninitialized palette
-    pub fn new(mut capacity: usize) -> Result<Self, String> {
+    pub fn new(mut capacity: usize) -> Result<Self, Error> {
         use crate::common::*;
 
         let ncolors = {
@@ -24,14 +24,14 @@ impl Palette {
 
             match validate_int(capacity as u32, "capacity") {
                 Ok(len) => len,
-                Err(e) => return Err(format!("{}", e)),
+                Err(e) => return Err(Error::SdlError(format!("{}", e))),
             }
         };
 
         let raw = unsafe { sys::SDL_AllocPalette(ncolors) };
 
         if raw.is_null() {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(Palette {
                 raw,
@@ -40,7 +40,7 @@ impl Palette {
     }
 
     /// Creates a palette from the provided colors
-    pub fn with_colors(colors: &[Color]) -> Result<Self, String> {
+    pub fn with_colors(colors: &[Color]) -> Result<Self, Error> {
         let pal = Self::new(colors.len())?;
 
         // Already validated, so don't check again
@@ -57,7 +57,7 @@ impl Palette {
         };
 
         if result < 0 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(pal)
         }
@@ -253,7 +253,7 @@ impl PixelFormatEnum {
         }
     }
 
-    pub fn into_masks(self) -> Result<PixelMasks, String> {
+    pub fn into_masks(self) -> Result<PixelMasks, Error> {
         let format: u32 = self as u32;
         let mut bpp = 0;
         let mut rmask = 0;
@@ -265,7 +265,7 @@ impl PixelFormatEnum {
         };
         if result == sys::SDL_bool::SDL_FALSE {
             // SDL_FALSE
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(PixelMasks {
                 bpp: bpp as u8,

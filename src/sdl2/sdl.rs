@@ -45,6 +45,27 @@ impl error::Error for ErrorCode {
     }
 }
 
+#[derive(Clone, Debug)]
+pub enum Error {
+    SdlError(String),
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Error::SdlError(s) => write!(f, "SDL error: {}", s),
+        }
+    }
+}
+
+impl error::Error for Error {
+    fn description(&self) -> &str {
+        match self {
+            Error::SdlError(_s) => "SDL error",
+        }
+    }
+}
+
 use std::sync::atomic::{AtomicBool};
 /// Only one Sdl context can be alive at a time.
 /// Set to false by default (not alive).
@@ -69,7 +90,7 @@ pub struct Sdl {
 
 impl Sdl {
     #[inline]
-    fn new() -> Result<Sdl, String> {
+    fn new() -> Result<Sdl, Error> {
         unsafe {
             use std::sync::atomic::Ordering;
 
@@ -77,7 +98,8 @@ impl Sdl {
             let was_alive = IS_SDL_CONTEXT_ALIVE.swap(true, Ordering::Relaxed);
 
             if was_alive {
-                Err("Cannot initialize `Sdl` more than once at a time.".to_owned())
+                Err(Error::SdlError(
+                    "Cannot initialize `Sdl` more than once at a time.".to_owned()))
             } else if sys::SDL_Init(0) == 0 {
                 // Initialize SDL without any explicit subsystems (flags = 0).
                 Ok(Sdl {
@@ -85,38 +107,38 @@ impl Sdl {
                 })
             } else {
                 IS_SDL_CONTEXT_ALIVE.swap(false, Ordering::Relaxed);
-                Err(get_error())
+                Err(get_error_as_error())
             }
         }
     }
 
     /// Initializes the audio subsystem.
     #[inline]
-    pub fn audio(&self) -> Result<AudioSubsystem, String> { AudioSubsystem::new(self) }
+    pub fn audio(&self) -> Result<AudioSubsystem, Error> { AudioSubsystem::new(self) }
 
     /// Initializes the event subsystem.
     #[inline]
-    pub fn event(&self) -> Result<EventSubsystem, String> { EventSubsystem::new(self) }
+    pub fn event(&self) -> Result<EventSubsystem, Error> { EventSubsystem::new(self) }
 
     /// Initializes the joystick subsystem.
     #[inline]
-    pub fn joystick(&self) -> Result<JoystickSubsystem, String> { JoystickSubsystem::new(self) }
+    pub fn joystick(&self) -> Result<JoystickSubsystem, Error> { JoystickSubsystem::new(self) }
 
     /// Initializes the haptic subsystem.
     #[inline]
-    pub fn haptic(&self) -> Result<HapticSubsystem, String> { HapticSubsystem::new(self) }
+    pub fn haptic(&self) -> Result<HapticSubsystem, Error> { HapticSubsystem::new(self) }
 
     /// Initializes the game controller subsystem.
     #[inline]
-    pub fn game_controller(&self) -> Result<GameControllerSubsystem, String> { GameControllerSubsystem::new(self) }
+    pub fn game_controller(&self) -> Result<GameControllerSubsystem, Error> { GameControllerSubsystem::new(self) }
 
     /// Initializes the timer subsystem.
     #[inline]
-    pub fn timer(&self) -> Result<TimerSubsystem, String> { TimerSubsystem::new(self) }
+    pub fn timer(&self) -> Result<TimerSubsystem, Error> { TimerSubsystem::new(self) }
 
     /// Initializes the video subsystem.
     #[inline]
-    pub fn video(&self) -> Result<VideoSubsystem, String> { VideoSubsystem::new(self) }
+    pub fn video(&self) -> Result<VideoSubsystem, Error> { VideoSubsystem::new(self) }
 
     /// Obtains the SDL event pump.
     ///
@@ -124,7 +146,7 @@ impl Sdl {
     /// If this function is called while an `EventPump` instance is alive, the function will return
     /// an error.
     #[inline]
-    pub fn event_pump(&self) -> Result<EventPump, String> {
+    pub fn event_pump(&self) -> Result<EventPump, Error> {
         EventPump::new(self)
     }
 
@@ -161,7 +183,7 @@ macro_rules! subsystem {
     ($name:ident, $flag:expr) => (
         impl $name {
             #[inline]
-            fn new(sdl: &Sdl) -> Result<$name, String> {
+            fn new(sdl: &Sdl) -> Result<$name, Error> {
                 let result = unsafe { sys::SDL_InitSubSystem($flag) };
 
                 if result == 0 {
@@ -172,7 +194,7 @@ macro_rules! subsystem {
                         })
                     })
                 } else {
-                    Err(get_error())
+                    Err(get_error_as_error())
                 }
             }
         }
@@ -259,12 +281,13 @@ pub struct EventPump {
 impl EventPump {
     /// Obtains the SDL event pump.
     #[inline]
-    fn new(sdl: &Sdl) -> Result<EventPump, String> {
+    fn new(sdl: &Sdl) -> Result<EventPump, Error> {
         // Called on the main SDL thread.
 
         unsafe {
             if IS_EVENT_PUMP_ALIVE {
-                Err("an `EventPump` instance is already alive - there can only be one `EventPump` in use at a time.".to_owned())
+                Err(Error::SdlError(
+                    "an `EventPump` instance is already alive - there can only be one `EventPump` in use at a time.".to_owned()))
             } else {
                 // Initialize the events subsystem, just in case none of the other subsystems have done it yet.
                 let result = sys::SDL_InitSubSystem(sys::SDL_INIT_EVENTS);
@@ -276,7 +299,7 @@ impl EventPump {
                         _sdldrop: sdl.sdldrop.clone()
                     })
                 } else {
-                    Err(get_error())
+                    Err(get_error_as_error())
                 }
             }
         }
@@ -319,13 +342,17 @@ pub fn get_platform() -> &'static str {
 /// // SDL_Quit() is called here as `sdl_context` is dropped.
 /// ```
 #[inline]
-pub fn init() -> Result<Sdl, String> { Sdl::new() }
+pub fn init() -> Result<Sdl, Error> { Sdl::new() }
 
 pub fn get_error() -> String {
     unsafe {
         let err = sys::SDL_GetError();
         CStr::from_ptr(err as *const _).to_str().unwrap().to_owned()
     }
+}
+
+pub fn get_error_as_error() -> Error {
+    Error::SdlError(get_error())
 }
 
 pub fn set_error(err: &str) -> Result<(), NulError> {

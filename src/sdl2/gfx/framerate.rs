@@ -3,7 +3,7 @@
 use libc;
 use libc::{c_void, size_t};
 use std::mem;
-use ::get_error;
+use crate::{Error, get_error_as_error};
 use sys::gfx;
 
 /// Structure holding the state and timing information of the framerate controller.
@@ -23,11 +23,11 @@ impl FPSManager {
     }
 
     /// Set the framerate in Hz.
-    pub fn set_framerate(&mut self, rate: u32) -> Result<(), String> {
+    pub fn set_framerate(&mut self, rate: u32) -> Result<(), Error> {
         let ret = unsafe { gfx::framerate::SDL_setFramerate(self.raw, rate as u32) };
         match ret {
             0 => Ok(()),
-            _ => Err(get_error())
+            _ => Err(get_error_as_error())
         }
     }
 

@@ -2,22 +2,22 @@ use crate::sys;
 use crate::sys::SDL_JoystickPowerLevel;
 
 use crate::JoystickSubsystem;
-use crate::get_error;
+use crate::{Error, get_error, get_error_as_error};
 use crate::clear_error;
 use std::ffi::{CString, CStr, NulError};
-use std::fmt::{Display, Formatter, Error};
+use std::fmt::{self, Display, Formatter};
 use libc::c_char;
 use crate::common::{validate_int, IntegerOrSdlError};
 
 impl JoystickSubsystem {
     /// Retrieve the total number of attached joysticks *and* controllers identified by SDL.
-    pub fn num_joysticks(&self) -> Result<u32, String> {
+    pub fn num_joysticks(&self) -> Result<u32, Error> {
         let result = unsafe { sys::SDL_NumJoysticks() };
 
         if result >= 0 {
             Ok(result as u32)
         } else {
-            Err(get_error())
+            Err(get_error_as_error())
         }
     }
 
@@ -455,7 +455,7 @@ impl Guid {
 }
 
 impl Display for Guid {
-    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), fmt::Error> {
         write!(f, "{}", self.string())
     }
 }
