@@ -9,16 +9,15 @@ use sdl2::gfx::primitives::DrawRenderer;
 const SCREEN_WIDTH: u32 = 800;
 const SCREEN_HEIGHT: u32 = 600;
 
-fn main() -> Result<(), String> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let sdl_context = sdl2::init()?;
     let video_subsys = sdl_context.video()?;
     let window = video_subsys.window("rust-sdl2_gfx: draw line & FPSManager", SCREEN_WIDTH, SCREEN_HEIGHT)
         .position_centered()
         .opengl()
-        .build()
-        .map_err(|e| e.to_string())?;
+        .build()?;
 
-    let mut canvas = window.into_canvas().build().map_err(|e| e.to_string())?;
+    let mut canvas = window.into_canvas().build()?;
 
     canvas.set_draw_color(pixels::Color::RGB(0, 0, 0));
     canvas.clear();

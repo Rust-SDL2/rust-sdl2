@@ -38,7 +38,7 @@ impl AudioCallback for Sound {
     }
 }
 
-fn main() -> Result<(), String> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let wav_file : Cow<'static, Path> = match std::env::args().nth(1) {
         None => Cow::from(Path::new("./assets/sine.wav")),
         Some(s) => Cow::from(PathBuf::from(s))

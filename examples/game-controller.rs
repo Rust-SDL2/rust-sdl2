@@ -1,6 +1,6 @@
 extern crate sdl2;
 
-fn main() -> Result<(), String> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let sdl_context = sdl2::init()?;
     let game_controller_subsystem = sdl_context.game_controller()?;
 

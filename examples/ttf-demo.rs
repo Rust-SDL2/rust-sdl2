@@ -43,18 +43,17 @@ fn get_centered_rect(rect_width: u32, rect_height: u32, cons_width: u32, cons_he
     rect!(cx, cy, w, h)
 }
 
-fn run(font_path: &Path) -> Result<(), String> {
+fn run(font_path: &Path) -> Result<(), Box<dyn std::error::Error>> {
     let sdl_context = sdl2::init()?;
     let video_subsys = sdl_context.video()?;
-    let ttf_context = sdl2::ttf::init().map_err(|e| e.to_string())?;
+    let ttf_context = sdl2::ttf::init()?;
 
     let window = video_subsys.window("SDL2_TTF Example", SCREEN_WIDTH, SCREEN_HEIGHT)
         .position_centered()
         .opengl()
-        .build()
-        .map_err(|e| e.to_string())?;
+        .build()?;
 
-    let mut canvas = window.into_canvas().build().map_err(|e| e.to_string())?;
+    let mut canvas = window.into_canvas().build()?;
     let texture_creator = canvas.texture_creator();
 
     // Load a font
@@ -63,9 +62,8 @@ fn run(font_path: &Path) -> Result<(), String> {
 
     // render a surface, and convert it to a texture bound to the canvas
     let surface = font.render("Hello Rust!")
-        .blended(Color::RGBA(255, 0, 0, 255)).map_err(|e| e.to_string())?;
-    let texture = texture_creator.create_texture_from_surface(&surface)
-        .map_err(|e| e.to_string())?;
+        .blended(Color::RGBA(255, 0, 0, 255))?;
+    let texture = texture_creator.create_texture_from_surface(&surface)?;
 
     canvas.set_draw_color(Color::RGBA(195, 217, 255, 255));
     canvas.clear();
@@ -92,7 +90,7 @@ fn run(font_path: &Path) -> Result<(), String> {
     Ok(())
 }
 
-fn main() -> Result<(), String> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = env::args().collect();
 
     println!("linked sdl2_ttf: {}", sdl2::ttf::get_linked_version());

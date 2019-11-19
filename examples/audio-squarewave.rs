@@ -21,7 +21,7 @@ impl AudioCallback for SquareWave {
     }
 }
 
-fn main() -> Result<(), String> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let sdl_context = sdl2::init()?;
     let audio_subsystem = sdl_context.audio()?;
 

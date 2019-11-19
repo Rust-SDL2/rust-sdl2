@@ -126,13 +126,13 @@ mod game_of_life {
 }
 
 #[cfg(feature = "unsafe_textures")]
-fn dummy_texture<'a>(canvas: &mut Canvas<Window>) -> Result<(Texture, Texture), String> {
+fn dummy_texture<'a>(canvas: &mut Canvas<Window>) -> Result<(Texture, Texture), Box<dyn std::error::Error>> {
     enum TextureColor {
         Yellow,
         White,
     };
-    let mut square_texture1 = canvas.create_texture_target(None, SQUARE_SIZE, SQUARE_SIZE).map_err(|e| e.to_string())?;
-    let mut square_texture2 = canvas.create_texture_target(None, SQUARE_SIZE, SQUARE_SIZE).map_err(|e| e.to_string())?;
+    let mut square_texture1 = canvas.create_texture_target(None, SQUARE_SIZE, SQUARE_SIZE)?;
+    let mut square_texture2 = canvas.create_texture_target(None, SQUARE_SIZE, SQUARE_SIZE)?;
         // let's change the textures we just created
     {
         let textures = vec![
@@ -198,13 +198,13 @@ fn dummy_texture<'a>(canvas: &mut Canvas<Window>) -> Result<(Texture, Texture), 
                     }
                 }
             }
-        }).map_err(|e| e.to_string())?;
+        })?;
     }
     Ok((square_texture1, square_texture2))
 }
 
 #[cfg(feature = "unsafe_textures")]
-pub fn main() -> Result<(), String> {
+pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     let sdl_context = sdl2::init()?;
     let video_subsystem = sdl_context.video()?;
 
@@ -217,15 +217,14 @@ pub fn main() -> Result<(), String> {
                 SQUARE_SIZE*PLAYGROUND_WIDTH,
                 SQUARE_SIZE*PLAYGROUND_HEIGHT)
         .position_centered()
-        .build()
-        .map_err(|e| e.to_string())?;
+        .build()?;
 
     // the canvas allows us to both manipulate the property of the window and to change its content
     // via hardware or software rendering. See CanvasBuilder for more info.
     let mut canvas = window.into_canvas()
         .target_texture()
         .present_vsync()
-        .build().map_err(|e| e.to_string())?;
+        .build()?;
 
     println!("Using SDL_Renderer \"{}\"", canvas.info().name);
     canvas.set_draw_color(Color::RGB(0, 0, 0));

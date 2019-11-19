@@ -39,7 +39,7 @@ impl AudioCallback for Recording {
     }
 }
 
-fn record(audio_subsystem: &AudioSubsystem, desired_spec: &AudioSpecDesired) -> Result<Vec<i16>, String> {
+fn record(audio_subsystem: &AudioSubsystem, desired_spec: &AudioSpecDesired) -> Result<Vec<i16>, Box<dyn std::error::Error>> {
     println!("Capturing {:} seconds... Please rock!", RECORDING_LENGTH_SECONDS);
 
     let (done_sender, done_receiver) = mpsc::channel();
@@ -100,7 +100,7 @@ impl AudioCallback for SoundPlayback {
     }
 }
 
-fn replay_recorded_vec(audio_subsystem: &AudioSubsystem, desired_spec: &AudioSpecDesired, recorded_vec: Vec<i16>) -> Result<(), String> {
+fn replay_recorded_vec(audio_subsystem: &AudioSubsystem, desired_spec: &AudioSpecDesired, recorded_vec: Vec<i16>) -> Result<(), Box<dyn std::error::Error>> {
     println!("Playing...");
 
     let playback_device = audio_subsystem.open_playback(None, desired_spec, |spec| {
@@ -121,7 +121,7 @@ fn replay_recorded_vec(audio_subsystem: &AudioSubsystem, desired_spec: &AudioSpe
 }
 
 
-fn main() -> Result<(), String> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let sdl_context = sdl2::init()?;
     let audio_subsystem = sdl_context.audio()?;
 
