@@ -20,10 +20,10 @@ use std::path::{Path, PathBuf};
 use std::{io, fs, env};
 
 // corresponds to the headers that we have in sdl2-sys/SDL2-{version}
-const SDL2_HEADERS_BUNDLED_VERSION: &str = "2.0.9";
+const SDL2_HEADERS_BUNDLED_VERSION: &str = "2.0.10";
 
 // means the lastest stable version that can be downloaded from SDL2's source
-const LASTEST_SDL2_VERSION: &str = "2.0.9";
+const LASTEST_SDL2_VERSION: &str = "2.0.10";
 
 #[cfg(feature = "bindgen")]
 macro_rules! add_msvc_includes_to_bindings {
