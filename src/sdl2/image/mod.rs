@@ -31,9 +31,9 @@ use get_error;
 use sys;
 use sys::image;
 
-/// InitFlags are passed to init() to control which subsystem
-/// functionality to load.
 bitflags! {
+    /// InitFlags are passed to init() to control which subsystem
+    /// functionality to load.
     pub struct InitFlag : u32 {
         const JPG  = image::IMG_InitFlags_IMG_INIT_JPG as u32;
         const PNG  = image::IMG_InitFlags_IMG_INIT_PNG as u32;
