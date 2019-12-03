@@ -136,7 +136,7 @@ pub struct Joystick {
 
 impl Joystick {
     #[inline]
-    pub fn subsystem(&self) -> &JoystickSubsystem { &self.subsystem }
+    pub const fn subsystem(&self) -> &JoystickSubsystem { &self.subsystem }
 
     /// Return the name of the joystick or an empty string if no name
     /// is found.

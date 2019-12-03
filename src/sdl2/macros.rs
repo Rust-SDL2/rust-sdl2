@@ -3,7 +3,7 @@ macro_rules! impl_raw_accessors(
         $(
         impl $t {
             #[inline]
-            pub unsafe fn raw(&self) -> $raw { self.raw }
+            pub const unsafe fn raw(&self) -> $raw { self.raw }
         }
         )+
     )
@@ -14,7 +14,7 @@ macro_rules! impl_raw_constructor(
         $(
         impl $t {
             #[inline]
-            pub unsafe fn from_ll($($r:$rt),+) -> $t {
+            pub const unsafe fn from_ll($($r:$rt),+) -> $t {
                 $te { $($r: $r),+ }
             }
         }

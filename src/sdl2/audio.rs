@@ -184,25 +184,25 @@ impl AudioFormat {
 #[cfg(target_endian = "little")]
 impl AudioFormat {
     /// Unsigned 16-bit samples, native endian
-    #[inline] pub fn u16_sys() -> AudioFormat { AudioFormat::U16LSB }
+    #[inline] pub const fn u16_sys() -> AudioFormat { AudioFormat::U16LSB }
     /// Signed 16-bit samples, native endian
-    #[inline] pub fn s16_sys() -> AudioFormat { AudioFormat::S16LSB }
+    #[inline] pub const fn s16_sys() -> AudioFormat { AudioFormat::S16LSB }
     /// Signed 32-bit samples, native endian
-    #[inline] pub fn s32_sys() -> AudioFormat { AudioFormat::S32LSB }
+    #[inline] pub const fn s32_sys() -> AudioFormat { AudioFormat::S32LSB }
     /// 32-bit floating point samples, native endian
-    #[inline] pub fn f32_sys() -> AudioFormat { AudioFormat::F32LSB }
+    #[inline] pub const fn f32_sys() -> AudioFormat { AudioFormat::F32LSB }
 }
 
 #[cfg(target_endian = "big")]
 impl AudioFormat {
     /// Unsigned 16-bit samples, native endian
-    #[inline] pub fn u16_sys() -> AudioFormat { AudioFormat::U16MSB }
+    #[inline] pub const fn u16_sys() -> AudioFormat { AudioFormat::U16MSB }
     /// Signed 16-bit samples, native endian
-    #[inline] pub fn s16_sys() -> AudioFormat { AudioFormat::S16MSB }
+    #[inline] pub const fn s16_sys() -> AudioFormat { AudioFormat::S16MSB }
     /// Signed 32-bit samples, native endian
-    #[inline] pub fn s32_sys() -> AudioFormat { AudioFormat::S32MSB }
+    #[inline] pub const fn s32_sys() -> AudioFormat { AudioFormat::S32MSB }
     /// 32-bit floating point samples, native endian
-    #[inline] pub fn f32_sys() -> AudioFormat { AudioFormat::F32MSB }
+    #[inline] pub const fn f32_sys() -> AudioFormat { AudioFormat::F32MSB }
 }
 
 #[repr(i32)]

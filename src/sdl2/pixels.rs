@@ -102,13 +102,13 @@ pub struct Color {
 impl Color {
     #[inline]
     #[allow(non_snake_case)]
-    pub fn RGB(r: u8, g: u8, b: u8) -> Color {
+    pub const fn RGB(r: u8, g: u8, b: u8) -> Color {
         Color { r, g, b, a: 0xff }
     }
 
     #[inline]
     #[allow(non_snake_case)]
-    pub fn RGBA(r: u8, g: u8, b: u8, a: u8) -> Color {
+    pub const fn RGBA(r: u8, g: u8, b: u8, a: u8) -> Color {
         Color { r, g, b, a }
     }
 
@@ -126,18 +126,18 @@ impl Color {
     }
 
     #[inline]
-    pub fn rgb(self) -> (u8, u8, u8) {
+    pub const fn rgb(self) -> (u8, u8, u8) {
         (self.r, self.g, self.b)
     }
 
     #[inline]
-    pub fn rgba(self) -> (u8, u8, u8, u8) {
+    pub const fn rgba(self) -> (u8, u8, u8, u8) {
         (self.r, self.g, self.b, self.a)
     }
 
     // Implemented manually and kept private, because reasons
     #[inline]
-    fn raw(self) -> sys::SDL_Color {
+    const fn raw(self) -> sys::SDL_Color {
         sys::SDL_Color { r: self.r, g: self.g, b: self.b, a: self.a }
     }
 }
