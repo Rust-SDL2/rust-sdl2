@@ -53,7 +53,7 @@
 //! ```
 
 use std::ffi::{CStr, CString};
-use num::FromPrimitive;
+use num_traits::FromPrimitive;
 use libc::{c_int, c_void, c_char};
 use std::ops::{Deref, DerefMut};
 use std::path::Path;
@@ -810,13 +810,13 @@ impl AudioCVT {
         //! the conversion in place; then it is passed to the SDL library.
         //!
         //! Certain conversions may cause buffer overflows. See AngryLawyer/rust-sdl2 issue #270.
-        use num::traits as num;
         unsafe {
             if self.raw.needed != 0 {
                 let mut raw = self.raw;
 
                 // calculate the size of the dst buffer
-                raw.len = num::cast(src.len()).expect("Buffer length overflow");
+                use std::convert::TryInto;
+                raw.len = src.len().try_into().expect("Buffer length overflow");
                 let dst_size = self.capacity(src.len());
                 let needed = dst_size - src.len();
                 src.reserve_exact(needed);

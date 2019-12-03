@@ -5,7 +5,7 @@ Event Handling
 use std::ffi::CStr;
 use std::mem;
 use libc::c_int;
-use num::FromPrimitive;
+use num_traits::FromPrimitive;
 use std::ptr;
 use std::borrow::ToOwned;
 use std::iter::FromIterator;

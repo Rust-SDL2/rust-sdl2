@@ -11,7 +11,7 @@ use crate::surface::SurfaceRef;
 use crate::pixels::PixelFormatEnum;
 use crate::VideoSubsystem;
 use crate::EventPump;
-use num::FromPrimitive;
+use num_traits::FromPrimitive;
 use crate::common::{validate_int, IntegerOrSdlError};
 
 use crate::get_error;

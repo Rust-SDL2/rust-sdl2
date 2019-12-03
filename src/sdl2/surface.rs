@@ -8,7 +8,7 @@ use crate::rect::Rect;
 use crate::get_error;
 use std::ptr;
 use libc::c_int;
-use num::FromPrimitive;
+use num_traits::FromPrimitive;
 use crate::pixels;
 use crate::render::{BlendMode, Canvas};
 use crate::rwops::RWops;
