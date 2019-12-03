@@ -239,7 +239,7 @@ impl Drop for Chunk {
 impl Chunk {
     /// Load file for use as a sample.
     pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Chunk, String> {
-        let raw = unsafe { mixer::Mix_LoadWAV_RW(try!(RWops::from_file(path, "rb")).raw(), 0) };
+        let raw = unsafe { mixer::Mix_LoadWAV_RW(RWops::from_file(path, "rb")?.raw(), 0) };
         if raw.is_null() {
             Err(get_error())
         } else {
