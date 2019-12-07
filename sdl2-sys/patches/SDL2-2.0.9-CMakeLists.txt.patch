@@ -1,0 +1,11 @@
+--- CMakeLists.txt	2018-10-31 08:07:22.000000000 -0700
++++ CMakeLists.txt	2019-12-04 21:50:07.606700200 -0800
+@@ -1292,7 +1292,7 @@
+   endif()
+ 
+   # Libraries for Win32 native and MinGW
+-  list(APPEND EXTRA_LIBS user32 gdi32 winmm imm32 ole32 oleaut32 version uuid advapi32 shell32)
++  list(APPEND EXTRA_LIBS user32 gdi32 winmm imm32 ole32 oleaut32 version uuid advapi32 shell32 vcruntime)
+ 
+   # TODO: in configure.in the check for timers is set on
+   # cygwin | mingw32* - does this include mingw32CE?

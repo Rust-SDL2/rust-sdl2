@@ -126,6 +126,7 @@ fn patch_sdl2(sdl2_source_path: &Path) {
     let patches: Vec<(&str, &'static str)> = vec![
         // No patches at this time. If needed, add them like this:
         // ("SDL-2.x.y-filename.patch", include_str!("patches/SDL-2.x.y-filename.patch")),
+        ("SDL2-2.0.9-CMakeLists.txt.patch", include_str!("patches/SDL2-2.0.9-CMakeLists.txt.patch")),
     ];
     let sdl_version = format!("SDL2-{}", LASTEST_SDL2_VERSION);
 
