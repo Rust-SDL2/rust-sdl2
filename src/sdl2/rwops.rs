@@ -4,7 +4,7 @@ use std::path::Path;
 use std::marker::PhantomData;
 use libc::{c_int, size_t, c_char};
 use libc::c_void;
-use crate::get_error;
+use crate::{Error, get_error, get_error_as_error};
 use std::mem::transmute;
 
 use crate::sys;
@@ -26,7 +26,7 @@ impl<'a> RWops<'a> {
     }
 
     /// Creates an SDL file stream.
-    pub fn from_file<P: AsRef<Path>>(path: P, mode: &str) -> Result<RWops <'static>, String> {
+    pub fn from_file<P: AsRef<Path>>(path: P, mode: &str) -> Result<RWops <'static>, Error> {
         let raw = unsafe {
             let path_c = CString::new(path.as_ref().to_str().unwrap()).unwrap();
             let mode_c = CString::new(mode).unwrap();
@@ -34,7 +34,7 @@ impl<'a> RWops<'a> {
         };
 
         if raw.is_null() {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(RWops {
                 raw,
@@ -46,13 +46,13 @@ impl<'a> RWops<'a> {
     /// Prepares a read-only memory buffer for use with `RWops`.
     ///
     /// This method can only fail if the buffer size is zero.
-    pub fn from_bytes(buf: &'a [u8]) -> Result<RWops <'a>, String> {
+    pub fn from_bytes(buf: &'a [u8]) -> Result<RWops <'a>, Error> {
         let raw = unsafe {
             sys::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int)
         };
 
         if raw.is_null() {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(RWops {
                 raw,
@@ -65,13 +65,13 @@ impl<'a> RWops<'a> {
     ///
     /// The buffer must be provided to this function and must live as long as the
     /// `RWops`, but the `RWops` does not take ownership of it.
-    pub fn from_read<T>(r: &mut T, buffer: &'a mut Vec<u8>) -> Result<RWops<'a>, String>
+    pub fn from_read<T>(r: &mut T, buffer: &'a mut Vec<u8>) -> Result<RWops<'a>, Error>
         where T: io::Read + Sized {
         match r.read_to_end(buffer) {
             Ok(_size) => RWops::from_bytes(buffer),
             Err(ioerror) => {
                 let msg = format!("IO error: {}", ioerror);
-                Err(msg)
+                Err(Error::SdlError(msg))
             }
         }
     }
@@ -79,13 +79,13 @@ impl<'a> RWops<'a> {
     /// Prepares a read-write memory buffer for use with `RWops`.
     ///
     /// This method can only fail if the buffer size is zero.
-    pub fn from_bytes_mut(buf: &'a mut [u8]) -> Result<RWops <'a>, String> {
+    pub fn from_bytes_mut(buf: &'a mut [u8]) -> Result<RWops <'a>, Error> {
         let raw = unsafe {
             sys::SDL_RWFromMem(buf.as_ptr() as *mut c_void, buf.len() as c_int)
         };
 
         if raw.is_null() {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(RWops {
                 raw,

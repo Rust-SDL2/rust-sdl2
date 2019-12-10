@@ -1,6 +1,6 @@
 extern crate sdl2;
 
-fn main() -> Result<(), String> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let sdl_context = sdl2::init()?;
     let joystick_subsystem = sdl_context.joystick()?;
     let haptic_subsystem = sdl_context.haptic()?;
@@ -22,8 +22,7 @@ fn main() -> Result<(), String> {
         },
     }).expect("Couldn't open any joystick");
 
-    let mut haptic = haptic_subsystem.open_from_joystick_id(joystick_index)
-        .map_err(|e| e.to_string())?;
+    let mut haptic = haptic_subsystem.open_from_joystick_id(joystick_index)?;
 
     for event in sdl_context.event_pump()?.wait_iter() {
         use sdl2::event::Event;

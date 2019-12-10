@@ -1,4 +1,4 @@
-use crate::get_error;
+use crate::{Error, get_error_as_error};
 use crate::surface::SurfaceRef;
 use crate::video;
 use crate::EventPump;
@@ -39,7 +39,7 @@ impl Drop for Cursor {
 }
 
 impl Cursor {
-    pub fn new(data: &[u8], mask: &[u8], width: i32, height: i32, hot_x: i32, hot_y: i32) -> Result<Cursor, String> {
+    pub fn new(data: &[u8], mask: &[u8], width: i32, height: i32, hot_x: i32, hot_y: i32) -> Result<Cursor, Error> {
         unsafe {
             let raw = sys::SDL_CreateCursor(data.as_ptr(),
                                            mask.as_ptr(),
@@ -47,7 +47,7 @@ impl Cursor {
                                            hot_x as i32, hot_y as i32);
 
             if raw.is_null() {
-                Err(get_error())
+                Err(get_error_as_error())
             } else {
                 Ok(Cursor{ raw })
             }
@@ -55,24 +55,24 @@ impl Cursor {
     }
 
     // TODO: figure out how to pass Surface in here correctly
-    pub fn from_surface<S: AsRef<SurfaceRef>>(surface: S, hot_x: i32, hot_y: i32) -> Result<Cursor, String> {
+    pub fn from_surface<S: AsRef<SurfaceRef>>(surface: S, hot_x: i32, hot_y: i32) -> Result<Cursor, Error> {
         unsafe {
             let raw = sys::SDL_CreateColorCursor(surface.as_ref().raw(), hot_x, hot_y);
 
             if raw.is_null() {
-                Err(get_error())
+                Err(get_error_as_error())
             } else {
                 Ok(Cursor{ raw })
             }
         }
     }
 
-    pub fn from_system(cursor: SystemCursor) -> Result<Cursor, String> {
+    pub fn from_system(cursor: SystemCursor) -> Result<Cursor, Error> {
         unsafe {
             let raw = sys::SDL_CreateSystemCursor(transmute(cursor as u32));
 
             if raw.is_null() {
-                Err(get_error())
+                Err(get_error_as_error())
             } else {
                 Ok(Cursor{ raw })
             }

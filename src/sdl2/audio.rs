@@ -62,7 +62,7 @@ use std::mem;
 use std::ptr;
 
 use crate::AudioSubsystem;
-use crate::get_error;
+use crate::{Error, get_error, get_error_as_error};
 use crate::rwops::RWops;
 
 use crate::sys;
@@ -75,7 +75,7 @@ impl AudioSubsystem {
     /// its data buffer) you're likely to be interested in the
     /// [AudioDevice.lock method](audio/struct.AudioDevice.html#method.lock).
     #[inline]
-    pub fn open_playback<'a, CB, F, D>(&self, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
+    pub fn open_playback<'a, CB, F, D>(&self, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, Error>
     where CB: AudioCallback, F: FnOnce(AudioSpec) -> CB, D: Into<Option<&'a str>>,
     {
         AudioDevice::open_playback(self, device, spec, get_callback)
@@ -87,7 +87,7 @@ impl AudioSubsystem {
     /// If you want to modify the callback-owned data at a later point (for example to update
     /// its data buffer) you're likely to be interested in the
     /// [AudioDevice.lock method](audio/struct.AudioDevice.html#method.lock).
-    pub fn open_capture<'a, CB, F, D>(&self, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
+    pub fn open_capture<'a, CB, F, D>(&self, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, Error>
         where CB: AudioCallback, F: FnOnce(AudioSpec) -> CB, D: Into<Option<&'a str>>,
     {
         AudioDevice::open_capture(self, device, spec, get_callback)
@@ -95,7 +95,7 @@ impl AudioSubsystem {
 
     /// Opens a new audio device which uses queueing rather than older callback method.
     #[inline]
-    pub fn open_queue<'a, Channel, D>(&self, device: D, spec: &AudioSpecDesired) -> Result<AudioQueue<Channel>, String>
+    pub fn open_queue<'a, Channel, D>(&self, device: D, spec: &AudioSpecDesired) -> Result<AudioQueue<Channel>, Error>
     where Channel: AudioFormatNum, D: Into<Option<&'a str>>,
     {
         AudioQueue::open_queue(self, device, spec)
@@ -120,11 +120,11 @@ impl AudioSubsystem {
         }
     }
 
-    pub fn audio_playback_device_name(&self, index: u32) -> Result<String, String> {
+    pub fn audio_playback_device_name(&self, index: u32) -> Result<String, Error> {
         unsafe {
             let dev_name = sys::SDL_GetAudioDeviceName(index as c_int, 0);
             if dev_name.is_null() {
-                Err(get_error())
+                Err(get_error_as_error())
             } else {
                 let cstr = CStr::from_ptr(dev_name as *const _);
                 Ok(cstr.to_str().unwrap().to_owned())
@@ -288,13 +288,13 @@ pub struct AudioSpecWAV {
 
 impl AudioSpecWAV {
     /// Loads a WAVE from the file path.
-    pub fn load_wav<P: AsRef<Path>>(path: P) -> Result<AudioSpecWAV, String> {
+    pub fn load_wav<P: AsRef<Path>>(path: P) -> Result<AudioSpecWAV, Error> {
         let mut file = RWops::from_file(path, "rb")?;
         AudioSpecWAV::load_wav_rw(&mut file)
     }
 
     /// Loads a WAVE from the data source.
-    pub fn load_wav_rw(src: &mut RWops) -> Result<AudioSpecWAV, String> {
+    pub fn load_wav_rw(src: &mut RWops) -> Result<AudioSpecWAV, Error> {
         use std::mem::MaybeUninit;
         use std::ptr::null_mut;
 
@@ -304,7 +304,7 @@ impl AudioSpecWAV {
         unsafe {
             let ret = sys::SDL_LoadWAV_RW(src.raw(), 0, desired.as_mut_ptr(), &mut audio_buf, &mut audio_len);
             if ret.is_null() {
-                Err(get_error())
+                Err(get_error_as_error())
             } else {
                 let desired = desired.assume_init();
                 Ok(AudioSpecWAV {
@@ -552,7 +552,7 @@ pub struct AudioQueue<Channel: AudioFormatNum> {
 
 impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
     /// Opens a new audio device given the desired parameters and callback.
-    pub fn open_queue<D: Into<Option<&'a str>>>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired) -> Result<AudioQueue<Channel>, String> {
+    pub fn open_queue<D: Into<Option<&'a str>>>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired) -> Result<AudioQueue<Channel>, Error> {
         use std::mem::MaybeUninit;
 
         let desired = AudioSpecDesired::convert_queue_to_ll::<Channel, Option<i32>, Option<u8>, Option<u16>>(spec.freq, spec.channels, spec.samples);
@@ -572,7 +572,7 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
             );
             match device_id {
                 0 => {
-                    Err(get_error())
+                    Err(get_error_as_error())
                 },
                 id => {
                     let obtained = obtained.assume_init();
@@ -640,7 +640,7 @@ pub struct AudioDevice<CB: AudioCallback> {
 
 impl<CB: AudioCallback> AudioDevice<CB> {
     /// Opens a new audio device for playback or capture (given the desired parameters and callback).
-    fn open<'a, F, D>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired, get_callback: F, capture: bool) -> Result<AudioDevice <CB>, String>
+    fn open<'a, F, D>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired, get_callback: F, capture: bool) -> Result<AudioDevice <CB>, Error>
     where
         F: FnOnce(AudioSpec) -> CB,
         D: Into<Option<&'a str>>,
@@ -665,7 +665,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
             );
             match device_id {
                 0 => {
-                    Err(get_error())
+                    Err(get_error_as_error())
                 },
                 id => {
                     let obtained = obtained.assume_init();
@@ -689,7 +689,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
     ///
     /// If you want to modify the callback-owned data at a later point (for example to update
     /// its data buffer) you're likely to be interested in the [lock method](#method.lock).
-    pub fn open_playback<'a, F, D>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
+    pub fn open_playback<'a, F, D>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, Error>
         where
             F: FnOnce(AudioSpec) -> CB,
             D: Into<Option<&'a str>>,
@@ -702,7 +702,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
     ///
     /// If you want to modify the callback-owned data at a later point (for example to update
     /// its data buffer) you're likely to be interested in the [lock method](#method.lock).
-    pub fn open_capture<'a, F, D>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
+    pub fn open_capture<'a, F, D>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, Error>
         where
             F: FnOnce(AudioSpec) -> CB,
             D: Into<Option<&'a str>>,
@@ -784,7 +784,7 @@ pub struct AudioCVT {
 
 impl AudioCVT {
     pub fn new(src_format: AudioFormat, src_channels: u8, src_rate: i32,
-               dst_format: AudioFormat, dst_channels: u8, dst_rate: i32) -> Result<AudioCVT, String>
+               dst_format: AudioFormat, dst_channels: u8, dst_rate: i32) -> Result<AudioCVT, Error>
     {
         use std::mem::MaybeUninit;
 
@@ -798,7 +798,7 @@ impl AudioCVT {
                 let raw = raw.assume_init();
                 Ok(AudioCVT { raw })
             } else {
-                Err(get_error())
+                Err(get_error_as_error())
             }
         }
     }

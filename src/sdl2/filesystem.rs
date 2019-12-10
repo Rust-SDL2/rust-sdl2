@@ -2,12 +2,12 @@ use std::error;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt;
 use libc::c_void;
-use crate::get_error;
+use crate::{Error, get_error, get_error_as_error};
 use libc::c_char;
 
 use crate::sys;
 
-pub fn base_path() -> Result<String, String> {
+pub fn base_path() -> Result<String, Error> {
     let result = unsafe {
         let buf = sys::SDL_GetBasePath();
         let s = CStr::from_ptr(buf as *const _).to_str().unwrap().to_owned();
@@ -16,7 +16,7 @@ pub fn base_path() -> Result<String, String> {
     };
 
     if result.is_empty() {
-        Err(get_error())
+        Err(get_error_as_error())
     } else {
         Ok(result)
     }

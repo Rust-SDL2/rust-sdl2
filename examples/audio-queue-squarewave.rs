@@ -24,7 +24,7 @@ fn gen_wave(bytes_to_write: i32) -> Vec<i16> {
     result
 }
 
-fn main() -> Result<(), String> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let sdl_context = sdl2::init()?;
     let audio_subsystem = sdl_context.audio()?;
 

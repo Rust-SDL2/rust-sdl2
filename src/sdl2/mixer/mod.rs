@@ -28,39 +28,37 @@ use std::str::from_utf8;
 use std::borrow::ToOwned;
 use std::path::Path;
 use libc::c_void;
-use libc::{c_int, uint16_t, c_double, c_uint};
-use ::get_error;
-use ::rwops::RWops;
-use ::version::Version;
+use libc::{c_int, c_double, c_uint};
+use crate::{Error, get_error, get_error_as_error};
+use crate::rwops::RWops;
+use crate::version::Version;
 use sys;
 use sys::mixer;
 
 // This comes from SDL_audio.h
 #[allow(non_camel_case_types)]
 mod ll {
-    use libc::uint16_t;
-
-    pub const AUDIO_U8: uint16_t = 0x0008;
-    pub const AUDIO_S8: uint16_t = 0x8008;
-    pub const AUDIO_U16LSB: uint16_t = 0x0010;
-    pub const AUDIO_S16LSB: uint16_t = 0x8010;
-    pub const AUDIO_U16MSB: uint16_t = 0x1010;
-    pub const AUDIO_S16MSB: uint16_t = 0x9010;
-    pub const AUDIO_U16: uint16_t = AUDIO_U16LSB;
-    pub const AUDIO_S16: uint16_t = AUDIO_S16LSB;
-    pub const AUDIO_S32LSB: uint16_t = 0x8020;
-    pub const AUDIO_S32MSB: uint16_t = 0x9020;
-    pub const AUDIO_S32: uint16_t = AUDIO_S32LSB;
-    pub const AUDIO_F32LSB: uint16_t = 0x8120;
-    pub const AUDIO_F32MSB: uint16_t = 0x9120;
-    pub const AUDIO_F32: uint16_t = AUDIO_F32LSB;
-    pub const AUDIO_U16SYS: uint16_t = AUDIO_U16LSB;
-    pub const AUDIO_S16SYS: uint16_t = AUDIO_S16LSB;
-    pub const AUDIO_S32SYS: uint16_t = AUDIO_S32LSB;
-    pub const AUDIO_F32SYS: uint16_t = AUDIO_F32LSB;
+    pub const AUDIO_U8: u16 = 0x0008;
+    pub const AUDIO_S8: u16 = 0x8008;
+    pub const AUDIO_U16LSB: u16 = 0x0010;
+    pub const AUDIO_S16LSB: u16 = 0x8010;
+    pub const AUDIO_U16MSB: u16 = 0x1010;
+    pub const AUDIO_S16MSB: u16 = 0x9010;
+    pub const AUDIO_U16: u16 = AUDIO_U16LSB;
+    pub const AUDIO_S16: u16 = AUDIO_S16LSB;
+    pub const AUDIO_S32LSB: u16 = 0x8020;
+    pub const AUDIO_S32MSB: u16 = 0x9020;
+    pub const AUDIO_S32: u16 = AUDIO_S32LSB;
+    pub const AUDIO_F32LSB: u16 = 0x8120;
+    pub const AUDIO_F32MSB: u16 = 0x9120;
+    pub const AUDIO_F32: u16 = AUDIO_F32LSB;
+    pub const AUDIO_U16SYS: u16 = AUDIO_U16LSB;
+    pub const AUDIO_S16SYS: u16 = AUDIO_S16LSB;
+    pub const AUDIO_S32SYS: u16 = AUDIO_S32LSB;
+    pub const AUDIO_F32SYS: u16 = AUDIO_F32LSB;
 }
 
-pub type AudioFormat = uint16_t;
+pub type AudioFormat = u16;
 
 pub const AUDIO_U8: AudioFormat = ll::AUDIO_U8;
 pub const AUDIO_S8: AudioFormat = ll::AUDIO_S8;
@@ -142,7 +140,7 @@ impl Drop for Sdl2MixerContext {
 
 /// Loads dynamic libraries and prepares them for use.  Flags should be
 /// one or more flags from `InitFlag`.
-pub fn init(flags: InitFlag) -> Result<Sdl2MixerContext, String> {
+pub fn init(flags: InitFlag) -> Result<Sdl2MixerContext, Error> {
     let return_flags = unsafe {
         let ret = mixer::Mix_Init(flags.bits() as c_int);
         InitFlag::from_bits_truncate(ret as u32)
@@ -158,7 +156,7 @@ pub fn init(flags: InitFlag) -> Result<Sdl2MixerContext, String> {
             let error_str = &("Could not init: ".to_string() + &un_init_flags.to_string());
             let _ = ::set_error(error_str);
         }
-        Err(get_error())
+        Err(get_error_as_error())
     }
 }
 
@@ -174,7 +172,7 @@ pub fn open_audio(frequency: i32,
                   format: AudioFormat,
                   channels: i32,
                   chunksize: i32)
-                  -> Result<(), String> {
+                  -> Result<(), Error> {
     let ret = unsafe {
         mixer::Mix_OpenAudio(frequency as c_int,
                            format,
@@ -184,7 +182,7 @@ pub fn open_audio(frequency: i32,
     if ret == 0 {
         Ok(())
     } else {
-        Err(get_error())
+        Err(get_error_as_error())
     }
 }
 
@@ -194,13 +192,13 @@ pub fn close_audio() {
 }
 
 /// Get the actual audio format in use by the opened audio device.
-pub fn query_spec() -> Result<(i32, AudioFormat, i32), String> {
+pub fn query_spec() -> Result<(i32, AudioFormat, i32), Error> {
     let mut frequency: c_int = 0;
-    let mut format: uint16_t = 0;
+    let mut format: u16 = 0;
     let mut channels: c_int = 0;
     let ret = unsafe { mixer::Mix_QuerySpec(&mut frequency, &mut format, &mut channels) };
     if ret == 0 {
-        Err(get_error())
+        Err(get_error_as_error())
     } else {
         Ok((frequency as i32, format as AudioFormat, channels as i32))
     }
@@ -238,10 +236,11 @@ impl Drop for Chunk {
 
 impl Chunk {
     /// Load file for use as a sample.
-    pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Chunk, String> {
-        let raw = unsafe { mixer::Mix_LoadWAV_RW(try!(RWops::from_file(path, "rb")).raw(), 0) };
+    pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Chunk, Error> {
+        let file = RWops::from_file(path, "rb")?;
+        let raw = unsafe { mixer::Mix_LoadWAV_RW(file.raw(), 0) };
         if raw.is_null() {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(Chunk {
                 raw: raw,
@@ -264,17 +263,17 @@ impl Chunk {
 /// Loader trait for `RWops`
 pub trait LoaderRWops<'a> {
     /// Load src for use as a sample.
-    fn load_wav(&self) -> Result<Chunk, String>;
+    fn load_wav(&self) -> Result<Chunk, Error>;
 
-    fn load_music(&'a self) -> Result<Music<'a>, String>;
+    fn load_music(&'a self) -> Result<Music<'a>, Error>;
 }
 
 impl<'a> LoaderRWops<'a> for RWops<'a> {
     /// Load src for use as a sample.
-    fn load_wav(&self) -> Result<Chunk, String> {
+    fn load_wav(&self) -> Result<Chunk, Error> {
         let raw = unsafe { mixer::Mix_LoadWAV_RW(self.raw(), 0) };
         if raw.is_null() {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(Chunk {
                 raw: raw,
@@ -284,10 +283,10 @@ impl<'a> LoaderRWops<'a> for RWops<'a> {
     }
 
     /// Load src for use as music.
-    fn load_music(&self) -> Result<Music<'a>, String> {
+    fn load_music(&self) -> Result<Music<'a>, Error> {
         let raw = unsafe { mixer::Mix_LoadMUS_RW(self.raw(), 0) };
         if raw.is_null() {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(Music {
                 raw: raw,
@@ -377,25 +376,25 @@ impl Channel {
         unsafe { mixer::Mix_Volume(ch as c_int, -1) as i32 }
     }
 
-    /// Play chunk on channel, or if channel is -1, pick the first free unreserved channel.
-    pub fn play(self, chunk: &Chunk, loops: i32) -> Result<Channel, String> {
+    /// Play chunk on channel, or if channel is -1, piczoomxk the first free unreserved channel.
+    pub fn play(self, chunk: &Chunk, loops: i32) -> Result<Channel, Error> {
         self.play_timed(chunk, loops, -1)
     }
 
-    pub fn play_timed(self, chunk: &Chunk, loops: i32, ticks: i32) -> Result<Channel, String> {
+    pub fn play_timed(self, chunk: &Chunk, loops: i32, ticks: i32) -> Result<Channel, Error> {
         let Channel(ch) = self;
         let ret = unsafe {
             mixer::Mix_PlayChannelTimed(ch as c_int, chunk.raw, loops as c_int, ticks as c_int)
         };
         if ret == -1 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(Channel(ret as i32))
         }
     }
 
     /// Play chunk on channel, or if channel is -1, pick the first free unreserved channel.
-    pub fn fade_in(self, chunk: &Chunk, loops: i32, ms: i32) -> Result<Channel, String> {
+    pub fn fade_in(self, chunk: &Chunk, loops: i32, ms: i32) -> Result<Channel, Error> {
         self.fade_in_timed(chunk, loops, ms, -1)
     }
 
@@ -404,7 +403,7 @@ impl Channel {
                          loops: i32,
                          ms: i32,
                          ticks: i32)
-                         -> Result<Channel, String> {
+                         -> Result<Channel, Error> {
         let Channel(ch) = self;
         let ret = unsafe {
             mixer::Mix_FadeInChannelTimed(ch as c_int,
@@ -414,7 +413,7 @@ impl Channel {
                                         ticks as c_int)
         };
         if ret == -1 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(Channel(ret as i32))
         }
@@ -494,11 +493,11 @@ impl Channel {
     }
 
     /// This removes all effects registered to channel.
-    pub fn unregister_all_effects(self) -> Result<(), String> {
+    pub fn unregister_all_effects(self) -> Result<(), Error> {
         let Channel(ch) = self;
         let ret = unsafe { mixer::Mix_UnregisterAllEffects(ch as c_int) };
         if ret == 0 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
@@ -506,22 +505,22 @@ impl Channel {
 
     /// Sets a panning effect, where left and right is the volume of the left and right channels.
     /// They range from 0 (silence) to 255 (loud).
-    pub fn set_panning(self, left: u8, right: u8) -> Result<(), String> {
+    pub fn set_panning(self, left: u8, right: u8) -> Result<(), Error> {
         let Channel(ch) = self;
         let ret = unsafe { mixer::Mix_SetPanning(ch as c_int, left, right) };
         if ret == 0 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
     }
 
     /// Unregisters panning effect.
-    pub fn unset_panning(self) -> Result<(), String> {
+    pub fn unset_panning(self) -> Result<(), Error> {
         let Channel(ch) = self;
         let ret = unsafe { mixer::Mix_SetPanning(ch as c_int, 255, 255) };
         if ret == 0 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
@@ -529,22 +528,22 @@ impl Channel {
 
     /// This effect simulates a simple attenuation of volume due to distance.
     /// distance ranges from 0 (close/loud) to 255 (far/quiet).
-    pub fn set_distance(self, distance: u8) -> Result<(), String> {
+    pub fn set_distance(self, distance: u8) -> Result<(), Error> {
         let Channel(ch) = self;
         let ret = unsafe { mixer::Mix_SetDistance(ch as c_int, distance) };
         if ret == 0 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
     }
 
     /// Unregisters distance effect.
-    pub fn unset_distance(self) -> Result<(), String> {
+    pub fn unset_distance(self) -> Result<(), Error> {
         let Channel(ch) = self;
         let ret = unsafe { mixer::Mix_SetDistance(ch as c_int, 0) };
         if ret == 0 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
@@ -553,22 +552,22 @@ impl Channel {
     /// This effect emulates a simple 3D audio effect.
     /// angle ranges from 0 to 360 degrees going clockwise, where 0 is directly in front.
     /// distance ranges from 0 (close/loud) to 255 (far/quiet).
-    pub fn set_position(self, angle: i16, distance: u8) -> Result<(), String> {
+    pub fn set_position(self, angle: i16, distance: u8) -> Result<(), Error> {
         let Channel(ch) = self;
         let ret = unsafe { mixer::Mix_SetPosition(ch as c_int, angle, distance) };
         if ret == 0 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
     }
 
     /// Unregisters position effect.
-    pub fn unset_position(self) -> Result<(), String> {
+    pub fn unset_position(self) -> Result<(), Error> {
         let Channel(ch) = self;
         let ret = unsafe { mixer::Mix_SetPosition(ch as c_int, 0, 0) };
         if ret == 0 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
@@ -576,11 +575,11 @@ impl Channel {
 
     /// Simple reverse stereo, swaps left and right channel sound.
     /// true for reverse, false to unregister effect.
-    pub fn set_reverse_stereo(self, flip: bool) -> Result<(), String> {
+    pub fn set_reverse_stereo(self, flip: bool) -> Result<(), Error> {
         let Channel(ch) = self;
         let ret = unsafe { mixer::Mix_SetReverseStereo(ch as c_int, flip as c_int) };
         if ret == 0 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
@@ -752,13 +751,13 @@ impl<'a> fmt::Debug for Music<'a> {
 
 impl<'a> Music<'a> {
     /// Load music file to use.
-    pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Music<'static>, String> {
+    pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Music<'static>, Error> {
         let raw = unsafe {
             let c_path = CString::new(path.as_ref().to_str().unwrap()).unwrap();
             mixer::Mix_LoadMUS(c_path.as_ptr())
         };
         if raw.is_null() {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(Music {
                 raw: raw,
@@ -769,18 +768,18 @@ impl<'a> Music<'a> {
     }
 
     /// Load music from a static byte buffer.
-    pub fn from_static_bytes(buf: &'static [u8]) -> Result<Music<'static>, String> {
+    pub fn from_static_bytes(buf: &'static [u8]) -> Result<Music<'static>, Error> {
         let rw = unsafe {
             sys::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int)
         };
 
         if rw.is_null() {
-            return Err(get_error());
+            return Err(get_error_as_error());
         }
 
         let raw = unsafe { mixer::Mix_LoadMUS_RW(rw, 0) };
         if raw.is_null() {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(Music {
                 raw: raw,
@@ -808,10 +807,10 @@ impl<'a> Music<'a> {
     }
 
     /// Play the loaded music loop times through from start to finish. Pass -1 to loop forever.
-    pub fn play(&self, loops: i32) -> Result<(), String> {
+    pub fn play(&self, loops: i32) -> Result<(), Error> {
         let ret = unsafe { mixer::Mix_PlayMusic(self.raw, loops as c_int) };
         if ret == -1 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
@@ -819,22 +818,22 @@ impl<'a> Music<'a> {
 
     /// Fade in over ms milliseconds of time, the loaded music,
     /// playing it loop times through from start to finish.
-    pub fn fade_in(&self, loops: i32, ms: i32) -> Result<(), String> {
+    pub fn fade_in(&self, loops: i32, ms: i32) -> Result<(), Error> {
         let ret = unsafe { mixer::Mix_FadeInMusic(self.raw, loops as c_int, ms as c_int) };
         if ret == -1 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
     }
 
     /// Fade in over ms milliseconds of time, from position.
-    pub fn fade_in_from_pos(&self, loops: i32, ms: i32, position: f64) -> Result<(), String> {
+    pub fn fade_in_from_pos(&self, loops: i32, ms: i32, position: f64) -> Result<(), Error> {
         let ret = unsafe {
             mixer::Mix_FadeInMusicPos(self.raw, loops as c_int, ms as c_int, position as c_double)
         };
         if ret == -1 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
@@ -875,23 +874,23 @@ impl<'a> Music<'a> {
     }
 
     /// Set the position of the currently playing music.
-    pub fn set_pos(position: f64) -> Result<(), String> {
+    pub fn set_pos(position: f64) -> Result<(), Error> {
         let ret = unsafe { mixer::Mix_SetMusicPosition(position as c_double) };
         if ret == -1 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
     }
 
     /// Setup a command line music player to use to play music.
-    pub fn set_command(command: &str) -> Result<(), String> {
+    pub fn set_command(command: &str) -> Result<(), Error> {
         let ret = unsafe {
             let c_command = CString::new(command).unwrap();
             mixer::Mix_SetMusicCMD(c_command.as_ptr())
         };
         if ret == -1 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }
@@ -905,10 +904,10 @@ impl<'a> Music<'a> {
     }
 
     /// Gradually fade out the music over ms milliseconds starting from now.
-    pub fn fade_out(ms: i32) -> Result<(), String> {
+    pub fn fade_out(ms: i32) -> Result<(), Error> {
         let ret = unsafe { mixer::Mix_FadeOutMusic(ms as c_int) };
         if ret == -1 {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(())
         }

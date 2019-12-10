@@ -10,16 +10,15 @@ use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use sdl2::surface::Surface;
 
-pub fn run(png: &Path) -> Result<(), String> {
+pub fn run(png: &Path) -> Result<(), Box<dyn std::error::Error>> {
     let sdl_context = sdl2::init()?;
     let video_subsystem = sdl_context.video()?;
     let _image_context = sdl2::image::init(InitFlag::PNG | InitFlag::JPG)?;
     let window = video_subsystem.window("rust-sdl2 demo: Cursor", 800, 600)
       .position_centered()
-      .build()
-      .map_err(|e| e.to_string())?;
+      .build()?;
 
-    let mut canvas = window.into_canvas().software().build().map_err(|e| e.to_string())?;
+    let mut canvas = window.into_canvas().software().build()?;
 
     let surface = Surface::from_file(png)
         .map_err(|err| format!("failed to load cursor image: {}", err))?;
@@ -53,7 +52,7 @@ pub fn run(png: &Path) -> Result<(), String> {
 }
 
 
-fn main() -> Result<(), String> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = env::args().collect();
 
     if args.len() < 2 {

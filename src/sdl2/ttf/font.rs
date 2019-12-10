@@ -1,17 +1,16 @@
 use std::ffi::{CString, CStr};
 use std::os::raw::{c_uint, c_int, c_long};
 use std::path::Path;
-use std::error;
-use std::error::Error;
+use std::error::{self, Error as StdError};
 use std::ffi::NulError;
 use std::fmt;
 use std::marker::PhantomData;
-use ::surface::Surface;
+use crate::surface::Surface;
 use sys::ttf;
 use sys::SDL_Surface;
-use ::get_error;
-use ::pixels::Color;
-use ::rwops::RWops;
+use crate::{Error, get_error, get_error_as_error};
+use crate::pixels::Color;
+use crate::rwops::RWops;
 
 bitflags! {
     /// The styling of a font.
@@ -69,7 +68,7 @@ impl error::Error for FontError {
         }
     }
 
-    fn cause(&self) -> Option<&error::Error> {
+    fn cause(&self) -> Option<&dyn error::Error> {
         match *self {
             FontError::InvalidLatin1Text(ref error) => {
                 Some(error)
@@ -149,7 +148,7 @@ impl<'f,'text> PartialRendering<'f,'text> {
     /// for an explanation.
     pub fn solid<'b, T>(self, color: T )
             -> FontResult<Surface<'b>> where T: Into<Color> {
-        let source = try!(self.text.convert());
+        let source = self.text.convert()?;
         let color = color.into().into();
         let raw = unsafe {
             match self.text {
@@ -171,7 +170,7 @@ impl<'f,'text> PartialRendering<'f,'text> {
     /// for an explanation.
     pub fn shaded<'b, T>(self, color: T, background: T)
             -> FontResult<Surface<'b>> where T: Into<Color> {
-        let source = try!(self.text.convert());
+        let source = self.text.convert()?;
         let foreground = color.into().into();
         let background = background.into().into();
         let raw = unsafe {
@@ -194,7 +193,7 @@ impl<'f,'text> PartialRendering<'f,'text> {
     /// for an explanation.
     pub fn blended<'b, T>(self, color: T)
             -> FontResult<Surface<'b>> where T: Into<Color> {
-        let source = try!(self.text.convert());
+        let source = self.text.convert()?;
         let color = color.into().into();
         let raw = unsafe {
             match self.text {
@@ -217,7 +216,7 @@ impl<'f,'text> PartialRendering<'f,'text> {
     /// for an explanation of the mode.
     pub fn blended_wrapped<'b, T>(self, color: T, wrap_max_width: u32)
             -> FontResult<Surface<'b>> where T: Into<Color> {
-        let source = try!(self.text.convert());
+        let source = self.text.convert()?;
         let color = color.into().into();
         let raw = unsafe {
             match self.text {
@@ -264,12 +263,12 @@ impl<'ttf,'r> Drop for Font<'ttf,'r> {
 }
 
 /// Internally used to load a font (for internal visibility).
-pub fn internal_load_font<'ttf,P:AsRef<Path>>(path: P, ptsize: u16) -> Result<Font<'ttf,'static>, String> {
+pub fn internal_load_font<'ttf,P:AsRef<Path>>(path: P, ptsize: u16) -> Result<Font<'ttf,'static>, Error> {
     unsafe {
         let cstring = CString::new(path.as_ref().to_str().unwrap()).unwrap();
         let raw = ttf::TTF_OpenFont(cstring.as_ptr(), ptsize as c_int);
         if raw.is_null() {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(Font { raw: raw, rwops: None, _marker: PhantomData })
         }
@@ -285,14 +284,14 @@ where R: Into<Option<RWops<'r>>> {
 
 /// Internally used to load a font (for internal visibility).
 pub fn internal_load_font_at_index<'ttf,P: AsRef<Path>>(path: P, index: u32, ptsize: u16)
-        -> Result<Font<'ttf, 'static>, String> {
+        -> Result<Font<'ttf, 'static>, Error> {
     unsafe {
         let cstring = CString::new(path.as_ref().to_str().unwrap().as_bytes())
             .unwrap();
         let raw = ttf::TTF_OpenFontIndex(cstring.as_ptr(),
             ptsize as c_int, index as c_long);
         if raw.is_null() {
-            Err(get_error())
+            Err(get_error_as_error())
         } else {
             Ok(Font { raw: raw, rwops: None, _marker: PhantomData})
         }
@@ -334,7 +333,7 @@ impl<'ttf,'r> Font<'ttf,'r> {
     /// Returns the width and height of the given text when rendered using this
     /// font.
     pub fn size_of(&self, text: &str) -> FontResult<(u32, u32)> {
-        let c_string = try!(RenderableText::Utf8(text).convert());
+        let c_string = RenderableText::Utf8(text).convert()?;
         let (res, size) = unsafe {
             let mut w = 0; // mutated by C code
             let mut h = 0; // mutated by C code
@@ -353,7 +352,7 @@ impl<'ttf,'r> Font<'ttf,'r> {
     #[allow(unused_mut)]
     pub fn size_of_latin1(&self, text: &[u8])
         -> FontResult<(u32, u32)> {
-        let c_string = try!(RenderableText::Latin1(text).convert());
+        let c_string = RenderableText::Latin1(text).convert()?;
         let (res, size) = unsafe {
             let mut w : i32 = 0; // mutated by C code
             let mut h : i32 = 0; // mutated by C code

@@ -1,6 +1,6 @@
 extern crate sdl2;
 
-fn main() -> Result<(), String> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let sdl_context = sdl2::init()?;
     let joystick_subsystem = sdl_context.joystick()?;
 
@@ -22,8 +22,7 @@ fn main() -> Result<(), String> {
     }).expect("Couldn't open any joystick");
 
     // Print the joystick's power level
-    println!("\"{}\" power level: {:?}", joystick.name(), joystick.power_level()
-        .map_err(|e| e.to_string())?);
+    println!("\"{}\" power level: {:?}", joystick.name(), joystick.power_level()?);
 
     let (mut lo_freq, mut hi_freq) = (0, 0);
 

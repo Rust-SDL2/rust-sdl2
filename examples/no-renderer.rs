@@ -19,7 +19,7 @@ enum Gradient {
     White
 }
 
-fn set_window_gradient(window: &mut Window, event_pump: &sdl2::EventPump, gradient: Gradient) -> Result<(), String> {
+fn set_window_gradient(window: &mut Window, event_pump: &sdl2::EventPump, gradient: Gradient) -> Result<(), Box<dyn std::error::Error>> {
     let mut surface = window.surface(event_pump)?;
     for i in 0 .. (WINDOW_WIDTH / 4) {
         let c : u8 = 255 - (i as u8);
@@ -33,7 +33,8 @@ fn set_window_gradient(window: &mut Window, event_pump: &sdl2::EventPump, gradie
         };
         surface.fill_rect(Rect::new(i*4, 0, 4, WINDOW_HEIGHT), color)?;
     }
-    surface.finish()
+    surface.finish()?;
+    Ok(())
 }
 
 fn next_gradient(gradient: Gradient) -> Gradient {
@@ -47,14 +48,13 @@ fn next_gradient(gradient: Gradient) -> Gradient {
     }
 }
 
-pub fn main() -> Result<(), String> {
+pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     let sdl_context = sdl2::init()?;
     let video_subsystem = sdl_context.video()?;
 
     let mut window = video_subsystem.window("rust-sdl2 demo: No Renderer", WINDOW_WIDTH, WINDOW_HEIGHT)
         .position_centered()
-        .build()
-        .map_err(|e| e.to_string())?;
+        .build()?;
     let mut event_pump = sdl_context.event_pump()?;
     let mut current_gradient = Gradient::Red;
     set_window_gradient(&mut window, &event_pump, current_gradient)?;

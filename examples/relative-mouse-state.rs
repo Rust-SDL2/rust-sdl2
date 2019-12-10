@@ -5,14 +5,13 @@ use sdl2::mouse::MouseButton;
 use sdl2::keyboard::Keycode;
 use std::time::Duration;
 
-pub fn main() -> Result<(), String> {
+pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     let sdl_context = sdl2::init()?;
     let video_subsystem = sdl_context.video()?;
 
     let _window = video_subsystem.window("Mouse", 800, 600)
         .position_centered()
-        .build()
-        .map_err(|e| e.to_string())?;
+        .build()?;
 
     let mut events = sdl_context.event_pump()?;
     let mut state;
