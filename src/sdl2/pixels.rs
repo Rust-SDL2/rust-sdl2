@@ -1,4 +1,4 @@
-use num::FromPrimitive;
+use num_traits::FromPrimitive;
 use std::mem::transmute;
 use std::convert::TryFrom;
 use crate::sys;

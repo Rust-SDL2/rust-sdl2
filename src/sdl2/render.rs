@@ -46,7 +46,7 @@ use libc::{c_int, c_double};
 use crate::rect::Point;
 use crate::rect::Rect;
 use std::ffi::CStr;
-use num::FromPrimitive;
+use num_traits::FromPrimitive;
 use std::vec::Vec;
 use crate::common::{validate_int, IntegerOrSdlError};
 use std::mem::{transmute, MaybeUninit};

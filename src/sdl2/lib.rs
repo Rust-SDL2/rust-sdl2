@@ -50,7 +50,7 @@
 
 #![allow(clippy::cast_lossless, clippy::transmute_ptr_to_ref)]
 
-extern crate num;
+extern crate num_traits;
 pub extern crate libc;
 
 #[macro_use]

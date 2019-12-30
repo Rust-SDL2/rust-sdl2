@@ -3,7 +3,7 @@
 use std::mem;
 use std::ptr;
 use std::ffi::CString;
-use num::traits::ToPrimitive;
+use std::convert::TryFrom;
 use libc::{c_int, c_char};
 use libc::c_void;
 use render::Canvas;
@@ -57,12 +57,12 @@ impl ToColor for u32 {
 impl ToColor for isize {
     #[inline]
     fn as_rgba(&self) -> (u8, u8, u8, u8) {
-        unsafe { mem::transmute(self.to_u32().expect("Can't convert to Color Type")) }
+        unsafe { mem::transmute(u32::try_from(*self).expect("Can't convert to Color Type")) }
     }
 
     #[inline]
     fn as_u32(&self) -> u32 {
-        self.to_u32().expect("Can't convert to Color Type")
+        u32::try_from(*self).expect("Can't convert to Color Type")
     }
 }
 
