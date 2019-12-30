@@ -358,16 +358,16 @@ pub mod gl_attr {
 
     impl ContextFlags {
         #[inline]
-        pub fn has_debug(&self) -> bool { self.flags & 0x0001 != 0 }
+        pub const fn has_debug(&self) -> bool { self.flags & 0x0001 != 0 }
 
         #[inline]
-        pub fn has_forward_compatible(&self) -> bool { self.flags & 0x0002 != 0 }
+        pub const fn has_forward_compatible(&self) -> bool { self.flags & 0x0002 != 0 }
 
         #[inline]
-        pub fn has_robust_access(&self) -> bool { self.flags & 0x0004 != 0 }
+        pub const fn has_robust_access(&self) -> bool { self.flags & 0x0004 != 0 }
 
         #[inline]
-        pub fn has_reset_isolation(&self) -> bool { self.flags & 0x0008 != 0 }
+        pub const fn has_reset_isolation(&self) -> bool { self.flags & 0x0008 != 0 }
     }
 
     impl<'a> GLAttr<'a> {
@@ -1076,7 +1076,7 @@ impl Window {
 
     #[inline]
     /// Create a new `Window` without taking ownership of the `WindowContext`
-    pub unsafe fn from_ref(context: Rc<WindowContext>) -> Window {
+    pub const unsafe fn from_ref(context: Rc<WindowContext>) -> Window {
         Window { context }
     }
 

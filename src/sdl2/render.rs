@@ -884,7 +884,7 @@ impl<T> TextureCreator<T> {
     /// Create a texture from its raw `SDL_Texture`.
     #[cfg(not(feature = "unsafe_textures"))]
     #[inline]
-    pub unsafe fn raw_create_texture(&self, raw: *mut sys::SDL_Texture) -> Texture {
+    pub const unsafe fn raw_create_texture(&self, raw: *mut sys::SDL_Texture) -> Texture {
         Texture {
             raw,
             _marker: PhantomData,
@@ -893,7 +893,7 @@ impl<T> TextureCreator<T> {
 
     /// Create a texture from its raw `SDL_Texture`. Should be used with care.
     #[cfg(feature = "unsafe_textures")]
-    pub unsafe fn raw_create_texture(&self, raw: *mut sys::SDL_Texture) -> Texture {
+    pub const unsafe fn raw_create_texture(&self, raw: *mut sys::SDL_Texture) -> Texture {
         Texture {
             raw,
         }
@@ -2129,7 +2129,7 @@ impl<'r> Texture<'r> {
     }
 
     #[inline]
-    pub fn raw(&self) -> *mut sys::SDL_Texture {
+    pub const fn raw(&self) -> *mut sys::SDL_Texture {
         self.raw
     }
 }
@@ -2247,7 +2247,7 @@ impl<> Texture<> {
     }
 
     #[inline]
-    pub fn raw(&self) -> *mut sys::SDL_Texture {
+    pub const fn raw(&self) -> *mut sys::SDL_Texture {
         self.raw
     }
 }
