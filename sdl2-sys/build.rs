@@ -221,7 +221,7 @@ fn patch_sdl2(sdl2_source_path: &Path) {
             // ever have more than one hunk.
             assert!(added_file.len() == 1);
             let file_path = sdl2_source_path.join(added_file.path());
-            let mut dst_file = fs::File::create(&file_path)
+            let dst_file = fs::File::create(&file_path)
                 .expect(&format!(
                     "Failed to create file {}",
                     file_path.to_string_lossy()));

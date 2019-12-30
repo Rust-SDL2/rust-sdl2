@@ -31,9 +31,9 @@ use get_error;
 use sys;
 use sys::image;
 
-/// InitFlags are passed to init() to control which subsystem
-/// functionality to load.
 bitflags! {
+    /// InitFlags are passed to init() to control which subsystem
+    /// functionality to load.
     pub struct InitFlag : u32 {
         const JPG  = image::IMG_InitFlags_IMG_INIT_JPG as u32;
         const PNG  = image::IMG_InitFlags_IMG_INIT_PNG as u32;
@@ -46,16 +46,16 @@ bitflags! {
 impl ::std::fmt::Display for InitFlag {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         if self.contains(InitFlag::JPG) {
-            try!(f.write_str("INIT_JPG "));
+            f.write_str("INIT_JPG ")?;
         }
         if self.contains(InitFlag::PNG) {
-            try!(f.write_str("INIT_PNG "));
+            f.write_str("INIT_PNG ")?;
         }
         if self.contains(InitFlag::TIF) {
-            try!(f.write_str("INIT_TIF "));
+            f.write_str("INIT_TIF ")?;
         }
         if self.contains(InitFlag::WEBP) {
-            try!(f.write_str("INIT_WEBP "));
+            f.write_str("INIT_WEBP ")?;
         }
         Ok(())
     }

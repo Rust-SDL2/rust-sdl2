@@ -1,7 +1,7 @@
 //! Framerate control
 
 use libc;
-use libc::{c_void, uint32_t, size_t};
+use libc::{c_void, size_t};
 use std::mem;
 use ::get_error;
 use sys::gfx;
@@ -24,7 +24,7 @@ impl FPSManager {
 
     /// Set the framerate in Hz.
     pub fn set_framerate(&mut self, rate: u32) -> Result<(), String> {
-        let ret = unsafe { gfx::framerate::SDL_setFramerate(self.raw, rate as uint32_t) };
+        let ret = unsafe { gfx::framerate::SDL_setFramerate(self.raw, rate as u32) };
         match ret {
             0 => Ok(()),
             _ => Err(get_error())

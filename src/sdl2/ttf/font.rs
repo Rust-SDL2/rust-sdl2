@@ -69,7 +69,7 @@ impl error::Error for FontError {
         }
     }
 
-    fn cause(&self) -> Option<&error::Error> {
+    fn cause(&self) -> Option<&dyn error::Error> {
         match *self {
             FontError::InvalidLatin1Text(ref error) => {
                 Some(error)
@@ -149,7 +149,7 @@ impl<'f,'text> PartialRendering<'f,'text> {
     /// for an explanation.
     pub fn solid<'b, T>(self, color: T )
             -> FontResult<Surface<'b>> where T: Into<Color> {
-        let source = try!(self.text.convert());
+        let source = self.text.convert()?;
         let color = color.into().into();
         let raw = unsafe {
             match self.text {
@@ -171,7 +171,7 @@ impl<'f,'text> PartialRendering<'f,'text> {
     /// for an explanation.
     pub fn shaded<'b, T>(self, color: T, background: T)
             -> FontResult<Surface<'b>> where T: Into<Color> {
-        let source = try!(self.text.convert());
+        let source = self.text.convert()?;
         let foreground = color.into().into();
         let background = background.into().into();
         let raw = unsafe {
@@ -194,7 +194,7 @@ impl<'f,'text> PartialRendering<'f,'text> {
     /// for an explanation.
     pub fn blended<'b, T>(self, color: T)
             -> FontResult<Surface<'b>> where T: Into<Color> {
-        let source = try!(self.text.convert());
+        let source = self.text.convert()?;
         let color = color.into().into();
         let raw = unsafe {
             match self.text {
@@ -217,7 +217,7 @@ impl<'f,'text> PartialRendering<'f,'text> {
     /// for an explanation of the mode.
     pub fn blended_wrapped<'b, T>(self, color: T, wrap_max_width: u32)
             -> FontResult<Surface<'b>> where T: Into<Color> {
-        let source = try!(self.text.convert());
+        let source = self.text.convert()?;
         let color = color.into().into();
         let raw = unsafe {
             match self.text {
@@ -334,7 +334,7 @@ impl<'ttf,'r> Font<'ttf,'r> {
     /// Returns the width and height of the given text when rendered using this
     /// font.
     pub fn size_of(&self, text: &str) -> FontResult<(u32, u32)> {
-        let c_string = try!(RenderableText::Utf8(text).convert());
+        let c_string = RenderableText::Utf8(text).convert()?;
         let (res, size) = unsafe {
             let mut w = 0; // mutated by C code
             let mut h = 0; // mutated by C code
@@ -353,7 +353,7 @@ impl<'ttf,'r> Font<'ttf,'r> {
     #[allow(unused_mut)]
     pub fn size_of_latin1(&self, text: &[u8])
         -> FontResult<(u32, u32)> {
-        let c_string = try!(RenderableText::Latin1(text).convert());
+        let c_string = RenderableText::Latin1(text).convert()?;
         let (res, size) = unsafe {
             let mut w : i32 = 0; // mutated by C code
             let mut h : i32 = 0; // mutated by C code
