@@ -8,7 +8,7 @@ use crate::rect::Rect;
 use crate::get_error;
 use std::ptr;
 use libc::c_int;
-use num_traits::FromPrimitive;
+use std::convert::TryFrom;
 use crate::pixels;
 use crate::render::{BlendMode, Canvas};
 use crate::rwops::RWops;
@@ -495,7 +495,7 @@ impl SurfaceRef {
         };
 
         match result {
-            0 => FromPrimitive::from_i32(mode as i32).unwrap(),
+            0 => BlendMode::try_from(mode as u32).unwrap(),
             // Should only fail on a null Surface
             _ => panic!(get_error())
         }

@@ -46,8 +46,7 @@ use libc::{c_int, c_double};
 use crate::rect::Point;
 use crate::rect::Rect;
 use std::ffi::CStr;
-use num_traits::FromPrimitive;
-use std::vec::Vec;
+use std::convert::TryFrom;
 use crate::common::{validate_int, IntegerOrSdlError};
 use std::mem::{transmute, MaybeUninit};
 use libc::c_void;
@@ -109,20 +108,18 @@ pub enum TextureAccess {
     Target = SDL_TextureAccess::SDL_TEXTUREACCESS_TARGET as i32,
 }
 
-impl FromPrimitive for TextureAccess {
-    fn from_i64(n: i64) -> Option<TextureAccess> {
+impl TryFrom<u32> for TextureAccess {
+    type Error = ();
+
+    fn try_from(n: u32) -> Result<Self, Self::Error> {
         use self::TextureAccess::*;
-        let n = n as u32;
+        use crate::sys::SDL_TextureAccess::*;
 
-        Some(match unsafe { transmute::<u32, SDL_TextureAccess>(n) } {
-                 SDL_TextureAccess::SDL_TEXTUREACCESS_STATIC => Static,
-                 SDL_TextureAccess::SDL_TEXTUREACCESS_STREAMING => Streaming,
-                 SDL_TextureAccess::SDL_TEXTUREACCESS_TARGET => Target,
-             })
-    }
-
-    fn from_u64(n: u64) -> Option<TextureAccess> {
-        FromPrimitive::from_i64(n as i64)
+        Ok(match unsafe { transmute(n) } {
+               SDL_TEXTUREACCESS_STATIC => Static,
+               SDL_TEXTUREACCESS_STREAMING => Streaming,
+               SDL_TEXTUREACCESS_TARGET => Target,
+           })
     }
 }
 
@@ -147,22 +144,20 @@ pub enum BlendMode {
     Invalid = SDL_BlendMode::SDL_BLENDMODE_INVALID as i32,
 }
 
-impl FromPrimitive for BlendMode {
-    fn from_i64(n: i64) -> Option<BlendMode> {
+impl TryFrom<u32> for BlendMode {
+    type Error = ();
+
+    fn try_from(n: u32) -> Result<Self, Self::Error> {
         use self::BlendMode::*;
-        let n = n as u32;
+        use crate::sys::SDL_BlendMode::*;
 
-        Some(match unsafe { transmute::<u32, SDL_BlendMode>(n) } {
-                 SDL_BlendMode::SDL_BLENDMODE_NONE => None,
-                 SDL_BlendMode::SDL_BLENDMODE_BLEND => Blend,
-                 SDL_BlendMode::SDL_BLENDMODE_ADD => Add,
-                 SDL_BlendMode::SDL_BLENDMODE_MOD => Mod,
-                 SDL_BlendMode::SDL_BLENDMODE_INVALID => Invalid,
-             })
-    }
-
-    fn from_u64(n: u64) -> Option<BlendMode> {
-        FromPrimitive::from_i64(n as i64)
+        Ok(match unsafe { transmute(n) } {
+               SDL_BLENDMODE_NONE => None,
+               SDL_BLENDMODE_BLEND => Blend,
+               SDL_BLENDMODE_ADD => Add,
+               SDL_BLENDMODE_MOD => Mod,
+               SDL_BLENDMODE_INVALID => Invalid,
+           })
     }
 }
 
@@ -172,7 +167,7 @@ impl RendererInfo {
             info.texture_formats[0..(info.num_texture_formats as usize)]
                 .iter()
                 .map(|&format| {
-                         PixelFormatEnum::from_i64(format as i64)
+                         PixelFormatEnum::try_from(format as u32)
                              .unwrap_or(PixelFormatEnum::Unknown)
                      })
                 .collect();
@@ -949,8 +944,7 @@ impl<T: RenderTarget> Canvas<T> {
             panic!(get_error())
         } else {
             let blend = unsafe { blend.assume_init() };
-
-            FromPrimitive::from_i64(blend as i64).unwrap()
+            BlendMode::try_from(blend as u32).unwrap()
         }
     }
 
@@ -1690,8 +1684,8 @@ impl InternalTexture {
             panic!(get_error())
         } else {
             TextureQuery {
-                format: FromPrimitive::from_i64(format as i64).unwrap(),
-                access: FromPrimitive::from_i64(access as i64).unwrap(),
+                format: PixelFormatEnum::try_from(format as u32).unwrap(),
+                access: TextureAccess::try_from(access as u32).unwrap(),
                 width: width as u32,
                 height: height as u32,
             }
@@ -1753,7 +1747,7 @@ impl InternalTexture {
             panic!(get_error())
         } else {
             let blend = unsafe { blend.assume_init() };
-            FromPrimitive::from_i64(blend as i64).unwrap()
+            BlendMode::try_from(blend as u32).unwrap()
         }
     }
 

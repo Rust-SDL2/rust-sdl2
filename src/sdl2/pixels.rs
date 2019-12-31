@@ -1,4 +1,3 @@
-use num_traits::FromPrimitive;
 use std::mem::transmute;
 use std::convert::TryFrom;
 use crate::sys;
@@ -249,7 +248,7 @@ impl PixelFormatEnum {
     pub fn from_masks(masks: PixelMasks) -> PixelFormatEnum {
         unsafe {
             let format = sys::SDL_MasksToPixelFormatEnum(masks.bpp as i32, masks.rmask, masks.gmask, masks.bmask, masks.amask);
-            PixelFormatEnum::from_u64(format as u64).unwrap()
+            PixelFormatEnum::try_from(format as u32).unwrap()
         }
     }
 
@@ -383,20 +382,21 @@ impl From<PixelFormat> for PixelFormatEnum {
     fn from(pf: PixelFormat) -> PixelFormatEnum {
         unsafe {
             let sdl_pf = *pf.raw;
-            match PixelFormatEnum::from_u64(sdl_pf.format as u64) {
-                Some(pfe) => pfe,
-                None => panic!("Unknown pixel format: {:?}", sdl_pf.format)
+            match PixelFormatEnum::try_from(sdl_pf.format as u32) {
+                Ok(pfe) => pfe,
+                Err(()) => panic!("Unknown pixel format: {:?}", sdl_pf.format)
             }
         }
     }
 }
 
-impl FromPrimitive for PixelFormatEnum {
-    fn from_i64(n: i64) -> Option<PixelFormatEnum> {
-        use self::PixelFormatEnum::*;
-        let n = n as u32;
+impl TryFrom<u32> for PixelFormatEnum {
+  type Error = ();
 
-        Some( match unsafe { transmute(n) } {
+    fn try_from(n: u32) -> Result<Self, Self::Error> {
+        use self::PixelFormatEnum::*;
+
+        Ok( match unsafe { transmute(n) } {
             sys::SDL_PIXELFORMAT_UNKNOWN     => Unknown,
             sys::SDL_PIXELFORMAT_INDEX1LSB   => Index1LSB,
             sys::SDL_PIXELFORMAT_INDEX1MSB   => Index1MSB,
@@ -433,11 +433,9 @@ impl FromPrimitive for PixelFormatEnum {
             sys::SDL_PIXELFORMAT_YUY2        => YUY2,
             sys::SDL_PIXELFORMAT_UYVY        => UYVY,
             sys::SDL_PIXELFORMAT_YVYU        => YVYU,
-            _                               => return None,
+            _                               => return Err(()),
         })
     }
-
-    fn from_u64(n: u64) -> Option<PixelFormatEnum> { FromPrimitive::from_i64(n as i64) }
 }
 
 impl TryFrom<PixelFormatEnum> for PixelFormat {
