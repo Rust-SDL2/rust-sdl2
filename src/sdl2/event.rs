@@ -5,10 +5,10 @@ Event Handling
 use std::ffi::CStr;
 use std::mem;
 use libc::c_int;
-use num_traits::FromPrimitive;
 use std::ptr;
 use std::borrow::ToOwned;
 use std::iter::FromIterator;
+use std::convert::TryFrom;
 use std::marker::PhantomData;
 use std::collections::HashMap;
 use std::sync::Mutex;
@@ -296,7 +296,7 @@ pub enum EventType {
 
     AudioDeviceAdded = SDL_EventType::SDL_AUDIODEVICEADDED as u32,
     AudioDeviceRemoved = SDL_EventType::SDL_AUDIODEVICEREMOVED as u32,
-    
+
     RenderTargetsReset = SDL_EventType::SDL_RENDER_TARGETS_RESET as u32,
     RenderDeviceReset = SDL_EventType::SDL_RENDER_DEVICE_RESET as u32,
 
@@ -304,13 +304,14 @@ pub enum EventType {
     Last = SDL_EventType::SDL_LASTEVENT as u32,
 }
 
-impl FromPrimitive for EventType {
-    fn from_i64(n: i64) -> Option<EventType> {
+impl TryFrom<u32> for EventType {
+    type Error = ();
+
+    fn try_from(n: u32) -> Result<Self, Self::Error> {
         use self::EventType::*;
         use crate::sys::SDL_EventType::*;
-        let n = n as u32;
 
-        Some( match unsafe { transmute(n) } {
+        Ok( match unsafe { transmute(n) } {
             SDL_FIRSTEVENT => First,
 
             SDL_QUIT => Quit,
@@ -370,11 +371,9 @@ impl FromPrimitive for EventType {
             SDL_USEREVENT => User,
             SDL_LASTEVENT => Last,
 
-            _ => return None,
+            _ => return Err(()),
         })
     }
-
-    fn from_u64(n: u64) -> Option<EventType> { FromPrimitive::from_i64(n as i64) }
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
@@ -1256,7 +1255,7 @@ impl Event {
         let raw_type = unsafe { raw.type_ };
 
         // if event type has not been defined, treat it as a UserEvent
-        let event_type: EventType = FromPrimitive::from_usize(raw_type as usize).unwrap_or(EventType::User);
+        let event_type: EventType = EventType::try_from(raw_type as u32).unwrap_or(EventType::User);
         unsafe { match event_type {
             EventType::Quit => {
                 let event = raw.quit;
@@ -2254,4 +2253,3 @@ impl EventSender {
         Ok(())
     }
 }
-

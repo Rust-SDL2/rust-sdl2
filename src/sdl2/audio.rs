@@ -53,7 +53,7 @@
 //! ```
 
 use std::ffi::{CStr, CString};
-use num_traits::FromPrimitive;
+use std::convert::TryFrom;
 use libc::{c_int, c_void, c_char};
 use std::ops::{Deref, DerefMut};
 use std::path::Path;
@@ -213,23 +213,19 @@ pub enum AudioStatus {
     Paused  = SDL_AudioStatus::SDL_AUDIO_PAUSED  as i32,
 }
 
-impl FromPrimitive for AudioStatus {
-    fn from_i64(n: i64) -> Option<AudioStatus> {
+impl TryFrom<u32> for AudioStatus {
+    type Error = ();
+
+    fn try_from(n: u32) -> Result<Self, Self::Error> {
         use self::AudioStatus::*;
+        use crate::sys::SDL_AudioStatus::*;
 
-        const STOPPED: i64 = SDL_AudioStatus::SDL_AUDIO_STOPPED as i64;
-        const PLAYING: i64 = SDL_AudioStatus::SDL_AUDIO_PLAYING as i64;
-        const PAUSED: i64 = SDL_AudioStatus::SDL_AUDIO_PAUSED as i64;
-
-        Some(match n {
-            STOPPED => Stopped,
-            PLAYING => Playing,
-            PAUSED  => Paused,
-            _ => return None,
+        Ok(match unsafe { mem::transmute(n) } {
+            SDL_AUDIO_STOPPED => Stopped,
+            SDL_AUDIO_PLAYING => Playing,
+            SDL_AUDIO_PAUSED  => Paused,
         })
     }
-
-    fn from_u64(n: u64) -> Option<AudioStatus> { FromPrimitive::from_i64(n as i64) }
 }
 
 #[derive(Copy, Clone)]
@@ -599,7 +595,7 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
     pub fn status(&self) -> AudioStatus {
         unsafe {
             let status = sys::SDL_GetAudioDeviceStatus(self.device_id.id());
-            FromPrimitive::from_i32(status as i32).unwrap()
+            AudioStatus::try_from(status as u32).unwrap()
         }
     }
 
@@ -719,7 +715,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
     pub fn status(&self) -> AudioStatus {
         unsafe {
             let status = sys::SDL_GetAudioDeviceStatus(self.device_id.id());
-            FromPrimitive::from_i32(status as i32).unwrap()
+            AudioStatus::try_from(status as u32).unwrap()
         }
     }
 

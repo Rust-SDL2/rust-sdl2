@@ -4,6 +4,7 @@ use std::{mem, ptr, fmt};
 use std::rc::Rc;
 use std::error::Error;
 use std::ops::{Deref, DerefMut};
+use std::convert::TryFrom;
 
 use crate::rect::Rect;
 use crate::render::CanvasBuilder;
@@ -11,7 +12,6 @@ use crate::surface::SurfaceRef;
 use crate::pixels::PixelFormatEnum;
 use crate::VideoSubsystem;
 use crate::EventPump;
-use num_traits::FromPrimitive;
 use crate::common::{validate_int, IntegerOrSdlError};
 
 use crate::get_error;
@@ -436,7 +436,7 @@ impl DisplayMode {
 
     pub fn from_ll(raw: &sys::SDL_DisplayMode) -> DisplayMode {
         DisplayMode::new(
-            PixelFormatEnum::from_u32(raw.format as u32).unwrap_or(PixelFormatEnum::Unknown),
+            PixelFormatEnum::try_from(raw.format as u32).unwrap_or(PixelFormatEnum::Unknown),
             raw.w as i32,
             raw.h as i32,
             raw.refresh_rate as i32
@@ -1206,7 +1206,7 @@ impl Window {
     }
 
     pub fn window_pixel_format(&self) -> PixelFormatEnum {
-        unsafe{ FromPrimitive::from_u64(sys::SDL_GetWindowPixelFormat(self.context.raw) as u64).unwrap() }
+        unsafe{ PixelFormatEnum::try_from(sys::SDL_GetWindowPixelFormat(self.context.raw) as u32).unwrap() }
     }
 
     pub fn window_flags(&self) -> u32 {
