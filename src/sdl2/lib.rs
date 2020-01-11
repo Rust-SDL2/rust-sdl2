@@ -103,3 +103,6 @@ pub mod gfx;
 mod common;
 // Export return types and such from the common module.
 pub use crate::common::IntegerOrSdlError;
+
+#[cfg(feature = "with-raw-window-handle")]
+mod raw_window_handle;
