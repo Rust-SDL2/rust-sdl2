@@ -1,7 +1,16 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
-### v0.32.3
+### v0.33
+
+[PR #956](https://github.com/Rust-SDL2/rust-sdl2/pull/956) + [PR #960](https://github.com/Rust-SDL2/rust-sdl2/pull/960) + [PR #951](https://github.com/Rust-SDL2/rust-sdl2/pull/951):
+Fix some build targets.
+
+[PR #948](https://github.com/Rust-SDL2/rust-sdl2/pull/948) + [PR #957](https://github.com/Rust-SDL2/rust-sdl2/pull/957):
+Remove the `num` dependency.
+
+[PR #947](https://github.com/Rust-SDL2/rust-sdl2/pull/947):
+Upgraded the "bundled" version of SDL2 to 2.0.10
 
 [PR #940](https://github.com/Rust-SDL2/rust-sdl2/pull/940):
 **Breaking change** Removed the `rand` dependency for random colors. You will have to implement your own random colors from now on.
