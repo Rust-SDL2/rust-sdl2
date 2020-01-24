@@ -538,7 +538,7 @@ pub enum Event {
     JoyAxisMotion {
         timestamp: u32,
         /// The joystick's `id`
-        which: i32,
+        which: u32,
         axis_idx: u8,
         value: i16
     },
@@ -546,7 +546,7 @@ pub enum Event {
     JoyBallMotion {
         timestamp: u32,
         /// The joystick's `id`
-        which: i32,
+        which: u32,
         ball_idx: u8,
         xrel: i16,
         yrel: i16
@@ -555,7 +555,7 @@ pub enum Event {
     JoyHatMotion {
         timestamp: u32,
         /// The joystick's `id`
-        which: i32,
+        which: u32,
         hat_idx: u8,
         state: HatState
     },
@@ -563,31 +563,31 @@ pub enum Event {
     JoyButtonDown {
         timestamp: u32,
         /// The joystick's `id`
-        which: i32,
+        which: u32,
         button_idx: u8
     },
     JoyButtonUp {
         timestamp: u32,
         /// The joystick's `id`
-        which: i32,
+        which: u32,
         button_idx: u8
     },
 
     JoyDeviceAdded {
         timestamp: u32,
         /// The newly added joystick's `joystick_index`
-        which: i32
+        which: u32
     },
     JoyDeviceRemoved {
         timestamp: u32,
         /// The joystick's `id`
-        which: i32
+        which: u32
     },
 
     ControllerAxisMotion {
         timestamp: u32,
         /// The controller's joystick `id`
-        which: i32,
+        which: u32,
         axis: Axis,
         value: i16
     },
@@ -595,30 +595,30 @@ pub enum Event {
     ControllerButtonDown {
         timestamp: u32,
         /// The controller's joystick `id`
-        which: i32,
+        which: u32,
         button: Button
     },
     ControllerButtonUp {
         timestamp: u32,
         /// The controller's joystick `id`
-        which: i32,
+        which: u32,
         button: Button
     },
 
     ControllerDeviceAdded {
         timestamp: u32,
         /// The newly added controller's `joystick_index`
-        which: i32
+        which: u32
     },
     ControllerDeviceRemoved {
         timestamp: u32,
         /// The controller's joystick `id`
-        which: i32
+        which: u32
     },
     ControllerDeviceRemapped {
         timestamp: u32,
         /// The controller's joystick `id`
-        which: i32
+        which: u32
     },
 
     FingerDown {
@@ -985,7 +985,7 @@ impl Event {
                 let event = sys::SDL_JoyAxisEvent {
                     type_: SDL_EventType::SDL_JOYAXISMOTION as u32,
                     timestamp,
-                    which,
+                    which: which as i32,
                     axis: axis_idx,
                     value,
                     padding1: 0,
@@ -1009,7 +1009,7 @@ impl Event {
                 let event = sys::SDL_JoyBallEvent {
                     type_: SDL_EventType::SDL_JOYBALLMOTION as u32,
                     timestamp,
-                    which,
+                    which: which as i32,
                     ball: ball_idx,
                     xrel,
                     yrel,
@@ -1033,7 +1033,7 @@ impl Event {
                 let event = sys::SDL_JoyHatEvent {
                     type_: SDL_EventType::SDL_JOYHATMOTION as u32,
                     timestamp,
-                    which,
+                    which: which as i32,
                     hat: hat_idx,
                     value: hatvalue,
                     padding1: 0,
@@ -1053,7 +1053,7 @@ impl Event {
                 let event = sys::SDL_JoyButtonEvent {
                     type_: SDL_EventType::SDL_JOYBUTTONDOWN as u32,
                     timestamp,
-                    which,
+                    which: which as i32,
                     button: button_idx,
                     state: sys::SDL_PRESSED as u8,
                     padding1: 0,
@@ -1074,7 +1074,7 @@ impl Event {
                 let event = sys::SDL_JoyButtonEvent {
                     type_: SDL_EventType::SDL_JOYBUTTONUP as u32,
                     timestamp,
-                    which,
+                    which: which as i32,
                     button: button_idx,
                     state: sys::SDL_RELEASED as u8,
                     padding1: 0,
@@ -1109,7 +1109,7 @@ impl Event {
                 let event = sys::SDL_JoyDeviceEvent {
                     type_: SDL_EventType::SDL_JOYDEVICEREMOVED as u32,
                     timestamp,
-                    which,
+                    which: which as i32,
                 };
                 unsafe {
                     ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_JoyDeviceEvent, 1);
@@ -1127,7 +1127,7 @@ impl Event {
                 let event = sys::SDL_ControllerAxisEvent {
                     type_: SDL_EventType::SDL_CONTROLLERAXISMOTION as u32,
                     timestamp,
-                    which,
+                    which: which as i32,
                     axis: axisval as u8,
                     value,
                     padding1: 0,
@@ -1149,7 +1149,7 @@ impl Event {
                 let event = sys::SDL_ControllerButtonEvent {
                     type_: SDL_EventType::SDL_CONTROLLERBUTTONDOWN as u32,
                     timestamp,
-                    which,
+                    which: which as i32,
                     // This conversion turns an i32 into a u8; signed-to-unsigned conversions
                     // are a bit of a code smell, but that appears to be how SDL defines it.
                     button: buttonval as u8,
@@ -1172,7 +1172,7 @@ impl Event {
                 let event = sys::SDL_ControllerButtonEvent {
                     type_: SDL_EventType::SDL_CONTROLLERBUTTONUP as u32,
                     timestamp,
-                    which,
+                    which: which as i32,
                     button: buttonval as u8,
                     state: sys::SDL_RELEASED as u8,
                     padding1: 0,
@@ -1207,7 +1207,7 @@ impl Event {
                 let event = sys::SDL_ControllerDeviceEvent {
                     type_: SDL_EventType::SDL_CONTROLLERDEVICEREMOVED as u32,
                     timestamp,
-                    which,
+                    which: which as i32,
                 };
                 unsafe {
                     ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_ControllerDeviceEvent, 1);
@@ -1223,7 +1223,7 @@ impl Event {
                 let event = sys::SDL_ControllerDeviceEvent {
                     type_: SDL_EventType::SDL_CONTROLLERDEVICEREMAPPED as u32,
                     timestamp,
-                    which,
+                    which: which as i32,
                 };
                 unsafe {
                     ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_ControllerDeviceEvent, 1);
@@ -1360,7 +1360,7 @@ impl Event {
                 Event::MouseMotion {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
-                    which: event.which,
+                    which: event.which as u32,
                     mousestate: mouse::MouseState::from_sdl_state(event.state),
                     x: event.x,
                     y: event.y,
@@ -1374,7 +1374,7 @@ impl Event {
                 Event::MouseButtonDown {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
-                    which: event.which,
+                    which: event.which as u32,
                     mouse_btn: mouse::MouseButton::from_ll(event.button),
                     clicks: event.clicks,
                     x: event.x,
@@ -1387,7 +1387,7 @@ impl Event {
                 Event::MouseButtonUp {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
-                    which: event.which,
+                    which: event.which as u32,
                     mouse_btn: mouse::MouseButton::from_ll(event.button),
                     clicks: event.clicks,
                     x: event.x,
@@ -1400,7 +1400,7 @@ impl Event {
                 Event::MouseWheel {
                     timestamp: event.timestamp,
                     window_id: event.windowID,
-                    which: event.which,
+                    which: event.which as u32,
                     x: event.x,
                     y: event.y,
                     direction: mouse::MouseWheelDirection::from_ll(event.direction),
@@ -1411,7 +1411,7 @@ impl Event {
                 let event = raw.jaxis;
                 Event::JoyAxisMotion {
                     timestamp: event.timestamp,
-                    which: event.which,
+                    which: event.which as u32,
                     axis_idx: event.axis,
                     value: event.value
                 }
@@ -1420,7 +1420,7 @@ impl Event {
                 let event = raw.jball;
                 Event::JoyBallMotion {
                     timestamp: event.timestamp,
-                    which: event.which,
+                    which: event.which as u32,
                     ball_idx: event.ball,
                     xrel: event.xrel,
                     yrel: event.yrel
@@ -1430,7 +1430,7 @@ impl Event {
                 let event = raw.jhat;
                 Event::JoyHatMotion {
                     timestamp: event.timestamp,
-                    which: event.which,
+                    which: event.which as u32,
                     hat_idx: event.hat,
                     state: joystick::HatState::from_raw(event.value),
                 }
@@ -1439,7 +1439,7 @@ impl Event {
                 let event = raw.jbutton;
                 Event::JoyButtonDown {
                     timestamp: event.timestamp,
-                    which: event.which,
+                    which: event.which as u32,
                     button_idx: event.button
                 }
             }
@@ -1447,7 +1447,7 @@ impl Event {
                 let event = raw.jbutton;
                 Event::JoyButtonUp {
                     timestamp: event.timestamp,
-                    which: event.which,
+                    which: event.which as u32,
                     button_idx: event.button
                 }
             }
@@ -1455,14 +1455,14 @@ impl Event {
                 let event = raw.jdevice;
                 Event::JoyDeviceAdded {
                     timestamp: event.timestamp,
-                    which: event.which as i32
+                    which: event.which as u32,
                 }
             }
             EventType::JoyDeviceRemoved => {
                 let event = raw.jdevice;
                 Event::JoyDeviceRemoved {
                     timestamp: event.timestamp,
-                    which: event.which
+                    which: event.which as u32,
                 }
             }
 
@@ -1472,7 +1472,7 @@ impl Event {
 
                 Event::ControllerAxisMotion {
                     timestamp: event.timestamp,
-                    which: event.which,
+                    which: event.which as u32,
                     axis,
                     value: event.value
                 }
@@ -1483,7 +1483,7 @@ impl Event {
 
                 Event::ControllerButtonDown {
                     timestamp: event.timestamp,
-                    which: event.which,
+                    which: event.which as u32,
                     button
                 }
             }
@@ -1493,7 +1493,7 @@ impl Event {
 
                 Event::ControllerButtonUp {
                     timestamp: event.timestamp,
-                    which: event.which,
+                    which: event.which as u32,
                     button
                 }
             }
@@ -1501,21 +1501,21 @@ impl Event {
                 let event = raw.cdevice;
                 Event::ControllerDeviceAdded {
                     timestamp: event.timestamp,
-                    which: event.which as i32
+                    which: event.which as u32,
                 }
             }
             EventType::ControllerDeviceRemoved => {
                 let event = raw.cdevice;
                 Event::ControllerDeviceRemoved {
                     timestamp: event.timestamp,
-                    which: event.which
+                    which: event.which as u32,
                 }
             }
             EventType::ControllerDeviceRemapped => {
                 let event = raw.cdevice;
                 Event::ControllerDeviceRemapped {
                     timestamp: event.timestamp,
-                    which: event.which
+                    which: event.which as u32,
                 }
             }
 
