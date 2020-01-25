@@ -20,6 +20,7 @@ use crate::sys;
 
 pub use crate::sys::{VkInstance, VkSurfaceKHR};
 
+
 pub struct WindowSurfaceRef<'a>(&'a mut SurfaceRef, &'a Window);
 
 impl<'a> Deref for WindowSurfaceRef<'a> {

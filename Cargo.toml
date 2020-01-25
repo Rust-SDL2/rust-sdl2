@@ -35,10 +35,6 @@ rand = "^0.7"
 version = "0.3.3"
 optional = true
 
-[target.'cfg(target_os = "macos")'.dependencies.objc]
-version = "0.2.7"
-optional = true
-
 [features]
 
 unsafe_textures = []
@@ -53,8 +49,6 @@ use-pkgconfig = ["sdl2-sys/use-pkgconfig"]
 use_mac_framework = ["sdl2-sys/use_mac_framework"]
 bundled = ["sdl2-sys/bundled"]
 static-link= ["sdl2-sys/static-link"]
-
-with-raw-window-handle = ["raw-window-handle", "objc", "use-bindgen"]
 
 [[example]]
 name = "animation"
