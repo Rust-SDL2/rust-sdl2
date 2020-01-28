@@ -553,10 +553,16 @@ version = "0.32"
 features = ["raw-window-handle"]
 ```
 
+An example working with [`wgpu`](https://crates.io/crates/wgpu) is also available:
+
+```bash
+cargo run --example raw-window-handle-with-wgpu --features raw-window-handle
+```
+
 ### sdl2 with raw-window-handle on macOS:
 
 On macOS the `RawWindowHandle.ns_view` field is returned null. Libraries consuming the `RawWindowHandle` (such as 
-`wgpu-rs`) should determine a sane default for `ns_view`. If they do not, please file an issue with the associated 
+`wgpu`) should determine a sane default for `ns_view`. If they do not, please file an issue with the associated 
 project.
 
 # When things go wrong
