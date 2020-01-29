@@ -152,14 +152,14 @@ impl Joystick {
         unsafe { sys::SDL_JoystickGetAttached(self.raw) != sys::SDL_bool::SDL_FALSE }
     }
 
-    pub fn instance_id(&self) -> i32 {
+    pub fn instance_id(&self) -> u32 {
         let result = unsafe { sys::SDL_JoystickInstanceID(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
             panic!(get_error())
         } else {
-            result
+            result as u32
         }
     }
 
