@@ -1,9 +1,9 @@
 extern crate raw_window_handle;
 
 use self::raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
-use crate::{sys::SDL_Window, video::Window as VideoWindow};
+use crate::{sys::SDL_Window, video::Window};
 
-unsafe impl HasRawWindowHandle for VideoWindow {
+unsafe impl HasRawWindowHandle for Window {
     fn raw_window_handle(&self) -> RawWindowHandle {
         use self::SDL_SYSWM_TYPE::*;
         let mut wm_info = SDL_SysWMinfo::default();

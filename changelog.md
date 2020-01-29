@@ -27,6 +27,9 @@ Ignore unknown bits in `SDL_Keysym`'s `mod` field (key modifiers) when construct
 [PR #898](https://github.com/Rust-SDL2/rust-sdl2/pull/898):
 Implements `TryFrom<PixelFormatEnum>` for `PixelFormat`
 
+[PR #962](https://github.com/Rust-SDL2/rust-sdl2/pull/962):
+Added `raw-window-handle` support for Windows, Linux (X11 and Wayland) and macOS.
+
 ### v0.32.2
 
 [PR #868](https://github.com/Rust-SDL2/rust-sdl2/pull/868):
