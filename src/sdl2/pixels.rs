@@ -125,7 +125,7 @@ impl Color {
     }
 
     pub fn invert(self) -> Color {
-        Color::RGBA(255 - r, 255 - g, 255 - b, 255 - a)
+        Color::RGBA(255 - self.r, 255 - self.g, 255 - self.b, 255 - self.a)
     }
 
     #[inline]
@@ -147,7 +147,7 @@ impl Color {
     pub const WHITE: Color = Color::RGBA(255, 255, 255, 255);
     pub const BLACK: Color = Color::RGBA(0, 0, 0, 255);
     pub const GRAY: Color = Color::RGBA(128, 128, 128, 255);
-    pub const GREY: Color = GRAY;
+    pub const GREY: Color = Color::GRAY;
     pub const RED: Color = Color::RGBA(255, 0, 0, 255);
     pub const GREEN: Color = Color::RGBA(0, 255, 0, 255);
     pub const BLUE: Color = Color::RGBA(0, 0, 255, 255);
