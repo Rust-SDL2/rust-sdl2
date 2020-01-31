@@ -124,6 +124,10 @@ impl Color {
         Color::RGBA(r, g, b, a)
     }
 
+    pub fn invert(self) -> Color {
+        Color::RGBA(255 - self.r, 255 - self.g, 255 - self.b, 255 - self.a)
+    }
+
     #[inline]
     pub const fn rgb(self) -> (u8, u8, u8) {
         (self.r, self.g, self.b)
@@ -139,6 +143,18 @@ impl Color {
     const fn raw(self) -> sys::SDL_Color {
         sys::SDL_Color { r: self.r, g: self.g, b: self.b, a: self.a }
     }
+
+    pub const WHITE: Color = Color::RGBA(255, 255, 255, 255);
+    pub const BLACK: Color = Color::RGBA(0, 0, 0, 255);
+    pub const GRAY: Color = Color::RGBA(128, 128, 128, 255);
+    pub const GREY: Color = Color::GRAY;
+    pub const RED: Color = Color::RGBA(255, 0, 0, 255);
+    pub const GREEN: Color = Color::RGBA(0, 255, 0, 255);
+    pub const BLUE: Color = Color::RGBA(0, 0, 255, 255);
+    pub const MAGENTA: Color = Color::RGBA(255, 0, 255, 255);
+    pub const YELLOW: Color = Color::RGBA(255, 255, 0, 255);
+    pub const CYAN: Color = Color::RGBA(0, 255, 255, 255);
+
 }
 
 impl Into<sys::SDL_Color> for Color {
