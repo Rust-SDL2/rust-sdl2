@@ -11,7 +11,6 @@ extern crate sdl2;
 extern crate wgpu;
 
 use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
-use raw_window_handle::macos::MacOSHandle;
 
 use sdl2::event::{Event, WindowEvent};
 use sdl2::keyboard::Keycode;
@@ -33,6 +32,7 @@ unsafe impl<'a> HasRawWindowHandle for WindowWrapper<'a> {
     fn raw_window_handle(&self) -> RawWindowHandle {
         use objc::{msg_send, sel, sel_impl};
         use objc::runtime::Object;
+        use raw_window_handle::macos::MacOSHandle;
         let handle = self.0.raw_window_handle();
         match handle {
             RawWindowHandle::MacOS(macos_handle) => {
