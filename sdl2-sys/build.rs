@@ -464,16 +464,20 @@ fn main() {
         let sdl2_downloaded_include_path = sdl2_source_path.join("include");
         let sdl2_compiled_lib_path = sdl2_compiled_path.join("lib");
 
+        println!("cargo:include={}", sdl2_downloaded_include_path.display());
+
         println!("cargo:rustc-link-search={}", sdl2_compiled_lib_path.display());
         
         #[cfg(feature = "bindgen")] {
             let include_paths = vec!(String::from(sdl2_downloaded_include_path.to_str().unwrap()));
+            println!("cargo:include={}", include_paths.join(":"));
             generate_bindings(target.as_str(), host.as_str(), include_paths.as_slice())
         }
     };
 
     #[cfg(all(not(feature = "bundled"), feature = "bindgen"))] {
         let include_paths: Vec<String> = compute_include_paths();
+        println!("cargo:include={}", include_paths.join(":"));
         generate_bindings(target.as_str(), host.as_str(), include_paths.as_slice())
     }
 
