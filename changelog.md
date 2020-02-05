@@ -1,6 +1,11 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
+### unreleased
+
+[PR #968](https://github.com/Rust-SDL2/rust-sdl2/pull/968)
+Pass SDL2 include directories to `sdl2-sys`'s dependant crates through `DEP_SDL2_INCLUDE`.
+
 ### v0.33
 
 [PR #956](https://github.com/Rust-SDL2/rust-sdl2/pull/956) + [PR #960](https://github.com/Rust-SDL2/rust-sdl2/pull/960) + [PR #951](https://github.com/Rust-SDL2/rust-sdl2/pull/951):
