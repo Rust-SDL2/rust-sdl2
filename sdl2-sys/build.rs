@@ -36,6 +36,13 @@ macro_rules! add_msvc_includes_to_bindings {
     };
 }
 
+fn get_bundled_header_path() -> PathBuf {
+    let mut include_path: PathBuf = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
+    include_path.push(format!("SDL2-{}", SDL2_HEADERS_BUNDLED_VERSION));
+    include_path.push("include");
+    include_path
+}
+
 #[cfg(feature = "bundled")]
 fn run_command(cmd: &str, args: &[&str]) {
     use std::process::Command;
@@ -468,7 +475,11 @@ fn main() {
         
         #[cfg(feature = "bindgen")] {
             let include_paths = vec!(String::from(sdl2_downloaded_include_path.to_str().unwrap()));
+            println!("cargo:include={}", include_paths.join(":"));
             generate_bindings(target.as_str(), host.as_str(), include_paths.as_slice())
+        }
+        #[cfg(not(feature = "bindgen"))] {
+            println!("cargo:include={}", sdl2_downloaded_include_path.display());
         }
     };
 
@@ -479,6 +490,7 @@ fn main() {
 
     #[cfg(not(feature = "bindgen"))] {
         copy_pregenerated_bindings();
+        println!("cargo:include={}", get_bundled_header_path().display());
     }
 
     link_sdl2(target_os);
@@ -526,7 +538,7 @@ fn copy_pregenerated_bindings() {
 #[cfg(feature = "bindgen")]
 // headers_path is a list of directories where the SDL2 headers are expected
 // to be found by bindgen (should point to the include/ directories)
-fn generate_bindings<S: AsRef<str> + ::std::fmt::Debug>(target: &str, host: &str, headers_paths: &[S]) {
+fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
     let target_os = get_os_from_triple(target).unwrap();
     let mut bindings = bindgen::Builder::default()
         // enable no_std-friendly output by only using core definitions
@@ -600,9 +612,9 @@ fn generate_bindings<S: AsRef<str> + ::std::fmt::Debug>(target: &str, host: &str
 
     if headers_paths.len() == 0 {
         // if no paths are being provided, fall back to the headers included in this repo
-        let mut include_path: PathBuf = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
-        include_path.push(format!("SDL2-{}", SDL2_HEADERS_BUNDLED_VERSION));
-        include_path.push("include");
+        let include_path = get_bundled_header_path();
+        println!("cargo:include={}", include_path.display());
+
         bindings = bindings.clang_arg(format!("-I{}", include_path.display()));
         if cfg!(feature = "image") {
             image_bindings = image_bindings.clang_arg(format!("-I{}", include_path.display()));
@@ -621,22 +633,23 @@ fn generate_bindings<S: AsRef<str> + ::std::fmt::Debug>(target: &str, host: &str
         }
     } else {
         // if paths are included, use them for bindgen. Bindgen should use the first one.
+        println!("cargo:include={}", headers_paths.join(":"));
         for headers_path in headers_paths {
-            bindings = bindings.clang_arg(format!("-I{}", headers_path.as_ref()));
+            bindings = bindings.clang_arg(format!("-I{}", headers_path));
             if cfg!(feature = "image") {
-                image_bindings = image_bindings.clang_arg(format!("-I{}", headers_path.as_ref()));
+                image_bindings = image_bindings.clang_arg(format!("-I{}", headers_path));
             }
             if cfg!(feature = "ttf") {
-                ttf_bindings = ttf_bindings.clang_arg(format!("-I{}", headers_path.as_ref()));
+                ttf_bindings = ttf_bindings.clang_arg(format!("-I{}", headers_path));
             }
             if cfg!(feature = "mixer") {
-                mixer_bindings = mixer_bindings.clang_arg(format!("-I{}", headers_path.as_ref()));
+                mixer_bindings = mixer_bindings.clang_arg(format!("-I{}", headers_path));
             }
             if cfg!(feature = "gfx") {
-                gfx_framerate_bindings = gfx_framerate_bindings.clang_arg(format!("-I{}", headers_path.as_ref()));
-                gfx_primitives_bindings = gfx_primitives_bindings.clang_arg(format!("-I{}", headers_path.as_ref()));
-                gfx_imagefilter_bindings = gfx_imagefilter_bindings.clang_arg(format!("-I{}", headers_path.as_ref()));
-                gfx_rotozoom_bindings = gfx_rotozoom_bindings.clang_arg(format!("-I{}", headers_path.as_ref()));
+                gfx_framerate_bindings = gfx_framerate_bindings.clang_arg(format!("-I{}", headers_path));
+                gfx_primitives_bindings = gfx_primitives_bindings.clang_arg(format!("-I{}", headers_path));
+                gfx_imagefilter_bindings = gfx_imagefilter_bindings.clang_arg(format!("-I{}", headers_path));
+                gfx_rotozoom_bindings = gfx_rotozoom_bindings.clang_arg(format!("-I{}", headers_path));
             }
         }
     }
