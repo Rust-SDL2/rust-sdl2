@@ -371,6 +371,19 @@ If you don't have pkg-config or disabled the feature, it will try to get the hea
 If somehow you have your own headers that you want to use (use a beta version, an older version, ...),
 you can set the environment variable "SDL2_INCLUDE_PATH" and those headers will be used by bindgen instead.
 
+# Using sdl2-sys to provide SDL2 headers/library
+
+If you are creating a `*-sys` crate for a library which requires SDL2, you can use `sdl2-sys` to provide both the compiled library
+and the headers for SDL2. 
+
+Follow the following process to get the header directory. In the `Cargo.toml` for your crate, add `sdl2-sys` as a dependency (not a build-dependency).
+Cargo will then provide your build script with an environment variable `DEP_SDL2_INCLUDE` which is populated with the include directory for SDL2.
+If there is more than one directory, they are combined with `:` as a separator. Pass these directories to whatever is building your C/C++.
+
+Once everything is linked together, there will be a single copy of SDL2 (the one provided by `sdl2-sys`) for all C, C++, and Rust code.
+
+For more discussion see the corresponding [issue][dep-sdl2-include-issue]
+
 # OpenGL
 
 If you want to use OpenGL, you also need the
@@ -589,5 +602,6 @@ Any Pull Request is welcome, however small your contribution may be ! There are,
 [homebrew]: http://brew.sh/
 [crates]: http://crates.io/
 [examples]: https://github.com/jdeseno/rs-sdl2-examples
+[dep-sdl2-include-issue]: https://github.com/Rust-SDL2/rust-sdl2/pull/968
 [gl-rs]: https://github.com/bjz/gl-rs
 [pdev-issue]: https://github.com/PistonDevelopers/rust-empty/issues/175
