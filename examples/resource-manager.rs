@@ -73,7 +73,7 @@ fn main() -> Result<(), String> {
 type TextureManager<'l, T> = ResourceManager<'l, String, Texture<'l>, TextureCreator<T>>;
 type FontManager<'l> = ResourceManager<'l, FontDetails, Font<'l, 'static>, Sdl2TtfContext>;
 
-// Generic struct to cache any resource loaded by a ResourceLoader
+/// Generic struct to cache any resource loaded by a ResourceLoader
 pub struct ResourceManager<'l, K, R, L>
     where K: Hash + Eq,
           L: 'l + ResourceLoader<'l, R>
@@ -89,12 +89,12 @@ impl<'l, K, R, L> ResourceManager<'l, K, R, L>
     pub fn new(loader: &'l L) -> Self {
         ResourceManager {
             cache: HashMap::new(),
-            loader: loader,
+            loader,
         }
     }
 
-    // Generics magic to allow a HashMap to use String as a key
-    // while allowing it to use &str for gets
+    /// Generics magic to allow a HashMap to use String as a key
+    /// while allowing it to use &str for gets
     pub fn load<D>(&mut self, details: &D) -> Result<Rc<R>, String>
         where L: ResourceLoader<'l, R, Args = D>,
               D: Eq + Hash + ?Sized,
@@ -112,7 +112,7 @@ impl<'l, K, R, L> ResourceManager<'l, K, R, L>
     }
 }
 
-// TextureCreator knows how to load Textures
+/// TextureCreator knows how to load Textures
 impl<'l, T> ResourceLoader<'l, Texture<'l>> for TextureCreator<T> {
     type Args = str;
     fn load(&'l self, path: &str) -> Result<Texture, String> {
@@ -121,7 +121,7 @@ impl<'l, T> ResourceLoader<'l, Texture<'l>> for TextureCreator<T> {
     }
 }
 
-// Font Context knows how to load Fonts
+/// Font Context knows how to load Fonts
 impl<'l> ResourceLoader<'l, Font<'l, 'static>> for Sdl2TtfContext {
     type Args = FontDetails;
     fn load(&'l self, details: &FontDetails) -> Result<Font<'l, 'static>, String> {
@@ -130,13 +130,13 @@ impl<'l> ResourceLoader<'l, Font<'l, 'static>> for Sdl2TtfContext {
     }
 }
 
-// Generic trait to Load any Resource Kind
+/// Generic trait to load any Resource Kind
 pub trait ResourceLoader<'l, R> {
     type Args: ?Sized;
     fn load(&'l self, data: &Self::Args) -> Result<R, String>;
 }
 
-// Information needed to load a Font
+/// Information needed to load a Font
 #[derive(PartialEq, Eq, Hash)]
 pub struct FontDetails {
     pub path: String,
