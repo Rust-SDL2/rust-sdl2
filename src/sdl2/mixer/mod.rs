@@ -21,6 +21,7 @@
 //! ```
 
 use std::marker::PhantomData;
+use std::convert::TryInto;
 use std::default;
 use std::fmt;
 use std::ffi::{CString, CStr};
@@ -29,6 +30,7 @@ use std::borrow::ToOwned;
 use std::path::Path;
 use libc::c_void;
 use libc::{c_int, c_double, c_uint};
+use ::audio::AudioFormatNum;
 use ::get_error;
 use ::rwops::RWops;
 use ::version::Version;
@@ -229,7 +231,16 @@ pub struct Chunk {
 impl Drop for Chunk {
     fn drop(&mut self) {
         if self.owned {
-            unsafe { mixer::Mix_FreeChunk(self.raw) }
+            unsafe {
+                // Mix_QuickLoad_* functions don't set the allocated flag, but
+                // from_wav_buffer and from_raw_buffer *do* take ownership of the data,
+                // so we need to deallocate the buffers here, because Mix_FreeChunk won't
+                // and we'd be leaking memory otherwise.
+                if (*self.raw).allocated == 0 {
+                    drop(Box::from_raw((*self.raw).abuf));
+                }
+                mixer::Mix_FreeChunk(self.raw);
+            }
         }
     }
 }
@@ -238,6 +249,29 @@ impl Chunk {
     /// Load file for use as a sample.
     pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Chunk, String> {
         let raw = unsafe { mixer::Mix_LoadWAV_RW(RWops::from_file(path, "rb")?.raw(), 0) };
+        Self::from_owned_raw(raw)
+    }
+
+    /// Get chunk based on a buffer containing WAV data in the mixer format. The chunk takes
+    /// ownership of the buffer.
+    pub fn from_wav_buffer(buffer: Box<[u8]>) -> Result<Chunk, String> {
+        let raw = unsafe { mixer::Mix_QuickLoad_WAV(Box::into_raw(buffer) as *mut u8) };
+        Self::from_owned_raw(raw)
+    }
+
+    /// Load chunk from a buffer containing raw audio data in the mixer format. The length of the
+    /// buffer has to fit in 32-bit unsigned integer. The chunk takes ownership of the buffer.
+    ///
+    /// It's your responsibility to provide the audio data in the right format, as no conversion
+    /// will take place when using this method.
+    pub fn from_raw_buffer<T: AudioFormatNum>(buffer: Box<[T]>) -> Result<Chunk, String> {
+        use std::mem::size_of;
+        let len: u32 = (buffer.len() * size_of::<T>()).try_into().unwrap();
+        let raw = unsafe { mixer::Mix_QuickLoad_RAW(Box::into_raw(buffer) as *mut u8, len) };
+        Self::from_owned_raw(raw)
+    }
+
+    fn from_owned_raw(raw: *mut mixer::Mix_Chunk) -> Result<Chunk, String> {
         if raw.is_null() {
             Err(get_error())
         } else {

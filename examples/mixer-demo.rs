@@ -70,9 +70,24 @@ fn demo(music_file: &Path, sound_file: Option<&Path>) -> Result<(), String> {
     println!("music volume => {:?}", sdl2::mixer::Music::get_volume());
     println!("play => {:?}", music.play(1));
 
-    if let Some(sound_file_path) = sound_file {
-        let sound_chunk = sdl2::mixer::Chunk::from_file(sound_file_path)
-            .map_err(|e| format!("Cannot load sound file: {:?}", e))?;
+    {
+        let sound_chunk = match sound_file {
+            Some(sound_file_path) => sdl2::mixer::Chunk::from_file(sound_file_path)
+                .map_err(|e| format!("Cannot load sound file: {:?}", e))?,
+            None => {
+                // One second of 500Hz sine wave using equation A * sin(2 * PI * f * t)
+                // (played at half the volume to save people's ears).
+                let buffer = (0..frequency)
+                    .map(|i| {
+                        (0.1 * i16::max_value() as f32
+                            * (2.0 * 3.14 * 500.0 * (i as f32 / frequency as f32)).sin())
+                            as i16
+                    })
+                    .collect();
+                sdl2::mixer::Chunk::from_raw_buffer(buffer)
+                    .map_err(|e| format!("Cannot get chunk from buffer: {:?}", e))?
+            }
+        };
 
         println!("chunk volume => {:?}", sound_chunk.get_volume());
         println!("playing sound twice");
