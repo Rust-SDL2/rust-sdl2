@@ -7,6 +7,7 @@ unsafe impl HasRawWindowHandle for Window {
     fn raw_window_handle(&self) -> RawWindowHandle {
         use self::SDL_SYSWM_TYPE::*;
         let mut wm_info = SDL_SysWMinfo::default();
+        SDL_GetVersion(&mut wm_info.version);
         if unsafe { SDL_GetWindowWMInfo(self.raw(), &mut wm_info) } == SDL_bool::SDL_FALSE {
             panic!("Couldn't get SDL window info: {}", crate::get_error());
         }
@@ -83,6 +84,11 @@ unsafe impl HasRawWindowHandle for Window {
 extern "C" {
     fn SDL_GetWindowWMInfo(window: *mut SDL_Window, info: *mut SDL_SysWMinfo) -> SDL_bool;
 }
+
+extern "C" {
+    pub fn SDL_GetVersion(version: *mut SDL_version);
+}
+
 
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
