@@ -6,7 +6,11 @@ use crate::{sys::SDL_Window, sys::SDL_bool, video::Window};
 unsafe impl HasRawWindowHandle for Window {
     fn raw_window_handle(&self) -> RawWindowHandle {
         let mut wm_info: sys::SDL_SysWMinfo = unsafe { std::mem::zeroed() };
+        
+        // Make certain to retrieve version before querying `SDL_GetWindowWMInfo`
+        // as that gives an error on certain systems
         unsafe { sys::SDL_GetVersion(&mut wm_info.version) }
+        
         if unsafe { sys::SDL_GetWindowWMInfo(self.raw(), &mut wm_info) } == SDL_bool::SDL_FALSE {
             panic!("Couldn't get SDL window info: {}", crate::get_error());
         }
