@@ -7,10 +7,17 @@ unsafe impl HasRawWindowHandle for Window {
     fn raw_window_handle(&self) -> RawWindowHandle {
         use self::SDL_SYSWM_TYPE::*;
         let mut wm_info = SDL_SysWMinfo::default();
+
         // Make certain to retrieve version before querying `SDL_GetWindowWMInfo`
         // as that gives an error on certain systems
-        unsafe { sys::SDL_GetVersion(&mut wm_info.version) }
-        if unsafe { sys::SDL_GetWindowWMInfo(self.raw(), &mut wm_info) } == SDL_bool::SDL_FALSE {
+        #[cfg(not(target_os = "macos"))]
+        unsafe {
+            let mut version: sys::SDL_version =  std::mem::zeroed();
+            sys::SDL_GetVersion(&mut version);
+            wm_info.version = version.into();
+        }
+
+        if unsafe { SDL_GetWindowWMInfo(self.raw(), &mut wm_info) } == SDL_bool::SDL_FALSE {
             panic!("Couldn't get SDL window info: {}", crate::get_error());
         }
         match wm_info.subsystem {
@@ -87,10 +94,6 @@ extern "C" {
     fn SDL_GetWindowWMInfo(window: *mut SDL_Window, info: *mut SDL_SysWMinfo) -> SDL_bool;
 }
 
-extern "C" {
-    pub fn SDL_GetVersion(version: *mut SDL_version);
-}
-
 
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -107,6 +110,16 @@ pub struct SDL_version {
     pub major: u8,
     pub minor: u8,
     pub patch: u8,
+}
+
+impl Into<SDL_version> for sys::SDL_version {
+    fn into(self) -> SDL_version {
+        SDL_version {
+            major: self.major,
+            minor: self.minor,
+            patch: self.patch
+        }
+    }
 }
 
 #[repr(u32)]
