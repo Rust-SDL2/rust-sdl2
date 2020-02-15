@@ -6,20 +6,18 @@ use crate::{sys::SDL_Window, video::Window};
 unsafe impl HasRawWindowHandle for Window {
     fn raw_window_handle(&self) -> RawWindowHandle {
         use self::SDL_SYSWM_TYPE::*;
-        let mut wm_info = SDL_SysWMinfo::default();
+
+        let mut wm_info: SDL_SysWMinfo = unsafe { std::mem::zeroed() };
 
         // Make certain to retrieve version before querying `SDL_GetWindowWMInfo`
         // as that gives an error on certain systems
-        #[cfg(not(target_os = "macos"))]
         unsafe {
-            let mut version: sys::SDL_version =  std::mem::zeroed();
-            sys::SDL_GetVersion(&mut version);
-            wm_info.version = version.into();
+            sys::SDL_GetVersion(&mut wm_info.version);
+            if SDL_GetWindowWMInfo(self.raw(), &mut wm_info) == SDL_bool::SDL_FALSE {
+                panic!("Couldn't get SDL window info: {}", crate::get_error());
+            }
         }
 
-        if unsafe { SDL_GetWindowWMInfo(self.raw(), &mut wm_info) } == SDL_bool::SDL_FALSE {
-            panic!("Couldn't get SDL window info: {}", crate::get_error());
-        }
         match wm_info.subsystem {
             #[cfg(target_os = "windows")]
             SDL_SYSWM_WINDOWS => {
@@ -30,11 +28,11 @@ unsafe impl HasRawWindowHandle for Window {
                 })
             },
             #[cfg(any(
-                target_os = "linux",
-                target_os = "dragonfly",
-                target_os = "freebsd",
-                target_os = "netbsd",
-                target_os = "openbsd",
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd",
             ))]
             SDL_SYSWM_WAYLAND => {
                 use self::raw_window_handle::unix::WaylandHandle;
@@ -45,11 +43,11 @@ unsafe impl HasRawWindowHandle for Window {
                 })
             },
             #[cfg(any(
-                target_os = "linux",
-                target_os = "dragonfly",
-                target_os = "freebsd",
-                target_os = "netbsd",
-                target_os = "openbsd",
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd",
             ))]
             SDL_SYSWM_X11 => {
                 use self::raw_window_handle::unix::XlibHandle;
@@ -103,25 +101,6 @@ pub enum SDL_bool {
     SDL_TRUE = 1,
 }
 
-#[repr(C)]
-#[derive(Debug, Default, Copy, Clone, PartialEq)]
-#[allow(non_camel_case_types, dead_code)]
-pub struct SDL_version {
-    pub major: u8,
-    pub minor: u8,
-    pub patch: u8,
-}
-
-impl Into<SDL_version> for sys::SDL_version {
-    fn into(self) -> SDL_version {
-        SDL_version {
-            major: self.major,
-            minor: self.minor,
-            patch: self.patch
-        }
-    }
-}
-
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 #[allow(non_camel_case_types, dead_code)]
@@ -147,21 +126,21 @@ impl Default for SDL_SYSWM_TYPE {
 }
 
 #[repr(C)]
-#[derive(Default, Copy, Clone)]
+#[derive(Copy, Clone)]
 #[allow(non_camel_case_types)]
 pub struct SDL_SysWMinfo {
-    pub version: SDL_version,
+    pub version: sys::SDL_version,
     pub subsystem: SDL_SYSWM_TYPE,
 
     #[cfg(target_os = "windows")]
     pub info: windows::WindowsSysWMinfo,
 
     #[cfg(any(
-        target_os = "linux",
-        target_os = "dragonfly",
-        target_os = "freebsd",
-        target_os = "netbsd",
-        target_os = "openbsd",
+    target_os = "linux",
+    target_os = "dragonfly",
+    target_os = "freebsd",
+    target_os = "netbsd",
+    target_os = "openbsd",
     ))]
     pub info: linux::LinuxSysWMinfo,
 
@@ -225,11 +204,11 @@ pub mod windows {
 }
 
 #[cfg(any(
-    target_os = "linux",
-    target_os = "dragonfly",
-    target_os = "freebsd",
-    target_os = "netbsd",
-    target_os = "openbsd",
+target_os = "linux",
+target_os = "dragonfly",
+target_os = "freebsd",
+target_os = "netbsd",
+target_os = "openbsd",
 ))]
 pub mod linux {
     #[repr(C)]
