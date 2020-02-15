@@ -294,7 +294,7 @@ pub mod gl_attr {
             "OpenGL context sharing; defaults to false"),
 
         (SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, set_framebuffer_srgb_compatible, framebuffer_srgb_compatible, bool,
-            "requests sRGB capable visual; defaults to false (>= SDL 2.0.1)")
+            "requests sRGB capable visual; defaults to false (>= SDL 2.0.1)"),
 
         (SDL_GL_CONTEXT_NO_ERROR, set_context_no_error, context_no_error, bool,
             "disables OpenGL error checking; defaults to false (>= SDL 2.0.6)")
