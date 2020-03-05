@@ -232,10 +232,9 @@ impl Drop for Chunk {
     fn drop(&mut self) {
         if self.owned {
             unsafe {
-                // Mix_QuickLoad_* functions don't set the allocated flag, but
-                // from_wav_buffer and from_raw_buffer *do* take ownership of the data,
-                // so we need to deallocate the buffers here, because Mix_FreeChunk won't
-                // and we'd be leaking memory otherwise.
+                // Mix_QuickLoad_* functions don't set the allocated flag, but from_raw_buffer
+                // *does* take ownership of the data, so we need to deallocate the buffers here,
+                // because Mix_FreeChunk won't and we'd be leaking memory otherwise.
                 if (*self.raw).allocated == 0 {
                     drop(Box::from_raw((*self.raw).abuf));
                 }
@@ -249,13 +248,6 @@ impl Chunk {
     /// Load file for use as a sample.
     pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Chunk, String> {
         let raw = unsafe { mixer::Mix_LoadWAV_RW(RWops::from_file(path, "rb")?.raw(), 0) };
-        Self::from_owned_raw(raw)
-    }
-
-    /// Get chunk based on a buffer containing WAV data in the mixer format. The chunk takes
-    /// ownership of the buffer.
-    pub fn from_wav_buffer(buffer: Box<[u8]>) -> Result<Chunk, String> {
-        let raw = unsafe { mixer::Mix_QuickLoad_WAV(Box::into_raw(buffer) as *mut u8) };
         Self::from_owned_raw(raw)
     }
 
