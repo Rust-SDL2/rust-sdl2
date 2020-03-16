@@ -543,6 +543,7 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
     let mut bindings = bindgen::Builder::default()
         // enable no_std-friendly output by only using core definitions
         .use_core()
+        .default_enum_style(bindgen::EnumVariation::Rust { non_exhaustive: false })
         .ctypes_prefix("libc");
 
     let mut image_bindings = bindgen::Builder::default()
@@ -704,13 +705,11 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
 
     let bindings = bindings
         .header("wrapper.h")
-        .rustified_enum(".*")
         .blacklist_type("FP_NAN")
         .blacklist_type("FP_INFINITE")
         .blacklist_type("FP_ZERO")
         .blacklist_type("FP_SUBNORMAL")
         .blacklist_type("FP_NORMAL")
-        .blacklist_type("max_align_t") // Until https://github.com/rust-lang-nursery/rust-bindgen/issues/550 gets fixed
         .derive_debug(false)
         .generate()
         .expect("Unable to generate bindings!");
@@ -729,7 +728,6 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
             .blacklist_type("FP_ZERO")
             .blacklist_type("FP_SUBNORMAL")
             .blacklist_type("FP_NORMAL")
-            .blacklist_type("max_align_t") // Until https://github.com/rust-lang-nursery/rust-bindgen/issues/550 gets fixed
             .whitelist_type("IMG.*")
             .whitelist_function("IMG.*")
             .whitelist_var("IMG.*")
