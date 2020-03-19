@@ -51,6 +51,14 @@ pub fn has_avx() -> bool {
     unsafe { sys::SDL_HasAVX() == SDL_bool::SDL_TRUE }
 }
 
+pub fn has_avx2() -> bool {
+    unsafe { sys::SDL_HasAVX2() == SDL_bool::SDL_TRUE }
+}
+
+pub fn has_avx512f() -> bool {
+    unsafe { sys::SDL_HasAVX512F() == SDL_bool::SDL_TRUE }
+}
+
 pub fn system_ram() -> i32 {
     unsafe { sys::SDL_GetSystemRAM() }
 }
