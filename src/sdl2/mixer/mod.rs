@@ -103,6 +103,7 @@ bitflags!(
         const MP3  = mixer::MIX_InitFlags_MIX_INIT_MP3 as u32;
         const OGG  = mixer::MIX_InitFlags_MIX_INIT_OGG as u32;
         const MID  = mixer::MIX_InitFlags_MIX_INIT_MID as u32;
+        const OPUS = mixer::MIX_InitFlags_MIX_INIT_OPUS as u32;
     }
 );
 
@@ -123,6 +124,9 @@ impl ToString for InitFlag {
         }
         if self.contains(InitFlag::MID) {
             string = string + &"INIT_MID ".to_string();
+        }
+        if self.contains(InitFlag::OPUS) {
+            string = string + &"INIT_OPUS ".to_string();
         }
         string
     }
