@@ -201,25 +201,25 @@ fn to_surface_result<'a>(raw: *mut sys::SDL_Surface) -> Result<Surface<'a>, Stri
 
 pub trait ImageRWops {
     /// load as a surface. except TGA
-    fn load(&self) -> Result<Surface, String>;
+    fn load(&self) -> Result<Surface<'static>, String>;
     /// load as a surface. This can load all supported image formats.
-    fn load_typed(&self, _type: &str) -> Result<Surface, String>;
+    fn load_typed(&self, _type: &str) -> Result<Surface<'static>, String>;
 
-    fn load_cur(&self) -> Result<Surface, String>;
-    fn load_ico(&self) -> Result<Surface, String>;
-    fn load_bmp(&self) -> Result<Surface, String>;
-    fn load_pnm(&self) -> Result<Surface, String>;
-    fn load_xpm(&self) -> Result<Surface, String>;
-    fn load_xcf(&self) -> Result<Surface, String>;
-    fn load_pcx(&self) -> Result<Surface, String>;
-    fn load_gif(&self) -> Result<Surface, String>;
-    fn load_jpg(&self) -> Result<Surface, String>;
-    fn load_tif(&self) -> Result<Surface, String>;
-    fn load_png(&self) -> Result<Surface, String>;
-    fn load_tga(&self) -> Result<Surface, String>;
-    fn load_lbm(&self) -> Result<Surface, String>;
-    fn load_xv(&self) -> Result<Surface, String>;
-    fn load_webp(&self) -> Result<Surface, String>;
+    fn load_cur(&self) -> Result<Surface<'static>, String>;
+    fn load_ico(&self) -> Result<Surface<'static>, String>;
+    fn load_bmp(&self) -> Result<Surface<'static>, String>;
+    fn load_pnm(&self) -> Result<Surface<'static>, String>;
+    fn load_xpm(&self) -> Result<Surface<'static>, String>;
+    fn load_xcf(&self) -> Result<Surface<'static>, String>;
+    fn load_pcx(&self) -> Result<Surface<'static>, String>;
+    fn load_gif(&self) -> Result<Surface<'static>, String>;
+    fn load_jpg(&self) -> Result<Surface<'static>, String>;
+    fn load_tif(&self) -> Result<Surface<'static>, String>;
+    fn load_png(&self) -> Result<Surface<'static>, String>;
+    fn load_tga(&self) -> Result<Surface<'static>, String>;
+    fn load_lbm(&self) -> Result<Surface<'static>, String>;
+    fn load_xv(&self) -> Result<Surface<'static>, String>;
+    fn load_webp(&self) -> Result<Surface<'static>, String>;
 
     fn is_cur(&self) -> bool;
     fn is_ico(&self) -> bool;
@@ -238,11 +238,11 @@ pub trait ImageRWops {
 }
 
 impl<'a> ImageRWops for RWops<'a> {
-    fn load(&self) -> Result<Surface, String> {
+    fn load(&self) -> Result<Surface<'static>, String> {
         let raw = unsafe { image::IMG_Load_RW(self.raw(), 0) };
         to_surface_result(raw)
     }
-    fn load_typed(&self, _type: &str) -> Result<Surface, String> {
+    fn load_typed(&self, _type: &str) -> Result<Surface<'static>, String> {
         let raw = unsafe {
             let c_type = CString::new(_type.as_bytes()).unwrap();
             image::IMG_LoadTyped_RW(self.raw(), 0, c_type.as_ptr() as *const _)
@@ -250,63 +250,63 @@ impl<'a> ImageRWops for RWops<'a> {
         to_surface_result(raw)
     }
 
-    fn load_cur(&self) -> Result<Surface, String> {
+    fn load_cur(&self) -> Result<Surface<'static>, String> {
         let raw = unsafe { image::IMG_LoadCUR_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_ico(&self) -> Result<Surface, String> {
+    fn load_ico(&self) -> Result<Surface<'static>, String> {
         let raw = unsafe { image::IMG_LoadICO_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_bmp(&self) -> Result<Surface, String> {
+    fn load_bmp(&self) -> Result<Surface<'static>, String> {
         let raw = unsafe { image::IMG_LoadBMP_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_pnm(&self) -> Result<Surface, String> {
+    fn load_pnm(&self) -> Result<Surface<'static>, String> {
         let raw = unsafe { image::IMG_LoadPNM_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_xpm(&self) -> Result<Surface, String> {
+    fn load_xpm(&self) -> Result<Surface<'static>, String> {
         let raw = unsafe { image::IMG_LoadXPM_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_xcf(&self) -> Result<Surface, String> {
+    fn load_xcf(&self) -> Result<Surface<'static>, String> {
         let raw = unsafe { image::IMG_LoadXCF_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_pcx(&self) -> Result<Surface, String> {
+    fn load_pcx(&self) -> Result<Surface<'static>, String> {
         let raw = unsafe { image::IMG_LoadPCX_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_gif(&self) -> Result<Surface, String> {
+    fn load_gif(&self) -> Result<Surface<'static>, String> {
         let raw = unsafe { image::IMG_LoadGIF_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_jpg(&self) -> Result<Surface, String> {
+    fn load_jpg(&self) -> Result<Surface<'static>, String> {
         let raw = unsafe { image::IMG_LoadJPG_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_tif(&self) -> Result<Surface, String> {
+    fn load_tif(&self) -> Result<Surface<'static>, String> {
         let raw = unsafe { image::IMG_LoadTIF_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_png(&self) -> Result<Surface, String> {
+    fn load_png(&self) -> Result<Surface<'static>, String> {
         let raw = unsafe { image::IMG_LoadPNG_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_tga(&self) -> Result<Surface, String> {
+    fn load_tga(&self) -> Result<Surface<'static>, String> {
         let raw = unsafe { image::IMG_LoadTGA_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_lbm(&self) -> Result<Surface, String> {
+    fn load_lbm(&self) -> Result<Surface<'static>, String> {
         let raw = unsafe { image::IMG_LoadLBM_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_xv(&self) -> Result<Surface, String> {
+    fn load_xv(&self) -> Result<Surface<'static>, String> {
         let raw = unsafe { image::IMG_LoadXV_RW(self.raw()) };
         to_surface_result(raw)
     }
-    fn load_webp(&self) -> Result<Surface, String> {
+    fn load_webp(&self) -> Result<Surface<'static>, String> {
         let raw = unsafe { image::IMG_LoadWEBP_RW(self.raw()) };
         to_surface_result(raw)
     }
