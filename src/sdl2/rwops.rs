@@ -131,7 +131,7 @@ impl<'a> io::Read for RWops<'a> {
         // FIXME: it's better to use as_mut_ptr().
         // number of objects read, or 0 at error or end of file.
         let ret = unsafe {
-            ((*self.raw).read.unwrap())(self.raw, buf.as_ptr() as *mut c_void, 1, out_len as u64)
+            ((*self.raw).read.unwrap())(self.raw, buf.as_ptr() as *mut c_void, 1, out_len as sys::size_t)
         };
         Ok(ret as usize)
     }
@@ -141,7 +141,7 @@ impl<'a> io::Write for RWops<'a> {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         let in_len = buf.len() as size_t;
         let ret = unsafe {
-            ((*self.raw).write.unwrap())(self.raw, buf.as_ptr() as *const c_void, 1, in_len as u64)
+            ((*self.raw).write.unwrap())(self.raw, buf.as_ptr() as *const c_void, 1, in_len as sys::size_t)
         };
         Ok(ret as usize)
     }
