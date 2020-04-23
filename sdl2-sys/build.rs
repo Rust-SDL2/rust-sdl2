@@ -134,6 +134,8 @@ fn patch_sdl2(sdl2_source_path: &Path) {
         // No patches at this time. If needed, add them like this:
         // ("SDL-2.x.y-filename.patch", include_str!("patches/SDL-2.x.y-filename.patch")),
         ("SDL2-2.0.10-CMakeLists.txt.patch", include_str!("patches/SDL2-2.0.10-CMakeLists.txt.patch")),
+        // https://bugzilla.libsdl.org/show_bug.cgi?id=5105
+        ("SDL2-2.0.10-sndio-shared-linux.patch", include_str!("patches/SDL2-2.0.10-sndio-shared-linux.patch")),
     ];
     let sdl_version = format!("SDL2-{}", LASTEST_SDL2_VERSION);
 
@@ -335,8 +337,6 @@ fn link_sdl2(target_os: &str) {
             println!("cargo:rustc-link-lib=dinput8");
             println!("cargo:rustc-link-lib=dxguid");
             println!("cargo:rustc-link-lib=setupapi");
-        } else if target_os.contains("linux") {
-            println!("cargo:rustc-link-lib=sndio");
         } else if target_os == "darwin" {
             println!("cargo:rustc-link-lib=framework=Cocoa");
             println!("cargo:rustc-link-lib=framework=IOKit");
