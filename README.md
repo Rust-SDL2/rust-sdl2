@@ -2,7 +2,7 @@
 
 Bindings for SDL2 in Rust
 
-### [Changelog for 0.33](changelog.md#v033)
+### [Changelog for 0.34](changelog.md#v034)
 
 # Overview
 
@@ -17,12 +17,17 @@ If you want a library compatible with earlier versions of SDL, please see
 
 # Documentation
 
-* [crates.io documentation](https://docs.rs/sdl2/), with no features at all.
-* [master documentation](https://rust-sdl2.github.io/rust-sdl2/sdl2/) with the following features:
-  * gfx
-  * image
-  * mixer
-  * ttf
+* [latest crate update documentation](https://docs.rs/sdl2/).
+* [master documentation](https://rust-sdl2.github.io/rust-sdl2/sdl2/).
+
+The following features are enabled in the documentation:
+* gfx
+* image
+* mixer
+* ttf
+
+The `unsafe_textures` feature is not documented online, you can use `cargo doc` to generate your own documentation
+with this feature enabled.
 
 # Requirements
 
@@ -53,6 +58,13 @@ Arch example:
 > sudo pacman -S sdl2
 
 You might also need a C compiler (`gcc`).
+
+#### Static linking in Linux
+
+You can choose to link SDL2 statically instead of dynamically with the `static-link` feature.
+However on Linux, unless you use the "bundled" feature, your operating system has no built-in way to find the resources needed to link statically SDL2 from your system.
+
+You need to add the feature `use-pkgconfig`, so that rustc knows where to look for your SDL2 libraries and its dependencies for static linking.
 
 ### Mac OS X
 #### If you are using homebrew
@@ -289,14 +301,14 @@ download through Crates.io:
 
 ```toml
     [dependencies]
-    sdl2 = "0.33"
+    sdl2 = "0.34"
 ```
 
 Alternatively, pull it from GitHub to obtain the latest version from master
 
 ```toml
     [dependencies.sdl2]
-    git = "https://github.com/AngryLawyer/rust-sdl2"
+    git = "https://github.com/rust-sdl2/rust-sdl2"
 ```
 
 Otherwise, clone this repo and run [cargo][crates]
@@ -310,7 +322,7 @@ adding this instead:
 
 ```toml
     [dependencies.sdl2]
-    version = "0.33"
+    version = "0.34"
     default-features = false
     features = ["ttf","image","gfx","mixer"]
 ```
@@ -386,6 +398,11 @@ For more discussion see the corresponding [issue][dep-sdl2-include-issue]
 
 # OpenGL
 
+There are two ways to use OpenGL:
+
+* As a backend for sdl2::render, where everything is done for you by sdl2. It is the default for linux devices.
+* Manually, using only sdl2 as a "shell" for your window (akin to `glutin` and `winit` crates), and still use sdl2's joystick, events, audio, text input, ect capabilities.
+
 If you want to use OpenGL, you also need the
 [gl-rs][gl-rs] package. If you're using
 [cargo][crates], just add these lines to your Cargo.toml:
@@ -413,42 +430,45 @@ fn find_sdl_gl_driver() -> Option<u32> {
     }
     None
 }
+
+fn main() {
+    let sdl_context = sdl2::init().unwrap();
+    let video_subsystem = sdl_context.video().unwrap();
+    let window = video_subsystem.window("Window", 800, 600)
+        .opengl() // this line DOES NOT enable opengl, but allows you to create/get an OpenGL context from your window.
+        .build()
+        .unwrap();
+    let canvas = window.into_canvas()
+        .index(find_sdl_gl_driver().unwrap())
+        .build()
+        .unwrap();
+
+    // ...
+}
 ```
 
-This is especially relevant on non-linux systems where the default render engine will something else (for instance DirectX on Windows).
+If you don't plan to use OpenGL calls via the [gl-rs][gl-rs] crate, you can stop here. SDL2 will automatically use the OpenGL backend
 
-Next, initialize the SDL2 subsystems, and create your window with the OpenGL canvas:
+If you plan to have your own calls intertwined with the sdl2 calls, you need to use the context of your canvas first:
 
 ```rust
 
-let sdl_context = sdl2::init().unwrap();
-let video_subsystem = sdl_context.video().unwrap();
-let window = video_subsystem.window("Window", 800, 600)
-    .opengl()
-    .build()
-    .unwrap();
-let canvas = window.into_canvas()
-    .index(find_sdl_gl_driver().unwrap())
-    .build()
-    .unwrap();
-
+// initialization
 gl::load_with(|name| video_subsystem.gl_get_proc_address(name) as *const _);
+
+// sdl::render creates a context for you, if you use a Canvas you need to use it.
 canvas.window().gl_set_context_to_current();
 
+// ... in the main loop ...
 unsafe {
     gl::ClearColor(0.6, 0.0, 0.8, 1.0);
     gl::Clear(gl::COLOR_BUFFER_BIT);
 }
-
 canvas.present();
-
-// opengl code here
 ```
 
 Be wary though, sdl2 has its own internal state which you should avoid messing with.
-Avoid using manual OpenGL in the middle of SDL2 calls, or change the state in between.
-
-**You cannot override the OpenGL version with this method unless via changing the gl state**
+Avoid using manual OpenGL in the middle of SDL2 calls, or make sure to restore the previous state.
 
 ## Use OpenGL calls manually
 
@@ -473,6 +493,7 @@ fn main() {
         .build()
         .unwrap();
 
+    // Unlike the other example above, nobody created a context for your window, so you need to create one.
     let ctx = window.gl_create_context().unwrap();
     gl::load_with(|name| video_subsystem.gl_get_proc_address(name) as *const _);
     
@@ -501,8 +522,11 @@ fn main() {
 }
 ```
 
-This method is useful when you don't care about sdl2's render capabilities, but you do care about
+As mentionned above, this method is useful when you don't care about sdl2's render capabilities, but you do care about
 its audio, controller and other neat features that sdl2 has.
+
+You don't have to worry about messing with the state intertwined with sdl2 or a version you don't like: SDL2 will never
+call any OpenGL function outside the `render` module.
 
 # Vulkan
 
