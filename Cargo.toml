@@ -1,6 +1,5 @@
 [package]
-
-name    = "sdl2"
+name = "sdl2"
 description = "SDL2 bindings for Rust"
 repository = "https://github.com/Rust-SDL2/rust-sdl2"
 documentation = "https://rust-sdl2.github.io/rust-sdl2/sdl2/"
@@ -11,9 +10,8 @@ keywords = ["SDL", "windowing", "graphics", "api", "engine"]
 categories = ["rendering","api-bindings","game-engines","multimedia"]
 
 [lib]
-
-name       = "sdl2"
-path       = "src/sdl2/lib.rs"
+name = "sdl2"
+path = "src/sdl2/lib.rs"
 
 [dependencies]
 bitflags = "^1"
@@ -41,7 +39,6 @@ version = "0.3.3"
 optional = true
 
 [features]
-
 unsafe_textures = []
 default = []
 gfx = ["c_vec", "sdl2-sys/gfx"]
@@ -53,7 +50,10 @@ use-bindgen = ["sdl2-sys/use-bindgen"]
 use-pkgconfig = ["sdl2-sys/use-pkgconfig"]
 use_mac_framework = ["sdl2-sys/use_mac_framework"]
 bundled = ["sdl2-sys/bundled"]
-static-link= ["sdl2-sys/static-link"]
+static-link = ["sdl2-sys/static-link"]
+
+[package.metadata.docs.rs]
+features = ["default", "gfx", "mixer", "image", "ttf"]
 
 [[example]]
 name = "animation"
