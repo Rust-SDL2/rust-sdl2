@@ -1,10 +1,34 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
-### unreleased
+### v0.34
+
+[PR #962](https://github.com/Rust-SDL2/rust-sdl2/pull/962):
+Added `raw-window-handle` support for Windows, Linux (X11 and Wayland) and macOS.
+
+[PR #964](https://github.com/Rust-SDL2/rust-sdl2/pull/964):
+**Breaking change**: Change joystick instance IDs from i32 to u32.
+
+[PR #965](https://github.com/Rust-SDL2/rust-sdl2/pull/965):
+Added invert method for Color, and added more Color names as constants.
 
 [PR #968](https://github.com/Rust-SDL2/rust-sdl2/pull/968)
 Pass SDL2 include directories to `sdl2-sys`'s dependant crates through `DEP_SDL2_INCLUDE`.
+
+[PR #970](https://github.com/Rust-SDL2/rust-sdl2/pull/970)
+Add `Chunk::from_buffer` in mixer.
+
+[PR #976](https://github.com/Rust-SDL2/rust-sdl2/pull/976)
+Fix compilation with `use-bingen` feature.
+
+[PR #977](https://github.com/Rust-SDL2/rust-sdl2/pull/977)
+Add `cpuinfo::has_avx2` and `cpuinfo::has_avx512f`
+
+[PR #982](https://github.com/Rust-SDL2/rust-sdl2/pull/982)
+Support for loading Opus format in mixer.
+
+[PR #980](https://github.com/Rust-SDL2/rust-sdl2/pull/980)
+Fix compilation on Windows.
 
 ### v0.33
 
@@ -31,9 +55,6 @@ Ignore unknown bits in `SDL_Keysym`'s `mod` field (key modifiers) when construct
 
 [PR #898](https://github.com/Rust-SDL2/rust-sdl2/pull/898):
 Implements `TryFrom<PixelFormatEnum>` for `PixelFormat`
-
-[PR #962](https://github.com/Rust-SDL2/rust-sdl2/pull/962):
-Added `raw-window-handle` support for Windows, Linux (X11 and Wayland) and macOS.
 
 ### v0.32.2
 
