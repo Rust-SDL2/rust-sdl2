@@ -861,7 +861,32 @@ impl<T> TextureCreator<T> {
     ///
     /// # Remarks
     ///
-    /// The access hint for the created texture is `TextureAccess::Static`.
+    /// The access hint for the created texture is [`TextureAccess::Static`].
+    ///
+    /// ```no_run
+    /// use sdl2::pixels::PixelFormatEnum;
+    /// use sdl2::surface::Surface;
+    /// use sdl2::render::{Canvas, Texture};
+    /// use sdl2::video::Window;
+    ///
+    /// // We init systems.
+    /// let sdl_context = sdl2::init().expect("failed to init SDL");
+    /// let video_subsystem = sdl_context.video().expect("failed to get video context");
+    ///
+    /// // We create a window.
+    /// let window = video_subsystem.window("sdl2 demo", 800, 600)
+    ///     .build()
+    ///     .expect("failed to build window");
+    ///
+    /// // We get the canvas from which we can get the `TextureCreator`.
+    /// let mut canvas: Canvas<Window> = window.into_canvas()
+    ///     .build()
+    ///     .expect("failed to build window's canvas");
+    /// let texture_creator = canvas.texture_creator();
+    ///
+    /// let surface = Surface::new(512, 512, PixelFormatEnum::RGB24).unwrap();
+    /// let texture = texture_creator.create_texture_from_surface(surface).unwrap();
+    /// ```
     pub fn create_texture_from_surface<S: AsRef<SurfaceRef>>
         (&self,
          surface: S)
@@ -2125,6 +2150,68 @@ impl<'r> Texture<'r> {
     #[inline]
     pub const fn raw(&self) -> *mut sys::SDL_Texture {
         self.raw
+    }
+
+    /// A convenience function for [`TextureCreator::create_texture_from_surface`].
+    ///
+    /// ```no_run
+    /// use sdl2::pixels::PixelFormatEnum;
+    /// use sdl2::surface::Surface;
+    /// use sdl2::render::{Canvas, Texture};
+    /// use sdl2::video::Window;
+    ///
+    /// // We init systems.
+    /// let sdl_context = sdl2::init().expect("failed to init SDL");
+    /// let video_subsystem = sdl_context.video().expect("failed to get video context");
+    ///
+    /// // We create a window.
+    /// let window = video_subsystem.window("sdl2 demo", 800, 600)
+    ///     .build()
+    ///     .expect("failed to build window");
+    ///
+    /// // We get the canvas from which we can get the `TextureCreator`.
+    /// let mut canvas: Canvas<Window> = window.into_canvas()
+    ///     .build()
+    ///     .expect("failed to build window's canvas");
+    /// let texture_creator = canvas.texture_creator();
+    ///
+    /// let surface = Surface::new(512, 512, PixelFormatEnum::RGB24).unwrap();
+    /// let texture = Texture::from_surface(&surface, &texture_creator).unwrap();
+    /// ```
+    #[cfg(not(feature = "unsafe_textures"))]
+    pub fn from_surface<'a, T>(surface: &Surface, texture_creator: &'a TextureCreator<T>) -> Result<Texture<'a>, TextureValueError> {
+        texture_creator.create_texture_from_surface(surface)
+    }
+
+    /// A convenience function for [`TextureCreator::create_texture_from_surface`].
+    ///
+    /// ```no_run
+    /// use sdl2::pixels::PixelFormatEnum;
+    /// use sdl2::surface::Surface;
+    /// use sdl2::render::{Canvas, Texture};
+    /// use sdl2::video::Window;
+    ///
+    /// // We init systems.
+    /// let sdl_context = sdl2::init().expect("failed to init SDL");
+    /// let video_subsystem = sdl_context.video().expect("failed to get video context");
+    ///
+    /// // We create a window.
+    /// let window = video_subsystem.window("sdl2 demo", 800, 600)
+    ///     .build()
+    ///     .expect("failed to build window");
+    ///
+    /// // We get the canvas from which we can get the `TextureCreator`.
+    /// let mut canvas: Canvas<Window> = window.into_canvas()
+    ///     .build()
+    ///     .expect("failed to build window's canvas");
+    /// let texture_creator = canvas.texture_creator();
+    ///
+    /// let surface = Surface::new(512, 512, PixelFormatEnum::RGB24).unwrap();
+    /// let texture = Texture::from_surface(&surface, &texture_creator).unwrap();
+    /// ```
+    #[cfg(feature = "unsafe_textures")]
+    pub fn from_surface<T>(surface: &Surface, texture_creator: &TextureCreator<T>) -> Result<Texture, TextureValueError> {
+        texture_creator.create_texture_from_surface(surface)
     }
 }
 
