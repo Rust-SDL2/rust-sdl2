@@ -483,6 +483,12 @@ pub enum WindowPos {
     Positioned(i32)
 }
 
+impl From<i32> for WindowPos {
+    fn from(pos: i32) -> Self {
+        WindowPos::Positioned(pos)
+    }
+}
+
 fn to_ll_windowpos (pos: WindowPos) -> c_int {
     match pos {
         WindowPos::Undefined => sys::SDL_WINDOWPOS_UNDEFINED_MASK as c_int,
