@@ -69,7 +69,7 @@ impl GameControllerSubsystem {
         }
     }
 
-    /// Attempt to open the controller ad index `joystick_index` and return it.
+    /// Attempt to open the controller at index `joystick_index` and return it.
     /// Controller IDs are the same as joystick IDs and the maximum number can
     /// be retrieved using the `SDL_NumJoysticks` function.
     pub fn open(&self, joystick_index: u32) -> Result<GameController, IntegerOrSdlError> {
