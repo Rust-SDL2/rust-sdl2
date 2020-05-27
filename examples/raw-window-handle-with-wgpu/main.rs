@@ -1,51 +1,15 @@
 /// Minimal example for getting sdl2 and wgpu working together with raw-window-handle.
-///
-/// TODO: update wgpu and this example after https://github.com/gfx-rs/wgpu/pull/462 ships
 
 extern crate glsl_to_spirv;
 extern crate libc;
-#[cfg(target_os = "macos")]
-extern crate objc;
-extern crate raw_window_handle;
 extern crate sdl2;
 extern crate wgpu;
+extern crate futures;
 
-use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
+use futures::executor::block_on;
 
 use sdl2::event::{Event, WindowEvent};
 use sdl2::keyboard::Keycode;
-use sdl2::video::Window;
-
-/// sdl2 implements raw-window-handle correctly, but wgpu does not for macOS
-/// wgpu wrongly expects an NSView to be provided by raw-window-handle, so we have to do a little more work
-struct WindowWrapper<'a>(pub &'a Window);
-
-unsafe impl<'a> HasRawWindowHandle for WindowWrapper<'a> {
-    #[cfg(not(target_os = "macos"))]
-    /// all non-mac platforms work correctly, so return the handle directly
-    fn raw_window_handle(&self) -> RawWindowHandle {
-        self.0.raw_window_handle()
-    }
-
-    #[cfg(target_os = "macos")]
-    /// do some work on macOS to get the root NSView for the NSWindow returned by sdl2
-    fn raw_window_handle(&self) -> RawWindowHandle {
-        use objc::{msg_send, sel, sel_impl};
-        use objc::runtime::Object;
-        use raw_window_handle::macos::MacOSHandle;
-        let handle = self.0.raw_window_handle();
-        match handle {
-            RawWindowHandle::MacOS(macos_handle) => {
-                RawWindowHandle::MacOS(MacOSHandle {
-                    ns_window: macos_handle.ns_window,
-                    ns_view: unsafe { msg_send![macos_handle.ns_window as *mut Object, contentView] },
-                    ..MacOSHandle::empty()
-                })
-            }
-            _ => unreachable!()
-        }
-    }
-}
 
 fn load_glsl(code: &str, ty: glsl_to_spirv::ShaderType) -> Result<Vec<u32>, String> {
     let spirv = glsl_to_spirv::compile(&code, ty)?;
@@ -63,22 +27,28 @@ fn main() -> Result<(), String> {
         .build()
         .map_err(|e| e.to_string())?;
     let (width, height) = window.size();
+    let surface = wgpu::Surface::create(&window);
 
-    let adapter_opt = wgpu::Adapter::request(&wgpu::RequestAdapterOptions {
-        power_preference: wgpu::PowerPreference::Default,
-        backends: wgpu::BackendBit::PRIMARY,
-    });
+    let adapter_opt = block_on(wgpu::Adapter::request(
+        &wgpu::RequestAdapterOptions {
+            power_preference: wgpu::PowerPreference::Default,
+            compatible_surface: Some(&surface),
+        },
+        wgpu::BackendBit::PRIMARY,
+    ));
     let adapter = match adapter_opt {
         Some(a) => a,
         None => return Err(String::from("No adapter found")),
     };
 
-    let (device, mut queue) = adapter.request_device(&wgpu::DeviceDescriptor {
-        extensions: wgpu::Extensions {
-            anisotropic_filtering: false,
-        },
-        limits: wgpu::Limits::default(),
-    });
+    let (device, queue) = block_on(adapter.request_device(
+            &wgpu::DeviceDescriptor {
+                extensions: wgpu::Extensions {
+                    anisotropic_filtering: false,
+                },
+                limits: wgpu::Limits::default(),
+            }
+    ));
 
     let vs = include_str!("shader.vert");
     let vs_spirv = &load_glsl(vs, glsl_to_spirv::ShaderType::Vertex)?;
@@ -88,10 +58,14 @@ fn main() -> Result<(), String> {
     let fs_spirv = &load_glsl(fs, glsl_to_spirv::ShaderType::Fragment)?;
     let fs_module = device.create_shader_module(fs_spirv);
 
-    let bind_group_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor { bindings: &[] });
+    let bind_group_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+        bindings: &[],
+        label: Some("bind_group_layout"),
+    });
     let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
         layout: &bind_group_layout,
         bindings: &[],
+        label: Some("bind_group"),
     });
     let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
         bind_group_layouts: &[&bind_group_layout],
@@ -121,23 +95,22 @@ fn main() -> Result<(), String> {
             alpha_blend: wgpu::BlendDescriptor::REPLACE,
             write_mask: wgpu::ColorWrite::ALL,
         }],
+        vertex_state: wgpu::VertexStateDescriptor {
+            index_format: wgpu::IndexFormat::Uint16,
+            vertex_buffers: &[],
+        },
         depth_stencil_state: None,
-        index_format: wgpu::IndexFormat::Uint16,
-        vertex_buffers: &[],
         sample_count: 1,
         sample_mask: !0,
         alpha_to_coverage_enabled: false,
     });
-
-    // use the WindowWrapper to make sure wgpu will work on macOS
-    let surface = wgpu::Surface::create(&WindowWrapper(&window));
 
     let mut sc_desc = wgpu::SwapChainDescriptor {
         usage: wgpu::TextureUsage::OUTPUT_ATTACHMENT,
         format: wgpu::TextureFormat::Bgra8UnormSrgb,
         width,
         height,
-        present_mode: wgpu::PresentMode::Vsync,
+        present_mode: wgpu::PresentMode::Fifo,
     };
 
     let mut swap_chain = device.create_swap_chain(&surface, &sc_desc);
@@ -165,9 +138,16 @@ fn main() -> Result<(), String> {
             }
         }
 
-        let frame = swap_chain.get_next_texture();
+        let frame_res = swap_chain.get_next_texture();
+        let frame = match frame_res {
+            Ok(a) => a,
+            Err(_) => return Err(String::from("Timeout getting next texture")),
+        };
         let mut encoder =
-            device.create_command_encoder(&wgpu::CommandEncoderDescriptor { todo: 0 });
+            device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
+                label: Some("command_encoder")
+            });
+
         {
             let mut rpass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                 color_attachments: &[wgpu::RenderPassColorAttachmentDescriptor {
