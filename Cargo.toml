@@ -28,11 +28,9 @@ optional = true
 
 [dev-dependencies]
 rand = "^0.7"
-wgpu = "^0.4.0"
+wgpu = "^0.5.0"
 glsl-to-spirv = "^0.1.7"
-
-[target.'cfg(target_os = "macos")'.dev-dependencies.objc]
-version = "^0.2.7"
+futures = "^0.3"
 
 [dependencies.raw-window-handle]
 version = "0.3.3"
