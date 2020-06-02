@@ -1743,6 +1743,573 @@ impl Event {
 
         Some(*event_box)
     }
+
+    /// Returns `true` if they are the same "kind" of events.
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// use sdl2::event::Event;
+    ///
+    /// let ev1 = Event::JoyButtonDown {
+    ///     timestamp: 0,
+    ///     which: 0,
+    ///     button_idx: 0,
+    /// };
+    /// let ev2 = Event::JoyButtonDown {
+    ///     timestamp: 1,
+    ///     which: 1,
+    ///     button_idx: 1,
+    /// };
+    ///
+    /// assert!(ev1 != ev2); // The events aren't equal (they contain different values).
+    /// assert!(ev1.is_same_kind_as(&ev2)); // But they are of the same kind!
+    /// ```
+    pub fn is_same_kind_as(&self, other: &Event) -> bool {
+        match (self, other) {
+            (Self::Quit { .. }, Self::Quit { .. })
+            | (Self::AppTerminating { .. }, Self::AppTerminating { .. })
+            | (Self::AppLowMemory { .. }, Self::AppLowMemory { .. })
+            | (Self::AppWillEnterBackground { .. }, Self::AppWillEnterBackground { .. })
+            | (Self::AppDidEnterBackground { .. }, Self::AppDidEnterBackground { .. })
+            | (Self::AppWillEnterForeground { .. }, Self::AppWillEnterForeground { .. })
+            | (Self::AppDidEnterForeground { .. }, Self::AppDidEnterForeground { .. })
+            | (Self::Window { .. }, Self::Window { .. })
+            | (Self::KeyDown { .. }, Self::KeyDown { .. })
+            | (Self::KeyUp { .. }, Self::KeyUp { .. })
+            | (Self::TextEditing { .. }, Self::TextEditing { .. })
+            | (Self::TextInput { .. }, Self::TextInput { .. })
+            | (Self::MouseMotion { .. }, Self::MouseMotion { .. })
+            | (Self::MouseButtonDown { .. }, Self::MouseButtonDown { .. })
+            | (Self::MouseButtonUp { .. }, Self::MouseButtonUp { .. })
+            | (Self::MouseWheel { .. }, Self::MouseWheel { .. })
+            | (Self::JoyAxisMotion { .. }, Self::JoyAxisMotion { .. })
+            | (Self::JoyBallMotion { .. }, Self::JoyBallMotion { .. })
+            | (Self::JoyHatMotion { .. }, Self::JoyHatMotion { .. })
+            | (Self::JoyButtonDown { .. }, Self::JoyButtonDown { .. })
+            | (Self::JoyButtonUp { .. }, Self::JoyButtonUp { .. })
+            | (Self::JoyDeviceAdded { .. }, Self::JoyDeviceAdded { .. })
+            | (Self::JoyDeviceRemoved { .. }, Self::JoyDeviceRemoved { .. })
+            | (Self::ControllerAxisMotion { .. }, Self::ControllerAxisMotion { .. })
+            | (Self::ControllerButtonDown { .. }, Self::ControllerButtonDown { .. })
+            | (Self::ControllerButtonUp { .. }, Self::ControllerButtonUp { .. })
+            | (Self::ControllerDeviceAdded { .. }, Self::ControllerDeviceAdded { .. })
+            | (Self::ControllerDeviceRemoved { .. }, Self::ControllerDeviceRemoved { .. })
+            | (Self::ControllerDeviceRemapped { .. }, Self::ControllerDeviceRemapped { .. })
+            | (Self::FingerDown { .. }, Self::FingerDown { .. })
+            | (Self::FingerUp { .. }, Self::FingerUp { .. })
+            | (Self::FingerMotion { .. }, Self::FingerMotion { .. })
+            | (Self::DollarGesture { .. }, Self::DollarGesture { .. })
+            | (Self::DollarRecord { .. }, Self::DollarRecord { .. })
+            | (Self::MultiGesture { .. }, Self::MultiGesture { .. })
+            | (Self::ClipboardUpdate { .. }, Self::ClipboardUpdate { .. })
+            | (Self::DropFile { .. }, Self::DropFile { .. })
+            | (Self::DropText { .. }, Self::DropText { .. })
+            | (Self::DropBegin { .. }, Self::DropBegin { .. })
+            | (Self::DropComplete { .. }, Self::DropComplete { .. })
+            | (Self::AudioDeviceAdded { .. }, Self::AudioDeviceAdded { .. })
+            | (Self::AudioDeviceRemoved { .. }, Self::AudioDeviceRemoved { .. })
+            | (Self::RenderTargetsReset { .. }, Self::RenderTargetsReset { .. })
+            | (Self::RenderDeviceReset { .. }, Self::RenderDeviceReset { .. })
+            | (Self::User { .. }, Self::User { .. })
+            | (Self::Unknown { .. }, Self::Unknown { .. }) => true,
+            _ => false,
+        }
+    }
+
+    /// Returns the `timestamp` field of the event.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::event::Event;
+    ///
+    /// let ev = Event::JoyButtonDown {
+    ///     timestamp: 12,
+    ///     which: 0,
+    ///     button_idx: 0,
+    /// };
+    /// assert!(ev.get_timestamp() == 12);
+    /// ```
+    pub fn get_timestamp(&self) -> u32 {
+        *match self {
+            Self::Quit { timestamp, .. } => timestamp,
+            Self::AppTerminating { timestamp, .. } => timestamp,
+            Self::AppLowMemory { timestamp, .. } => timestamp,
+            Self::AppWillEnterBackground { timestamp, .. } => timestamp,
+            Self::AppDidEnterBackground { timestamp, .. } => timestamp,
+            Self::AppWillEnterForeground { timestamp, .. } => timestamp,
+            Self::AppDidEnterForeground { timestamp, .. } => timestamp,
+            Self::Window { timestamp, .. } => timestamp,
+            Self::KeyDown { timestamp, .. } => timestamp,
+            Self::KeyUp { timestamp, .. } => timestamp,
+            Self::TextEditing { timestamp, .. } => timestamp,
+            Self::TextInput { timestamp, .. } => timestamp,
+            Self::MouseMotion { timestamp, .. } => timestamp,
+            Self::MouseButtonDown { timestamp, .. } => timestamp,
+            Self::MouseButtonUp { timestamp, .. } => timestamp,
+            Self::MouseWheel { timestamp, .. } => timestamp,
+            Self::JoyAxisMotion { timestamp, .. } => timestamp,
+            Self::JoyBallMotion { timestamp, .. } => timestamp,
+            Self::JoyHatMotion { timestamp, .. } => timestamp,
+            Self::JoyButtonDown { timestamp, .. } => timestamp,
+            Self::JoyButtonUp { timestamp, .. } => timestamp,
+            Self::JoyDeviceAdded { timestamp, .. } => timestamp,
+            Self::JoyDeviceRemoved { timestamp, .. } => timestamp,
+            Self::ControllerAxisMotion { timestamp, .. } => timestamp,
+            Self::ControllerButtonDown { timestamp, .. } => timestamp,
+            Self::ControllerButtonUp { timestamp, .. } => timestamp,
+            Self::ControllerDeviceAdded { timestamp, .. } => timestamp,
+            Self::ControllerDeviceRemoved { timestamp, .. } => timestamp,
+            Self::ControllerDeviceRemapped { timestamp, .. } => timestamp,
+            Self::FingerDown { timestamp, .. } => timestamp,
+            Self::FingerUp { timestamp, .. } => timestamp,
+            Self::FingerMotion { timestamp, .. } => timestamp,
+            Self::DollarGesture { timestamp, .. } => timestamp,
+            Self::DollarRecord { timestamp, .. } => timestamp,
+            Self::MultiGesture { timestamp, .. } => timestamp,
+            Self::ClipboardUpdate { timestamp, .. } => timestamp,
+            Self::DropFile { timestamp, .. } => timestamp,
+            Self::DropText { timestamp, .. } => timestamp,
+            Self::DropBegin { timestamp, .. } => timestamp,
+            Self::DropComplete { timestamp, .. } => timestamp,
+            Self::AudioDeviceAdded { timestamp, .. } => timestamp,
+            Self::AudioDeviceRemoved { timestamp, .. } => timestamp,
+            Self::RenderTargetsReset { timestamp, .. } => timestamp,
+            Self::RenderDeviceReset { timestamp, .. } => timestamp,
+            Self::User { timestamp, .. } => timestamp,
+            Self::Unknown { timestamp, .. } => timestamp,
+        }
+    }
+
+    /// Returns the `window_id` field of the event if it's present (not all events have it!).
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::event::Event;
+    ///
+    /// let ev = Event::JoyButtonDown {
+    ///     timestamp: 0,
+    ///     which: 0,
+    ///     button_idx: 0,
+    /// };
+    /// assert!(ev.get_window_id() == None);
+    ///
+    /// let another_ev = Event::DropBegin {
+    ///     timestamp: 0,
+    ///     window_id: 3,
+    /// };
+    /// assert!(another_ev.get_window_id() == Some(3));
+    /// ```
+    pub fn get_window_id(&self) -> Option<u32> {
+        match self {
+            Self::Window { window_id, .. } => Some(*window_id),
+            Self::KeyDown { window_id, .. } => Some(*window_id),
+            Self::KeyUp { window_id, .. } => Some(*window_id),
+            Self::TextEditing { window_id, .. } => Some(*window_id),
+            Self::TextInput { window_id, .. } => Some(*window_id),
+            Self::MouseMotion { window_id, .. } => Some(*window_id),
+            Self::MouseButtonDown { window_id, .. } => Some(*window_id),
+            Self::MouseButtonUp { window_id, .. } => Some(*window_id),
+            Self::MouseWheel { window_id, .. } => Some(*window_id),
+            Self::DropFile { window_id, .. } => Some(*window_id),
+            Self::DropText { window_id, .. } => Some(*window_id),
+            Self::DropBegin { window_id, .. } => Some(*window_id),
+            Self::DropComplete { window_id, .. } => Some(*window_id),
+            Self::User { window_id, .. } => Some(*window_id),
+            _ => None,
+        }
+    }
+
+    /// Returns `true` if this is a window event.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::event::Event;
+    ///
+    /// let ev = Event::Quit {
+    ///     timestamp: 0,
+    /// };
+    /// assert!(ev.is_window());
+    ///
+    /// let ev = Event::AppLowMemory {
+    ///     timestamp: 0,
+    /// };
+    /// assert!(ev.is_window());
+    ///
+    /// let another_ev = Event::TextInput {
+    ///     timestamp: 0,
+    ///     window_id: 0,
+    ///     text: String::new(),
+    /// };
+    /// assert!(another_ev.is_window() == false); // Not a window event!
+    /// ```
+    pub fn is_window(&self) -> bool {
+        match self {
+            Self::Quit { .. }
+            | Self::AppTerminating { .. }
+            | Self::AppLowMemory { .. }
+            | Self::AppWillEnterBackground { .. }
+            | Self::AppDidEnterBackground { .. }
+            | Self::AppWillEnterForeground { .. }
+            | Self::AppDidEnterForeground { .. }
+            | Self::Window { .. } => true,
+            _ => false,
+        }
+    }
+
+    /// Returns `true` if this is a keyboard event.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::event::Event;
+    /// use sdl2::keyboard::Mod;
+    ///
+    /// let ev = Event::KeyDown {
+    ///     timestamp: 0,
+    ///     window_id: 0,
+    ///     keycode: None,
+    ///     scancode: None,
+    ///     keymod: Mod::empty(),
+    ///     repeat: false,
+    /// };
+    /// assert!(ev.is_keyboard());
+    ///
+    /// let another_ev = Event::Quit {
+    ///     timestamp: 0,
+    /// };
+    /// assert!(another_ev.is_keyboard() == false); // Not a keyboard event!
+    /// ```
+    pub fn is_keyboard(&self) -> bool {
+        match self {
+            Self::KeyDown { .. }
+            | Self::KeyUp { .. } => true,
+            _ => false,
+        }
+    }
+
+    /// Returns `true` if this is a text event.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::event::Event;
+    ///
+    /// let ev = Event::TextInput {
+    ///     timestamp: 0,
+    ///     window_id: 0,
+    ///     text: String::new(),
+    /// };
+    /// assert!(ev.is_text());
+    ///
+    /// let another_ev = Event::Quit {
+    ///     timestamp: 0,
+    /// };
+    /// assert!(another_ev.is_text() == false); // Not a text event!
+    /// ```
+    pub fn is_text(&self) -> bool {
+        match self {
+            Self::TextEditing { .. }
+            | Self::TextInput { .. } => true,
+            _ => false,
+        }
+    }
+
+    /// Returns `true` if this is a mouse event.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::event::Event;
+    /// use sdl2::mouse::MouseWheelDirection;
+    ///
+    /// let ev = Event::MouseWheel {
+    ///     timestamp: 0,
+    ///     window_id: 0,
+    ///     which: 0,
+    ///     x: 0,
+    ///     y: 0,
+    ///     direction: MouseWheelDirection::Normal,
+    /// };
+    /// assert!(ev.is_mouse());
+    ///
+    /// let another_ev = Event::Quit {
+    ///     timestamp: 0,
+    /// };
+    /// assert!(another_ev.is_mouse() == false); // Not a mouse event!
+    /// ```
+    pub fn is_mouse(&self) -> bool {
+        match self {
+            Self::MouseMotion { .. }
+            | Self::MouseButtonDown { .. }
+            | Self::MouseButtonUp { .. }
+            | Self::MouseWheel { .. } => true,
+            _ => false,
+        }
+    }
+
+    /// Returns `true` if this is a controller event.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::event::Event;
+    ///
+    /// let ev = Event::ControllerDeviceAdded {
+    ///     timestamp: 0,
+    ///     which: 0,
+    /// };
+    /// assert!(ev.is_controller());
+    ///
+    /// let another_ev = Event::Quit {
+    ///     timestamp: 0,
+    /// };
+    /// assert!(another_ev.is_controller() == false); // Not a controller event!
+    /// ```
+    pub fn is_controller(&self) -> bool {
+        match self {
+            Self::ControllerAxisMotion { .. }
+            | Self::ControllerButtonDown { .. }
+            | Self::ControllerButtonUp { .. }
+            | Self::ControllerDeviceAdded { .. }
+            | Self::ControllerDeviceRemoved { .. }
+            | Self::ControllerDeviceRemapped { .. } => true,
+            _ => false,
+        }
+    }
+
+    /// Returns `true` if this is a joy event.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::event::Event;
+    ///
+    /// let ev = Event::JoyButtonUp {
+    ///     timestamp: 0,
+    ///     which: 0,
+    ///     button_idx: 0,
+    /// };
+    /// assert!(ev.is_joy());
+    ///
+    /// let another_ev = Event::Quit {
+    ///     timestamp: 0,
+    /// };
+    /// assert!(another_ev.is_joy() == false); // Not a joy event!
+    /// ```
+    pub fn is_joy(&self) -> bool {
+        match self {
+            Self::JoyAxisMotion { .. }
+            | Self::JoyBallMotion { .. }
+            | Self::JoyHatMotion { .. }
+            | Self::JoyButtonDown { .. }
+            | Self::JoyButtonUp { .. }
+            | Self::JoyDeviceAdded { .. }
+            | Self::JoyDeviceRemoved { .. } => true,
+            _ => false,
+        }
+    }
+
+    /// Returns `true` if this is a finger event.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::event::Event;
+    ///
+    /// let ev = Event::FingerMotion {
+    ///     timestamp: 0,
+    ///     touch_id: 0,
+    ///     finger_id: 0,
+    ///     x: 0.,
+    ///     y: 0.,
+    ///     dx: 0.,
+    ///     dy: 0.,
+    ///     pressure: 0.,
+    /// };
+    /// assert!(ev.is_finger());
+    ///
+    /// let another_ev = Event::Quit {
+    ///     timestamp: 0,
+    /// };
+    /// assert!(another_ev.is_finger() == false); // Not a finger event!
+    /// ```
+    pub fn is_finger(&self) -> bool {
+        match self {
+            Self::FingerDown { .. }
+            | Self::FingerUp { .. }
+            | Self::FingerMotion { .. } => true,
+            _ => false,
+        }
+    }
+
+    /// Returns `true` if this is a dollar event.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::event::Event;
+    ///
+    /// let ev = Event::DollarGesture {
+    ///     timestamp: 0,
+    ///     touch_id: 0,
+    ///     gesture_id: 0,
+    ///     num_fingers: 0,
+    ///     error: 0.,
+    ///     x: 0.,
+    ///     y: 0.,
+    /// };
+    /// assert!(ev.is_dollar());
+    ///
+    /// let another_ev = Event::Quit {
+    ///     timestamp: 0,
+    /// };
+    /// assert!(another_ev.is_dollar() == false); // Not a dollar event!
+    /// ```
+    pub fn is_dollar(&self) -> bool {
+        match self {
+            Self::DollarGesture { .. }
+            | Self::DollarRecord { .. } => true,
+            _ => false,
+        }
+    }
+
+    /// Returns `true` if this is a drop event.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::event::Event;
+    ///
+    /// let ev = Event::DropBegin {
+    ///     timestamp: 0,
+    ///     window_id: 3,
+    /// };
+    /// assert!(ev.is_drop());
+    ///
+    /// let another_ev = Event::Quit {
+    ///     timestamp: 0,
+    /// };
+    /// assert!(another_ev.is_drop() == false); // Not a drop event!
+    /// ```
+    pub fn is_drop(&self) -> bool {
+        match self {
+            Self::DropFile { .. }
+            | Self::DropText { .. }
+            | Self::DropBegin { .. }
+            | Self::DropComplete { .. } => true,
+            _ => false,
+        }
+    }
+
+    /// Returns `true` if this is an audio event.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::event::Event;
+    ///
+    /// let ev = Event::AudioDeviceAdded {
+    ///     timestamp: 0,
+    ///     which: 3,
+    ///     iscapture: false,
+    /// };
+    /// assert!(ev.is_audio());
+    ///
+    /// let another_ev = Event::Quit {
+    ///     timestamp: 0,
+    /// };
+    /// assert!(another_ev.is_audio() == false); // Not an audio event!
+    /// ```
+    pub fn is_audio(&self) -> bool {
+        match self {
+            Self::AudioDeviceAdded { .. }
+            | Self::AudioDeviceRemoved { .. } => true,
+            _ => false,
+        }
+    }
+
+    /// Returns `true` if this is a render event.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::event::Event;
+    ///
+    /// let ev = Event::RenderTargetsReset {
+    ///     timestamp: 0,
+    /// };
+    /// assert!(ev.is_render());
+    ///
+    /// let another_ev = Event::Quit {
+    ///     timestamp: 0,
+    /// };
+    /// assert!(another_ev.is_render() == false); // Not a render event!
+    /// ```
+    pub fn is_render(&self) -> bool {
+        match self {
+            Self::RenderTargetsReset { .. }
+            | Self::RenderDeviceReset { .. } => true,
+            _ => false,
+        }
+    }
+
+    /// Returns `true` if this is a user event.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::event::Event;
+    ///
+    /// let ev = Event::User {
+    ///     timestamp: 0,
+    ///     window_id: 0,
+    ///     type_: 0,
+    ///     code: 0,
+    ///     data1: ::std::ptr::null_mut(),
+    ///     data2: ::std::ptr::null_mut(),
+    /// };
+    /// assert!(ev.is_user());
+    ///
+    /// let another_ev = Event::Quit {
+    ///     timestamp: 0,
+    /// };
+    /// assert!(another_ev.is_user() == false); // Not a user event!
+    /// ```
+    pub fn is_user(&self) -> bool {
+        match self {
+            Self::User { .. } => true,
+            _ => false,
+        }
+    }
+
+    /// Returns `true` if this is an unknown event.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::event::Event;
+    ///
+    /// let ev = Event::Unknown {
+    ///     timestamp: 0,
+    ///     type_: 0,
+    /// };
+    /// assert!(ev.is_unknown());
+    ///
+    /// let another_ev = Event::Quit {
+    ///     timestamp: 0,
+    /// };
+    /// assert!(another_ev.is_unknown() == false); // Not an unknown event!
+    /// ```
+    pub fn is_unknown(&self) -> bool {
+        match self {
+            Self::Unknown { .. } => true,
+            _ => false,
+        }
+    }
 }
 
 unsafe fn poll_event() -> Option<Event> {
