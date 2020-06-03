@@ -343,36 +343,6 @@ impl Rect {
         self.raw.h = clamp_size(height) as i32;
     }
 
-    /// Checks whether this rect contains a given point, or touches it on the
-    /// right and/or bottom edges.  This method is deprecated in favor of
-    /// [`Rect::contains_point`](#method.contains_point).
-    ///
-    /// For [historical
-    /// reasons](https://github.com/AngryLawyer/rust-sdl2/issues/569), this
-    /// method differs in behavior from
-    /// [`SDL_PointInRect`](https://wiki.libsdl.org/SDL_PointInRect) by
-    /// including points along the bottom and right edges of the rectangle, so
-    /// that a 1-by-1 rectangle actually covers an area of four points, not
-    /// one.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use sdl2::rect::{Rect, Point};
-    /// let rect = Rect::new(1, 2, 3, 4);
-    /// assert!(rect.contains(Point::new(1, 2)));
-    /// assert!(!rect.contains(Point::new(0, 1)));
-    /// assert!(rect.contains(Point::new(3, 5)));
-    /// assert!(rect.contains(Point::new(4, 6)));  // N.B.
-    /// assert!(!rect.contains(Point::new(5, 7)));
-    /// ```
-    #[deprecated(since = "0.30.0", note = "use `contains_point` instead")]
-    pub fn contains<P>(&self, point: P) -> bool where P: Into<(i32, i32)> {
-        let (x, y) = point.into();
-        let inside_x = x >= self.left() && x <= self.right();
-        inside_x && (y >= self.top() && y <= self.bottom())
-    }
-
     /// Checks whether this rectangle contains a given point.
     ///
     /// Points along the right and bottom edges are not considered to be inside
