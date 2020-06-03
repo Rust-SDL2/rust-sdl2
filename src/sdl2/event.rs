@@ -445,6 +445,28 @@ impl WindowEvent {
         }
     }
 
+    pub fn is_same_kind_as(&self, other: &WindowEvent) -> bool {
+        match (self, other) {
+            (Self::None, Self::None)
+            | (Self::Shown, Self::Shown)
+            | (Self::Hidden, Self::Hidden)
+            | (Self::Exposed, Self::Exposed)
+            | (Self::Moved(_, _), Self::Moved(_, _))
+            | (Self::Resized(_, _), Self::Resized(_, _))
+            | (Self::SizeChanged(_, _), Self::SizeChanged(_, _))
+            | (Self::Minimized, Self::Minimized)
+            | (Self::Maximized, Self::Maximized)
+            | (Self::Restored, Self::Restored)
+            | (Self::Enter, Self::Enter)
+            | (Self::Leave, Self::Leave)
+            | (Self::FocusGained, Self::FocusGained)
+            | (Self::FocusLost, Self::FocusLost)
+            | (Self::Close, Self::Close)
+            | (Self::TakeFocus, Self::TakeFocus)
+            | (Self::HitTest, Self::HitTest) => true,
+            _ => false,
+        }
+    }
 }
 
 #[derive(Clone, PartialEq, Debug)]
