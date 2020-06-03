@@ -343,12 +343,6 @@ pub enum Fading {
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Channel(pub i32);
 
-/// Return a channel object.
-#[deprecated(since = "0.31.0", note = "use `Channel(i32)` instead")]
-pub fn channel(chan: i32) -> Channel {
-    Channel(chan)
-}
-
 /// Set the number of channels being mixed.
 pub fn allocate_channels(numchans: i32) -> i32 {
     unsafe { mixer::Mix_AllocateChannels(numchans as c_int) as i32 }

@@ -1704,8 +1704,7 @@ impl Event {
         }}                      // close unsafe & match
     }
 
-    #[deprecated(since = "0.33.0", note = "This method has been made public accidentally")]
-    pub fn unwrap_keymod(keymod_option: Option<keyboard::Mod>) -> keyboard::Mod {
+    fn unwrap_keymod(keymod_option: Option<keyboard::Mod>) -> keyboard::Mod {
         match keymod_option {
             None => keyboard::Mod::empty(),
             Some(x) => x,
