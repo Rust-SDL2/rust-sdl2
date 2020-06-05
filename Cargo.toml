@@ -8,6 +8,7 @@ license = "MIT"
 authors = [ "Tony Aldridge <tony@angry-lawyer.com>", "Cobrand <cobrandw@gmail.com>"]
 keywords = ["SDL", "windowing", "graphics", "api", "engine"]
 categories = ["rendering","api-bindings","game-engines","multimedia"]
+readme = "README.md"
 
 [lib]
 name = "sdl2"
