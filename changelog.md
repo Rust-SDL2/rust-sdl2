@@ -1,7 +1,18 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
-### v0.34
+### v0.34.1
+
+[PR #1004](https://github.com/Rust-SDL2/rust-sdl2/pull/1004) + [PR #1005](https://github.com/Rust-SDL2/rust-sdl2/pull/1005):
+Add convenience functions for Window and Event.
+
+[PR #996](https://github.com/Rust-SDL2/rust-sdl2/pull/996):
+Impl `From<i32>` for `WindowPos`.
+
+[PR #988](https://github.com/Rust-SDL2/rust-sdl2/pull/988):
+Add convenience functions for `Texture`.
+
+### v0.34.0
 
 [PR #962](https://github.com/Rust-SDL2/rust-sdl2/pull/962):
 Added `raw-window-handle` support for Windows, Linux (X11 and Wayland) and macOS.
