@@ -27,6 +27,10 @@ optional = true
 version = "^0.3"
 optional = true
 
+[build-dependencies.vcpkg]
+version = "^0.2.10"
+optional = true
+
 [build-dependencies.cmake]
 version = "^0.1"
 optional = true
@@ -50,6 +54,7 @@ cfg-if = "^0.1"
 
 default = []
 use-pkgconfig = ["pkg-config"]
+use-vcpkg = ["vcpkg"]
 use-bindgen = ["bindgen"]
 static-link = []
 use_mac_framework = []
