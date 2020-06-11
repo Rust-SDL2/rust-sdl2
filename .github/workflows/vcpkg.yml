@@ -1,0 +1,31 @@
+name: vcpkg
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install cargo-vcpkg
+        run: cargo install cargo-vcpkg
+      - name: Install dependencies
+        run: cargo vcpkg build
+      - name: Build SDL2
+        shell: bash
+        env:
+          CI_BUILD_FEATURES: "use-vcpkg static-link gfx image ttf mixer"
+          RUST_TEST_THREADS: 1
+        run: |
+          set -xeuo pipefail
+          rustc --version
+          cargo --version
+          cargo build --features "${CI_BUILD_FEATURES}"
+          cargo build --examples --features "${CI_BUILD_FEATURES}"
+          cargo test --features "${CI_BUILD_FEATURES}"
