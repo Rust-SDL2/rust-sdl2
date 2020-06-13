@@ -1,6 +1,11 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
+### Unreleased
+
+[PR #1009](https://github.com/Rust-SDL2/rust-sdl2/pull/1009)
+Add support for linking to development libraries from vcpkg, and automatically setting up a vcpkg installation using `cargo-vcpkg`.
+
 ### v0.34.1
 
 [PR #1004](https://github.com/Rust-SDL2/rust-sdl2/pull/1004) + [PR #1005](https://github.com/Rust-SDL2/rust-sdl2/pull/1005):

@@ -62,9 +62,10 @@ You might also need a C compiler (`gcc`).
 #### Static linking in Linux
 
 You can choose to link SDL2 statically instead of dynamically with the `static-link` feature.
-However on Linux, unless you use the "bundled" feature, your operating system has no built-in way to find the resources needed to link statically SDL2 from your system.
-
-You need to add the feature `use-pkgconfig`, so that rustc knows where to look for your SDL2 libraries and its dependencies for static linking.
+On Linux, you will need to additionally do one of the following:
+* use the `bundled` feature
+* use the feature `use-pkgconfig` so that rustc knows where to look for your SDL2 libraries and its dependencies for static linking. This is required because there is no built-in way to find the resources needed to link statically SDL2 from your system
+* install development libraries with [vcpkg][vcpkg]. Instructions to generate a static binary on Linux and other operating systems using vcpkg are [here][cargo-vcpkg-usage]
 
 ### Mac OS X
 #### If you are using homebrew
@@ -116,6 +117,10 @@ following in your `Cargo.toml` file:
 default = []
 use_sdl2_mac_framework = ["sdl2/use_mac_framework"]
 ```
+
+#### Static linking on macOS using vcpkg
+
+Instructions to generate a static binary on macOS and other operating systems using [vcpkg][vcpkg] are [here][cargo-vcpkg-usage].
 
 ### Windows with build script
 
@@ -248,7 +253,7 @@ These files are not currently included with the windows-gnu toolchain, but can b
 You will find the aforementioned libraries under `mingw64/x86_64-w64-mingw32/lib/` (for x86_64) or `mingw32/i686-w64-mingw32/lib/` (for i686). Copy them to your toolchain's `lib` directory (the same one you copied the SDL .a files to).
 
 ### Windows (MSVC with vcpkg)
-1. Install [MS build tools](https://visualstudio.microsoft.com/downloads/) and [vcpkg](https://github.com/microsoft/vcpkg)
+1. Install [MS build tools](https://visualstudio.microsoft.com/downloads/) and [vcpkg][vcpkg]
 2. Install the needed SDL2 libs: `vcpkg.exe install sdl2-ttf:x64-windows sdl2:x64-windows`
 3. Open a x64 native tools prompt (x64 Native Tools Command Prompt for VS 2019)
 4. set env vars:
@@ -289,10 +294,39 @@ SET LIB=%LIB%;C:\Users\my_user\dev\vcpkg\installed\x64-windows\lib
 
 #### Static linking with MSVC
 
-The MSVC development libraries provided by http://libsdl.org/ don't include a static library. This means that if you want to use the `static-link` feature with the windows-msvc toolchain, you have to either
+The MSVC development libraries provided by http://libsdl.org/ don't include a static library. This means that if you want to use the `static-link` feature with the windows-msvc toolchain, you have to do one of
 
 - build an SDL2 static library yourself and copy it to your toolchain's `lib` directory; or
-- also enable the `bundled` feature, which will build a static library for you.
+- also enable the `bundled` feature, which will build a static library for you; or
+- use a static SDL2 library from vcpkg as described below.
+
+### Windows, Linux and macOS with vcpkg
+
+Another method of getting the development libraries is with [vcpkg][vcpkg]. To set up a project to build a static binary on Windows (MSVC), Linux or macOS that is buildable like this:
+```sh
+cargo install cargo-vcpkg
+cargo vcpkg build
+cargo build
+```
+
+add the following your `Cargo.toml`:
+
+```toml
+[dependencies.sdl2]
+version = "0.34"
+default-features = false
+features = ["ttf","image","gfx","mixer","static-link","use-vcpkg"]
+
+[package.metadata.vcpkg]
+dependencies = ["sdl2", "sdl2-image[libjpeg-turbo,tiff,libwebp]", "sdl2-ttf", "sdl2-gfx", "sdl2-mixer"]
+git = "https://github.com/microsoft/vcpkg"
+rev = "a0518036077baa4"
+
+[package.metadata.vcpkg.target]
+x86_64-pc-windows-msvc = { triplet = "x64-windows-static-md" }
+```
+
+More information on the `cargo vcpkg` tool is [here][cargo-vcpkg].
 
 # Installation
 
@@ -629,3 +663,6 @@ Any Pull Request is welcome, however small your contribution may be ! There are,
 [dep-sdl2-include-issue]: https://github.com/Rust-SDL2/rust-sdl2/pull/968
 [gl-rs]: https://github.com/bjz/gl-rs
 [pdev-issue]: https://github.com/PistonDevelopers/rust-empty/issues/175
+[vcpkg]: https://github.com/microsoft/vcpkg
+[cargo-vcpkg]: https://crates.io/crates/cargo-vcpkg
+[cargo-vcpkg-usage]: #Windows,-Linux-and-macOS-with-vcpkg
