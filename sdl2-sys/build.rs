@@ -267,6 +267,19 @@ fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
     let mut cfg = cmake::Config::new(sdl2_build_path);
     cfg.profile("release");
 
+    #[cfg(target_os = "linux")]
+    {
+        use version_compare::Version;
+        if let Ok(version) = std::process::Command::new("cc").arg("-dumpversion").output() {
+            let local_ver = Version::from(std::str::from_utf8(&version.stdout).unwrap()).unwrap();
+            let affected_ver = Version::from("10").unwrap();
+
+            if local_ver >= affected_ver {
+                cfg.cflag("-fcommon");
+            }
+        }
+    }
+
     if target_os == "windows-gnu" {
         cfg.define("VIDEO_OPENGLES", "OFF");
     }

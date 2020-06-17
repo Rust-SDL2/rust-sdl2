@@ -48,6 +48,7 @@ version = "^0.3"
 optional = true
 
 [build-dependencies]
+version-compare = "0.0.10"
 cfg-if = "^0.1"
 
 [features]
