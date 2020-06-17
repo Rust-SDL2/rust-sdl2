@@ -276,7 +276,6 @@ fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
 
             if local_ver >= affected_ver {
                 cfg.cflag("-fcommon");
-                cfg.cflag("-fPIE");
             }
         }
     }
