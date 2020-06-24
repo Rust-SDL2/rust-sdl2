@@ -559,7 +559,10 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
                 Some(device) => Some(CString::new(device).unwrap()),
                 None => None
             };
-            let device_ptr = device.map_or(ptr::null(), |s| s.as_ptr());
+            // Warning: map_or consumes its argument; `device.map_or()` would therefore consume the
+            // CString and drop it, making device_ptr a dangling pointer! To avoid that we downgrade
+            // device to an Option<&_> first.
+            let device_ptr = device.as_ref().map_or(ptr::null(), |s| s.as_ptr());
 
             let iscapture_flag = 0;
             let device_id = sys::SDL_OpenAudioDevice(
@@ -652,7 +655,10 @@ impl<CB: AudioCallback> AudioDevice<CB> {
                 Some(device) => Some(CString::new(device).unwrap()),
                 None => None
             };
-            let device_ptr = device.map_or(ptr::null(), |s| s.as_ptr());
+            // Warning: map_or consumes its argument; `device.map_or()` would therefore consume the
+            // CString and drop it, making device_ptr a dangling pointer! To avoid that we downgrade
+            // device to an Option<&_> first.
+            let device_ptr = device.as_ref().map_or(ptr::null(), |s| s.as_ptr());
 
             let iscapture_flag = if capture { 1 } else { 0 };
             let device_id = sys::SDL_OpenAudioDevice(
