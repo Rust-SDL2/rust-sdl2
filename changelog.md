@@ -1,7 +1,13 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
-### Unreleased
+### v0.34.2
+
+[PR #1012](https://github.com/Rust-SDL2/rust-sdl2/pull/1012)
+Fix use after free with AudioDevice::open and AudioDevice::open\_queue
+
+[PR #1010](https://github.com/Rust-SDL2/rust-sdl2/pull/1010)
+Fix compilation with gcc10.
 
 [PR #1009](https://github.com/Rust-SDL2/rust-sdl2/pull/1009)
 Add support for linking to development libraries from vcpkg, and automatically setting up a vcpkg installation using `cargo-vcpkg`.
