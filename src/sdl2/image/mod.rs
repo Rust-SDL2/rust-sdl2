@@ -135,7 +135,7 @@ impl<'a> SaveSurface for Surface<'a> {
 /// Method extensions for creating Textures from a `TextureCreator`
 pub trait LoadTexture {
     fn load_texture<P: AsRef<Path>>(&self, filename: P) -> Result<Texture, String>;
-    fn load_texture_rw(&self, buf: &[u8]) -> Result<Texture, String>;
+    fn load_texture_bytes(&self, buf: &[u8]) -> Result<Texture, String>;
 }
 
 impl<T> LoadTexture for TextureCreator<T> {
@@ -152,7 +152,8 @@ impl<T> LoadTexture for TextureCreator<T> {
         }
     }
 
-    fn load_texture_rw(&self, buf: &[u8]) -> Result<Texture, String> {
+    fn load_texture_bytes(&self, buf: &[u8]) -> Result<Texture, String> {
+        //! Loads an SDL Texture from a buffer that the format must be something supported by SDL2_image (png, jpeg, ect, but NOT RGBA8888 bytes for instance)
         unsafe {
             let buf = sdl2_sys::SDL_RWFromMem(buf.as_ptr() as *mut libc::c_void, buf.len() as i32);
             let raw = image::IMG_LoadTexture_RW(self.raw(), buf, 1); // close(free) buff after load
