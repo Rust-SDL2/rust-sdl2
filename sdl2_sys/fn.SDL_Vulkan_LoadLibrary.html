@@ -1,0 +1,37 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `SDL_Vulkan_LoadLibrary` fn in crate `sdl2_sys`."><meta name="keywords" content="rust, rustlang, rust-lang, SDL_Vulkan_LoadLibrary"><title>sdl2_sys::SDL_Vulkan_LoadLibrary - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../sdl2_sys/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class='location'><a href='index.html'>sdl2_sys</a></p><script>window.sidebarCurrent = {name: 'SDL_Vulkan_LoadLibrary', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/sdl2_sys/Users/travis/build/Rust-SDL2/rust-sdl2/target/debug/build/sdl2-sys-f32779682524d647/out/sdl_bindings.rs.html#29943' title='goto source code'>[src]</a></span><span class='in-band'>Function <a href='index.html'>sdl2_sys</a>::<wbr><a class="fn" href=''>SDL_Vulkan_LoadLibrary</a></span></h1><pre class='rust fn'>pub unsafe extern &quot;C&quot; fn SDL_Vulkan_LoadLibrary(path: *const <a class="type" href="../libc/unix/bsd/apple/type.c_char.html" title="type libc::unix::bsd::apple::c_char">c_char</a>) -&gt; <a class="type" href="../libc/unix/type.c_int.html" title="type libc::unix::c_int">c_int</a></pre><div class='docblock'><p>\brief Dynamically load a Vulkan loader library.</p>
+<p>\param [in] path The platform dependent Vulkan loader library name, or
+\c NULL.</p>
+<p>\return \c 0 on success, or \c -1 if the library couldn't be loaded.</p>
+<p>If \a path is NULL SDL will use the value of the environment variable
+\c SDL_VULKAN_LIBRARY, if set, otherwise it loads the default Vulkan
+loader library.</p>
+<p>This should be called after initializing the video driver, but before
+creating any Vulkan windows. If no Vulkan loader library is loaded, the
+default library will be loaded upon creation of the first Vulkan window.</p>
+<p>\note It is fairly common for Vulkan applications to link with \a libvulkan
+instead of explicitly loading it at run time. This will work with
+SDL provided the application links to a dynamic library and both it
+and SDL use the same search path.</p>
+<p>\note If you specify a non-NULL \c path, an application should retrieve all
+of the Vulkan functions it uses from the dynamic library using
+\c SDL_Vulkan_GetVkGetInstanceProcAddr() unless you can guarantee
+\c path points to the same vulkan loader library the application
+linked to.</p>
+<p>\note On Apple devices, if \a path is NULL, SDL will attempt to find
+the vkGetInstanceProcAddr address within all the mach-o images of
+the current process. This is because it is fairly common for Vulkan
+applications to link with libvulkan (and historically MoltenVK was
+provided as a static library). If it is not found then, on macOS, SDL
+will attempt to load \c vulkan.framework/vulkan, \c libvulkan.1.dylib,
+followed by \c libvulkan.dylib, in that order.
+On iOS SDL will attempt to load \c libvulkan.dylib only. Applications
+using a dynamic framework or .dylib must ensure it is included in its
+application bundle.</p>
+<p>\note On non-Apple devices, application linking with a static libvulkan is
+not supported. Either do not link to the Vulkan loader or link to a
+dynamic library version.</p>
+<p>\note This function will fail if there are no working Vulkan drivers
+installed.</p>
+<p>\sa SDL_Vulkan_GetVkGetInstanceProcAddr()
+\sa SDL_Vulkan_UnloadLibrary()</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "sdl2_sys";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

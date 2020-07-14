@@ -1,0 +1,44 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `SDL_OpenAudio` fn in crate `sdl2_sys`."><meta name="keywords" content="rust, rustlang, rust-lang, SDL_OpenAudio"><title>sdl2_sys::SDL_OpenAudio - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../sdl2_sys/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class='location'><a href='index.html'>sdl2_sys</a></p><script>window.sidebarCurrent = {name: 'SDL_OpenAudio', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/sdl2_sys/Users/travis/build/Rust-SDL2/rust-sdl2/target/debug/build/sdl2-sys-f32779682524d647/out/sdl_bindings.rs.html#3042' title='goto source code'>[src]</a></span><span class='in-band'>Function <a href='index.html'>sdl2_sys</a>::<wbr><a class="fn" href=''>SDL_OpenAudio</a></span></h1><pre class='rust fn'>pub unsafe extern &quot;C&quot; fn SDL_OpenAudio(<br>&nbsp;&nbsp;&nbsp;&nbsp;desired: *mut <a class="struct" href="../sdl2_sys/struct.SDL_AudioSpec.html" title="struct sdl2_sys::SDL_AudioSpec">SDL_AudioSpec</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;obtained: *mut <a class="struct" href="../sdl2_sys/struct.SDL_AudioSpec.html" title="struct sdl2_sys::SDL_AudioSpec">SDL_AudioSpec</a><br>) -&gt; <a class="type" href="../libc/unix/type.c_int.html" title="type libc::unix::c_int">c_int</a></pre><div class='docblock'><p>This function opens the audio device with the desired parameters, and
+returns 0 if successful, placing the actual hardware parameters in the
+structure pointed to by \c obtained.  If \c obtained is NULL, the audio
+data passed to the callback function will be guaranteed to be in the
+requested format, and will be automatically converted to the hardware
+audio format if necessary.  This function returns -1 if it failed
+to open the audio device, or couldn't set up the audio thread.</p>
+<p>When filling in the desired audio spec structure,</p>
+<ul>
+<li>\c desired-&gt;freq should be the desired audio frequency in samples-per-
+second.</li>
+<li>\c desired-&gt;format should be the desired audio format.</li>
+<li>\c desired-&gt;samples is the desired size of the audio buffer, in
+samples.  This number should be a power of two, and may be adjusted by
+the audio driver to a value more suitable for the hardware.  Good values
+seem to range between 512 and 8096 inclusive, depending on the
+application and CPU speed.  Smaller values yield faster response time,
+but can lead to underflow if the application is doing heavy processing
+and cannot fill the audio buffer in time.  A stereo sample consists of
+both right and left channels in LR ordering.
+Note that the number of samples is directly related to time by the
+following formula:  \code ms = (samples*1000)/freq \endcode</li>
+<li>\c desired-&gt;size is the size in bytes of the audio buffer, and is
+calculated by SDL_OpenAudio().</li>
+<li>\c desired-&gt;silence is the value used to set the buffer to silence,
+and is calculated by SDL_OpenAudio().</li>
+<li>\c desired-&gt;callback should be set to a function that will be called
+when the audio device is ready for more data.  It is passed a pointer
+to the audio buffer, and the length in bytes of the audio buffer.
+This function usually runs in a separate thread, and so you should
+protect data structures that it accesses by calling SDL_LockAudio()
+and SDL_UnlockAudio() in your code. Alternately, you may pass a NULL
+pointer here, and call SDL_QueueAudio() with some frequency, to queue
+more audio samples to be played (or for capture devices, call
+SDL_DequeueAudio() with some frequency, to obtain audio samples).</li>
+<li>\c desired-&gt;userdata is passed as the first parameter to your callback
+function. If you passed a NULL callback, this value is ignored.</li>
+</ul>
+<p>The audio device starts out playing silence when it's opened, and should
+be enabled for playing by calling \c SDL_PauseAudio(0) when you are ready
+for your audio callback function to be called.  Since the audio driver
+may modify the requested size of the audio buffer, you should allocate
+any local mixing buffers after you open the audio device.</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "sdl2_sys";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

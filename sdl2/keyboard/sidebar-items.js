@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Keycode",""],["Scancode",""]],"struct":[["KeyboardState",""],["KeyboardUtil","Keyboard utility functions. Access with `Sdl::keyboard()`."],["Mod",""],["PressedScancodeIterator",""],["ScancodeIterator",""],["TextInputUtil","Text input utility functions. Access with `VideoSubsystem::text_input()`."]]});

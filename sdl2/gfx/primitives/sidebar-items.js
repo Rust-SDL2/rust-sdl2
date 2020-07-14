@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["set_font","Sets or resets the current global font data."],["set_font_rotation","Sets current global font character rotation steps."]],"trait":[["DrawRenderer","For drawing with rust-sdl2 Renderer"],["ToColor","generic Color type"]]});

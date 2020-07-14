@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["max_int_value","The maximal integer value that can be used for rectangles."],["min_int_value","The minimal integer value that can be used for rectangle positions and points."]],"struct":[["Point","Immutable point type, consisting of x and y."],["Rect","A (non-empty) rectangle."]]});

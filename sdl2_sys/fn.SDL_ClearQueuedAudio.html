@@ -1,0 +1,26 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `SDL_ClearQueuedAudio` fn in crate `sdl2_sys`."><meta name="keywords" content="rust, rustlang, rust-lang, SDL_ClearQueuedAudio"><title>sdl2_sys::SDL_ClearQueuedAudio - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../sdl2_sys/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class='location'><a href='index.html'>sdl2_sys</a></p><script>window.sidebarCurrent = {name: 'SDL_ClearQueuedAudio', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/sdl2_sys/Users/travis/build/Rust-SDL2/rust-sdl2/target/debug/build/sdl2-sys-f32779682524d647/out/sdl_bindings.rs.html#3517' title='goto source code'>[src]</a></span><span class='in-band'>Function <a href='index.html'>sdl2_sys</a>::<wbr><a class="fn" href=''>SDL_ClearQueuedAudio</a></span></h1><pre class='rust fn'>pub unsafe extern &quot;C&quot; fn SDL_ClearQueuedAudio(dev: <a class="type" href="../sdl2_sys/type.SDL_AudioDeviceID.html" title="type sdl2_sys::SDL_AudioDeviceID">SDL_AudioDeviceID</a>)</pre><div class='docblock'><p>Drop any queued audio data. For playback devices, this is any queued data
+still waiting to be submitted to the hardware. For capture devices, this
+is any data that was queued by the device that hasn't yet been dequeued by
+the application.</p>
+<p>Immediately after this call, SDL_GetQueuedAudioSize() will return 0. For
+playback devices, the hardware will start playing silence if more audio
+isn't queued. Unpaused capture devices will start filling the queue again
+as soon as they have more data available (which, depending on the state
+of the hardware and the thread, could be before this function call
+returns!).</p>
+<p>This will not prevent playback of queued audio that's already been sent
+to the hardware, as we can not undo that, so expect there to be some
+fraction of a second of audio that might still be heard. This can be
+useful if you want to, say, drop any pending music during a level change
+in your game.</p>
+<p>You may not queue audio on a device that is using an application-supplied
+callback; calling this function on such a device is always a no-op.
+You have to queue audio with SDL_QueueAudio()/SDL_DequeueAudio(), or use
+the audio callback, but not both.</p>
+<p>You should not call SDL_LockAudio() on the device before clearing the
+queue; SDL handles locking internally for this function.</p>
+<p>This function always succeeds and thus returns void.</p>
+<p>\param dev The device ID of which to clear the audio queue.</p>
+<p>\sa SDL_QueueAudio
+\sa SDL_GetQueuedAudioSize</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "sdl2_sys";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

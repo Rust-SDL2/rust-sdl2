@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["FPSManager","Structure holding the state and timing information of the framerate controller."]]});

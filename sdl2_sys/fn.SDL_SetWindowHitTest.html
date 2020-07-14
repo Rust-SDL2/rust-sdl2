@@ -1,0 +1,29 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `SDL_SetWindowHitTest` fn in crate `sdl2_sys`."><meta name="keywords" content="rust, rustlang, rust-lang, SDL_SetWindowHitTest"><title>sdl2_sys::SDL_SetWindowHitTest - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../sdl2_sys/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class='location'><a href='index.html'>sdl2_sys</a></p><script>window.sidebarCurrent = {name: 'SDL_SetWindowHitTest', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/sdl2_sys/Users/travis/build/Rust-SDL2/rust-sdl2/target/debug/build/sdl2-sys-f32779682524d647/out/sdl_bindings.rs.html#8304-8308' title='goto source code'>[src]</a></span><span class='in-band'>Function <a href='index.html'>sdl2_sys</a>::<wbr><a class="fn" href=''>SDL_SetWindowHitTest</a></span></h1><pre class='rust fn'>pub unsafe extern &quot;C&quot; fn SDL_SetWindowHitTest(<br>&nbsp;&nbsp;&nbsp;&nbsp;window: *mut <a class="struct" href="../sdl2_sys/struct.SDL_Window.html" title="struct sdl2_sys::SDL_Window">SDL_Window</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;callback: <a class="type" href="../sdl2_sys/type.SDL_HitTest.html" title="type sdl2_sys::SDL_HitTest">SDL_HitTest</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;callback_data: *mut <a class="enum" href="https://doc.rust-lang.org/nightly/core/ffi/enum.c_void.html" title="enum core::ffi::c_void">c_void</a><br>) -&gt; <a class="type" href="../libc/unix/type.c_int.html" title="type libc::unix::c_int">c_int</a></pre><div class='docblock'><p>\brief Provide a callback that decides if a window region has special properties.</p>
+<p>Normally windows are dragged and resized by decorations provided by the
+system window manager (a title bar, borders, etc), but for some apps, it
+makes sense to drag them from somewhere else inside the window itself; for
+example, one might have a borderless window that wants to be draggable
+from any part, or simulate its own title bar, etc.</p>
+<p>This function lets the app provide a callback that designates pieces of
+a given window as special. This callback is run during event processing
+if we need to tell the OS to treat a region of the window specially; the
+use of this callback is known as &quot;hit testing.&quot;</p>
+<p>Mouse input may not be delivered to your application if it is within
+a special area; the OS will often apply that input to moving the window or
+resizing the window and not deliver it to the application.</p>
+<p>Specifying NULL for a callback disables hit-testing. Hit-testing is
+disabled by default.</p>
+<p>Platforms that don't support this functionality will return -1
+unconditionally, even if you're attempting to disable hit-testing.</p>
+<p>Your callback may fire at any time, and its firing does not indicate any
+specific behavior (for example, on Windows, this certainly might fire
+when the OS is deciding whether to drag your window, but it fires for lots
+of other reasons, too, some unrelated to anything you probably care about
+<em>and when the mouse isn't actually at the location it is testing</em>).
+Since this can fire at any time, you should try to keep your callback
+efficient, devoid of allocations, etc.</p>
+<p>\param window The window to set hit-testing on.
+\param callback The callback to call when doing a hit-test.
+\param callback_data An app-defined void pointer passed to the callback.
+\return 0 on success, -1 on error (including unsupported).</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "sdl2_sys";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

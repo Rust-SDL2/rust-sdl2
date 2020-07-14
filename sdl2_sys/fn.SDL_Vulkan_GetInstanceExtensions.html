@@ -1,0 +1,58 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `SDL_Vulkan_GetInstanceExtensions` fn in crate `sdl2_sys`."><meta name="keywords" content="rust, rustlang, rust-lang, SDL_Vulkan_GetInstanceExtensions"><title>sdl2_sys::SDL_Vulkan_GetInstanceExtensions - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../sdl2_sys/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class='location'><a href='index.html'>sdl2_sys</a></p><script>window.sidebarCurrent = {name: 'SDL_Vulkan_GetInstanceExtensions', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/sdl2_sys/Users/travis/build/Rust-SDL2/rust-sdl2/target/debug/build/sdl2-sys-f32779682524d647/out/sdl_bindings.rs.html#30031-30035' title='goto source code'>[src]</a></span><span class='in-band'>Function <a href='index.html'>sdl2_sys</a>::<wbr><a class="fn" href=''>SDL_Vulkan_GetInstanceExtensions</a></span></h1><pre class='rust fn'>pub unsafe extern &quot;C&quot; fn SDL_Vulkan_GetInstanceExtensions(<br>&nbsp;&nbsp;&nbsp;&nbsp;window: *mut <a class="struct" href="../sdl2_sys/struct.SDL_Window.html" title="struct sdl2_sys::SDL_Window">SDL_Window</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;pCount: *mut <a class="type" href="../libc/unix/type.c_uint.html" title="type libc::unix::c_uint">c_uint</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;pNames: *mut *const <a class="type" href="../libc/unix/bsd/apple/type.c_char.html" title="type libc::unix::bsd::apple::c_char">c_char</a><br>) -&gt; <a class="enum" href="../sdl2_sys/enum.SDL_bool.html" title="enum sdl2_sys::SDL_bool">SDL_bool</a></pre><div class='docblock'><p>\brief Get the names of the Vulkan instance extensions needed to create
+a surface with \c SDL_Vulkan_CreateSurface().</p>
+<p>\param [in]     \c NULL or window Window for which the required Vulkan instance
+extensions should be retrieved
+\param [in,out] pCount pointer to an \c unsigned related to the number of
+required Vulkan instance extensions
+\param [out]    pNames \c NULL or a pointer to an array to be filled with the
+required Vulkan instance extensions</p>
+<p>\return \c SDL_TRUE on success, \c SDL_FALSE on error.</p>
+<p>If \a pNames is \c NULL, then the number of required Vulkan instance
+extensions is returned in pCount. Otherwise, \a pCount must point to a
+variable set to the number of elements in the \a pNames array, and on
+return the variable is overwritten with the number of names actually
+written to \a pNames. If \a pCount is less than the number of required
+extensions, at most \a pCount structures will be written. If \a pCount
+is smaller than the number of required extensions, \c SDL_FALSE will be
+returned instead of \c SDL_TRUE, to indicate that not all the required
+extensions were returned.</p>
+<p>\note If \c window is not NULL, it will be checked against its creation
+flags to ensure that the Vulkan flag is present. This parameter
+will be removed in a future major release.</p>
+<p>\note The returned list of extensions will contain \c VK_KHR_surface
+and zero or more platform specific extensions</p>
+<p>\note The extension names queried here must be enabled when calling
+VkCreateInstance, otherwise surface creation will fail.</p>
+<p>\note \c window should have been created with the \c SDL_WINDOW_VULKAN flag
+or be \c NULL</p>
+<p>\code
+unsigned int count;
+// get count of required extensions
+if(!SDL_Vulkan_GetInstanceExtensions(NULL, &amp;count, NULL))
+handle_error();</p>
+<p>static const char *const additionalExtensions[] =
+{
+VK_EXT_DEBUG_REPORT_EXTENSION_NAME, // example additional extension
+};
+size_t additionalExtensionsCount = sizeof(additionalExtensions) / sizeof(additionalExtensions[0]);
+size_t extensionCount = count + additionalExtensionsCount;
+const char **names = malloc(sizeof(const char *) * extensionCount);
+if(!names)
+handle_error();</p>
+<p>// get names of required extensions
+if(!SDL_Vulkan_GetInstanceExtensions(NULL, &amp;count, names))
+handle_error();</p>
+<p>// copy additional extensions after required extensions
+for(size_t i = 0; i &lt; additionalExtensionsCount; i++)
+names[i + count] = additionalExtensions[i];</p>
+<p>VkInstanceCreateInfo instanceCreateInfo = {};
+instanceCreateInfo.enabledExtensionCount = extensionCount;
+instanceCreateInfo.ppEnabledExtensionNames = names;
+// fill in rest of instanceCreateInfo</p>
+<p>VkInstance instance;
+// create the Vulkan instance
+VkResult result = vkCreateInstance(&amp;instanceCreateInfo, NULL, &amp;instance);
+free(names);
+\endcode</p>
+<p>\sa SDL_Vulkan_CreateSurface()</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "sdl2_sys";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

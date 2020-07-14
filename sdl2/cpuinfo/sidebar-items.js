@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["CACHELINESIZE",""]],"fn":[["cpu_cache_line_size",""],["cpu_count",""],["has_3d_now",""],["has_alti_vec",""],["has_avx",""],["has_avx2",""],["has_avx512f",""],["has_mmx",""],["has_rdtsc",""],["has_sse",""],["has_sse2",""],["has_sse3",""],["has_sse41",""],["has_sse42",""],["system_ram",""]]});

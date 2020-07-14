@@ -1,0 +1,41 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `SDL_LoadWAV_RW` fn in crate `sdl2_sys`."><meta name="keywords" content="rust, rustlang, rust-lang, SDL_LoadWAV_RW"><title>sdl2_sys::SDL_LoadWAV_RW - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../sdl2_sys/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class='location'><a href='index.html'>sdl2_sys</a></p><script>window.sidebarCurrent = {name: 'SDL_LoadWAV_RW', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/sdl2_sys/Users/travis/build/Rust-SDL2/rust-sdl2/target/debug/build/sdl2-sys-f32779682524d647/out/sdl_bindings.rs.html#3172-3178' title='goto source code'>[src]</a></span><span class='in-band'>Function <a href='index.html'>sdl2_sys</a>::<wbr><a class="fn" href=''>SDL_LoadWAV_RW</a></span></h1><pre class='rust fn'>pub unsafe extern &quot;C&quot; fn SDL_LoadWAV_RW(<br>&nbsp;&nbsp;&nbsp;&nbsp;src: *mut <a class="struct" href="../sdl2_sys/struct.SDL_RWops.html" title="struct sdl2_sys::SDL_RWops">SDL_RWops</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;freesrc: <a class="type" href="../libc/unix/type.c_int.html" title="type libc::unix::c_int">c_int</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;spec: *mut <a class="struct" href="../sdl2_sys/struct.SDL_AudioSpec.html" title="struct sdl2_sys::SDL_AudioSpec">SDL_AudioSpec</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;audio_buf: *mut *mut <a class="type" href="../sdl2_sys/type.Uint8.html" title="type sdl2_sys::Uint8">Uint8</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;audio_len: *mut <a class="type" href="../sdl2_sys/type.Uint32.html" title="type sdl2_sys::Uint32">Uint32</a><br>) -&gt; *mut <a class="struct" href="../sdl2_sys/struct.SDL_AudioSpec.html" title="struct sdl2_sys::SDL_AudioSpec">SDL_AudioSpec</a></pre><div class='docblock'><p>\brief Load the audio data of a WAVE file into memory</p>
+<p>Loading a WAVE file requires \c src, \c spec, \c audio_buf and \c audio_len
+to be valid pointers. The entire data portion of the file is then loaded
+into memory and decoded if necessary.</p>
+<p>If \c freesrc is non-zero, the data source gets automatically closed and
+freed before the function returns.</p>
+<p>Supported are RIFF WAVE files with the formats PCM (8, 16, 24, and 32 bits),
+IEEE Float (32 bits), Microsoft ADPCM and IMA ADPCM (4 bits), and A-law and
+µ-law (8 bits). Other formats are currently unsupported and cause an error.</p>
+<p>If this function succeeds, the pointer returned by it is equal to \c spec
+and the pointer to the audio data allocated by the function is written to
+\c audio_buf and its length in bytes to \c audio_len. The \ref SDL_AudioSpec
+members \c freq, \c channels, and \c format are set to the values of the
+audio data in the buffer. The \c samples member is set to a sane default and
+all others are set to zero.</p>
+<p>It's necessary to use SDL_FreeWAV() to free the audio data returned in
+\c audio_buf when it is no longer used.</p>
+<p>Because of the underspecification of the Waveform format, there are many
+problematic files in the wild that cause issues with strict decoders. To
+provide compatibility with these files, this decoder is lenient in regards
+to the truncation of the file, the fact chunk, and the size of the RIFF
+chunk. The hints SDL_HINT_WAVE_RIFF_CHUNK_SIZE, SDL_HINT_WAVE_TRUNCATION,
+and SDL_HINT_WAVE_FACT_CHUNK can be used to tune the behavior of the
+loading process.</p>
+<p>Any file that is invalid (due to truncation, corruption, or wrong values in
+the headers), too big, or unsupported causes an error. Additionally, any
+critical I/O error from the data source will terminate the loading process
+with an error. The function returns NULL on error and in all cases (with the
+exception of \c src being NULL), an appropriate error message will be set.</p>
+<p>It is required that the data source supports seeking.</p>
+<p>Example:
+\code
+SDL_LoadWAV_RW(SDL_RWFromFile(&quot;sample.wav&quot;, &quot;rb&quot;), 1, ...);
+\endcode</p>
+<p>\param src The data source with the WAVE data
+\param freesrc A integer value that makes the function close the data source if non-zero
+\param spec A pointer filled with the audio format of the audio data
+\param audio_buf A pointer filled with the audio data allocated by the function
+\param audio_len A pointer filled with the length of the audio data buffer in bytes
+\return NULL on error, or non-NULL on success.</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "sdl2_sys";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

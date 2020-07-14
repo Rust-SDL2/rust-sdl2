@@ -1,0 +1,62 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `audio` mod in crate `sdl2`."><meta name="keywords" content="rust, rustlang, rust-lang, audio"><title>sdl2::audio - Rust</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../sdl2/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a><p class='location'>Module audio</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li></ul></div><p class='location'><a href='../index.html'>sdl2</a></p><script>window.sidebarCurrent = {name: 'audio', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../../src/sdl2/audio.rs.html#1-885' title='goto source code'>[src]</a></span><span class='in-band'>Module <a href='../index.html'>sdl2</a>::<wbr><a class="mod" href=''>audio</a></span></h1><div class='docblock'><p>Audio Functions</p>
+<h1 id="example" class="section-header"><a href="#example">Example</a></h1>
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">sdl2</span>::<span class="ident">audio</span>::{<span class="ident">AudioCallback</span>, <span class="ident">AudioSpecDesired</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">time</span>::<span class="ident">Duration</span>;
+
+<span class="kw">struct</span> <span class="ident">SquareWave</span> {
+    <span class="ident">phase_inc</span>: <span class="ident">f32</span>,
+    <span class="ident">phase</span>: <span class="ident">f32</span>,
+    <span class="ident">volume</span>: <span class="ident">f32</span>
+}
+
+<span class="kw">impl</span> <span class="ident">AudioCallback</span> <span class="kw">for</span> <span class="ident">SquareWave</span> {
+    <span class="kw">type</span> <span class="ident">Channel</span> <span class="op">=</span> <span class="ident">f32</span>;
+
+    <span class="kw">fn</span> <span class="ident">callback</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">out</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">f32</span>]) {
+        <span class="comment">// Generate a square wave</span>
+        <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="ident">out</span>.<span class="ident">iter_mut</span>() {
+            <span class="kw-2">*</span><span class="ident">x</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">phase</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">0.5</span> {
+                <span class="self">self</span>.<span class="ident">volume</span>
+            } <span class="kw">else</span> {
+                <span class="op">-</span><span class="self">self</span>.<span class="ident">volume</span>
+            };
+            <span class="self">self</span>.<span class="ident">phase</span> <span class="op">=</span> (<span class="self">self</span>.<span class="ident">phase</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">phase_inc</span>) <span class="op">%</span> <span class="number">1.0</span>;
+        }
+    }
+}
+
+<span class="kw">let</span> <span class="ident">sdl_context</span> <span class="op">=</span> <span class="ident">sdl2</span>::<span class="ident">init</span>().<span class="ident">unwrap</span>();
+<span class="kw">let</span> <span class="ident">audio_subsystem</span> <span class="op">=</span> <span class="ident">sdl_context</span>.<span class="ident">audio</span>().<span class="ident">unwrap</span>();
+
+<span class="kw">let</span> <span class="ident">desired_spec</span> <span class="op">=</span> <span class="ident">AudioSpecDesired</span> {
+    <span class="ident">freq</span>: <span class="prelude-val">Some</span>(<span class="number">44100</span>),
+    <span class="ident">channels</span>: <span class="prelude-val">Some</span>(<span class="number">1</span>),  <span class="comment">// mono</span>
+    <span class="ident">samples</span>: <span class="prelude-val">None</span>       <span class="comment">// default sample size</span>
+};
+
+<span class="kw">let</span> <span class="ident">device</span> <span class="op">=</span> <span class="ident">audio_subsystem</span>.<span class="ident">open_playback</span>(<span class="prelude-val">None</span>, <span class="kw-2">&amp;</span><span class="ident">desired_spec</span>, <span class="op">|</span><span class="ident">spec</span><span class="op">|</span> {
+    <span class="comment">// initialize the audio callback</span>
+    <span class="ident">SquareWave</span> {
+        <span class="ident">phase_inc</span>: <span class="number">440.0</span> <span class="op">/</span> <span class="ident">spec</span>.<span class="ident">freq</span> <span class="kw">as</span> <span class="ident">f32</span>,
+        <span class="ident">phase</span>: <span class="number">0.0</span>,
+        <span class="ident">volume</span>: <span class="number">0.25</span>
+    }
+}).<span class="ident">unwrap</span>();
+
+<span class="comment">// Start playback</span>
+<span class="ident">device</span>.<span class="ident">resume</span>();
+
+<span class="comment">// Play for 2 seconds</span>
+<span class="ident">std</span>::<span class="ident">thread</span>::<span class="ident">sleep</span>(<span class="ident">Duration</span>::<span class="ident">from_millis</span>(<span class="number">2000</span>));</pre></div>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table><tr class='module-item'><td><a class="struct" href="struct.AudioCVT.html" title='sdl2::audio::AudioCVT struct'>AudioCVT</a></td><td class='docblock-short'></td></tr><tr class='module-item'><td><a class="struct" href="struct.AudioDevice.html" title='sdl2::audio::AudioDevice struct'>AudioDevice</a></td><td class='docblock-short'><p>Wraps <code>SDL_AudioDeviceID</code> and owns the callback data used by the audio device.</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.AudioDeviceLockGuard.html" title='sdl2::audio::AudioDeviceLockGuard struct'>AudioDeviceLockGuard</a></td><td class='docblock-short'><p>Similar to <code>std::sync::MutexGuard</code>, but for use with <code>AudioDevice::lock()</code>.</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.AudioQueue.html" title='sdl2::audio::AudioQueue struct'>AudioQueue</a></td><td class='docblock-short'><p>Wraps <code>SDL_AudioDeviceID</code> and owns the callback data used by the audio device.</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.AudioSpec.html" title='sdl2::audio::AudioSpec struct'>AudioSpec</a></td><td class='docblock-short'></td></tr><tr class='module-item'><td><a class="struct" href="struct.AudioSpecDesired.html" title='sdl2::audio::AudioSpecDesired struct'>AudioSpecDesired</a></td><td class='docblock-short'></td></tr><tr class='module-item'><td><a class="struct" href="struct.AudioSpecWAV.html" title='sdl2::audio::AudioSpecWAV struct'>AudioSpecWAV</a></td><td class='docblock-short'></td></tr><tr class='module-item'><td><a class="struct" href="struct.DriverIterator.html" title='sdl2::audio::DriverIterator struct'>DriverIterator</a></td><td class='docblock-short'></td></tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table><tr class='module-item'><td><a class="enum" href="enum.AudioFormat.html" title='sdl2::audio::AudioFormat enum'>AudioFormat</a></td><td class='docblock-short'></td></tr><tr class='module-item'><td><a class="enum" href="enum.AudioStatus.html" title='sdl2::audio::AudioStatus enum'>AudioStatus</a></td><td class='docblock-short'></td></tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table><tr class='module-item'><td><a class="trait" href="trait.AudioCallback.html" title='sdl2::audio::AudioCallback trait'>AudioCallback</a></td><td class='docblock-short'></td></tr><tr class='module-item'><td><a class="trait" href="trait.AudioFormatNum.html" title='sdl2::audio::AudioFormatNum trait'>AudioFormatNum</a></td><td class='docblock-short'><p>A phantom type for retrieving the <code>SDL_AudioFormat</code> of a given generic type.
+All format types are returned as native-endian.</p>
+</td></tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table><tr class='module-item'><td><a class="fn" href="fn.drivers.html" title='sdl2::audio::drivers fn'>drivers</a></td><td class='docblock-short'><p>Gets an iterator of all audio drivers compiled into the SDL2 library.</p>
+</td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "sdl2";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script defer src="../../search-index.js"></script></body></html>

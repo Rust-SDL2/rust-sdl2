@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["PI","Archimedes' constant (π)"]],"fn":[["get_rotozoom_size",""],["get_rotozoom_xy_size",""],["get_zoom_size",""]],"trait":[["RotozoomSurface","`RotozoomSurface` for work with rust-sdl2 Surface type"]]});

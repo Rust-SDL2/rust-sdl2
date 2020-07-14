@@ -1,0 +1,30 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `SDL_QueueAudio` fn in crate `sdl2_sys`."><meta name="keywords" content="rust, rustlang, rust-lang, SDL_QueueAudio"><title>sdl2_sys::SDL_QueueAudio - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../sdl2_sys/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class='location'><a href='index.html'>sdl2_sys</a></p><script>window.sidebarCurrent = {name: 'SDL_QueueAudio', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/sdl2_sys/Users/travis/build/Rust-SDL2/rust-sdl2/target/debug/build/sdl2-sys-f32779682524d647/out/sdl_bindings.rs.html#3397-3401' title='goto source code'>[src]</a></span><span class='in-band'>Function <a href='index.html'>sdl2_sys</a>::<wbr><a class="fn" href=''>SDL_QueueAudio</a></span></h1><pre class='rust fn'>pub unsafe extern &quot;C&quot; fn SDL_QueueAudio(<br>&nbsp;&nbsp;&nbsp;&nbsp;dev: <a class="type" href="../sdl2_sys/type.SDL_AudioDeviceID.html" title="type sdl2_sys::SDL_AudioDeviceID">SDL_AudioDeviceID</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;data: *const <a class="enum" href="https://doc.rust-lang.org/nightly/core/ffi/enum.c_void.html" title="enum core::ffi::c_void">c_void</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;len: <a class="type" href="../sdl2_sys/type.Uint32.html" title="type sdl2_sys::Uint32">Uint32</a><br>) -&gt; <a class="type" href="../libc/unix/type.c_int.html" title="type libc::unix::c_int">c_int</a></pre><div class='docblock'><p>Queue more audio on non-callback devices.</p>
+<p>(If you are looking to retrieve queued audio from a non-callback capture
+device, you want SDL_DequeueAudio() instead. This will return -1 to
+signify an error if you use it with capture devices.)</p>
+<p>SDL offers two ways to feed audio to the device: you can either supply a
+callback that SDL triggers with some frequency to obtain more audio
+(pull method), or you can supply no callback, and then SDL will expect
+you to supply data at regular intervals (push method) with this function.</p>
+<p>There are no limits on the amount of data you can queue, short of
+exhaustion of address space. Queued data will drain to the device as
+necessary without further intervention from you. If the device needs
+audio but there is not enough queued, it will play silence to make up
+the difference. This means you will have skips in your audio playback
+if you aren't routinely queueing sufficient data.</p>
+<p>This function copies the supplied data, so you are safe to free it when
+the function returns. This function is thread-safe, but queueing to the
+same device from two threads at once does not promise which buffer will
+be queued first.</p>
+<p>You may not queue audio on a device that is using an application-supplied
+callback; doing so returns an error. You have to use the audio callback
+or queue audio with this function, but not both.</p>
+<p>You should not call SDL_LockAudio() on the device before queueing; SDL
+handles locking internally for this function.</p>
+<p>\param dev The device ID to which we will queue audio.
+\param data The data to queue to the device for later playback.
+\param len The number of bytes (not samples!) to which (data) points.
+\return 0 on success, or -1 on error.</p>
+<p>\sa SDL_GetQueuedAudioSize
+\sa SDL_ClearQueuedAudio</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "sdl2_sys";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

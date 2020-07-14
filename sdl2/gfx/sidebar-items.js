@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["framerate","Framerate control"],["imagefilter","MMX image filters"],["primitives","Graphic Primitives"],["rotozoom","Surface Rotozoomer"]]});
