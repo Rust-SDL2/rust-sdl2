@@ -739,7 +739,7 @@ impl Point {
         slice.as_ptr() as *const sys::SDL_Point
     }
 
-    pub fn raw(self) -> *const sys::SDL_Point {
+    pub fn raw(&self) -> *const sys::SDL_Point {
         &self.raw
     }
 
