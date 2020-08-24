@@ -281,6 +281,9 @@ impl SurfaceRef {
     }
 
     #[inline]
+    // this can prevent introducing UB until
+    // https://github.com/rust-lang/rust-clippy/issues/3992 is fixed
+    #[allow(clippy::trivially_copy_pass_by_ref)]
     pub fn raw(&self) -> *mut sys::SDL_Surface {
         self as *const SurfaceRef as *mut SurfaceRef as *mut () as *mut sys::SDL_Surface
     }

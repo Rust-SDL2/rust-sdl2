@@ -3,6 +3,9 @@ macro_rules! impl_raw_accessors(
         $(
         impl $t {
             #[inline]
+            // can prevent introducing UB until
+            // https://github.com/rust-lang/rust-clippy/issues/3992 is fixed
+            #[allow(clippy::trivially_copy_pass_by_ref)]
             pub const unsafe fn raw(&self) -> $raw { self.raw }
         }
         )+
