@@ -302,7 +302,7 @@ pub fn internal_load_font_at_index<'ttf,P: AsRef<Path>>(path: P, index: u32, pts
 impl<'ttf,'r> Font<'ttf,'r> {
     /// Returns the underlying C font object.
     // this can prevent introducing UB until
-    // https://github.com/rust-lang/rust-clippy/issues/3992 is fixed
+    // https://github.com/rust-lang/rust-clippy/issues/5953 is fixed
     #[allow(clippy::trivially_copy_pass_by_ref)]
     unsafe fn raw(&self) -> *mut ttf::TTF_Font {
         self.raw

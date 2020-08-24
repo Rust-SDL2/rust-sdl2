@@ -1076,7 +1076,7 @@ impl From<Window> for CanvasBuilder {
 impl Window {
     #[inline]
     // this can prevent introducing UB until
-    // https://github.com/rust-lang/rust-clippy/issues/3992 is fixed
+    // https://github.com/rust-lang/rust-clippy/issues/5953 is fixed
     #[allow(clippy::trivially_copy_pass_by_ref)]
     pub fn raw(&self) -> *mut sys::SDL_Window { self.context.raw }
 

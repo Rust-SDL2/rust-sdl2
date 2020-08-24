@@ -220,7 +220,7 @@ impl<T> RendererContext<T> {
 
     /// Gets the raw pointer to the SDL_Renderer
     // this can prevent introducing UB until
-    // https://github.com/rust-lang/rust-clippy/issues/3992 is fixed
+    // https://github.com/rust-lang/rust-clippy/issues/5953 is fixed
     #[allow(clippy::trivially_copy_pass_by_ref)]
     pub fn raw(&self) -> *mut sys::SDL_Renderer {
         self.raw
@@ -788,7 +788,7 @@ fn ll_create_texture(context: *mut sys::SDL_Renderer,
 /// Texture-creating methods for the renderer
 impl<T> TextureCreator<T> {
     // this can prevent introducing UB until
-    // https://github.com/rust-lang/rust-clippy/issues/3992 is fixed
+    // https://github.com/rust-lang/rust-clippy/issues/5953 is fixed
     #[allow(clippy::trivially_copy_pass_by_ref)]
     pub fn raw(&self) -> *mut sys::SDL_Renderer {
         self.context.raw()
@@ -929,7 +929,7 @@ impl<T> TextureCreator<T> {
 /// Drawing methods
 impl<T: RenderTarget> Canvas<T> {
     // this can prevent introducing UB until
-    // https://github.com/rust-lang/rust-clippy/issues/3992 is fixed
+    // https://github.com/rust-lang/rust-clippy/issues/5953 is fixed
     #[allow(clippy::trivially_copy_pass_by_ref)]
     pub fn raw(&self) -> *mut sys::SDL_Renderer {
         self.context.raw()
@@ -2158,7 +2158,7 @@ impl<'r> Texture<'r> {
 
     #[inline]
     // this can prevent introducing UB until
-    // https://github.com/rust-lang/rust-clippy/issues/3992 is fixed
+    // https://github.com/rust-lang/rust-clippy/issues/5953 is fixed
     #[allow(clippy::trivially_copy_pass_by_ref)]
     pub const fn raw(&self) -> *mut sys::SDL_Texture {
         self.raw
@@ -2341,7 +2341,7 @@ impl<> Texture<> {
 
     #[inline]
     // this can prevent introducing UB until
-    // https://github.com/rust-lang/rust-clippy/issues/3992 is fixed
+    // https://github.com/rust-lang/rust-clippy/issues/5953 is fixed
     #[allow(clippy::trivially_copy_pass_by_ref)]
     pub const fn raw(&self) -> *mut sys::SDL_Texture {
         self.raw

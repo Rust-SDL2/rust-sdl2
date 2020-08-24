@@ -392,7 +392,7 @@ impl Rect {
 
     /// Returns the underlying C Rect.
     // this can prevent introducing UB until
-    // https://github.com/rust-lang/rust-clippy/issues/3992 is fixed
+    // https://github.com/rust-lang/rust-clippy/issues/5953 is fixed
     #[allow(clippy::trivially_copy_pass_by_ref)]
     pub fn raw(&self) -> *const sys::SDL_Rect {
         &self.raw
@@ -742,7 +742,7 @@ impl Point {
         slice.as_ptr() as *const sys::SDL_Point
     }
     // this can prevent introducing UB until
-    // https://github.com/rust-lang/rust-clippy/issues/3992 is fixed
+    // https://github.com/rust-lang/rust-clippy/issues/5953 is fixed
     #[allow(clippy::trivially_copy_pass_by_ref)]
     pub fn raw(&self) -> *const sys::SDL_Point {
         &self.raw
