@@ -1,0 +1,19 @@
+commit b2f11ac0707d7186cd7d0f783d0f5fdeae172cdb (HEAD -> hunt3)
+Author: Hunt Lin <hunt.lin@tes-tec.com>
+Date:   Thu Sep 10 14:20:38 2020 +0800
+
+    SDL_USE_IME
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 610f150..a771288 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1106,6 +1106,7 @@ elseif(UNIX AND NOT APPLE AND NOT ANDROID)
+         set(HAVE_IBUS_IBUS_H TRUE)
+         include_directories(${IBUS_INCLUDE_DIRS})
+         list(APPEND EXTRA_LIBS ${IBUS_LIBRARIES})
++        add_definitions(-DSDL_USE_IME)
+       endif()
+       if(HAVE_LIBUNWIND_H)
+         # We've already found the header, so REQUIRE the lib to be present
+

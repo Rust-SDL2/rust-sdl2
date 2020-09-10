@@ -153,6 +153,7 @@ fn patch_sdl2(sdl2_source_path: &Path) {
         ("SDL2-2.0.10-CMakeLists.txt.patch", include_str!("patches/SDL2-2.0.10-CMakeLists.txt.patch")),
         // https://bugzilla.libsdl.org/show_bug.cgi?id=5105
         ("SDL2-2.0.10-sndio-shared-linux.patch", include_str!("patches/SDL2-2.0.10-sndio-shared-linux.patch")),
+        ("SDL2-2.0.10-SDL_USE_IME.patch", include_str!("patches/SDL2-2.0.10-SDL_USE_IME.patch")),
     ];
     let sdl_version = format!("SDL2-{}", LASTEST_SDL2_VERSION);
 
