@@ -1,0 +1,12 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7dfd35389..1f086fb70 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -355,6 +355,7 @@ dep_option(ARTS_SHARED         "Dynamically load aRts audio support" ON "ARTS" O
+ set_option(NAS                 "Support the NAS audio API" ${UNIX_SYS})
+ set_option(NAS_SHARED          "Dynamically load NAS audio API" ${UNIX_SYS})
+ set_option(SNDIO               "Support the sndio audio API" ${UNIX_SYS})
++dep_option(SNDIO_SHARED        "Dynamically load the sndio audio API" ${UNIX_SYS} ON "SNDIO" OFF)
+ set_option(FUSIONSOUND         "Use FusionSound audio driver" OFF)
+ dep_option(FUSIONSOUND_SHARED  "Dynamically load fusionsound audio support" ON "FUSIONSOUND" OFF)
+ set_option(LIBSAMPLERATE       "Use libsamplerate for audio rate conversion" ${UNIX_SYS})
