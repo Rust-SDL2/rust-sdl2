@@ -1,12 +1,9 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
-### Unreleased
-
- * Upgraded the "bundled" version of SDL2 to 2.0.12
-
 ### v0.34.3
 
+[PR #1027](https://github.com/Rust-SDL2/rust-sdl2/pull/1027): upgrade "bundled" version of SDL2 to 2.0.12
 [PR #1020](https://github.com/Rust-SDL2/rust-sdl2/pull/1020): revert undefined behavior introduction.
 [Commit](https://github.com/Rust-SDL2/rust-sdl2/commit/9d1851b7dfa53168d22c5c17ca941088e9ab4b34): Fix clippy issue
 [Commit](https://github.com/Rust-SDL2/rust-sdl2/commit/eaa01c597e08f08962b47a862dfdc2b5a0f63b5d): Temporarily suppress dangerous clippy hints
