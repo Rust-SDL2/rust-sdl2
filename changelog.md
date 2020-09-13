@@ -1,6 +1,10 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
+### Unreleased
+
+ * Upgraded the "bundled" version of SDL2 to 2.0.12
+
 ### v0.34.3
 
 [PR #1020](https://github.com/Rust-SDL2/rust-sdl2/pull/1020): revert undefined behavior introduction.
