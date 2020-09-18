@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1f086fb70..0f2e74efb 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1667,7 +1667,7 @@ elseif(APPLE)
+ 
+     if(VIDEO_VULKAN OR VIDEO_METAL OR RENDER_METAL)
+       set(ORIG_CMAKE_REQUIRED_FLAGS ${CMAKE_REQUIRED_FLAGS})
+-      set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -x objective-c")
++      set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -ObjC")
+       check_c_source_compiles("
+         #include <AvailabilityMacros.h>
+         #import <Metal/Metal.h>
