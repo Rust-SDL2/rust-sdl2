@@ -395,6 +395,7 @@ fn link_sdl2(target_os: &str) {
             println!("cargo:rustc-link-lib=framework=CoreVideo");
             println!("cargo:rustc-link-lib=framework=CoreAudio");
             println!("cargo:rustc-link-lib=framework=AudioToolbox");
+            println!("cargo:rustc-link-lib=framework=Metal");
             println!("cargo:rustc-link-lib=iconv");
         } else {
             // TODO: Add other platform linker options here.
