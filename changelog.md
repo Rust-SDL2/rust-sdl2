@@ -4,6 +4,7 @@ when upgrading from a version of rust-sdl2 to another.
 ### Unreleased
 
  * Add patch to fix metal detection (https://bugzilla.libsdl.org/show_bug.cgi?id=4988)
+ * Changed signature of `TimerSubsystem::ticks to accept `&self`.
 
 ### v0.34.3
 

@@ -31,7 +31,7 @@ impl TimerSubsystem {
     /// Gets the number of milliseconds elapsed since the timer subsystem was initialized.
     ///
     /// It's recommended that you use another library for timekeeping, such as `time`.
-    pub fn ticks(&mut self) -> u32 {
+    pub fn ticks(&self) -> u32 {
         // Google says this is probably not thread-safe (TODO: prove/disprove this).
         unsafe { sys::SDL_GetTicks() }
     }
