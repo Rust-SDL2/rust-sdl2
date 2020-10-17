@@ -111,7 +111,11 @@ impl Color {
         Color { r, g, b, a }
     }
 
+    #[deprecated(since="0.34.4", note="please, use `as_u32()`")]
     pub fn to_u32(self, format: &PixelFormat) -> u32 {
+        unsafe { sys::SDL_MapRGBA(format.raw, self.r, self.g, self.b, self.a) }
+    }
+    pub fn as_u32(self, format: &PixelFormat) -> u32 {
         unsafe { sys::SDL_MapRGBA(format.raw, self.r, self.g, self.b, self.a) }
     }
 

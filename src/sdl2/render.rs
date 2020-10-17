@@ -355,13 +355,25 @@ impl<'s> Canvas<Surface<'s>> {
 
     /// Gets a reference to the associated surface of the Canvas
     #[inline]
+    #[deprecated(since="0.34.4", note="please, use `as_surface()` instead")]
     pub fn surface(&self) -> &SurfaceRef {
+        &self.target
+    }
+    /// Gets a reference to the associated surface of the Canvas
+    #[inline]
+    pub fn as_surface(&self) -> &SurfaceRef {
         &self.target
     }
 
     /// Gets a mutable reference to the associated surface of the Canvas
     #[inline]
+    #[deprecated(since="0.34.4", note="please, use `as_surface_mut()` instead")]
     pub fn surface_mut(&mut self) -> &mut SurfaceRef {
+        &mut self.target
+    }
+    /// Gets a mutable reference to the associated surface of the Canvas
+    #[inline]
+    pub fn as_surface_mut(&mut self) -> &mut SurfaceRef {
         &mut self.target
     }
 
@@ -395,13 +407,25 @@ impl RenderTarget for Window {
 impl Canvas<Window> {
     /// Gets a reference to the associated window of the Canvas
     #[inline]
+    #[deprecated(since="0.34.4", note="please, use `as_window()` instead")]
     pub fn window(&self) -> &Window {
+        &self.target
+    }
+    /// Gets a reference to the associated window of the Canvas
+    #[inline]
+    pub fn as_window(&self) -> &Window {
         &self.target
     }
 
     /// Gets a mutable reference to the associated window of the Canvas
     #[inline]
+    #[deprecated(since="0.34.4", note="please, use `as_window_mut()` instead")]
     pub fn window_mut(&mut self) -> &mut Window {
+        &mut self.target
+    }
+    /// Gets a mutable reference to the associated window of the Canvas
+    #[inline]
+    pub fn as_window_mut(&mut self) -> &mut Window {
         &mut self.target
     }
 

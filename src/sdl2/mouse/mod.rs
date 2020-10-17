@@ -177,7 +177,12 @@ impl MouseState {
     pub fn from_sdl_state(state: u32) -> MouseState {
         MouseState { mouse_state : state, x: 0, y: 0 }
     }
+
+    #[deprecated(since="0.34.4", note="please, use `as_sdl_state()` instead")]
     pub fn to_sdl_state(&self) -> u32 {
+        self.mouse_state
+    }
+    pub fn as_sdl_state(&self) -> u32 {
         self.mouse_state
     }
 

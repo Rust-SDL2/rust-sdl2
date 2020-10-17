@@ -497,7 +497,12 @@ impl HatState {
         }
     }
 
+    #[deprecated(since="0.34.4", note="please, use `as_raw()` instead")]
     pub fn to_raw(self) -> u8 {
+        self.as_raw()
+    }
+
+    pub fn as_raw(self) -> u8 {
         match self {
             HatState::Centered => 0,
             HatState::Up => 1,
