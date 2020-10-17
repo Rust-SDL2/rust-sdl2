@@ -448,7 +448,7 @@ impl SurfaceRef {
     }
 
     pub fn set_color_key(&mut self, enable: bool, color: pixels::Color) -> Result<(), String> {
-        let key = color.to_u32(&self.pixel_format());
+        let key = color.as_u32(&self.pixel_format());
         let result = unsafe {
             sys::SDL_SetColorKey(self.raw(), if enable { 1 } else { 0 }, key)
         };
@@ -513,7 +513,7 @@ impl SurfaceRef {
             let rect_ptr = mem::transmute(rect.as_ref()); // TODO find a better way to transform
             // Option<&...> into a *const _
             let format = self.pixel_format();
-            let result = sys::SDL_FillRect(self.raw(), rect_ptr, color.to_u32(&format) );
+            let result = sys::SDL_FillRect(self.raw(), rect_ptr, color.as_u32(&format) );
             match result {
                 0 => Ok(()),
                 _ => Err(get_error())

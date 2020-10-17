@@ -437,7 +437,7 @@ impl Canvas<Window> {
 
     #[inline]
     pub fn default_pixel_format(&self) -> PixelFormatEnum {
-        self.window().window_pixel_format()
+        self.as_window().window_pixel_format()
     }
 
     /// Returns a `TextureCreator` that can create Textures to be drawn on this `Canvas`

@@ -905,7 +905,7 @@ impl Event {
                 xrel,
                 yrel
             } => {
-                let state = mousestate.to_sdl_state();
+                let state = mousestate.as_sdl_state();
                 let event = sys::SDL_MouseMotionEvent {
                     type_: SDL_EventType::SDL_MOUSEMOTION as u32,
                     timestamp,
@@ -1051,7 +1051,7 @@ impl Event {
                 hat_idx,
                 state,
             } => {
-                let hatvalue = state.to_raw();
+                let hatvalue = state.as_raw();
                 let event = sys::SDL_JoyHatEvent {
                     type_: SDL_EventType::SDL_JOYHATMOTION as u32,
                     timestamp,
@@ -1145,7 +1145,7 @@ impl Event {
                 axis,
                 value,
             } => {
-                let axisval = axis.to_ll();
+                let axisval = axis.into_ll();
                 let event = sys::SDL_ControllerAxisEvent {
                     type_: SDL_EventType::SDL_CONTROLLERAXISMOTION as u32,
                     timestamp,
@@ -1167,7 +1167,7 @@ impl Event {
                 which,
                 button,
             } => {
-                let buttonval = button.to_ll();
+                let buttonval = button.into_ll();
                 let event = sys::SDL_ControllerButtonEvent {
                     type_: SDL_EventType::SDL_CONTROLLERBUTTONDOWN as u32,
                     timestamp,
@@ -1190,7 +1190,7 @@ impl Event {
                 which,
                 button,
             } => {
-                let buttonval = button.to_ll();
+                let buttonval = button.into_ll();
                 let event = sys::SDL_ControllerButtonEvent {
                     type_: SDL_EventType::SDL_CONTROLLERBUTTONUP as u32,
                     timestamp,
