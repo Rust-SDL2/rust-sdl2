@@ -66,10 +66,18 @@ unsafe impl HasRawWindowHandle for Window {
                     ..MacOSHandle::empty()
                 })
             },
-            SDL_SYSWM_ANDROID | SDL_SYSWM_UIKIT => {
+            #[cfg(any(target_os = "ios"))]
+            SDL_SYSWM_UIKIT => {
+                use self::raw_window_handle::ios::IOSHandle;
+                RawWindowHandle::IOS(IOSHandle {
+                    ui_window: unsafe { wm_info.info.uikit }.window as *mut libc::c_void,
+                    ui_view: 0 as *mut libc::c_void, // consumer of RawWindowHandle should determine this
+                    ..IOSHandle::empty()
+                })
+            },
+            SDL_SYSWM_ANDROID => {
                 let window_system = match wm_info.subsystem {
                     SDL_SYSWM_ANDROID => "Android",
-                    SDL_SYSWM_UIKIT => "iOS",
                     _ => unreachable!(),
                 };
                 panic!("raw-window-handle support for {} not yet implemented", window_system);
@@ -146,6 +154,9 @@ pub struct SDL_SysWMinfo {
 
     #[cfg(target_os = "macos")]
     pub info: macos::MacOSSysWMinfo,
+
+    #[cfg(target_os = "ios")]
+    pub info: ios::IOSSysWMinfo,
 }
 
 #[cfg(target_os = "windows")]
@@ -315,6 +326,45 @@ pub mod macos {
     #[repr(C)]
     #[derive(Debug, Copy, Clone)]
     pub struct NSWindow {
+        _unused: [u8; 0],
+    }
+}
+
+#[cfg(target_os = "ios")]
+pub mod ios {
+    #[repr(C)]
+    #[derive(Copy, Clone)]
+    pub union IOSSysWMinfo {
+        pub uikit: UiKitInfo,
+        pub dummy: [u8; 64usize],
+        _bindgen_union_align: [u64; 8usize],
+    }
+
+    impl Default for IOSSysWMinfo {
+        fn default() -> Self {
+            IOSSysWMinfo {
+                uikit: UiKitInfo::default(),
+            }
+        }
+    }
+
+    #[repr(C)]
+    #[derive(Debug, Copy, Clone, PartialEq)]
+    pub struct UiKitInfo {
+        pub window: *mut UIWindow,
+    }
+
+    impl Default for UiKitInfo {
+        fn default() -> Self {
+            UiKitInfo {
+                window: 0 as *mut UIWindow,
+            }
+        }
+    }
+
+    #[repr(C)]
+    #[derive(Debug, Copy, Clone)]
+    pub struct UIWindow {
         _unused: [u8; 0],
     }
 }
