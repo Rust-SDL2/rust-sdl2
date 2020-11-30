@@ -1,0 +1,12 @@
+diff -r 355a4f94a782 src/video/windows/SDL_windowskeyboard.c
+--- a/src/video/windows/SDL_windowskeyboard.c
++++ b/src/video/windows/SDL_windowskeyboard.c
+@@ -30,6 +30,8 @@
+ #include <imm.h>
+ #include <oleauto.h>
+ 
++#define SDL_DISABLE_WINDOWS_IME
++
+ #ifndef SDL_DISABLE_WINDOWS_IME
+ static void IME_Init(SDL_VideoData *videodata, HWND hwnd);
+ static void IME_Enable(SDL_VideoData *videodata, HWND hwnd);

@@ -155,6 +155,10 @@ fn patch_sdl2(sdl2_source_path: &Path) {
         // Expected to be fixed in 2.0.14
         ("SDL2-2.0.12-sndio-shared-linux.patch", include_str!("patches/SDL2-2.0.12-sndio-shared-linux.patch")),
 
+        // https://bugzilla.libsdl.org/show_bug.cgi?id=3421
+        // Expected to be fixed in 2.0.14
+        ("SDL2-2.0.12-SDL_DISABLE_WINDOWS_IME.patch", include_str!("patches/SDL2-2.0.12-SDL_DISABLE_WINDOWS_IME.patch")),
+
         // https://bugzilla.libsdl.org/show_bug.cgi?id=4988
         // Expected to be fixed in 2.0.14
         ("SDL2-2.0.12-metal-detection-macos-ios.patch", include_str!("patches/SDL2-2.0.12-metal-detection-macos-ios.patch"))
