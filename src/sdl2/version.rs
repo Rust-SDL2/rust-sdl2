@@ -32,6 +32,7 @@ impl fmt::Display for Version {
 }
 
 /// Get the version of SDL that is linked against your program.
+#[doc(alias = "SDL_GetVersion")]
 pub fn version() -> Version {
     unsafe {
         let mut cver = sys::SDL_version { major: 0, minor: 0, patch: 0};
@@ -41,6 +42,7 @@ pub fn version() -> Version {
 }
 
 /// Get the code revision of SDL that is linked against your program.
+#[doc(alias = "SDL_GetRevision")]
 pub fn revision() -> String {
     unsafe {
         let rev = sys::SDL_GetRevision();
@@ -49,6 +51,7 @@ pub fn revision() -> String {
 }
 
 /// Get the revision number of SDL that is linked against your program.
+#[doc(alias = "SDL_GetRevisionNumber")]
 pub fn revision_number() -> i32 {
     unsafe {
         sys::SDL_GetRevisionNumber()

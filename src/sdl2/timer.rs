@@ -13,6 +13,7 @@ impl TimerSubsystem {
     /// * when the timer is dropped
     /// * or when the callback returns a non-positive continuation interval
     #[must_use = "if unused the Timer will be dropped immediately"]
+    #[doc(alias = "SDL_AddTimer")]
     pub fn add_timer<'b, 'c>(&'b self, delay: u32, callback: TimerCallback<'c>) -> Timer<'b, 'c> {
         unsafe {
             let callback = Box::new(callback);
@@ -31,6 +32,7 @@ impl TimerSubsystem {
     /// Gets the number of milliseconds elapsed since the timer subsystem was initialized.
     ///
     /// It's recommended that you use another library for timekeeping, such as `time`.
+    #[doc(alias = "SDL_GetTicks")]
     pub fn ticks(&self) -> u32 {
         // Google says this is probably not thread-safe (TODO: prove/disprove this).
         unsafe { sys::SDL_GetTicks() }
@@ -39,15 +41,18 @@ impl TimerSubsystem {
     /// Sleeps the current thread for the specified amount of milliseconds.
     ///
     /// It's recommended that you use `std::thread::sleep()` instead.
+    #[doc(alias = "SDL_Delay")]
     pub fn delay(&mut self, ms: u32) {
         // Google says this is probably not thread-safe (TODO: prove/disprove this).
         unsafe { sys::SDL_Delay(ms) }
     }
 
+    #[doc(alias = "SDL_GetPerformanceCounter")]
     pub fn performance_counter(&self) -> u64 {
         unsafe { sys::SDL_GetPerformanceCounter() }
     }
 
+    #[doc(alias = "SDL_GetPerformanceFrequency")]
     pub fn performance_frequency(&self) -> u64 {
         unsafe { sys::SDL_GetPerformanceFrequency() }
     }
@@ -71,6 +76,7 @@ impl<'b, 'a> Timer<'b, 'a> {
 
 impl<'b, 'a> Drop for Timer<'b, 'a> {
     #[inline]
+    #[doc(alias = "SDL_RemoveTimer")]
     fn drop(&mut self) {
         // SDL_RemoveTimer returns SDL_FALSE if the timer wasn't found (impossible),
         // or the timer has been cancelled via the callback (possible).

@@ -101,6 +101,7 @@ impl AudioSubsystem {
         AudioQueue::open_queue(self, device, spec)
     }
 
+    #[doc(alias = "SDL_GetCurrentAudioDriver")]
     pub fn current_audio_driver(&self) -> &'static str {
         unsafe {
             let buf = sys::SDL_GetCurrentAudioDriver();
@@ -110,6 +111,7 @@ impl AudioSubsystem {
         }
     }
 
+    #[doc(alias = "SDL_GetNumAudioDevices")]
     pub fn num_audio_playback_devices(&self) -> Option<u32> {
         let result = unsafe { sys::SDL_GetNumAudioDevices(0) };
         if result < 0 {
@@ -120,6 +122,7 @@ impl AudioSubsystem {
         }
     }
 
+    #[doc(alias = "SDL_GetAudioDeviceName")]
     pub fn audio_playback_device_name(&self, index: u32) -> Result<String, String> {
         unsafe {
             let dev_name = sys::SDL_GetAudioDeviceName(index as c_int, 0);
@@ -176,6 +179,7 @@ impl AudioFormat {
         }
     }
 
+    #[doc(alias = "SDL_AudioFormat")]
     fn to_ll(self) -> sys::SDL_AudioFormat {
         self as sys::SDL_AudioFormat
     }
@@ -228,6 +232,7 @@ impl TryFrom<u32> for AudioStatus {
     }
 }
 
+#[doc(alias = "SDL_GetAudioDriver")]
 #[derive(Copy, Clone)]
 pub struct DriverIterator {
     length: i32,
@@ -262,6 +267,7 @@ impl Iterator for DriverIterator {
 impl ExactSizeIterator for DriverIterator { }
 
 /// Gets an iterator of all audio drivers compiled into the SDL2 library.
+#[doc(alias = "SDL_GetAudioDriver")]
 #[inline]
 pub fn drivers() -> DriverIterator {
     // This function is thread-safe and doesn't require the audio subsystem to be initialized.
@@ -290,6 +296,7 @@ impl AudioSpecWAV {
     }
 
     /// Loads a WAVE from the data source.
+    #[doc(alias = "SDL_LoadWAV_RW")]
     pub fn load_wav_rw(src: &mut RWops) -> Result<AudioSpecWAV, String> {
         use std::mem::MaybeUninit;
         use std::ptr::null_mut;
@@ -325,6 +332,7 @@ impl AudioSpecWAV {
 }
 
 impl Drop for AudioSpecWAV {
+    #[doc(alias = "SDL_FreeWAV")]
     fn drop(&mut self) {
         unsafe { sys::SDL_FreeWAV(self.audio_buf); }
     }
@@ -532,6 +540,7 @@ impl AudioDeviceID {
 }
 
 impl Drop for AudioDeviceID {
+    #[doc(alias = "SDL_CloseAudioDevice")]
     fn drop(&mut self) {
         //! Shut down audio processing and close the audio device.
         unsafe { sys::SDL_CloseAudioDevice(self.id()) }
@@ -548,6 +557,7 @@ pub struct AudioQueue<Channel: AudioFormatNum> {
 
 impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
     /// Opens a new audio device given the desired parameters and callback.
+    #[doc(alias = "SDL_OpenAudioDevice")]
     pub fn open_queue<D: Into<Option<&'a str>>>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired) -> Result<AudioQueue<Channel>, String> {
         use std::mem::MaybeUninit;
 
@@ -590,6 +600,7 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
     }
 
     #[inline]
+    #[doc(alias = "SDL_GetAudioDeviceStatus")]
     pub fn subsystem(&self) -> &AudioSubsystem { &self.subsystem }
 
     #[inline]
@@ -603,26 +614,31 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
     }
 
     /// Pauses playback of the audio device.
+    #[doc(alias = "SDL_PauseAudioDevice")]
     pub fn pause(&self) {
         unsafe { sys::SDL_PauseAudioDevice(self.device_id.id(), 1) }
     }
 
     /// Starts playback of the audio device.
+    #[doc(alias = "SDL_PauseAudioDevice")]
     pub fn resume(&self) {
         unsafe { sys::SDL_PauseAudioDevice(self.device_id.id(), 0) }
     }
 
     /// Adds data to the audio queue.
+    #[doc(alias = "SDL_QueueAudio")]
     pub fn queue(&self, data: &[Channel]) -> bool {
         let result = unsafe {sys::SDL_QueueAudio(self.device_id.id(), data.as_ptr() as *const c_void, (data.len() * mem::size_of::<Channel>()) as u32)};
         result == 0
     }
 
+    #[doc(alias = "SDL_GetQueuedAudioSize")]
     pub fn size(&self) -> u32 {
         unsafe {sys::SDL_GetQueuedAudioSize(self.device_id.id())}
     }
 
     /// Clears all data from the current audio queue.
+    #[doc(alias = "SDL_ClearQueuedAudio")]
     pub fn clear(&self) {
         unsafe {sys::SDL_ClearQueuedAudio(self.device_id.id());}
     }
@@ -639,6 +655,7 @@ pub struct AudioDevice<CB: AudioCallback> {
 
 impl<CB: AudioCallback> AudioDevice<CB> {
     /// Opens a new audio device for playback or capture (given the desired parameters and callback).
+    #[doc(alias = "SDL_OpenAudioDevice")]
     fn open<'a, F, D>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired, get_callback: F, capture: bool) -> Result<AudioDevice <CB>, String>
     where
         F: FnOnce(AudioSpec) -> CB,
@@ -713,6 +730,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
     }
 
     #[inline]
+    #[doc(alias = "SDL_GetAudioDeviceStatus")]
     pub fn subsystem(&self) -> &AudioSubsystem { &self.subsystem }
 
     #[inline]
@@ -726,11 +744,13 @@ impl<CB: AudioCallback> AudioDevice<CB> {
     }
 
     /// Pauses playback of the audio device.
+    #[doc(alias = "SDL_PauseAudioDevice")]
     pub fn pause(&self) {
         unsafe { sys::SDL_PauseAudioDevice(self.device_id.id(), 1) }
     }
 
     /// Starts playback of the audio device.
+    #[doc(alias = "SDL_PauseAudioDevice")]
     pub fn resume(&self) {
         unsafe { sys::SDL_PauseAudioDevice(self.device_id.id(), 0) }
     }
@@ -740,6 +760,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
     /// When the returned lock guard is dropped, `SDL_UnlockAudioDevice` is
     /// called.
     /// Use this method to read and mutate callback data.
+    #[doc(alias = "SDL_LockAudioDevice")]
     pub fn lock(&mut self) -> AudioDeviceLockGuard<CB> {
         unsafe { sys::SDL_LockAudioDevice(self.device_id.id()) };
         AudioDeviceLockGuard {
@@ -766,6 +787,7 @@ pub struct AudioDeviceLockGuard<'a, CB> where CB: AudioCallback, CB: 'a {
 
 impl<'a, CB: AudioCallback> Deref for AudioDeviceLockGuard<'a, CB> {
     type Target = CB;
+    #[doc(alias = "SDL_UnlockAudioDevice")]
     fn deref(&self) -> &CB { (*self.device.userdata).as_ref().expect("Missing callback") }
 }
 
@@ -785,6 +807,7 @@ pub struct AudioCVT {
 }
 
 impl AudioCVT {
+    #[doc(alias = "SDL_BuildAudioCVT")]
     pub fn new(src_format: AudioFormat, src_channels: u8, src_rate: i32,
                dst_format: AudioFormat, dst_channels: u8, dst_rate: i32) -> Result<AudioCVT, String>
     {
@@ -805,6 +828,7 @@ impl AudioCVT {
         }
     }
 
+    #[doc(alias = "SDL_ConvertAudio")]
     pub fn convert(&self, mut src: Vec<u8>) -> Vec<u8> {
         //! Convert audio data to a desired audio format.
         //!

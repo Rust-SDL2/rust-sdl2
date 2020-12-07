@@ -11,6 +11,7 @@ pub struct Palette {
 impl Palette {
     #[inline]
     /// Creates a new, uninitialized palette
+    #[doc(alias = "SDL_AllocPalette")]
     pub fn new(mut capacity: usize) -> Result<Self, String> {
         use crate::common::*;
 
@@ -39,6 +40,7 @@ impl Palette {
     }
 
     /// Creates a palette from the provided colors
+    #[doc(alias = "SDL_SetPaletteColors")]
     pub fn with_colors(colors: &[Color]) -> Result<Self, String> {
         let pal = Self::new(colors.len())?;
 
@@ -72,6 +74,7 @@ impl Palette {
 }
 
 impl Drop for Palette {
+    #[doc(alias = "SDL_FreePalette")]
     fn drop(&mut self) {
         unsafe { sys::SDL_FreePalette(self.raw); }
     }
@@ -111,10 +114,12 @@ impl Color {
         Color { r, g, b, a }
     }
 
+    #[doc(alias = "SDL_MapRGBA")]
     pub fn to_u32(self, format: &PixelFormat) -> u32 {
         unsafe { sys::SDL_MapRGBA(format.raw, self.r, self.g, self.b, self.a) }
     }
 
+    #[doc(alias = "SDL_GetRGBA")]
     pub fn from_u32(format: &PixelFormat, pixel: u32) -> Color {
         let (mut r, mut g, mut b, mut a) = (0, 0, 0, 0);
 
@@ -261,6 +266,7 @@ impl PixelFormatEnum {
 }
 
 impl PixelFormatEnum {
+    #[doc(alias = "SDL_MasksToPixelFormatEnum")]
     pub fn from_masks(masks: PixelMasks) -> PixelFormatEnum {
         unsafe {
             let format = sys::SDL_MasksToPixelFormatEnum(masks.bpp as i32, masks.rmask, masks.gmask, masks.bmask, masks.amask);
@@ -268,6 +274,7 @@ impl PixelFormatEnum {
         }
     }
 
+    #[doc(alias = "SDL_PixelFormatEnumToMasks")]
     pub fn into_masks(self) -> Result<PixelMasks, String> {
         let format: u32 = self as u32;
         let mut bpp = 0;
@@ -457,6 +464,7 @@ impl TryFrom<u32> for PixelFormatEnum {
 impl TryFrom<PixelFormatEnum> for PixelFormat {
     type Error = String;
 
+    #[doc(alias = "SDL_AllocFormat")]
     fn try_from(pfe: PixelFormatEnum) -> Result<Self, Self::Error> {
         unsafe {
             let pf_ptr = sys::SDL_AllocFormat(pfe as u32);

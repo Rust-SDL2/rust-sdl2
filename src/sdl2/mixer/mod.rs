@@ -791,6 +791,7 @@ impl<'a> Music<'a> {
     }
 
     /// Load music from a static byte buffer.
+    #[doc(alias = "SDL_RWFromConstMem")]
     pub fn from_static_bytes(buf: &'static [u8]) -> Result<Music<'static>, String> {
         let rw = unsafe {
             sys::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int)

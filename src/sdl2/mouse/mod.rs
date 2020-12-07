@@ -33,12 +33,14 @@ pub struct Cursor {
 
 impl Drop for Cursor {
     #[inline]
+    #[doc(alias = "SDL_FreeCursor")]
     fn drop(&mut self) {
         unsafe { sys::SDL_FreeCursor(self.raw) };
     }
 }
 
 impl Cursor {
+    #[doc(alias = "SDL_CreateCursor")]
     pub fn new(data: &[u8], mask: &[u8], width: i32, height: i32, hot_x: i32, hot_y: i32) -> Result<Cursor, String> {
         unsafe {
             let raw = sys::SDL_CreateCursor(data.as_ptr(),
@@ -55,6 +57,7 @@ impl Cursor {
     }
 
     // TODO: figure out how to pass Surface in here correctly
+    #[doc(alias = "SDL_CreateColorCursor")]
     pub fn from_surface<S: AsRef<SurfaceRef>>(surface: S, hot_x: i32, hot_y: i32) -> Result<Cursor, String> {
         unsafe {
             let raw = sys::SDL_CreateColorCursor(surface.as_ref().raw(), hot_x, hot_y);
@@ -67,6 +70,7 @@ impl Cursor {
         }
     }
 
+    #[doc(alias = "SDL_CreateSystemCursor")]
     pub fn from_system(cursor: SystemCursor) -> Result<Cursor, String> {
         unsafe {
             let raw = sys::SDL_CreateSystemCursor(transmute(cursor as u32));
@@ -79,6 +83,7 @@ impl Cursor {
         }
     }
 
+    #[doc(alias = "SDL_SetCursor")]
     pub fn set(&self) {
         unsafe { sys::SDL_SetCursor(self.raw); }
     }
@@ -160,6 +165,7 @@ pub struct MouseState {
 }
 
 impl MouseState {
+    #[doc(alias = "SDL_GetMouseState")]
     pub fn new(_e: &EventPump) -> MouseState {
         let mut x = 0;
         let mut y = 0;
@@ -338,6 +344,7 @@ pub struct MouseUtil {
 
 impl MouseUtil {
     /// Gets the id of the window which currently has mouse focus.
+    #[doc(alias = "SDL_GetMouseFocus")]
     pub fn focused_window_id(&self) -> Option<u32> {
         let raw = unsafe { sys::SDL_GetMouseFocus() };
         if raw.is_null() {
@@ -348,27 +355,33 @@ impl MouseUtil {
         }
     }
 
+    #[doc(alias = "SDL_WarpMouseInWindow")]
     pub fn warp_mouse_in_window(&self, window: &video::Window, x: i32, y: i32) {
         unsafe { sys::SDL_WarpMouseInWindow(window.raw(), x, y); }
     }
 
+    #[doc(alias = "SDL_SetRelativeMouseMode")]
     pub fn set_relative_mouse_mode(&self, on: bool) {
         let on = if on { sys::SDL_bool::SDL_TRUE } else { sys::SDL_bool::SDL_FALSE };
         unsafe { sys::SDL_SetRelativeMouseMode(on); }
     }
 
+    #[doc(alias = "SDL_GetRelativeMouseMode")]
     pub fn relative_mouse_mode(&self) -> bool {
         unsafe { sys::SDL_GetRelativeMouseMode() == sys::SDL_bool::SDL_TRUE }
     }
 
+    #[doc(alias = "SDL_ShowCursor")]
     pub fn is_cursor_showing(&self) -> bool {
         unsafe { sys::SDL_ShowCursor(crate::sys::SDL_QUERY) == 1 }
     }
 
+    #[doc(alias = "SDL_ShowCursor")]
     pub fn show_cursor(&self, show: bool) {
         unsafe { sys::SDL_ShowCursor(show as i32); }
     }
 
+    #[doc(alias = "SDL_CaptureMouse")]
     pub fn capture(&self, enable: bool) {
         let enable = if enable { sys::SDL_bool::SDL_TRUE } else { sys::SDL_bool::SDL_FALSE };
         unsafe { sys::SDL_CaptureMouse(enable); }

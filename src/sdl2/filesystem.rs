@@ -7,6 +7,7 @@ use libc::c_char;
 
 use crate::sys;
 
+#[doc(alias = "SDL_GetBasePath")]
 pub fn base_path() -> Result<String, String> {
     let result = unsafe {
         let buf = sys::SDL_GetBasePath();
@@ -56,6 +57,7 @@ impl error::Error for PrefPathError {
 // TODO: Change to OsStr or something?
 /// Return the preferred directory for the application to write files on this
 /// system, based on the given organization and application name.
+#[doc(alias = "SDL_GetPrefPath")]
 pub fn pref_path(org_name: &str, app_name: &str)
         -> Result<String, PrefPathError> {
     use self::PrefPathError::*;

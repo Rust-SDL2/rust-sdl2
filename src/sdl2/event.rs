@@ -50,11 +50,13 @@ lazy_static! {
 
 impl crate::EventSubsystem {
     /// Removes all events in the event queue that match the specified event type.
+    #[doc(alias = "SDL_FlushEvent")]
     pub fn flush_event(&self, event_type: EventType) {
         unsafe { sys::SDL_FlushEvent(event_type as u32) };
     }
 
     /// Removes all events in the event queue that match the specified type range.
+    #[doc(alias = "SDL_FlushEvents")]
     pub fn flush_events(&self, min_type: u32, max_type: u32) {
         unsafe { sys::SDL_FlushEvents(min_type, max_type) };
     }
@@ -79,6 +81,7 @@ impl crate::EventSubsystem {
     ///     println!("{:?}", event);
     /// }
     /// ```
+    #[doc(alias = "SDL_PeepEvents")]
     pub fn peek_events<B>(&self, max_amount: u32) -> B
     where B: FromIterator<Event>
     {
@@ -770,6 +773,7 @@ unsafe impl Sync for Event {}
 
 /// Helper function to make converting scancodes
 /// and keycodes to primitive `SDL_Keysym` types.
+#[doc(alias = "SDL_Keysym")]
 fn mk_keysym<S, K>(scancode: S,
              keycode: K,
              keymod: Mod) -> sys::SDL_Keysym
@@ -2359,6 +2363,7 @@ unsafe fn wait_event_timeout(timeout: u32) -> Option<Event> {
 
 impl crate::EventPump {
     /// Query if an event type is enabled.
+    #[doc(alias = "SDL_EventState")]
     pub fn is_event_enabled(&self, event_type: EventType) -> bool {
         let result = unsafe { sys::SDL_EventState(event_type as u32, sys::SDL_QUERY) };
 
@@ -2366,6 +2371,7 @@ impl crate::EventPump {
     }
 
     /// Enable an event type. Returns if the event type was enabled before the call.
+    #[doc(alias = "SDL_EventState")]
     pub fn enable_event(&mut self, event_type: EventType) -> bool {
         let result = unsafe { sys::SDL_EventState(event_type as u32, sys::SDL_ENABLE as c_int) };
 
@@ -2373,6 +2379,7 @@ impl crate::EventPump {
     }
 
     /// Disable an event type. Returns if the event type was enabled before the call.
+    #[doc(alias = "SDL_EventState")]
     pub fn disable_event(&mut self, event_type: EventType) -> bool {
         let result = unsafe { sys::SDL_EventState(event_type as u32, sys::SDL_DISABLE as c_int) };
 
@@ -2409,6 +2416,7 @@ impl crate::EventPump {
     }
 
     /// Pumps the event loop, gathering events from the input devices.
+    #[doc(alias = "SDL_PumpEvents")]
     pub fn pump_events(&mut self) {
         unsafe { sys::SDL_PumpEvents(); };
     }
@@ -2768,6 +2776,7 @@ pub struct EventSender {
 
 impl EventSender {
     /// Pushes an event to the event queue.
+    #[doc(alias = "SDL_PushEvent")]
     pub fn push_event(&self, event: Event) -> Result<(), String> {
         match event.to_ll() {
             Some(mut raw_event) => {

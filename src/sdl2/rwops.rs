@@ -29,6 +29,7 @@ impl<'a> RWops<'a> {
     }
 
     /// Creates an SDL file stream.
+    #[doc(alias = "SDL_RWFromFile")]
     pub fn from_file<P: AsRef<Path>>(path: P, mode: &str) -> Result<RWops <'static>, String> {
         let raw = unsafe {
             let path_c = CString::new(path.as_ref().to_str().unwrap()).unwrap();
@@ -49,6 +50,7 @@ impl<'a> RWops<'a> {
     /// Prepares a read-only memory buffer for use with `RWops`.
     ///
     /// This method can only fail if the buffer size is zero.
+    #[doc(alias = "SDL_RWFromConstMem")]
     pub fn from_bytes(buf: &'a [u8]) -> Result<RWops <'a>, String> {
         let raw = unsafe {
             sys::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int)
@@ -82,6 +84,7 @@ impl<'a> RWops<'a> {
     /// Prepares a read-write memory buffer for use with `RWops`.
     ///
     /// This method can only fail if the buffer size is zero.
+    #[doc(alias = "SDL_RWFromMem")]
     pub fn from_bytes_mut(buf: &'a mut [u8]) -> Result<RWops <'a>, String> {
         let raw = unsafe {
             sys::SDL_RWFromMem(buf.as_ptr() as *mut c_void, buf.len() as c_int)

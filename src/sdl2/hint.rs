@@ -73,6 +73,7 @@ pub fn get_video_minimize_on_focus_loss() -> bool {
     }
 }
 
+#[doc(alias = "SDL_SetHint")]
 pub fn set(name: &str, value: &str) -> bool{
     let name = CString::new(name).unwrap();
     let value = CString::new(value).unwrap();
@@ -81,6 +82,7 @@ pub fn set(name: &str, value: &str) -> bool{
     }
 }
 
+#[doc(alias = "SDL_GetHint")]
 pub fn get(name: &str) -> Option<String> {
     use std::str;
 
@@ -97,6 +99,7 @@ pub fn get(name: &str) -> Option<String> {
     }
 }
 
+#[doc(alias = "SDL_SetHintWithPriority")]
 pub fn set_with_priority(name: &str, value: &str, priority: &Hint) -> bool {
     let name = CString::new(name).unwrap();
     let value = CString::new(value).unwrap();
