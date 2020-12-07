@@ -175,32 +175,9 @@ impl<'a> Surface<'a> {
     }
 
     /// A convenience function for [`TextureCreator::create_texture_from_surface`].
-    ///
-    /// ```no_run
-    /// use sdl2::pixels::PixelFormatEnum;
-    /// use sdl2::surface::Surface;
-    /// use sdl2::render::{Canvas, Texture};
-    /// use sdl2::video::Window;
-    ///
-    /// // We init systems.
-    /// let sdl_context = sdl2::init().expect("failed to init SDL");
-    /// let video_subsystem = sdl_context.video().expect("failed to get video context");
-    ///
-    /// // We create a window.
-    /// let window = video_subsystem.window("sdl2 demo", 800, 600)
-    ///     .build()
-    ///     .expect("failed to build window");
-    ///
-    /// // We get the canvas from which we can get the `TextureCreator`.
-    /// let mut canvas: Canvas<Window> = window.into_canvas()
-    ///     .build()
-    ///     .expect("failed to build window's canvas");
-    /// let texture_creator = canvas.texture_creator();
-    ///
-    /// let surface = Surface::new(512, 512, PixelFormatEnum::RGB24).unwrap();
-    /// let texture = surface.as_texture(&texture_creator).unwrap();
-    /// ```
+    /// Deprecated: use `to_texture()` instead.
     #[cfg(not(feature = "unsafe_textures"))]
+    #[deprecated(since="0.34.4", note="please, use `to_texture()` instead")]
     pub fn as_texture<'b, T>(&self, texture_creator: &'b TextureCreator<T>) -> Result<Texture<'b>, TextureValueError> {
         texture_creator.create_texture_from_surface(self)
     }
@@ -229,10 +206,49 @@ impl<'a> Surface<'a> {
     /// let texture_creator = canvas.texture_creator();
     ///
     /// let surface = Surface::new(512, 512, PixelFormatEnum::RGB24).unwrap();
-    /// let texture = surface.as_texture(&texture_creator).unwrap();
+    /// let texture = surface.to_texture(&texture_creator).unwrap();
+    /// ```
+    #[cfg(not(feature = "unsafe_textures"))]
+    pub fn to_texture<'b, T>(&self, texture_creator: &'b TextureCreator<T>) -> Result<Texture<'b>, TextureValueError> {
+        texture_creator.create_texture_from_surface(self)
+    }
+
+    /// A convenience function for [`TextureCreator::create_texture_from_surface`].
+    /// Deprecated: use `to_texture()` instead.
+    #[cfg(feature = "unsafe_textures")]
+    #[deprecated(since="0.34.4", note="please, use `to_texture()` instead")]
+    pub fn as_texture<T>(&self, texture_creator: &TextureCreator<T>) -> Result<Texture, TextureValueError> {
+        texture_creator.create_texture_from_surface(self)
+    }
+
+    /// A convenience function for [`TextureCreator::create_texture_from_surface`].
+    ///
+    /// ```no_run
+    /// use sdl2::pixels::PixelFormatEnum;
+    /// use sdl2::surface::Surface;
+    /// use sdl2::render::{Canvas, Texture};
+    /// use sdl2::video::Window;
+    ///
+    /// // We init systems.
+    /// let sdl_context = sdl2::init().expect("failed to init SDL");
+    /// let video_subsystem = sdl_context.video().expect("failed to get video context");
+    ///
+    /// // We create a window.
+    /// let window = video_subsystem.window("sdl2 demo", 800, 600)
+    ///     .build()
+    ///     .expect("failed to build window");
+    ///
+    /// // We get the canvas from which we can get the `TextureCreator`.
+    /// let mut canvas: Canvas<Window> = window.into_canvas()
+    ///     .build()
+    ///     .expect("failed to build window's canvas");
+    /// let texture_creator = canvas.texture_creator();
+    ///
+    /// let surface = Surface::new(512, 512, PixelFormatEnum::RGB24).unwrap();
+    /// let texture = surface.to_texture(&texture_creator).unwrap();
     /// ```
     #[cfg(feature = "unsafe_textures")]
-    pub fn as_texture<T>(&self, texture_creator: &TextureCreator<T>) -> Result<Texture, TextureValueError> {
+    pub fn to_texture<T>(&self, texture_creator: &TextureCreator<T>) -> Result<Texture, TextureValueError> {
         texture_creator.create_texture_from_surface(self)
     }
 
@@ -432,7 +448,7 @@ impl SurfaceRef {
     }
 
     pub fn set_color_key(&mut self, enable: bool, color: pixels::Color) -> Result<(), String> {
-        let key = color.to_u32(&self.pixel_format());
+        let key = color.as_u32(&self.pixel_format());
         let result = unsafe {
             sys::SDL_SetColorKey(self.raw(), if enable { 1 } else { 0 }, key)
         };
@@ -497,7 +513,7 @@ impl SurfaceRef {
             let rect_ptr = mem::transmute(rect.as_ref()); // TODO find a better way to transform
             // Option<&...> into a *const _
             let format = self.pixel_format();
-            let result = sys::SDL_FillRect(self.raw(), rect_ptr, color.to_u32(&format) );
+            let result = sys::SDL_FillRect(self.raw(), rect_ptr, color.as_u32(&format) );
             match result {
                 0 => Ok(()),
                 _ => Err(get_error())

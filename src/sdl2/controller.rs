@@ -224,7 +224,12 @@ impl Axis {
         })
     }
 
+    #[deprecated(since="0.34.4", note="please, use `into_ll()` instead")]
     pub fn to_ll(self) -> sys::SDL_GameControllerAxis {
+        self.into_ll()
+    }
+
+    pub fn into_ll(self) -> sys::SDL_GameControllerAxis {
         match self {
             Axis::LeftX => sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTX,
             Axis::LeftY => sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTY,
@@ -302,7 +307,12 @@ impl Button {
         })
     }
 
+    #[deprecated(since="0.34.4", note="please, use `into_ll()` instead")]
     pub fn to_ll(self) -> sys::SDL_GameControllerButton {
+        self.into_ll()
+    }
+
+    pub fn into_ll(self) -> sys::SDL_GameControllerButton {
         match self {
             Button::A             => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A,
             Button::B             => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_B,
