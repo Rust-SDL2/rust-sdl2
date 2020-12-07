@@ -4,6 +4,7 @@ use self::raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
 use crate::{sys::SDL_Window, video::Window};
 
 unsafe impl HasRawWindowHandle for Window {
+    #[doc(alias = "SDL_GetVersion")]
     fn raw_window_handle(&self) -> RawWindowHandle {
         use self::SDL_SYSWM_TYPE::*;
 

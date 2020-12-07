@@ -152,6 +152,7 @@ impl<T> LoadTexture for TextureCreator<T> {
         }
     }
 
+    #[doc(alias = "IMG_LoadTexture")]
     fn load_texture_bytes(&self, buf: &[u8]) -> Result<Texture, String> {
         //! Loads an SDL Texture from a buffer that the format must be something supported by SDL2_image (png, jpeg, ect, but NOT RGBA8888 bytes for instance)
         unsafe {

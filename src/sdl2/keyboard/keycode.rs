@@ -504,6 +504,7 @@ use crate::keyboard::Scancode;
 
 impl Keycode {
     /// Gets the virtual key from a scancode. Returns None if there is no corresponding virtual key.
+    #[doc(alias = "SDL_GetKeyFromScancode")]
     pub fn from_scancode(scancode: Scancode) -> Option<Keycode> {
         const UNKNOWN: i32 = sys::SDLK_UNKNOWN as i32;
         unsafe {
@@ -514,6 +515,7 @@ impl Keycode {
         }
     }
 
+    #[doc(alias = "SDL_GetKeyFromName")]
     pub fn from_name(name: &str) -> Option<Keycode> {
         const UNKNOWN: i32 = sys::SDLK_UNKNOWN as i32;
         unsafe {
@@ -528,6 +530,7 @@ impl Keycode {
         }
     }
 
+    #[doc(alias = "SDL_GetKeyName")]
     pub fn name(self) -> String {
         // The name string pointer's contents _might_ change, depending on the last call to SDL_GetKeyName.
         // Knowing this, we must always return a new string.

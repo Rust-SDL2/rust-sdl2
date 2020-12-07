@@ -41,6 +41,7 @@ pub struct KeyboardState<'a> {
 }
 
 impl<'a> KeyboardState<'a> {
+    #[doc(alias = "SDL_GetKeyboardState")]
     pub fn new(_e: &'a EventPump) -> KeyboardState<'a> {
         let keyboard_state = unsafe {
             let mut count = 0;
@@ -179,6 +180,7 @@ pub struct KeyboardUtil {
 
 impl KeyboardUtil {
     /// Gets the id of the window which currently has keyboard focus.
+    #[doc(alias = "SDL_GetKeyboardFocus")]
     pub fn focused_window_id(&self) -> Option<u32> {
         let raw = unsafe { sys::SDL_GetKeyboardFocus() };
         if raw.is_null() {
@@ -189,10 +191,12 @@ impl KeyboardUtil {
         }
     }
 
+    #[doc(alias = "SDL_GetModState")]
     pub fn mod_state(&self) -> Mod {
         unsafe { Mod::from_bits(sys::SDL_GetModState() as u16).unwrap() }
     }
 
+    #[doc(alias = "SDL_SetModState")]
     pub fn set_mod_state(&self, flags: Mod) {
         unsafe { sys::SDL_SetModState(transmute::<u32, sys::SDL_Keymod>(flags.bits() as u32)); }
     }
@@ -214,26 +218,32 @@ pub struct TextInputUtil {
 }
 
 impl TextInputUtil {
+    #[doc(alias = "SDL_StartTextInput")]
     pub fn start(&self) {
         unsafe { sys::SDL_StartTextInput(); }
     }
 
+    #[doc(alias = "SDL_IsTextInputActive")]
     pub fn is_active(&self, ) -> bool {
         unsafe { sys::SDL_IsTextInputActive() == sys::SDL_bool::SDL_TRUE }
     }
 
+    #[doc(alias = "SDL_StopTextInput")]
     pub fn stop(&self) {
         unsafe { sys::SDL_StopTextInput(); }
     }
 
+    #[doc(alias = "SDL_SetTextInputRect")]
     pub fn set_rect(&self, rect: Rect) {
         unsafe { sys::SDL_SetTextInputRect(rect.raw() as *mut sys::SDL_Rect); }
     }
 
+    #[doc(alias = "SDL_HasScreenKeyboardSupport")]
     pub fn has_screen_keyboard_support(&self) -> bool {
         unsafe { sys::SDL_HasScreenKeyboardSupport() == sys::SDL_bool::SDL_TRUE }
     }
 
+    #[doc(alias = "SDL_IsScreenKeyboardShown")]
     pub fn is_screen_keyboard_shown(&self, window: &Window) -> bool {
         unsafe { sys::SDL_IsScreenKeyboardShown(window.raw()) == sys::SDL_bool::SDL_TRUE }
     }

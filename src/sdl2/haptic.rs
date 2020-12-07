@@ -7,6 +7,7 @@ use crate::get_error;
 
 impl HapticSubsystem {
     /// Attempt to open the joystick at index `joystick_index` and return its haptic device.
+    #[doc(alias = "SDL_JoystickOpen")]
     pub fn open_from_joystick_id(&self, joystick_index: u32) -> Result<Haptic, IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
         let joystick_index = validate_int(joystick_index, "joystick_index")?;
@@ -37,6 +38,7 @@ pub struct Haptic {
 
 impl Haptic {
     #[inline]
+    #[doc(alias = "SDL_HapticRumblePlay")]
     pub fn subsystem(&self) -> &HapticSubsystem { &self.subsystem }
 
     /// Run a simple rumble effect on the haptic device.
@@ -45,6 +47,7 @@ impl Haptic {
     }
 
     /// Stop the simple rumble on the haptic device.
+    #[doc(alias = "SDL_HapticRumbleStop")]
     pub fn rumble_stop(&mut self) {
         unsafe { sys::SDL_HapticRumbleStop(self.raw) };
     }
@@ -52,6 +55,7 @@ impl Haptic {
 
 
 impl Drop for Haptic {
+    #[doc(alias = "SDL_HapticClose")]
     fn drop(&mut self) {
         unsafe { sys::SDL_HapticClose(self.raw) }
     }

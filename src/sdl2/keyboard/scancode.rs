@@ -517,6 +517,7 @@ use crate::keyboard::Keycode;
 
 impl Scancode {
     /// Gets the scancode from a virtual key. Returns None if there is no corresponding scancode.
+    #[doc(alias = "SDL_GetScancodeFromKey")]
     pub fn from_keycode(keycode: Keycode) -> Option<Scancode> {
         unsafe {
             match sys::SDL_GetScancodeFromKey(keycode as i32) {
@@ -526,6 +527,7 @@ impl Scancode {
         }
     }
 
+    #[doc(alias = "SDL_GetScancodeFromName")]
     pub fn from_name(name: &str) -> Option<Scancode> {
         unsafe {
             match CString::new(name) {
@@ -539,6 +541,7 @@ impl Scancode {
         }
     }
 
+    #[doc(alias = "SDL_GetScancodeName")]
     pub fn name(self) -> &'static str {
         // The name string pointer lives in static, read-only memory.
         // Knowing this, we can always return a string slice.

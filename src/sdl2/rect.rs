@@ -402,6 +402,7 @@ impl Rect {
         self.raw() as *mut _
     }
 
+    #[doc(alias = "SDL_Rect")]
     pub fn raw_slice(slice: &[Rect]) -> *const sys::SDL_Rect {
         slice.as_ptr() as *const sys::SDL_Rect
     }
@@ -413,6 +414,7 @@ impl Rect {
     /// Calculate a minimal rectangle enclosing a set of points.
     /// If a clipping rectangle is given, only points that are within it will be
     /// considered.
+    #[doc(alias = "SDL_EnclosePoints")]
     pub fn from_enclose_points<R: Into<Option<Rect>>>(points: &[Point], clipping_rect: R)
             -> Option<Rect>
     where R: Into<Option<Rect>>
@@ -463,6 +465,7 @@ impl Rect {
     /// assert!(rect.has_intersection(Rect::new(2, 2, 5, 5)));
     /// assert!(!rect.has_intersection(Rect::new(5, 0, 5, 5)));
     /// ```
+    #[doc(alias = "SDL_HasIntersection")]
     pub fn has_intersection(&self, other: Rect) -> bool {
         unsafe {
             sys::SDL_HasIntersection(self.raw(), other.raw()) != sys::SDL_bool::SDL_FALSE
@@ -487,6 +490,7 @@ impl Rect {
     ///            Some(Rect::new(2, 2, 3, 3)));
     /// assert_eq!(rect.intersection(Rect::new(5, 0, 5, 5)), None);
     /// ```
+    #[doc(alias = "SDL_IntersectRect")]
     pub fn intersection(&self, other: Rect) -> Option<Rect> {
         let mut out = mem::MaybeUninit::uninit();
 
@@ -516,6 +520,7 @@ impl Rect {
     /// assert_eq!(rect.union(Rect::new(2, 2, 5, 5)), Rect::new(0, 0, 7, 7));
     /// assert_eq!(rect.union(Rect::new(5, 0, 5, 5)), Rect::new(0, 0, 10, 5));
     /// ```
+    #[doc(alias = "SDL_UnionRect")]
     pub fn union(&self, other: Rect) -> Rect {
         let mut out = mem::MaybeUninit::uninit();
 
@@ -532,6 +537,7 @@ impl Rect {
 
     /// Calculates the intersection of a rectangle and a line segment and
     /// returns the points of their intersection.
+    #[doc(alias = "SDL_IntersectRectAndLine")]
     pub fn intersect_line(&self, start: Point, end: Point)
             -> Option<(Point, Point)> {
 
@@ -622,6 +628,7 @@ impl AsMut<sys::SDL_Rect> for Rect {
 // Intersection
 impl BitAnd<Rect> for Rect {
     type Output = Option<Rect>;
+    #[doc(alias = "SDL_Point")]
     fn bitand(self, rhs: Rect) -> Option<Rect> { self.intersection(rhs) }
 }
 
@@ -738,6 +745,7 @@ impl Point {
         Point::new(raw.x, raw.y)
     }
 
+    #[doc(alias = "SDL_Point")]
     pub fn raw_slice(slice: &[Point]) -> *const sys::SDL_Point {
         slice.as_ptr() as *const sys::SDL_Point
     }

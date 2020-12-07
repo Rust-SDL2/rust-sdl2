@@ -29,6 +29,7 @@ impl crate::VideoSubsystem {
 }
 
 impl ClipboardUtil {
+    #[doc(alias = "SDL_SetClipboardText")]
     pub fn set_clipboard_text(&self, text: &str) -> Result<(), String> {
         unsafe {
             let text = CString::new(text).unwrap();
@@ -42,6 +43,7 @@ impl ClipboardUtil {
         }
     }
 
+    #[doc(alias = "SDL_GetClipboardText")]
     pub fn clipboard_text(&self) -> Result<String, String> {
         unsafe {
             let buf = sys::SDL_GetClipboardText();
@@ -56,6 +58,7 @@ impl ClipboardUtil {
         }
     }
 
+    #[doc(alias = "SDL_HasClipboardText")]
     pub fn has_clipboard_text(&self) -> bool {
         unsafe { sys::SDL_HasClipboardText() == sys::SDL_bool::SDL_TRUE }
     }

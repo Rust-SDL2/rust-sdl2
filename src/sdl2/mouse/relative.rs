@@ -12,6 +12,7 @@ pub struct RelativeMouseState {
 }
 
 impl RelativeMouseState {
+    #[doc(alias = "SDL_GetRelativeMouseState")]
     pub fn new(_e: &EventPump) -> RelativeMouseState {
         let mut x = 0;
         let mut y = 0;

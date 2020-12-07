@@ -85,6 +85,7 @@ unsafe extern "C" fn rust_sdl2_log_fn(_userdata: *mut libc::c_void,
     custom_log_fn(priority, category, &*message);
 }
 
+#[doc(alias = "SDL_LogSetOutputFunction")]
 pub fn set_output_function(callback : fn(Priority, Category, &str)) {
     unsafe {
         custom_log_fn = callback;
@@ -94,6 +95,7 @@ pub fn set_output_function(callback : fn(Priority, Category, &str)) {
 
 /// Standard log function which takes as priority INFO and
 /// as category APPLICATION
+#[doc(alias = "SDL_Log")]
 pub fn log(message: &str) {
     let message = message.replace('%', "%%");
     let message = CString::new(message).unwrap();

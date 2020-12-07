@@ -141,6 +141,7 @@ impl error::Error for ShowMessageError {
 /// There is no way to know if the user clicked "Ok" or closed the message box,
 /// If you want to retrieve which button was clicked and customize a bit more
 /// your message box, use `show_message_box` instead.
+#[doc(alias = "SDL_ShowSimpleMessageBox")]
 pub fn show_simple_message_box<'a, W>(flags: MessageBoxFlag, title: &str,
         message: &str, window: W)
         -> Result<(), ShowMessageError>
@@ -180,6 +181,7 @@ where W: Into<Option<&'a Window>>
 /// Note that the variant of the `ClickedButton` enum will also be returned if the message box
 /// has been forcefully closed (Alt-F4, ...)
 ///
+#[doc(alias = "SDL_ShowMessageBox")]
 pub fn show_message_box<'a, 'b, W, M>(flags:MessageBoxFlag, buttons:&'a [ButtonData], title:&str,
     message:&str, window: W, scheme: M)
     -> Result<ClickedButton<'a>,ShowMessageError>

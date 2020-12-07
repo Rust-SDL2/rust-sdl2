@@ -69,6 +69,7 @@ pub struct Sdl {
 
 impl Sdl {
     #[inline]
+    #[doc(alias = "SDL_Init")]
     fn new() -> Result<Sdl, String> {
         unsafe {
             use std::sync::atomic::Ordering;
@@ -142,6 +143,7 @@ pub struct SdlDrop;
 
 impl Drop for SdlDrop {
     #[inline]
+    #[doc(alias = "SDL_Quit")]
     fn drop(&mut self) {
         use std::sync::atomic::Ordering;
 
@@ -161,6 +163,7 @@ macro_rules! subsystem {
     ($name:ident, $flag:expr) => (
         impl $name {
             #[inline]
+            #[doc(alias = "SDL_InitSubSystem")]
             fn new(sdl: &Sdl) -> Result<$name, String> {
                 let result = unsafe { sys::SDL_InitSubSystem($flag) };
 
@@ -234,6 +237,7 @@ struct SubsystemDrop {
 
 impl Drop for SubsystemDrop {
     #[inline]
+    #[doc(alias = "SDL_QuitSubSystem")]
     fn drop(&mut self) {
         unsafe { sys::SDL_QuitSubSystem(self.flag); }
     }
@@ -259,6 +263,7 @@ pub struct EventPump {
 impl EventPump {
     /// Obtains the SDL event pump.
     #[inline]
+    #[doc(alias = "SDL_InitSubSystem")]
     fn new(sdl: &Sdl) -> Result<EventPump, String> {
         // Called on the main SDL thread.
 
@@ -285,6 +290,7 @@ impl EventPump {
 
 impl Drop for EventPump {
     #[inline]
+    #[doc(alias = "SDL_QuitSubSystem")]
     fn drop(&mut self) {
         // Called on the main SDL thread.
 
@@ -298,6 +304,7 @@ impl Drop for EventPump {
 
 /// Get platform name
 #[inline]
+#[doc(alias = "SDL_GetPlatform")]
 pub fn get_platform() -> &'static str {
   unsafe {
     CStr::from_ptr(sys::SDL_GetPlatform()).to_str().unwrap()
@@ -319,6 +326,7 @@ pub fn get_platform() -> &'static str {
 /// // SDL_Quit() is called here as `sdl_context` is dropped.
 /// ```
 #[inline]
+#[doc(alias = "SDL_GetError")]
 pub fn init() -> Result<Sdl, String> { Sdl::new() }
 
 pub fn get_error() -> String {
@@ -328,6 +336,7 @@ pub fn get_error() -> String {
     }
 }
 
+#[doc(alias = "SDL_SetError")]
 pub fn set_error(err: &str) -> Result<(), NulError> {
     let c_string = CString::new(err)?;
     unsafe {
@@ -336,10 +345,12 @@ pub fn set_error(err: &str) -> Result<(), NulError> {
     Ok(())
 }
 
+#[doc(alias = "SDL_Error")]
 pub fn set_error_from_code(err: Error) {
     unsafe { sys::SDL_Error(transmute(err)); }
 }
 
+#[doc(alias = "SDL_ClearError")]
 pub fn clear_error() {
     unsafe { sys::SDL_ClearError(); }
 }

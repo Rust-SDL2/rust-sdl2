@@ -50,6 +50,7 @@ impl error::Error for AddMappingError {
 
 impl GameControllerSubsystem {
     /// Retrieve the total number of attached joysticks *and* controllers identified by SDL.
+    #[doc(alias = "SDL_NumJoysticks")]
     pub fn num_joysticks(&self) -> Result<u32, String> {
         let result = unsafe { sys::SDL_NumJoysticks() };
 
@@ -62,6 +63,7 @@ impl GameControllerSubsystem {
 
     /// Return true if the joystick at index `joystick_index` is a game controller.
     #[inline]
+    #[doc(alias = "SDL_IsGameController")]
     pub fn is_game_controller(&self, joystick_index: u32) -> bool {
         match validate_int(joystick_index, "joystick_index") {
             Ok(joystick_index) => unsafe { sys::SDL_IsGameController(joystick_index) != sys::SDL_bool::SDL_FALSE },
@@ -72,6 +74,7 @@ impl GameControllerSubsystem {
     /// Attempt to open the controller at index `joystick_index` and return it.
     /// Controller IDs are the same as joystick IDs and the maximum number can
     /// be retrieved using the `SDL_NumJoysticks` function.
+    #[doc(alias = "SDL_GameControllerOpen")]
     pub fn open(&self, joystick_index: u32) -> Result<GameController, IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
         let joystick_index = validate_int(joystick_index, "joystick_index")?;
@@ -88,6 +91,7 @@ impl GameControllerSubsystem {
     }
 
     /// Return the name of the controller at index `joystick_index`.
+    #[doc(alias = "SDL_GameControllerNameForIndex")]
     pub fn name_for_index(&self, joystick_index: u32) -> Result<String, IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
         let joystick_index = validate_int(joystick_index, "joystick_index")?;
@@ -104,17 +108,20 @@ impl GameControllerSubsystem {
 
     /// If state is `true` controller events are processed, otherwise
     /// they're ignored.
+    #[doc(alias = "SDL_GameControllerEventState")]
     pub fn set_event_state(&self, state: bool) {
         unsafe { sys::SDL_GameControllerEventState(state as i32) };
     }
 
     /// Return `true` if controller events are processed.
+    #[doc(alias = "SDL_GameControllerEventState")]
     pub fn event_state(&self) -> bool {
         unsafe { sys::SDL_GameControllerEventState(sys::SDL_QUERY as i32)
                  == sys::SDL_ENABLE as i32 }
     }
 
     /// Add a new controller input mapping from a mapping string.
+    #[doc(alias = "SDL_GameControllerAddMapping")]
     pub fn add_mapping(&self, mapping: &str)
             -> Result<MappingStatus, AddMappingError> {
         use self::AddMappingError::*;
@@ -153,6 +160,7 @@ impl GameControllerSubsystem {
     }
 
     /// Load controller input mappings from an SDL [`RWops`] object.
+    #[doc(alias = "SDL_GameControllerAddMappingsFromRW")]
     pub fn load_mappings_from_rw<'a>(&self, rw: RWops<'a>) -> Result<i32, AddMappingError> {
         use self::AddMappingError::*;
 
@@ -163,6 +171,7 @@ impl GameControllerSubsystem {
         }
     }
 
+    #[doc(alias = "SDL_GameControllerMappingForGUID")]
     pub fn mapping_for_guid(&self, guid: joystick::Guid) -> Result<String, String> {
         let c_str = unsafe { sys::SDL_GameControllerMappingForGUID(guid.raw()) };
 
@@ -171,6 +180,7 @@ impl GameControllerSubsystem {
 
     #[inline]
     /// Force controller update when not using the event loop
+    #[doc(alias = "SDL_GameControllerUpdate")]
     pub fn update(&self) {
         unsafe { sys::SDL_GameControllerUpdate() };
     }
@@ -190,6 +200,7 @@ pub enum Axis {
 impl Axis {
     /// Return the Axis from a string description in the same format
     /// used by the game controller mapping strings.
+    #[doc(alias = "SDL_GameControllerGetAxisFromString")]
     pub fn from_string(axis: &str) -> Option<Axis> {
         let id = match CString::new(axis) {
             Ok(axis) => unsafe { sys::SDL_GameControllerGetAxisFromString(axis.as_ptr() as *const c_char) },
@@ -202,6 +213,7 @@ impl Axis {
 
     /// Return a string for a given axis in the same format using by
     /// the game controller mapping strings
+    #[doc(alias = "SDL_GameControllerGetStringForAxis")]
     pub fn string(self) -> String {
         let axis: sys::SDL_GameControllerAxis;
         unsafe { axis = transmute(self); }
@@ -259,6 +271,7 @@ pub enum Button {
 impl Button {
     /// Return the Button from a string description in the same format
     /// used by the game controller mapping strings.
+    #[doc(alias = "SDL_GameControllerGetButtonFromString")]
     pub fn from_string(button: &str) -> Option<Button> {
         let id = match CString::new(button) {
             Ok(button) => unsafe { sys::SDL_GameControllerGetButtonFromString(button.as_ptr() as *const c_char) },
@@ -271,6 +284,7 @@ impl Button {
 
     /// Return a string for a given button in the same format using by
     /// the game controller mapping strings
+    #[doc(alias = "SDL_GameControllerGetStringForButton")]
     pub fn string(self) -> String {
         let button: sys::SDL_GameControllerButton;
         unsafe { button = transmute(self); }
@@ -342,6 +356,7 @@ impl GameController {
 
     /// Return the name of the controller or an empty string if no
     /// name is found.
+    #[doc(alias = "SDL_GameControllerName")]
     pub fn name(&self) -> String {
         let name = unsafe { sys::SDL_GameControllerName(self.raw) };
 
@@ -350,6 +365,7 @@ impl GameController {
 
     /// Return a String describing the controller's button and axis
     /// mappings
+    #[doc(alias = "SDL_GameControllerMapping")]
     pub fn mapping(&self) -> String {
         let mapping = unsafe { sys::SDL_GameControllerMapping(self.raw) };
 
@@ -358,11 +374,13 @@ impl GameController {
 
     /// Return true if the controller has been opened and currently
     /// connected.
+    #[doc(alias = "SDL_GameControllerGetAttached")]
     pub fn attached(&self) -> bool {
         unsafe { sys::SDL_GameControllerGetAttached(self.raw) != sys::SDL_bool::SDL_FALSE }
     }
 
     /// Return the joystick instance id of this controller
+    #[doc(alias = "SDL_GameControllerGetJoystick")]
     pub fn instance_id(&self) -> u32 {
         let result = unsafe {
           let joystick = sys::SDL_GameControllerGetJoystick(self.raw);
@@ -378,6 +396,7 @@ impl GameController {
     }
 
     /// Get the position of the given `axis`
+    #[doc(alias = "SDL_GameControllerGetAxis")]
     pub fn axis(&self, axis: Axis) -> i16 {
         // This interface is a bit messed up: 0 is a valid position
         // but can also mean that an error occured.
@@ -391,6 +410,7 @@ impl GameController {
     }
 
     /// Returns `true` if `button` is pressed.
+    #[doc(alias = "SDL_GameControllerGetButton")]
     pub fn button(&self, button: Button) -> bool {
         // This interface is a bit messed up: 0 is a valid position
         // but can also mean that an error occured.
@@ -414,6 +434,7 @@ impl GameController {
     /// the rumble effect to keep playing for a long time, as this results in
     /// the effect ending immediately after starting due to an overflow.
     /// Use some smaller, "huge enough" number instead.
+    #[doc(alias = "SDL_GameControllerRumble")]
     pub fn set_rumble(&mut self,
                       low_frequency_rumble: u16,
                       high_frequency_rumble: u16,
@@ -436,6 +457,7 @@ impl GameController {
 }
 
 impl Drop for GameController {
+    #[doc(alias = "SDL_GameControllerClose")]
     fn drop(&mut self) {
         unsafe { sys::SDL_GameControllerClose(self.raw) }
     }
