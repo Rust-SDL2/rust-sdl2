@@ -5,7 +5,8 @@ on:
   pull_request:
 
 jobs:
-  build:
+  build-vcpkg:
+    name: build vcpkg
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
