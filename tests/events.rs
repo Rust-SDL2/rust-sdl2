@@ -69,23 +69,24 @@ fn test2(ev: &sdl2::EventSubsystem, ep: &mut sdl2::EventPump) {
 
 #[allow(unused)]
 struct SomeEventTypeTest3 {
-    a: u32
+    a: u32,
 }
 
 #[allow(unused)]
 struct SomeOtherEventTypeTest3 {
-    b: u32
+    b: u32,
 }
 
 fn test3(ev: &sdl2::EventSubsystem) {
     ev.register_custom_event::<SomeEventTypeTest3>().unwrap();
-    ev.register_custom_event::<SomeOtherEventTypeTest3>().unwrap();
+    ev.register_custom_event::<SomeOtherEventTypeTest3>()
+        .unwrap();
 
     assert!(ev.register_custom_event::<SomeEventTypeTest3>().is_err());
 }
 
 struct SomeEventTypeTest4 {
-    a: u32
+    a: u32,
 }
 
 fn test4(ev: &sdl2::EventSubsystem, ep: &mut sdl2::EventPump) {
@@ -106,18 +107,22 @@ fn test_event_sender_no_subsystem() {
     let ev = sdl.event().unwrap();
     let tx = ev.event_sender();
 
-    assert!(tx.push_event(sdl2::event::Event::Window {
-        timestamp: 0,
-        window_id: 0,
-        win_event: sdl2::event::WindowEvent::Shown,
-    }).is_ok());
+    assert!(tx
+        .push_event(sdl2::event::Event::Window {
+            timestamp: 0,
+            window_id: 0,
+            win_event: sdl2::event::WindowEvent::Shown,
+        })
+        .is_ok());
 
     drop(ev);
 
     // Should return an error now the evet subsystem has been shut down
-    assert!(tx.push_event(sdl2::event::Event::Window {
-        timestamp: 0,
-        window_id: 0,
-        win_event: sdl2::event::WindowEvent::Hidden,
-    }).is_err());
+    assert!(tx
+        .push_event(sdl2::event::Event::Window {
+            timestamp: 0,
+            window_id: 0,
+            win_event: sdl2::event::WindowEvent::Hidden,
+        })
+        .is_err());
 }

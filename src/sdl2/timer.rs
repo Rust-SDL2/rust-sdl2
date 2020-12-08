@@ -1,7 +1,7 @@
+use crate::sys;
 use libc::c_void;
 use std::marker::PhantomData;
 use std::mem;
-use crate::sys;
 
 use crate::TimerSubsystem;
 
@@ -17,14 +17,16 @@ impl TimerSubsystem {
     pub fn add_timer<'b, 'c>(&'b self, delay: u32, callback: TimerCallback<'c>) -> Timer<'b, 'c> {
         unsafe {
             let callback = Box::new(callback);
-            let timer_id = sys::SDL_AddTimer(delay,
-                                            Some(c_timer_callback),
-                                            mem::transmute_copy(&callback));
+            let timer_id = sys::SDL_AddTimer(
+                delay,
+                Some(c_timer_callback),
+                mem::transmute_copy(&callback),
+            );
 
             Timer {
                 callback: Some(callback),
                 raw: timer_id,
-                _marker: PhantomData
+                _marker: PhantomData,
             }
         }
     }
@@ -58,12 +60,12 @@ impl TimerSubsystem {
     }
 }
 
-pub type TimerCallback<'a> = Box<dyn FnMut() -> u32+'a+Sync>;
+pub type TimerCallback<'a> = Box<dyn FnMut() -> u32 + 'a + Sync>;
 
 pub struct Timer<'b, 'a> {
     callback: Option<Box<TimerCallback<'a>>>,
     raw: sys::SDL_TimerID,
-    _marker: PhantomData<&'b ()>
+    _marker: PhantomData<&'b ()>,
 }
 
 impl<'b, 'a> Timer<'b, 'a> {
@@ -87,11 +89,8 @@ impl<'b, 'a> Drop for Timer<'b, 'a> {
 
 extern "C" fn c_timer_callback(_interval: u32, param: *mut c_void) -> u32 {
     let f = param as *mut std::boxed::Box<dyn std::ops::Fn() -> u32>;
-    unsafe {
-        (*f)()
-    }
+    unsafe { (*f)() }
 }
-
 
 #[cfg(not(target_os = "macos"))]
 #[cfg(test)]
@@ -113,21 +112,26 @@ mod test {
         let local_num = Arc::new(Mutex::new(0));
         let timer_num = local_num.clone();
 
-        let _timer = timer_subsystem.add_timer(20, Box::new(|| {
-            // increment up to 10 times (0 -> 9)
-            // tick again in 100ms after each increment
-            //
-            let mut num = timer_num.lock().unwrap();
-            if *num < 9 {
-                *num += 1;
-                20
-            } else { 0 }
-        }));
+        let _timer = timer_subsystem.add_timer(
+            20,
+            Box::new(|| {
+                // increment up to 10 times (0 -> 9)
+                // tick again in 100ms after each increment
+                //
+                let mut num = timer_num.lock().unwrap();
+                if *num < 9 {
+                    *num += 1;
+                    20
+                } else {
+                    0
+                }
+            }),
+        );
 
         // tick the timer at least 10 times w/ 200ms of "buffer"
         ::std::thread::sleep(Duration::from_millis(250));
         let num = local_num.lock().unwrap(); // read the number back
-        assert_eq!(*num, 9);                 // it should have incremented at least 10 times...
+        assert_eq!(*num, 9); // it should have incremented at least 10 times...
     }
 
     fn test_timer_runs_at_least_once() {
@@ -137,10 +141,14 @@ mod test {
         let local_flag = Arc::new(Mutex::new(false));
         let timer_flag = local_flag.clone();
 
-        let _timer = timer_subsystem.add_timer(20, Box::new(|| {
-            let mut flag = timer_flag.lock().unwrap();
-            *flag = true; 0
-        }));
+        let _timer = timer_subsystem.add_timer(
+            20,
+            Box::new(|| {
+                let mut flag = timer_flag.lock().unwrap();
+                *flag = true;
+                0
+            }),
+        );
 
         ::std::thread::sleep(Duration::from_millis(50));
         let flag = local_flag.lock().unwrap();
@@ -155,11 +163,14 @@ mod test {
         let timer_num = local_num.clone();
 
         // run the timer once and reclaim its closure
-        let timer_1 = timer_subsystem.add_timer(20, Box::new(move|| {
-            let mut num = timer_num.lock().unwrap();
-            *num += 1; // increment the number
-            0          // do not run timer again
-        }));
+        let timer_1 = timer_subsystem.add_timer(
+            20,
+            Box::new(move || {
+                let mut num = timer_num.lock().unwrap();
+                *num += 1; // increment the number
+                0 // do not run timer again
+            }),
+        );
 
         // reclaim closure after timer runs
         ::std::thread::sleep(Duration::from_millis(50));

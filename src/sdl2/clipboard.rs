@@ -1,7 +1,7 @@
-use std::ffi::{CString, CStr};
-use libc::c_void;
-use libc::c_char;
 use crate::get_error;
+use libc::c_char;
+use libc::c_void;
+use std::ffi::{CStr, CString};
 
 use crate::sys;
 
@@ -16,14 +16,14 @@ use crate::sys;
 /// video_subsystem.clipboard().set_clipboard_text("Hello World!").unwrap();
 /// ```
 pub struct ClipboardUtil {
-    _subsystem: crate::VideoSubsystem
+    _subsystem: crate::VideoSubsystem,
 }
 
 impl crate::VideoSubsystem {
     #[inline]
     pub fn clipboard(&self) -> ClipboardUtil {
         ClipboardUtil {
-            _subsystem: self.clone()
+            _subsystem: self.clone(),
         }
     }
 }

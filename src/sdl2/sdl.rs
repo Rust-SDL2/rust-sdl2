@@ -1,9 +1,9 @@
+use libc::c_char;
 use std::error;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt;
-use std::rc::Rc;
-use libc::c_char;
 use std::mem::transmute;
+use std::rc::Rc;
 
 use crate::sys;
 
@@ -14,7 +14,7 @@ pub enum Error {
     ReadError = sys::SDL_errorcode::SDL_EFREAD as i32,
     WriteError = sys::SDL_errorcode::SDL_EFWRITE as i32,
     SeekError = sys::SDL_errorcode::SDL_EFSEEK as i32,
-    UnsupportedError = sys::SDL_errorcode::SDL_UNSUPPORTED as i32
+    UnsupportedError = sys::SDL_errorcode::SDL_UNSUPPORTED as i32,
 }
 
 impl fmt::Display for Error {
@@ -26,7 +26,7 @@ impl fmt::Display for Error {
             ReadError => write!(f, "Error reading from datastream"),
             WriteError => write!(f, "Error writing to datastream"),
             SeekError => write!(f, "Error seeking in datastream"),
-            UnsupportedError => write!(f, "Unknown SDL error")
+            UnsupportedError => write!(f, "Unknown SDL error"),
         }
     }
 }
@@ -40,12 +40,12 @@ impl error::Error for Error {
             ReadError => "error reading from datastream",
             WriteError => "error writing to datastream",
             SeekError => "error seeking in datastream",
-            UnsupportedError => "unknown SDL error"
+            UnsupportedError => "unknown SDL error",
         }
     }
 }
 
-use std::sync::atomic::{AtomicBool};
+use std::sync::atomic::AtomicBool;
 /// Only one Sdl context can be alive at a time.
 /// Set to false by default (not alive).
 static IS_SDL_CONTEXT_ALIVE: AtomicBool = AtomicBool::new(false);
@@ -64,7 +64,7 @@ static IS_SDL_CONTEXT_ALIVE: AtomicBool = AtomicBool::new(false);
 /// the main thread.
 #[derive(Clone)]
 pub struct Sdl {
-    sdldrop: Rc<SdlDrop>
+    sdldrop: Rc<SdlDrop>,
 }
 
 impl Sdl {
@@ -82,7 +82,7 @@ impl Sdl {
             } else if sys::SDL_Init(0) == 0 {
                 // Initialize SDL without any explicit subsystems (flags = 0).
                 Ok(Sdl {
-                    sdldrop: Rc::new(SdlDrop)
+                    sdldrop: Rc::new(SdlDrop),
                 })
             } else {
                 IS_SDL_CONTEXT_ALIVE.swap(false, Ordering::Relaxed);
@@ -93,31 +93,45 @@ impl Sdl {
 
     /// Initializes the audio subsystem.
     #[inline]
-    pub fn audio(&self) -> Result<AudioSubsystem, String> { AudioSubsystem::new(self) }
+    pub fn audio(&self) -> Result<AudioSubsystem, String> {
+        AudioSubsystem::new(self)
+    }
 
     /// Initializes the event subsystem.
     #[inline]
-    pub fn event(&self) -> Result<EventSubsystem, String> { EventSubsystem::new(self) }
+    pub fn event(&self) -> Result<EventSubsystem, String> {
+        EventSubsystem::new(self)
+    }
 
     /// Initializes the joystick subsystem.
     #[inline]
-    pub fn joystick(&self) -> Result<JoystickSubsystem, String> { JoystickSubsystem::new(self) }
+    pub fn joystick(&self) -> Result<JoystickSubsystem, String> {
+        JoystickSubsystem::new(self)
+    }
 
     /// Initializes the haptic subsystem.
     #[inline]
-    pub fn haptic(&self) -> Result<HapticSubsystem, String> { HapticSubsystem::new(self) }
+    pub fn haptic(&self) -> Result<HapticSubsystem, String> {
+        HapticSubsystem::new(self)
+    }
 
     /// Initializes the game controller subsystem.
     #[inline]
-    pub fn game_controller(&self) -> Result<GameControllerSubsystem, String> { GameControllerSubsystem::new(self) }
+    pub fn game_controller(&self) -> Result<GameControllerSubsystem, String> {
+        GameControllerSubsystem::new(self)
+    }
 
     /// Initializes the timer subsystem.
     #[inline]
-    pub fn timer(&self) -> Result<TimerSubsystem, String> { TimerSubsystem::new(self) }
+    pub fn timer(&self) -> Result<TimerSubsystem, String> {
+        TimerSubsystem::new(self)
+    }
 
     /// Initializes the video subsystem.
     #[inline]
-    pub fn video(&self) -> Result<VideoSubsystem, String> { VideoSubsystem::new(self) }
+    pub fn video(&self) -> Result<VideoSubsystem, String> {
+        VideoSubsystem::new(self)
+    }
 
     /// Obtains the SDL event pump.
     ///
@@ -150,7 +164,9 @@ impl Drop for SdlDrop {
         let was_alive = IS_SDL_CONTEXT_ALIVE.swap(false, Ordering::Relaxed);
         assert!(was_alive);
 
-        unsafe { sys::SDL_Quit(); }
+        unsafe {
+            sys::SDL_Quit();
+        }
     }
 }
 
@@ -160,7 +176,7 @@ impl Drop for SdlDrop {
 // the event queue. These subsystems implement `Sync`.
 
 macro_rules! subsystem {
-    ($name:ident, $flag:expr) => (
+    ($name:ident, $flag:expr) => {
         impl $name {
             #[inline]
             #[doc(alias = "SDL_InitSubSystem")]
@@ -171,38 +187,40 @@ macro_rules! subsystem {
                     Ok($name {
                         _subsystem_drop: Rc::new(SubsystemDrop {
                             _sdldrop: sdl.sdldrop.clone(),
-                            flag: $flag
-                        })
+                            flag: $flag,
+                        }),
                     })
                 } else {
                     Err(get_error())
                 }
             }
         }
-    );
-    ($name:ident, $flag:expr, nosync) => (
+    };
+    ($name:ident, $flag:expr, nosync) => {
         #[derive(Debug, Clone)]
         pub struct $name {
             /// Subsystems cannot be moved or (usually) used on non-main threads.
             /// Luckily, Rc restricts use to the main thread.
-            _subsystem_drop: Rc<SubsystemDrop>
+            _subsystem_drop: Rc<SubsystemDrop>,
         }
 
         impl $name {
             /// Obtain an SDL context.
             #[inline]
             pub fn sdl(&self) -> Sdl {
-                Sdl { sdldrop: self._subsystem_drop._sdldrop.clone() }
+                Sdl {
+                    sdldrop: self._subsystem_drop._sdldrop.clone(),
+                }
             }
         }
 
         subsystem!($name, $flag);
-    );
-    ($name:ident, $flag:expr, sync) => (
+    };
+    ($name:ident, $flag:expr, sync) => {
         pub struct $name {
             /// Subsystems cannot be moved or (usually) used on non-main threads.
             /// Luckily, Rc restricts use to the main thread.
-            _subsystem_drop: Rc<SubsystemDrop>
+            _subsystem_drop: Rc<SubsystemDrop>,
         }
         unsafe impl Sync for $name {}
 
@@ -210,7 +228,7 @@ macro_rules! subsystem {
             #[inline]
             fn clone(&self) -> $name {
                 $name {
-                    _subsystem_drop: self._subsystem_drop.clone()
+                    _subsystem_drop: self._subsystem_drop.clone(),
                 }
             }
         }
@@ -219,12 +237,14 @@ macro_rules! subsystem {
             /// Obtain an SDL context.
             #[inline]
             pub fn sdl(&self) -> Sdl {
-                Sdl { sdldrop: self._subsystem_drop._sdldrop.clone() }
+                Sdl {
+                    sdldrop: self._subsystem_drop._sdldrop.clone(),
+                }
             }
         }
 
         subsystem!($name, $flag);
-    )
+    };
 }
 
 /// When a subsystem is no longer in use (the refcount in an `Rc<SubsystemDrop>` reaches 0),
@@ -232,19 +252,25 @@ macro_rules! subsystem {
 #[derive(Debug, Clone)]
 struct SubsystemDrop {
     _sdldrop: Rc<SdlDrop>,
-    flag: u32
+    flag: u32,
 }
 
 impl Drop for SubsystemDrop {
     #[inline]
     #[doc(alias = "SDL_QuitSubSystem")]
     fn drop(&mut self) {
-        unsafe { sys::SDL_QuitSubSystem(self.flag); }
+        unsafe {
+            sys::SDL_QuitSubSystem(self.flag);
+        }
     }
 }
 
 subsystem!(AudioSubsystem, sys::SDL_INIT_AUDIO, nosync);
-subsystem!(GameControllerSubsystem, sys::SDL_INIT_GAMECONTROLLER, nosync);
+subsystem!(
+    GameControllerSubsystem,
+    sys::SDL_INIT_GAMECONTROLLER,
+    nosync
+);
 subsystem!(HapticSubsystem, sys::SDL_INIT_HAPTIC, nosync);
 subsystem!(JoystickSubsystem, sys::SDL_INIT_JOYSTICK, nosync);
 subsystem!(VideoSubsystem, sys::SDL_INIT_VIDEO, nosync);
@@ -257,7 +283,7 @@ static mut IS_EVENT_PUMP_ALIVE: bool = false;
 
 /// A thread-safe type that encapsulates SDL event-pumping functions.
 pub struct EventPump {
-    _sdldrop: Rc<SdlDrop>
+    _sdldrop: Rc<SdlDrop>,
 }
 
 impl EventPump {
@@ -278,7 +304,7 @@ impl EventPump {
                     IS_EVENT_PUMP_ALIVE = true;
 
                     Ok(EventPump {
-                        _sdldrop: sdl.sdldrop.clone()
+                        _sdldrop: sdl.sdldrop.clone(),
                     })
                 } else {
                     Err(get_error())
@@ -306,9 +332,7 @@ impl Drop for EventPump {
 #[inline]
 #[doc(alias = "SDL_GetPlatform")]
 pub fn get_platform() -> &'static str {
-  unsafe {
-    CStr::from_ptr(sys::SDL_GetPlatform()).to_str().unwrap()
-  }
+    unsafe { CStr::from_ptr(sys::SDL_GetPlatform()).to_str().unwrap() }
 }
 
 /// Initializes the SDL library.
@@ -327,7 +351,9 @@ pub fn get_platform() -> &'static str {
 /// ```
 #[inline]
 #[doc(alias = "SDL_GetError")]
-pub fn init() -> Result<Sdl, String> { Sdl::new() }
+pub fn init() -> Result<Sdl, String> {
+    Sdl::new()
+}
 
 pub fn get_error() -> String {
     unsafe {
@@ -347,10 +373,14 @@ pub fn set_error(err: &str) -> Result<(), NulError> {
 
 #[doc(alias = "SDL_Error")]
 pub fn set_error_from_code(err: Error) {
-    unsafe { sys::SDL_Error(transmute(err)); }
+    unsafe {
+        sys::SDL_Error(transmute(err));
+    }
 }
 
 #[doc(alias = "SDL_ClearError")]
 pub fn clear_error() {
-    unsafe { sys::SDL_ClearError(); }
+    unsafe {
+        sys::SDL_ClearError();
+    }
 }

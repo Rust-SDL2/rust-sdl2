@@ -1,13 +1,13 @@
 use crate::sys;
 use crate::sys::SDL_JoystickPowerLevel;
 
-use crate::JoystickSubsystem;
-use crate::get_error;
 use crate::clear_error;
-use std::ffi::{CString, CStr, NulError};
-use std::fmt::{Display, Formatter, Error};
-use libc::c_char;
 use crate::common::{validate_int, IntegerOrSdlError};
+use crate::get_error;
+use crate::JoystickSubsystem;
+use libc::c_char;
+use std::ffi::{CStr, CString, NulError};
+use std::fmt::{Display, Error, Formatter};
 
 impl JoystickSubsystem {
     /// Retrieve the total number of attached joysticks *and* controllers identified by SDL.
@@ -24,8 +24,7 @@ impl JoystickSubsystem {
 
     /// Attempt to open the joystick at index `joystick_index` and return it.
     #[doc(alias = "SDL_JoystickOpen")]
-    pub fn open(&self, joystick_index: u32)
-            -> Result<Joystick, IntegerOrSdlError> {
+    pub fn open(&self, joystick_index: u32) -> Result<Joystick, IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
         let joystick_index = validate_int(joystick_index, "joystick_index")?;
 
@@ -36,7 +35,7 @@ impl JoystickSubsystem {
         } else {
             Ok(Joystick {
                 subsystem: self.clone(),
-                raw: joystick
+                raw: joystick,
             })
         }
     }
@@ -53,7 +52,10 @@ impl JoystickSubsystem {
             Err(SdlError(get_error()))
         } else {
             Ok(unsafe {
-                CStr::from_ptr(c_str as *const _).to_str().unwrap().to_string()
+                CStr::from_ptr(c_str as *const _)
+                    .to_str()
+                    .unwrap()
+                    .to_string()
             })
         }
     }
@@ -85,8 +87,7 @@ impl JoystickSubsystem {
     /// Return `true` if joystick events are processed.
     #[doc(alias = "SDL_JoystickEventState")]
     pub fn event_state(&self) -> bool {
-        unsafe { sys::SDL_JoystickEventState(sys::SDL_QUERY as i32)
-                 == sys::SDL_ENABLE as i32 }
+        unsafe { sys::SDL_JoystickEventState(sys::SDL_QUERY as i32) == sys::SDL_ENABLE as i32 }
     }
 
     /// Force joystick update when not using the event loop
@@ -95,55 +96,55 @@ impl JoystickSubsystem {
     pub fn update(&self) {
         unsafe { sys::SDL_JoystickUpdate() };
     }
-
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(i32)]
 pub enum PowerLevel {
     Unknown = SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_UNKNOWN as i32,
-    Empty   = SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_EMPTY as i32,
-    Low     = SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_LOW as i32,
-    Medium  = SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_MEDIUM as i32,
-    Full    = SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_FULL as i32,
-    Wired   = SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_WIRED as i32,
+    Empty = SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_EMPTY as i32,
+    Low = SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_LOW as i32,
+    Medium = SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_MEDIUM as i32,
+    Full = SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_FULL as i32,
+    Wired = SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_WIRED as i32,
 }
 
 impl PowerLevel {
     pub fn from_ll(raw: SDL_JoystickPowerLevel) -> PowerLevel {
         match raw {
             SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_UNKNOWN => PowerLevel::Unknown,
-            SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_EMPTY   => PowerLevel::Empty,
-            SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_LOW     => PowerLevel::Low,
-            SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_MEDIUM  => PowerLevel::Medium,
-            SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_FULL    => PowerLevel::Full,
-            SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_WIRED   => PowerLevel::Wired,
-            _  => panic!("Unexpected power level: {:?}", raw),
+            SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_EMPTY => PowerLevel::Empty,
+            SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_LOW => PowerLevel::Low,
+            SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_MEDIUM => PowerLevel::Medium,
+            SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_FULL => PowerLevel::Full,
+            SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_WIRED => PowerLevel::Wired,
+            _ => panic!("Unexpected power level: {:?}", raw),
         }
     }
 
     pub fn to_ll(self) -> SDL_JoystickPowerLevel {
         match self {
             PowerLevel::Unknown => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_UNKNOWN,
-            PowerLevel::Empty   => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_EMPTY,
-            PowerLevel::Low     => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_LOW,
-            PowerLevel::Medium  => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_MEDIUM,
-            PowerLevel::Full    => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_FULL,
-            PowerLevel::Wired   => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_WIRED,
+            PowerLevel::Empty => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_EMPTY,
+            PowerLevel::Low => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_LOW,
+            PowerLevel::Medium => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_MEDIUM,
+            PowerLevel::Full => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_FULL,
+            PowerLevel::Wired => SDL_JoystickPowerLevel::SDL_JOYSTICK_POWER_WIRED,
         }
-
     }
 }
 
 /// Wrapper around the `SDL_Joystick` object
 pub struct Joystick {
     subsystem: JoystickSubsystem,
-    raw: *mut sys::SDL_Joystick
+    raw: *mut sys::SDL_Joystick,
 }
 
 impl Joystick {
     #[inline]
-    pub const fn subsystem(&self) -> &JoystickSubsystem { &self.subsystem }
+    pub const fn subsystem(&self) -> &JoystickSubsystem {
+        &self.subsystem
+    }
 
     /// Return the name of the joystick or an empty string if no name
     /// is found.
@@ -378,17 +379,19 @@ impl Joystick {
     /// the effect ending immediately after starting due to an overflow.
     /// Use some smaller, "huge enough" number instead.
     #[doc(alias = "SDL_JoystickRumble")]
-    pub fn set_rumble(&mut self,
-                      low_frequency_rumble: u16,
-                      high_frequency_rumble: u16,
-                      duration_ms: u32)
-                      -> Result<(), IntegerOrSdlError>
-    {
+    pub fn set_rumble(
+        &mut self,
+        low_frequency_rumble: u16,
+        high_frequency_rumble: u16,
+        duration_ms: u32,
+    ) -> Result<(), IntegerOrSdlError> {
         let result = unsafe {
-            sys::SDL_JoystickRumble(self.raw,
-                                    low_frequency_rumble,
-                                    high_frequency_rumble,
-                                    duration_ms)
+            sys::SDL_JoystickRumble(
+                self.raw,
+                low_frequency_rumble,
+                high_frequency_rumble,
+                duration_ms,
+            )
         };
 
         if result != 0 {
@@ -453,7 +456,7 @@ impl Guid {
         // maybe I'm wrong?
         let mut buf = [0; 33];
 
-        let len   = buf.len() as i32;
+        let len = buf.len() as i32;
         let c_str = buf.as_mut_ptr();
 
         unsafe {
@@ -467,7 +470,10 @@ impl Guid {
             String::new()
         } else {
             unsafe {
-                CStr::from_ptr(c_str as *const _).to_str().unwrap().to_string()
+                CStr::from_ptr(c_str as *const _)
+                    .to_str()
+                    .unwrap()
+                    .to_string()
             }
         }
     }
@@ -490,34 +496,34 @@ impl Display for Guid {
 /// is how the SDL2 docs present it anyway (using macros).
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum HatState {
-    Centered  = 0,
-    Up        = 0x01,
-    Right     = 0x02,
-    Down      = 0x04,
-    Left      = 0x08,
-    RightUp   = 0x02 | 0x01,
+    Centered = 0,
+    Up = 0x01,
+    Right = 0x02,
+    Down = 0x04,
+    Left = 0x08,
+    RightUp = 0x02 | 0x01,
     RightDown = 0x02 | 0x04,
-    LeftUp    = 0x08 | 0x01,
-    LeftDown  = 0x08 | 0x04,
+    LeftUp = 0x08 | 0x01,
+    LeftDown = 0x08 | 0x04,
 }
 
 impl HatState {
     pub fn from_raw(raw: u8) -> HatState {
         match raw {
-            0  => HatState::Centered,
-            1  => HatState::Up,
-            2  => HatState::Right,
-            4  => HatState::Down,
-            8  => HatState::Left,
-            3  => HatState::RightUp,
-            6  => HatState::RightDown,
-            9  => HatState::LeftUp,
+            0 => HatState::Centered,
+            1 => HatState::Up,
+            2 => HatState::Right,
+            4 => HatState::Down,
+            8 => HatState::Left,
+            3 => HatState::RightUp,
+            6 => HatState::RightDown,
+            9 => HatState::LeftUp,
             12 => HatState::LeftDown,
 
             // The Xinput driver on Windows can report hat states on certain hardware that don't
             // make any sense from a gameplay perspective, and so aren't worth putting in the
             // HatState enumeration.
-            _  => HatState::Centered,
+            _ => HatState::Centered,
         }
     }
 
@@ -533,7 +539,6 @@ impl HatState {
             HatState::LeftUp => 9,
             HatState::LeftDown => 12,
         }
-
     }
 }
 

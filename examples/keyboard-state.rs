@@ -9,7 +9,8 @@ pub fn main() -> Result<(), String> {
     let sdl_context = sdl2::init()?;
     let video_subsystem = sdl_context.video()?;
 
-    let _window = video_subsystem.window("Keyboard", 800, 600)
+    let _window = video_subsystem
+        .window("Keyboard", 800, 600)
         .position_centered()
         .build()
         .map_err(|e| e.to_string())?;
@@ -20,13 +21,17 @@ pub fn main() -> Result<(), String> {
 
     'running: loop {
         for event in events.poll_iter() {
-            if let Event::Quit {..} = event {
+            if let Event::Quit { .. } = event {
                 break 'running;
             };
         }
 
         // Create a set of pressed Keys.
-        let keys = events.keyboard_state().pressed_scancodes().filter_map(Keycode::from_scancode).collect();
+        let keys = events
+            .keyboard_state()
+            .pressed_scancodes()
+            .filter_map(Keycode::from_scancode)
+            .collect();
 
         // Get the difference between the new and old sets.
         let new_keys = &keys - &prev_keys;

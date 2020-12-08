@@ -1,9 +1,9 @@
+use crate::get_error;
+use libc::c_char;
+use libc::c_void;
 use std::error;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt;
-use libc::c_void;
-use crate::get_error;
-use libc::c_char;
 
 use crate::sys;
 
@@ -37,7 +37,7 @@ impl fmt::Display for PrefPathError {
         match *self {
             InvalidOrganizationName(ref e) => write!(f, "Invalid organization name: {}", e),
             InvalidApplicationName(ref e) => write!(f, "Invalid application name: {}", e),
-            SdlError(ref e) => write!(f, "SDL error: {}", e)
+            SdlError(ref e) => write!(f, "SDL error: {}", e),
         }
     }
 }
@@ -58,8 +58,7 @@ impl error::Error for PrefPathError {
 /// Return the preferred directory for the application to write files on this
 /// system, based on the given organization and application name.
 #[doc(alias = "SDL_GetPrefPath")]
-pub fn pref_path(org_name: &str, app_name: &str)
-        -> Result<String, PrefPathError> {
+pub fn pref_path(org_name: &str, app_name: &str) -> Result<String, PrefPathError> {
     use self::PrefPathError::*;
     let result = unsafe {
         let org = match CString::new(org_name) {
@@ -67,10 +66,11 @@ pub fn pref_path(org_name: &str, app_name: &str)
             Err(err) => return Err(InvalidOrganizationName(err)),
         };
         let app = match CString::new(app_name) {
-            Ok(s) =>s,
+            Ok(s) => s,
             Err(err) => return Err(InvalidApplicationName(err)),
         };
-        let buf = sys::SDL_GetPrefPath(org.as_ptr() as *const c_char, app.as_ptr() as *const c_char);
+        let buf =
+            sys::SDL_GetPrefPath(org.as_ptr() as *const c_char, app.as_ptr() as *const c_char);
         CStr::from_ptr(buf as *const _).to_str().unwrap().to_owned()
     };
 

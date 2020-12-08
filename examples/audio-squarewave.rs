@@ -6,7 +6,7 @@ use std::time::Duration;
 struct SquareWave {
     phase_inc: f32,
     phase: f32,
-    volume: f32
+    volume: f32,
 }
 
 impl AudioCallback for SquareWave {
@@ -15,7 +15,11 @@ impl AudioCallback for SquareWave {
     fn callback(&mut self, out: &mut [f32]) {
         // Generate a square wave
         for x in out.iter_mut() {
-            *x = if self.phase <= 0.5 { self.volume } else { -self.volume };
+            *x = if self.phase <= 0.5 {
+                self.volume
+            } else {
+                -self.volume
+            };
             self.phase = (self.phase + self.phase_inc) % 1.0;
         }
     }
@@ -27,8 +31,8 @@ fn main() -> Result<(), String> {
 
     let desired_spec = AudioSpecDesired {
         freq: Some(44_100),
-        channels: Some(1),  // mono
-        samples: None       // default sample size
+        channels: Some(1), // mono
+        samples: None,     // default sample size
     };
 
     let device = audio_subsystem.open_playback(None, &desired_spec, |spec| {
@@ -39,7 +43,7 @@ fn main() -> Result<(), String> {
         SquareWave {
             phase_inc: 440.0 / spec.freq as f32,
             phase: 0.0,
-            volume: 0.25
+            volume: 0.25,
         }
     })?;
 
@@ -50,6 +54,6 @@ fn main() -> Result<(), String> {
     std::thread::sleep(Duration::from_millis(2_000));
 
     // Device is automatically closed when dropped
-    
+
     Ok(())
 }

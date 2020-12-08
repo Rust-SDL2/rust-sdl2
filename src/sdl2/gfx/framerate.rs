@@ -1,9 +1,9 @@
 //! Framerate control
 
+use get_error;
 use libc;
 use libc::{c_void, size_t};
 use std::mem;
-use ::get_error;
 use sys::gfx;
 
 /// Structure holding the state and timing information of the framerate controller.
@@ -27,7 +27,7 @@ impl FPSManager {
         let ret = unsafe { gfx::framerate::SDL_setFramerate(self.raw, rate as u32) };
         match ret {
             0 => Ok(()),
-            _ => Err(get_error())
+            _ => Err(get_error()),
         }
     }
 

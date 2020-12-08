@@ -1,10 +1,9 @@
+extern crate futures;
 /// Minimal example for getting sdl2 and wgpu working together with raw-window-handle.
-
 extern crate glsl_to_spirv;
 extern crate libc;
 extern crate sdl2;
 extern crate wgpu;
-extern crate futures;
 
 use futures::executor::block_on;
 
@@ -41,14 +40,12 @@ fn main() -> Result<(), String> {
         None => return Err(String::from("No adapter found")),
     };
 
-    let (device, queue) = block_on(adapter.request_device(
-            &wgpu::DeviceDescriptor {
-                extensions: wgpu::Extensions {
-                    anisotropic_filtering: false,
-                },
-                limits: wgpu::Limits::default(),
-            }
-    ));
+    let (device, queue) = block_on(adapter.request_device(&wgpu::DeviceDescriptor {
+        extensions: wgpu::Extensions {
+            anisotropic_filtering: false,
+        },
+        limits: wgpu::Limits::default(),
+    }));
 
     let vs = include_str!("shader.vert");
     let vs_spirv = &load_glsl(vs, glsl_to_spirv::ShaderType::Vertex)?;
@@ -143,10 +140,9 @@ fn main() -> Result<(), String> {
             Ok(a) => a,
             Err(_) => return Err(String::from("Timeout getting next texture")),
         };
-        let mut encoder =
-            device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
-                label: Some("command_encoder")
-            });
+        let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
+            label: Some("command_encoder"),
+        });
 
         {
             let mut rpass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
@@ -161,7 +157,7 @@ fn main() -> Result<(), String> {
             });
             rpass.set_pipeline(&render_pipeline);
             rpass.set_bind_group(0, &bind_group, &[]);
-            rpass.draw(0 .. 3, 0 .. 1);
+            rpass.draw(0..3, 0..1);
         }
 
         queue.submit(&[encoder.finish()]);

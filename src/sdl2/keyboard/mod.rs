@@ -1,6 +1,6 @@
-use crate::EventPump;
 use crate::rect::Rect;
 use crate::video::Window;
+use crate::EventPump;
 
 use std::fmt;
 use std::mem::transmute;
@@ -37,7 +37,7 @@ impl fmt::Display for Mod {
 }
 
 pub struct KeyboardState<'a> {
-    keyboard_state: &'a [u8]
+    keyboard_state: &'a [u8],
 }
 
 impl<'a> KeyboardState<'a> {
@@ -50,9 +50,7 @@ impl<'a> KeyboardState<'a> {
             ::std::slice::from_raw_parts(state_ptr, count as usize)
         };
 
-        KeyboardState {
-            keyboard_state
-        }
+        KeyboardState { keyboard_state }
     }
 
     /// Returns true if the scancode is pressed.
@@ -73,7 +71,7 @@ impl<'a> KeyboardState<'a> {
     pub fn scancodes(&self) -> ScancodeIterator {
         ScancodeIterator {
             index: 0,
-            keyboard_state: self.keyboard_state
+            keyboard_state: self.keyboard_state,
         }
     }
 
@@ -102,14 +100,14 @@ impl<'a> KeyboardState<'a> {
     /// ```
     pub fn pressed_scancodes(&self) -> PressedScancodeIterator {
         PressedScancodeIterator {
-            iter: self.scancodes()
+            iter: self.scancodes(),
         }
     }
 }
 
 pub struct ScancodeIterator<'a> {
     index: i32,
-    keyboard_state: &'a [u8]
+    keyboard_state: &'a [u8],
 }
 
 impl<'a> Iterator for ScancodeIterator<'a> {
@@ -134,7 +132,7 @@ impl<'a> Iterator for ScancodeIterator<'a> {
 }
 
 pub struct PressedScancodeIterator<'a> {
-    iter: ScancodeIterator<'a>
+    iter: ScancodeIterator<'a>,
 }
 
 impl<'a> Iterator for PressedScancodeIterator<'a> {
@@ -142,7 +140,9 @@ impl<'a> Iterator for PressedScancodeIterator<'a> {
 
     fn next(&mut self) -> Option<Scancode> {
         while let Some((scancode, pressed)) = self.iter.next() {
-            if pressed { return Some(scancode) }
+            if pressed {
+                return Some(scancode);
+            }
         }
 
         None
@@ -153,7 +153,7 @@ impl crate::Sdl {
     #[inline]
     pub fn keyboard(&self) -> KeyboardUtil {
         KeyboardUtil {
-            _sdldrop: self.sdldrop()
+            _sdldrop: self.sdldrop(),
         }
     }
 }
@@ -162,7 +162,7 @@ impl crate::VideoSubsystem {
     #[inline]
     pub fn text_input(&self) -> TextInputUtil {
         TextInputUtil {
-            _subsystem: self.clone()
+            _subsystem: self.clone(),
         }
     }
 }
@@ -175,7 +175,7 @@ impl crate::VideoSubsystem {
 /// let focused = sdl_context.keyboard().focused_window_id().is_some();
 /// ```
 pub struct KeyboardUtil {
-    _sdldrop: ::std::rc::Rc<crate::SdlDrop>
+    _sdldrop: ::std::rc::Rc<crate::SdlDrop>,
 }
 
 impl KeyboardUtil {
@@ -198,7 +198,9 @@ impl KeyboardUtil {
 
     #[doc(alias = "SDL_SetModState")]
     pub fn set_mod_state(&self, flags: Mod) {
-        unsafe { sys::SDL_SetModState(transmute::<u32, sys::SDL_Keymod>(flags.bits() as u32)); }
+        unsafe {
+            sys::SDL_SetModState(transmute::<u32, sys::SDL_Keymod>(flags.bits() as u32));
+        }
     }
 }
 
@@ -214,28 +216,34 @@ impl KeyboardUtil {
 /// video_subsystem.text_input().start();
 /// ```
 pub struct TextInputUtil {
-    _subsystem: crate::VideoSubsystem
+    _subsystem: crate::VideoSubsystem,
 }
 
 impl TextInputUtil {
     #[doc(alias = "SDL_StartTextInput")]
     pub fn start(&self) {
-        unsafe { sys::SDL_StartTextInput(); }
+        unsafe {
+            sys::SDL_StartTextInput();
+        }
     }
 
     #[doc(alias = "SDL_IsTextInputActive")]
-    pub fn is_active(&self, ) -> bool {
+    pub fn is_active(&self) -> bool {
         unsafe { sys::SDL_IsTextInputActive() == sys::SDL_bool::SDL_TRUE }
     }
 
     #[doc(alias = "SDL_StopTextInput")]
     pub fn stop(&self) {
-        unsafe { sys::SDL_StopTextInput(); }
+        unsafe {
+            sys::SDL_StopTextInput();
+        }
     }
 
     #[doc(alias = "SDL_SetTextInputRect")]
     pub fn set_rect(&self, rect: Rect) {
-        unsafe { sys::SDL_SetTextInputRect(rect.raw() as *mut sys::SDL_Rect); }
+        unsafe {
+            sys::SDL_SetTextInputRect(rect.raw() as *mut sys::SDL_Rect);
+        }
     }
 
     #[doc(alias = "SDL_HasScreenKeyboardSupport")]

@@ -1,6 +1,6 @@
 use crate::sys;
-use std::ptr::null_mut;
 use std::ffi::{CStr, CString};
+use std::ptr::null_mut;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Category {
@@ -68,17 +68,18 @@ impl Priority {
     }
 }
 
-fn dummy(_priority: Priority, _category: Category, _message: &str) {
-}
+fn dummy(_priority: Priority, _category: Category, _message: &str) {}
 
 #[allow(non_upper_case_globals)]
 // NEVER make this public
-static mut custom_log_fn : fn(Priority, Category, &str) = dummy;
+static mut custom_log_fn: fn(Priority, Category, &str) = dummy;
 
-unsafe extern "C" fn rust_sdl2_log_fn(_userdata: *mut libc::c_void,
-                                   category: libc::c_int,
-                                   priority: sys::SDL_LogPriority,
-                                   message: *const libc::c_char) {
+unsafe extern "C" fn rust_sdl2_log_fn(
+    _userdata: *mut libc::c_void,
+    category: libc::c_int,
+    priority: sys::SDL_LogPriority,
+    message: *const libc::c_char,
+) {
     let category = Category::from_ll(category as u32);
     let priority = Priority::from_ll(priority);
     let message = CStr::from_ptr(message).to_string_lossy();
@@ -86,7 +87,7 @@ unsafe extern "C" fn rust_sdl2_log_fn(_userdata: *mut libc::c_void,
 }
 
 #[doc(alias = "SDL_LogSetOutputFunction")]
-pub fn set_output_function(callback : fn(Priority, Category, &str)) {
+pub fn set_output_function(callback: fn(Priority, Category, &str)) {
     unsafe {
         custom_log_fn = callback;
         sys::SDL_LogSetOutputFunction(Some(rust_sdl2_log_fn), null_mut());

@@ -1,9 +1,9 @@
 //! Haptic Functions
 use crate::sys;
 
-use crate::HapticSubsystem;
 use crate::common::{validate_int, IntegerOrSdlError};
 use crate::get_error;
+use crate::HapticSubsystem;
 
 impl HapticSubsystem {
     /// Attempt to open the joystick at index `joystick_index` and return its haptic device.
@@ -35,11 +35,12 @@ pub struct Haptic {
     raw: *mut sys::SDL_Haptic,
 }
 
-
 impl Haptic {
     #[inline]
     #[doc(alias = "SDL_HapticRumblePlay")]
-    pub fn subsystem(&self) -> &HapticSubsystem { &self.subsystem }
+    pub fn subsystem(&self) -> &HapticSubsystem {
+        &self.subsystem
+    }
 
     /// Run a simple rumble effect on the haptic device.
     pub fn rumble_play(&mut self, strength: f32, duration: u32) {
@@ -52,7 +53,6 @@ impl Haptic {
         unsafe { sys::SDL_HapticRumbleStop(self.raw) };
     }
 }
-
 
 impl Drop for Haptic {
     #[doc(alias = "SDL_HapticClose")]
