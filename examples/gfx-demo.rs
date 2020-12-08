@@ -1,8 +1,8 @@
 extern crate sdl2;
 
 use sdl2::event::Event;
-use sdl2::pixels;
 use sdl2::keyboard::Keycode;
+use sdl2::pixels;
 
 use sdl2::gfx::primitives::DrawRenderer;
 
@@ -12,7 +12,12 @@ const SCREEN_HEIGHT: u32 = 600;
 fn main() -> Result<(), String> {
     let sdl_context = sdl2::init()?;
     let video_subsys = sdl_context.video()?;
-    let window = video_subsys.window("rust-sdl2_gfx: draw line & FPSManager", SCREEN_WIDTH, SCREEN_HEIGHT)
+    let window = video_subsys
+        .window(
+            "rust-sdl2_gfx: draw line & FPSManager",
+            SCREEN_WIDTH,
+            SCREEN_HEIGHT,
+        )
         .position_centered()
         .opengl()
         .build()
@@ -31,14 +36,15 @@ fn main() -> Result<(), String> {
 
     'main: loop {
         for event in events.poll_iter() {
-
             match event {
+                Event::Quit { .. } => break 'main,
 
-                Event::Quit {..} => break 'main,
-
-                Event::KeyDown {keycode: Some(keycode), ..} => {
+                Event::KeyDown {
+                    keycode: Some(keycode),
+                    ..
+                } => {
                     if keycode == Keycode::Escape {
-                        break 'main
+                        break 'main;
                     } else if keycode == Keycode::Space {
                         println!("space down");
                         for i in 0..400 {
@@ -48,7 +54,7 @@ fn main() -> Result<(), String> {
                     }
                 }
 
-                Event::MouseButtonDown {x, y, ..} => {
+                Event::MouseButtonDown { x, y, .. } => {
                     let color = pixels::Color::RGB(x as u8, y as u8, 255);
                     let _ = canvas.line(lastx, lasty, x as i16, y as i16, color);
                     lastx = x as i16;

@@ -21,7 +21,11 @@ pub struct Version {
 impl Version {
     /// Convert a raw *SDL_version to Version.
     pub fn from_ll(v: sys::SDL_version) -> Version {
-        Version { major: v.major, minor: v.minor, patch: v.patch }
+        Version {
+            major: v.major,
+            minor: v.minor,
+            patch: v.patch,
+        }
     }
 }
 
@@ -35,7 +39,11 @@ impl fmt::Display for Version {
 #[doc(alias = "SDL_GetVersion")]
 pub fn version() -> Version {
     unsafe {
-        let mut cver = sys::SDL_version { major: 0, minor: 0, patch: 0};
+        let mut cver = sys::SDL_version {
+            major: 0,
+            minor: 0,
+            patch: 0,
+        };
         sys::SDL_GetVersion(&mut cver);
         Version::from_ll(cver)
     }
@@ -53,7 +61,5 @@ pub fn revision() -> String {
 /// Get the revision number of SDL that is linked against your program.
 #[doc(alias = "SDL_GetRevisionNumber")]
 pub fn revision_number() -> i32 {
-    unsafe {
-        sys::SDL_GetRevisionNumber()
-    }
+    unsafe { sys::SDL_GetRevisionNumber() }
 }

@@ -8,7 +8,7 @@ use super::{MouseButton, MouseButtonIterator, PressedMouseButtonIterator};
 pub struct RelativeMouseState {
     mouse_state: u32,
     x: i32,
-    y: i32
+    y: i32,
 }
 
 impl RelativeMouseState {
@@ -24,12 +24,16 @@ impl RelativeMouseState {
         RelativeMouseState {
             mouse_state,
             x: x as i32,
-            y: y as i32
+            y: y as i32,
         }
     }
 
     pub fn from_sdl_state(state: u32) -> RelativeMouseState {
-        RelativeMouseState { mouse_state : state, x: 0, y: 0 }
+        RelativeMouseState {
+            mouse_state: state,
+            x: 0,
+            y: 0,
+        }
     }
     pub fn to_sdl_state(&self) -> u32 {
         self.mouse_state
@@ -49,25 +53,39 @@ impl RelativeMouseState {
     ///     e.mouse_state().left()
     /// }
     /// ```
-    pub fn left(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_LEFT)) != 0 }
+    pub fn left(&self) -> bool {
+        (self.mouse_state & self.button_mask(sys::SDL_BUTTON_LEFT)) != 0
+    }
 
     /// Tests if the middle mouse button was pressed.
-    pub fn middle(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_MIDDLE)) != 0 }
+    pub fn middle(&self) -> bool {
+        (self.mouse_state & self.button_mask(sys::SDL_BUTTON_MIDDLE)) != 0
+    }
 
     /// Tests if the right mouse button was pressed.
-    pub fn right(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_RIGHT)) != 0 }
+    pub fn right(&self) -> bool {
+        (self.mouse_state & self.button_mask(sys::SDL_BUTTON_RIGHT)) != 0
+    }
 
     /// Tests if the X1 mouse button was pressed.
-    pub fn x1(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_X1)) != 0 }
+    pub fn x1(&self) -> bool {
+        (self.mouse_state & self.button_mask(sys::SDL_BUTTON_X1)) != 0
+    }
 
     /// Tests if the X2 mouse button was pressed.
-    pub fn x2(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_X2)) != 0 }
+    pub fn x2(&self) -> bool {
+        (self.mouse_state & self.button_mask(sys::SDL_BUTTON_X2)) != 0
+    }
 
     /// Returns the x coordinate of the state
-    pub fn x(&self) -> i32 { self.x }
+    pub fn x(&self) -> i32 {
+        self.x
+    }
 
     /// Returns the y coordinate of the state
-    pub fn y(&self) -> i32 { self.y }
+    pub fn y(&self) -> i32 {
+        self.y
+    }
 
     /// Returns true if the mouse button is pressed.
     ///
@@ -80,7 +98,7 @@ impl RelativeMouseState {
     /// }
     /// ```
     pub fn is_mouse_button_pressed(&self, mouse_button: MouseButton) -> bool {
-        let mask = 1 << ((mouse_button as u32)-1);
+        let mask = 1 << ((mouse_button as u32) - 1);
         self.mouse_state & mask != 0
     }
 
@@ -106,7 +124,7 @@ impl RelativeMouseState {
     pub fn mouse_buttons(&self) -> MouseButtonIterator {
         MouseButtonIterator {
             cur_button: 1,
-            mouse_state: &self.mouse_state
+            mouse_state: &self.mouse_state,
         }
     }
 
@@ -128,7 +146,7 @@ impl RelativeMouseState {
     /// ```
     pub fn pressed_mouse_buttons(&self) -> PressedMouseButtonIterator {
         PressedMouseButtonIterator {
-            iter: self.mouse_buttons()
+            iter: self.mouse_buttons(),
         }
     }
 }

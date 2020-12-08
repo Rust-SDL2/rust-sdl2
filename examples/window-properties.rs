@@ -1,8 +1,8 @@
 extern crate sdl2;
 
-use sdl2::pixels::Color;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
+use sdl2::pixels::Color;
 
 pub fn main() -> Result<(), String> {
     let sdl_context = sdl2::init()?;
@@ -14,7 +14,11 @@ pub fn main() -> Result<(), String> {
         .build()
         .map_err(|e| e.to_string())?;
 
-    let mut canvas = window.into_canvas().present_vsync().build().map_err(|e| e.to_string())?;
+    let mut canvas = window
+        .into_canvas()
+        .present_vsync()
+        .build()
+        .map_err(|e| e.to_string())?;
 
     let mut tick = 0;
 
@@ -23,8 +27,11 @@ pub fn main() -> Result<(), String> {
     'running: loop {
         for event in event_pump.poll_iter() {
             match event {
-                Event::Quit { .. } |
-                Event::KeyDown { keycode: Some(Keycode::Escape), .. } => break 'running,
+                Event::Quit { .. }
+                | Event::KeyDown {
+                    keycode: Some(Keycode::Escape),
+                    ..
+                } => break 'running,
                 _ => {}
             }
         }
@@ -35,12 +42,10 @@ pub fn main() -> Result<(), String> {
 
             let position = window.position();
             let size = window.size();
-            let title = format!("Window - pos({}x{}), size({}x{}): {}",
-                                position.0,
-                                position.1,
-                                size.0,
-                                size.1,
-                                tick);
+            let title = format!(
+                "Window - pos({}x{}), size({}x{}): {}",
+                position.0, position.1, size.0, size.1, tick
+            );
             window.set_title(&title).map_err(|e| e.to_string())?;
 
             tick += 1;

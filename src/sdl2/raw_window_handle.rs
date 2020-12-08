@@ -27,13 +27,13 @@ unsafe impl HasRawWindowHandle for Window {
                     hwnd: unsafe { wm_info.info.win }.window as *mut libc::c_void,
                     ..WindowsHandle::empty()
                 })
-            },
+            }
             #[cfg(any(
-            target_os = "linux",
-            target_os = "dragonfly",
-            target_os = "freebsd",
-            target_os = "netbsd",
-            target_os = "openbsd",
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd",
             ))]
             SDL_SYSWM_WAYLAND => {
                 use self::raw_window_handle::unix::WaylandHandle;
@@ -42,13 +42,13 @@ unsafe impl HasRawWindowHandle for Window {
                     display: unsafe { wm_info.info.wl }.display as *mut libc::c_void,
                     ..WaylandHandle::empty()
                 })
-            },
+            }
             #[cfg(any(
-            target_os = "linux",
-            target_os = "dragonfly",
-            target_os = "freebsd",
-            target_os = "netbsd",
-            target_os = "openbsd",
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd",
             ))]
             SDL_SYSWM_X11 => {
                 use self::raw_window_handle::unix::XlibHandle;
@@ -57,7 +57,7 @@ unsafe impl HasRawWindowHandle for Window {
                     display: unsafe { wm_info.info.x11 }.display as *mut libc::c_void,
                     ..XlibHandle::empty()
                 })
-            },
+            }
             #[cfg(target_os = "macos")]
             SDL_SYSWM_COCOA => {
                 use self::raw_window_handle::macos::MacOSHandle;
@@ -66,7 +66,7 @@ unsafe impl HasRawWindowHandle for Window {
                     ns_view: 0 as *mut libc::c_void, // consumer of RawWindowHandle should determine this
                     ..MacOSHandle::empty()
                 })
-            },
+            }
             #[cfg(any(target_os = "ios"))]
             SDL_SYSWM_UIKIT => {
                 use self::raw_window_handle::ios::IOSHandle;
@@ -75,14 +75,17 @@ unsafe impl HasRawWindowHandle for Window {
                     ui_view: 0 as *mut libc::c_void, // consumer of RawWindowHandle should determine this
                     ..IOSHandle::empty()
                 })
-            },
+            }
             SDL_SYSWM_ANDROID => {
                 let window_system = match wm_info.subsystem {
                     SDL_SYSWM_ANDROID => "Android",
                     _ => unreachable!(),
                 };
-                panic!("raw-window-handle support for {} not yet implemented", window_system);
-            },
+                panic!(
+                    "raw-window-handle support for {} not yet implemented",
+                    window_system
+                );
+            }
             x => {
                 let window_system = match x {
                     SDL_SYSWM_DIRECTFB => "DirectFB",
@@ -92,7 +95,7 @@ unsafe impl HasRawWindowHandle for Window {
                     _ => unreachable!(),
                 };
                 panic!("{} window system is not supported, please file issue with raw-window-handle: https://github.com/rust-windowing/raw-window-handle/issues/new", window_system);
-            },
+            }
         }
     }
 }
@@ -100,7 +103,6 @@ unsafe impl HasRawWindowHandle for Window {
 extern "C" {
     fn SDL_GetWindowWMInfo(window: *mut SDL_Window, info: *mut SDL_SysWMinfo) -> SDL_bool;
 }
-
 
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -145,11 +147,11 @@ pub struct SDL_SysWMinfo {
     pub info: windows::WindowsSysWMinfo,
 
     #[cfg(any(
-    target_os = "linux",
-    target_os = "dragonfly",
-    target_os = "freebsd",
-    target_os = "netbsd",
-    target_os = "openbsd",
+        target_os = "linux",
+        target_os = "dragonfly",
+        target_os = "freebsd",
+        target_os = "netbsd",
+        target_os = "openbsd",
     ))]
     pub info: linux::LinuxSysWMinfo,
 
@@ -216,11 +218,11 @@ pub mod windows {
 }
 
 #[cfg(any(
-target_os = "linux",
-target_os = "dragonfly",
-target_os = "freebsd",
-target_os = "netbsd",
-target_os = "openbsd",
+    target_os = "linux",
+    target_os = "dragonfly",
+    target_os = "freebsd",
+    target_os = "netbsd",
+    target_os = "openbsd",
 ))]
 pub mod linux {
     #[repr(C)]

@@ -20,22 +20,22 @@
 //! features = ["mixer"]
 //! ```
 
-use std::marker::PhantomData;
+use audio::AudioFormatNum;
+use get_error;
+use libc::c_void;
+use libc::{c_double, c_int, c_uint};
+use rwops::RWops;
+use std::borrow::ToOwned;
 use std::convert::TryInto;
 use std::default;
+use std::ffi::{CStr, CString};
 use std::fmt;
-use std::ffi::{CString, CStr};
-use std::str::from_utf8;
-use std::borrow::ToOwned;
+use std::marker::PhantomData;
 use std::path::Path;
-use libc::c_void;
-use libc::{c_int, c_double, c_uint};
-use ::audio::AudioFormatNum;
-use ::get_error;
-use ::rwops::RWops;
-use ::version::Version;
+use std::str::from_utf8;
 use sys;
 use sys::mixer;
+use version::Version;
 
 // This comes from SDL_audio.h
 #[allow(non_camel_case_types)]
@@ -92,7 +92,6 @@ pub const MAX_VOLUME: i32 = 128;
 
 /// Returns the version of the dynamically linked `SDL_mixer` library
 pub fn get_linked_version() -> Version {
-
     unsafe { Version::from_ll(*mixer::Mix_Linked_Version()) }
 }
 
@@ -166,7 +165,6 @@ pub fn init(flags: InitFlag) -> Result<Sdl2MixerContext, String> {
     }
 }
 
-
 /// Open the mixer with a certain audio format.
 ///
 /// * `chunksize`: It is recommended to choose values between 256 and 1024, depending on whether
@@ -174,16 +172,19 @@ pub fn init(flags: InitFlag) -> Result<Sdl2MixerContext, String> {
 ///                work very well on older systems. For instance, a chunk size of 256 will give
 ///                you a latency of 6ms, while a chunk size of 1024 will give you a latency of 23ms
 ///                for a frequency of 44100kHz.
-pub fn open_audio(frequency: i32,
-                  format: AudioFormat,
-                  channels: i32,
-                  chunksize: i32)
-                  -> Result<(), String> {
+pub fn open_audio(
+    frequency: i32,
+    format: AudioFormat,
+    channels: i32,
+    chunksize: i32,
+) -> Result<(), String> {
     let ret = unsafe {
-        mixer::Mix_OpenAudio(frequency as c_int,
-                           format,
-                           channels as c_int,
-                           chunksize as c_int)
+        mixer::Mix_OpenAudio(
+            frequency as c_int,
+            format,
+            channels as c_int,
+            chunksize as c_int,
+        )
     };
     if ret == 0 {
         Ok(())
@@ -221,7 +222,9 @@ pub fn get_chunk_decoders_number() -> i32 {
 pub fn get_chunk_decoder(index: i32) -> String {
     unsafe {
         let name = mixer::Mix_GetChunkDecoder(index as c_int);
-        from_utf8(CStr::from_ptr(name).to_bytes()).unwrap().to_owned()
+        from_utf8(CStr::from_ptr(name).to_bytes())
+            .unwrap()
+            .to_owned()
     }
 }
 
@@ -324,9 +327,7 @@ impl<'a> LoaderRWops<'a> for RWops<'a> {
             })
         }
     }
-
 }
-
 
 // 4.3 Channels
 
@@ -363,7 +364,9 @@ extern "C" fn c_channel_finished_callback(ch: c_int) {
 pub fn set_channel_finished(f: fn(Channel)) {
     unsafe {
         CHANNEL_FINISHED_CALLBACK = Some(f);
-        mixer::Mix_ChannelFinished(Some(c_channel_finished_callback as extern "C" fn(ch: c_int)));
+        mixer::Mix_ChannelFinished(Some(
+            c_channel_finished_callback as extern "C" fn(ch: c_int),
+        ));
     }
 }
 
@@ -421,19 +424,22 @@ impl Channel {
         self.fade_in_timed(chunk, loops, ms, -1)
     }
 
-    pub fn fade_in_timed(self,
-                         chunk: &Chunk,
-                         loops: i32,
-                         ms: i32,
-                         ticks: i32)
-                         -> Result<Channel, String> {
+    pub fn fade_in_timed(
+        self,
+        chunk: &Chunk,
+        loops: i32,
+        ms: i32,
+        ticks: i32,
+    ) -> Result<Channel, String> {
         let Channel(ch) = self;
         let ret = unsafe {
-            mixer::Mix_FadeInChannelTimed(ch as c_int,
-                                        chunk.raw,
-                                        loops as c_int,
-                                        ms as c_int,
-                                        ticks as c_int)
+            mixer::Mix_FadeInChannelTimed(
+                ch as c_int,
+                chunk.raw,
+                loops as c_int,
+                ms as c_int,
+                ticks as c_int,
+            )
         };
         if ret == -1 {
             Err(get_error())
@@ -495,9 +501,9 @@ impl Channel {
         let Channel(ch) = self;
         let ret = unsafe { mixer::Mix_FadingChannel(ch as c_int) as c_uint };
         match ret {
-            mixer::Mix_Fading_MIX_FADING_OUT    => Fading::FadingOut,
-            mixer::Mix_Fading_MIX_FADING_IN     => Fading::FadingIn,
-            mixer::Mix_Fading_MIX_NO_FADING | _ => Fading::NoFading
+            mixer::Mix_Fading_MIX_FADING_OUT => Fading::FadingOut,
+            mixer::Mix_Fading_MIX_FADING_IN => Fading::FadingIn,
+            mixer::Mix_Fading_MIX_NO_FADING | _ => Fading::NoFading,
         }
     }
 
@@ -717,7 +723,9 @@ pub fn get_music_decoders_number() -> i32 {
 pub fn get_music_decoder(index: i32) -> String {
     unsafe {
         let name = mixer::Mix_GetMusicDecoder(index as c_int);
-        from_utf8(CStr::from_ptr(name).to_bytes()).unwrap().to_owned()
+        from_utf8(CStr::from_ptr(name).to_bytes())
+            .unwrap()
+            .to_owned()
     }
 }
 
@@ -754,7 +762,7 @@ extern "C" fn c_music_finished_hook() {
 pub struct Music<'a> {
     pub raw: *mut mixer::Mix_Music,
     pub owned: bool,
-    _marker: PhantomData<&'a ()>
+    _marker: PhantomData<&'a ()>,
 }
 
 impl<'a> Drop for Music<'a> {
@@ -793,9 +801,8 @@ impl<'a> Music<'a> {
     /// Load music from a static byte buffer.
     #[doc(alias = "SDL_RWFromConstMem")]
     pub fn from_static_bytes(buf: &'static [u8]) -> Result<Music<'static>, String> {
-        let rw = unsafe {
-            sys::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int)
-        };
+        let rw =
+            unsafe { sys::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int) };
 
         if rw.is_null() {
             return Err(get_error());
@@ -817,16 +824,16 @@ impl<'a> Music<'a> {
     pub fn get_type(&self) -> MusicType {
         let ret = unsafe { mixer::Mix_GetMusicType(self.raw) as i32 } as c_uint;
         match ret {
-            mixer::Mix_MusicType_MUS_CMD      => MusicType::MusicCmd,
-            mixer::Mix_MusicType_MUS_WAV      => MusicType::MusicWav,
-            mixer::Mix_MusicType_MUS_MOD      => MusicType::MusicMod,
-            mixer::Mix_MusicType_MUS_MID      => MusicType::MusicMid,
-            mixer::Mix_MusicType_MUS_OGG      => MusicType::MusicOgg,
-            mixer::Mix_MusicType_MUS_MP3      => MusicType::MusicMp3,
-            mixer::Mix_MusicType_MUS_MP3_MAD_UNUSED  => MusicType::MusicMp3Mad,
-            mixer::Mix_MusicType_MUS_FLAC     => MusicType::MusicFlac,
-            mixer::Mix_MusicType_MUS_MODPLUG_UNUSED  => MusicType::MusicModPlug,
-            mixer::Mix_MusicType_MUS_NONE | _ => MusicType::MusicNone
+            mixer::Mix_MusicType_MUS_CMD => MusicType::MusicCmd,
+            mixer::Mix_MusicType_MUS_WAV => MusicType::MusicWav,
+            mixer::Mix_MusicType_MUS_MOD => MusicType::MusicMod,
+            mixer::Mix_MusicType_MUS_MID => MusicType::MusicMid,
+            mixer::Mix_MusicType_MUS_OGG => MusicType::MusicOgg,
+            mixer::Mix_MusicType_MUS_MP3 => MusicType::MusicMp3,
+            mixer::Mix_MusicType_MUS_MP3_MAD_UNUSED => MusicType::MusicMp3Mad,
+            mixer::Mix_MusicType_MUS_FLAC => MusicType::MusicFlac,
+            mixer::Mix_MusicType_MUS_MODPLUG_UNUSED => MusicType::MusicModPlug,
+            mixer::Mix_MusicType_MUS_NONE | _ => MusicType::MusicNone,
         }
     }
 
@@ -981,9 +988,9 @@ impl<'a> Music<'a> {
     pub fn get_fading() -> Fading {
         let ret = unsafe { mixer::Mix_FadingMusic() as i32 } as c_uint;
         match ret {
-            mixer::Mix_Fading_MIX_FADING_OUT    => Fading::FadingOut,
-            mixer::Mix_Fading_MIX_FADING_IN     => Fading::FadingIn,
-            mixer::Mix_Fading_MIX_NO_FADING | _ => Fading::NoFading
+            mixer::Mix_Fading_MIX_FADING_OUT => Fading::FadingOut,
+            mixer::Mix_Fading_MIX_FADING_IN => Fading::FadingIn,
+            mixer::Mix_Fading_MIX_NO_FADING | _ => Fading::NoFading,
         }
     }
 }

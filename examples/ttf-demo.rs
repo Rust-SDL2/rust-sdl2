@@ -5,12 +5,12 @@ use std::path::Path;
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
+use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use sdl2::render::TextureQuery;
-use sdl2::pixels::Color;
 
-static SCREEN_WIDTH : u32 = 800;
-static SCREEN_HEIGHT : u32 = 600;
+static SCREEN_WIDTH: u32 = 800;
+static SCREEN_HEIGHT: u32 = 600;
 
 // handle the annoying Rect i32
 macro_rules! rect(
@@ -48,7 +48,8 @@ fn run(font_path: &Path) -> Result<(), String> {
     let video_subsys = sdl_context.video()?;
     let ttf_context = sdl2::ttf::init().map_err(|e| e.to_string())?;
 
-    let window = video_subsys.window("SDL2_TTF Example", SCREEN_WIDTH, SCREEN_HEIGHT)
+    let window = video_subsys
+        .window("SDL2_TTF Example", SCREEN_WIDTH, SCREEN_HEIGHT)
         .position_centered()
         .opengl()
         .build()
@@ -62,9 +63,12 @@ fn run(font_path: &Path) -> Result<(), String> {
     font.set_style(sdl2::ttf::FontStyle::BOLD);
 
     // render a surface, and convert it to a texture bound to the canvas
-    let surface = font.render("Hello Rust!")
-        .blended(Color::RGBA(255, 0, 0, 255)).map_err(|e| e.to_string())?;
-    let texture = texture_creator.create_texture_from_surface(&surface)
+    let surface = font
+        .render("Hello Rust!")
+        .blended(Color::RGBA(255, 0, 0, 255))
+        .map_err(|e| e.to_string())?;
+    let texture = texture_creator
+        .create_texture_from_surface(&surface)
         .map_err(|e| e.to_string())?;
 
     canvas.set_draw_color(Color::RGBA(195, 217, 255, 255));
@@ -74,7 +78,12 @@ fn run(font_path: &Path) -> Result<(), String> {
 
     // If the example text is too big for the screen, downscale it (and center irregardless)
     let padding = 64;
-    let target = get_centered_rect(width, height, SCREEN_WIDTH - padding, SCREEN_HEIGHT - padding);
+    let target = get_centered_rect(
+        width,
+        height,
+        SCREEN_WIDTH - padding,
+        SCREEN_HEIGHT - padding,
+    );
 
     canvas.copy(&texture, None, Some(target))?;
     canvas.present();
@@ -82,8 +91,11 @@ fn run(font_path: &Path) -> Result<(), String> {
     'mainloop: loop {
         for event in sdl_context.event_pump()?.poll_iter() {
             match event {
-                Event::KeyDown {keycode: Some(Keycode::Escape), ..} |
-                Event::Quit {..} => break 'mainloop,
+                Event::KeyDown {
+                    keycode: Some(Keycode::Escape),
+                    ..
+                }
+                | Event::Quit { .. } => break 'mainloop,
                 _ => {}
             }
         }

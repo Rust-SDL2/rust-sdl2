@@ -1,24 +1,24 @@
 //! # Getting started
 //!
 //! ```rust,no_run
-//! extern crate sdl2; 
+//! extern crate sdl2;
 //!
 //! use sdl2::pixels::Color;
 //! use sdl2::event::Event;
 //! use sdl2::keyboard::Keycode;
 //! use std::time::Duration;
-//! 
+//!
 //! pub fn main() {
 //!     let sdl_context = sdl2::init().unwrap();
 //!     let video_subsystem = sdl_context.video().unwrap();
-//! 
+//!
 //!     let window = video_subsystem.window("rust-sdl2 demo", 800, 600)
 //!         .position_centered()
 //!         .build()
 //!         .unwrap();
-//! 
+//!
 //!     let mut canvas = window.into_canvas().build().unwrap();
-//! 
+//!
 //!     canvas.set_draw_color(Color::RGB(0, 255, 255));
 //!     canvas.clear();
 //!     canvas.present();
@@ -47,7 +47,6 @@
 
 #![crate_name = "sdl2"]
 #![crate_type = "lib"]
-
 #![allow(clippy::cast_lossless, clippy::transmute_ptr_to_ref)]
 
 pub extern crate libc;
@@ -66,38 +65,39 @@ pub use crate::sdl::*;
 
 pub mod clipboard;
 pub mod cpuinfo;
-#[macro_use] mod macros;
+#[macro_use]
+mod macros;
+pub mod audio;
+pub mod controller;
 pub mod event;
 pub mod filesystem;
-pub mod touch;
-pub mod joystick;
-pub mod controller;
 pub mod haptic;
+pub mod hint;
+pub mod joystick;
 pub mod keyboard;
+pub mod log;
+pub mod messagebox;
 pub mod mouse;
-pub mod rect;
-pub mod surface;
 pub mod pixels;
-pub mod video;
-pub mod timer;
+pub mod rect;
 pub mod render;
 pub mod rwops;
-pub mod log;
 mod sdl;
-pub mod audio;
+pub mod surface;
+pub mod timer;
+pub mod touch;
 pub mod version;
-pub mod messagebox;
-pub mod hint;
+pub mod video;
 
 // modules
-#[cfg(feature = "ttf")]
-pub mod ttf;
+#[cfg(feature = "gfx")]
+pub mod gfx;
 #[cfg(feature = "image")]
 pub mod image;
 #[cfg(feature = "mixer")]
 pub mod mixer;
-#[cfg(feature = "gfx")]
-pub mod gfx;
+#[cfg(feature = "ttf")]
+pub mod ttf;
 
 mod common;
 // Export return types and such from the common module.

@@ -1,17 +1,17 @@
-extern crate sdl2;
 extern crate rand;
+extern crate sdl2;
 
 use sdl2::audio::{AudioCallback, AudioSpecDesired};
 use std::time::Duration;
 
 struct MyCallback {
-    volume: f32
+    volume: f32,
 }
 impl AudioCallback for MyCallback {
     type Channel = f32;
 
     fn callback(&mut self, out: &mut [f32]) {
-        use self::rand::{Rng, thread_rng};
+        use self::rand::{thread_rng, Rng};
         let mut rng = thread_rng();
 
         // Generate white noise
@@ -27,8 +27,8 @@ fn main() -> Result<(), String> {
 
     let desired_spec = AudioSpecDesired {
         freq: Some(44_100),
-        channels: Some(1),  // mono
-        samples: None,      // default sample size
+        channels: Some(1), // mono
+        samples: None,     // default sample size
     };
 
     // None: use default device

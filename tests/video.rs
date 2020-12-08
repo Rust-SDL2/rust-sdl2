@@ -9,5 +9,5 @@ fn display_name_no_segfault() {
         let r = video_subsystem.display_name(99);
         assert!(r.is_err());
     } // in Err(), environment has no video device (for instance travis)
-    // so ignore it
+      // so ignore it
 }

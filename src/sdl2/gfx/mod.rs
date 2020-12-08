@@ -20,7 +20,7 @@
 //! features = ["gfx"]
 //! ```
 
-pub mod primitives;
-pub mod rotozoom;
 pub mod framerate;
 pub mod imagefilter;
+pub mod primitives;
+pub mod rotozoom;

@@ -28,7 +28,7 @@ pub enum SystemCursor {
 }
 
 pub struct Cursor {
-    raw: *mut sys::SDL_Cursor
+    raw: *mut sys::SDL_Cursor,
 }
 
 impl Drop for Cursor {
@@ -41,31 +41,46 @@ impl Drop for Cursor {
 
 impl Cursor {
     #[doc(alias = "SDL_CreateCursor")]
-    pub fn new(data: &[u8], mask: &[u8], width: i32, height: i32, hot_x: i32, hot_y: i32) -> Result<Cursor, String> {
+    pub fn new(
+        data: &[u8],
+        mask: &[u8],
+        width: i32,
+        height: i32,
+        hot_x: i32,
+        hot_y: i32,
+    ) -> Result<Cursor, String> {
         unsafe {
-            let raw = sys::SDL_CreateCursor(data.as_ptr(),
-                                           mask.as_ptr(),
-                                           width as i32, height as i32,
-                                           hot_x as i32, hot_y as i32);
+            let raw = sys::SDL_CreateCursor(
+                data.as_ptr(),
+                mask.as_ptr(),
+                width as i32,
+                height as i32,
+                hot_x as i32,
+                hot_y as i32,
+            );
 
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(Cursor{ raw })
+                Ok(Cursor { raw })
             }
         }
     }
 
     // TODO: figure out how to pass Surface in here correctly
     #[doc(alias = "SDL_CreateColorCursor")]
-    pub fn from_surface<S: AsRef<SurfaceRef>>(surface: S, hot_x: i32, hot_y: i32) -> Result<Cursor, String> {
+    pub fn from_surface<S: AsRef<SurfaceRef>>(
+        surface: S,
+        hot_x: i32,
+        hot_y: i32,
+    ) -> Result<Cursor, String> {
         unsafe {
             let raw = sys::SDL_CreateColorCursor(surface.as_ref().raw(), hot_x, hot_y);
 
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(Cursor{ raw })
+                Ok(Cursor { raw })
             }
         }
     }
@@ -78,14 +93,16 @@ impl Cursor {
             if raw.is_null() {
                 Err(get_error())
             } else {
-                Ok(Cursor{ raw })
+                Ok(Cursor { raw })
             }
         }
     }
 
     #[doc(alias = "SDL_SetCursor")]
     pub fn set(&self) {
-        unsafe { sys::SDL_SetCursor(self.raw); }
+        unsafe {
+            sys::SDL_SetCursor(self.raw);
+        }
     }
 }
 
@@ -136,23 +153,23 @@ impl MouseWheelDirection {
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum MouseButton {
     Unknown = 0,
-    Left   = sys::SDL_BUTTON_LEFT as u8,
+    Left = sys::SDL_BUTTON_LEFT as u8,
     Middle = sys::SDL_BUTTON_MIDDLE as u8,
-    Right  = sys::SDL_BUTTON_RIGHT as u8,
-    X1     = sys::SDL_BUTTON_X1 as u8,
-    X2     = sys::SDL_BUTTON_X2 as u8,
+    Right = sys::SDL_BUTTON_RIGHT as u8,
+    X1 = sys::SDL_BUTTON_X1 as u8,
+    X2 = sys::SDL_BUTTON_X2 as u8,
 }
 
 impl MouseButton {
     #[inline]
     pub fn from_ll(button: u8) -> MouseButton {
         match button as u32 {
-            sys::SDL_BUTTON_LEFT   => MouseButton::Left,
+            sys::SDL_BUTTON_LEFT => MouseButton::Left,
             sys::SDL_BUTTON_MIDDLE => MouseButton::Middle,
-            sys::SDL_BUTTON_RIGHT  => MouseButton::Right,
-            sys::SDL_BUTTON_X1     => MouseButton::X1,
-            sys::SDL_BUTTON_X2     => MouseButton::X2,
-            _                      => MouseButton::Unknown,
+            sys::SDL_BUTTON_RIGHT => MouseButton::Right,
+            sys::SDL_BUTTON_X1 => MouseButton::X1,
+            sys::SDL_BUTTON_X2 => MouseButton::X2,
+            _ => MouseButton::Unknown,
         }
     }
 }
@@ -161,7 +178,7 @@ impl MouseButton {
 pub struct MouseState {
     mouse_state: u32,
     x: i32,
-    y: i32
+    y: i32,
 }
 
 impl MouseState {
@@ -169,19 +186,21 @@ impl MouseState {
     pub fn new(_e: &EventPump) -> MouseState {
         let mut x = 0;
         let mut y = 0;
-        let mouse_state: u32 = unsafe {
-            sys::SDL_GetMouseState(&mut x, &mut y)
-        };
+        let mouse_state: u32 = unsafe { sys::SDL_GetMouseState(&mut x, &mut y) };
 
         MouseState {
             mouse_state,
             x: x as i32,
-            y: y as i32
+            y: y as i32,
         }
     }
 
     pub fn from_sdl_state(state: u32) -> MouseState {
-        MouseState { mouse_state : state, x: 0, y: 0 }
+        MouseState {
+            mouse_state: state,
+            x: 0,
+            y: 0,
+        }
     }
     pub fn to_sdl_state(&self) -> u32 {
         self.mouse_state
@@ -201,25 +220,39 @@ impl MouseState {
     ///     e.mouse_state().left()
     /// }
     /// ```
-    pub fn left(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_LEFT)) != 0 }
+    pub fn left(&self) -> bool {
+        (self.mouse_state & self.button_mask(sys::SDL_BUTTON_LEFT)) != 0
+    }
 
     /// Tests if the middle mouse button was pressed.
-    pub fn middle(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_MIDDLE)) != 0 }
+    pub fn middle(&self) -> bool {
+        (self.mouse_state & self.button_mask(sys::SDL_BUTTON_MIDDLE)) != 0
+    }
 
     /// Tests if the right mouse button was pressed.
-    pub fn right(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_RIGHT)) != 0 }
+    pub fn right(&self) -> bool {
+        (self.mouse_state & self.button_mask(sys::SDL_BUTTON_RIGHT)) != 0
+    }
 
     /// Tests if the X1 mouse button was pressed.
-    pub fn x1(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_X1)) != 0 }
+    pub fn x1(&self) -> bool {
+        (self.mouse_state & self.button_mask(sys::SDL_BUTTON_X1)) != 0
+    }
 
     /// Tests if the X2 mouse button was pressed.
-    pub fn x2(&self) -> bool { (self.mouse_state & self.button_mask(sys::SDL_BUTTON_X2)) != 0 }
+    pub fn x2(&self) -> bool {
+        (self.mouse_state & self.button_mask(sys::SDL_BUTTON_X2)) != 0
+    }
 
     /// Returns the x coordinate of the state
-    pub fn x(&self) -> i32 { self.x }
+    pub fn x(&self) -> i32 {
+        self.x
+    }
 
     /// Returns the y coordinate of the state
-    pub fn y(&self) -> i32 { self.y }
+    pub fn y(&self) -> i32 {
+        self.y
+    }
 
     /// Returns true if the mouse button is pressed.
     ///
@@ -232,7 +265,7 @@ impl MouseState {
     /// }
     /// ```
     pub fn is_mouse_button_pressed(&self, mouse_button: MouseButton) -> bool {
-        let mask = 1 << ((mouse_button as u32)-1);
+        let mask = 1 << ((mouse_button as u32) - 1);
         self.mouse_state & mask != 0
     }
 
@@ -258,7 +291,7 @@ impl MouseState {
     pub fn mouse_buttons(&self) -> MouseButtonIterator {
         MouseButtonIterator {
             cur_button: 1,
-            mouse_state: &self.mouse_state
+            mouse_state: &self.mouse_state,
         }
     }
 
@@ -280,14 +313,14 @@ impl MouseState {
     /// ```
     pub fn pressed_mouse_buttons(&self) -> PressedMouseButtonIterator {
         PressedMouseButtonIterator {
-            iter: self.mouse_buttons()
+            iter: self.mouse_buttons(),
         }
     }
 }
 
 pub struct MouseButtonIterator<'a> {
     cur_button: u8,
-    mouse_state: &'a u32
+    mouse_state: &'a u32,
 }
 
 impl<'a> Iterator for MouseButtonIterator<'a> {
@@ -296,7 +329,7 @@ impl<'a> Iterator for MouseButtonIterator<'a> {
     fn next(&mut self) -> Option<(MouseButton, bool)> {
         if self.cur_button < MouseButton::X2 as u8 + 1 {
             let mouse_button = self.cur_button;
-            let mask = 1 << ((self.cur_button as u32)-1);
+            let mask = 1 << ((self.cur_button as u32) - 1);
             let pressed = self.mouse_state & mask != 0;
             self.cur_button += 1;
             Some((MouseButton::from_ll(mouse_button), pressed))
@@ -307,7 +340,7 @@ impl<'a> Iterator for MouseButtonIterator<'a> {
 }
 
 pub struct PressedMouseButtonIterator<'a> {
-    iter: MouseButtonIterator<'a>
+    iter: MouseButtonIterator<'a>,
 }
 
 impl<'a> Iterator for PressedMouseButtonIterator<'a> {
@@ -315,7 +348,9 @@ impl<'a> Iterator for PressedMouseButtonIterator<'a> {
 
     fn next(&mut self) -> Option<MouseButton> {
         while let Some((mouse_button, pressed)) = self.iter.next() {
-            if pressed { return Some(mouse_button) }
+            if pressed {
+                return Some(mouse_button);
+            }
         }
         None
     }
@@ -325,7 +360,7 @@ impl crate::Sdl {
     #[inline]
     pub fn mouse(&self) -> MouseUtil {
         MouseUtil {
-            _sdldrop: self.sdldrop()
+            _sdldrop: self.sdldrop(),
         }
     }
 }
@@ -339,7 +374,7 @@ impl crate::Sdl {
 /// sdl_context.mouse().show_cursor(false);
 /// ```
 pub struct MouseUtil {
-    _sdldrop: ::std::rc::Rc<crate::SdlDrop>
+    _sdldrop: ::std::rc::Rc<crate::SdlDrop>,
 }
 
 impl MouseUtil {
@@ -357,13 +392,21 @@ impl MouseUtil {
 
     #[doc(alias = "SDL_WarpMouseInWindow")]
     pub fn warp_mouse_in_window(&self, window: &video::Window, x: i32, y: i32) {
-        unsafe { sys::SDL_WarpMouseInWindow(window.raw(), x, y); }
+        unsafe {
+            sys::SDL_WarpMouseInWindow(window.raw(), x, y);
+        }
     }
 
     #[doc(alias = "SDL_SetRelativeMouseMode")]
     pub fn set_relative_mouse_mode(&self, on: bool) {
-        let on = if on { sys::SDL_bool::SDL_TRUE } else { sys::SDL_bool::SDL_FALSE };
-        unsafe { sys::SDL_SetRelativeMouseMode(on); }
+        let on = if on {
+            sys::SDL_bool::SDL_TRUE
+        } else {
+            sys::SDL_bool::SDL_FALSE
+        };
+        unsafe {
+            sys::SDL_SetRelativeMouseMode(on);
+        }
     }
 
     #[doc(alias = "SDL_GetRelativeMouseMode")]
@@ -378,12 +421,20 @@ impl MouseUtil {
 
     #[doc(alias = "SDL_ShowCursor")]
     pub fn show_cursor(&self, show: bool) {
-        unsafe { sys::SDL_ShowCursor(show as i32); }
+        unsafe {
+            sys::SDL_ShowCursor(show as i32);
+        }
     }
 
     #[doc(alias = "SDL_CaptureMouse")]
     pub fn capture(&self, enable: bool) {
-        let enable = if enable { sys::SDL_bool::SDL_TRUE } else { sys::SDL_bool::SDL_FALSE };
-        unsafe { sys::SDL_CaptureMouse(enable); }
+        let enable = if enable {
+            sys::SDL_bool::SDL_TRUE
+        } else {
+            sys::SDL_bool::SDL_FALSE
+        };
+        unsafe {
+            sys::SDL_CaptureMouse(enable);
+        }
     }
 }

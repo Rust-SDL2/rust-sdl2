@@ -1,11 +1,11 @@
 use std::error;
 use std::ffi::{CString, NulError};
 use std::fmt;
+use std::os::raw::{c_char, c_int};
 use std::ptr;
-use std::os::raw::{c_char,c_int};
 
-use crate::video::Window;
 use crate::get_error;
+use crate::video::Window;
 
 use crate::sys;
 
@@ -32,16 +32,18 @@ bitflags! {
 
 #[derive(Debug)]
 pub struct MessageBoxColorScheme {
-    pub background:(u8,u8,u8),
-    pub text:(u8,u8,u8),
-    pub button_border:(u8,u8,u8),
-    pub button_background:(u8,u8,u8),
-    pub button_selected:(u8,u8,u8)
+    pub background: (u8, u8, u8),
+    pub text: (u8, u8, u8),
+    pub button_border: (u8, u8, u8),
+    pub button_background: (u8, u8, u8),
+    pub button_selected: (u8, u8, u8),
 }
 
 impl Into<sys::SDL_MessageBoxColorScheme> for MessageBoxColorScheme {
     fn into(self) -> sys::SDL_MessageBoxColorScheme {
-        sys::SDL_MessageBoxColorScheme { colors: self.into() }
+        sys::SDL_MessageBoxColorScheme {
+            colors: self.into(),
+        }
     }
 }
 
@@ -56,40 +58,42 @@ impl From<sys::SDL_MessageBoxColorScheme> for MessageBoxColorScheme {
 /// and should only be used to know which button has been triggered
 #[derive(Debug)]
 pub struct ButtonData<'a> {
-    pub flags:MessageBoxButtonFlag,
-    pub button_id:i32,
-    pub text:&'a str
+    pub flags: MessageBoxButtonFlag,
+    pub button_id: i32,
+    pub text: &'a str,
 }
 
 #[derive(Debug)]
 pub enum ClickedButton<'a> {
     CloseButton,
-    CustomButton(&'a ButtonData<'a>)
+    CustomButton(&'a ButtonData<'a>),
 }
 
-impl From<MessageBoxColorScheme> for [sys::SDL_MessageBoxColor ; 5] {
-    fn from(scheme:MessageBoxColorScheme) -> [sys::SDL_MessageBoxColor ; 5] {
-        fn to_message_box_color(t:(u8,u8,u8)) -> sys::SDL_MessageBoxColor {
+impl From<MessageBoxColorScheme> for [sys::SDL_MessageBoxColor; 5] {
+    fn from(scheme: MessageBoxColorScheme) -> [sys::SDL_MessageBoxColor; 5] {
+        fn to_message_box_color(t: (u8, u8, u8)) -> sys::SDL_MessageBoxColor {
             sys::SDL_MessageBoxColor {
-                r:t.0,
-                g:t.1,
-                b:t.2
+                r: t.0,
+                g: t.1,
+                b: t.2,
             }
         };
-        [to_message_box_color(scheme.background),
-        to_message_box_color(scheme.text),
-        to_message_box_color(scheme.button_border),
-        to_message_box_color(scheme.button_background),
-        to_message_box_color(scheme.button_selected)]
+        [
+            to_message_box_color(scheme.background),
+            to_message_box_color(scheme.text),
+            to_message_box_color(scheme.button_border),
+            to_message_box_color(scheme.button_background),
+            to_message_box_color(scheme.button_selected),
+        ]
     }
 }
 
-impl Into<MessageBoxColorScheme> for [sys::SDL_MessageBoxColor ; 5] {
+impl Into<MessageBoxColorScheme> for [sys::SDL_MessageBoxColor; 5] {
     fn into(self) -> MessageBoxColorScheme {
         fn from_message_box_color(prim_color: sys::SDL_MessageBoxColor) -> (u8, u8, u8) {
             (prim_color.r, prim_color.g, prim_color.b)
         };
-        MessageBoxColorScheme{
+        MessageBoxColorScheme {
             background: from_message_box_color(self[0]),
             text: from_message_box_color(self[1]),
             button_border: from_message_box_color(self[2]),
@@ -105,7 +109,7 @@ pub enum ShowMessageError {
     InvalidMessage(NulError),
     /// Second argument of the tuple (i32) corresponds to the
     /// first button_id having an error
-    InvalidButton(NulError,i32),
+    InvalidButton(NulError, i32),
     SdlError(String),
 }
 
@@ -116,9 +120,8 @@ impl fmt::Display for ShowMessageError {
         match *self {
             InvalidTitle(ref e) => write!(f, "Invalid title: {}", e),
             InvalidMessage(ref e) => write!(f, "Invalid message: {}", e),
-            InvalidButton(ref e, value) => write!(f,
-                "Invalid button ({}): {}", value, e),
-            SdlError(ref e) => write!(f, "SDL error: {}", e)
+            InvalidButton(ref e, value) => write!(f, "Invalid button ({}): {}", value, e),
+            SdlError(ref e) => write!(f, "SDL error: {}", e),
         }
     }
 }
@@ -131,7 +134,7 @@ impl error::Error for ShowMessageError {
             InvalidTitle(_) => "invalid title",
             InvalidMessage(_) => "invalid message",
             InvalidButton(..) => "invalid button",
-            SdlError(ref e) => e
+            SdlError(ref e) => e,
         }
     }
 }
@@ -142,10 +145,14 @@ impl error::Error for ShowMessageError {
 /// If you want to retrieve which button was clicked and customize a bit more
 /// your message box, use `show_message_box` instead.
 #[doc(alias = "SDL_ShowSimpleMessageBox")]
-pub fn show_simple_message_box<'a, W>(flags: MessageBoxFlag, title: &str,
-        message: &str, window: W)
-        -> Result<(), ShowMessageError>
-where W: Into<Option<&'a Window>>
+pub fn show_simple_message_box<'a, W>(
+    flags: MessageBoxFlag,
+    title: &str,
+    message: &str,
+    window: W,
+) -> Result<(), ShowMessageError>
+where
+    W: Into<Option<&'a Window>>,
 {
     use self::ShowMessageError::*;
     let result = unsafe {
@@ -161,7 +168,7 @@ where W: Into<Option<&'a Window>>
             flags.bits(),
             title.as_ptr() as *const c_char,
             message.as_ptr() as *const c_char,
-            window.into().map_or(ptr::null_mut(), |win| win.raw())
+            window.into().map_or(ptr::null_mut(), |win| win.raw()),
         )
     } == 0;
 
@@ -182,17 +189,23 @@ where W: Into<Option<&'a Window>>
 /// has been forcefully closed (Alt-F4, ...)
 ///
 #[doc(alias = "SDL_ShowMessageBox")]
-pub fn show_message_box<'a, 'b, W, M>(flags:MessageBoxFlag, buttons:&'a [ButtonData], title:&str,
-    message:&str, window: W, scheme: M)
-    -> Result<ClickedButton<'a>,ShowMessageError>
-where W: Into<Option<&'b Window>>,
-      M: Into<Option<MessageBoxColorScheme>>,
+pub fn show_message_box<'a, 'b, W, M>(
+    flags: MessageBoxFlag,
+    buttons: &'a [ButtonData],
+    title: &str,
+    message: &str,
+    window: W,
+    scheme: M,
+) -> Result<ClickedButton<'a>, ShowMessageError>
+where
+    W: Into<Option<&'b Window>>,
+    M: Into<Option<MessageBoxColorScheme>>,
 {
     let window = window.into();
     let scheme = scheme.into();
 
     use self::ShowMessageError::*;
-    let mut button_id : c_int = 0;
+    let mut button_id: c_int = 0;
     let title = match CString::new(title) {
         Ok(s) => s,
         Err(err) => return Err(InvalidTitle(err)),
@@ -201,41 +214,40 @@ where W: Into<Option<&'b Window>>,
         Ok(s) => s,
         Err(err) => return Err(InvalidMessage(err)),
     };
-    let button_texts : Result<Vec<_>,(_,i32)> = buttons.iter().map(|b|{
-        CString::new(b.text).map_err(|e|(e,b.button_id))
-    }).collect(); // Create CString for every button; and catch any CString Error
+    let button_texts: Result<Vec<_>, (_, i32)> = buttons
+        .iter()
+        .map(|b| CString::new(b.text).map_err(|e| (e, b.button_id)))
+        .collect(); // Create CString for every button; and catch any CString Error
     let button_texts = match button_texts {
         Ok(b) => b,
-        Err(e) => return Err(InvalidButton(e.0,e.1))
+        Err(e) => return Err(InvalidButton(e.0, e.1)),
     };
-    let raw_buttons : Vec<sys::SDL_MessageBoxButtonData> =
-        buttons.iter().zip(button_texts.iter()).map(|(b,b_text)|{
-        sys::SDL_MessageBoxButtonData {
-            flags:b.flags.bits(),
-            buttonid:b.button_id as c_int,
-            text:b_text.as_ptr()
-        }
-    }).collect();
+    let raw_buttons: Vec<sys::SDL_MessageBoxButtonData> = buttons
+        .iter()
+        .zip(button_texts.iter())
+        .map(|(b, b_text)| sys::SDL_MessageBoxButtonData {
+            flags: b.flags.bits(),
+            buttonid: b.button_id as c_int,
+            text: b_text.as_ptr(),
+        })
+        .collect();
     let result = unsafe {
         let msg_box_data = sys::SDL_MessageBoxData {
-            flags:flags.bits(),
-            window:window.map_or(ptr::null_mut(), |win| win.raw()),
+            flags: flags.bits(),
+            window: window.map_or(ptr::null_mut(), |win| win.raw()),
             title: title.as_ptr() as *const c_char,
             message: message.as_ptr() as *const c_char,
             numbuttons: raw_buttons.len() as c_int,
             buttons: raw_buttons.as_ptr(),
             colorScheme: if let Some(scheme) = scheme {
                 &sys::SDL_MessageBoxColorScheme {
-                    colors:From::from(scheme)
+                    colors: From::from(scheme),
                 } as *const _
             } else {
                 ptr::null()
-            }
+            },
         };
-        sys::SDL_ShowMessageBox(
-            &msg_box_data as *const _,
-            &mut button_id as &mut _
-        )
+        sys::SDL_ShowMessageBox(&msg_box_data as *const _, &mut button_id as &mut _)
     } == 0;
     if result {
         match button_id {

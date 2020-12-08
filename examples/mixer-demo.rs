@@ -1,10 +1,9 @@
 /// Demonstrates the simultaneous mixing of music and sound effects.
-
 extern crate sdl2;
 
+use sdl2::mixer::{InitFlag, AUDIO_S16LSB, DEFAULT_CHANNELS};
 use std::env;
 use std::path::Path;
-use sdl2::mixer::{InitFlag, DEFAULT_CHANNELS, AUDIO_S16LSB};
 
 fn main() -> Result<(), String> {
     let args: Vec<_> = env::args().collect();
@@ -31,9 +30,8 @@ fn demo(music_file: &Path, sound_file: Option<&Path>) -> Result<(), String> {
     let channels = DEFAULT_CHANNELS; // Stereo
     let chunk_size = 1_024;
     sdl2::mixer::open_audio(frequency, format, channels, chunk_size)?;
-    let _mixer_context = sdl2::mixer::init(
-        InitFlag::MP3 | InitFlag::FLAC | InitFlag::MOD | InitFlag::OGG
-    )?;
+    let _mixer_context =
+        sdl2::mixer::init(InitFlag::MP3 | InitFlag::FLAC | InitFlag::MOD | InitFlag::OGG)?;
 
     // Number of mixing channels available for sound effect `Chunk`s to play
     // simultaneously.
@@ -106,8 +104,10 @@ fn demo(music_file: &Path, sound_file: Option<&Path>) -> Result<(), String> {
 
     timer.delay(5_000);
 
-    println!("fading in from pos ... {:?}",
-        music.fade_in_from_pos(1, 10_000, 100.0));
+    println!(
+        "fading in from pos ... {:?}",
+        music.fade_in_from_pos(1, 10_000, 100.0)
+    );
 
     timer.delay(5_000);
     sdl2::mixer::Music::halt();

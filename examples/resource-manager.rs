@@ -1,15 +1,15 @@
 extern crate sdl2;
 
 use sdl2::event::Event;
-use sdl2::image::{LoadTexture, InitFlag};
+use sdl2::image::{InitFlag, LoadTexture};
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
-use sdl2::render::{TextureCreator, Texture};
+use sdl2::render::{Texture, TextureCreator};
 use sdl2::ttf::{Font, Sdl2TtfContext};
 
-use std::env;
 use std::borrow::Borrow;
 use std::collections::HashMap;
+use std::env;
 use std::hash::Hash;
 use std::rc::Rc;
 
@@ -31,7 +31,11 @@ fn main() -> Result<(), String> {
             .position_centered()
             .build()
             .map_err(|e| e.to_string())?;
-        let mut canvas = window.into_canvas().software().build().map_err(|e| e.to_string())?;
+        let mut canvas = window
+            .into_canvas()
+            .software()
+            .build()
+            .map_err(|e| e.to_string())?;
         let texture_creator = canvas.texture_creator();
         let mut texture_manager = TextureManager::new(&texture_creator);
         let mut font_manager = FontManager::new(&font_context);
@@ -43,8 +47,11 @@ fn main() -> Result<(), String> {
         'mainloop: loop {
             for event in sdl_context.event_pump()?.poll_iter() {
                 match event {
-                    Event::KeyDown { keycode: Some(Keycode::Escape), .. } |
-                    Event::Quit { .. } => break 'mainloop,
+                    Event::KeyDown {
+                        keycode: Some(Keycode::Escape),
+                        ..
+                    }
+                    | Event::Quit { .. } => break 'mainloop,
                     _ => {}
                 }
             }
@@ -54,10 +61,13 @@ fn main() -> Result<(), String> {
 
             // not recommended to create a texture from the font each iteration
             // but it is the simplest thing to do for this example
-            let surface = font.render("Hello Rust!")
-                .blended(Color::RGBA(255, 0, 0, 255)).map_err(|e| e.to_string())?;
+            let surface = font
+                .render("Hello Rust!")
+                .blended(Color::RGBA(255, 0, 0, 255))
+                .map_err(|e| e.to_string())?;
             let font_texture = texture_creator
-                .create_texture_from_surface(&surface).map_err(|e| e.to_string())?;
+                .create_texture_from_surface(&surface)
+                .map_err(|e| e.to_string())?;
 
             //draw all
             canvas.clear();
@@ -75,16 +85,18 @@ type FontManager<'l> = ResourceManager<'l, FontDetails, Font<'l, 'static>, Sdl2T
 
 // Generic struct to cache any resource loaded by a ResourceLoader
 pub struct ResourceManager<'l, K, R, L>
-    where K: Hash + Eq,
-          L: 'l + ResourceLoader<'l, R>
+where
+    K: Hash + Eq,
+    L: 'l + ResourceLoader<'l, R>,
 {
     loader: &'l L,
     cache: HashMap<K, Rc<R>>,
 }
 
 impl<'l, K, R, L> ResourceManager<'l, K, R, L>
-    where K: Hash + Eq,
-          L: ResourceLoader<'l, R>
+where
+    K: Hash + Eq,
+    L: ResourceLoader<'l, R>,
 {
     pub fn new(loader: &'l L) -> Self {
         ResourceManager {
@@ -96,19 +108,19 @@ impl<'l, K, R, L> ResourceManager<'l, K, R, L>
     // Generics magic to allow a HashMap to use String as a key
     // while allowing it to use &str for gets
     pub fn load<D>(&mut self, details: &D) -> Result<Rc<R>, String>
-        where L: ResourceLoader<'l, R, Args = D>,
-              D: Eq + Hash + ?Sized,
-              K: Borrow<D> + for<'a> From<&'a D>
+    where
+        L: ResourceLoader<'l, R, Args = D>,
+        D: Eq + Hash + ?Sized,
+        K: Borrow<D> + for<'a> From<&'a D>,
     {
-        self.cache
-            .get(details)
-            .cloned()
-            .map_or_else(|| {
-                             let resource = Rc::new(self.loader.load(details)?);
-                             self.cache.insert(details.into(), resource.clone());
-                             Ok(resource)
-                         },
-                         Ok)
+        self.cache.get(details).cloned().map_or_else(
+            || {
+                let resource = Rc::new(self.loader.load(details)?);
+                self.cache.insert(details.into(), resource.clone());
+                Ok(resource)
+            },
+            Ok,
+        )
     }
 }
 

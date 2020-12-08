@@ -2,11 +2,14 @@
 #![allow(const_err)]
 
 use crate::sys;
-use std::mem;
-use std::ptr;
-use std::ops::{Deref, DerefMut, Add, AddAssign, BitAnd, BitOr, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
-use std::convert::{AsRef, AsMut};
+use std::convert::{AsMut, AsRef};
 use std::hash::{Hash, Hasher};
+use std::mem;
+use std::ops::{
+    Add, AddAssign, BitAnd, BitOr, Deref, DerefMut, Div, DivAssign, Mul, MulAssign, Neg, Sub,
+    SubAssign,
+};
+use std::ptr;
 
 /// The maximal integer value that can be used for rectangles.
 ///
@@ -72,17 +75,20 @@ pub struct Rect {
 
 impl ::std::fmt::Debug for Rect {
     fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
-        return write!(fmt, "Rect {{ x: {}, y: {}, w: {}, h: {} }}",
-            self.raw.x, self.raw.y, self.raw.w, self.raw.h);
+        return write!(
+            fmt,
+            "Rect {{ x: {}, y: {}, w: {}, h: {} }}",
+            self.raw.x, self.raw.y, self.raw.w, self.raw.h
+        );
     }
 }
 
 impl PartialEq for Rect {
     fn eq(&self, other: &Rect) -> bool {
-        self.raw.x == other.raw.x &&
-        self.raw.y == other.raw.y &&
-        self.raw.w == other.raw.w &&
-        self.raw.h == other.raw.h
+        self.raw.x == other.raw.x
+            && self.raw.y == other.raw.y
+            && self.raw.w == other.raw.w
+            && self.raw.h == other.raw.h
     }
 }
 
@@ -128,8 +134,10 @@ impl Rect {
     ///
     /// `Rect`s must always be non-empty, so a `width` and/or `height` argument
     /// of 0 will be replaced with 1.
-    pub fn from_center<P>(center: P, width: u32, height: u32)
-            -> Rect where P: Into<Point> {
+    pub fn from_center<P>(center: P, width: u32, height: u32) -> Rect
+    where
+        P: Into<Point>,
+    {
         let raw = sys::SDL_Rect {
             x: 0,
             y: 0,
@@ -299,10 +307,13 @@ impl Rect {
     }
 
     /// Centers the rectangle on the given point.
-    pub fn center_on<P>(&mut self, point: P) where P: Into<(i32, i32)> {
+    pub fn center_on<P>(&mut self, point: P)
+    where
+        P: Into<(i32, i32)>,
+    {
         let (x, y) = point.into();
         self.raw.x = clamp_position(clamp_position(x) - self.raw.w / 2);
-        self.raw.y = clamp_position(clamp_position(y) - self.raw. h / 2);
+        self.raw.y = clamp_position(clamp_position(y) - self.raw.h / 2);
     }
 
     /// Move this rect and clamp the positions to prevent over/underflow.
@@ -316,7 +327,7 @@ impl Rect {
                 } else {
                     self.raw.x = i32::min_value();
                 }
-            },
+            }
         }
         match self.raw.y.checked_add(y) {
             Some(val) => self.raw.y = clamp_position(val),
@@ -326,12 +337,15 @@ impl Rect {
                 } else {
                     self.raw.y = i32::min_value();
                 }
-            },
+            }
         }
     }
 
     /// Moves this rect to the given position after clamping the values.
-    pub fn reposition<P>(&mut self, point: P) where P: Into<(i32, i32)> {
+    pub fn reposition<P>(&mut self, point: P)
+    where
+        P: Into<(i32, i32)>,
+    {
         let (x, y) = point.into();
         self.raw.x = clamp_position(x);
         self.raw.y = clamp_position(y);
@@ -363,7 +377,9 @@ impl Rect {
     /// assert!(!rect.contains_point(Point::new(4, 6)));
     /// ```
     pub fn contains_point<P>(&self, point: P) -> bool
-            where P: Into<(i32, i32)> {
+    where
+        P: Into<(i32, i32)>,
+    {
         let (x, y) = point.into();
         let inside_x = x >= self.left() && x < self.right();
         inside_x && (y >= self.top() && y < self.bottom())
@@ -386,8 +402,10 @@ impl Rect {
     /// assert!(!rect.contains_rect(Rect::new(3, 3, 2, 1)));
     /// ```
     pub fn contains_rect(&self, other: Rect) -> bool {
-        other.left() >= self.left() && other.right() <= self.right() &&
-            other.top() >= self.top() && other.bottom() <= self.bottom()
+        other.left() >= self.left()
+            && other.right() <= self.right()
+            && other.top() >= self.top()
+            && other.bottom() <= self.bottom()
     }
 
     /// Returns the underlying C Rect.
@@ -415,9 +433,12 @@ impl Rect {
     /// If a clipping rectangle is given, only points that are within it will be
     /// considered.
     #[doc(alias = "SDL_EnclosePoints")]
-    pub fn from_enclose_points<R: Into<Option<Rect>>>(points: &[Point], clipping_rect: R)
-            -> Option<Rect>
-    where R: Into<Option<Rect>>
+    pub fn from_enclose_points<R: Into<Option<Rect>>>(
+        points: &[Point],
+        clipping_rect: R,
+    ) -> Option<Rect>
+    where
+        R: Into<Option<Rect>>,
     {
         let clipping_rect = clipping_rect.into();
 
@@ -429,7 +450,7 @@ impl Rect {
 
         let clip_ptr = match clipping_rect.as_ref() {
             Some(r) => r.raw(),
-            None => ptr::null()
+            None => ptr::null(),
         };
 
         let result = unsafe {
@@ -437,7 +458,7 @@ impl Rect {
                 Point::raw_slice(points),
                 points.len() as i32,
                 clip_ptr,
-                out.as_mut_ptr()
+                out.as_mut_ptr(),
             ) != sys::SDL_bool::SDL_FALSE
         };
 
@@ -467,9 +488,7 @@ impl Rect {
     /// ```
     #[doc(alias = "SDL_HasIntersection")]
     pub fn has_intersection(&self, other: Rect) -> bool {
-        unsafe {
-            sys::SDL_HasIntersection(self.raw(), other.raw()) != sys::SDL_bool::SDL_FALSE
-        }
+        unsafe { sys::SDL_HasIntersection(self.raw(), other.raw()) != sys::SDL_bool::SDL_FALSE }
     }
 
     /// Calculates the intersection of two rectangles.
@@ -495,7 +514,8 @@ impl Rect {
         let mut out = mem::MaybeUninit::uninit();
 
         let success = unsafe {
-            sys::SDL_IntersectRect(self.raw(), other.raw(), out.as_mut_ptr()) != sys::SDL_bool::SDL_FALSE
+            sys::SDL_IntersectRect(self.raw(), other.raw(), out.as_mut_ptr())
+                != sys::SDL_bool::SDL_FALSE
         };
 
         if success {
@@ -538,17 +558,17 @@ impl Rect {
     /// Calculates the intersection of a rectangle and a line segment and
     /// returns the points of their intersection.
     #[doc(alias = "SDL_IntersectRectAndLine")]
-    pub fn intersect_line(&self, start: Point, end: Point)
-            -> Option<(Point, Point)> {
-
+    pub fn intersect_line(&self, start: Point, end: Point) -> Option<(Point, Point)> {
         let (mut start_x, mut start_y) = (start.x(), start.y());
         let (mut end_x, mut end_y) = (end.x(), end.y());
 
         let intersected = unsafe {
             sys::SDL_IntersectRectAndLine(
                 self.raw(),
-                &mut start_x, &mut start_y,
-                &mut end_x, &mut end_y
+                &mut start_x,
+                &mut start_y,
+                &mut end_x,
+                &mut end_y,
             ) != sys::SDL_bool::SDL_FALSE
         };
 
@@ -629,19 +649,23 @@ impl AsMut<sys::SDL_Rect> for Rect {
 impl BitAnd<Rect> for Rect {
     type Output = Option<Rect>;
     #[doc(alias = "SDL_Point")]
-    fn bitand(self, rhs: Rect) -> Option<Rect> { self.intersection(rhs) }
+    fn bitand(self, rhs: Rect) -> Option<Rect> {
+        self.intersection(rhs)
+    }
 }
 
 // Union
 impl BitOr<Rect> for Rect {
     type Output = Rect;
-    fn bitor(self, rhs: Rect) -> Rect { self.union(rhs) }
+    fn bitor(self, rhs: Rect) -> Rect {
+        self.union(rhs)
+    }
 }
 
 /// Immutable point type, consisting of x and y.
 #[derive(Copy, Clone)]
 pub struct Point {
-    raw: sys::SDL_Point
+    raw: sys::SDL_Point,
 }
 
 impl ::std::fmt::Debug for Point {
@@ -737,7 +761,7 @@ impl Point {
             raw: sys::SDL_Point {
                 x: clamp_position(x),
                 y: clamp_position(y),
-            }
+            },
         }
     }
 
@@ -785,8 +809,7 @@ impl Point {
     /// Returns a new point by multiplying this point's coordinates by the
     /// given scale factor.
     pub fn scale(self, f: i32) -> Point {
-        Point::new(clamped_mul(self.raw.x, f),
-                   clamped_mul(self.raw.y, f))
+        Point::new(clamped_mul(self.raw.x, f), clamped_mul(self.raw.y, f))
     }
 
     /// Returns the x-coordinate of this point.
@@ -870,7 +893,7 @@ impl DivAssign<i32> for Point {
 
 #[cfg(test)]
 mod test {
-    use super::{Rect, Point, max_int_value, min_int_value};
+    use super::{max_int_value, min_int_value, Point, Rect};
 
     /// Used to compare "literal" (unclamped) rect values.
     fn tuple(x: i32, y: i32, w: u32, h: u32) -> (i32, i32, u32, u32) {
@@ -881,10 +904,8 @@ mod test {
     fn enclose_points_valid() {
         assert_eq!(
             Some(tuple(2, 4, 4, 6)),
-            Rect::from_enclose_points(
-                &[Point::new(2, 4), Point::new(5,9)],
-                None
-            ).map(|r| r.into())
+            Rect::from_enclose_points(&[Point::new(2, 4), Point::new(5, 9)], None)
+                .map(|r| r.into())
         );
     }
 
@@ -892,8 +913,9 @@ mod test {
     fn enclose_points_outside_clip_rect() {
         assert_eq!(
             Rect::from_enclose_points(
-                &[Point::new(0, 0), Point::new(10,10)],
-                Some(Rect::new(3, 3, 1, 1))),
+                &[Point::new(0, 0), Point::new(10, 10)],
+                Some(Rect::new(3, 3, 1, 1))
+            ),
             None
         );
     }
@@ -903,13 +925,19 @@ mod test {
         // Try to enclose the top-left-most and bottom-right-most points.
         assert_eq!(
             Some(tuple(
-                min_int_value(), min_int_value(),
-                max_int_value(), max_int_value()
+                min_int_value(),
+                min_int_value(),
+                max_int_value(),
+                max_int_value()
             )),
             Rect::from_enclose_points(
-                &[Point::new(i32::min_value(), i32::min_value()),
-                Point::new(i32::max_value(), i32::max_value())], None
-            ).map(|r| r.into())
+                &[
+                    Point::new(i32::min_value(), i32::min_value()),
+                    Point::new(i32::max_value(), i32::max_value())
+                ],
+                None
+            )
+            .map(|r| r.into())
         );
     }
 
@@ -918,22 +946,16 @@ mod test {
         let rect = Rect::new(0, 0, 10, 10);
         assert!(rect.has_intersection(Rect::new(9, 9, 10, 10)));
         // edge
-        assert!(! rect.has_intersection(Rect::new(10, 10, 10, 10)));
+        assert!(!rect.has_intersection(Rect::new(10, 10, 10, 10)));
         // out
-        assert!(! rect.has_intersection(Rect::new(11, 11, 10, 10)));
+        assert!(!rect.has_intersection(Rect::new(11, 11, 10, 10)));
     }
 
     #[test]
     fn intersection() {
         let rect = Rect::new(0, 0, 10, 10);
-        assert_eq!(
-            rect & Rect::new(9, 9, 10, 10),
-            Some(Rect::new(9, 9, 1, 1))
-        );
-        assert_eq!(
-            rect & Rect::new(11, 11, 10, 10),
-            None
-        );
+        assert_eq!(rect & Rect::new(9, 9, 10, 10), Some(Rect::new(9, 9, 1, 1)));
+        assert_eq!(rect & Rect::new(11, 11, 10, 10), None);
     }
 
     #[test]
@@ -947,19 +969,14 @@ mod test {
     #[test]
     fn intersect_line() {
         assert_eq!(
-            Rect::new(1, 1, 5, 5).intersect_line(
-                Point::new(0, 0), Point::new(10, 10)
-            ),
+            Rect::new(1, 1, 5, 5).intersect_line(Point::new(0, 0), Point::new(10, 10)),
             Some((Point::new(1, 1), Point::new(5, 5)))
         );
     }
 
     #[test]
     fn clamp_size_zero() {
-        assert_eq!(
-            tuple(0, 0, 1, 1),
-            Rect::new(0, 0, 0, 0).into()
-        );
+        assert_eq!(tuple(0, 0, 1, 1), Rect::new(0, 0, 0, 0).into());
     }
 
     #[test]
@@ -982,9 +999,7 @@ mod test {
     fn clamp_i32_max() {
         assert_eq!(
             tuple(0, 0, max_int_value(), max_int_value()),
-            Rect::new(
-                0, 0, i32::max_value() as u32, i32::max_value() as u32
-            ).into()
+            Rect::new(0, 0, i32::max_value() as u32, i32::max_value() as u32).into()
         )
     }
 
@@ -992,99 +1007,67 @@ mod test {
     fn clamp_position_max() {
         assert_eq!(
             tuple(max_int_value() as i32, max_int_value() as i32, 1, 1),
-            Rect::new(
-                max_int_value() as i32 + 1, max_int_value() as i32 + 1, 1, 1
-            ).into()
+            Rect::new(max_int_value() as i32 + 1, max_int_value() as i32 + 1, 1, 1).into()
         );
     }
 
     #[test]
     fn rect_into() {
         let test: (i32, i32, u32, u32) = (-11, 5, 50, 20);
-        assert_eq!(
-            test,
-            Rect::new(-11, 5, 50, 20).into()
-        );
+        assert_eq!(test, Rect::new(-11, 5, 50, 20).into());
     }
 
     #[test]
     fn rect_from() {
-        assert_eq!(
-            Rect::from((-11, 5, 50, 20)),
-            Rect::new(-11, 5, 50, 20)
-        );
+        assert_eq!(Rect::from((-11, 5, 50, 20)), Rect::new(-11, 5, 50, 20));
     }
 
     #[test]
     fn point_into() {
         let test: (i32, i32) = (-11, 5);
-        assert_eq!(
-            test,
-            Point::new(-11, 5).into()
-        );
+        assert_eq!(test, Point::new(-11, 5).into());
     }
 
     #[test]
     fn point_from() {
         let test: (i32, i32) = (-11, 5);
-        assert_eq!(
-            test,
-            Point::new(-11, 5).into()
-        );
+        assert_eq!(test, Point::new(-11, 5).into());
     }
 
     #[test]
     fn point_add() {
-        assert_eq!(
-            Point::new(-5, 7),
-            Point::new(-11, 5) + Point::new(6, 2)
-        );
+        assert_eq!(Point::new(-5, 7), Point::new(-11, 5) + Point::new(6, 2));
     }
 
     #[test]
     fn point_add_assign() {
         let mut point = Point::new(-11, 5);
         point += Point::new(6, 2);
-        assert_eq!(
-            point,
-            Point::new(-11, 5) + Point::new(6, 2)
-        );
+        assert_eq!(point, Point::new(-11, 5) + Point::new(6, 2));
     }
 
     #[test]
     fn point_sub() {
-        assert_eq!(
-            Point::new(-17, 3),
-            Point::new(-11, 5) - Point::new(6, 2)
-        );
+        assert_eq!(Point::new(-17, 3), Point::new(-11, 5) - Point::new(6, 2));
     }
 
     #[test]
     fn point_sub_assign() {
         let mut point = Point::new(-11, 5);
         point -= Point::new(6, 2);
-        assert_eq!(
-            point,
-            Point::new(-11, 5) - Point::new(6, 2)
-        );
+        assert_eq!(point, Point::new(-11, 5) - Point::new(6, 2));
     }
 
     #[test]
     fn point_mul() {
-        assert_eq!(
-            Point::new(-33, 15),
-            Point::new(-11, 5) * 3
-        );
+        assert_eq!(Point::new(-33, 15), Point::new(-11, 5) * 3);
     }
 
     #[test]
     fn point_mul_assign() {
         let mut point = Point::new(-11, 5);
         point *= 3;
-        assert_eq!(
-            point,
-            Point::new(-11, 5) * 3
-        );
+        assert_eq!(point, Point::new(-11, 5) * 3);
     }
 
     #[test]
@@ -1099,28 +1082,18 @@ mod test {
     fn point_mul_assign_clamp() {
         let mut point = Point::new(-1000000, 5000000);
         point *= -3000000;
-        assert_eq!(
-            point,
-            Point::new(-1000000, 5000000) * -3000000
-        );
+        assert_eq!(point, Point::new(-1000000, 5000000) * -3000000);
     }
 
     #[test]
     fn point_div() {
-        assert_eq!(
-            Point::new(-3, 1),
-            Point::new(-11, 5) / 3
-        );
+        assert_eq!(Point::new(-3, 1), Point::new(-11, 5) / 3);
     }
 
     #[test]
-    fn point_div_assign () {
+    fn point_div_assign() {
         let mut point = Point::new(-11, 5);
         point /= 3;
-        assert_eq!(
-            point,
-            Point::new(-11, 5) / 3
-        );
+        assert_eq!(point, Point::new(-11, 5) / 3);
     }
-
 }

@@ -52,18 +52,18 @@
 //! std::thread::sleep(Duration::from_millis(2000));
 //! ```
 
-use std::ffi::{CStr, CString};
+use libc::{c_char, c_int, c_void};
 use std::convert::TryFrom;
-use libc::{c_int, c_void, c_char};
-use std::ops::{Deref, DerefMut};
-use std::path::Path;
+use std::ffi::{CStr, CString};
 use std::marker::PhantomData;
 use std::mem;
+use std::ops::{Deref, DerefMut};
+use std::path::Path;
 use std::ptr;
 
-use crate::AudioSubsystem;
 use crate::get_error;
 use crate::rwops::RWops;
+use crate::AudioSubsystem;
 
 use crate::sys;
 use crate::sys::SDL_AudioStatus;
@@ -75,8 +75,16 @@ impl AudioSubsystem {
     /// its data buffer) you're likely to be interested in the
     /// [AudioDevice.lock method](audio/struct.AudioDevice.html#method.lock).
     #[inline]
-    pub fn open_playback<'a, CB, F, D>(&self, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
-    where CB: AudioCallback, F: FnOnce(AudioSpec) -> CB, D: Into<Option<&'a str>>,
+    pub fn open_playback<'a, CB, F, D>(
+        &self,
+        device: D,
+        spec: &AudioSpecDesired,
+        get_callback: F,
+    ) -> Result<AudioDevice<CB>, String>
+    where
+        CB: AudioCallback,
+        F: FnOnce(AudioSpec) -> CB,
+        D: Into<Option<&'a str>>,
     {
         AudioDevice::open_playback(self, device, spec, get_callback)
     }
@@ -87,16 +95,30 @@ impl AudioSubsystem {
     /// If you want to modify the callback-owned data at a later point (for example to update
     /// its data buffer) you're likely to be interested in the
     /// [AudioDevice.lock method](audio/struct.AudioDevice.html#method.lock).
-    pub fn open_capture<'a, CB, F, D>(&self, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
-        where CB: AudioCallback, F: FnOnce(AudioSpec) -> CB, D: Into<Option<&'a str>>,
+    pub fn open_capture<'a, CB, F, D>(
+        &self,
+        device: D,
+        spec: &AudioSpecDesired,
+        get_callback: F,
+    ) -> Result<AudioDevice<CB>, String>
+    where
+        CB: AudioCallback,
+        F: FnOnce(AudioSpec) -> CB,
+        D: Into<Option<&'a str>>,
     {
         AudioDevice::open_capture(self, device, spec, get_callback)
     }
 
     /// Opens a new audio device which uses queueing rather than older callback method.
     #[inline]
-    pub fn open_queue<'a, Channel, D>(&self, device: D, spec: &AudioSpecDesired) -> Result<AudioQueue<Channel>, String>
-    where Channel: AudioFormatNum, D: Into<Option<&'a str>>,
+    pub fn open_queue<'a, Channel, D>(
+        &self,
+        device: D,
+        spec: &AudioSpecDesired,
+    ) -> Result<AudioQueue<Channel>, String>
+    where
+        Channel: AudioFormatNum,
+        D: Into<Option<&'a str>>,
     {
         AudioQueue::open_queue(self, device, spec)
     }
@@ -158,7 +180,7 @@ pub enum AudioFormat {
     /// 32-bit floating point samples, little-endian
     F32LSB = sys::AUDIO_F32LSB as i32,
     /// 32-bit floating point samples, big-endian
-    F32MSB = sys::AUDIO_F32MSB as i32
+    F32MSB = sys::AUDIO_F32MSB as i32,
 }
 
 impl AudioFormat {
@@ -175,7 +197,7 @@ impl AudioFormat {
             sys::AUDIO_S32MSB => Some(S32MSB),
             sys::AUDIO_F32LSB => Some(F32LSB),
             sys::AUDIO_F32MSB => Some(F32MSB),
-            _ => None
+            _ => None,
         }
     }
 
@@ -188,25 +210,49 @@ impl AudioFormat {
 #[cfg(target_endian = "little")]
 impl AudioFormat {
     /// Unsigned 16-bit samples, native endian
-    #[inline] pub const fn u16_sys() -> AudioFormat { AudioFormat::U16LSB }
+    #[inline]
+    pub const fn u16_sys() -> AudioFormat {
+        AudioFormat::U16LSB
+    }
     /// Signed 16-bit samples, native endian
-    #[inline] pub const fn s16_sys() -> AudioFormat { AudioFormat::S16LSB }
+    #[inline]
+    pub const fn s16_sys() -> AudioFormat {
+        AudioFormat::S16LSB
+    }
     /// Signed 32-bit samples, native endian
-    #[inline] pub const fn s32_sys() -> AudioFormat { AudioFormat::S32LSB }
+    #[inline]
+    pub const fn s32_sys() -> AudioFormat {
+        AudioFormat::S32LSB
+    }
     /// 32-bit floating point samples, native endian
-    #[inline] pub const fn f32_sys() -> AudioFormat { AudioFormat::F32LSB }
+    #[inline]
+    pub const fn f32_sys() -> AudioFormat {
+        AudioFormat::F32LSB
+    }
 }
 
 #[cfg(target_endian = "big")]
 impl AudioFormat {
     /// Unsigned 16-bit samples, native endian
-    #[inline] pub const fn u16_sys() -> AudioFormat { AudioFormat::U16MSB }
+    #[inline]
+    pub const fn u16_sys() -> AudioFormat {
+        AudioFormat::U16MSB
+    }
     /// Signed 16-bit samples, native endian
-    #[inline] pub const fn s16_sys() -> AudioFormat { AudioFormat::S16MSB }
+    #[inline]
+    pub const fn s16_sys() -> AudioFormat {
+        AudioFormat::S16MSB
+    }
     /// Signed 32-bit samples, native endian
-    #[inline] pub const fn s32_sys() -> AudioFormat { AudioFormat::S32MSB }
+    #[inline]
+    pub const fn s32_sys() -> AudioFormat {
+        AudioFormat::S32MSB
+    }
     /// 32-bit floating point samples, native endian
-    #[inline] pub const fn f32_sys() -> AudioFormat { AudioFormat::F32MSB }
+    #[inline]
+    pub const fn f32_sys() -> AudioFormat {
+        AudioFormat::F32MSB
+    }
 }
 
 #[repr(i32)]
@@ -214,7 +260,7 @@ impl AudioFormat {
 pub enum AudioStatus {
     Stopped = SDL_AudioStatus::SDL_AUDIO_STOPPED as i32,
     Playing = SDL_AudioStatus::SDL_AUDIO_PLAYING as i32,
-    Paused  = SDL_AudioStatus::SDL_AUDIO_PAUSED  as i32,
+    Paused = SDL_AudioStatus::SDL_AUDIO_PAUSED as i32,
 }
 
 impl TryFrom<u32> for AudioStatus {
@@ -227,7 +273,7 @@ impl TryFrom<u32> for AudioStatus {
         Ok(match unsafe { mem::transmute(n) } {
             SDL_AUDIO_STOPPED => Stopped,
             SDL_AUDIO_PLAYING => Playing,
-            SDL_AUDIO_PAUSED  => Paused,
+            SDL_AUDIO_PAUSED => Paused,
         })
     }
 }
@@ -236,7 +282,7 @@ impl TryFrom<u32> for AudioStatus {
 #[derive(Copy, Clone)]
 pub struct DriverIterator {
     length: i32,
-    index: i32
+    index: i32,
 }
 
 impl Iterator for DriverIterator {
@@ -264,7 +310,7 @@ impl Iterator for DriverIterator {
     }
 }
 
-impl ExactSizeIterator for DriverIterator { }
+impl ExactSizeIterator for DriverIterator {}
 
 /// Gets an iterator of all audio drivers compiled into the SDL2 library.
 #[doc(alias = "SDL_GetAudioDriver")]
@@ -276,7 +322,7 @@ pub fn drivers() -> DriverIterator {
     // SDL_GetNumAudioDrivers can never return a negative value.
     DriverIterator {
         length: unsafe { sys::SDL_GetNumAudioDrivers() },
-        index: 0
+        index: 0,
     }
 }
 
@@ -285,7 +331,7 @@ pub struct AudioSpecWAV {
     pub format: AudioFormat,
     pub channels: u8,
     audio_buf: *mut u8,
-    audio_len: u32
+    audio_len: u32,
 }
 
 impl AudioSpecWAV {
@@ -305,7 +351,13 @@ impl AudioSpecWAV {
         let mut audio_buf: *mut u8 = null_mut();
         let mut audio_len: u32 = 0;
         unsafe {
-            let ret = sys::SDL_LoadWAV_RW(src.raw(), 0, desired.as_mut_ptr(), &mut audio_buf, &mut audio_len);
+            let ret = sys::SDL_LoadWAV_RW(
+                src.raw(),
+                0,
+                desired.as_mut_ptr(),
+                &mut audio_buf,
+                &mut audio_len,
+            );
             if ret.is_null() {
                 Err(get_error())
             } else {
@@ -315,7 +367,7 @@ impl AudioSpecWAV {
                     format: AudioFormat::from_ll(desired.format).unwrap(),
                     channels: desired.channels,
                     audio_buf,
-                    audio_len
+                    audio_len,
                 })
             }
         }
@@ -334,12 +386,15 @@ impl AudioSpecWAV {
 impl Drop for AudioSpecWAV {
     #[doc(alias = "SDL_FreeWAV")]
     fn drop(&mut self) {
-        unsafe { sys::SDL_FreeWAV(self.audio_buf); }
+        unsafe {
+            sys::SDL_FreeWAV(self.audio_buf);
+        }
     }
 }
 
 pub trait AudioCallback: Send
-where Self::Channel: AudioFormatNum + 'static
+where
+    Self::Channel: AudioFormatNum + 'static,
 {
     type Channel;
 
@@ -376,44 +431,59 @@ pub trait AudioFormatNum {
 
 /// `AUDIO_S8`
 impl AudioFormatNum for i8 {
-    fn audio_format() -> AudioFormat { AudioFormat::S8 }
+    fn audio_format() -> AudioFormat {
+        AudioFormat::S8
+    }
     const SILENCE: i8 = 0;
 }
 /// `AUDIO_U8`
 impl AudioFormatNum for u8 {
-    fn audio_format() -> AudioFormat { AudioFormat::U8 }
+    fn audio_format() -> AudioFormat {
+        AudioFormat::U8
+    }
     const SILENCE: u8 = 0x80;
 }
 /// `AUDIO_S16`
 impl AudioFormatNum for i16 {
-    fn audio_format() -> AudioFormat { AudioFormat::s16_sys() }
+    fn audio_format() -> AudioFormat {
+        AudioFormat::s16_sys()
+    }
     const SILENCE: i16 = 0;
 }
 /// `AUDIO_U16`
 impl AudioFormatNum for u16 {
-    fn audio_format() -> AudioFormat { AudioFormat::u16_sys() }
+    fn audio_format() -> AudioFormat {
+        AudioFormat::u16_sys()
+    }
     const SILENCE: u16 = 0x8000;
 }
 /// `AUDIO_S32`
 impl AudioFormatNum for i32 {
-    fn audio_format() -> AudioFormat { AudioFormat::s32_sys() }
+    fn audio_format() -> AudioFormat {
+        AudioFormat::s32_sys()
+    }
     const SILENCE: i32 = 0;
 }
 /// `AUDIO_F32`
 impl AudioFormatNum for f32 {
-    fn audio_format() -> AudioFormat { AudioFormat::f32_sys() }
+    fn audio_format() -> AudioFormat {
+        AudioFormat::f32_sys()
+    }
     const SILENCE: f32 = 0.0;
 }
 
-extern "C" fn audio_callback_marshall<CB: AudioCallback>
-(userdata: *mut c_void, stream: *mut u8, len: c_int) {
-    use std::slice::from_raw_parts_mut;
+extern "C" fn audio_callback_marshall<CB: AudioCallback>(
+    userdata: *mut c_void,
+    stream: *mut u8,
+    len: c_int,
+) {
     use std::mem::size_of;
+    use std::slice::from_raw_parts_mut;
     unsafe {
         let cb_userdata: &mut Option<CB> = &mut *(userdata as *mut _);
         let buf: &mut [CB::Channel] = from_raw_parts_mut(
             stream as *mut CB::Channel,
-            len as usize / size_of::<CB::Channel>()
+            len as usize / size_of::<CB::Channel>(),
         );
 
         if let Some(cb) = cb_userdata {
@@ -433,21 +503,31 @@ pub struct AudioSpecDesired {
 }
 
 impl AudioSpecDesired {
-    fn convert_to_ll<CB, F, C, S>(freq: F, channels: C, samples: S, userdata: *mut Option<CB>) -> sys::SDL_AudioSpec
+    fn convert_to_ll<CB, F, C, S>(
+        freq: F,
+        channels: C,
+        samples: S,
+        userdata: *mut Option<CB>,
+    ) -> sys::SDL_AudioSpec
     where
         CB: AudioCallback,
         F: Into<Option<i32>>,
         C: Into<Option<u8>>,
         S: Into<Option<u16>>,
     {
-
         let freq = freq.into();
         let channels = channels.into();
         let samples = samples.into();
 
-        if let Some(freq) = freq { assert!(freq > 0); }
-        if let Some(channels) = channels { assert!(channels > 0); }
-        if let Some(samples) = samples { assert!(samples > 0); }
+        if let Some(freq) = freq {
+            assert!(freq > 0);
+        }
+        if let Some(channels) = channels {
+            assert!(channels > 0);
+        }
+        if let Some(samples) = samples {
+            assert!(samples > 0);
+        }
 
         // A value of 0 means "fallback" or "default".
 
@@ -459,11 +539,10 @@ impl AudioSpecDesired {
             samples: samples.unwrap_or(0),
             padding: 0,
             size: 0,
-            callback: Some(audio_callback_marshall::<CB>
-                    as extern "C" fn
-                        (arg1: *mut c_void,
-                            arg2: *mut u8,
-                            arg3: c_int)),
+            callback: Some(
+                audio_callback_marshall::<CB>
+                    as extern "C" fn(arg1: *mut c_void, arg2: *mut u8, arg3: c_int),
+            ),
             userdata: userdata as *mut _,
         }
     }
@@ -473,15 +552,21 @@ impl AudioSpecDesired {
         Channel: AudioFormatNum,
         F: Into<Option<i32>>,
         C: Into<Option<u8>>,
-        S: Into<Option<u16>>
+        S: Into<Option<u16>>,
     {
         let freq = freq.into();
         let channels = channels.into();
         let samples = samples.into();
 
-        if let Some(freq) = freq { assert!(freq > 0); }
-        if let Some(channels) = channels { assert!(channels > 0); }
-        if let Some(samples) = samples { assert!(samples > 0); }
+        if let Some(freq) = freq {
+            assert!(freq > 0);
+        }
+        if let Some(channels) = channels {
+            assert!(channels > 0);
+        }
+        if let Some(samples) = samples {
+            assert!(samples > 0);
+        }
 
         // A value of 0 means "fallback" or "default".
 
@@ -511,7 +596,7 @@ pub struct AudioSpec {
     /// trait.AudioFormatNum.html#associatedconstant.SILENCE) more useful.
     pub silence: u8,
     pub samples: u16,
-    pub size: u32
+    pub size: u32,
 }
 
 impl AudioSpec {
@@ -522,19 +607,19 @@ impl AudioSpec {
             channels: spec.channels,
             silence: spec.silence,
             samples: spec.samples,
-            size: spec.size
+            size: spec.size,
         }
     }
 }
 
 enum AudioDeviceID {
-    PlaybackDevice(sys::SDL_AudioDeviceID)
+    PlaybackDevice(sys::SDL_AudioDeviceID),
 }
 
 impl AudioDeviceID {
     fn id(&self) -> sys::SDL_AudioDeviceID {
         match *self {
-            AudioDeviceID::PlaybackDevice(id)  => id
+            AudioDeviceID::PlaybackDevice(id) => id,
         }
     }
 }
@@ -558,16 +643,25 @@ pub struct AudioQueue<Channel: AudioFormatNum> {
 impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
     /// Opens a new audio device given the desired parameters and callback.
     #[doc(alias = "SDL_OpenAudioDevice")]
-    pub fn open_queue<D: Into<Option<&'a str>>>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired) -> Result<AudioQueue<Channel>, String> {
+    pub fn open_queue<D: Into<Option<&'a str>>>(
+        a: &AudioSubsystem,
+        device: D,
+        spec: &AudioSpecDesired,
+    ) -> Result<AudioQueue<Channel>, String> {
         use std::mem::MaybeUninit;
 
-        let desired = AudioSpecDesired::convert_queue_to_ll::<Channel, Option<i32>, Option<u8>, Option<u16>>(spec.freq, spec.channels, spec.samples);
+        let desired = AudioSpecDesired::convert_queue_to_ll::<
+            Channel,
+            Option<i32>,
+            Option<u8>,
+            Option<u16>,
+        >(spec.freq, spec.channels, spec.samples);
 
         let mut obtained = MaybeUninit::uninit();
         unsafe {
             let device = match device.into() {
                 Some(device) => Some(CString::new(device).unwrap()),
-                None => None
+                None => None,
             };
             // Warning: map_or consumes its argument; `device.map_or()` would therefore consume the
             // CString and drop it, making device_ptr a dangling pointer! To avoid that we downgrade
@@ -576,13 +670,14 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
 
             let iscapture_flag = 0;
             let device_id = sys::SDL_OpenAudioDevice(
-                device_ptr as *const c_char, iscapture_flag, &desired,
-                obtained.as_mut_ptr(), 0
+                device_ptr as *const c_char,
+                iscapture_flag,
+                &desired,
+                obtained.as_mut_ptr(),
+                0,
             );
             match device_id {
-                0 => {
-                    Err(get_error())
-                },
+                0 => Err(get_error()),
                 id => {
                     let obtained = obtained.assume_init();
                     let device_id = AudioDeviceID::PlaybackDevice(id);
@@ -601,10 +696,14 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
 
     #[inline]
     #[doc(alias = "SDL_GetAudioDeviceStatus")]
-    pub fn subsystem(&self) -> &AudioSubsystem { &self.subsystem }
+    pub fn subsystem(&self) -> &AudioSubsystem {
+        &self.subsystem
+    }
 
     #[inline]
-    pub fn spec(&self) -> &AudioSpec { &self.spec }
+    pub fn spec(&self) -> &AudioSpec {
+        &self.spec
+    }
 
     pub fn status(&self) -> AudioStatus {
         unsafe {
@@ -628,19 +727,27 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
     /// Adds data to the audio queue.
     #[doc(alias = "SDL_QueueAudio")]
     pub fn queue(&self, data: &[Channel]) -> bool {
-        let result = unsafe {sys::SDL_QueueAudio(self.device_id.id(), data.as_ptr() as *const c_void, (data.len() * mem::size_of::<Channel>()) as u32)};
+        let result = unsafe {
+            sys::SDL_QueueAudio(
+                self.device_id.id(),
+                data.as_ptr() as *const c_void,
+                (data.len() * mem::size_of::<Channel>()) as u32,
+            )
+        };
         result == 0
     }
 
     #[doc(alias = "SDL_GetQueuedAudioSize")]
     pub fn size(&self) -> u32 {
-        unsafe {sys::SDL_GetQueuedAudioSize(self.device_id.id())}
+        unsafe { sys::SDL_GetQueuedAudioSize(self.device_id.id()) }
     }
 
     /// Clears all data from the current audio queue.
     #[doc(alias = "SDL_ClearQueuedAudio")]
     pub fn clear(&self) {
-        unsafe {sys::SDL_ClearQueuedAudio(self.device_id.id());}
+        unsafe {
+            sys::SDL_ClearQueuedAudio(self.device_id.id());
+        }
     }
 }
 
@@ -650,13 +757,19 @@ pub struct AudioDevice<CB: AudioCallback> {
     device_id: AudioDeviceID,
     spec: AudioSpec,
     /// Store the callback to keep it alive for the entire duration of `AudioDevice`.
-    userdata: Box<Option<CB>>
+    userdata: Box<Option<CB>>,
 }
 
 impl<CB: AudioCallback> AudioDevice<CB> {
     /// Opens a new audio device for playback or capture (given the desired parameters and callback).
     #[doc(alias = "SDL_OpenAudioDevice")]
-    fn open<'a, F, D>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired, get_callback: F, capture: bool) -> Result<AudioDevice <CB>, String>
+    fn open<'a, F, D>(
+        a: &AudioSubsystem,
+        device: D,
+        spec: &AudioSpecDesired,
+        get_callback: F,
+        capture: bool,
+    ) -> Result<AudioDevice<CB>, String>
     where
         F: FnOnce(AudioSpec) -> CB,
         D: Into<Option<&'a str>>,
@@ -664,13 +777,14 @@ impl<CB: AudioCallback> AudioDevice<CB> {
         use std::mem::MaybeUninit;
 
         let mut userdata: Box<Option<CB>> = Box::new(None);
-        let desired = AudioSpecDesired::convert_to_ll(spec.freq, spec.channels, spec.samples, &mut *userdata);
+        let desired =
+            AudioSpecDesired::convert_to_ll(spec.freq, spec.channels, spec.samples, &mut *userdata);
 
         let mut obtained = MaybeUninit::uninit();
         unsafe {
             let device = match device.into() {
                 Some(device) => Some(CString::new(device).unwrap()),
-                None => None
+                None => None,
             };
             // Warning: map_or consumes its argument; `device.map_or()` would therefore consume the
             // CString and drop it, making device_ptr a dangling pointer! To avoid that we downgrade
@@ -679,13 +793,14 @@ impl<CB: AudioCallback> AudioDevice<CB> {
 
             let iscapture_flag = if capture { 1 } else { 0 };
             let device_id = sys::SDL_OpenAudioDevice(
-                device_ptr as *const c_char, iscapture_flag, &desired,
-                obtained.as_mut_ptr(), 0
+                device_ptr as *const c_char,
+                iscapture_flag,
+                &desired,
+                obtained.as_mut_ptr(),
+                0,
             );
             match device_id {
-                0 => {
-                    Err(get_error())
-                },
+                0 => Err(get_error()),
                 id => {
                     let obtained = obtained.assume_init();
                     let device_id = AudioDeviceID::PlaybackDevice(id);
@@ -708,10 +823,15 @@ impl<CB: AudioCallback> AudioDevice<CB> {
     ///
     /// If you want to modify the callback-owned data at a later point (for example to update
     /// its data buffer) you're likely to be interested in the [lock method](#method.lock).
-    pub fn open_playback<'a, F, D>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
-        where
-            F: FnOnce(AudioSpec) -> CB,
-            D: Into<Option<&'a str>>,
+    pub fn open_playback<'a, F, D>(
+        a: &AudioSubsystem,
+        device: D,
+        spec: &AudioSpecDesired,
+        get_callback: F,
+    ) -> Result<AudioDevice<CB>, String>
+    where
+        F: FnOnce(AudioSpec) -> CB,
+        D: Into<Option<&'a str>>,
     {
         AudioDevice::open(a, device, spec, get_callback, false)
     }
@@ -721,20 +841,29 @@ impl<CB: AudioCallback> AudioDevice<CB> {
     ///
     /// If you want to modify the callback-owned data at a later point (for example to update
     /// its data buffer) you're likely to be interested in the [lock method](#method.lock).
-    pub fn open_capture<'a, F, D>(a: &AudioSubsystem, device: D, spec: &AudioSpecDesired, get_callback: F) -> Result<AudioDevice <CB>, String>
-        where
-            F: FnOnce(AudioSpec) -> CB,
-            D: Into<Option<&'a str>>,
+    pub fn open_capture<'a, F, D>(
+        a: &AudioSubsystem,
+        device: D,
+        spec: &AudioSpecDesired,
+        get_callback: F,
+    ) -> Result<AudioDevice<CB>, String>
+    where
+        F: FnOnce(AudioSpec) -> CB,
+        D: Into<Option<&'a str>>,
     {
         AudioDevice::open(a, device, spec, get_callback, true)
     }
 
     #[inline]
     #[doc(alias = "SDL_GetAudioDeviceStatus")]
-    pub fn subsystem(&self) -> &AudioSubsystem { &self.subsystem }
+    pub fn subsystem(&self) -> &AudioSubsystem {
+        &self.subsystem
+    }
 
     #[inline]
-    pub fn spec(&self) -> &AudioSpec { &self.spec }
+    pub fn spec(&self) -> &AudioSpec {
+        &self.spec
+    }
 
     pub fn status(&self) -> AudioStatus {
         unsafe {
@@ -764,8 +893,8 @@ impl<CB: AudioCallback> AudioDevice<CB> {
     pub fn lock(&mut self) -> AudioDeviceLockGuard<CB> {
         unsafe { sys::SDL_LockAudioDevice(self.device_id.id()) };
         AudioDeviceLockGuard {
-            device:  self,
-            _nosend: PhantomData
+            device: self,
+            _nosend: PhantomData,
         }
     }
 
@@ -780,19 +909,27 @@ impl<CB: AudioCallback> AudioDevice<CB> {
 }
 
 /// Similar to `std::sync::MutexGuard`, but for use with `AudioDevice::lock()`.
-pub struct AudioDeviceLockGuard<'a, CB> where CB: AudioCallback, CB: 'a {
+pub struct AudioDeviceLockGuard<'a, CB>
+where
+    CB: AudioCallback,
+    CB: 'a,
+{
     device: &'a mut AudioDevice<CB>,
-    _nosend: PhantomData<*mut ()>
+    _nosend: PhantomData<*mut ()>,
 }
 
 impl<'a, CB: AudioCallback> Deref for AudioDeviceLockGuard<'a, CB> {
     type Target = CB;
     #[doc(alias = "SDL_UnlockAudioDevice")]
-    fn deref(&self) -> &CB { (*self.device.userdata).as_ref().expect("Missing callback") }
+    fn deref(&self) -> &CB {
+        (*self.device.userdata).as_ref().expect("Missing callback")
+    }
 }
 
 impl<'a, CB: AudioCallback> DerefMut for AudioDeviceLockGuard<'a, CB> {
-    fn deref_mut(&mut self) -> &mut CB { (*self.device.userdata).as_mut().expect("Missing callback") }
+    fn deref_mut(&mut self) -> &mut CB {
+        (*self.device.userdata).as_mut().expect("Missing callback")
+    }
 }
 
 impl<'a, CB: AudioCallback> Drop for AudioDeviceLockGuard<'a, CB> {
@@ -803,22 +940,33 @@ impl<'a, CB: AudioCallback> Drop for AudioDeviceLockGuard<'a, CB> {
 
 #[derive(Copy, Clone)]
 pub struct AudioCVT {
-    raw: sys::SDL_AudioCVT
+    raw: sys::SDL_AudioCVT,
 }
 
 impl AudioCVT {
     #[doc(alias = "SDL_BuildAudioCVT")]
-    pub fn new(src_format: AudioFormat, src_channels: u8, src_rate: i32,
-               dst_format: AudioFormat, dst_channels: u8, dst_rate: i32) -> Result<AudioCVT, String>
-    {
+    pub fn new(
+        src_format: AudioFormat,
+        src_channels: u8,
+        src_rate: i32,
+        dst_format: AudioFormat,
+        dst_channels: u8,
+        dst_rate: i32,
+    ) -> Result<AudioCVT, String> {
         use std::mem::MaybeUninit;
 
         let mut raw: MaybeUninit<sys::SDL_AudioCVT> = mem::MaybeUninit::uninit();
 
         unsafe {
-            let ret = sys::SDL_BuildAudioCVT(raw.as_mut_ptr(),
-                                            src_format.to_ll(), src_channels, src_rate as c_int,
-                                            dst_format.to_ll(), dst_channels, dst_rate as c_int);
+            let ret = sys::SDL_BuildAudioCVT(
+                raw.as_mut_ptr(),
+                src_format.to_ll(),
+                src_channels,
+                src_rate as c_int,
+                dst_format.to_ll(),
+                dst_channels,
+                dst_rate as c_int,
+            );
             if ret == 1 || ret == 0 {
                 let raw = raw.assume_init();
                 Ok(AudioCVT { raw })
@@ -852,7 +1000,9 @@ impl AudioCVT {
                 let ret = sys::SDL_ConvertAudio(&mut raw);
                 // There's no reason for SDL_ConvertAudio to fail.
                 // The only time it can fail is if buf is NULL, which it never is.
-                if ret != 0 { panic!(get_error()) }
+                if ret != 0 {
+                    panic!(get_error())
+                }
 
                 // return original buffer back to caller
                 debug_assert!(raw.len_cvt > 0);
@@ -869,15 +1019,18 @@ impl AudioCVT {
 
     /// Checks if any conversion is needed. i.e. if the buffer that goes
     /// into `convert()` is unchanged from the result.
-    pub fn is_conversion_needed(&self) -> bool { self.raw.needed != 0 }
+    pub fn is_conversion_needed(&self) -> bool {
+        self.raw.needed != 0
+    }
 
     /// Gets the buffer capacity that can contain both the original and
     /// converted data.
     pub fn capacity(&self, src_len: usize) -> usize {
-        src_len.checked_mul(self.raw.len_mult as usize).expect("Integer overflow")
+        src_len
+            .checked_mul(self.raw.len_mult as usize)
+            .expect("Integer overflow")
     }
 }
-
 
 #[cfg(test)]
 mod test {
@@ -897,10 +1050,17 @@ mod test {
         assert!(cvt.is_conversion_needed());
 
         // since we're going from mono to stereo, our capacity must be at least twice the original (255) vec size
-        assert!(cvt.capacity(255) >= 255*2, "capacity must be able to hold the converted audio sample");
+        assert!(
+            cvt.capacity(255) >= 255 * 2,
+            "capacity must be able to hold the converted audio sample"
+        );
 
         let new_buffer = cvt.convert(buffer);
-        assert_eq!(new_buffer.len(), new_buffer_expected.len(), "capacity must be exactly equal to twice the original vec size");
+        assert_eq!(
+            new_buffer.len(),
+            new_buffer_expected.len(),
+            "capacity must be exactly equal to twice the original vec size"
+        );
 
         // // this has been commented, see https://discourse.libsdl.org/t/change-of-behavior-in-audiocvt-sdl-convertaudio-from-2-0-5-to-2-0-6/24682
         // // to maybe re-enable it someday

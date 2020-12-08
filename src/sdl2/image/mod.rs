@@ -20,16 +20,16 @@
 //! features = ["image"]
 //! ```
 
-use std::os::raw::{c_int, c_char};
+use get_error;
+use render::{Texture, TextureCreator};
+use rwops::RWops;
 use std::ffi::CString;
+use std::os::raw::{c_char, c_int};
 use std::path::Path;
 use surface::Surface;
-use render::{TextureCreator, Texture};
-use rwops::RWops;
-use version::Version;
-use get_error;
 use sys;
 use sys::image;
+use version::Version;
 
 bitflags! {
     /// InitFlags are passed to init() to control which subsystem
@@ -60,7 +60,6 @@ impl ::std::fmt::Display for InitFlag {
         Ok(())
     }
 }
-
 
 /// Static method extensions for creating Surfaces
 pub trait LoadSurface: Sized {
