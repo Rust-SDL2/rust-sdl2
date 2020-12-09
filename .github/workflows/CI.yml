@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-vcpkg:
+    name: build vcpkg
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install cargo-vcpkg
+        run: cargo install cargo-vcpkg
+      - name: Install dependencies
+        run: cargo vcpkg build
+      - name: Build SDL2
+        shell: bash
+        env:
+          CI_BUILD_FEATURES: "use-vcpkg static-link gfx image ttf mixer"
+          RUST_TEST_THREADS: 1
+        run: |
+          set -xeuo pipefail
+          rustc --version
+          cargo --version
+          cargo build --features "${CI_BUILD_FEATURES}"
+          cargo build --examples --features "${CI_BUILD_FEATURES}"
+          cargo test --features "${CI_BUILD_FEATURES}"
+
+  build-linux:
+    name: build linux
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        feature: ["", "bundled"]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -y -qq
+          sudo apt-get install -y libsdl2-dev libsdl2-mixer-dev libsdl2-gfx-dev libsdl2-image-dev libsdl2-ttf-dev
+      - name: Build SDL2
+        shell: bash
+        env:
+          CI_BUILD_FEATURES: "gfx image ttf mixer"
+          RUST_TEST_THREADS: 1
+        run: |
+          set -xeuo pipefail
+          rustc --version
+          cargo --version
+          cargo build --features "${CI_BUILD_FEATURES},${{matrix.feature}}"
+          cargo build --examples --features "${CI_BUILD_FEATURES},${{matrix.feature}}"
+          cargo test --features "${CI_BUILD_FEATURES},${{matrix.feature}}"
