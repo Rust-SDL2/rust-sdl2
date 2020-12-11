@@ -46,7 +46,7 @@ impl CustomEventTypeMaps {
 
 lazy_static! {
     static ref CUSTOM_EVENT_TYPES: Mutex<CustomEventTypeMaps> =
-        { Mutex::new(CustomEventTypeMaps::new()) };
+        Mutex::new(CustomEventTypeMaps::new());
 }
 
 impl crate::EventSubsystem {
@@ -1768,13 +1768,6 @@ impl Event {
                 }
             }
         } // close unsafe & match
-    }
-
-    fn unwrap_keymod(keymod_option: Option<keyboard::Mod>) -> keyboard::Mod {
-        match keymod_option {
-            None => keyboard::Mod::empty(),
-            Some(x) => x,
-        }
     }
 
     pub fn is_user_event(&self) -> bool {
