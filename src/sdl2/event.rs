@@ -46,7 +46,7 @@ impl CustomEventTypeMaps {
 
 lazy_static! {
     static ref CUSTOM_EVENT_TYPES: Mutex<CustomEventTypeMaps> =
-        { Mutex::new(CustomEventTypeMaps::new()) };
+        Mutex::new(CustomEventTypeMaps::new());
 }
 
 impl crate::EventSubsystem {
