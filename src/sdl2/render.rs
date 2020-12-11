@@ -94,7 +94,7 @@ impl Error for TargetRenderError {
     fn description(&self) -> &str {
         use self::TargetRenderError::*;
         match *self {
-            SdlError(ref e) => e.description(),
+            SdlError(self::SdlError(ref e)) => e.as_str(),
             NotSupported => "The renderer does not support the use of render targets",
         }
     }
