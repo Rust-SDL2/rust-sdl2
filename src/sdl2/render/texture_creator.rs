@@ -3,8 +3,6 @@ use crate::get_error;
 use crate::pixels::PixelFormatEnum;
 use crate::surface::SurfaceRef;
 use libc::c_int;
-#[cfg(not(feature = "unsafe_textures"))]
-use std::marker::PhantomData;
 use std::rc::Rc;
 
 use super::{RendererContext, Texture, TextureAccess};
@@ -174,10 +172,7 @@ impl<T> TextureCreator<T> {
     #[cfg(not(feature = "unsafe_textures"))]
     #[inline]
     pub const unsafe fn raw_create_texture(&self, raw: *mut sys::SDL_Texture) -> Texture {
-        Texture {
-            raw,
-            _marker: PhantomData,
-        }
+        Texture::from_raw_create_texture(raw)
     }
 
     /// Create a texture from its raw `SDL_Texture`. Should be used with care.

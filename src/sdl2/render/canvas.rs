@@ -153,7 +153,7 @@ impl<T: RenderTarget> Canvas<T> {
     {
         if self.render_target_supported() {
             let target = self.get_raw_target();
-            unsafe { self.set_raw_target(texture.raw) }.map_err(TargetRenderError::SdlError)?;
+            unsafe { self.set_raw_target(texture.raw()) }.map_err(TargetRenderError::SdlError)?;
             f(self);
             unsafe { self.set_raw_target(target) }.map_err(TargetRenderError::SdlError)?;
             Ok(())
@@ -231,7 +231,8 @@ impl<T: RenderTarget> Canvas<T> {
         if self.render_target_supported() {
             let target = self.get_raw_target();
             for &(ref texture, ref user_context) in textures {
-                unsafe { self.set_raw_target(texture.raw) }.map_err(TargetRenderError::SdlError)?;
+                unsafe { self.set_raw_target(texture.raw()) }
+                    .map_err(TargetRenderError::SdlError)?;
                 f(self, user_context);
             }
             // reset the target to its source
