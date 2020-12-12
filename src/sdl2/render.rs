@@ -41,7 +41,6 @@ use libc::c_void;
 use libc::{c_double, c_int};
 use std::convert::TryFrom;
 use std::error::Error;
-use std::ffi::CStr;
 use std::fmt;
 #[cfg(not(feature = "unsafe_textures"))]
 use std::marker::PhantomData;
@@ -53,7 +52,15 @@ use std::rc::Rc;
 
 use crate::sys;
 use crate::sys::SDL_BlendMode;
-use crate::sys::SDL_TextureAccess;
+
+mod context;
+pub use self::context::RendererContext;
+mod blend_mode;
+pub use self::blend_mode::BlendMode;
+mod texture_access;
+pub use self::texture_access::TextureAccess;
+mod renderer_info;
+pub use self::renderer_info::RendererInfo;
 
 /// Contains the description of an error returned by SDL
 #[derive(Debug)]
@@ -97,154 +104,6 @@ impl Error for TargetRenderError {
             SdlError(self::SdlError(ref e)) => e.as_str(),
             NotSupported => "The renderer does not support the use of render targets",
         }
-    }
-}
-
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
-#[repr(i32)]
-pub enum TextureAccess {
-    Static = SDL_TextureAccess::SDL_TEXTUREACCESS_STATIC as i32,
-    Streaming = SDL_TextureAccess::SDL_TEXTUREACCESS_STREAMING as i32,
-    Target = SDL_TextureAccess::SDL_TEXTUREACCESS_TARGET as i32,
-}
-
-impl TryFrom<u32> for TextureAccess {
-    type Error = ();
-
-    fn try_from(n: u32) -> Result<Self, Self::Error> {
-        use self::TextureAccess::*;
-        use crate::sys::SDL_TextureAccess::*;
-
-        Ok(match unsafe { transmute(n) } {
-            SDL_TEXTUREACCESS_STATIC => Static,
-            SDL_TEXTUREACCESS_STREAMING => Streaming,
-            SDL_TEXTUREACCESS_TARGET => Target,
-        })
-    }
-}
-
-/// A structure that contains information on the capabilities of a render driver
-/// or the current render context.
-#[derive(Clone, Eq, PartialEq, Hash, Debug)]
-pub struct RendererInfo {
-    pub name: &'static str,
-    pub flags: u32,
-    pub texture_formats: Vec<PixelFormatEnum>,
-    pub max_texture_width: u32,
-    pub max_texture_height: u32,
-}
-
-#[repr(i32)]
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
-pub enum BlendMode {
-    None = SDL_BlendMode::SDL_BLENDMODE_NONE as i32,
-    Blend = SDL_BlendMode::SDL_BLENDMODE_BLEND as i32,
-    Add = SDL_BlendMode::SDL_BLENDMODE_ADD as i32,
-    Mod = SDL_BlendMode::SDL_BLENDMODE_MOD as i32,
-    Invalid = SDL_BlendMode::SDL_BLENDMODE_INVALID as i32,
-}
-
-impl TryFrom<u32> for BlendMode {
-    type Error = ();
-
-    fn try_from(n: u32) -> Result<Self, Self::Error> {
-        use self::BlendMode::*;
-        use crate::sys::SDL_BlendMode::*;
-
-        Ok(match unsafe { transmute(n) } {
-            SDL_BLENDMODE_NONE => None,
-            SDL_BLENDMODE_BLEND => Blend,
-            SDL_BLENDMODE_ADD => Add,
-            SDL_BLENDMODE_MOD => Mod,
-            SDL_BLENDMODE_INVALID => Invalid,
-        })
-    }
-}
-
-impl RendererInfo {
-    pub unsafe fn from_ll(info: &sys::SDL_RendererInfo) -> RendererInfo {
-        let texture_formats: Vec<PixelFormatEnum> = info.texture_formats
-            [0..(info.num_texture_formats as usize)]
-            .iter()
-            .map(|&format| {
-                PixelFormatEnum::try_from(format as u32).unwrap_or(PixelFormatEnum::Unknown)
-            })
-            .collect();
-
-        // The driver name is always a static string, compiled into SDL2.
-        let name = CStr::from_ptr(info.name as *const _).to_str().unwrap();
-
-        RendererInfo {
-            name,
-            flags: info.flags,
-            texture_formats,
-            max_texture_width: info.max_texture_width as u32,
-            max_texture_height: info.max_texture_height as u32,
-        }
-    }
-}
-
-/// Manages what keeps a `SDL_Renderer` alive
-///
-/// When the `RendererContext` is dropped, it destroys the `SDL_Renderer`
-pub struct RendererContext<T> {
-    raw: *mut sys::SDL_Renderer,
-    _target: Rc<T>,
-}
-
-impl<T> Drop for RendererContext<T> {
-    #[doc(alias = "SDL_DestroyRenderer")]
-    fn drop(&mut self) {
-        unsafe {
-            sys::SDL_DestroyRenderer(self.raw);
-        };
-    }
-}
-
-impl<T> RendererContext<T> {
-    /// Gets information about the rendering context.
-    #[doc(alias = "SDL_GetRendererInfo")]
-    pub fn info(&self) -> RendererInfo {
-        let mut renderer_info_raw = mem::MaybeUninit::uninit();
-        let result =
-            unsafe { sys::SDL_GetRendererInfo(self.raw, renderer_info_raw.as_mut_ptr()) != 0 };
-
-        if result {
-            // Should only fail on an invalid renderer
-            panic!();
-        } else {
-            unsafe {
-                let renderer_info_raw = renderer_info_raw.assume_init();
-                RendererInfo::from_ll(&renderer_info_raw)
-            }
-        }
-    }
-
-    /// Gets the raw pointer to the SDL_Renderer
-    // this can prevent introducing UB until
-    // https://github.com/rust-lang/rust-clippy/issues/5953 is fixed
-    #[allow(clippy::trivially_copy_pass_by_ref)]
-    pub fn raw(&self) -> *mut sys::SDL_Renderer {
-        self.raw
-    }
-
-    pub unsafe fn from_ll(raw: *mut sys::SDL_Renderer, target: Rc<T>) -> Self {
-        RendererContext {
-            raw,
-            _target: target,
-        }
-    }
-
-    unsafe fn set_raw_target(&self, raw_texture: *mut sys::SDL_Texture) -> Result<(), SdlError> {
-        if sys::SDL_SetRenderTarget(self.raw, raw_texture) == 0 {
-            Ok(())
-        } else {
-            Err(SdlError(get_error()))
-        }
-    }
-
-    unsafe fn get_raw_target(&self) -> *mut sys::SDL_Texture {
-        sys::SDL_GetRenderTarget(self.raw)
     }
 }
 
@@ -437,7 +296,7 @@ impl<T: RenderTarget> Canvas<T> {
     /// Determine whether a window supports the use of render targets.
     #[doc(alias = "SDL_RenderTargetSupported")]
     pub fn render_target_supported(&self) -> bool {
-        unsafe { sys::SDL_RenderTargetSupported(self.context.raw) == sys::SDL_bool::SDL_TRUE }
+        self.context.is_supported()
     }
 
     /// Temporarily sets the target of `Canvas` to a `Texture`. This effectively allows rendering
@@ -514,7 +373,7 @@ impl<T: RenderTarget> Canvas<T> {
         for<'r> F: FnOnce(&'r mut Canvas<T>),
     {
         if self.render_target_supported() {
-            let target = unsafe { self.get_raw_target() };
+            let target = self.get_raw_target();
             unsafe { self.set_raw_target(texture.raw) }.map_err(TargetRenderError::SdlError)?;
             f(self);
             unsafe { self.set_raw_target(target) }.map_err(TargetRenderError::SdlError)?;
@@ -591,7 +450,7 @@ impl<T: RenderTarget> Canvas<T> {
         I: Iterator<Item = &'s (&'a mut Texture<'t>, U)>,
     {
         if self.render_target_supported() {
-            let target = unsafe { self.get_raw_target() };
+            let target = self.get_raw_target();
             for &(ref texture, ref user_context) in textures {
                 unsafe { self.set_raw_target(texture.raw) }.map_err(TargetRenderError::SdlError)?;
                 f(self, user_context);
@@ -926,8 +785,9 @@ impl<T> TextureCreator<T> {
         surface: S,
     ) -> Result<Texture, TextureValueError> {
         use self::TextureValueError::*;
-        let result =
-            unsafe { sys::SDL_CreateTextureFromSurface(self.context.raw, surface.as_ref().raw()) };
+        let result = unsafe {
+            sys::SDL_CreateTextureFromSurface(self.context.raw(), surface.as_ref().raw())
+        };
         if result.is_null() {
             Err(SdlError(get_error()))
         } else {
@@ -965,7 +825,7 @@ impl<T: RenderTarget> Canvas<T> {
     #[doc(alias = "SDL_SetRenderDrawColor")]
     pub fn set_draw_color<C: Into<pixels::Color>>(&mut self, color: C) {
         let (r, g, b, a) = color.into().rgba();
-        let ret = unsafe { sys::SDL_SetRenderDrawColor(self.raw, r, g, b, a) };
+        let ret = unsafe { sys::SDL_SetRenderDrawColor(self.raw(), r, g, b, a) };
         // Should only fail on an invalid renderer
         if ret != 0 {
             panic!(get_error())
@@ -977,7 +837,7 @@ impl<T: RenderTarget> Canvas<T> {
     pub fn draw_color(&self) -> pixels::Color {
         let (mut r, mut g, mut b, mut a) = (0, 0, 0, 0);
         let ret = unsafe {
-            sys::SDL_GetRenderDrawColor(self.context.raw, &mut r, &mut g, &mut b, &mut a)
+            sys::SDL_GetRenderDrawColor(self.context.raw(), &mut r, &mut g, &mut b, &mut a)
         };
         // Should only fail on an invalid renderer
         if ret != 0 {
@@ -991,7 +851,7 @@ impl<T: RenderTarget> Canvas<T> {
     #[doc(alias = "SDL_SetRenderDrawBlendMode")]
     pub fn set_blend_mode(&mut self, blend: BlendMode) {
         let ret =
-            unsafe { sys::SDL_SetRenderDrawBlendMode(self.context.raw, transmute(blend as u32)) };
+            unsafe { sys::SDL_SetRenderDrawBlendMode(self.context.raw(), transmute(blend as u32)) };
         // Should only fail on an invalid renderer
         if ret != 0 {
             panic!(get_error())
@@ -1002,7 +862,8 @@ impl<T: RenderTarget> Canvas<T> {
     #[doc(alias = "SDL_GetRenderDrawBlendMode")]
     pub fn blend_mode(&self) -> BlendMode {
         let mut blend: MaybeUninit<SDL_BlendMode> = mem::MaybeUninit::uninit();
-        let ret = unsafe { sys::SDL_GetRenderDrawBlendMode(self.context.raw, blend.as_mut_ptr()) };
+        let ret =
+            unsafe { sys::SDL_GetRenderDrawBlendMode(self.context.raw(), blend.as_mut_ptr()) };
         // Should only fail on an invalid renderer
         if ret != 0 {
             panic!(get_error())
@@ -1015,7 +876,7 @@ impl<T: RenderTarget> Canvas<T> {
     /// Clears the current rendering target with the drawing color.
     #[doc(alias = "SDL_RenderClear")]
     pub fn clear(&mut self) {
-        let ret = unsafe { sys::SDL_RenderClear(self.context.raw) };
+        let ret = unsafe { sys::SDL_RenderClear(self.context.raw()) };
         if ret != 0 {
             panic!("Could not clear: {}", get_error())
         }
@@ -1030,7 +891,7 @@ impl<T: RenderTarget> Canvas<T> {
     /// backbuffer to the screen as a complete picture.
     #[doc(alias = "SDL_RenderPresent")]
     pub fn present(&mut self) {
-        unsafe { sys::SDL_RenderPresent(self.context.raw) }
+        self.context.present()
     }
 
     /// Gets the output size of a rendering context.
@@ -1040,7 +901,7 @@ impl<T: RenderTarget> Canvas<T> {
         let mut height = 0;
 
         let result =
-            unsafe { sys::SDL_GetRendererOutputSize(self.context.raw, &mut width, &mut height) };
+            unsafe { sys::SDL_GetRendererOutputSize(self.context.raw(), &mut width, &mut height) };
 
         if result == 0 {
             Ok((width as u32, height as u32))
@@ -1055,7 +916,7 @@ impl<T: RenderTarget> Canvas<T> {
         use crate::common::IntegerOrSdlError::*;
         let width = validate_int(width, "width")?;
         let height = validate_int(height, "height")?;
-        let result = unsafe { sys::SDL_RenderSetLogicalSize(self.context.raw, width, height) };
+        let result = unsafe { sys::SDL_RenderSetLogicalSize(self.context.raw(), width, height) };
         match result {
             0 => Ok(()),
             _ => Err(SdlError(get_error())),
@@ -1068,7 +929,7 @@ impl<T: RenderTarget> Canvas<T> {
         let mut width = 0;
         let mut height = 0;
 
-        unsafe { sys::SDL_RenderGetLogicalSize(self.context.raw, &mut width, &mut height) };
+        unsafe { sys::SDL_RenderGetLogicalSize(self.context.raw(), &mut width, &mut height) };
 
         (width as u32, height as u32)
     }
@@ -1080,7 +941,7 @@ impl<T: RenderTarget> Canvas<T> {
             Some(ref rect) => rect.raw(),
             None => ptr::null(),
         };
-        let ret = unsafe { sys::SDL_RenderSetViewport(self.context.raw, ptr) };
+        let ret = unsafe { sys::SDL_RenderSetViewport(self.context.raw(), ptr) };
         if ret != 0 {
             panic!("Could not set viewport: {}", get_error())
         }
@@ -1090,7 +951,7 @@ impl<T: RenderTarget> Canvas<T> {
     #[doc(alias = "SDL_RenderGetViewport")]
     pub fn viewport(&self) -> Rect {
         let mut rect = mem::MaybeUninit::uninit();
-        unsafe { sys::SDL_RenderGetViewport(self.context.raw, rect.as_mut_ptr()) };
+        unsafe { sys::SDL_RenderGetViewport(self.context.raw(), rect.as_mut_ptr()) };
         let rect = unsafe { rect.assume_init() };
         Rect::from_ll(rect)
     }
@@ -1102,7 +963,7 @@ impl<T: RenderTarget> Canvas<T> {
     pub fn set_clip_rect<R: Into<Option<Rect>>>(&mut self, rect: R) {
         let ret = unsafe {
             sys::SDL_RenderSetClipRect(
-                self.context.raw,
+                self.context.raw(),
                 match rect.into() {
                     Some(ref rect) => rect.raw(),
                     None => ptr::null(),
@@ -1120,7 +981,7 @@ impl<T: RenderTarget> Canvas<T> {
     #[doc(alias = "SDL_RenderGetClipRect")]
     pub fn clip_rect(&self) -> Option<Rect> {
         let mut raw = mem::MaybeUninit::uninit();
-        unsafe { sys::SDL_RenderGetClipRect(self.context.raw, raw.as_mut_ptr()) };
+        unsafe { sys::SDL_RenderGetClipRect(self.context.raw(), raw.as_mut_ptr()) };
         let raw = unsafe { raw.assume_init() };
         if raw.w == 0 || raw.h == 0 {
             None
@@ -1132,7 +993,7 @@ impl<T: RenderTarget> Canvas<T> {
     /// Sets the drawing scale for rendering on the current target.
     #[doc(alias = "SDL_RenderSetScale")]
     pub fn set_scale(&mut self, scale_x: f32, scale_y: f32) -> Result<(), String> {
-        let ret = unsafe { sys::SDL_RenderSetScale(self.context.raw, scale_x, scale_y) };
+        let ret = unsafe { sys::SDL_RenderSetScale(self.context.raw(), scale_x, scale_y) };
         // Should only fail on an invalid renderer
         if ret != 0 {
             Err(get_error())
@@ -1146,7 +1007,7 @@ impl<T: RenderTarget> Canvas<T> {
     pub fn scale(&self) -> (f32, f32) {
         let mut scale_x = 0.0;
         let mut scale_y = 0.0;
-        unsafe { sys::SDL_RenderGetScale(self.context.raw, &mut scale_x, &mut scale_y) };
+        unsafe { sys::SDL_RenderGetScale(self.context.raw(), &mut scale_x, &mut scale_y) };
         (scale_x, scale_y)
     }
 
@@ -1155,7 +1016,7 @@ impl<T: RenderTarget> Canvas<T> {
     #[doc(alias = "SDL_RenderDrawPoint")]
     pub fn draw_point<P: Into<Point>>(&mut self, point: P) -> Result<(), String> {
         let point = point.into();
-        let result = unsafe { sys::SDL_RenderDrawPoint(self.context.raw, point.x(), point.y()) };
+        let result = unsafe { sys::SDL_RenderDrawPoint(self.context.raw(), point.x(), point.y()) };
         if result != 0 {
             Err(get_error())
         } else {
@@ -1170,7 +1031,7 @@ impl<T: RenderTarget> Canvas<T> {
         let points = points.into();
         let result = unsafe {
             sys::SDL_RenderDrawPoints(
-                self.context.raw,
+                self.context.raw(),
                 Point::raw_slice(points),
                 points.len() as c_int,
             )
@@ -1193,7 +1054,7 @@ impl<T: RenderTarget> Canvas<T> {
         let start = start.into();
         let end = end.into();
         let result = unsafe {
-            sys::SDL_RenderDrawLine(self.context.raw, start.x(), start.y(), end.x(), end.y())
+            sys::SDL_RenderDrawLine(self.context.raw(), start.x(), start.y(), end.x(), end.y())
         };
         if result != 0 {
             Err(get_error())
@@ -1209,7 +1070,7 @@ impl<T: RenderTarget> Canvas<T> {
         let points = points.into();
         let result = unsafe {
             sys::SDL_RenderDrawLines(
-                self.context.raw,
+                self.context.raw(),
                 Point::raw_slice(points),
                 points.len() as c_int,
             )
@@ -1225,7 +1086,7 @@ impl<T: RenderTarget> Canvas<T> {
     /// Errors if drawing fails for any reason (e.g. driver failure)
     #[doc(alias = "SDL_RenderDrawRect")]
     pub fn draw_rect(&mut self, rect: Rect) -> Result<(), String> {
-        let result = unsafe { sys::SDL_RenderDrawRect(self.context.raw, rect.raw()) };
+        let result = unsafe { sys::SDL_RenderDrawRect(self.context.raw(), rect.raw()) };
         if result != 0 {
             Err(get_error())
         } else {
@@ -1239,7 +1100,7 @@ impl<T: RenderTarget> Canvas<T> {
     pub fn draw_rects(&mut self, rects: &[Rect]) -> Result<(), String> {
         let result = unsafe {
             sys::SDL_RenderDrawRects(
-                self.context.raw,
+                self.context.raw(),
                 Rect::raw_slice(rects),
                 rects.len() as c_int,
             )
@@ -1259,7 +1120,7 @@ impl<T: RenderTarget> Canvas<T> {
     pub fn fill_rect<R: Into<Option<Rect>>>(&mut self, rect: R) -> Result<(), String> {
         let result = unsafe {
             sys::SDL_RenderFillRect(
-                self.context.raw,
+                self.context.raw(),
                 rect.into().as_ref().map(|r| r.raw()).unwrap_or(ptr::null()),
             )
         };
@@ -1277,7 +1138,7 @@ impl<T: RenderTarget> Canvas<T> {
     pub fn fill_rects(&mut self, rects: &[Rect]) -> Result<(), String> {
         let result = unsafe {
             sys::SDL_RenderFillRects(
-                self.context.raw,
+                self.context.raw(),
                 Rect::raw_slice(rects),
                 rects.len() as c_int,
             )
@@ -1305,8 +1166,8 @@ impl<T: RenderTarget> Canvas<T> {
     {
         let ret = unsafe {
             sys::SDL_RenderCopy(
-                self.context.raw,
-                texture.raw,
+                self.context.raw(),
+                texture.raw(),
                 match src.into() {
                     Some(ref rect) => rect.raw(),
                     None => ptr::null(),
@@ -1369,8 +1230,8 @@ impl<T: RenderTarget> Canvas<T> {
 
         let ret = unsafe {
             sys::SDL_RenderCopyEx(
-                self.context.raw,
-                texture.raw,
+                self.context.raw(),
+                texture.raw(),
                 match src.into() {
                     Some(ref rect) => rect.raw(),
                     None => ptr::null(),
@@ -1422,7 +1283,7 @@ impl<T: RenderTarget> Canvas<T> {
             // Pass the interior of `pixels: Vec<u8>` to SDL
             let ret = {
                 sys::SDL_RenderReadPixels(
-                    self.context.raw,
+                    self.context.raw(),
                     actual_rect,
                     format as u32,
                     pixels.as_mut_ptr() as *mut c_void,
@@ -1549,8 +1410,9 @@ impl<T: RenderTarget> Canvas<T> {
         surface: S,
     ) -> Result<Texture, TextureValueError> {
         use self::TextureValueError::*;
-        let result =
-            unsafe { sys::SDL_CreateTextureFromSurface(self.context.raw, surface.as_ref().raw()) };
+        let result = unsafe {
+            sys::SDL_CreateTextureFromSurface(self.context.raw(), surface.as_ref().raw())
+        };
         if result.is_null() {
             Err(SdlError(get_error()))
         } else {
