@@ -2,6 +2,9 @@ use std::convert::TryFrom;
 use std::intrinsics::transmute;
 
 use crate::sys::SDL_EventType::*;
+
+pub mod custom;
+
 /// Types of events that can be delivered.
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(u32)]
