@@ -28,9 +28,6 @@
 //! None of the draw methods in `Canvas` are expected to fail.
 //! If they do, a panic is raised and the program is aborted.
 
-use crate::surface::{Surface, SurfaceContext};
-use crate::video::{Window, WindowContext};
-
 mod blend_mode;
 pub use self::blend_mode::BlendMode;
 mod canvas;
@@ -45,6 +42,8 @@ mod error;
 pub use self::error::*;
 mod renderer_info;
 pub use self::renderer_info::RendererInfo;
+mod target;
+pub use self::target::*;
 mod texture;
 pub use self::texture::error::*;
 pub use self::texture::{Texture, TextureQuery};
@@ -53,24 +52,3 @@ pub use self::texture_access::TextureAccess;
 mod texture_creator;
 pub use self::texture_creator::TextureCreator;
 pub use self::texture_creator::TextureValueError;
-
-/// Represents structs which can be the target of a `SDL_Renderer` (or Canvas).
-///
-/// This is intended for internal use only. It should not be used outside of this crate,
-/// but is still visible for documentation reasons.
-pub trait RenderTarget {
-    type Context;
-}
-
-/// Alias for a `Canvas` that was created out of a `Surface`
-pub type SurfaceCanvas<'s> = Canvas<Surface<'s>>;
-
-impl<'s> RenderTarget for Surface<'s> {
-    type Context = SurfaceContext<'s>;
-}
-
-pub type WindowCanvas = Canvas<Window>;
-
-impl RenderTarget for Window {
-    type Context = WindowContext;
-}
