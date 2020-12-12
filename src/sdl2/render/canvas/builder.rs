@@ -4,7 +4,8 @@ use crate::common::validate_int;
 use crate::video::Window;
 use crate::{get_error, IntegerOrSdlError};
 
-use super::{Canvas, RendererContext, WindowCanvas};
+use super::super::WindowCanvas;
+use super::{Canvas, RendererContext};
 
 /// The type that allows you to build Window-based renderers.
 ///

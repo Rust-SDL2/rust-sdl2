@@ -31,9 +31,7 @@
 mod blend_mode;
 pub use self::blend_mode::BlendMode;
 mod canvas;
-pub use self::canvas::Canvas;
-mod canvas_builder;
-pub use self::canvas_builder::CanvasBuilder;
+pub use self::canvas::{Canvas, CanvasBuilder};
 mod context;
 pub use self::context::RendererContext;
 mod driver;

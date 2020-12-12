@@ -5,6 +5,8 @@ use crate::pixels::PixelFormatEnum;
 
 use super::{RenderTarget, RendererContext, TargetRenderError, Texture};
 
+mod builder;
+pub use self::builder::CanvasBuilder;
 pub mod render;
 pub mod surface;
 pub mod window;

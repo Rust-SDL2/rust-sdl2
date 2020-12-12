@@ -9,7 +9,7 @@ use super::Canvas;
 
 /// Methods for the `WindowCanvas`.
 impl Canvas<Window> {
-    pub(in crate::render) fn new(
+    pub(super) fn new(
         context: Rc<RendererContext<WindowContext>>,
         target: Window,
         default_pixel_format: PixelFormatEnum,
