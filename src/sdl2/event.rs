@@ -218,7 +218,7 @@ impl crate::EventSubsystem {
     /// An `EventSender` will not keep the event subsystem alive. If the event subsystem is
     /// shut down calls to `push_event` and `push_custom_event` will return errors.
     pub fn event_sender(&self) -> EventSender {
-        EventSender { _priv: () }
+        EventSender::new()
     }
 }
 

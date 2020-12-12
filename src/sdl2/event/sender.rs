@@ -7,10 +7,14 @@ use super::Event;
 
 /// A sendible type that can push events to the event queue.
 pub struct EventSender {
-    pub(in crate::event) _priv: (),
+    _priv: (),
 }
 
 impl EventSender {
+    pub(in crate::event) fn new() -> Self {
+        Self { _priv: () }
+    }
+
     /// Pushes an event to the event queue.
     #[doc(alias = "SDL_PushEvent")]
     pub fn push_event(&self, event: Event) -> Result<(), String> {
