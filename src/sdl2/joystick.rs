@@ -6,8 +6,12 @@ use crate::common::{validate_int, IntegerOrSdlError};
 use crate::get_error;
 use crate::JoystickSubsystem;
 use libc::c_char;
-use std::ffi::{CStr, CString, NulError};
-use std::fmt::{Display, Error, Formatter};
+use std::ffi::CStr;
+
+mod guid;
+pub use self::guid::Guid;
+mod hat_state;
+pub use self::hat_state::HatState;
 
 impl JoystickSubsystem {
     /// Retrieve the total number of attached joysticks *and* controllers identified by SDL.
@@ -68,7 +72,7 @@ impl JoystickSubsystem {
 
         let raw = unsafe { sys::SDL_JoystickGetDeviceGUID(joystick_index) };
 
-        let guid = Guid { raw };
+        let guid = Guid::new(raw);
 
         if guid.is_zero() {
             Err(SdlError(get_error()))
@@ -179,7 +183,7 @@ impl Joystick {
     pub fn guid(&self) -> Guid {
         let raw = unsafe { sys::SDL_JoystickGetGUID(self.raw) };
 
-        let guid = Guid { raw };
+        let guid = Guid::new(raw);
 
         if guid.is_zero() {
             // Should only fail if the joystick is NULL.
@@ -407,137 +411,6 @@ impl Drop for Joystick {
     fn drop(&mut self) {
         if self.attached() {
             unsafe { sys::SDL_JoystickClose(self.raw) }
-        }
-    }
-}
-
-/// Wrapper around a `SDL_JoystickGUID`, a globally unique identifier
-/// for a joystick.
-#[derive(Copy, Clone)]
-pub struct Guid {
-    raw: sys::SDL_JoystickGUID,
-}
-
-impl PartialEq for Guid {
-    fn eq(&self, other: &Guid) -> bool {
-        self.raw.data == other.raw.data
-    }
-}
-
-impl Eq for Guid {}
-
-impl Guid {
-    /// Create a GUID from a string representation.
-    #[doc(alias = "SDL_JoystickGetGUIDFromString")]
-    pub fn from_string(guid: &str) -> Result<Guid, NulError> {
-        let guid = CString::new(guid)?;
-
-        let raw = unsafe { sys::SDL_JoystickGetGUIDFromString(guid.as_ptr() as *const c_char) };
-
-        Ok(Guid { raw })
-    }
-
-    /// Return `true` if GUID is full 0s
-    pub fn is_zero(&self) -> bool {
-        for &i in &self.raw.data {
-            if i != 0 {
-                return false;
-            }
-        }
-
-        true
-    }
-
-    /// Return a String representation of GUID
-    #[doc(alias = "SDL_JoystickGetGUIDString")]
-    pub fn string(&self) -> String {
-        // Doc says "buf should supply at least 33bytes". I took that
-        // to mean that 33bytes should be enough in all cases, but
-        // maybe I'm wrong?
-        let mut buf = [0; 33];
-
-        let len = buf.len() as i32;
-        let c_str = buf.as_mut_ptr();
-
-        unsafe {
-            sys::SDL_JoystickGetGUIDString(self.raw, c_str, len);
-        }
-
-        // The buffer should always be NUL terminated (the
-        // documentation doesn't explicitly say it but I checked the
-        // code)
-        if c_str.is_null() {
-            String::new()
-        } else {
-            unsafe {
-                CStr::from_ptr(c_str as *const _)
-                    .to_str()
-                    .unwrap()
-                    .to_string()
-            }
-        }
-    }
-
-    /// Return a copy of the internal SDL_JoystickGUID
-    pub fn raw(self) -> sys::SDL_JoystickGUID {
-        self.raw
-    }
-}
-
-impl Display for Guid {
-    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "{}", self.string())
-    }
-}
-
-/// This is represented in SDL2 as a bitfield but obviously not all
-/// combinations make sense: 5 for instance would mean up and down at
-/// the same time... To simplify things I turn it into an enum which
-/// is how the SDL2 docs present it anyway (using macros).
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
-pub enum HatState {
-    Centered = 0,
-    Up = 0x01,
-    Right = 0x02,
-    Down = 0x04,
-    Left = 0x08,
-    RightUp = 0x02 | 0x01,
-    RightDown = 0x02 | 0x04,
-    LeftUp = 0x08 | 0x01,
-    LeftDown = 0x08 | 0x04,
-}
-
-impl HatState {
-    pub fn from_raw(raw: u8) -> HatState {
-        match raw {
-            0 => HatState::Centered,
-            1 => HatState::Up,
-            2 => HatState::Right,
-            4 => HatState::Down,
-            8 => HatState::Left,
-            3 => HatState::RightUp,
-            6 => HatState::RightDown,
-            9 => HatState::LeftUp,
-            12 => HatState::LeftDown,
-
-            // The Xinput driver on Windows can report hat states on certain hardware that don't
-            // make any sense from a gameplay perspective, and so aren't worth putting in the
-            // HatState enumeration.
-            _ => HatState::Centered,
-        }
-    }
-
-    pub fn to_raw(self) -> u8 {
-        match self {
-            HatState::Centered => 0,
-            HatState::Up => 1,
-            HatState::Right => 2,
-            HatState::Down => 4,
-            HatState::Left => 8,
-            HatState::RightUp => 3,
-            HatState::RightDown => 6,
-            HatState::LeftUp => 9,
-            HatState::LeftDown => 12,
         }
     }
 }
