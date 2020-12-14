@@ -144,10 +144,34 @@ impl AudioSubsystem {
         }
     }
 
+    #[doc(alias = "SDL_GetNumAudioDevices")]
+    pub fn num_audio_capture_devices(&self) -> Option<u32> {
+        let result = unsafe { sys::SDL_GetNumAudioDevices(1) };
+        if result < 0 {
+            // SDL cannot retrieve a list of audio devices. This is not necessarily an error (see the SDL2 docs).
+            None
+        } else {
+            Some(result as u32)
+        }
+    }
+
     #[doc(alias = "SDL_GetAudioDeviceName")]
     pub fn audio_playback_device_name(&self, index: u32) -> Result<String, String> {
         unsafe {
             let dev_name = sys::SDL_GetAudioDeviceName(index as c_int, 0);
+            if dev_name.is_null() {
+                Err(get_error())
+            } else {
+                let cstr = CStr::from_ptr(dev_name as *const _);
+                Ok(cstr.to_str().unwrap().to_owned())
+            }
+        }
+    }
+
+    #[doc(alias = "SDL_GetAudioDeviceName")]
+    pub fn audio_capture_device_name(&self, index: u32) -> Result<String, String> {
+        unsafe {
+            let dev_name = sys::SDL_GetAudioDeviceName(index as c_int, 1);
             if dev_name.is_null() {
                 Err(get_error())
             } else {
