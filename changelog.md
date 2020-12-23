@@ -10,6 +10,10 @@ when upgrading from a version of rust-sdl2 to another.
 
 [PR #1058](https://github.com/Rust-SDL2/rust-sdl2/pull/1058): deprecate direct field access in `RendererInfo`
 
+### v0.34.4
+
+[PR #1057](https://github.com/Rust-SDL2/rust-sdl2/pull/1057): fix memory safety bug in set_error
+
 ### v0.34.3
 
 [PR #1027](https://github.com/Rust-SDL2/rust-sdl2/pull/1027): upgrade "bundled" version of SDL2 to 2.0.12
