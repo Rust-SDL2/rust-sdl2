@@ -366,7 +366,10 @@ pub fn get_error() -> String {
 pub fn set_error(err: &str) -> Result<(), NulError> {
     let c_string = CString::new(err)?;
     unsafe {
-        sys::SDL_SetError(c_string.as_ptr() as *const c_char);
+        sys::SDL_SetError(
+            b"%s\0".as_ptr() as *const c_char,
+            c_string.as_ptr() as *const c_char,
+        );
     }
     Ok(())
 }
