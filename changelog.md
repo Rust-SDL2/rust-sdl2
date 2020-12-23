@@ -6,6 +6,10 @@ when upgrading from a version of rust-sdl2 to another.
  * Add patch to fix metal detection (https://bugzilla.libsdl.org/show_bug.cgi?id=4988)
  * Changed signature of TimerSubsystem::ticks to accept `&self`.
 
+### v0.35.0
+
+[PR #1058](https://github.com/Rust-SDL2/rust-sdl2/pull/1058): deprecate direct field access in `RendererInfo`
+
 ### v0.34.3
 
 [PR #1027](https://github.com/Rust-SDL2/rust-sdl2/pull/1027): upgrade "bundled" version of SDL2 to 2.0.12
