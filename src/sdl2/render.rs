@@ -47,6 +47,7 @@ use std::fmt;
 use std::marker::PhantomData;
 use std::mem;
 use std::mem::{transmute, MaybeUninit};
+use std::num::NonZeroU32;
 use std::ops::Deref;
 use std::ptr;
 use std::rc::Rc;
@@ -143,11 +144,9 @@ bitflags! {
 // FIXME: remove deprecated attributes when fields are made private.
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
 pub struct RendererInfo {
-    #[deprecated = "direct field access is deprecated and may be removed in a future version. please use the name() method instead"]
     pub name: &'static str,
     #[deprecated = "direct field access is deprecated and may be removed in a future version. please use the flags() method instead"]
     pub flags: u32,
-    #[deprecated = "direct field access is deprecated and may be removed in a future version. please use the texture_formats() method instead"]
     pub texture_formats: Vec<PixelFormatEnum>,
     #[deprecated = "direct field access is deprecated and may be removed in a future version. please use the max_texture_width() method instead"]
     pub max_texture_width: u32,
@@ -182,7 +181,7 @@ impl TryFrom<u32> for BlendMode {
     }
 }
 
-// FIXME: remove this attribute when fields are made private
+// FIXME: remove this attribute when deprecation attributes above are removed
 #[allow(deprecated)]
 impl RendererInfo {
     pub unsafe fn from_ll(info: &sys::SDL_RendererInfo) -> RendererInfo {
@@ -207,30 +206,24 @@ impl RendererInfo {
     }
 
     #[inline]
-    pub fn name(&self) -> &'static str {
-        self.name
-    }
-
-    #[inline]
     pub fn flags(&self) -> RendererFlags {
         RendererFlags::from_bits_truncate(self.flags)
     }
 
+    /// Returns the maximum texture width supported by this renderer.
+    /// The renderer may not report this information, in which case this method returns `None`.
     #[inline]
-    pub fn texture_formats(&self) -> &[PixelFormatEnum] {
-        &self.texture_formats
+    pub fn max_texture_width(&self) -> Option<NonZeroU32> {
+        // SAFETY: u32 is layout-compatible with Option<NonZeroU32>
+        unsafe { transmute(self.max_texture_width) }
     }
 
-    // Should these return Option<NonZeroU32> instead?
-
+    /// Returns the maximum texture height supported by this renderer.
+    /// The renderer may not report this information, in which case this method returns `None`.
     #[inline]
-    pub fn max_texture_width(&self) -> u32 {
-        self.max_texture_width
-    }
-
-    #[inline]
-    pub fn max_texture_height(&self) -> u32 {
-        self.max_texture_height
+    pub fn max_texture_height(&self) -> Option<NonZeroU32> {
+        // SAFETY: u32 is layout-compatible with Option<NonZeroU32>
+        unsafe { transmute(self.max_texture_height) }
     }
 }
 
