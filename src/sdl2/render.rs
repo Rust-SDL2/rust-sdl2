@@ -140,6 +140,7 @@ bitflags! {
 
 /// A structure that contains information on the capabilities of a render driver
 /// or the current render context.
+// FIXME: remove deprecated attributes when fields are made private.
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
 pub struct RendererInfo {
     #[deprecated = "direct field access is deprecated and may be removed in a future version. please use the name() method instead"]
@@ -181,6 +182,7 @@ impl TryFrom<u32> for BlendMode {
     }
 }
 
+// FIXME: remove this attribute when fields are made private
 #[allow(deprecated)]
 impl RendererInfo {
     pub unsafe fn from_ll(info: &sys::SDL_RendererInfo) -> RendererInfo {
