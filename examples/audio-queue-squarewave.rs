@@ -29,7 +29,7 @@ fn main() -> Result<(), String> {
         freq: Some(48_000),
         channels: Some(2),
         // mono  -
-        samples: Some(4), // default sample size
+        samples: None, // default sample size
     };
 
     let device = audio_subsystem.open_queue::<i16, _>(None, &desired_spec)?;
