@@ -242,7 +242,11 @@ impl crate::EventSubsystem {
     ///
     /// # Example: dump every event to stderr
     /// ```
-    /// let _event_watch = event_subsystem.add_event_watch(|event| {
+    /// let sdl = sdl2::init().unwrap();
+    /// let ev = sdl.event().unwrap();
+    ///
+    /// // `let _ = ...` is insufficient, as it is dropped immediately.
+    /// let _event_watch = ev.add_event_watch(|event| {
     ///     dbg!(event);
     /// });
     /// ```
