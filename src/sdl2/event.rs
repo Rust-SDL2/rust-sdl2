@@ -28,6 +28,7 @@ use crate::mouse;
 use crate::mouse::{MouseButton, MouseState, MouseWheelDirection};
 
 use crate::sys;
+use crate::sys::SDL_EventFilter;
 use crate::sys::SDL_EventType;
 
 struct CustomEventTypeMaps {
@@ -230,6 +231,13 @@ impl crate::EventSubsystem {
     /// shut down calls to `push_event` and `push_custom_event` will return errors.
     pub fn event_sender(&self) -> EventSender {
         EventSender { _priv: () }
+    }
+
+    pub fn add_event_watch<'a, F: FnMut(Event) -> () + 'a>(
+        &self,
+        callback: F,
+    ) -> EventWatch<'a, F> {
+        EventWatch::add(callback)
     }
 }
 
@@ -2893,4 +2901,41 @@ impl EventSender {
 
         Ok(())
     }
+}
+
+pub struct EventWatch<'a, F: FnMut(Event) -> () + 'a>(Box<F>, PhantomData<&'a F>);
+
+impl<'a, F: FnMut(Event) -> () + 'a> EventWatch<'a, F> {
+    pub fn add(f: F) -> EventWatch<'a, F> {
+        let f = Box::new(f);
+        let mut watch = EventWatch(f, PhantomData);
+        unsafe { sys::SDL_AddEventWatch(watch.filter(), watch.callback()) };
+        println!("Added");
+        watch
+    }
+
+    fn filter(&self) -> SDL_EventFilter {
+        Some(event_callback_marshall::<F> as _)
+    }
+
+    fn callback(&mut self) -> *mut c_void {
+        &mut *self.0 as *mut _ as *mut c_void
+    }
+}
+
+impl<'a, F: FnMut(Event) -> () + 'a> Drop for EventWatch<'a, F> {
+    fn drop(&mut self) {
+        unsafe { sys::SDL_DelEventWatch(self.filter(), self.callback()) };
+        println!("Deleted");
+    }
+}
+
+extern "C" fn event_callback_marshall<F: FnMut(Event) -> ()>(
+    user_data: *mut c_void,
+    event: *mut sdl2_sys::SDL_Event,
+) -> i32 {
+    let f: &mut F = unsafe { &mut *(user_data as *mut _) };
+    let event = Event::from_ll(unsafe { *event });
+    f(event);
+    0
 }
