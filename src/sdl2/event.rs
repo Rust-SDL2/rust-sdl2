@@ -2923,7 +2923,6 @@ impl<'a, F: FnMut(Event) -> () + 'a> EventWatch<'a, F> {
         let f = Box::new(f);
         let mut watch = EventWatch(f, PhantomData);
         unsafe { sys::SDL_AddEventWatch(watch.filter(), watch.callback()) };
-        println!("Added");
         watch
     }
 
@@ -2939,7 +2938,6 @@ impl<'a, F: FnMut(Event) -> () + 'a> EventWatch<'a, F> {
 impl<'a, F: FnMut(Event) -> () + 'a> Drop for EventWatch<'a, F> {
     fn drop(&mut self) {
         unsafe { sys::SDL_DelEventWatch(self.filter(), self.callback()) };
-        println!("Deleted");
     }
 }
 
