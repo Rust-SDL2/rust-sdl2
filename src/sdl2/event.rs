@@ -2920,10 +2920,12 @@ impl EventSender {
     }
 }
 
+/// An handler for the event watch callback.
+/// One must bind this struct in a variable as long as you want to keep the callback active.
 pub struct EventWatch<'a, F: FnMut(Event) -> () + 'a>(Box<F>, PhantomData<&'a F>);
 
 impl<'a, F: FnMut(Event) -> () + 'a> EventWatch<'a, F> {
-    pub fn add(f: F) -> EventWatch<'a, F> {
+    fn add(f: F) -> EventWatch<'a, F> {
         let f = Box::new(f);
         let mut watch = EventWatch(f, PhantomData);
         unsafe { sys::SDL_AddEventWatch(watch.filter(), watch.callback()) };
