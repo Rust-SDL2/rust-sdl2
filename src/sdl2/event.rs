@@ -233,6 +233,19 @@ impl crate::EventSubsystem {
         EventSender { _priv: () }
     }
 
+    /// Create an event watcher which is called every time an event is added to event queue.
+    ///
+    /// The watcher is disabled when the return value is dropped.
+    /// Just calling this function without binding to a variable immediately disables the watcher.
+    /// In order to make it persistent, you have to bind in a variable and keep it until it's no
+    /// longer needed.
+    ///
+    /// # Example: dump every event to stderr
+    /// ```
+    /// let _event_watch = event_subsystem.add_event_watch(|event| {
+    ///     dbg!(event);
+    /// });
+    /// ```
     pub fn add_event_watch<'a, F: FnMut(Event) -> () + 'a>(
         &self,
         callback: F,
