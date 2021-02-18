@@ -2922,14 +2922,55 @@ impl EventSender {
 
 /// An handler for the event watch callback.
 /// One must bind this struct in a variable as long as you want to keep the callback active.
-pub struct EventWatch<'a, F: FnMut(Event) -> () + 'a>(Box<F>, PhantomData<&'a F>);
+/// For further information, see [`EventSubsystem::add_event_watch`].
+pub struct EventWatch<'a, F: FnMut(Event) -> () + 'a> {
+    activated: bool,
+    callback: Box<F>,
+    _phantom: PhantomData<&'a F>,
+}
 
 impl<'a, F: FnMut(Event) -> () + 'a> EventWatch<'a, F> {
     fn add(f: F) -> EventWatch<'a, F> {
         let f = Box::new(f);
-        let mut watch = EventWatch(f, PhantomData);
-        unsafe { sys::SDL_AddEventWatch(watch.filter(), watch.callback()) };
+        let mut watch = EventWatch {
+            activated: false,
+            callback: f,
+            _phantom: PhantomData,
+        };
+        watch.activate();
         watch
+    }
+
+    /// Activates the event watch.
+    /// Does nothing if it is already activated.
+    pub fn activate(&mut self) {
+        if !self.activated {
+            self.activated = true;
+            unsafe { sys::SDL_AddEventWatch(self.filter(), self.callback()) };
+        }
+    }
+
+    /// Deactivates the event watch.
+    /// Does nothing if it is already activated.
+    pub fn deactivate(&mut self) {
+        if self.activated {
+            self.activated = false;
+            unsafe { sys::SDL_DelEventWatch(self.filter(), self.callback()) };
+        }
+    }
+
+    /// Returns if the event watch is activated.
+    pub fn activated(&self) -> bool {
+        self.activated
+    }
+
+    /// Set the activation state of the event watch.
+    pub fn set_activated(&mut self, activate: bool) {
+        if activate {
+            self.activate();
+        } else {
+            self.deactivate();
+        }
     }
 
     fn filter(&self) -> SDL_EventFilter {
@@ -2937,13 +2978,13 @@ impl<'a, F: FnMut(Event) -> () + 'a> EventWatch<'a, F> {
     }
 
     fn callback(&mut self) -> *mut c_void {
-        &mut *self.0 as *mut _ as *mut c_void
+        &mut *self.callback as *mut _ as *mut c_void
     }
 }
 
 impl<'a, F: FnMut(Event) -> () + 'a> Drop for EventWatch<'a, F> {
     fn drop(&mut self) {
-        unsafe { sys::SDL_DelEventWatch(self.filter(), self.callback()) };
+        self.deactivate();
     }
 }
 
