@@ -242,18 +242,24 @@ impl crate::EventSubsystem {
     ///
     /// # Example: dump every event to stderr
     /// ```
+    /// use sdl2::event::{Event, EventWatchCallback};
     /// let sdl = sdl2::init().unwrap();
     /// let ev = sdl.event().unwrap();
     ///
+    /// struct Callback;
+    /// impl EventWatchCallback for Callback {
+    ///     fn callback(&mut self, event: Event) {
+    ///         dbg!(event);
+    ///     }
+    /// }
+    ///
     /// // `let _ = ...` is insufficient, as it is dropped immediately.
-    /// let _event_watch = ev.add_event_watch(|event| {
-    ///     dbg!(event);
-    /// });
+    /// let _event_watch = ev.add_event_watch(Callback);
     /// ```
-    pub fn add_event_watch<'a, F: FnMut(Event) -> () + 'a>(
+    pub fn add_event_watch<'a, CB: EventWatchCallback + 'a>(
         &self,
-        callback: F,
-    ) -> EventWatch<'a, F> {
+        callback: CB,
+    ) -> EventWatch<'a, CB> {
         EventWatch::add(callback)
     }
 }
@@ -2920,18 +2926,23 @@ impl EventSender {
     }
 }
 
+/// A callback trait for [`EventSubsystem::add_event_watch`].
+pub trait EventWatchCallback {
+    fn callback(&mut self, event: Event) -> ();
+}
+
 /// An handler for the event watch callback.
 /// One must bind this struct in a variable as long as you want to keep the callback active.
 /// For further information, see [`EventSubsystem::add_event_watch`].
-pub struct EventWatch<'a, F: FnMut(Event) -> () + 'a> {
+pub struct EventWatch<'a, CB: EventWatchCallback + 'a> {
     activated: bool,
-    callback: Box<F>,
-    _phantom: PhantomData<&'a F>,
+    callback: Box<CB>,
+    _phantom: PhantomData<&'a CB>,
 }
 
-impl<'a, F: FnMut(Event) -> () + 'a> EventWatch<'a, F> {
-    fn add(f: F) -> EventWatch<'a, F> {
-        let f = Box::new(f);
+impl<'a, CB: EventWatchCallback + 'a> EventWatch<'a, CB> {
+    fn add(callback: CB) -> EventWatch<'a, CB> {
+        let f = Box::new(callback);
         let mut watch = EventWatch {
             activated: false,
             callback: f,
@@ -2974,7 +2985,7 @@ impl<'a, F: FnMut(Event) -> () + 'a> EventWatch<'a, F> {
     }
 
     fn filter(&self) -> SDL_EventFilter {
-        Some(event_callback_marshall::<F> as _)
+        Some(event_callback_marshall::<CB> as _)
     }
 
     fn callback(&mut self) -> *mut c_void {
@@ -2982,18 +2993,18 @@ impl<'a, F: FnMut(Event) -> () + 'a> EventWatch<'a, F> {
     }
 }
 
-impl<'a, F: FnMut(Event) -> () + 'a> Drop for EventWatch<'a, F> {
+impl<'a, CB: EventWatchCallback + 'a> Drop for EventWatch<'a, CB> {
     fn drop(&mut self) {
         self.deactivate();
     }
 }
 
-extern "C" fn event_callback_marshall<F: FnMut(Event) -> ()>(
+extern "C" fn event_callback_marshall<CB: EventWatchCallback>(
     user_data: *mut c_void,
     event: *mut sdl2_sys::SDL_Event,
 ) -> i32 {
-    let f: &mut F = unsafe { &mut *(user_data as *mut _) };
+    let f: &mut CB = unsafe { &mut *(user_data as *mut _) };
     let event = Event::from_ll(unsafe { *event });
-    f(event);
+    f.callback(event);
     0
 }
