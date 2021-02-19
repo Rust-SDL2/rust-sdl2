@@ -28,6 +28,7 @@ use crate::mouse;
 use crate::mouse::{MouseButton, MouseState, MouseWheelDirection};
 
 use crate::sys;
+use crate::sys::SDL_EventFilter;
 use crate::sys::SDL_EventType;
 
 struct CustomEventTypeMaps {
@@ -230,6 +231,30 @@ impl crate::EventSubsystem {
     /// shut down calls to `push_event` and `push_custom_event` will return errors.
     pub fn event_sender(&self) -> EventSender {
         EventSender { _priv: () }
+    }
+
+    /// Create an event watcher which is called every time an event is added to event queue.
+    ///
+    /// The watcher is disabled when the return value is dropped.
+    /// Just calling this function without binding to a variable immediately disables the watcher.
+    /// In order to make it persistent, you have to bind in a variable and keep it until it's no
+    /// longer needed.
+    ///
+    /// # Example: dump every event to stderr
+    /// ```
+    /// let sdl = sdl2::init().unwrap();
+    /// let ev = sdl.event().unwrap();
+    ///
+    /// // `let _ = ...` is insufficient, as it is dropped immediately.
+    /// let _event_watch = ev.add_event_watch(|event| {
+    ///     dbg!(event);
+    /// });
+    /// ```
+    pub fn add_event_watch<'a, CB: EventWatchCallback + 'a>(
+        &self,
+        callback: CB,
+    ) -> EventWatch<'a, CB> {
+        EventWatch::add(callback)
     }
 }
 
@@ -2892,5 +2917,94 @@ impl EventSender {
         self.push_event(event)?;
 
         Ok(())
+    }
+}
+
+/// A callback trait for [`EventSubsystem::add_event_watch`].
+pub trait EventWatchCallback {
+    fn callback(&mut self, event: Event) -> ();
+}
+
+/// An handler for the event watch callback.
+/// One must bind this struct in a variable as long as you want to keep the callback active.
+/// For further information, see [`EventSubsystem::add_event_watch`].
+pub struct EventWatch<'a, CB: EventWatchCallback + 'a> {
+    activated: bool,
+    callback: Box<CB>,
+    _phantom: PhantomData<&'a CB>,
+}
+
+impl<'a, CB: EventWatchCallback + 'a> EventWatch<'a, CB> {
+    fn add(callback: CB) -> EventWatch<'a, CB> {
+        let f = Box::new(callback);
+        let mut watch = EventWatch {
+            activated: false,
+            callback: f,
+            _phantom: PhantomData,
+        };
+        watch.activate();
+        watch
+    }
+
+    /// Activates the event watch.
+    /// Does nothing if it is already activated.
+    pub fn activate(&mut self) {
+        if !self.activated {
+            self.activated = true;
+            unsafe { sys::SDL_AddEventWatch(self.filter(), self.callback()) };
+        }
+    }
+
+    /// Deactivates the event watch.
+    /// Does nothing if it is already activated.
+    pub fn deactivate(&mut self) {
+        if self.activated {
+            self.activated = false;
+            unsafe { sys::SDL_DelEventWatch(self.filter(), self.callback()) };
+        }
+    }
+
+    /// Returns if the event watch is activated.
+    pub fn activated(&self) -> bool {
+        self.activated
+    }
+
+    /// Set the activation state of the event watch.
+    pub fn set_activated(&mut self, activate: bool) {
+        if activate {
+            self.activate();
+        } else {
+            self.deactivate();
+        }
+    }
+
+    fn filter(&self) -> SDL_EventFilter {
+        Some(event_callback_marshall::<CB> as _)
+    }
+
+    fn callback(&mut self) -> *mut c_void {
+        &mut *self.callback as *mut _ as *mut c_void
+    }
+}
+
+impl<'a, CB: EventWatchCallback + 'a> Drop for EventWatch<'a, CB> {
+    fn drop(&mut self) {
+        self.deactivate();
+    }
+}
+
+extern "C" fn event_callback_marshall<CB: EventWatchCallback>(
+    user_data: *mut c_void,
+    event: *mut sdl2_sys::SDL_Event,
+) -> i32 {
+    let f: &mut CB = unsafe { &mut *(user_data as *mut _) };
+    let event = Event::from_ll(unsafe { *event });
+    f.callback(event);
+    0
+}
+
+impl<F: FnMut(Event) -> ()> EventWatchCallback for F {
+    fn callback(&mut self, event: Event) -> () {
+        self(event)
     }
 }
