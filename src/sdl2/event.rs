@@ -242,19 +242,13 @@ impl crate::EventSubsystem {
     ///
     /// # Example: dump every event to stderr
     /// ```
-    /// use sdl2::event::{Event, EventWatchCallback};
     /// let sdl = sdl2::init().unwrap();
     /// let ev = sdl.event().unwrap();
     ///
-    /// struct Callback;
-    /// impl EventWatchCallback for Callback {
-    ///     fn callback(&mut self, event: Event) {
-    ///         dbg!(event);
-    ///     }
-    /// }
-    ///
     /// // `let _ = ...` is insufficient, as it is dropped immediately.
-    /// let _event_watch = ev.add_event_watch(Callback);
+    /// let _event_watch = ev.add_event_watch(|event| {
+    ///     dbg!(event);
+    /// });
     /// ```
     pub fn add_event_watch<'a, CB: EventWatchCallback + 'a>(
         &self,
@@ -3007,4 +3001,10 @@ extern "C" fn event_callback_marshall<CB: EventWatchCallback>(
     let event = Event::from_ll(unsafe { *event });
     f.callback(event);
     0
+}
+
+impl<F: FnMut(Event) -> ()> EventWatchCallback for F {
+    fn callback(&mut self, event: Event) -> () {
+        self(event)
+    }
 }
