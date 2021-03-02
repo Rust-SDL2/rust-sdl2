@@ -56,11 +56,11 @@ use crate::sys::SDL_BlendMode;
 use crate::sys::SDL_TextureAccess;
 
 /// Contains the description of an error returned by SDL
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct SdlError(String);
 
 /// Possible errors returned by targeting a `Canvas` to render to a `Texture`
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum TargetRenderError {
     SdlError(SdlError),
     NotSupported,
@@ -732,7 +732,7 @@ impl CanvasBuilder {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum TextureValueError {
     WidthOverflows(u32),
     HeightOverflows(u32),
@@ -1652,7 +1652,7 @@ impl Texture {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum UpdateTextureError {
     PitchOverflows(usize),
     PitchMustBeMultipleOfTwoForFormat(usize, PixelFormatEnum),
@@ -1725,7 +1725,7 @@ impl Error for UpdateTextureError {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum UpdateTextureYUVError {
     PitchOverflows {
         plane: &'static str,

@@ -49,7 +49,7 @@ pub struct GlyphMetrics {
 pub type FontResult<T> = Result<T, FontError>;
 
 /// A font-related error.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum FontError {
     /// A Latin-1 encoded byte string is invalid.
     InvalidLatin1Text(NulError),

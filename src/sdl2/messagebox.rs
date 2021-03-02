@@ -103,7 +103,7 @@ impl Into<MessageBoxColorScheme> for [sys::SDL_MessageBoxColor; 5] {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum ShowMessageError {
     InvalidTitle(NulError),
     InvalidMessage(NulError),
