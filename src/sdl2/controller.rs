@@ -14,7 +14,7 @@ use std::mem::transmute;
 
 use crate::sys;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum AddMappingError {
     InvalidMapping(NulError),
     InvalidFilePath(String),

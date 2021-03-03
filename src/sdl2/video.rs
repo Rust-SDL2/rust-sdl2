@@ -960,7 +960,7 @@ impl VideoSubsystem {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum WindowBuildError {
     HeightOverflows(u32),
     WidthOverflows(u32),
