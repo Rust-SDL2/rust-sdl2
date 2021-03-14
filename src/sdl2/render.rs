@@ -134,13 +134,29 @@ pub struct RendererInfo {
     pub max_texture_height: u32,
 }
 
+/// Blend mode for `Canvas`, `Texture` or `Surface`.
 #[repr(i32)]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum BlendMode {
+    /// no blending (replace destination with source).
     None = SDL_BlendMode::SDL_BLENDMODE_NONE as i32,
+    /// Alpha blending
+    ///
+    /// dstRGB = (srcRGB * srcA) + (dstRGB * (1-srcA))
+    ///
+    /// dstA = srcA + (dstA * (1-srcA))
     Blend = SDL_BlendMode::SDL_BLENDMODE_BLEND as i32,
+    /// Additive blending
+    ///
+    /// dstRGB = (srcRGB * srcA) + dstRGB
+    ///
+    /// dstA = dstA (keep original alpha)
     Add = SDL_BlendMode::SDL_BLENDMODE_ADD as i32,
+    /// Color modulate
+    ///
+    /// dstRGB = srcRGB * dstRGB
     Mod = SDL_BlendMode::SDL_BLENDMODE_MOD as i32,
+    /// Invalid blending mode (indicates error)
     Invalid = SDL_BlendMode::SDL_BLENDMODE_INVALID as i32,
 }
 
