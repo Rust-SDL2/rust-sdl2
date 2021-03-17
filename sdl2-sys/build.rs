@@ -20,10 +20,10 @@ use std::path::{Path, PathBuf};
 use std::{env, fs, io};
 
 // corresponds to the headers that we have in sdl2-sys/SDL2-{version}
-const SDL2_HEADERS_BUNDLED_VERSION: &str = "2.0.12";
+const SDL2_HEADERS_BUNDLED_VERSION: &str = "2.0.14";
 
 // means the lastest stable version that can be downloaded from SDL2's source
-const LASTEST_SDL2_VERSION: &str = "2.0.12";
+const LASTEST_SDL2_VERSION: &str = "2.0.14";
 
 #[cfg(feature = "bindgen")]
 macro_rules! add_msvc_includes_to_bindings {
@@ -168,27 +168,8 @@ fn download_sdl2() -> PathBuf {
 fn patch_sdl2(sdl2_source_path: &Path) {
     // vector of <(patch_file_name, patch_file_contents)>
     let patches: Vec<(&str, &'static str)> = vec![
-        // Required patches can be added here like this:
+        // If needed, add them like this:
         // ("SDL-2.x.y-filename.patch", include_str!("patches/SDL-2.x.y-filename.patch")),
-
-        // https://bugzilla.libsdl.org/show_bug.cgi?id=5105
-        // Expected to be fixed in 2.0.14
-        (
-            "SDL2-2.0.12-sndio-shared-linux.patch",
-            include_str!("patches/SDL2-2.0.12-sndio-shared-linux.patch"),
-        ),
-        // https://bugzilla.libsdl.org/show_bug.cgi?id=3421
-        // Expected to be fixed in 2.0.14
-        (
-            "SDL2-2.0.12-SDL_DISABLE_WINDOWS_IME.patch",
-            include_str!("patches/SDL2-2.0.12-SDL_DISABLE_WINDOWS_IME.patch"),
-        ),
-        // https://bugzilla.libsdl.org/show_bug.cgi?id=4988
-        // Expected to be fixed in 2.0.14
-        (
-            "SDL2-2.0.12-metal-detection-macos-ios.patch",
-            include_str!("patches/SDL2-2.0.12-metal-detection-macos-ios.patch"),
-        ),
     ];
     let sdl_version = format!("SDL2-{}", LASTEST_SDL2_VERSION);
 
