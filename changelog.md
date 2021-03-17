@@ -10,6 +10,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 [PR #1080](https://github.com/Rust-SDL2/rust-sdl2/pull/1080): Fix line endings of patches to lf so patching of sources works on Windows.
 
+[PR #1078](https://github.com/Rust-SDL2/rust-sdl2/pull/1078): Upgraded the "bundled" version of SDL2 to 2.0.14
+
 ### v0.34.4
 
 [PR #1057](https://github.com/Rust-SDL2/rust-sdl2/pull/1057): fix memory safety bug in set_error
