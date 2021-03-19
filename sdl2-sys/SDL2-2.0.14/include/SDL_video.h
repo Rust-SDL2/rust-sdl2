@@ -118,7 +118,8 @@ typedef enum
     SDL_WINDOW_UTILITY       = 0x00020000,      /**< window should be treated as a utility window */
     SDL_WINDOW_TOOLTIP       = 0x00040000,      /**< window should be treated as a tooltip */
     SDL_WINDOW_POPUP_MENU    = 0x00080000,      /**< window should be treated as a popup menu */
-    SDL_WINDOW_VULKAN        = 0x10000000       /**< window usable for Vulkan surface */
+    SDL_WINDOW_VULKAN        = 0x10000000,      /**< window usable for Vulkan surface */
+    SDL_WINDOW_METAL         = 0x20000000       /**< window usable for Metal view */
 } SDL_WindowFlags;
 
 /**
@@ -174,7 +175,9 @@ typedef enum
 typedef enum
 {
     SDL_DISPLAYEVENT_NONE,          /**< Never used */
-    SDL_DISPLAYEVENT_ORIENTATION    /**< Display orientation has changed to data1 */
+    SDL_DISPLAYEVENT_ORIENTATION,   /**< Display orientation has changed to data1 */
+    SDL_DISPLAYEVENT_CONNECTED,     /**< Display has been added to the system */
+    SDL_DISPLAYEVENT_DISCONNECTED   /**< Display has been removed from the system */
 } SDL_DisplayEventID;
 
 typedef enum
@@ -484,7 +487,8 @@ extern DECLSPEC Uint32 SDLCALL SDL_GetWindowPixelFormat(SDL_Window * window);
  *               ::SDL_WINDOW_HIDDEN,        ::SDL_WINDOW_BORDERLESS,
  *               ::SDL_WINDOW_RESIZABLE,     ::SDL_WINDOW_MAXIMIZED,
  *               ::SDL_WINDOW_MINIMIZED,     ::SDL_WINDOW_INPUT_GRABBED,
- *               ::SDL_WINDOW_ALLOW_HIGHDPI, ::SDL_WINDOW_VULKAN.
+ *               ::SDL_WINDOW_ALLOW_HIGHDPI, ::SDL_WINDOW_VULKAN
+ *               ::SDL_WINDOW_METAL.
  *
  *  \return The created window, or NULL if window creation failed.
  *
@@ -502,6 +506,9 @@ extern DECLSPEC Uint32 SDLCALL SDL_GetWindowPixelFormat(SDL_Window * window);
  *
  *  If SDL_WINDOW_VULKAN is specified and there isn't a working Vulkan driver,
  *  SDL_CreateWindow() will fail because SDL_Vulkan_LoadLibrary() will fail.
+ *
+ *  If SDL_WINDOW_METAL is specified on an OS that does not support Metal,
+ *  SDL_CreateWindow() will fail.
  *
  *  \note On non-Apple devices, SDL requires you to either not link to the
  *        Vulkan loader or link to a dynamic library version. This limitation
