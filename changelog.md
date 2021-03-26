@@ -5,7 +5,7 @@ when upgrading from a version of rust-sdl2 to another.
 
  * Add patch to fix metal detection (https://bugzilla.libsdl.org/show_bug.cgi?id=4988)
  * Changed signature of TimerSubsystem::ticks to accept `&self`.
- * Fix line endings of patches to lf so patching of sources works on Windows.
+[PR #1080](https://github.com/Rust-SDL2/rust-sdl2/pull/1080): Fix line endings of patches to lf so patching of sources works on Windows.
 
 ### v0.34.4
 
