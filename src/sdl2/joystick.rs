@@ -168,7 +168,7 @@ impl Joystick {
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
-            panic!(get_error())
+            panic!("{}", get_error())
         } else {
             result as u32
         }
@@ -183,7 +183,7 @@ impl Joystick {
 
         if guid.is_zero() {
             // Should only fail if the joystick is NULL.
-            panic!(get_error())
+            panic!("{}", get_error())
         } else {
             guid
         }
@@ -219,7 +219,7 @@ impl Joystick {
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
-            panic!(get_error())
+            panic!("{}", get_error())
         } else {
             result as u32
         }
@@ -260,7 +260,7 @@ impl Joystick {
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
-            panic!(get_error())
+            panic!("{}", get_error())
         } else {
             result as u32
         }
@@ -303,7 +303,7 @@ impl Joystick {
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
-            panic!(get_error())
+            panic!("{}", get_error())
         } else {
             result as u32
         }
@@ -334,7 +334,7 @@ impl Joystick {
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
-            panic!(get_error())
+            panic!("{}", get_error())
         } else {
             result as u32
         }

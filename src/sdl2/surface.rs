@@ -471,7 +471,7 @@ impl SurfaceRef {
 
         if result != 0 {
             // Should only panic on a null Surface
-            panic!(get_error());
+            panic!("{}", get_error());
         }
     }
 
@@ -482,7 +482,7 @@ impl SurfaceRef {
 
         if result != 0 {
             // Should only panic on a null Surface
-            panic!(get_error());
+            panic!("{}", get_error());
         }
     }
 
@@ -520,7 +520,7 @@ impl SurfaceRef {
 
         if result != 0 {
             // Should only fail on a null Surface
-            panic!(get_error());
+            panic!("{}", get_error());
         }
     }
 
@@ -539,7 +539,7 @@ impl SurfaceRef {
             pixels::Color::RGB(r, g, b)
         } else {
             // Should only fail on a null Surface
-            panic!(get_error())
+            panic!("{}", get_error())
         }
     }
 
@@ -578,7 +578,7 @@ impl SurfaceRef {
 
         if result != 0 {
             // Should only fail on a null Surface
-            panic!(get_error());
+            panic!("{}", get_error());
         }
     }
 
@@ -590,7 +590,7 @@ impl SurfaceRef {
         match result {
             0 => alpha,
             // Should only fail on a null Surface
-            _ => panic!(get_error()),
+            _ => panic!("{}", get_error()),
         }
     }
 
@@ -613,7 +613,7 @@ impl SurfaceRef {
         match result {
             0 => BlendMode::try_from(mode as u32).unwrap(),
             // Should only fail on a null Surface
-            _ => panic!(get_error()),
+            _ => panic!("{}", get_error()),
         }
     }
 

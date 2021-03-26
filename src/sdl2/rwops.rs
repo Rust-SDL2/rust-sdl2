@@ -130,7 +130,7 @@ impl<'a> Drop for RWops<'a> {
     fn drop(&mut self) {
         let ret = unsafe { ((*self.raw).close.unwrap())(self.raw) };
         if ret != 0 {
-            panic!(get_error());
+            panic!("{}", get_error());
         }
     }
 }
