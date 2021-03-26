@@ -5,7 +5,7 @@ when upgrading from a version of rust-sdl2 to another.
 
  * Add patch to fix metal detection (https://bugzilla.libsdl.org/show_bug.cgi?id=4988)
  * Changed signature of TimerSubsystem::ticks to accept `&self`.
- * Allow bundled build to be built in debug mode.  Fixes issue when linking binary with mixed debug+release CRT dependencies.
+[PR #1081](https://github.com/Rust-SDL2/rust-sdl2/pull/1081): Allow bundled build to be built in debug mode.  Fixes issue when linking binary with mixed debug+release CRT dependencies.
 
 ### v0.34.4
 
