@@ -189,6 +189,13 @@ fn patch_sdl2(sdl2_source_path: &Path) {
             "SDL2-2.0.12-metal-detection-macos-ios.patch",
             include_str!("patches/SDL2-2.0.12-metal-detection-macos-ios.patch"),
         ),
+        // Cherrypick to fix "SDL_string.obj : error LNK2019: unresolved external symbol memset
+        // referenced in function SDL_vsnprintf_REAL"
+        // Expected to be fixed in 2.0.15
+        (
+            "SDL2-2.0.12-vs2019-intrinsics.patch",
+            include_str!("patches/SDL2-2.0.12-vs2019-intrinsics.patch"),
+        ),
     ];
     let sdl_version = format!("SDL2-{}", LASTEST_SDL2_VERSION);
 
@@ -238,8 +245,8 @@ fn patch_sdl2(sdl2_source_path: &Path) {
                 for expected_line in hunk.source_lines() {
                     let mut actual_line = String::new();
                     old_buf.read_line(&mut actual_line).unwrap();
-                    actual_line.pop(); // Remove the trailing newline.
-                    if expected_line.value.trim_end() != actual_line {
+                    actual_line.pop();
+                    if expected_line.value != actual_line {
                         panic!(
                             "Can't apply patch; mismatch between expected and actual in hunk {}",
                             i
