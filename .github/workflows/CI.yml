@@ -17,12 +17,7 @@ jobs:
       - name: Install cargo-vcpkg
         run: cargo install cargo-vcpkg
       - name: Install dependencies
-        shell: bash
-        run: |
-          set +e
-          set -x
-          cargo vcpkg -v build
-          cat /mnt/d/a/rust-sdl2/rust-sdl2/target/vcpkg/buildtrees/sdl2-gfx/install-x64-windows-static-md-rel-out.log
+        run: cargo vcpkg -v build
       - name: Build SDL2
         shell: bash
         env:
