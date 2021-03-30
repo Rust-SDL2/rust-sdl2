@@ -156,7 +156,7 @@ dependencies = ["sdl2"]
 # dependencies required when building examples and tests for this crate
 dev-dependencies = ["sdl2", "sdl2-image[libjpeg-turbo,tiff,libwebp]", "sdl2-ttf", "sdl2-gfx", "sdl2-mixer"]
 git = "https://github.com/microsoft/vcpkg"
-rev = "ed54efbb16ae8a457296c7a7e1462a9f54571e94"
+rev = "0b26c1fe58d2f5f3a3ecd8face441724d6f0dd9f"
 
 [package.metadata.vcpkg.target]
 x86_64-pc-windows-msvc = { triplet = "x64-windows-static-md" }
