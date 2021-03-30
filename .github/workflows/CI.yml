@@ -10,14 +10,19 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [windows-latest]
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
       - name: Install cargo-vcpkg
         run: cargo install cargo-vcpkg
       - name: Install dependencies
-        run: cargo vcpkg -v build
+        shell: bash
+        run: |
+          set +e
+          set -x
+          cargo vcpkg -v build
+          cat D:\a\rust-sdl2\rust-sdl2\target\vcpkg\buildtrees\sdl2-gfx\install-x64-windows-static-md-rel-out.log
       - name: Build SDL2
         shell: bash
         env:
