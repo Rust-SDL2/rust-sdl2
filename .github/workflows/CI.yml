@@ -22,7 +22,7 @@ jobs:
           set +e
           set -x
           cargo vcpkg -v build
-          cat D:\\a\\rust-sdl2\\rust-sdl2\\target\\vcpkg\\buildtrees\\sdl2-gfx\\install-x64-windows-static-md-rel-out.log
+          cat /mnt/d/a/rust-sdl2/rust-sdl2/target/vcpkg/buildtrees/sdl2-gfx/install-x64-windows-static-md-rel-out.log
       - name: Build SDL2
         shell: bash
         env:
