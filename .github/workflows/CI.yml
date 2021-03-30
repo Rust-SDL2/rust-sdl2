@@ -17,7 +17,7 @@ jobs:
       - name: Install cargo-vcpkg
         run: cargo install cargo-vcpkg
       - name: Install dependencies
-        run: cargo vcpkg build
+        run: cargo vcpkg -v build
       - name: Build SDL2
         shell: bash
         env:
