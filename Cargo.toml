@@ -155,6 +155,7 @@ dependencies = ["sdl2"]
 
 # dependencies required when building examples and tests for this crate
 dev-dependencies = ["sdl2", "sdl2-image[libjpeg-turbo,tiff,libwebp]", "sdl2-ttf", "sdl2-gfx", "sdl2-mixer"]
+# TODO: This should be tracking https://github.com/microsoft/vcpkg see #1085
 git = "https://github.com/waych/vcpkg"
 rev = "14d56fa2da809c5632043041625b975a3ce557bc"
 
