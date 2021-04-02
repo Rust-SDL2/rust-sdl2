@@ -3,18 +3,21 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### Unreleased
 
- * Add patch to fix metal detection (https://bugzilla.libsdl.org/show_bug.cgi?id=4988)
- * Changed signature of TimerSubsystem::ticks to accept `&self`.
+Nothing for now
+
+### v0.34.4
+
+[PR #1086](https://github.com/Rust-SDL2/rust-sdl2/pull/1086) Update bundled to use SDL2 2.0.14
+
+[PR #1033](https://github.com/Rust-SDL2/rust-sdl2/pull/1033) Changed signature of TimerSubsystem::ticks to accept `&self`.
+
+[PR #1057](https://github.com/Rust-SDL2/rust-sdl2/pull/1057): fix memory safety bug in set_error
  
 [PR #1081](https://github.com/Rust-SDL2/rust-sdl2/pull/1081): Allow bundled build to be built in debug mode.  Fixes issue when linking binary with mixed debug+release CRT dependencies.
 
 [PR #1080](https://github.com/Rust-SDL2/rust-sdl2/pull/1080): Fix line endings of patches to lf so patching of sources works on Windows.
 
-[PR #1078](https://github.com/Rust-SDL2/rust-sdl2/pull/1078): Upgraded the "bundled" version of SDL2 to 2.0.14
-
-### v0.34.4
-
-[PR #1057](https://github.com/Rust-SDL2/rust-sdl2/pull/1057): fix memory safety bug in set_error
+[PR #1031](https://github.com/Rust-SDL2/rust-sdl2/pull/1031): Add patch to fix metal detection (https://bugzilla.libsdl.org/show_bug.cgi?id=4988)
 
 ### v0.34.3
 
