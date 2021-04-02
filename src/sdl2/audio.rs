@@ -1025,7 +1025,7 @@ impl AudioCVT {
                 // There's no reason for SDL_ConvertAudio to fail.
                 // The only time it can fail is if buf is NULL, which it never is.
                 if ret != 0 {
-                    panic!(get_error())
+                    panic!("{}", get_error())
                 }
 
                 // return original buffer back to caller

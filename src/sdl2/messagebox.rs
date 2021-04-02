@@ -77,7 +77,7 @@ impl From<MessageBoxColorScheme> for [sys::SDL_MessageBoxColor; 5] {
                 g: t.1,
                 b: t.2,
             }
-        };
+        }
         [
             to_message_box_color(scheme.background),
             to_message_box_color(scheme.text),
@@ -92,7 +92,7 @@ impl Into<MessageBoxColorScheme> for [sys::SDL_MessageBoxColor; 5] {
     fn into(self) -> MessageBoxColorScheme {
         fn from_message_box_color(prim_color: sys::SDL_MessageBoxColor) -> (u8, u8, u8) {
             (prim_color.r, prim_color.g, prim_color.b)
-        };
+        }
         MessageBoxColorScheme {
             background: from_message_box_color(self[0]),
             text: from_message_box_color(self[1]),

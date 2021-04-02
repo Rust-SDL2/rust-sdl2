@@ -105,7 +105,7 @@ impl crate::EventSubsystem {
 
             if result < 0 {
                 // The only error possible is "Couldn't lock event queue"
-                panic!(get_error());
+                panic!("{}", get_error());
             } else {
                 events.set_len(result as usize);
 
@@ -2408,7 +2408,7 @@ unsafe fn wait_event() -> Event {
     if success {
         Event::from_ll(raw.assume_init())
     } else {
-        panic!(get_error())
+        panic!("{}", get_error())
     }
 }
 

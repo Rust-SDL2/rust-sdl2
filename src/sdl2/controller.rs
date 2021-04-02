@@ -413,7 +413,7 @@ impl GameController {
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
-            panic!(get_error())
+            panic!("{}", get_error())
         } else {
             result as u32
         }

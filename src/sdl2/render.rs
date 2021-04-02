@@ -984,7 +984,7 @@ impl<T: RenderTarget> Canvas<T> {
         let ret = unsafe { sys::SDL_SetRenderDrawColor(self.raw, r, g, b, a) };
         // Should only fail on an invalid renderer
         if ret != 0 {
-            panic!(get_error())
+            panic!("{}", get_error())
         }
     }
 
@@ -997,7 +997,7 @@ impl<T: RenderTarget> Canvas<T> {
         };
         // Should only fail on an invalid renderer
         if ret != 0 {
-            panic!(get_error())
+            panic!("{}", get_error())
         } else {
             pixels::Color::RGBA(r, g, b, a)
         }
@@ -1010,7 +1010,7 @@ impl<T: RenderTarget> Canvas<T> {
             unsafe { sys::SDL_SetRenderDrawBlendMode(self.context.raw, transmute(blend as u32)) };
         // Should only fail on an invalid renderer
         if ret != 0 {
-            panic!(get_error())
+            panic!("{}", get_error())
         }
     }
 
@@ -1021,7 +1021,7 @@ impl<T: RenderTarget> Canvas<T> {
         let ret = unsafe { sys::SDL_GetRenderDrawBlendMode(self.context.raw, blend.as_mut_ptr()) };
         // Should only fail on an invalid renderer
         if ret != 0 {
-            panic!(get_error())
+            panic!("{}", get_error())
         } else {
             let blend = unsafe { blend.assume_init() };
             BlendMode::try_from(blend as u32).unwrap()
@@ -1833,7 +1833,7 @@ impl InternalTexture {
         };
         // Should only fail on an invalid texture
         if ret != 0 {
-            panic!(get_error())
+            panic!("{}", get_error())
         } else {
             TextureQuery {
                 format: PixelFormatEnum::try_from(format as u32).unwrap(),
@@ -1860,7 +1860,7 @@ impl InternalTexture {
 
         // Should only fail on an invalid texture
         if ret != 0 {
-            panic!(get_error())
+            panic!("{}", get_error())
         } else {
             (r, g, b)
         }
@@ -1882,7 +1882,7 @@ impl InternalTexture {
 
         // Should only fail on an invalid texture
         if ret != 0 {
-            panic!(get_error())
+            panic!("{}", get_error())
         } else {
             alpha
         }
@@ -1904,7 +1904,7 @@ impl InternalTexture {
 
         // Should only fail on an invalid texture
         if ret != 0 {
-            panic!(get_error())
+            panic!("{}", get_error())
         } else {
             let blend = unsafe { blend.assume_init() };
             BlendMode::try_from(blend as u32).unwrap()
@@ -2529,7 +2529,7 @@ impl Iterator for DriverIterator {
         } else {
             let mut out = mem::MaybeUninit::uninit();
             let result = unsafe { sys::SDL_GetRenderDriverInfo(self.index, out.as_mut_ptr()) == 0 };
-            assert!(result, 0);
+            assert!(result, "{}", 0);
             self.index += 1;
 
             unsafe { Some(RendererInfo::from_ll(&out.assume_init())) }
