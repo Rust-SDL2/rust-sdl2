@@ -305,6 +305,12 @@ fn patch_sdl2(sdl2_source_path: &Path) {
 fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
     let mut cfg = cmake::Config::new(sdl2_build_path);
 
+    // Override __FLTUSED__ to keep the _fltused symbol from getting defined in the static build.
+    // This conflicts and fails to link properly when building statically on Windows, likely due to
+    // COMDAT conflicts/breakage happening somewhere.
+    #[cfg(feature = "static-link")]
+    cfg.cflag("-D__FLTUSED__");
+
     #[cfg(target_os = "linux")]
     {
         use version_compare::Version;
