@@ -3,6 +3,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### Unreleased
 
+* [PR #1092](https://github.com/Rust-SDL2/rust-sdl2/pull/1092) Add debug builds to "bundled", second attempt.
+
 * Rollback PR #1081: Broke dynamic linking on Windows #1088
 
 ### v0.34.4
