@@ -43,7 +43,8 @@ jobs:
       - name: Build SDL2
         shell: bash
         env:
-          CI_BUILD_FEATURES: "gfx image ttf mixer bundled"
+          # Bundled doesn't yet support gfx, image, ttf, mixer.
+          CI_BUILD_FEATURES: "bundled"
           RUST_TEST_THREADS: 1
         run: |
           set -xeuo pipefail
