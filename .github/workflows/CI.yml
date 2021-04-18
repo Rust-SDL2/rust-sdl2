@@ -38,6 +38,7 @@ jobs:
       fail-fast: false
       matrix:
         feature: ["", "static-link"]
+        build_mode: ["", "--release"]
     steps:
       - uses: actions/checkout@v2
       - name: Build SDL2
@@ -50,9 +51,9 @@ jobs:
           set -xeuo pipefail
           rustc --version
           cargo --version
-          cargo build --features "${CI_BUILD_FEATURES},${{matrix.feature}}"
-          cargo build --examples --features "${CI_BUILD_FEATURES},${{matrix.feature}}"
-          cargo test --features "${CI_BUILD_FEATURES},${{matrix.feature}}"
+          cargo build --features "${CI_BUILD_FEATURES} ${{matrix.feature}}" ${{matrix.build_mode}}
+          cargo build --examples --features "${CI_BUILD_FEATURES} ${{matrix.feature}}" ${{matrix.build_mode}}
+          cargo test --features "${CI_BUILD_FEATURES} ${{matrix.feature}}" ${{matrix.build_mode}}
 
   build-linux:
     name: build linux
