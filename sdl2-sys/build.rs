@@ -554,16 +554,22 @@ fn copy_dynamic_libraries(sdl2_compiled_path: &PathBuf, target_os: &str) {
     if target_os.contains("windows") {
         let sdl2_dll_name = "SDL2.dll";
         let sdl2_bin_path = sdl2_compiled_path.join("bin");
-        let target_path = find_cargo_target_dir();
-
         let src_dll_path = sdl2_bin_path.join(sdl2_dll_name);
-        let dst_dll_path = target_path.join(sdl2_dll_name);
 
-        fs::copy(&src_dll_path, &dst_dll_path).expect(&format!(
-            "Failed to copy SDL2 dynamic library from {} to {}",
-            src_dll_path.to_string_lossy(),
-            dst_dll_path.to_string_lossy()
-        ));
+        // Copy the dll to:
+        //  * target dir: as a product ship product of the build,
+        //  * deps directory: as comment example testing doesn't pick up the library search path
+        //    otherwise and fails.
+        let target_path = find_cargo_target_dir();
+        let deps_path = target_path.join("deps");
+        for path in &[target_path, deps_path] {
+            let dst_dll_path = path.join(&sdl2_dll_name);
+            fs::copy(&src_dll_path, &dst_dll_path).expect(&format!(
+                "Failed to copy SDL2 dynamic library from {} to {}",
+                src_dll_path.to_string_lossy(),
+                dst_dll_path.to_string_lossy()
+            ));
+        }
     }
 }
 
