@@ -3,7 +3,7 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### Unreleased
 
-Nothing for now
+* Rollback PR #1081: Broke dynamic linking on Windows #1088
 
 ### v0.34.4
 

@@ -293,6 +293,7 @@ fn patch_sdl2(sdl2_source_path: &Path) {
 #[cfg(feature = "bundled")]
 fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
     let mut cfg = cmake::Config::new(sdl2_build_path);
+    cfg.profile("release");
 
     // Override __FLTUSED__ to keep the _fltused symbol from getting defined in the static build.
     // This conflicts and fails to link properly when building statically on Windows, likely due to
@@ -410,24 +411,11 @@ fn link_sdl2(target_os: &str) {
 
     #[cfg(feature = "static-link")]
     {
-        // There's no way to extract this from `cmake::Config` so we have to emulate their
-        // behaviour here (see the source for `cmake::Config::build`).
-        let debug_postfix = match (
-            &env::var("OPT_LEVEL").unwrap_or_default()[..],
-            &env::var("PROFILE").unwrap_or_default()[..],
-        ) {
-            ("1", _) | ("2", _) | ("3", _) | ("s", _) | ("z", _) => "",
-            ("0", _) => "d",
-            (_, "debug") => "d",
-            // ("0", _) => "",
-            // (_, "debug") => "",
-            (_, _) => "",
-        };
         if cfg!(feature = "bundled")
             || (cfg!(feature = "use-pkgconfig") == false && cfg!(feature = "use-vcpkg") == false)
         {
-            println!("cargo:rustc-link-lib=static=SDL2main{}", debug_postfix);
-            println!("cargo:rustc-link-lib=static=SDL2{}", debug_postfix);
+            println!("cargo:rustc-link-lib=static=SDL2main");
+            println!("cargo:rustc-link-lib=static=SDL2");
         }
 
         // Also linked to any required libraries for each supported platform
