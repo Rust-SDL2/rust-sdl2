@@ -1024,7 +1024,7 @@ impl AudioCVT {
                     panic!("Failed SDL_malloc needed for SDL_ConvertAudio");
                 }
                 // raw.buf is dst_size long, but we want to copy into only the first src.len bytes.
-                assert!(src.len() < dst_size);
+                assert!(src.len() <= dst_size);
                 std::slice::from_raw_parts_mut(raw.buf, src.len()).copy_from_slice(src.as_ref());
 
                 let ret = sys::SDL_ConvertAudio(&mut raw);
