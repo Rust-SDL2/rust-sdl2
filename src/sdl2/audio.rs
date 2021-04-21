@@ -1012,19 +1012,19 @@ impl AudioCVT {
             if self.raw.needed != 0 {
                 let mut raw = self.raw;
 
-                // calculate the size of the dst buffer.
-                use std::convert::TryInto;
-                raw.len = src.len().try_into().expect("Buffer length overflow");
-
+                // Calculate the size of the buffer we're handing to to SDL.
                 // This is more a suggestion, and not really a guarantee...
                 let dst_size = self.capacity(src.len());
 
                 // Bounce into SDL2 heap allocation as SDL_ConvertAudio may rewrite the pointer.
                 raw.buf = sys::SDL_malloc(dst_size as _) as *mut _;
+                use std::convert::TryInto;
+                raw.len = src.len().try_into().expect("Buffer length overflow");
                 if raw.buf.is_null() {
                     panic!("Failed SDL_malloc needed for SDL_ConvertAudio");
                 }
                 // raw.buf is dst_size long, but we want to copy into only the first src.len bytes.
+                assert!(src.len() < dst_size);
                 std::slice::from_raw_parts_mut(raw.buf, src.len()).copy_from_slice(src.as_ref());
 
                 let ret = sys::SDL_ConvertAudio(&mut raw);
