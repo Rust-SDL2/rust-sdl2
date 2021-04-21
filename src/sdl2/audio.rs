@@ -1012,15 +1012,21 @@ impl AudioCVT {
             if self.raw.needed != 0 {
                 let mut raw = self.raw;
 
-                // calculate the size of the dst buffer
+                // calculate the size of the dst buffer.
                 use std::convert::TryInto;
                 raw.len = src.len().try_into().expect("Buffer length overflow");
-                let dst_size = self.capacity(src.len());
-                let needed = dst_size - src.len();
-                src.reserve_exact(needed);
 
-                // perform the conversion in place
-                raw.buf = src.as_mut_ptr();
+                // This is more a suggestion, and not really a guarantee...
+                let dst_size = self.capacity(src.len());
+
+                // Bounce into SDL2 heap allocation as SDL_ConvertAudio may rewrite the pointer.
+                raw.buf = sys::SDL_malloc(dst_size as u32) as *mut _;
+                if raw.buf.is_null() {
+                    panic!("Failed SDL_malloc needed for SDL_ConvertAudio");
+                }
+                // raw.buf is dst_size long, but we want to copy into only the first src.len bytes.
+                std::slice::from_raw_parts_mut(raw.buf, src.len()).copy_from_slice(src.as_ref());
+
                 let ret = sys::SDL_ConvertAudio(&mut raw);
                 // There's no reason for SDL_ConvertAudio to fail.
                 // The only time it can fail is if buf is NULL, which it never is.
@@ -1028,11 +1034,13 @@ impl AudioCVT {
                     panic!("{}", get_error())
                 }
 
-                // return original buffer back to caller
-                debug_assert!(raw.len_cvt > 0);
-                debug_assert!(raw.len_cvt as usize <= src.capacity());
+                // Bounce back into src, trying to re-use the same buffer.
+                let outlen: usize = raw.len_cvt.try_into().expect("Buffer size rollover");
+                debug_assert!(outlen <= dst_size);
+                src.resize(outlen, 0);
+                src.copy_from_slice(std::slice::from_raw_parts_mut(raw.buf, outlen));
+                sys::SDL_free(raw.buf as *mut _);
 
-                src.set_len(raw.len_cvt as usize);
                 src
             } else {
                 // The buffer remains unmodified
