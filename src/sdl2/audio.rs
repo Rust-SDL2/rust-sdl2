@@ -1020,7 +1020,7 @@ impl AudioCVT {
                 let dst_size = self.capacity(src.len());
 
                 // Bounce into SDL2 heap allocation as SDL_ConvertAudio may rewrite the pointer.
-                raw.buf = sys::SDL_malloc(dst_size as u32) as *mut _;
+                raw.buf = sys::SDL_malloc(dst_size as _) as *mut _;
                 if raw.buf.is_null() {
                     panic!("Failed SDL_malloc needed for SDL_ConvertAudio");
                 }
