@@ -1010,22 +1010,24 @@ impl AudioCVT {
         //! Certain conversions may cause buffer overflows. See AngryLawyer/rust-sdl2 issue #270.
         unsafe {
             if self.raw.needed != 0 {
+                use std::convert::TryInto;
+                use std::slice::from_raw_parts_mut;
+
                 let mut raw = self.raw;
 
-                // Calculate the size of the buffer we're handing to to SDL.
+                // Calculate the size of the buffer we're handing to SDL.
                 // This is more a suggestion, and not really a guarantee...
                 let dst_size = self.capacity(src.len());
 
                 // Bounce into SDL2 heap allocation as SDL_ConvertAudio may rewrite the pointer.
-                raw.buf = sys::SDL_malloc(dst_size as _) as *mut _;
-                use std::convert::TryInto;
                 raw.len = src.len().try_into().expect("Buffer length overflow");
+                raw.buf = sys::SDL_malloc(dst_size as _) as *mut _;
                 if raw.buf.is_null() {
                     panic!("Failed SDL_malloc needed for SDL_ConvertAudio");
                 }
                 // raw.buf is dst_size long, but we want to copy into only the first src.len bytes.
                 assert!(src.len() <= dst_size);
-                std::slice::from_raw_parts_mut(raw.buf, src.len()).copy_from_slice(src.as_ref());
+                from_raw_parts_mut(raw.buf, src.len()).copy_from_slice(src.as_ref());
 
                 let ret = sys::SDL_ConvertAudio(&mut raw);
                 // There's no reason for SDL_ConvertAudio to fail.
@@ -1038,7 +1040,7 @@ impl AudioCVT {
                 let outlen: usize = raw.len_cvt.try_into().expect("Buffer size rollover");
                 debug_assert!(outlen <= dst_size);
                 src.resize(outlen, 0);
-                src.copy_from_slice(std::slice::from_raw_parts_mut(raw.buf, outlen));
+                src.copy_from_slice(from_raw_parts_mut(raw.buf, outlen));
                 sys::SDL_free(raw.buf as *mut _);
 
                 src
