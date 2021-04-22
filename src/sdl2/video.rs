@@ -676,6 +676,20 @@ impl VideoSubsystem {
         }
     }
 
+    #[doc(alias = "SDL_GetDisplayUsableBounds")]
+    pub fn display_usable_bounds(&self, display_index: i32) -> Result<Rect, String> {
+        let mut out = mem::MaybeUninit::uninit();
+        let result = unsafe {
+            sys::SDL_GetDisplayUsableBounds(display_index as c_int, out.as_mut_ptr())
+        };
+        if result == 0 {
+            let out = unsafe { out.assume_init() };
+            Ok(Rect::from_ll(out))
+        } else {
+            Err(get_error())
+        }
+    }
+
     #[doc(alias = "SDL_GetNumDisplayModes")]
     pub fn num_display_modes(&self, display_index: i32) -> Result<i32, String> {
         let result = unsafe { sys::SDL_GetNumDisplayModes(display_index as c_int) };
