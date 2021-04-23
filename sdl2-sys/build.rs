@@ -594,22 +594,16 @@ fn copy_dynamic_libraries(sdl2_compiled_path: &PathBuf, target_os: &str) {
         let src_dll_path = sdl2_bin_path.join(sdl2_dll_name);
 
         copy_library_file(&src_dll_path, &target_path);
-    } else if target_os.contains("linux") {
+    } else if target_os != "emscripten" {
         // Find all libraries build and copy them, symlinks included.
         let lib_path = sdl2_compiled_path.join("lib");
         for entry in std::fs::read_dir(&lib_path).expect("Couldn't readdir lib") {
             let entry = entry.expect("Error looking at lib dir");
-            let filename = entry.file_name();
-            let filename = filename.to_string_lossy();
-            if filename.starts_with("lib")
-                && (filename.ends_with(".so") || filename.contains(".so."))
-            {
-                if let Ok(file_type) = entry.file_type() {
-                    if file_type.is_symlink() {
-                        copy_library_symlink(&entry.path(), &target_path);
-                    } else {
-                        copy_library_file(&entry.path(), &target_path)
-                    }
+            if let Ok(file_type) = entry.file_type() {
+                if file_type.is_symlink() {
+                    copy_library_symlink(&entry.path(), &target_path);
+                } else if file_type.is_file() {
+                    copy_library_file(&entry.path(), &target_path)
                 }
             }
         }
