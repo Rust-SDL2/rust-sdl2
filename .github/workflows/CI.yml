@@ -31,6 +31,30 @@ jobs:
           cargo build --examples --features "${CI_BUILD_FEATURES}"
           cargo test --features "${CI_BUILD_FEATURES}"
 
+  build-windows:
+    name: build windows bundled
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        feature: ["", "static-link"]
+        build_mode: ["", "--release"]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build SDL2
+        shell: bash
+        env:
+          # Bundled doesn't yet support gfx, image, ttf, mixer.
+          CI_BUILD_FEATURES: "bundled"
+          RUST_TEST_THREADS: 1
+        run: |
+          set -xeuo pipefail
+          rustc --version
+          cargo --version
+          cargo build --features "${CI_BUILD_FEATURES} ${{matrix.feature}}" ${{matrix.build_mode}}
+          cargo build --examples --features "${CI_BUILD_FEATURES} ${{matrix.feature}}" ${{matrix.build_mode}}
+          cargo test --features "${CI_BUILD_FEATURES} ${{matrix.feature}}" ${{matrix.build_mode}}
+
   build-linux:
     name: build linux
     runs-on: ubuntu-20.04
