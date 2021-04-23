@@ -32,7 +32,7 @@ jobs:
           cargo test --features "${CI_BUILD_FEATURES}"
 
   build-bundled:
-    name: build windows bundled
+    name: build bundled
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
