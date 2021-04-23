@@ -1004,10 +1004,8 @@ impl AudioCVT {
     pub fn convert(&self, mut src: Vec<u8>) -> Vec<u8> {
         //! Convert audio data to a desired audio format.
         //!
-        //! The `src` vector is adjusted to the capacity necessary to perform
-        //! the conversion in place; then it is passed to the SDL library.
-        //!
-        //! Certain conversions may cause buffer overflows. See AngryLawyer/rust-sdl2 issue #270.
+        //! Passes raw audio data from src to the SDL library for conversion, returning the result
+        //! of the conversion.
         unsafe {
             if self.raw.needed != 0 {
                 use std::convert::TryInto;
