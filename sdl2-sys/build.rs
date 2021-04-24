@@ -544,7 +544,44 @@ fn find_cargo_target_dir() -> PathBuf {
     out_dir
 }
 
+#[cfg(unix)]
+fn copy_library_symlink(src_path: &Path, target_path: &Path) {
+    if let Ok(link_path) = fs::read_link(src_path) {
+        // Copy symlinks to:
+        //  * target dir: as a product ship product of the build,
+        //  * deps directory: as comment example testing doesn't pick up the library search path
+        //    otherwise and fails.
+        let deps_path = target_path.join("deps");
+        for path in &[target_path, &deps_path] {
+            let dst_path = path.join(src_path.file_name().expect("Path missing filename"));
+            // Silently drop errors here, in case the symlink already exists.
+            let _ = std::os::unix::fs::symlink(&link_path, &dst_path);
+        }
+    }
+}
+#[cfg(not(unix))]
+fn copy_library_symlink(src_path: &Path, target_path: &Path) {}
+
+fn copy_library_file(src_path: &Path, target_path: &Path) {
+    // Copy the shared libs to:
+    //  * target dir: as a product ship product of the build,
+    //  * deps directory: as comment example testing doesn't pick up the library search path
+    //    otherwise and fails.
+    let deps_path = target_path.join("deps");
+    for path in &[target_path, &deps_path] {
+        let dst_path = path.join(src_path.file_name().expect("Path missing filename"));
+
+        fs::copy(&src_path, &dst_path).expect(&format!(
+            "Failed to copy SDL2 dynamic library from {} to {}",
+            src_path.to_string_lossy(),
+            dst_path.to_string_lossy()
+        ));
+    }
+}
+
 fn copy_dynamic_libraries(sdl2_compiled_path: &PathBuf, target_os: &str) {
+    let target_path = find_cargo_target_dir();
+
     // Windows binaries do not embed library search paths, so successfully
     // linking the DLL isn't sufficient to find it at runtime -- it must be
     // either on PATH or in the current working directory when we run binaries
@@ -556,19 +593,19 @@ fn copy_dynamic_libraries(sdl2_compiled_path: &PathBuf, target_os: &str) {
         let sdl2_bin_path = sdl2_compiled_path.join("bin");
         let src_dll_path = sdl2_bin_path.join(sdl2_dll_name);
 
-        // Copy the dll to:
-        //  * target dir: as a product ship product of the build,
-        //  * deps directory: as comment example testing doesn't pick up the library search path
-        //    otherwise and fails.
-        let target_path = find_cargo_target_dir();
-        let deps_path = target_path.join("deps");
-        for path in &[target_path, deps_path] {
-            let dst_dll_path = path.join(&sdl2_dll_name);
-            fs::copy(&src_dll_path, &dst_dll_path).expect(&format!(
-                "Failed to copy SDL2 dynamic library from {} to {}",
-                src_dll_path.to_string_lossy(),
-                dst_dll_path.to_string_lossy()
-            ));
+        copy_library_file(&src_dll_path, &target_path);
+    } else if target_os != "emscripten" {
+        // Find all libraries build and copy them, symlinks included.
+        let lib_path = sdl2_compiled_path.join("lib");
+        for entry in std::fs::read_dir(&lib_path).expect("Couldn't readdir lib") {
+            let entry = entry.expect("Error looking at lib dir");
+            if let Ok(file_type) = entry.file_type() {
+                if file_type.is_symlink() {
+                    copy_library_symlink(&entry.path(), &target_path);
+                } else if file_type.is_file() {
+                    copy_library_file(&entry.path(), &target_path)
+                }
+            }
         }
     }
 }
