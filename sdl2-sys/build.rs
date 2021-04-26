@@ -369,14 +369,19 @@ fn compute_include_paths() -> Vec<String> {
 /// There's no easy way to extract this suffix from `cmake::Config` so we have to emulate their
 /// behaviour here (see the source for `cmake::Config::build`).
 fn debug_postfix() -> &'static str {
-    match (
-        &env::var("OPT_LEVEL").unwrap_or_default()[..],
-        &env::var("PROFILE").unwrap_or_default()[..],
-    ) {
-        ("1", _) | ("2", _) | ("3", _) | ("s", _) | ("z", _) => "",
-        ("0", _) => "d",
-        (_, "debug") => "d",
-        (_, _) => "",
+    // pkgconfig is always a release build.
+    if cfg!(feature = "use-pkgconfig") {
+        ""
+    } else {
+        match (
+            &env::var("OPT_LEVEL").unwrap_or_default()[..],
+            &env::var("PROFILE").unwrap_or_default()[..],
+        ) {
+            ("1", _) | ("2", _) | ("3", _) | ("s", _) | ("z", _) => "",
+            ("0", _) => "d",
+            (_, "debug") => "d",
+            (_, _) => "",
+        }
     }
 }
 
