@@ -369,8 +369,8 @@ fn compute_include_paths() -> Vec<String> {
 /// There's no easy way to extract this suffix from `cmake::Config` so we have to emulate their
 /// behaviour here (see the source for `cmake::Config::build`).
 fn debug_postfix() -> &'static str {
-    // pkgconfig is always a release build.
-    if cfg!(feature = "use-pkgconfig") {
+    // default, and use-pkgconfig are always a release build.
+    if cfg!(not(feature = "bundled")) {
         ""
     } else {
         match (
