@@ -31,7 +31,7 @@ jobs:
           cargo build --examples --features "${CI_BUILD_FEATURES}"
           cargo test --features "${CI_BUILD_FEATURES}"
 
-  build-windows:
+  build-bundled:
     name: build bundled
     runs-on: ${{ matrix.os }}
     strategy:

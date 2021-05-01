@@ -2913,6 +2913,7 @@ impl EventSender {
             data1: Box::into_raw(event_box) as *mut c_void,
             data2: ::std::ptr::null_mut(),
         };
+        drop(cet);
 
         self.push_event(event)?;
 

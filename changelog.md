@@ -3,9 +3,19 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### Unreleased
 
-* [PR #1092](https://github.com/Rust-SDL2/rust-sdl2/pull/1092) Add debug builds to "bundled", second attempt.
+[PR #1092](https://github.com/Rust-SDL2/rust-sdl2/pull/1092) Add debug builds to "bundled", second attempt.
 
-* Rollback PR #1081: Broke dynamic linking on Windows #1088
+### v0.34.5
+
+[PR #1100](https://github.com/Rust-SDL2/rust-sdl2/pull/1100) Added binding for `SDL_GetDisplayUsableBounds`
+
+[PR #1102](https://github.com/Rust-SDL2/rust-sdl2/pull/1102) Correctly se linux and macSO built libraries when using bundled without static-link.
+
+[PR #1098](https://github.com/Rust-SDL2/rust-sdl2/pull/1098) Fix potential heap corruption when using AudioCVT::convert
+
+[PR #1088](https://github.com/Rust-SDL2/rust-sdl2/pull/1088) Rollback of PR #1081: Broke dynamic linking on Windows
+
+Various fixes to CI.
 
 ### v0.34.4
 
