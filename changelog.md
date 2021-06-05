@@ -1,6 +1,10 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
+### Unreleased
+
+Add wrapper functions for `SDL_RenderSetIntegerScale` and `SDL_RenderGetIntegerScale`
+
 ### v0.34.5
 
 [PR #1100](https://github.com/Rust-SDL2/rust-sdl2/pull/1100) Added binding for `SDL_GetDisplayUsableBounds`
