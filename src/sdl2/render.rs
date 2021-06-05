@@ -1145,6 +1145,32 @@ impl<T: RenderTarget> Canvas<T> {
         }
     }
 
+    /// Sets whether to force integer scales for resolution-independent rendering.
+    #[doc(alias = "SDL_RenderSetIntegerScale")]
+    pub fn set_integer_scale(&mut self, scale: bool) -> Result<(), String> {
+        let ret = unsafe {
+            sys::SDL_RenderSetIntegerScale(
+                self.raw(),
+                if scale {
+                    sys::SDL_bool::SDL_TRUE
+                } else {
+                    sys::SDL_bool::SDL_FALSE
+                },
+            )
+        };
+        if ret != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Gets whether integer scales are forced for resolution-independent rendering.
+    #[doc(alias = "SDL_RenderGetIntegerScale")]
+    pub fn integer_scale(&self) -> bool {
+        unsafe { sys::SDL_RenderGetIntegerScale(self.raw()) == sys::SDL_bool::SDL_TRUE }
+    }
+
     /// Sets the drawing scale for rendering on the current target.
     #[doc(alias = "SDL_RenderSetScale")]
     pub fn set_scale(&mut self, scale_x: f32, scale_y: f32) -> Result<(), String> {
