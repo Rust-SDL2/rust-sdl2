@@ -321,7 +321,7 @@ features = ["ttf","image","gfx","mixer","static-link","use-vcpkg"]
 [package.metadata.vcpkg]
 dependencies = ["sdl2", "sdl2-image[libjpeg-turbo,tiff,libwebp]", "sdl2-ttf", "sdl2-gfx", "sdl2-mixer"]
 git = "https://github.com/microsoft/vcpkg"
-rev = "a0518036077baa4"
+rev = "a267ab118c09f56f3dae96c9a4b3410820ad2f0b"
 
 [package.metadata.vcpkg.target]
 x86_64-pc-windows-msvc = { triplet = "x64-windows-static-md" }
