@@ -6571,6 +6571,10 @@ pub enum SDL_BlendMode {
     #[doc = "dstRGB = srcRGB * dstRGB"]
     #[doc = "dstA = dstA"]
     SDL_BLENDMODE_MOD = 4,
+    #[doc = "< color multiply"]
+    #[doc = "dstRGB = (srcRGB * dstRGB) + (dstRGB * (1-srcA))"]
+    #[doc = "dstA = (srcA * dstA) + (dstA * (1-srcA))"]
+    SDL_BLENDMODE_MUL = 8,
     SDL_BLENDMODE_INVALID = 2147483647,
 }
 #[repr(u32)]
