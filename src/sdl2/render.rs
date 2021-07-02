@@ -184,6 +184,7 @@ impl TryFrom<u32> for BlendMode {
 }
 
 impl RendererInfo {
+    /// # Safety
     pub unsafe fn from_ll(info: &sys::SDL_RendererInfo) -> RendererInfo {
         let texture_formats: Vec<PixelFormatEnum> = info.texture_formats
             [0..(info.num_texture_formats as usize)]
@@ -250,6 +251,7 @@ impl<T> RendererContext<T> {
         self.raw
     }
 
+    /// # Safety
     pub unsafe fn from_ll(raw: *mut sys::SDL_Renderer, target: Rc<T>) -> Self {
         RendererContext {
             raw,
@@ -958,6 +960,7 @@ impl<T> TextureCreator<T> {
     }
 
     /// Create a texture from its raw `SDL_Texture`.
+    /// # Safety
     #[cfg(not(feature = "unsafe_textures"))]
     #[inline]
     pub const unsafe fn raw_create_texture(&self, raw: *mut sys::SDL_Texture) -> Texture {
@@ -968,6 +971,7 @@ impl<T> TextureCreator<T> {
     }
 
     /// Create a texture from its raw `SDL_Texture`. Should be used with care.
+    /// # Safety
     #[cfg(feature = "unsafe_textures")]
     pub const unsafe fn raw_create_texture(&self, raw: *mut sys::SDL_Texture) -> Texture {
         Texture { raw }
@@ -2295,12 +2299,14 @@ impl<'r> Texture<'r> {
 
     /// Binds an OpenGL/ES/ES2 texture to the current
     /// context for use with when rendering OpenGL primitives directly.
+    /// # Safety
     #[inline]
     pub unsafe fn gl_bind_texture(&mut self) -> (f32, f32) {
         InternalTexture { raw: self.raw }.gl_bind_texture()
     }
 
     /// Unbinds an OpenGL/ES/ES2 texture from the current context.
+    /// # Safety
     #[inline]
     pub unsafe fn gl_unbind_texture(&mut self) {
         InternalTexture { raw: self.raw }.gl_unbind_texture()

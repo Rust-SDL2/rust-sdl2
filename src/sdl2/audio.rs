@@ -683,10 +683,7 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
 
         let mut obtained = MaybeUninit::uninit();
         unsafe {
-            let device = match device.into() {
-                Some(device) => Some(CString::new(device).unwrap()),
-                None => None,
-            };
+            let device = device.into().map(|device| CString::new(device).unwrap());
             // Warning: map_or consumes its argument; `device.map_or()` would therefore consume the
             // CString and drop it, making device_ptr a dangling pointer! To avoid that we downgrade
             // device to an Option<&_> first.
@@ -806,10 +803,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
 
         let mut obtained = MaybeUninit::uninit();
         unsafe {
-            let device = match device.into() {
-                Some(device) => Some(CString::new(device).unwrap()),
-                None => None,
-            };
+            let device = device.into().map(|device| CString::new(device).unwrap());
             // Warning: map_or consumes its argument; `device.map_or()` would therefore consume the
             // CString and drop it, making device_ptr a dangling pointer! To avoid that we downgrade
             // device to an Option<&_> first.
@@ -1040,12 +1034,8 @@ impl AudioCVT {
                 src.resize(outlen, 0);
                 src.copy_from_slice(from_raw_parts_mut(raw.buf, outlen));
                 sys::SDL_free(raw.buf as *mut _);
-
-                src
-            } else {
-                // The buffer remains unmodified
-                src
             }
+            src
         }
     }
 
@@ -1076,7 +1066,6 @@ mod test {
         let buffer: Vec<u8> = (0..255).collect();
 
         // 0,0,1,1,2,2,3,3, ...
-        let new_buffer_expected: Vec<u8> = (0..255).flat_map(|v| repeat(v).take(2)).collect();
 
         let cvt = AudioCVT::new(AudioFormat::U8, 1, 44100, AudioFormat::U8, 2, 44100).unwrap();
         assert!(cvt.is_conversion_needed());
@@ -1090,7 +1079,7 @@ mod test {
         let new_buffer = cvt.convert(buffer);
         assert_eq!(
             new_buffer.len(),
-            new_buffer_expected.len(),
+            (0..255).flat_map(|v| repeat(v).take(2)).count(),
             "capacity must be exactly equal to twice the original vec size"
         );
 

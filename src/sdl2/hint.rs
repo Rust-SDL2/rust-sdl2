@@ -69,10 +69,7 @@ pub fn set_video_minimize_on_focus_loss_with_priority(value: bool, priority: &Hi
 /// ```
 pub fn get_video_minimize_on_focus_loss() -> bool {
     match get(VIDEO_MINIMIZE_ON_FOCUS_LOSS) {
-        Some(value) => match &*value {
-            "1" => true,
-            _ => false,
-        },
+        Some(value) => matches!(&*value, "1"),
         _ => true,
     }
 }

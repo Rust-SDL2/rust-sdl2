@@ -44,7 +44,7 @@ fn test2(ev: &sdl2::EventSubsystem, ep: &mut sdl2::EventPump) {
         } => (w1, t1, c1, a1, a2),
         _ => panic!("expected user event"),
     };
-    ev.push_event(event.clone()).unwrap();
+    ev.push_event(event).unwrap();
     let received = ep.poll_event().unwrap();
     // Do not check for timestamp here because it is always modified by
     // SDL_PushEvent.

@@ -2,6 +2,7 @@ macro_rules! impl_raw_accessors(
     ($(($t:ty, $raw:ty)),+) => (
         $(
         impl $t {
+            /// # Safety
             #[inline]
             // can prevent introducing UB until
             // https://github.com/rust-lang/rust-clippy/issues/5953 is fixed
@@ -16,9 +17,10 @@ macro_rules! impl_raw_constructor(
     ($(($t:ty, $te:ident ($($r:ident:$rt:ty),+))),+) => (
         $(
         impl $t {
+            /// # Safety
             #[inline]
             pub const unsafe fn from_ll($($r:$rt),+) -> $t {
-                $te { $($r: $r),+ }
+                $te { $($r),+ }
             }
         }
         )+

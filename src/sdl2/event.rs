@@ -109,10 +109,7 @@ impl crate::EventSubsystem {
             } else {
                 events.set_len(result as usize);
 
-                events
-                    .into_iter()
-                    .map(|event_raw| Event::from_ll(event_raw))
-                    .collect()
+                events.into_iter().map(Event::from_ll).collect()
             }
         }
     }
@@ -149,6 +146,7 @@ impl crate::EventSubsystem {
     /// ev.push_event(event);
     ///
     /// ```
+    /// # Safety
     #[inline(always)]
     pub unsafe fn register_event(&self) -> Result<u32, String> {
         Ok(*self.register_events(1)?.first().unwrap())
@@ -157,6 +155,7 @@ impl crate::EventSubsystem {
     /// Registers custom SDL events.
     ///
     /// Returns an error, if no more user events can be created.
+    /// # Safety
     pub unsafe fn register_events(&self, nr: u32) -> Result<Vec<u32>, String> {
         let result = sys::SDL_RegisterEvents(nr as ::libc::c_int);
         const ERR_NR: u32 = ::std::u32::MAX - 1;
@@ -441,8 +440,8 @@ impl WindowEvent {
         }
     }
 
-    fn to_ll(&self) -> (u8, i32, i32) {
-        match *self {
+    fn to_ll(self) -> (u8, i32, i32) {
+        match self {
             WindowEvent::None => (0, 0, 0),
             WindowEvent::Shown => (1, 0, 0),
             WindowEvent::Hidden => (2, 0, 0),
@@ -464,26 +463,26 @@ impl WindowEvent {
     }
 
     pub fn is_same_kind_as(&self, other: &WindowEvent) -> bool {
-        match (self, other) {
+        matches!(
+            (self, other),
             (Self::None, Self::None)
-            | (Self::Shown, Self::Shown)
-            | (Self::Hidden, Self::Hidden)
-            | (Self::Exposed, Self::Exposed)
-            | (Self::Moved(_, _), Self::Moved(_, _))
-            | (Self::Resized(_, _), Self::Resized(_, _))
-            | (Self::SizeChanged(_, _), Self::SizeChanged(_, _))
-            | (Self::Minimized, Self::Minimized)
-            | (Self::Maximized, Self::Maximized)
-            | (Self::Restored, Self::Restored)
-            | (Self::Enter, Self::Enter)
-            | (Self::Leave, Self::Leave)
-            | (Self::FocusGained, Self::FocusGained)
-            | (Self::FocusLost, Self::FocusLost)
-            | (Self::Close, Self::Close)
-            | (Self::TakeFocus, Self::TakeFocus)
-            | (Self::HitTest, Self::HitTest) => true,
-            _ => false,
-        }
+                | (Self::Shown, Self::Shown)
+                | (Self::Hidden, Self::Hidden)
+                | (Self::Exposed, Self::Exposed)
+                | (Self::Moved(_, _), Self::Moved(_, _))
+                | (Self::Resized(_, _), Self::Resized(_, _))
+                | (Self::SizeChanged(_, _), Self::SizeChanged(_, _))
+                | (Self::Minimized, Self::Minimized)
+                | (Self::Maximized, Self::Maximized)
+                | (Self::Restored, Self::Restored)
+                | (Self::Enter, Self::Enter)
+                | (Self::Leave, Self::Leave)
+                | (Self::FocusGained, Self::FocusGained)
+                | (Self::FocusLost, Self::FocusLost)
+                | (Self::Close, Self::Close)
+                | (Self::TakeFocus, Self::TakeFocus)
+                | (Self::HitTest, Self::HitTest)
+        )
     }
 }
 
@@ -1315,8 +1314,8 @@ impl Event {
             | Event::DropFile { .. }
             | Event::TextEditing { .. }
             | Event::TextInput { .. }
-            | Event::Unknown { .. }
-            | _ => {
+            | Event::Unknown { .. } => None,
+            _ => {
                 // don't know how to convert!
                 None
             }
@@ -1796,10 +1795,7 @@ impl Event {
     }
 
     pub fn is_user_event(&self) -> bool {
-        match *self {
-            Event::User { .. } => true,
-            _ => false,
-        }
+        matches!(*self, Event::User { .. })
     }
 
     pub fn as_user_event_type<T: ::std::any::Any>(&self) -> Option<T> {
@@ -1851,55 +1847,94 @@ impl Event {
     /// assert!(ev1.is_same_kind_as(&ev2)); // But they are of the same kind!
     /// ```
     pub fn is_same_kind_as(&self, other: &Event) -> bool {
-        match (self, other) {
+        matches!(
+            (self, other),
             (Self::Quit { .. }, Self::Quit { .. })
-            | (Self::AppTerminating { .. }, Self::AppTerminating { .. })
-            | (Self::AppLowMemory { .. }, Self::AppLowMemory { .. })
-            | (Self::AppWillEnterBackground { .. }, Self::AppWillEnterBackground { .. })
-            | (Self::AppDidEnterBackground { .. }, Self::AppDidEnterBackground { .. })
-            | (Self::AppWillEnterForeground { .. }, Self::AppWillEnterForeground { .. })
-            | (Self::AppDidEnterForeground { .. }, Self::AppDidEnterForeground { .. })
-            | (Self::Window { .. }, Self::Window { .. })
-            | (Self::KeyDown { .. }, Self::KeyDown { .. })
-            | (Self::KeyUp { .. }, Self::KeyUp { .. })
-            | (Self::TextEditing { .. }, Self::TextEditing { .. })
-            | (Self::TextInput { .. }, Self::TextInput { .. })
-            | (Self::MouseMotion { .. }, Self::MouseMotion { .. })
-            | (Self::MouseButtonDown { .. }, Self::MouseButtonDown { .. })
-            | (Self::MouseButtonUp { .. }, Self::MouseButtonUp { .. })
-            | (Self::MouseWheel { .. }, Self::MouseWheel { .. })
-            | (Self::JoyAxisMotion { .. }, Self::JoyAxisMotion { .. })
-            | (Self::JoyBallMotion { .. }, Self::JoyBallMotion { .. })
-            | (Self::JoyHatMotion { .. }, Self::JoyHatMotion { .. })
-            | (Self::JoyButtonDown { .. }, Self::JoyButtonDown { .. })
-            | (Self::JoyButtonUp { .. }, Self::JoyButtonUp { .. })
-            | (Self::JoyDeviceAdded { .. }, Self::JoyDeviceAdded { .. })
-            | (Self::JoyDeviceRemoved { .. }, Self::JoyDeviceRemoved { .. })
-            | (Self::ControllerAxisMotion { .. }, Self::ControllerAxisMotion { .. })
-            | (Self::ControllerButtonDown { .. }, Self::ControllerButtonDown { .. })
-            | (Self::ControllerButtonUp { .. }, Self::ControllerButtonUp { .. })
-            | (Self::ControllerDeviceAdded { .. }, Self::ControllerDeviceAdded { .. })
-            | (Self::ControllerDeviceRemoved { .. }, Self::ControllerDeviceRemoved { .. })
-            | (Self::ControllerDeviceRemapped { .. }, Self::ControllerDeviceRemapped { .. })
-            | (Self::FingerDown { .. }, Self::FingerDown { .. })
-            | (Self::FingerUp { .. }, Self::FingerUp { .. })
-            | (Self::FingerMotion { .. }, Self::FingerMotion { .. })
-            | (Self::DollarGesture { .. }, Self::DollarGesture { .. })
-            | (Self::DollarRecord { .. }, Self::DollarRecord { .. })
-            | (Self::MultiGesture { .. }, Self::MultiGesture { .. })
-            | (Self::ClipboardUpdate { .. }, Self::ClipboardUpdate { .. })
-            | (Self::DropFile { .. }, Self::DropFile { .. })
-            | (Self::DropText { .. }, Self::DropText { .. })
-            | (Self::DropBegin { .. }, Self::DropBegin { .. })
-            | (Self::DropComplete { .. }, Self::DropComplete { .. })
-            | (Self::AudioDeviceAdded { .. }, Self::AudioDeviceAdded { .. })
-            | (Self::AudioDeviceRemoved { .. }, Self::AudioDeviceRemoved { .. })
-            | (Self::RenderTargetsReset { .. }, Self::RenderTargetsReset { .. })
-            | (Self::RenderDeviceReset { .. }, Self::RenderDeviceReset { .. })
-            | (Self::User { .. }, Self::User { .. })
-            | (Self::Unknown { .. }, Self::Unknown { .. }) => true,
-            _ => false,
-        }
+                | (Self::AppTerminating { .. }, Self::AppTerminating { .. })
+                | (Self::AppLowMemory { .. }, Self::AppLowMemory { .. })
+                | (
+                    Self::AppWillEnterBackground { .. },
+                    Self::AppWillEnterBackground { .. }
+                )
+                | (
+                    Self::AppDidEnterBackground { .. },
+                    Self::AppDidEnterBackground { .. }
+                )
+                | (
+                    Self::AppWillEnterForeground { .. },
+                    Self::AppWillEnterForeground { .. }
+                )
+                | (
+                    Self::AppDidEnterForeground { .. },
+                    Self::AppDidEnterForeground { .. }
+                )
+                | (Self::Window { .. }, Self::Window { .. })
+                | (Self::KeyDown { .. }, Self::KeyDown { .. })
+                | (Self::KeyUp { .. }, Self::KeyUp { .. })
+                | (Self::TextEditing { .. }, Self::TextEditing { .. })
+                | (Self::TextInput { .. }, Self::TextInput { .. })
+                | (Self::MouseMotion { .. }, Self::MouseMotion { .. })
+                | (Self::MouseButtonDown { .. }, Self::MouseButtonDown { .. })
+                | (Self::MouseButtonUp { .. }, Self::MouseButtonUp { .. })
+                | (Self::MouseWheel { .. }, Self::MouseWheel { .. })
+                | (Self::JoyAxisMotion { .. }, Self::JoyAxisMotion { .. })
+                | (Self::JoyBallMotion { .. }, Self::JoyBallMotion { .. })
+                | (Self::JoyHatMotion { .. }, Self::JoyHatMotion { .. })
+                | (Self::JoyButtonDown { .. }, Self::JoyButtonDown { .. })
+                | (Self::JoyButtonUp { .. }, Self::JoyButtonUp { .. })
+                | (Self::JoyDeviceAdded { .. }, Self::JoyDeviceAdded { .. })
+                | (Self::JoyDeviceRemoved { .. }, Self::JoyDeviceRemoved { .. })
+                | (
+                    Self::ControllerAxisMotion { .. },
+                    Self::ControllerAxisMotion { .. }
+                )
+                | (
+                    Self::ControllerButtonDown { .. },
+                    Self::ControllerButtonDown { .. }
+                )
+                | (
+                    Self::ControllerButtonUp { .. },
+                    Self::ControllerButtonUp { .. }
+                )
+                | (
+                    Self::ControllerDeviceAdded { .. },
+                    Self::ControllerDeviceAdded { .. }
+                )
+                | (
+                    Self::ControllerDeviceRemoved { .. },
+                    Self::ControllerDeviceRemoved { .. }
+                )
+                | (
+                    Self::ControllerDeviceRemapped { .. },
+                    Self::ControllerDeviceRemapped { .. }
+                )
+                | (Self::FingerDown { .. }, Self::FingerDown { .. })
+                | (Self::FingerUp { .. }, Self::FingerUp { .. })
+                | (Self::FingerMotion { .. }, Self::FingerMotion { .. })
+                | (Self::DollarGesture { .. }, Self::DollarGesture { .. })
+                | (Self::DollarRecord { .. }, Self::DollarRecord { .. })
+                | (Self::MultiGesture { .. }, Self::MultiGesture { .. })
+                | (Self::ClipboardUpdate { .. }, Self::ClipboardUpdate { .. })
+                | (Self::DropFile { .. }, Self::DropFile { .. })
+                | (Self::DropText { .. }, Self::DropText { .. })
+                | (Self::DropBegin { .. }, Self::DropBegin { .. })
+                | (Self::DropComplete { .. }, Self::DropComplete { .. })
+                | (Self::AudioDeviceAdded { .. }, Self::AudioDeviceAdded { .. })
+                | (
+                    Self::AudioDeviceRemoved { .. },
+                    Self::AudioDeviceRemoved { .. }
+                )
+                | (
+                    Self::RenderTargetsReset { .. },
+                    Self::RenderTargetsReset { .. }
+                )
+                | (
+                    Self::RenderDeviceReset { .. },
+                    Self::RenderDeviceReset { .. }
+                )
+                | (Self::User { .. }, Self::User { .. })
+                | (Self::Unknown { .. }, Self::Unknown { .. })
+        )
     }
 
     /// Returns the `timestamp` field of the event.
@@ -2032,17 +2067,17 @@ impl Event {
     /// assert!(another_ev.is_window() == false); // Not a window event!
     /// ```
     pub fn is_window(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::Quit { .. }
-            | Self::AppTerminating { .. }
-            | Self::AppLowMemory { .. }
-            | Self::AppWillEnterBackground { .. }
-            | Self::AppDidEnterBackground { .. }
-            | Self::AppWillEnterForeground { .. }
-            | Self::AppDidEnterForeground { .. }
-            | Self::Window { .. } => true,
-            _ => false,
-        }
+                | Self::AppTerminating { .. }
+                | Self::AppLowMemory { .. }
+                | Self::AppWillEnterBackground { .. }
+                | Self::AppDidEnterBackground { .. }
+                | Self::AppWillEnterForeground { .. }
+                | Self::AppDidEnterForeground { .. }
+                | Self::Window { .. }
+        )
     }
 
     /// Returns `true` if this is a keyboard event.
@@ -2069,10 +2104,7 @@ impl Event {
     /// assert!(another_ev.is_keyboard() == false); // Not a keyboard event!
     /// ```
     pub fn is_keyboard(&self) -> bool {
-        match self {
-            Self::KeyDown { .. } | Self::KeyUp { .. } => true,
-            _ => false,
-        }
+        matches!(self, Self::KeyDown { .. } | Self::KeyUp { .. })
     }
 
     /// Returns `true` if this is a text event.
@@ -2095,10 +2127,7 @@ impl Event {
     /// assert!(another_ev.is_text() == false); // Not a text event!
     /// ```
     pub fn is_text(&self) -> bool {
-        match self {
-            Self::TextEditing { .. } | Self::TextInput { .. } => true,
-            _ => false,
-        }
+        matches!(self, Self::TextEditing { .. } | Self::TextInput { .. })
     }
 
     /// Returns `true` if this is a mouse event.
@@ -2125,13 +2154,13 @@ impl Event {
     /// assert!(another_ev.is_mouse() == false); // Not a mouse event!
     /// ```
     pub fn is_mouse(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::MouseMotion { .. }
-            | Self::MouseButtonDown { .. }
-            | Self::MouseButtonUp { .. }
-            | Self::MouseWheel { .. } => true,
-            _ => false,
-        }
+                | Self::MouseButtonDown { .. }
+                | Self::MouseButtonUp { .. }
+                | Self::MouseWheel { .. }
+        )
     }
 
     /// Returns `true` if this is a controller event.
@@ -2153,15 +2182,15 @@ impl Event {
     /// assert!(another_ev.is_controller() == false); // Not a controller event!
     /// ```
     pub fn is_controller(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::ControllerAxisMotion { .. }
-            | Self::ControllerButtonDown { .. }
-            | Self::ControllerButtonUp { .. }
-            | Self::ControllerDeviceAdded { .. }
-            | Self::ControllerDeviceRemoved { .. }
-            | Self::ControllerDeviceRemapped { .. } => true,
-            _ => false,
-        }
+                | Self::ControllerButtonDown { .. }
+                | Self::ControllerButtonUp { .. }
+                | Self::ControllerDeviceAdded { .. }
+                | Self::ControllerDeviceRemoved { .. }
+                | Self::ControllerDeviceRemapped { .. }
+        )
     }
 
     /// Returns `true` if this is a joy event.
@@ -2184,16 +2213,16 @@ impl Event {
     /// assert!(another_ev.is_joy() == false); // Not a joy event!
     /// ```
     pub fn is_joy(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::JoyAxisMotion { .. }
-            | Self::JoyBallMotion { .. }
-            | Self::JoyHatMotion { .. }
-            | Self::JoyButtonDown { .. }
-            | Self::JoyButtonUp { .. }
-            | Self::JoyDeviceAdded { .. }
-            | Self::JoyDeviceRemoved { .. } => true,
-            _ => false,
-        }
+                | Self::JoyBallMotion { .. }
+                | Self::JoyHatMotion { .. }
+                | Self::JoyButtonDown { .. }
+                | Self::JoyButtonUp { .. }
+                | Self::JoyDeviceAdded { .. }
+                | Self::JoyDeviceRemoved { .. }
+        )
     }
 
     /// Returns `true` if this is a finger event.
@@ -2221,10 +2250,10 @@ impl Event {
     /// assert!(another_ev.is_finger() == false); // Not a finger event!
     /// ```
     pub fn is_finger(&self) -> bool {
-        match self {
-            Self::FingerDown { .. } | Self::FingerUp { .. } | Self::FingerMotion { .. } => true,
-            _ => false,
-        }
+        matches!(
+            self,
+            Self::FingerDown { .. } | Self::FingerUp { .. } | Self::FingerMotion { .. }
+        )
     }
 
     /// Returns `true` if this is a dollar event.
@@ -2251,10 +2280,7 @@ impl Event {
     /// assert!(another_ev.is_dollar() == false); // Not a dollar event!
     /// ```
     pub fn is_dollar(&self) -> bool {
-        match self {
-            Self::DollarGesture { .. } | Self::DollarRecord { .. } => true,
-            _ => false,
-        }
+        matches!(self, Self::DollarGesture { .. } | Self::DollarRecord { .. })
     }
 
     /// Returns `true` if this is a drop event.
@@ -2276,13 +2302,13 @@ impl Event {
     /// assert!(another_ev.is_drop() == false); // Not a drop event!
     /// ```
     pub fn is_drop(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::DropFile { .. }
-            | Self::DropText { .. }
-            | Self::DropBegin { .. }
-            | Self::DropComplete { .. } => true,
-            _ => false,
-        }
+                | Self::DropText { .. }
+                | Self::DropBegin { .. }
+                | Self::DropComplete { .. }
+        )
     }
 
     /// Returns `true` if this is an audio event.
@@ -2305,10 +2331,10 @@ impl Event {
     /// assert!(another_ev.is_audio() == false); // Not an audio event!
     /// ```
     pub fn is_audio(&self) -> bool {
-        match self {
-            Self::AudioDeviceAdded { .. } | Self::AudioDeviceRemoved { .. } => true,
-            _ => false,
-        }
+        matches!(
+            self,
+            Self::AudioDeviceAdded { .. } | Self::AudioDeviceRemoved { .. }
+        )
     }
 
     /// Returns `true` if this is a render event.
@@ -2329,10 +2355,10 @@ impl Event {
     /// assert!(another_ev.is_render() == false); // Not a render event!
     /// ```
     pub fn is_render(&self) -> bool {
-        match self {
-            Self::RenderTargetsReset { .. } | Self::RenderDeviceReset { .. } => true,
-            _ => false,
-        }
+        matches!(
+            self,
+            Self::RenderTargetsReset { .. } | Self::RenderDeviceReset { .. }
+        )
     }
 
     /// Returns `true` if this is a user event.
@@ -2358,10 +2384,7 @@ impl Event {
     /// assert!(another_ev.is_user() == false); // Not a user event!
     /// ```
     pub fn is_user(&self) -> bool {
-        match self {
-            Self::User { .. } => true,
-            _ => false,
-        }
+        matches!(self, Self::User { .. })
     }
 
     /// Returns `true` if this is an unknown event.
@@ -2383,10 +2406,7 @@ impl Event {
     /// assert!(another_ev.is_unknown() == false); // Not an unknown event!
     /// ```
     pub fn is_unknown(&self) -> bool {
-        match self {
-            Self::Unknown { .. } => true,
-            _ => false,
-        }
+        matches!(self, Self::Unknown { .. })
     }
 }
 
@@ -2587,7 +2607,7 @@ mod test {
     fn test_to_from_ll() {
         {
             let e = Event::Quit { timestamp: 0 };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2596,7 +2616,7 @@ mod test {
                 window_id: 0,
                 win_event: WindowEvent::Resized(1, 2),
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2608,7 +2628,7 @@ mod test {
                 keymod: Mod::all(),
                 repeat: false,
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2620,7 +2640,7 @@ mod test {
                 keymod: Mod::empty(),
                 repeat: true,
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2634,7 +2654,7 @@ mod test {
                 xrel: -1,
                 yrel: 43,
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2647,7 +2667,7 @@ mod test {
                 x: 543,
                 y: 345,
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2660,7 +2680,7 @@ mod test {
                 x: 543,
                 y: 345,
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2672,7 +2692,7 @@ mod test {
                 y: 91,
                 direction: MouseWheelDirection::Flipped,
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2682,7 +2702,7 @@ mod test {
                 axis_idx: 1,
                 value: 12,
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2693,7 +2713,7 @@ mod test {
                 xrel: 123,
                 yrel: 321,
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2703,7 +2723,7 @@ mod test {
                 hat_idx: 1,
                 state: HatState::Left,
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2712,7 +2732,7 @@ mod test {
                 which: 0,
                 button_idx: 3,
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2721,7 +2741,7 @@ mod test {
                 which: 1,
                 button_idx: 2,
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2729,7 +2749,7 @@ mod test {
                 timestamp: 0,
                 which: 1,
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2737,7 +2757,7 @@ mod test {
                 timestamp: 0,
                 which: 2,
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2747,7 +2767,7 @@ mod test {
                 axis: Axis::LeftX,
                 value: 3,
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2756,7 +2776,7 @@ mod test {
                 which: 1,
                 button: Button::Guide,
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2765,7 +2785,7 @@ mod test {
                 which: 0,
                 button: Button::DPadRight,
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2773,7 +2793,7 @@ mod test {
                 timestamp: 543,
                 which: 3,
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2781,7 +2801,7 @@ mod test {
                 timestamp: 555,
                 which: 3,
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
         {
@@ -2789,7 +2809,7 @@ mod test {
                 timestamp: 654,
                 which: 0,
             };
-            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            let e2 = Event::from_ll(e.to_ll().unwrap());
             assert_eq!(e, e2);
         }
     }
@@ -2923,7 +2943,7 @@ impl EventSender {
 
 /// A callback trait for [`EventSubsystem::add_event_watch`].
 pub trait EventWatchCallback {
-    fn callback(&mut self, event: Event) -> ();
+    fn callback(&mut self, event: Event);
 }
 
 /// An handler for the event watch callback.
@@ -3004,8 +3024,8 @@ extern "C" fn event_callback_marshall<CB: EventWatchCallback>(
     0
 }
 
-impl<F: FnMut(Event) -> ()> EventWatchCallback for F {
-    fn callback(&mut self, event: Event) -> () {
+impl<F: FnMut(Event)> EventWatchCallback for F {
+    fn callback(&mut self, event: Event) {
         self(event)
     }
 }

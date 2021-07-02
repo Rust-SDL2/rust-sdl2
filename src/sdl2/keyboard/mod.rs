@@ -139,7 +139,7 @@ impl<'a> Iterator for PressedScancodeIterator<'a> {
     type Item = Scancode;
 
     fn next(&mut self) -> Option<Scancode> {
-        while let Some((scancode, pressed)) = self.iter.next() {
+        for (scancode, pressed) in &mut self.iter {
             if pressed {
                 return Some(scancode);
             }

@@ -163,9 +163,9 @@ impl Color {
     pub const CYAN: Color = Color::RGBA(0, 255, 255, 255);
 }
 
-impl Into<sys::SDL_Color> for Color {
-    fn into(self) -> sys::SDL_Color {
-        self.raw()
+impl From<Color> for sys::SDL_Color {
+    fn from(val: Color) -> Self {
+        val.raw()
     }
 }
 
@@ -407,11 +407,22 @@ impl PixelFormatEnum {
 
     pub fn supports_alpha(self) -> bool {
         use crate::pixels::PixelFormatEnum::*;
-        match self {
-            ARGB4444 | ARGB1555 | ARGB8888 | ARGB2101010 | ABGR4444 | ABGR1555 | ABGR8888
-            | BGRA4444 | BGRA5551 | BGRA8888 | RGBA4444 | RGBA5551 | RGBA8888 => true,
-            _ => false,
-        }
+        matches!(
+            self,
+            ARGB4444
+                | ARGB1555
+                | ARGB8888
+                | ARGB2101010
+                | ABGR4444
+                | ABGR1555
+                | ABGR8888
+                | BGRA4444
+                | BGRA5551
+                | BGRA8888
+                | RGBA4444
+                | RGBA5551
+                | RGBA8888
+        )
     }
 }
 

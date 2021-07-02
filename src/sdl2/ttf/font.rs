@@ -2,7 +2,6 @@ use get_error;
 use pixels::Color;
 use rwops::RWops;
 use std::error;
-use std::error::Error;
 use std::ffi::NulError;
 use std::ffi::{CStr, CString};
 use std::fmt;
@@ -57,27 +56,13 @@ pub enum FontError {
     SdlError(String),
 }
 
-impl error::Error for FontError {
-    fn description(&self) -> &str {
-        match *self {
-            FontError::InvalidLatin1Text(ref error) => error.description(),
-            FontError::SdlError(ref message) => message,
-        }
-    }
-
-    fn cause(&self) -> Option<&dyn error::Error> {
-        match *self {
-            FontError::InvalidLatin1Text(ref error) => Some(error),
-            FontError::SdlError(_) => None,
-        }
-    }
-}
+impl error::Error for FontError {}
 
 impl fmt::Display for FontError {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         match *self {
             FontError::InvalidLatin1Text(ref err) => {
-                write!(f, "Invalid Latin-1 bytes: {}", err.description())
+                write!(f, "Invalid Latin-1 bytes: {}", err)
             }
             FontError::SdlError(ref msg) => {
                 write!(f, "SDL2 error: {}", msg)
@@ -266,7 +251,7 @@ pub fn internal_load_font<'ttf, P: AsRef<Path>>(
             Err(get_error())
         } else {
             Ok(Font {
-                raw: raw,
+                raw,
                 rwops: None,
                 _marker: PhantomData,
             })
@@ -280,7 +265,7 @@ where
     R: Into<Option<RWops<'r>>>,
 {
     Font {
-        raw: raw,
+        raw,
         rwops: rwops.into(),
         _marker: PhantomData,
     }
@@ -299,7 +284,7 @@ pub fn internal_load_font_at_index<'ttf, P: AsRef<Path>>(
             Err(get_error())
         } else {
             Ok(Font {
-                raw: raw,
+                raw,
                 rwops: None,
                 _marker: PhantomData,
             })
@@ -420,7 +405,8 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
                 ttf::TTF_HINTING_NORMAL => Hinting::Normal,
                 ttf::TTF_HINTING_LIGHT => Hinting::Light,
                 ttf::TTF_HINTING_MONO => Hinting::Mono,
-                ttf::TTF_HINTING_NONE | _ => Hinting::None,
+                ttf::TTF_HINTING_NONE => Hinting::None,
+                _ => Hinting::None,
             }
         }
     }

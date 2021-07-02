@@ -78,8 +78,8 @@ fn demo(music_file: &Path, sound_file: Option<&Path>) -> Result<(), String> {
                 let buffer = (0..frequency)
                     .map(|i| {
                         (0.1 * i16::max_value() as f32
-                            * (2.0 * 3.14 * 500.0 * (i as f32 / frequency as f32)).sin())
-                            as i16
+                            * (2.0 * std::f32::consts::PI * 500.0 * (i as f32 / frequency as f32))
+                                .sin()) as i16
                     })
                     .collect();
                 sdl2::mixer::Chunk::from_raw_buffer(buffer)

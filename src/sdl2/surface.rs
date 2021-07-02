@@ -100,6 +100,7 @@ impl<'a> AsMut<SurfaceRef> for Surface<'a> {
 }
 
 impl<'a> Surface<'a> {
+    /// # Safety
     pub unsafe fn from_ll<'b>(raw: *mut sys::SDL_Surface) -> Surface<'b> {
         let context = SurfaceContext {
             raw,
@@ -317,11 +318,13 @@ impl<'a> Surface<'a> {
 }
 
 impl SurfaceRef {
+    /// # Safety
     #[inline]
     pub unsafe fn from_ll<'a>(raw: *const sys::SDL_Surface) -> &'a SurfaceRef {
         &*(raw as *const () as *const SurfaceRef)
     }
 
+    /// # Safety
     #[inline]
     pub unsafe fn from_ll_mut<'a>(raw: *mut sys::SDL_Surface) -> &'a mut SurfaceRef {
         &mut *(raw as *mut () as *mut SurfaceRef)
@@ -723,6 +726,7 @@ impl SurfaceRef {
     ///
     /// Unless you know what you're doing, use `blit()` instead, which will clip the input rectangles.
     /// This function could crash if the rectangles aren't pre-clipped to the surface, and is therefore unsafe.
+    /// # Safety
     pub unsafe fn lower_blit<R1, R2>(
         &self,
         src_rect: R1,
@@ -785,6 +789,7 @@ impl SurfaceRef {
     ///
     /// Unless you know what you're doing, use `blit_scaled()` instead, which will clip the input rectangles.
     /// This function could crash if the rectangles aren't pre-clipped to the surface, and is therefore unsafe.
+    /// # Safety
     pub unsafe fn lower_blit_scaled<R1, R2>(
         &self,
         src_rect: R1,

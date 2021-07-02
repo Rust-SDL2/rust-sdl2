@@ -167,7 +167,7 @@ impl GameControllerSubsystem {
 
     /// Load controller input mappings from an SDL [`RWops`] object.
     #[doc(alias = "SDL_GameControllerAddMappingsFromRW")]
-    pub fn load_mappings_from_rw<'a>(&self, rw: RWops<'a>) -> Result<i32, AddMappingError> {
+    pub fn load_mappings_from_rw(&self, rw: RWops) -> Result<i32, AddMappingError> {
         use self::AddMappingError::*;
 
         let result = unsafe { sys::SDL_GameControllerAddMappingsFromRW(rw.raw(), 0) };

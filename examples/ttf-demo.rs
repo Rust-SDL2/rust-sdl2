@@ -25,12 +25,11 @@ fn get_centered_rect(rect_width: u32, rect_height: u32, cons_width: u32, cons_he
     let hr = rect_height as f32 / cons_height as f32;
 
     let (w, h) = if wr > 1f32 || hr > 1f32 {
+        println!("Scaling down! The text will look worse!");
         if wr > hr {
-            println!("Scaling down! The text will look worse!");
             let h = (rect_height as f32 / wr) as i32;
             (cons_width as i32, h)
         } else {
-            println!("Scaling down! The text will look worse!");
             let w = (rect_width as f32 / hr) as i32;
             (w, cons_height as i32)
         }

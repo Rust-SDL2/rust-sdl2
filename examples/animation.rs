@@ -26,7 +26,7 @@ fn main() -> Result<(), String> {
 
     canvas.set_draw_color(sdl2::pixels::Color::RGBA(0, 0, 0, 255));
 
-    let mut timer = sdl_context.timer()?;
+    let timer = sdl_context.timer()?;
 
     let mut event_pump = sdl_context.event_pump()?;
 
@@ -74,13 +74,13 @@ fn main() -> Result<(), String> {
 
         // set the current frame for time
         source_rect_0.set_x(32 * ((ticks / 100) % frames_per_anim));
-        dest_rect_0.set_x(1 * ((ticks / 14) % 768) - 128);
+        dest_rect_0.set_x((ticks / 14) % 768);
 
         source_rect_1.set_x(32 * ((ticks / 100) % frames_per_anim));
-        dest_rect_1.set_x((1 * ((ticks / 12) % 768) - 672) * -1);
+        dest_rect_1.set_x(-(((ticks / 12) % 768) - 672));
 
         source_rect_2.set_x(32 * ((ticks / 100) % frames_per_anim));
-        dest_rect_2.set_x(1 * ((ticks / 10) % 768) - 128);
+        dest_rect_2.set_x((ticks / 10) % 768);
 
         canvas.clear();
         // copy the frame to the canvas

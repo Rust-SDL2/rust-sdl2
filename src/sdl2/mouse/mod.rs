@@ -202,7 +202,7 @@ impl MouseState {
             y: 0,
         }
     }
-    pub fn to_sdl_state(&self) -> u32 {
+    pub fn to_sdl_state(self) -> u32 {
         self.mouse_state
     }
 
@@ -347,7 +347,7 @@ impl<'a> Iterator for PressedMouseButtonIterator<'a> {
     type Item = MouseButton;
 
     fn next(&mut self) -> Option<MouseButton> {
-        while let Some((mouse_button, pressed)) = self.iter.next() {
+        for (mouse_button, pressed) in &mut self.iter {
             if pressed {
                 return Some(mouse_button);
             }

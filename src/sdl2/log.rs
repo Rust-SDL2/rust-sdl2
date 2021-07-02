@@ -63,7 +63,8 @@ impl Priority {
             SDL_LOG_PRIORITY_INFO => Priority::Info,
             SDL_LOG_PRIORITY_WARN => Priority::Warn,
             SDL_LOG_PRIORITY_ERROR => Priority::Error,
-            SDL_LOG_PRIORITY_CRITICAL | _ => Priority::Critical,
+            SDL_LOG_PRIORITY_CRITICAL => Priority::Critical,
+            _ => Priority::Critical,
         }
     }
 }

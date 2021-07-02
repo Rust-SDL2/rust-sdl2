@@ -35,7 +35,7 @@ impl RelativeMouseState {
             y: 0,
         }
     }
-    pub fn to_sdl_state(&self) -> u32 {
+    pub fn to_sdl_state(self) -> u32 {
         self.mouse_state
     }
 

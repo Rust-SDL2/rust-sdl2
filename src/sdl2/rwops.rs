@@ -16,6 +16,7 @@ pub struct RWops<'a> {
 }
 
 impl<'a> RWops<'a> {
+    /// # Safety
     // this can prevent introducing UB until
     // https://github.com/rust-lang/rust-clippy/issues/5953 is fixed
     #[allow(clippy::trivially_copy_pass_by_ref)]
@@ -23,6 +24,7 @@ impl<'a> RWops<'a> {
         self.raw
     }
 
+    /// # Safety
     pub unsafe fn from_ll<'b>(raw: *mut sys::SDL_RWops) -> RWops<'b> {
         RWops {
             raw,

@@ -18,7 +18,7 @@ impl FPSManager {
             let size = mem::size_of::<gfx::framerate::FPSmanager>() as size_t;
             let raw = libc::malloc(size) as *mut gfx::framerate::FPSmanager;
             gfx::framerate::SDL_initFramerate(raw);
-            FPSManager { raw: raw }
+            FPSManager { raw }
         }
     }
 
@@ -46,6 +46,12 @@ impl FPSManager {
     /// Delay execution to maintain a constant framerate and calculate fps.
     pub fn delay(&mut self) -> u32 {
         unsafe { gfx::framerate::SDL_framerateDelay(self.raw) as u32 }
+    }
+}
+
+impl Default for FPSManager {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

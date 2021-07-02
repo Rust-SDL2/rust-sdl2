@@ -609,15 +609,15 @@ impl DerefMut for Rect {
     }
 }
 
-impl Into<sys::SDL_Rect> for Rect {
-    fn into(self) -> sys::SDL_Rect {
-        self.raw
+impl From<Rect> for sys::SDL_Rect {
+    fn from(val: Rect) -> Self {
+        val.raw
     }
 }
 
-impl Into<(i32, i32, u32, u32)> for Rect {
-    fn into(self) -> (i32, i32, u32, u32) {
-        (self.raw.x, self.raw.y, self.raw.w as u32, self.raw.h as u32)
+impl From<Rect> for (i32, i32, u32, u32) {
+    fn from(val: Rect) -> Self {
+        (val.raw.x, val.raw.y, val.raw.w as u32, val.raw.h as u32)
     }
 }
 
@@ -742,15 +742,15 @@ impl From<(i32, i32)> for Point {
     }
 }
 
-impl Into<sys::SDL_Point> for Point {
-    fn into(self) -> sys::SDL_Point {
-        self.raw
+impl From<Point> for sys::SDL_Point {
+    fn from(val: Point) -> Self {
+        val.raw
     }
 }
 
-impl Into<(i32, i32)> for Point {
-    fn into(self) -> (i32, i32) {
-        (self.x(), self.y())
+impl From<Point> for (i32, i32) {
+    fn from(val: Point) -> Self {
+        (val.x(), val.y())
     }
 }
 

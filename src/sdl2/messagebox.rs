@@ -39,11 +39,9 @@ pub struct MessageBoxColorScheme {
     pub button_selected: (u8, u8, u8),
 }
 
-impl Into<sys::SDL_MessageBoxColorScheme> for MessageBoxColorScheme {
-    fn into(self) -> sys::SDL_MessageBoxColorScheme {
-        sys::SDL_MessageBoxColorScheme {
-            colors: self.into(),
-        }
+impl From<MessageBoxColorScheme> for sys::SDL_MessageBoxColorScheme {
+    fn from(val: MessageBoxColorScheme) -> Self {
+        Self { colors: val.into() }
     }
 }
 
@@ -88,17 +86,17 @@ impl From<MessageBoxColorScheme> for [sys::SDL_MessageBoxColor; 5] {
     }
 }
 
-impl Into<MessageBoxColorScheme> for [sys::SDL_MessageBoxColor; 5] {
-    fn into(self) -> MessageBoxColorScheme {
+impl From<[sys::SDL_MessageBoxColor; 5]> for MessageBoxColorScheme {
+    fn from(val: [sys::SDL_MessageBoxColor; 5]) -> Self {
         fn from_message_box_color(prim_color: sys::SDL_MessageBoxColor) -> (u8, u8, u8) {
             (prim_color.r, prim_color.g, prim_color.b)
         }
-        MessageBoxColorScheme {
-            background: from_message_box_color(self[0]),
-            text: from_message_box_color(self[1]),
-            button_border: from_message_box_color(self[2]),
-            button_background: from_message_box_color(self[3]),
-            button_selected: from_message_box_color(self[4]),
+        Self {
+            background: from_message_box_color(val[0]),
+            text: from_message_box_color(val[1]),
+            button_border: from_message_box_color(val[2]),
+            button_background: from_message_box_color(val[3]),
+            button_selected: from_message_box_color(val[4]),
         }
     }
 }

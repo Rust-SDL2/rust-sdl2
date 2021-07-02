@@ -470,7 +470,7 @@ impl DisplayMode {
         )
     }
 
-    pub fn to_ll(&self) -> sys::SDL_DisplayMode {
+    pub fn to_ll(self) -> sys::SDL_DisplayMode {
         sys::SDL_DisplayMode {
             format: self.format as u32,
             w: self.w as c_int,
@@ -558,13 +558,11 @@ impl Drop for WindowContext {
 }
 
 impl WindowContext {
-    #[inline]
     /// Unsafe if the `*mut SDL_Window` is used after the `WindowContext` is dropped
+    /// # Safety
+    #[inline]
     pub unsafe fn from_ll(subsystem: VideoSubsystem, raw: *mut sys::SDL_Window) -> WindowContext {
-        WindowContext {
-            subsystem: subsystem.clone(),
-            raw,
-        }
+        WindowContext { subsystem, raw }
     }
 }
 
@@ -1178,14 +1176,16 @@ impl Window {
         self.context.raw
     }
 
+    /// # Safety
     #[inline]
     pub unsafe fn from_ll(subsystem: VideoSubsystem, raw: *mut sys::SDL_Window) -> Window {
         let context = WindowContext::from_ll(subsystem, raw);
         context.into()
     }
 
-    #[inline]
     /// Create a new `Window` without taking ownership of the `WindowContext`
+    /// # Safety
+    #[inline]
     pub const unsafe fn from_ref(context: Rc<WindowContext>) -> Window {
         Window { context }
     }

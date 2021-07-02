@@ -40,7 +40,7 @@ mod game_of_life {
             }
 
             GameOfLife {
-                playground: playground,
+                playground,
                 state: State::Paused,
             }
         }
@@ -90,15 +90,21 @@ mod game_of_life {
                         }
                     }
                 }
-                if count > 3 || count < 2 {
+                if !(2..=3).contains(&count) {
                     *square = false;
                 } else if count == 3 {
                     *square = true;
                 } else if count == 2 {
-                    *square = *square;
+                    // *square = *square;
                 }
             }
             self.playground = new_playground;
+        }
+    }
+
+    impl Default for GameOfLife {
+        fn default() -> Self {
+            Self::new()
         }
     }
 
@@ -118,7 +124,7 @@ fn dummy_texture<'a>(
     enum TextureColor {
         Yellow,
         White,
-    };
+    }
     let mut square_texture1 = texture_creator
         .create_texture_target(None, SQUARE_SIZE, SQUARE_SIZE)
         .map_err(|e| e.to_string())?;
