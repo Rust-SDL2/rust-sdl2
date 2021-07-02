@@ -156,6 +156,11 @@ pub enum BlendMode {
     ///
     /// dstRGB = srcRGB * dstRGB
     Mod = SDL_BlendMode::SDL_BLENDMODE_MOD as i32,
+    /// Color multiply
+    ///
+    /// dstRGB = (srcRGB * dstRGB) + (dstRGB * (1-srcA))
+    /// dstA = (srcA * dstA) + (dstA * (1-srcA))
+    Mul = SDL_BlendMode::SDL_BLENDMODE_MUL as i32,
     /// Invalid blending mode (indicates error)
     Invalid = SDL_BlendMode::SDL_BLENDMODE_INVALID as i32,
 }
@@ -172,6 +177,7 @@ impl TryFrom<u32> for BlendMode {
             SDL_BLENDMODE_BLEND => Blend,
             SDL_BLENDMODE_ADD => Add,
             SDL_BLENDMODE_MOD => Mod,
+            SDL_BLENDMODE_MUL => Mul,
             SDL_BLENDMODE_INVALID => Invalid,
         })
     }
