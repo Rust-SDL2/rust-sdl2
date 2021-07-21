@@ -293,7 +293,6 @@ fn patch_sdl2(sdl2_source_path: &Path) {
 #[cfg(feature = "bundled")]
 fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
     let mut cfg = cmake::Config::new(sdl2_build_path);
-    cfg.profile("release");
 
     // Override __FLTUSED__ to keep the _fltused symbol from getting defined in the static build.
     // This conflicts and fails to link properly when building statically on Windows, likely due to
@@ -367,6 +366,25 @@ fn compute_include_paths() -> Vec<String> {
     include_paths
 }
 
+/// There's no easy way to extract this suffix from `cmake::Config` so we have to emulate their
+/// behaviour here (see the source for `cmake::Config::build`).
+fn debug_postfix() -> &'static str {
+    // default, and use-pkgconfig are always a release build.
+    if cfg!(not(feature = "bundled")) {
+        ""
+    } else {
+        match (
+            &env::var("OPT_LEVEL").unwrap_or_default()[..],
+            &env::var("PROFILE").unwrap_or_default()[..],
+        ) {
+            ("1", _) | ("2", _) | ("3", _) | ("s", _) | ("z", _) => "",
+            ("0", _) => "d",
+            (_, "debug") => "d",
+            (_, _) => "",
+        }
+    }
+}
+
 fn link_sdl2(target_os: &str) {
     #[cfg(all(feature = "use-pkgconfig", not(feature = "bundled")))]
     {
@@ -404,7 +422,7 @@ fn link_sdl2(target_os: &str) {
             if cfg!(feature = "use_mac_framework") && target_os == "darwin" {
                 println!("cargo:rustc-flags=-l framework=SDL2");
             } else if target_os != "emscripten" {
-                println!("cargo:rustc-flags=-l SDL2");
+                println!("cargo:rustc-flags=-l SDL2{}", debug_postfix());
             }
         }
     }
@@ -414,8 +432,8 @@ fn link_sdl2(target_os: &str) {
         if cfg!(feature = "bundled")
             || (cfg!(feature = "use-pkgconfig") == false && cfg!(feature = "use-vcpkg") == false)
         {
-            println!("cargo:rustc-link-lib=static=SDL2main");
-            println!("cargo:rustc-link-lib=static=SDL2");
+            println!("cargo:rustc-link-lib=static=SDL2main{}", debug_postfix());
+            println!("cargo:rustc-link-lib=static=SDL2{}", debug_postfix());
         }
 
         // Also linked to any required libraries for each supported platform
@@ -589,9 +607,9 @@ fn copy_dynamic_libraries(sdl2_compiled_path: &PathBuf, target_os: &str) {
     // copy sdl2.dll out of its build tree and down to the top level cargo
     // binary output directory.
     if target_os.contains("windows") {
-        let sdl2_dll_name = "SDL2.dll";
+        let sdl2_dll_name = format!("SDL2{}.dll", debug_postfix());
         let sdl2_bin_path = sdl2_compiled_path.join("bin");
-        let src_dll_path = sdl2_bin_path.join(sdl2_dll_name);
+        let src_dll_path = sdl2_bin_path.join(&sdl2_dll_name);
 
         copy_library_file(&src_dll_path, &target_path);
     } else if target_os != "emscripten" {

@@ -1,6 +1,10 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
+### Unreleased
+
+[PR #1092](https://github.com/Rust-SDL2/rust-sdl2/pull/1092) Add debug builds to "bundled", second attempt.
+
 ### v0.34.5
 
 [PR #1100](https://github.com/Rust-SDL2/rust-sdl2/pull/1100) Added binding for `SDL_GetDisplayUsableBounds`
