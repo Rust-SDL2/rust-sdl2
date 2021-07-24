@@ -26,7 +26,7 @@ fn main() -> Result<(), String> {
 
     canvas.set_draw_color(sdl2::pixels::Color::RGBA(0, 0, 0, 255));
 
-    let mut timer = sdl_context.timer()?;
+    let timer = sdl_context.timer()?;
 
     let mut event_pump = sdl_context.event_pump()?;
 
