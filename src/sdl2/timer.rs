@@ -60,7 +60,7 @@ impl TimerSubsystem {
     }
 }
 
-pub type TimerCallback<'a> = Box<dyn FnMut() -> u32 + 'a + Sync>;
+pub type TimerCallback<'a> = Box<dyn FnMut() -> u32 + 'a + Send>;
 
 pub struct Timer<'b, 'a> {
     callback: Option<Box<TimerCallback<'a>>>,
