@@ -1,10 +1,13 @@
 use crate::rwops::RWops;
+use crate::sensor::SensorType;
 use libc::c_char;
+use std::convert::TryInto;
 use std::error;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt;
 use std::io;
 use std::path::Path;
+use sys::SDL_bool;
 
 use crate::common::{validate_int, IntegerOrSdlError};
 use crate::get_error;
@@ -475,6 +478,80 @@ impl GameController {
                 low_frequency_rumble,
                 high_frequency_rumble,
                 duration_ms,
+            )
+        };
+
+        if result != 0 {
+            Err(IntegerOrSdlError::SdlError(get_error()))
+        } else {
+            Ok(())
+        }
+    }
+}
+
+impl GameController {
+    #[doc(alias = "SDL_GameControllerHasSensor")]
+    pub fn has_sensor(&self, sensor_type: SensorType) -> bool {
+        let result = unsafe { sys::SDL_GameControllerHasSensor(self.raw, sensor_type.into()) };
+
+        match result {
+            sys::SDL_bool::SDL_FALSE => false,
+            sys::SDL_bool::SDL_TRUE => true,
+        }
+    }
+
+    #[doc(alias = "SDL_GameControllerIsSensorEnabled")]
+    pub fn sensor_enabled(&self, sensor_type: SensorType) -> bool {
+        let result =
+            unsafe { sys::SDL_GameControllerIsSensorEnabled(self.raw, sensor_type.into()) };
+
+        match result {
+            sys::SDL_bool::SDL_FALSE => false,
+            sys::SDL_bool::SDL_TRUE => true,
+        }
+    }
+
+    #[doc(alias = "SDL_GameControllerHasSensor")]
+    pub fn sensor_set_enabled(
+        &self,
+        sensor_type: SensorType,
+        enabled: bool,
+    ) -> Result<(), IntegerOrSdlError> {
+        let result = unsafe {
+            sys::SDL_GameControllerSetSensorEnabled(
+                self.raw,
+                sensor_type.into(),
+                if enabled {
+                    SDL_bool::SDL_TRUE
+                } else {
+                    SDL_bool::SDL_FALSE
+                },
+            )
+        };
+
+        if result != 0 {
+            Err(IntegerOrSdlError::SdlError(get_error()))
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Get data from a sensor.
+    ///
+    /// The number of data points depends on the sensor. Both Gyroscope and
+    /// Accelerometer return 3 values, one for each axis.
+    #[doc(alias = "SDL_GameControllerGetSensorData")]
+    pub fn sensor_get_data(
+        &self,
+        sensor_type: SensorType,
+        data: &mut [f32],
+    ) -> Result<(), IntegerOrSdlError> {
+        let result = unsafe {
+            sys::SDL_GameControllerGetSensorData(
+                self.raw,
+                sensor_type.into(),
+                data.as_mut_ptr(),
+                data.len().try_into().unwrap(),
             )
         };
 

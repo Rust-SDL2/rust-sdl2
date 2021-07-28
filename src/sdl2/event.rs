@@ -298,6 +298,7 @@ pub enum EventType {
     ControllerDeviceAdded = SDL_EventType::SDL_CONTROLLERDEVICEADDED as u32,
     ControllerDeviceRemoved = SDL_EventType::SDL_CONTROLLERDEVICEREMOVED as u32,
     ControllerDeviceRemapped = SDL_EventType::SDL_CONTROLLERDEVICEREMAPPED as u32,
+    ControllerSensorUpdated = SDL_EventType::SDL_CONTROLLERSENSORUPDATE as u32,
 
     FingerDown = SDL_EventType::SDL_FINGERDOWN as u32,
     FingerUp = SDL_EventType::SDL_FINGERUP as u32,
@@ -366,6 +367,7 @@ impl TryFrom<u32> for EventType {
             SDL_CONTROLLERDEVICEADDED => ControllerDeviceAdded,
             SDL_CONTROLLERDEVICEREMOVED => ControllerDeviceRemoved,
             SDL_CONTROLLERDEVICEREMAPPED => ControllerDeviceRemapped,
+            SDL_CONTROLLERSENSORUPDATE => ControllerSensorUpdated,
 
             SDL_FINGERDOWN => FingerDown,
             SDL_FINGERUP => FingerUp,
@@ -672,6 +674,18 @@ pub enum Event {
         timestamp: u32,
         /// The controller's joystick `id`
         which: u32,
+    },
+
+    /// Triggered when the gyroscope or accelerometer is updated
+    ControllerSensorUpdated {
+        timestamp: u32,
+        which: u32,
+        /// The type of the sensor, see SensorType.
+        sensor: i32,
+        /// Data from the sensor.
+        ///
+        /// See the `sensor` module for more information.
+        data: [f32; 3],
     },
 
     FingerDown {
@@ -1612,6 +1626,15 @@ impl Event {
                         which: event.which as u32,
                     }
                 }
+                EventType::ControllerSensorUpdated => {
+                    let event = raw.csensor;
+                    Event::ControllerSensorUpdated {
+                        timestamp: event.timestamp,
+                        which: event.which as u32,
+                        sensor: event.sensor,
+                        data: event.data,
+                    }
+                }
 
                 EventType::FingerDown => {
                     let event = raw.tfinger;
@@ -1881,6 +1904,7 @@ impl Event {
             | (Self::ControllerDeviceAdded { .. }, Self::ControllerDeviceAdded { .. })
             | (Self::ControllerDeviceRemoved { .. }, Self::ControllerDeviceRemoved { .. })
             | (Self::ControllerDeviceRemapped { .. }, Self::ControllerDeviceRemapped { .. })
+            | (Self::ControllerSensorUpdated { .. }, Self::ControllerSensorUpdated { .. })
             | (Self::FingerDown { .. }, Self::FingerDown { .. })
             | (Self::FingerUp { .. }, Self::FingerUp { .. })
             | (Self::FingerMotion { .. }, Self::FingerMotion { .. })
@@ -1947,6 +1971,7 @@ impl Event {
             Self::ControllerDeviceAdded { timestamp, .. } => timestamp,
             Self::ControllerDeviceRemoved { timestamp, .. } => timestamp,
             Self::ControllerDeviceRemapped { timestamp, .. } => timestamp,
+            Self::ControllerSensorUpdated { timestamp, .. } => timestamp,
             Self::FingerDown { timestamp, .. } => timestamp,
             Self::FingerUp { timestamp, .. } => timestamp,
             Self::FingerMotion { timestamp, .. } => timestamp,

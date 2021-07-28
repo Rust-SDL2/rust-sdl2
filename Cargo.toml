@@ -141,6 +141,9 @@ required-features = ["ttf", "image"]
 name = "resource-manager"
 
 [[example]]
+name = "sensors"
+
+[[example]]
 required-features = ["ttf"]
 name = "ttf-demo"
 

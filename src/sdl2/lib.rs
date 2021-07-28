@@ -77,6 +77,7 @@ pub mod joystick;
 pub mod keyboard;
 pub mod log;
 pub mod messagebox;
+pub mod sensor;
 pub mod mouse;
 pub mod pixels;
 pub mod rect;
