@@ -6,6 +6,8 @@ when upgrading from a version of rust-sdl2 to another.
 * **BREAKING CHANGE** Update `sdl2-sys/sdl_bindings.rs` to use enums instead of consts. If you were using `sdl2-sys`'s
 enum variants directly in your project, you may be affected. If you only used sdl2 calls, there should not be any problems.
 
+[PR #1138](https://github.com/Rust-SDL2/rust-sdl2/pull/1138) Added binding for `SDL_OpenURL`
+
 ### v0.34.5
 
 [PR #1100](https://github.com/Rust-SDL2/rust-sdl2/pull/1100) Added binding for `SDL_GetDisplayUsableBounds`

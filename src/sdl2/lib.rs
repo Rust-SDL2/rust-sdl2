@@ -86,6 +86,7 @@ mod sdl;
 pub mod surface;
 pub mod timer;
 pub mod touch;
+pub mod url;
 pub mod version;
 pub mod video;
 
