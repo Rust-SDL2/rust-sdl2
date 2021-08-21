@@ -27,7 +27,7 @@ use sys::SDL_SensorGetData;
 use sys::SDL_SensorType;
 
 impl SensorSubsystem {
-    /// Retrieve the total number of attached joysticks *and* controllers identified by SDL.
+    /// Retrieve the total number of attached sensor *and* controllers identified by SDL.
     #[doc(alias = "SDL_NumSensors")]
     pub fn num_sensors(&self) -> Result<u32, String> {
         let result = unsafe { sys::SDL_NumSensors() };
@@ -39,7 +39,7 @@ impl SensorSubsystem {
         }
     }
 
-    /// Attempt to open the joystick at index `joystick_index` and return it.
+    /// Attempt to open the sensor at index `sensor_index` and return it.
     #[doc(alias = "SDL_SensorOpen")]
     pub fn open(&self, sensor_index: u32) -> Result<Sensor, IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
@@ -57,7 +57,7 @@ impl SensorSubsystem {
         }
     }
 
-    /// Force joystick update when not using the event loop
+    /// Force sensor update when not using the event loop
     #[inline]
     #[doc(alias = "SDL_SensorUpdate")]
     pub fn update(&self) {
