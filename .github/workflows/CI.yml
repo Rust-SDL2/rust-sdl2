@@ -58,9 +58,7 @@ jobs:
 
   build-linux:
     name: build linux pkg-config
-    runs-on: ubuntu-20.04
-    strategy:
-      fail-fast: false
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
