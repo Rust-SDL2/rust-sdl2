@@ -76,5 +76,5 @@ jobs:
           cargo --version
           cargo build --features "${CI_BUILD_FEATURES}"
           # sensors.rs require sdl 2.0.14 which is not available in ubuntu-latest
-          for example in $(ls examples/*.rs | grep -v sensors.rs); do cargo build --example "$(basename ${example%.*})" "${CI_BUILD_FEATURES}"; done
+          for example in $(ls examples/*.rs | grep -v sensors.rs); do cargo build --example "$(basename ${example%.*})" --features "${CI_BUILD_FEATURES}"; done
           cargo test --features "${CI_BUILD_FEATURES}"
