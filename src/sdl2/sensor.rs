@@ -72,6 +72,16 @@ pub enum SensorType {
     Accelerometer,
 }
 
+impl SensorType {
+    pub fn from_ll(raw: i32) -> Self {
+        match raw {
+            x if x == SDL_SensorType::SDL_SENSOR_GYRO as i32 => SensorType::Gyroscope,
+            x if x == SDL_SensorType::SDL_SENSOR_ACCEL as i32 => SensorType::Accelerometer,
+            _ => SensorType::Unknown,
+        }
+    }
+}
+
 impl Into<SDL_SensorType> for SensorType {
     fn into(self) -> SDL_SensorType {
         match self {

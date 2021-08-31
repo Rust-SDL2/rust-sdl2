@@ -15,7 +15,6 @@ use std::mem::transmute;
 use std::ptr;
 use std::sync::Mutex;
 
-use crate::controller;
 use crate::controller::{Axis, Button};
 use crate::get_error;
 use crate::joystick;
@@ -26,6 +25,7 @@ use crate::keyboard::Mod;
 use crate::keyboard::Scancode;
 use crate::mouse;
 use crate::mouse::{MouseButton, MouseState, MouseWheelDirection};
+use crate::{controller, sensor::SensorType};
 
 use crate::sys;
 use crate::sys::SDL_EventFilter;
@@ -680,8 +680,7 @@ pub enum Event {
     ControllerSensorUpdated {
         timestamp: u32,
         which: u32,
-        /// The type of the sensor, see SensorType.
-        sensor: i32,
+        sensor: SensorType,
         /// Data from the sensor.
         ///
         /// See the `sensor` module for more information.
@@ -1631,7 +1630,7 @@ impl Event {
                     Event::ControllerSensorUpdated {
                         timestamp: event.timestamp,
                         which: event.which as u32,
-                        sensor: event.sensor,
+                        sensor: SensorType::from_ll(event.sensor),
                         data: event.data,
                     }
                 }
