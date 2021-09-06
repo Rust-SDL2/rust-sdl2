@@ -576,10 +576,11 @@ extern crate vulkano;
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
+use sdl2::video::VkInstance;
 use std::ffi::CString;
-use vulkano::VulkanObject;
-use vulkano::instance::{Instance, RawInstanceExtensions};
+use vulkano::instance::{Instance, InstanceExtensions};
 use vulkano::swapchain::Surface;
+use vulkano::{Handle, Version, VulkanObject};
 
 fn main() {
     let sdl_context = sdl2::init().unwrap();
@@ -590,18 +591,26 @@ fn main() {
         .build()
         .unwrap();
 
-    let instance_extensions = window.vulkan_instance_extensions().unwrap();
-    let raw_instance_extensions = RawInstanceExtensions::new(instance_extensions.iter().map(
-        |&v| CString::new(v).unwrap()
-        ));
-    let instance = Instance::new(None, raw_instance_extensions, None).unwrap();
-    let surface_handle = window.vulkan_create_surface(instance.internal_object()).unwrap();
-    let surface = unsafe { Surface::from_raw_surface(instance, surface_handle, window.context()) };
+    let instance_extensions_strings: Vec<CString> = window
+        .vulkan_instance_extensions()
+        .unwrap()
+        .iter()
+        .map(|&v| CString::new(v).unwrap())
+        .collect();
+    let instance_extension =
+        InstanceExtensions::from(instance_extensions_strings.iter().map(AsRef::as_ref));
+    let instance = Instance::new(None, Version::V1_2, &instance_extension, None).unwrap();
+    let surface_handle = window
+        .vulkan_create_surface(instance.internal_object().as_raw() as VkInstance)
+        .unwrap();
+    let surface = unsafe {
+        Surface::from_raw_surface(instance, Handle::from_raw(surface_handle), window.context())
+    };
 
     let mut event_pump = sdl_context.event_pump().unwrap();
 
     'running: loop {
-        for event in event_pump.poll_iter() {
+         for event in event_pump.poll_iter() {
             match event {
                 Event::Quit {..} | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
                     break 'running
@@ -612,6 +621,7 @@ fn main() {
         ::std::thread::sleep(::std::time::Duration::new(0, 1_000_000_000u32 / 60));
     }
 }
+
 
 ```
 
