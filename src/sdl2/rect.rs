@@ -891,6 +891,12 @@ impl DivAssign<i32> for Point {
     }
 }
 
+impl std::iter::Sum for Point {
+    fn sum<I: Iterator<Item=Self>>(iter: I) -> Self {
+        iter.fold(Point::new(0, 0), Point::add)
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::{max_int_value, min_int_value, Point, Rect};
@@ -1095,5 +1101,11 @@ mod test {
         let mut point = Point::new(-11, 5);
         point /= 3;
         assert_eq!(point, Point::new(-11, 5) / 3);
+    }
+
+    #[test]
+    fn point_sum() {
+        let points_sum: Point = vec![Point::new(-11, 5), Point::new(6, 2)].iter().sum();
+        assert_eq!(Point::new(-5, 7), points_sum);
     }
 }
