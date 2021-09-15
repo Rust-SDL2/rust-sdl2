@@ -1,22 +1,17 @@
-extern crate futures;
 /// Minimal example for getting sdl2 and wgpu working together with raw-window-handle.
-extern crate glsl_to_spirv;
-extern crate libc;
+extern crate pollster;
 extern crate sdl2;
 extern crate wgpu;
 
-use futures::executor::block_on;
+use std::borrow::Cow;
 
 use sdl2::event::{Event, WindowEvent};
 use sdl2::keyboard::Keycode;
 
-fn load_glsl(code: &str, ty: glsl_to_spirv::ShaderType) -> Result<Vec<u32>, String> {
-    let spirv = glsl_to_spirv::compile(&code, ty)?;
-    let result = wgpu::read_spirv(spirv).map_err(|e| e.to_string())?;
-    Ok(result)
-}
-
 fn main() -> Result<(), String> {
+    // Show logs from wgpu
+    env_logger::init();
+
     let sdl_context = sdl2::init()?;
     let video_subsystem = sdl_context.video()?;
     let window = video_subsystem
@@ -26,103 +21,120 @@ fn main() -> Result<(), String> {
         .build()
         .map_err(|e| e.to_string())?;
     let (width, height) = window.size();
-    let surface = wgpu::Surface::create(&window);
 
-    let adapter_opt = block_on(wgpu::Adapter::request(
-        &wgpu::RequestAdapterOptions {
-            power_preference: wgpu::PowerPreference::Default,
-            compatible_surface: Some(&surface),
-        },
-        wgpu::BackendBit::PRIMARY,
-    ));
+    let instance = wgpu::Instance::new(wgpu::Backends::PRIMARY);
+    let surface = unsafe { instance.create_surface(&window) };
+    let adapter_opt = pollster::block_on(instance.request_adapter(&wgpu::RequestAdapterOptions {
+        power_preference: wgpu::PowerPreference::HighPerformance,
+        compatible_surface: Some(&surface),
+    }));
     let adapter = match adapter_opt {
         Some(a) => a,
         None => return Err(String::from("No adapter found")),
     };
 
-    let (device, queue) = block_on(adapter.request_device(&wgpu::DeviceDescriptor {
-        extensions: wgpu::Extensions {
-            anisotropic_filtering: false,
+    let (device, queue) = match pollster::block_on(adapter.request_device(
+        &wgpu::DeviceDescriptor {
+            limits: wgpu::Limits::default(),
+            label: Some("device"),
+            features: wgpu::Features::empty(),
         },
-        limits: wgpu::Limits::default(),
-    }));
+        None,
+    )) {
+        Ok(a) => a,
+        Err(e) => return Err(e.to_string()),
+    };
 
-    let vs = include_str!("shader.vert");
-    let vs_spirv = &load_glsl(vs, glsl_to_spirv::ShaderType::Vertex)?;
-    let vs_module = device.create_shader_module(vs_spirv);
-
-    let fs = include_str!("shader.frag");
-    let fs_spirv = &load_glsl(fs, glsl_to_spirv::ShaderType::Fragment)?;
-    let fs_module = device.create_shader_module(fs_spirv);
+    let shader = device.create_shader_module(&wgpu::ShaderModuleDescriptor {
+        label: Some("shader"),
+        source: wgpu::ShaderSource::Wgsl(Cow::Borrowed(include_str!("shader.wgsl"))),
+    });
 
     let bind_group_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
-        bindings: &[],
+        entries: &[],
         label: Some("bind_group_layout"),
     });
     let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
         layout: &bind_group_layout,
-        bindings: &[],
+        entries: &[],
         label: Some("bind_group"),
     });
     let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
         bind_group_layouts: &[&bind_group_layout],
+        label: None,
+        push_constant_ranges: &[],
     });
 
     let render_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
-        layout: &pipeline_layout,
-        vertex_stage: wgpu::ProgrammableStageDescriptor {
-            module: &vs_module,
-            entry_point: "main",
+        layout: Some(&pipeline_layout),
+        vertex: wgpu::VertexState {
+            buffers: &[],
+            module: &shader,
+            entry_point: "vs_main",
         },
-        fragment_stage: Some(wgpu::ProgrammableStageDescriptor {
-            module: &fs_module,
-            entry_point: "main",
+        fragment: Some(wgpu::FragmentState {
+            targets: &[wgpu::ColorTargetState {
+                format: wgpu::TextureFormat::Bgra8UnormSrgb,
+                blend: None,
+                write_mask: wgpu::ColorWrites::ALL,
+            }],
+            module: &shader,
+            entry_point: "fs_main",
         }),
-        rasterization_state: Some(wgpu::RasterizationStateDescriptor {
+        //rasterization_state: Some(wgpu::RasterizationStateDescriptor {
+        //    depth_bias: 0,
+        //    depth_bias_slope_scale: 0.0,
+        //    depth_bias_clamp: 0.0,
+        //}),
+        primitive: wgpu::PrimitiveState {
+            topology: wgpu::PrimitiveTopology::TriangleList,
+            strip_index_format: None,
             front_face: wgpu::FrontFace::Ccw,
-            cull_mode: wgpu::CullMode::None,
-            depth_bias: 0,
-            depth_bias_slope_scale: 0.0,
-            depth_bias_clamp: 0.0,
-        }),
-        primitive_topology: wgpu::PrimitiveTopology::TriangleList,
-        color_states: &[wgpu::ColorStateDescriptor {
-            format: wgpu::TextureFormat::Bgra8UnormSrgb,
-            color_blend: wgpu::BlendDescriptor::REPLACE,
-            alpha_blend: wgpu::BlendDescriptor::REPLACE,
-            write_mask: wgpu::ColorWrite::ALL,
-        }],
-        vertex_state: wgpu::VertexStateDescriptor {
-            index_format: wgpu::IndexFormat::Uint16,
-            vertex_buffers: &[],
+            cull_mode: Some(wgpu::Face::Front),
+            clamp_depth: false,
+            polygon_mode: wgpu::PolygonMode::Fill,
+            conservative: false,
         },
-        depth_stencil_state: None,
-        sample_count: 1,
-        sample_mask: !0,
-        alpha_to_coverage_enabled: false,
+        //color_states: &[wgpu::ColorStateDescriptor {
+        //    format: wgpu::TextureFormat::Bgra8UnormSrgb,
+        //    color_blend: wgpu::BlendDescriptor::REPLACE,
+        //    alpha_blend: wgpu::BlendDescriptor::REPLACE,
+        //    write_mask: wgpu::ColorWrite::ALL,
+        //}],
+        //vertex_state: wgpu::VertexStateDescriptor {
+        //    index_format: wgpu::IndexFormat::Uint16,
+        //    vertex_buffers: &[],
+        //},
+        depth_stencil: None,
+        label: None,
+        multisample: wgpu::MultisampleState {
+            count: 1,
+            mask: !0,
+            alpha_to_coverage_enabled: false,
+        },
     });
 
-    let mut sc_desc = wgpu::SwapChainDescriptor {
-        usage: wgpu::TextureUsage::OUTPUT_ATTACHMENT,
-        format: wgpu::TextureFormat::Bgra8UnormSrgb,
+    let mut config = wgpu::SurfaceConfiguration {
+        usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
+        format: surface.get_preferred_format(&adapter).unwrap(),
         width,
         height,
-        present_mode: wgpu::PresentMode::Fifo,
+        present_mode: wgpu::PresentMode::Mailbox,
     };
-
-    let mut swap_chain = device.create_swap_chain(&surface, &sc_desc);
+    surface.configure(&device, &config);
 
     let mut event_pump = sdl_context.event_pump()?;
     'running: loop {
         for event in event_pump.poll_iter() {
             match event {
                 Event::Window {
-                    win_event: WindowEvent::Resized(width, height),
+                    window_id,
+                    win_event: WindowEvent::SizeChanged(width, height),
                     ..
-                } => {
-                    sc_desc.width = width as u32;
-                    sc_desc.height = height as u32;
-                    swap_chain = device.create_swap_chain(&surface, &sc_desc);
+                } if window_id == window.id() => {
+                    config.width = width as u32;
+                    config.height = height as u32;
+                    surface.configure(&device, &config);
                 }
                 Event::Quit { .. }
                 | Event::KeyDown {
@@ -131,36 +143,44 @@ fn main() -> Result<(), String> {
                 } => {
                     break 'running;
                 }
-                _ => {}
+                e => {
+                    dbg!(e);
+                }
             }
         }
 
-        let frame_res = swap_chain.get_next_texture();
+        let frame_res = surface.get_current_frame();
         let frame = match frame_res {
             Ok(a) => a,
-            Err(_) => return Err(String::from("Timeout getting next texture")),
+            Err(e) => return Err(format!("Timeout getting next texture: {}", e)),
         };
+        let output = frame
+            .output
+            .texture
+            .create_view(&wgpu::TextureViewDescriptor::default());
         let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
             label: Some("command_encoder"),
         });
 
         {
             let mut rpass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
-                color_attachments: &[wgpu::RenderPassColorAttachmentDescriptor {
-                    attachment: &frame.view,
+                color_attachments: &[wgpu::RenderPassColorAttachment {
+                    view: &output,
                     resolve_target: None,
-                    load_op: wgpu::LoadOp::Clear,
-                    store_op: wgpu::StoreOp::Store,
-                    clear_color: wgpu::Color::GREEN,
+                    ops: wgpu::Operations {
+                        load: wgpu::LoadOp::Clear(wgpu::Color::GREEN),
+                        store: true,
+                    },
                 }],
                 depth_stencil_attachment: None,
+                label: None,
             });
             rpass.set_pipeline(&render_pipeline);
             rpass.set_bind_group(0, &bind_group, &[]);
             rpass.draw(0..3, 0..1);
         }
 
-        queue.submit(&[encoder.finish()]);
+        queue.submit([encoder.finish()]);
     }
 
     Ok(())
