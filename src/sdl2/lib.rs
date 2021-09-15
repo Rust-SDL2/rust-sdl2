@@ -83,6 +83,7 @@ pub mod rect;
 pub mod render;
 pub mod rwops;
 mod sdl;
+#[cfg(feature = "hidapi")]
 pub mod sensor;
 pub mod surface;
 pub mod timer;

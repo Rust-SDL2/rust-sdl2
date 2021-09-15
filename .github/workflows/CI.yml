@@ -74,5 +74,6 @@ jobs:
           set -xeuo pipefail
           rustc --version
           cargo --version
-          cargo build --features "${CI_BUILD_FEATURES}"
-          cargo test --features "${CI_BUILD_FEATURES}"
+          # SDL 2.0.10 so no hidapi
+          cargo build --no-default-features --features "${CI_BUILD_FEATURES}"
+          cargo test --no-default-features --features "${CI_BUILD_FEATURES}"

@@ -1,13 +1,15 @@
 use crate::rwops::RWops;
-use crate::sensor::SensorType;
 use libc::c_char;
-use std::convert::TryInto;
 use std::error;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt;
 use std::io;
 use std::path::Path;
-use sys::SDL_bool;
+
+#[cfg(feature = "hidapi")]
+use crate::sensor::SensorType;
+#[cfg(feature = "hidapi")]
+use std::convert::TryInto;
 
 use crate::common::{validate_int, IntegerOrSdlError};
 use crate::get_error;
@@ -489,9 +491,10 @@ impl GameController {
     }
 }
 
+#[cfg(feature = "hidapi")]
 impl GameController {
     #[doc(alias = "SDL_GameControllerHasSensor")]
-    pub fn has_sensor(&self, sensor_type: SensorType) -> bool {
+    pub fn has_sensor(&self, sensor_type: crate::sensor::SensorType) -> bool {
         let result = unsafe { sys::SDL_GameControllerHasSensor(self.raw, sensor_type.into()) };
 
         match result {
@@ -501,7 +504,7 @@ impl GameController {
     }
 
     #[doc(alias = "SDL_GameControllerIsSensorEnabled")]
-    pub fn sensor_enabled(&self, sensor_type: SensorType) -> bool {
+    pub fn sensor_enabled(&self, sensor_type: crate::sensor::SensorType) -> bool {
         let result =
             unsafe { sys::SDL_GameControllerIsSensorEnabled(self.raw, sensor_type.into()) };
 
@@ -514,7 +517,7 @@ impl GameController {
     #[doc(alias = "SDL_GameControllerHasSensor")]
     pub fn sensor_set_enabled(
         &self,
-        sensor_type: SensorType,
+        sensor_type: crate::sensor::SensorType,
         enabled: bool,
     ) -> Result<(), IntegerOrSdlError> {
         let result = unsafe {
@@ -522,9 +525,9 @@ impl GameController {
                 self.raw,
                 sensor_type.into(),
                 if enabled {
-                    SDL_bool::SDL_TRUE
+                    sys::SDL_bool::SDL_TRUE
                 } else {
-                    SDL_bool::SDL_FALSE
+                    sys::SDL_bool::SDL_FALSE
                 },
             )
         };
