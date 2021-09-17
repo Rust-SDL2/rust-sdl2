@@ -41,7 +41,7 @@ SDL2 >= 2.0.8 is recommended to use these bindings, but note that SDL2 >= 2.0.5 
 
 ### "Bundled" Feature
 
-Since 0.31, this crate supports a feature named "bundled" which downloads SDL2 from source, compiles it and links it automatically. While this should work for any architecture, you **will** need a C compiler (like `gcc`, `clang`, or MS's own compiler) to use this feature properly.
+Since 0.31, this crate supports a feature named "bundled" which compiles SDL2 from source and links it automatically. While this should work for any architecture, you **will** need a C compiler (like `gcc`, `clang`, or MS's own compiler) to use this feature properly.
 
 ### Linux
 Install these through your favourite package management tool, or via

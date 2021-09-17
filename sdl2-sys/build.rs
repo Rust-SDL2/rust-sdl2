@@ -2,28 +2,15 @@
 
 #[cfg(feature = "bindgen")]
 extern crate bindgen;
-#[cfg(feature = "bundled")]
-extern crate cmake;
-#[cfg(feature = "bundled")]
-extern crate flate2;
-#[cfg(feature = "pkg-config")]
-extern crate pkg_config;
-#[cfg(feature = "bundled")]
-extern crate tar;
-#[cfg(feature = "bundled")]
-extern crate unidiff;
-
 #[macro_use]
 extern crate cfg_if;
+#[cfg(feature = "bundled")]
+extern crate cmake;
+#[cfg(feature = "pkg-config")]
+extern crate pkg_config;
 
-use std::path::{Path, PathBuf};
 use std::{env, fs, io};
-
-// corresponds to the headers that we have in sdl2-sys/SDL2-{version}
-const SDL2_HEADERS_BUNDLED_VERSION: &str = "2.0.14";
-
-// means the lastest stable version that can be downloaded from SDL2's source
-const LASTEST_SDL2_VERSION: &str = "2.0.14";
+use std::path::{Path, PathBuf};
 
 #[cfg(feature = "bindgen")]
 macro_rules! add_msvc_includes_to_bindings {
@@ -42,54 +29,6 @@ macro_rules! add_msvc_includes_to_bindings {
             "-IC:/Program Files (x86)/Windows Kits/8.1/Include/um"
         ));
     };
-}
-
-fn get_bundled_header_path() -> PathBuf {
-    let mut include_path: PathBuf = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
-    include_path.push(format!("SDL2-{}", SDL2_HEADERS_BUNDLED_VERSION));
-    include_path.push("include");
-    include_path
-}
-
-#[cfg(feature = "bundled")]
-fn run_command(cmd: &str, args: &[&str]) {
-    use std::process::Command;
-    match Command::new(cmd).args(args).output() {
-        Ok(output) => {
-            if !output.status.success() {
-                let error = std::str::from_utf8(&output.stderr).unwrap();
-                panic!("Command '{}' failed: {}", cmd, error);
-            }
-        }
-        Err(error) => {
-            panic!("Error running command '{}': {:#}", cmd, error);
-        }
-    }
-}
-
-#[cfg(feature = "bundled")]
-fn download_to(url: &str, dest: &str) {
-    if cfg!(windows) {
-        run_command(
-            "powershell",
-            &[
-                "-NoProfile",
-                "-NonInteractive",
-                "-Command",
-                &format!(
-                    "& {{
-                $client = New-Object System.Net.WebClient
-                $client.DownloadFile(\"{0}\", \"{1}\")
-                if (!$?) {{ Exit 1 }}
-            }}",
-                    url, dest
-                )
-                .as_str(),
-            ],
-        );
-    } else {
-        run_command("curl", &[url, "-o", dest]);
-    }
 }
 
 #[cfg(feature = "use-pkgconfig")]
@@ -140,179 +79,39 @@ fn get_vcpkg_config() {
     }
 }
 
-// returns the location of the downloaded source
-#[cfg(feature = "bundled")]
-fn download_sdl2() -> PathBuf {
-    let out_dir = env::var("OUT_DIR").unwrap();
-
-    let sdl2_archive_name = format!("SDL2-{}.tar.gz", LASTEST_SDL2_VERSION);
-    let sdl2_archive_url = format!("https://libsdl.org/release/{}", sdl2_archive_name);
-
-    let sdl2_archive_path = Path::new(&out_dir).join(sdl2_archive_name);
-    let sdl2_build_path = Path::new(&out_dir).join(format!("SDL2-{}", LASTEST_SDL2_VERSION));
-
-    // avoid re-downloading the archive if it already exists
-    if !sdl2_archive_path.exists() {
-        download_to(&sdl2_archive_url, sdl2_archive_path.to_str().unwrap());
-    }
-
-    let reader = flate2::read::GzDecoder::new(fs::File::open(&sdl2_archive_path).unwrap());
-    let mut ar = tar::Archive::new(reader);
-    ar.unpack(&out_dir).unwrap();
-
-    sdl2_build_path
-}
-
-// apply patches to sdl2 source
-#[cfg(feature = "bundled")]
-fn patch_sdl2(sdl2_source_path: &Path) {
-    // vector of <(patch_file_name, patch_file_contents)>
-    let patches: Vec<(&str, &'static str)> = vec![
-        // Required patches can be added here like this:
-        // ("SDL-2.x.y-filename.patch", include_str!("patches/SDL-2.x.y-filename.patch")),
-
-        // Cherrypick to fix "SDL_string.obj : error LNK2019: unresolved external symbol memset
-        // referenced in function SDL_vsnprintf_REAL"
-        // Expected to be fixed in 2.0.15
-        (
-            "SDL2-2.0.12-vs2019-intrinsics.patch",
-            include_str!("patches/SDL2-2.0.12-vs2019-intrinsics.patch"),
-        ),
-    ];
-    let sdl_version = format!("SDL2-{}", LASTEST_SDL2_VERSION);
-
-    for patch in &patches {
-        // Only apply patches whose file name is prefixed with the currently
-        // targeted version of SDL2.
-        if !patch.0.starts_with(&sdl_version) {
-            continue;
-        }
-        let mut patch_set = unidiff::PatchSet::new();
-        patch_set.parse(patch.1).expect("Error parsing diff");
-
-        // For every modified file, copy the existing file to <file_name>_old,
-        // open a new copy of <file_name>. and fill the new file with a
-        // combination of the unmodified contents, and the patched sections.
-        // TOOD: This code is untested (save for the immediate application), and
-        // probably belongs in the unidiff (or similar) package.
-        for modified_file in patch_set.modified_files() {
-            use std::io::{BufRead, Write};
-
-            let file_path = sdl2_source_path.join(modified_file.path());
-            let old_path = sdl2_source_path.join(format!("{}_old", modified_file.path()));
-            fs::rename(&file_path, &old_path).expect(&format!(
-                "Rename of {} to {} failed",
-                file_path.to_string_lossy(),
-                old_path.to_string_lossy()
-            ));
-
-            let dst_file = fs::File::create(file_path).unwrap();
-            let mut dst_buf = io::BufWriter::new(dst_file);
-            let old_file = fs::File::open(old_path).unwrap();
-            let mut old_buf = io::BufReader::new(old_file);
-            let mut cursor = 0;
-
-            for (i, hunk) in modified_file.into_iter().enumerate() {
-                // Write old lines from cursor to the start of this hunk.
-                let num_lines = hunk.source_start - cursor - 1;
-                for _ in 0..num_lines {
-                    let mut line = String::new();
-                    old_buf.read_line(&mut line).unwrap();
-                    dst_buf.write_all(line.as_bytes()).unwrap();
-                }
-                cursor += num_lines;
-
-                // Skip lines in old_file, and verify that what we expect to
-                // replace is present in the old_file.
-                for expected_line in hunk.source_lines() {
-                    let mut actual_line = String::new();
-                    old_buf.read_line(&mut actual_line).unwrap();
-                    actual_line.pop();
-                    if expected_line.value != actual_line {
-                        panic!(
-                            "Can't apply patch; mismatch between expected and actual in hunk {}",
-                            i
-                        );
-                    }
-                }
-                cursor += hunk.source_length;
-
-                // Write the new lines into the destination.
-                for line in hunk.target_lines() {
-                    dst_buf.write_all(line.value.as_bytes()).unwrap();
-                    dst_buf.write_all(b"\n").unwrap();
-                }
-            }
-
-            // Write all remaining lines from the old file into the new.
-            for line in old_buf.lines() {
-                dst_buf.write_all(&line.unwrap().into_bytes()).unwrap();
-                dst_buf.write_all(b"\n").unwrap();
-            }
-        }
-        // For every removed file, simply delete the original.
-        // TODO: This is entirely untested code. There are likely bugs here, and
-        // this really should be part of the unidiff library, not a function
-        // defined here. Hopefully this gets moved somewhere else before it
-        // bites someone.
-        for removed_file in patch_set.removed_files() {
-            fs::remove_file(sdl2_source_path.join(removed_file.path())).expect(&format!(
-                "Failed to remove file {} from {}",
-                removed_file.path(),
-                sdl2_source_path.to_string_lossy()
-            ));
-        }
-        // For every new file, copy the entire contents of the patched file into
-        // a newly created <file_name>.
-        // TODO: This is entirely untested code. There are likely bugs here, and
-        // this really should be part of the unidiff library, not a function
-        // defined here. Hopefully this gets moved somewhere else before it
-        // bites someone.
-        for added_file in patch_set.added_files() {
-            use std::io::Write;
-
-            // This should be superfluous. I don't know how a new file would
-            // ever have more than one hunk.
-            assert!(added_file.len() == 1);
-            let file_path = sdl2_source_path.join(added_file.path());
-            let dst_file = fs::File::create(&file_path).expect(&format!(
-                "Failed to create file {}",
-                file_path.to_string_lossy()
-            ));
-            let mut dst_buf = io::BufWriter::new(&dst_file);
-
-            for line in added_file.into_iter().nth(0).unwrap().target_lines() {
-                dst_buf.write_all(line.value.as_bytes()).unwrap();
-                dst_buf.write_all(b"\n").unwrap();
-            }
-        }
-    }
-}
-
 // compile a shared or static lib depending on the feature
 #[cfg(feature = "bundled")]
 fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
     let mut cfg = cmake::Config::new(sdl2_build_path);
-    cfg.profile("release");
+    if let Ok(profile) = env::var("SDL2_BUILD_PROFILE") {
+        cfg.profile(&profile);
+    } else {
+        cfg.profile("release");
+    }
 
-    // Override __FLTUSED__ to keep the _fltused symbol from getting defined in the static build.
-    // This conflicts and fails to link properly when building statically on Windows, likely due to
-    // COMDAT conflicts/breakage happening somewhere.
-    #[cfg(feature = "static-link")]
-    cfg.cflag("-D__FLTUSED__");
+    // Allow specifying custom toolchain specifically for SDL2.
+    if let Ok(toolchain) = env::var("SDL2_TOOLCHAIN") {
+        cfg.define("CMAKE_TOOLCHAIN_FILE", &toolchain);
+    } else {
+        // Override __FLTUSED__ to keep the _fltused symbol from getting defined in the static build.
+        // This conflicts and fails to link properly when building statically on Windows, likely due to
+        // COMDAT conflicts/breakage happening somewhere.
+        #[cfg(feature = "static-link")]
+        cfg.cflag("-D__FLTUSED__");
 
-    #[cfg(target_os = "linux")]
-    {
-        use version_compare::Version;
-        if let Ok(version) = std::process::Command::new("cc")
-            .arg("-dumpversion")
-            .output()
+        #[cfg(target_os = "linux")]
         {
-            let local_ver = Version::from(std::str::from_utf8(&version.stdout).unwrap()).unwrap();
-            let affected_ver = Version::from("10").unwrap();
+            use version_compare::Version;
+            if let Ok(version) = std::process::Command::new("cc")
+                .arg("-dumpversion")
+                .output()
+            {
+                let local_ver = Version::from(std::str::from_utf8(&version.stdout).unwrap()).unwrap();
+                let affected_ver = Version::from("10").unwrap();
 
-            if local_ver >= affected_ver {
-                cfg.cflag("-fcommon");
+                if local_ver >= affected_ver {
+                    cfg.cflag("-fcommon");
+                }
             }
         }
     }
@@ -333,11 +132,11 @@ fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
 }
 
 #[cfg(not(feature = "bundled"))]
-fn compute_include_paths() -> Vec<String> {
+fn compute_include_paths(fallback_path: String) -> Vec<String> {
     let mut include_paths: Vec<String> = vec![];
 
     if let Ok(include_path) = env::var("SDL2_INCLUDE_PATH") {
-        include_paths.push(format!("{}", include_path));
+        include_paths.push(include_path);
     };
 
     #[cfg(feature = "pkg-config")]
@@ -362,6 +161,10 @@ fn compute_include_paths() -> Vec<String> {
         for path in vcpkg_library.include_paths {
             include_paths.push(format!("{}", path.display()));
         }
+    }
+
+    if include_paths.is_empty() {
+        include_paths.push(fallback_path);
     }
 
     include_paths
@@ -559,6 +362,7 @@ fn copy_library_symlink(src_path: &Path, target_path: &Path) {
         }
     }
 }
+
 #[cfg(not(unix))]
 fn copy_library_symlink(src_path: &Path, target_path: &Path) {}
 
@@ -615,43 +419,37 @@ fn main() {
     let host = env::var("HOST").expect("Cargo build scripts always have HOST");
     let target_os = get_os_from_triple(target.as_str()).unwrap();
 
+    let sdl2_source_path = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap()).join("SDL");
     let sdl2_compiled_path: PathBuf;
     #[cfg(feature = "bundled")]
     {
-        let sdl2_source_path = download_sdl2();
-        patch_sdl2(sdl2_source_path.as_path());
         sdl2_compiled_path = compile_sdl2(sdl2_source_path.as_path(), target_os);
 
-        let sdl2_downloaded_include_path = sdl2_source_path.join("include");
         let sdl2_compiled_lib_path = sdl2_compiled_path.join("lib");
+        println!("cargo:rustc-link-search={}", sdl2_compiled_lib_path.display());
+    }
 
-        println!(
-            "cargo:rustc-link-search={}",
-            sdl2_compiled_lib_path.display()
-        );
+    let sdl2_includes = sdl2_source_path.join("include").to_str().unwrap().to_string();
 
-        #[cfg(feature = "bindgen")]
-        {
-            let include_paths = vec![String::from(sdl2_downloaded_include_path.to_str().unwrap())];
-            println!("cargo:include={}", include_paths.join(":"));
-            generate_bindings(target.as_str(), host.as_str(), include_paths.as_slice())
-        }
-        #[cfg(not(feature = "bindgen"))]
-        {
-            println!("cargo:include={}", sdl2_downloaded_include_path.display());
-        }
-    };
-
-    #[cfg(all(not(feature = "bundled"), feature = "bindgen"))]
+    #[cfg(feature = "bindgen")]
     {
-        let include_paths: Vec<String> = compute_include_paths();
-        generate_bindings(target.as_str(), host.as_str(), include_paths.as_slice())
+        let include_paths: Vec<String>;
+        #[cfg(feature = "bundled")]
+        {
+            include_paths = vec![sdl2_includes];
+        }
+        #[cfg(not(feature = "bundled"))]
+        {
+            include_paths = compute_include_paths(sdl2_includes)
+        }
+        generate_bindings(target.as_str(), host.as_str(), include_paths.as_slice());
+        println!("cargo:include={}", include_paths.join(":"));
     }
 
     #[cfg(not(feature = "bindgen"))]
     {
         copy_pregenerated_bindings();
-        println!("cargo:include={}", get_bundled_header_path().display());
+        println!("cargo:include={}", sdl2_includes);
     }
 
     link_sdl2(target_os);
@@ -795,55 +593,26 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
         }
     }
 
-    if headers_paths.len() == 0 {
-        // if no paths are being provided, fall back to the headers included in this repo
-        let include_path = get_bundled_header_path();
-        println!("cargo:include={}", include_path.display());
-
-        bindings = bindings.clang_arg(format!("-I{}", include_path.display()));
+    for headers_path in headers_paths {
+        bindings = bindings.clang_arg(format!("-I{}", headers_path));
         if cfg!(feature = "image") {
-            image_bindings = image_bindings.clang_arg(format!("-I{}", include_path.display()));
+            image_bindings = image_bindings.clang_arg(format!("-I{}", headers_path));
         }
         if cfg!(feature = "ttf") {
-            ttf_bindings = ttf_bindings.clang_arg(format!("-I{}", include_path.display()));
+            ttf_bindings = ttf_bindings.clang_arg(format!("-I{}", headers_path));
         }
         if cfg!(feature = "mixer") {
-            mixer_bindings = mixer_bindings.clang_arg(format!("-I{}", include_path.display()));
+            mixer_bindings = mixer_bindings.clang_arg(format!("-I{}", headers_path));
         }
         if cfg!(feature = "gfx") {
             gfx_framerate_bindings =
-                gfx_framerate_bindings.clang_arg(format!("-I{}", include_path.display()));
+                gfx_framerate_bindings.clang_arg(format!("-I{}", headers_path));
             gfx_primitives_bindings =
-                gfx_primitives_bindings.clang_arg(format!("-I{}", include_path.display()));
+                gfx_primitives_bindings.clang_arg(format!("-I{}", headers_path));
             gfx_imagefilter_bindings =
-                gfx_imagefilter_bindings.clang_arg(format!("-I{}", include_path.display()));
+                gfx_imagefilter_bindings.clang_arg(format!("-I{}", headers_path));
             gfx_rotozoom_bindings =
-                gfx_rotozoom_bindings.clang_arg(format!("-I{}", include_path.display()));
-        }
-    } else {
-        // if paths are included, use them for bindgen. Bindgen should use the first one.
-        println!("cargo:include={}", headers_paths.join(":"));
-        for headers_path in headers_paths {
-            bindings = bindings.clang_arg(format!("-I{}", headers_path));
-            if cfg!(feature = "image") {
-                image_bindings = image_bindings.clang_arg(format!("-I{}", headers_path));
-            }
-            if cfg!(feature = "ttf") {
-                ttf_bindings = ttf_bindings.clang_arg(format!("-I{}", headers_path));
-            }
-            if cfg!(feature = "mixer") {
-                mixer_bindings = mixer_bindings.clang_arg(format!("-I{}", headers_path));
-            }
-            if cfg!(feature = "gfx") {
-                gfx_framerate_bindings =
-                    gfx_framerate_bindings.clang_arg(format!("-I{}", headers_path));
-                gfx_primitives_bindings =
-                    gfx_primitives_bindings.clang_arg(format!("-I{}", headers_path));
-                gfx_imagefilter_bindings =
-                    gfx_imagefilter_bindings.clang_arg(format!("-I{}", headers_path));
-                gfx_rotozoom_bindings =
-                    gfx_rotozoom_bindings.clang_arg(format!("-I{}", headers_path));
-            }
+                gfx_rotozoom_bindings.clang_arg(format!("-I{}", headers_path));
         }
     }
 
