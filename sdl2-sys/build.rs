@@ -9,8 +9,9 @@ extern crate cmake;
 #[cfg(feature = "pkg-config")]
 extern crate pkg_config;
 
-use std::{env, fs, io};
 use std::path::{Path, PathBuf};
+use std::process::Command;
+use std::{env, fs, io};
 
 #[cfg(feature = "bindgen")]
 macro_rules! add_msvc_includes_to_bindings {
@@ -29,6 +30,16 @@ macro_rules! add_msvc_includes_to_bindings {
             "-IC:/Program Files (x86)/Windows Kits/8.1/Include/um"
         ));
     };
+}
+
+fn init_submodule(sdl_path: &Path) {
+    if !sdl_path.join("CMakeLists.txt").exists() {
+        Command::new("git")
+            .args(&["submodule", "update", "--init"])
+            .current_dir(sdl_path.clone())
+            .status()
+            .expect("Git is needed to retrieve the SDL source files");
+    }
 }
 
 #[cfg(feature = "use-pkgconfig")]
@@ -106,7 +117,8 @@ fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
                 .arg("-dumpversion")
                 .output()
             {
-                let local_ver = Version::from(std::str::from_utf8(&version.stdout).unwrap()).unwrap();
+                let local_ver =
+                    Version::from(std::str::from_utf8(&version.stdout).unwrap()).unwrap();
                 let affected_ver = Version::from("10").unwrap();
 
                 if local_ver >= affected_ver {
@@ -420,16 +432,25 @@ fn main() {
     let target_os = get_os_from_triple(target.as_str()).unwrap();
 
     let sdl2_source_path = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap()).join("SDL");
+    init_submodule(sdl2_source_path.as_path());
+
     let sdl2_compiled_path: PathBuf;
     #[cfg(feature = "bundled")]
     {
         sdl2_compiled_path = compile_sdl2(sdl2_source_path.as_path(), target_os);
 
         let sdl2_compiled_lib_path = sdl2_compiled_path.join("lib");
-        println!("cargo:rustc-link-search={}", sdl2_compiled_lib_path.display());
+        println!(
+            "cargo:rustc-link-search={}",
+            sdl2_compiled_lib_path.display()
+        );
     }
 
-    let sdl2_includes = sdl2_source_path.join("include").to_str().unwrap().to_string();
+    let sdl2_includes = sdl2_source_path
+        .join("include")
+        .to_str()
+        .unwrap()
+        .to_string();
 
     #[cfg(feature = "bindgen")]
     {
@@ -611,8 +632,7 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
                 gfx_primitives_bindings.clang_arg(format!("-I{}", headers_path));
             gfx_imagefilter_bindings =
                 gfx_imagefilter_bindings.clang_arg(format!("-I{}", headers_path));
-            gfx_rotozoom_bindings =
-                gfx_rotozoom_bindings.clang_arg(format!("-I{}", headers_path));
+            gfx_rotozoom_bindings = gfx_rotozoom_bindings.clang_arg(format!("-I{}", headers_path));
         }
     }
 
