@@ -483,7 +483,10 @@ fn main() {
     link_sdl2(target_os);
 
     // Android builds shared libhidapi.so even for static builds.
-    #[cfg(all(feature = "bundled", any(not(feature = "static-link"), target_os = "android")))]
+    #[cfg(all(
+        feature = "bundled",
+        any(not(feature = "static-link"), target_os = "android")
+    ))]
     {
         copy_dynamic_libraries(&sdl2_compiled_path, target_os);
     }

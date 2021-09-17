@@ -8,7 +8,7 @@ enum variants directly in your project, you may be affected. If you only used sd
 
 [PR #1138](https://github.com/Rust-SDL2/rust-sdl2/pull/1138) Added binding for `SDL_OpenURL`
 
-[PR #XXX](https://github.com/Rust-SDL2/rust-sdl2/pull/XXX) Do not download SDL2 sources when using bundled feature
+[PR #1150](https://github.com/Rust-SDL2/rust-sdl2/pull/1150) Do not download SDL2 sources when using bundled feature
 
 ### v0.34.5
 
