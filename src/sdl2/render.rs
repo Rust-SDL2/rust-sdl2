@@ -1586,6 +1586,15 @@ impl<T: RenderTarget> Canvas<T> {
     pub unsafe fn raw_create_texture(&self, raw: *mut sys::SDL_Texture) -> Texture {
         Texture { raw }
     }
+
+    #[doc(alias = "SDL_RenderFlush")]
+    pub unsafe fn render_flush(&self) {
+        let ret = sys::SDL_RenderFlush(self.context.raw);
+
+        if ret != 0 {
+            panic!("Error setting blend: {}", get_error())
+        }
+    }
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
