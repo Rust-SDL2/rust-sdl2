@@ -257,6 +257,13 @@ fn link_sdl2(target_os: &str) {
             println!("cargo:rustc-link-lib=framework=AudioToolbox");
             println!("cargo:rustc-link-lib=framework=Metal");
             println!("cargo:rustc-link-lib=iconv");
+        } else if target_os == "android" {
+            println!("cargo:rustc-link-lib=android");
+            println!("cargo:rustc-link-lib=dl");
+            println!("cargo:rustc-link-lib=GLESv1_CM");
+            println!("cargo:rustc-link-lib=GLESv2");
+            println!("cargo:rustc-link-lib=hidapi");
+            println!("cargo:rustc-link-lib=log");
         } else {
             // TODO: Add other platform linker options here.
         }
@@ -475,7 +482,8 @@ fn main() {
 
     link_sdl2(target_os);
 
-    #[cfg(all(feature = "bundled", not(feature = "static-link")))]
+    // Android builds shared libhidapi.so even for static builds.
+    #[cfg(all(feature = "bundled", any(not(feature = "static-link"), target_os = "android")))]
     {
         copy_dynamic_libraries(&sdl2_compiled_path, target_os);
     }
