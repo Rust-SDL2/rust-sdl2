@@ -1219,8 +1219,19 @@ impl Window {
         }
     }
 
-    /// Set the window's OpenGL context to the current context on the thread.
     #[doc(alias = "SDL_GL_GetCurrentContext")]
+    pub unsafe fn gl_get_current_context(&self) -> Option<GLContext> {
+        let context_raw = sys::SDL_GL_GetCurrentContext();
+
+        if !context_raw.is_null() {
+            Some(GLContext { raw: context_raw })
+        } else {
+            None
+        }
+    }
+
+    /// Set the window's OpenGL context to the current context on the thread.
+    #[doc(alias = "SDL_GL_MakeCurrent")]
     pub fn gl_set_context_to_current(&self) -> Result<(), String> {
         unsafe {
             let context_raw = sys::SDL_GL_GetCurrentContext();

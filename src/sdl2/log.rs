@@ -20,23 +20,23 @@ pub enum Category {
 impl Category {
     #[allow(dead_code)]
     fn from_ll(value: u32) -> Category {
-        if value == sys::SDL_LOG_CATEGORY_APPLICATION as u32 {
+        if value == sys::SDL_LogCategory::SDL_LOG_CATEGORY_APPLICATION as u32 {
             Category::Application
-        } else if value == sys::SDL_LOG_CATEGORY_ERROR as u32 {
+        } else if value == sys::SDL_LogCategory::SDL_LOG_CATEGORY_ERROR as u32 {
             Category::Error
-        } else if value == sys::SDL_LOG_CATEGORY_ASSERT as u32 {
+        } else if value == sys::SDL_LogCategory::SDL_LOG_CATEGORY_ASSERT as u32 {
             Category::Assert
-        } else if value == sys::SDL_LOG_CATEGORY_SYSTEM as u32 {
+        } else if value == sys::SDL_LogCategory::SDL_LOG_CATEGORY_SYSTEM as u32 {
             Category::System
-        } else if value == sys::SDL_LOG_CATEGORY_AUDIO as u32 {
+        } else if value == sys::SDL_LogCategory::SDL_LOG_CATEGORY_AUDIO as u32 {
             Category::Audio
-        } else if value == sys::SDL_LOG_CATEGORY_VIDEO as u32 {
+        } else if value == sys::SDL_LogCategory::SDL_LOG_CATEGORY_VIDEO as u32 {
             Category::Video
-        } else if value == sys::SDL_LOG_CATEGORY_RENDER as u32 {
+        } else if value == sys::SDL_LogCategory::SDL_LOG_CATEGORY_RENDER as u32 {
             Category::Render
-        } else if value == sys::SDL_LOG_CATEGORY_INPUT as u32 {
+        } else if value == sys::SDL_LogCategory::SDL_LOG_CATEGORY_INPUT as u32 {
             Category::Input
-        } else if value == sys::SDL_LOG_CATEGORY_TEST as u32 {
+        } else if value == sys::SDL_LogCategory::SDL_LOG_CATEGORY_TEST as u32 {
             Category::Test
         } else {
             Category::Custom

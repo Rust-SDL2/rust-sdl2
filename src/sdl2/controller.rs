@@ -6,6 +6,11 @@ use std::fmt;
 use std::io;
 use std::path::Path;
 
+#[cfg(feature = "hidapi")]
+use crate::sensor::SensorType;
+#[cfg(feature = "hidapi")]
+use std::convert::TryInto;
+
 use crate::common::{validate_int, IntegerOrSdlError};
 use crate::get_error;
 use crate::joystick;
@@ -242,7 +247,7 @@ impl Axis {
             sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_RIGHTY => Axis::RightY,
             sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_TRIGGERLEFT => Axis::TriggerLeft,
             sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_TRIGGERRIGHT => Axis::TriggerRight,
-            _ => panic!("unhandled controller axis"),
+            _ => return None,
         })
     }
 
@@ -276,6 +281,12 @@ pub enum Button {
     DPadDown = sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN as i32,
     DPadLeft = sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT as i32,
     DPadRight = sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT as i32,
+    Misc1 = sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_MISC1 as i32,
+    Paddle1 = sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE1 as i32,
+    Paddle2 = sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE2 as i32,
+    Paddle3 = sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE3 as i32,
+    Paddle4 = sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE4 as i32,
+    Touchpad = sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_TOUCHPAD as i32,
 }
 
 impl Button {
@@ -330,7 +341,13 @@ impl Button {
             sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN => Button::DPadDown,
             sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT => Button::DPadLeft,
             sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT => Button::DPadRight,
-            _ => panic!("unhandled controller button"),
+            sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_MISC1 => Button::Misc1,
+            sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE1 => Button::Paddle1,
+            sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE2 => Button::Paddle2,
+            sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE3 => Button::Paddle3,
+            sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE4 => Button::Paddle4,
+            sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_TOUCHPAD => Button::Touchpad,
+            _ => return None,
         })
     }
 
@@ -355,6 +372,12 @@ impl Button {
             Button::DPadDown => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN,
             Button::DPadLeft => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT,
             Button::DPadRight => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
+            Button::Misc1 => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_MISC1,
+            Button::Paddle1 => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE1,
+            Button::Paddle2 => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE2,
+            Button::Paddle3 => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE3,
+            Button::Paddle4 => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE4,
+            Button::Touchpad => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_TOUCHPAD,
         }
     }
 }
@@ -475,6 +498,81 @@ impl GameController {
                 low_frequency_rumble,
                 high_frequency_rumble,
                 duration_ms,
+            )
+        };
+
+        if result != 0 {
+            Err(IntegerOrSdlError::SdlError(get_error()))
+        } else {
+            Ok(())
+        }
+    }
+}
+
+#[cfg(feature = "hidapi")]
+impl GameController {
+    #[doc(alias = "SDL_GameControllerHasSensor")]
+    pub fn has_sensor(&self, sensor_type: crate::sensor::SensorType) -> bool {
+        let result = unsafe { sys::SDL_GameControllerHasSensor(self.raw, sensor_type.into()) };
+
+        match result {
+            sys::SDL_bool::SDL_FALSE => false,
+            sys::SDL_bool::SDL_TRUE => true,
+        }
+    }
+
+    #[doc(alias = "SDL_GameControllerIsSensorEnabled")]
+    pub fn sensor_enabled(&self, sensor_type: crate::sensor::SensorType) -> bool {
+        let result =
+            unsafe { sys::SDL_GameControllerIsSensorEnabled(self.raw, sensor_type.into()) };
+
+        match result {
+            sys::SDL_bool::SDL_FALSE => false,
+            sys::SDL_bool::SDL_TRUE => true,
+        }
+    }
+
+    #[doc(alias = "SDL_GameControllerHasSensor")]
+    pub fn sensor_set_enabled(
+        &self,
+        sensor_type: crate::sensor::SensorType,
+        enabled: bool,
+    ) -> Result<(), IntegerOrSdlError> {
+        let result = unsafe {
+            sys::SDL_GameControllerSetSensorEnabled(
+                self.raw,
+                sensor_type.into(),
+                if enabled {
+                    sys::SDL_bool::SDL_TRUE
+                } else {
+                    sys::SDL_bool::SDL_FALSE
+                },
+            )
+        };
+
+        if result != 0 {
+            Err(IntegerOrSdlError::SdlError(get_error()))
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Get data from a sensor.
+    ///
+    /// The number of data points depends on the sensor. Both Gyroscope and
+    /// Accelerometer return 3 values, one for each axis.
+    #[doc(alias = "SDL_GameControllerGetSensorData")]
+    pub fn sensor_get_data(
+        &self,
+        sensor_type: SensorType,
+        data: &mut [f32],
+    ) -> Result<(), IntegerOrSdlError> {
+        let result = unsafe {
+            sys::SDL_GameControllerGetSensorData(
+                self.raw,
+                sensor_type.into(),
+                data.as_mut_ptr(),
+                data.len().try_into().unwrap(),
             )
         };
 

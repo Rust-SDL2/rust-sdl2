@@ -58,9 +58,7 @@ jobs:
 
   build-linux:
     name: build linux pkg-config
-    runs-on: ubuntu-20.04
-    strategy:
-      fail-fast: false
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
@@ -76,6 +74,6 @@ jobs:
           set -xeuo pipefail
           rustc --version
           cargo --version
-          cargo build --features "${CI_BUILD_FEATURES}"
-          cargo build --examples --features "${CI_BUILD_FEATURES}"
-          cargo test --features "${CI_BUILD_FEATURES}"
+          # SDL 2.0.10 so no hidapi
+          cargo build --no-default-features --features "${CI_BUILD_FEATURES}"
+          cargo test --no-default-features --features "${CI_BUILD_FEATURES}"

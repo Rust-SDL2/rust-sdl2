@@ -43,13 +43,13 @@ pub const __STDC_IEC_559_COMPLEX__: u32 = 1;
 pub const __STDC_ISO_10646__: u32 = 201706;
 pub const __GNU_LIBRARY__: u32 = 6;
 pub const __GLIBC__: u32 = 2;
-pub const __GLIBC_MINOR__: u32 = 31;
+pub const __GLIBC_MINOR__: u32 = 33;
 pub const _SYS_CDEFS_H: u32 = 1;
 pub const __glibc_c99_flexarr_available: u32 = 1;
 pub const __WORDSIZE: u32 = 64;
 pub const __WORDSIZE_TIME64_COMPAT32: u32 = 1;
 pub const __SYSCALL_WORDSIZE: u32 = 64;
-pub const __LONG_DOUBLE_USES_FLOAT128: u32 = 0;
+pub const __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI: u32 = 0;
 pub const __HAVE_GENERIC_SELECTION: u32 = 1;
 pub const __GLIBC_USE_LIB_EXT2: u32 = 0;
 pub const __GLIBC_USE_IEC_60559_BFP_EXT: u32 = 0;
@@ -64,6 +64,7 @@ pub const __OFF_T_MATCHES_OFF64_T: u32 = 1;
 pub const __INO_T_MATCHES_INO64_T: u32 = 1;
 pub const __RLIM_T_MATCHES_RLIM64_T: u32 = 1;
 pub const __STATFS_MATCHES_STATFS64: u32 = 1;
+pub const __KERNEL_OLD_TIMEVAL_MATCHES_TIMEVAL64: u32 = 1;
 pub const __FD_SETSIZE: u32 = 1024;
 pub const _BITS_TIME64_H: u32 = 1;
 pub const _BITS_WCHAR_H: u32 = 1;
@@ -209,7 +210,6 @@ pub const __time_t_defined: u32 = 1;
 pub const __timer_t_defined: u32 = 1;
 pub const __BIT_TYPES_DEFINED__: u32 = 1;
 pub const _SYS_SELECT_H: u32 = 1;
-pub const __FD_ZERO_STOS: &'static [u8; 6usize] = b"stosq\0";
 pub const __sigset_t_defined: u32 = 1;
 pub const __timeval_defined: u32 = 1;
 pub const _STRUCT_TIMESPEC: u32 = 1;
@@ -277,6 +277,7 @@ pub const SDL_BUTTON_MIDDLE: u32 = 2;
 pub const SDL_BUTTON_RIGHT: u32 = 3;
 pub const SDL_BUTTON_X1: u32 = 4;
 pub const SDL_BUTTON_X2: u32 = 5;
+pub const SDL_IPHONE_MAX_GFORCE: f64 = 5.0;
 pub const SDL_JOYSTICK_AXIS_MAX: u32 = 32767;
 pub const SDL_JOYSTICK_AXIS_MIN: i32 = -32768;
 pub const SDL_HAT_CENTERED: u32 = 0;
@@ -288,6 +289,7 @@ pub const SDL_HAT_RIGHTUP: u32 = 3;
 pub const SDL_HAT_RIGHTDOWN: u32 = 6;
 pub const SDL_HAT_LEFTUP: u32 = 9;
 pub const SDL_HAT_LEFTDOWN: u32 = 12;
+pub const SDL_STANDARD_GRAVITY: f64 = 9.80665;
 pub const SDL_RELEASED: u32 = 0;
 pub const SDL_PRESSED: u32 = 1;
 pub const SDL_TEXTEDITINGEVENT_TEXT_SIZE: u32 = 32;
@@ -315,6 +317,7 @@ pub const SDL_HAPTIC_PAUSE: u32 = 32768;
 pub const SDL_HAPTIC_POLAR: u32 = 0;
 pub const SDL_HAPTIC_CARTESIAN: u32 = 1;
 pub const SDL_HAPTIC_SPHERICAL: u32 = 2;
+pub const SDL_HAPTIC_STEERING_AXIS: u32 = 3;
 pub const SDL_HAPTIC_INFINITY: u32 = 4294967295;
 pub const SDL_HINT_FRAMEBUFFER_ACCELERATION: &'static [u8; 29usize] =
     b"SDL_FRAMEBUFFER_ACCELERATION\0";
@@ -330,12 +333,16 @@ pub const SDL_HINT_RENDER_SCALE_QUALITY: &'static [u8; 25usize] = b"SDL_RENDER_S
 pub const SDL_HINT_RENDER_VSYNC: &'static [u8; 17usize] = b"SDL_RENDER_VSYNC\0";
 pub const SDL_HINT_VIDEO_ALLOW_SCREENSAVER: &'static [u8; 28usize] =
     b"SDL_VIDEO_ALLOW_SCREENSAVER\0";
+pub const SDL_HINT_VIDEO_EXTERNAL_CONTEXT: &'static [u8; 27usize] = b"SDL_VIDEO_EXTERNAL_CONTEXT\0";
 pub const SDL_HINT_VIDEO_X11_XVIDMODE: &'static [u8; 23usize] = b"SDL_VIDEO_X11_XVIDMODE\0";
 pub const SDL_HINT_VIDEO_X11_XINERAMA: &'static [u8; 23usize] = b"SDL_VIDEO_X11_XINERAMA\0";
 pub const SDL_HINT_VIDEO_X11_XRANDR: &'static [u8; 21usize] = b"SDL_VIDEO_X11_XRANDR\0";
+pub const SDL_HINT_VIDEO_X11_WINDOW_VISUALID: &'static [u8; 30usize] =
+    b"SDL_VIDEO_X11_WINDOW_VISUALID\0";
 pub const SDL_HINT_VIDEO_X11_NET_WM_PING: &'static [u8; 26usize] = b"SDL_VIDEO_X11_NET_WM_PING\0";
 pub const SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR: &'static [u8; 39usize] =
     b"SDL_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR\0";
+pub const SDL_HINT_VIDEO_X11_FORCE_EGL: &'static [u8; 24usize] = b"SDL_VIDEO_X11_FORCE_EGL\0";
 pub const SDL_HINT_WINDOW_FRAME_USABLE_WHILE_CURSOR_HIDDEN: &'static [u8; 44usize] =
     b"SDL_WINDOW_FRAME_USABLE_WHILE_CURSOR_HIDDEN\0";
 pub const SDL_HINT_WINDOWS_INTRESOURCE_ICON: &'static [u8; 29usize] =
@@ -353,6 +360,7 @@ pub const SDL_HINT_MOUSE_NORMAL_SPEED_SCALE: &'static [u8; 29usize] =
     b"SDL_MOUSE_NORMAL_SPEED_SCALE\0";
 pub const SDL_HINT_MOUSE_RELATIVE_SPEED_SCALE: &'static [u8; 31usize] =
     b"SDL_MOUSE_RELATIVE_SPEED_SCALE\0";
+pub const SDL_HINT_MOUSE_RELATIVE_SCALING: &'static [u8; 27usize] = b"SDL_MOUSE_RELATIVE_SCALING\0";
 pub const SDL_HINT_MOUSE_RELATIVE_MODE_WARP: &'static [u8; 29usize] =
     b"SDL_MOUSE_RELATIVE_MODE_WARP\0";
 pub const SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH: &'static [u8; 29usize] =
@@ -375,6 +383,7 @@ pub const SDL_HINT_TV_REMOTE_AS_JOYSTICK: &'static [u8; 26usize] = b"SDL_TV_REMO
 pub const SDL_HINT_XINPUT_ENABLED: &'static [u8; 19usize] = b"SDL_XINPUT_ENABLED\0";
 pub const SDL_HINT_XINPUT_USE_OLD_JOYSTICK_MAPPING: &'static [u8; 36usize] =
     b"SDL_XINPUT_USE_OLD_JOYSTICK_MAPPING\0";
+pub const SDL_HINT_GAMECONTROLLERTYPE: &'static [u8; 23usize] = b"SDL_GAMECONTROLLERTYPE\0";
 pub const SDL_HINT_GAMECONTROLLERCONFIG: &'static [u8; 25usize] = b"SDL_GAMECONTROLLERCONFIG\0";
 pub const SDL_HINT_GAMECONTROLLERCONFIG_FILE: &'static [u8; 30usize] =
     b"SDL_GAMECONTROLLERCONFIG_FILE\0";
@@ -382,23 +391,37 @@ pub const SDL_HINT_GAMECONTROLLER_IGNORE_DEVICES: &'static [u8; 34usize] =
     b"SDL_GAMECONTROLLER_IGNORE_DEVICES\0";
 pub const SDL_HINT_GAMECONTROLLER_IGNORE_DEVICES_EXCEPT: &'static [u8; 41usize] =
     b"SDL_GAMECONTROLLER_IGNORE_DEVICES_EXCEPT\0";
+pub const SDL_HINT_GAMECONTROLLER_USE_BUTTON_LABELS: &'static [u8; 37usize] =
+    b"SDL_GAMECONTROLLER_USE_BUTTON_LABELS\0";
 pub const SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS: &'static [u8; 37usize] =
     b"SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS\0";
 pub const SDL_HINT_JOYSTICK_HIDAPI: &'static [u8; 20usize] = b"SDL_JOYSTICK_HIDAPI\0";
 pub const SDL_HINT_JOYSTICK_HIDAPI_PS4: &'static [u8; 24usize] = b"SDL_JOYSTICK_HIDAPI_PS4\0";
+pub const SDL_HINT_JOYSTICK_HIDAPI_PS5: &'static [u8; 24usize] = b"SDL_JOYSTICK_HIDAPI_PS5\0";
 pub const SDL_HINT_JOYSTICK_HIDAPI_PS4_RUMBLE: &'static [u8; 31usize] =
     b"SDL_JOYSTICK_HIDAPI_PS4_RUMBLE\0";
 pub const SDL_HINT_JOYSTICK_HIDAPI_STEAM: &'static [u8; 26usize] = b"SDL_JOYSTICK_HIDAPI_STEAM\0";
 pub const SDL_HINT_JOYSTICK_HIDAPI_SWITCH: &'static [u8; 27usize] = b"SDL_JOYSTICK_HIDAPI_SWITCH\0";
 pub const SDL_HINT_JOYSTICK_HIDAPI_XBOX: &'static [u8; 25usize] = b"SDL_JOYSTICK_HIDAPI_XBOX\0";
+pub const SDL_HINT_JOYSTICK_HIDAPI_CORRELATE_XINPUT: &'static [u8; 37usize] =
+    b"SDL_JOYSTICK_HIDAPI_CORRELATE_XINPUT\0";
+pub const SDL_HINT_JOYSTICK_HIDAPI_GAMECUBE: &'static [u8; 29usize] =
+    b"SDL_JOYSTICK_HIDAPI_GAMECUBE\0";
 pub const SDL_HINT_ENABLE_STEAM_CONTROLLERS: &'static [u8; 29usize] =
     b"SDL_ENABLE_STEAM_CONTROLLERS\0";
+pub const SDL_HINT_JOYSTICK_RAWINPUT: &'static [u8; 22usize] = b"SDL_JOYSTICK_RAWINPUT\0";
+pub const SDL_HINT_JOYSTICK_THREAD: &'static [u8; 20usize] = b"SDL_JOYSTICK_THREAD\0";
+pub const SDL_HINT_LINUX_JOYSTICK_DEADZONES: &'static [u8; 29usize] =
+    b"SDL_LINUX_JOYSTICK_DEADZONES\0";
 pub const SDL_HINT_ALLOW_TOPMOST: &'static [u8; 18usize] = b"SDL_ALLOW_TOPMOST\0";
 pub const SDL_HINT_TIMER_RESOLUTION: &'static [u8; 21usize] = b"SDL_TIMER_RESOLUTION\0";
 pub const SDL_HINT_QTWAYLAND_CONTENT_ORIENTATION: &'static [u8; 34usize] =
     b"SDL_QTWAYLAND_CONTENT_ORIENTATION\0";
 pub const SDL_HINT_QTWAYLAND_WINDOW_FLAGS: &'static [u8; 27usize] = b"SDL_QTWAYLAND_WINDOW_FLAGS\0";
 pub const SDL_HINT_THREAD_STACK_SIZE: &'static [u8; 22usize] = b"SDL_THREAD_STACK_SIZE\0";
+pub const SDL_HINT_THREAD_PRIORITY_POLICY: &'static [u8; 27usize] = b"SDL_THREAD_PRIORITY_POLICY\0";
+pub const SDL_HINT_THREAD_FORCE_REALTIME_TIME_CRITICAL: &'static [u8; 40usize] =
+    b"SDL_THREAD_FORCE_REALTIME_TIME_CRITICAL\0";
 pub const SDL_HINT_VIDEO_HIGHDPI_DISABLED: &'static [u8; 27usize] = b"SDL_VIDEO_HIGHDPI_DISABLED\0";
 pub const SDL_HINT_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK: &'static [u8; 39usize] =
     b"SDL_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK\0";
@@ -422,9 +445,12 @@ pub const SDL_HINT_IME_INTERNAL_EDITING: &'static [u8; 25usize] = b"SDL_IME_INTE
 pub const SDL_HINT_ANDROID_TRAP_BACK_BUTTON: &'static [u8; 29usize] =
     b"SDL_ANDROID_TRAP_BACK_BUTTON\0";
 pub const SDL_HINT_ANDROID_BLOCK_ON_PAUSE: &'static [u8; 27usize] = b"SDL_ANDROID_BLOCK_ON_PAUSE\0";
+pub const SDL_HINT_ANDROID_BLOCK_ON_PAUSE_PAUSEAUDIO: &'static [u8; 38usize] =
+    b"SDL_ANDROID_BLOCK_ON_PAUSE_PAUSEAUDIO\0";
 pub const SDL_HINT_RETURN_KEY_HIDES_IME: &'static [u8; 25usize] = b"SDL_RETURN_KEY_HIDES_IME\0";
 pub const SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT: &'static [u8; 32usize] =
     b"SDL_EMSCRIPTEN_KEYBOARD_ELEMENT\0";
+pub const SDL_HINT_EMSCRIPTEN_ASYNCIFY: &'static [u8; 24usize] = b"SDL_EMSCRIPTEN_ASYNCIFY\0";
 pub const SDL_HINT_NO_SIGNAL_HANDLERS: &'static [u8; 23usize] = b"SDL_NO_SIGNAL_HANDLERS\0";
 pub const SDL_HINT_WINDOWS_NO_CLOSE_ON_ALT_F4: &'static [u8; 31usize] =
     b"SDL_WINDOWS_NO_CLOSE_ON_ALT_F4\0";
@@ -437,18 +463,24 @@ pub const SDL_HINT_OPENGL_ES_DRIVER: &'static [u8; 21usize] = b"SDL_OPENGL_ES_DR
 pub const SDL_HINT_AUDIO_RESAMPLING_MODE: &'static [u8; 26usize] = b"SDL_AUDIO_RESAMPLING_MODE\0";
 pub const SDL_HINT_AUDIO_CATEGORY: &'static [u8; 19usize] = b"SDL_AUDIO_CATEGORY\0";
 pub const SDL_HINT_RENDER_BATCHING: &'static [u8; 20usize] = b"SDL_RENDER_BATCHING\0";
+pub const SDL_HINT_AUTO_UPDATE_JOYSTICKS: &'static [u8; 26usize] = b"SDL_AUTO_UPDATE_JOYSTICKS\0";
+pub const SDL_HINT_AUTO_UPDATE_SENSORS: &'static [u8; 24usize] = b"SDL_AUTO_UPDATE_SENSORS\0";
 pub const SDL_HINT_EVENT_LOGGING: &'static [u8; 18usize] = b"SDL_EVENT_LOGGING\0";
 pub const SDL_HINT_WAVE_RIFF_CHUNK_SIZE: &'static [u8; 25usize] = b"SDL_WAVE_RIFF_CHUNK_SIZE\0";
 pub const SDL_HINT_WAVE_TRUNCATION: &'static [u8; 20usize] = b"SDL_WAVE_TRUNCATION\0";
 pub const SDL_HINT_WAVE_FACT_CHUNK: &'static [u8; 20usize] = b"SDL_WAVE_FACT_CHUNK\0";
+pub const SDL_HINT_DISPLAY_USABLE_BOUNDS: &'static [u8; 26usize] = b"SDL_DISPLAY_USABLE_BOUNDS\0";
+pub const SDL_HINT_AUDIO_DEVICE_APP_NAME: &'static [u8; 26usize] = b"SDL_AUDIO_DEVICE_APP_NAME\0";
+pub const SDL_HINT_AUDIO_DEVICE_STREAM_NAME: &'static [u8; 29usize] =
+    b"SDL_AUDIO_DEVICE_STREAM_NAME\0";
+pub const SDL_HINT_PREFERRED_LOCALES: &'static [u8; 22usize] = b"SDL_PREFERRED_LOCALES\0";
 pub const SDL_MAX_LOG_MESSAGE: u32 = 4096;
-pub const SDL_STANDARD_GRAVITY: f64 = 9.80665;
 pub const SDL_NONSHAPEABLE_WINDOW: i32 = -1;
 pub const SDL_INVALID_SHAPE_ARGUMENT: i32 = -2;
 pub const SDL_WINDOW_LACKS_SHAPE: i32 = -3;
 pub const SDL_MAJOR_VERSION: u32 = 2;
 pub const SDL_MINOR_VERSION: u32 = 0;
-pub const SDL_PATCHLEVEL: u32 = 10;
+pub const SDL_PATCHLEVEL: u32 = 14;
 pub const SDL_INIT_TIMER: u32 = 1;
 pub const SDL_INIT_AUDIO: u32 = 16;
 pub const SDL_INIT_VIDEO: u32 = 32;
@@ -1034,6 +1066,7 @@ pub type __id_t = libc::c_uint;
 pub type __time_t = libc::c_long;
 pub type __useconds_t = libc::c_uint;
 pub type __suseconds_t = libc::c_long;
+pub type __suseconds64_t = libc::c_long;
 pub type __daddr_t = libc::c_int;
 pub type __key_t = libc::c_int;
 pub type __clockid_t = libc::c_int;
@@ -1180,10 +1213,19 @@ extern "C" {
     pub fn SDL_isspace(x: libc::c_int) -> libc::c_int;
 }
 extern "C" {
+    pub fn SDL_isupper(x: libc::c_int) -> libc::c_int;
+}
+extern "C" {
+    pub fn SDL_islower(x: libc::c_int) -> libc::c_int;
+}
+extern "C" {
     pub fn SDL_toupper(x: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     pub fn SDL_tolower(x: libc::c_int) -> libc::c_int;
+}
+extern "C" {
+    pub fn SDL_crc32(crc: Uint32, data: *const libc::c_void, len: size_t) -> Uint32;
 }
 extern "C" {
     pub fn SDL_memset(dst: *mut libc::c_void, c: libc::c_int, len: size_t) -> *mut libc::c_void;
@@ -1207,9 +1249,6 @@ extern "C" {
         -> libc::c_int;
 }
 extern "C" {
-    pub fn SDL_wcsdup(wstr: *const wchar_t) -> *mut wchar_t;
-}
-extern "C" {
     pub fn SDL_wcslen(wstr: *const wchar_t) -> size_t;
 }
 extern "C" {
@@ -1219,7 +1258,22 @@ extern "C" {
     pub fn SDL_wcslcat(dst: *mut wchar_t, src: *const wchar_t, maxlen: size_t) -> size_t;
 }
 extern "C" {
+    pub fn SDL_wcsdup(wstr: *const wchar_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn SDL_wcsstr(haystack: *const wchar_t, needle: *const wchar_t) -> *mut wchar_t;
+}
+extern "C" {
     pub fn SDL_wcscmp(str1: *const wchar_t, str2: *const wchar_t) -> libc::c_int;
+}
+extern "C" {
+    pub fn SDL_wcsncmp(str1: *const wchar_t, str2: *const wchar_t, maxlen: size_t) -> libc::c_int;
+}
+extern "C" {
+    pub fn SDL_wcscasecmp(str1: *const wchar_t, str2: *const wchar_t) -> libc::c_int;
+}
+extern "C" {
+    pub fn SDL_wcsncasecmp(str1: *const wchar_t, str2: *const wchar_t, len: size_t) -> libc::c_int;
 }
 extern "C" {
     pub fn SDL_strlen(str: *const libc::c_char) -> size_t;
@@ -1259,6 +1313,13 @@ extern "C" {
     pub fn SDL_strstr(
         haystack: *const libc::c_char,
         needle: *const libc::c_char,
+    ) -> *mut libc::c_char;
+}
+extern "C" {
+    pub fn SDL_strtokr(
+        s1: *mut libc::c_char,
+        s2: *const libc::c_char,
+        saveptr: *mut *mut libc::c_char,
     ) -> *mut libc::c_char;
 }
 extern "C" {
@@ -1448,6 +1509,12 @@ extern "C" {
 }
 extern "C" {
     pub fn SDL_floorf(x: f32) -> f32;
+}
+extern "C" {
+    pub fn SDL_trunc(x: f64) -> f64;
+}
+extern "C" {
+    pub fn SDL_truncf(x: f32) -> f32;
 }
 extern "C" {
     pub fn SDL_fmod(x: f64, y: f64) -> f64;
@@ -1874,12 +1941,38 @@ extern "C" {
     pub fn SDL_AtomicGetPtr(a: *mut *mut libc::c_void) -> *mut libc::c_void;
 }
 extern "C" {
+    #[doc = "  \\brief Set the error message for the current thread"]
+    #[doc = ""]
+    #[doc = "  \\return -1, there is no error handling for this function"]
     pub fn SDL_SetError(fmt: *const libc::c_char, ...) -> libc::c_int;
 }
 extern "C" {
+    #[doc = "  \\brief Get the last error message that was set"]
+    #[doc = ""]
+    #[doc = " SDL API functions may set error messages and then succeed, so you should"]
+    #[doc = " only use the error value if a function fails."]
+    #[doc = ""]
+    #[doc = " This returns a pointer to a static buffer for convenience and should not"]
+    #[doc = " be called by multiple threads simultaneously."]
+    #[doc = ""]
+    #[doc = "  \\return a pointer to the last error message that was set"]
     pub fn SDL_GetError() -> *const libc::c_char;
 }
 extern "C" {
+    #[doc = "  \\brief Get the last error message that was set for the current thread"]
+    #[doc = ""]
+    #[doc = " SDL API functions may set error messages and then succeed, so you should"]
+    #[doc = " only use the error value if a function fails."]
+    #[doc = ""]
+    #[doc = "  \\param errstr A buffer to fill with the last error message that was set"]
+    #[doc = "                for the current thread"]
+    #[doc = "  \\param maxlen The size of the buffer pointed to by the errstr parameter"]
+    #[doc = ""]
+    #[doc = "  \\return errstr"]
+    pub fn SDL_GetErrorMsg(errstr: *mut libc::c_char, maxlen: libc::c_int) -> *mut libc::c_char;
+}
+extern "C" {
+    #[doc = "  \\brief Clear the error message for the current thread"]
     pub fn SDL_ClearError();
 }
 #[repr(u32)]
@@ -2049,6 +2142,11 @@ pub type SDL_threadID = libc::c_ulong;
 pub type SDL_TLSID = libc::c_uint;
 #[repr(u32)]
 #[doc = "  The SDL thread priority."]
+#[doc = ""]
+#[doc = "  SDL will make system changes as necessary in order to apply the thread priority."]
+#[doc = "  Code which attempts to control thread state related to priority should be aware"]
+#[doc = "  that calling SDL_SetThreadPriority may alter such state."]
+#[doc = "  SDL_HINT_THREAD_PRIORITY_POLICY can be used to control aspects of this behavior."]
 #[doc = ""]
 #[doc = "  \\note On many systems you require special privileges to set high or time critical priority."]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -3130,7 +3228,7 @@ extern "C" {
     #[doc = ""]
     #[doc = "  Supported are RIFF WAVE files with the formats PCM (8, 16, 24, and 32 bits),"]
     #[doc = "  IEEE Float (32 bits), Microsoft ADPCM and IMA ADPCM (4 bits), and A-law and"]
-    #[doc = "  \u{b5}-law (8 bits). Other formats are currently unsupported and cause an error."]
+    #[doc = "  µ-law (8 bits). Other formats are currently unsupported and cause an error."]
     #[doc = ""]
     #[doc = "  If this function succeeds, the pointer returned by it is equal to \\c spec"]
     #[doc = "  and the pointer to the audio data allocated by the function is written to"]
@@ -4562,6 +4660,36 @@ fn bindgen_test_layout___pthread_cond_s() {
         )
     );
 }
+pub type __tss_t = libc::c_uint;
+pub type __thrd_t = libc::c_ulong;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct __once_flag {
+    pub __data: libc::c_int,
+}
+#[test]
+fn bindgen_test_layout___once_flag() {
+    assert_eq!(
+        ::core::mem::size_of::<__once_flag>(),
+        4usize,
+        concat!("Size of: ", stringify!(__once_flag))
+    );
+    assert_eq!(
+        ::core::mem::align_of::<__once_flag>(),
+        4usize,
+        concat!("Alignment of ", stringify!(__once_flag))
+    );
+    assert_eq!(
+        unsafe { &(*(::core::ptr::null::<__once_flag>())).__data as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(__once_flag),
+            "::",
+            stringify!(__data)
+        )
+    );
+}
 pub type pthread_t = libc::c_ulong;
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -5576,6 +5704,10 @@ extern "C" {
     pub fn SDL_HasAVX512F() -> SDL_bool;
 }
 extern "C" {
+    #[doc = "  This function returns true if the CPU has ARM SIMD (ARMv6) features."]
+    pub fn SDL_HasARMSIMD() -> SDL_bool;
+}
+extern "C" {
     #[doc = "  This function returns true if the CPU has NEON (ARM SIMD) features."]
     pub fn SDL_HasNEON() -> SDL_bool;
 }
@@ -5627,8 +5759,30 @@ extern "C" {
     #[doc = " \\return Pointer to newly-allocated block, NULL if out of memory."]
     #[doc = ""]
     #[doc = " \\sa SDL_SIMDAlignment"]
+    #[doc = " \\sa SDL_SIMDRealloc"]
     #[doc = " \\sa SDL_SIMDFree"]
     pub fn SDL_SIMDAlloc(len: size_t) -> *mut libc::c_void;
+}
+extern "C" {
+    #[doc = " \\brief Reallocate memory obtained from SDL_SIMDAlloc"]
+    #[doc = ""]
+    #[doc = " It is not valid to use this function on a pointer from anything but"]
+    #[doc = "  SDL_SIMDAlloc(). It can't be used on pointers from malloc, realloc,"]
+    #[doc = "  SDL_malloc, memalign, new[], etc."]
+    #[doc = ""]
+    #[doc = "  \\param mem The pointer obtained from SDL_SIMDAlloc. This function also"]
+    #[doc = "             accepts NULL, at which point this function is the same as"]
+    #[doc = "             calling SDL_realloc with a NULL pointer."]
+    #[doc = "  \\param len The length, in bytes, of the block to allocated. The actual"]
+    #[doc = "             allocated block might be larger due to padding, etc. Passing 0"]
+    #[doc = "             will return a non-NULL pointer, assuming the system isn't out of"]
+    #[doc = "             memory."]
+    #[doc = " \\return Pointer to newly-reallocated block, NULL if out of memory."]
+    #[doc = ""]
+    #[doc = " \\sa SDL_SIMDAlignment"]
+    #[doc = " \\sa SDL_SIMDAlloc"]
+    #[doc = " \\sa SDL_SIMDFree"]
+    pub fn SDL_SIMDRealloc(mem: *mut libc::c_void, len: size_t) -> *mut libc::c_void;
 }
 extern "C" {
     #[doc = " \\brief Deallocate memory obtained from SDL_SIMDAlloc"]
@@ -5640,24 +5794,13 @@ extern "C" {
     #[doc = " However, SDL_SIMDFree(NULL) is a legal no-op."]
     #[doc = ""]
     #[doc = " \\sa SDL_SIMDAlloc"]
+    #[doc = " \\sa SDL_SIMDRealloc"]
     pub fn SDL_SIMDFree(ptr: *mut libc::c_void);
 }
-pub const SDL_PIXELTYPE_UNKNOWN: _bindgen_ty_1 = _bindgen_ty_1::SDL_PIXELTYPE_UNKNOWN;
-pub const SDL_PIXELTYPE_INDEX1: _bindgen_ty_1 = _bindgen_ty_1::SDL_PIXELTYPE_INDEX1;
-pub const SDL_PIXELTYPE_INDEX4: _bindgen_ty_1 = _bindgen_ty_1::SDL_PIXELTYPE_INDEX4;
-pub const SDL_PIXELTYPE_INDEX8: _bindgen_ty_1 = _bindgen_ty_1::SDL_PIXELTYPE_INDEX8;
-pub const SDL_PIXELTYPE_PACKED8: _bindgen_ty_1 = _bindgen_ty_1::SDL_PIXELTYPE_PACKED8;
-pub const SDL_PIXELTYPE_PACKED16: _bindgen_ty_1 = _bindgen_ty_1::SDL_PIXELTYPE_PACKED16;
-pub const SDL_PIXELTYPE_PACKED32: _bindgen_ty_1 = _bindgen_ty_1::SDL_PIXELTYPE_PACKED32;
-pub const SDL_PIXELTYPE_ARRAYU8: _bindgen_ty_1 = _bindgen_ty_1::SDL_PIXELTYPE_ARRAYU8;
-pub const SDL_PIXELTYPE_ARRAYU16: _bindgen_ty_1 = _bindgen_ty_1::SDL_PIXELTYPE_ARRAYU16;
-pub const SDL_PIXELTYPE_ARRAYU32: _bindgen_ty_1 = _bindgen_ty_1::SDL_PIXELTYPE_ARRAYU32;
-pub const SDL_PIXELTYPE_ARRAYF16: _bindgen_ty_1 = _bindgen_ty_1::SDL_PIXELTYPE_ARRAYF16;
-pub const SDL_PIXELTYPE_ARRAYF32: _bindgen_ty_1 = _bindgen_ty_1::SDL_PIXELTYPE_ARRAYF32;
 #[repr(u32)]
 #[doc = " Pixel type."]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_1 {
+pub enum SDL_PixelType {
     SDL_PIXELTYPE_UNKNOWN = 0,
     SDL_PIXELTYPE_INDEX1 = 1,
     SDL_PIXELTYPE_INDEX4 = 2,
@@ -5671,30 +5814,18 @@ pub enum _bindgen_ty_1 {
     SDL_PIXELTYPE_ARRAYF16 = 10,
     SDL_PIXELTYPE_ARRAYF32 = 11,
 }
-pub const SDL_BITMAPORDER_NONE: _bindgen_ty_2 = _bindgen_ty_2::SDL_BITMAPORDER_NONE;
-pub const SDL_BITMAPORDER_4321: _bindgen_ty_2 = _bindgen_ty_2::SDL_BITMAPORDER_4321;
-pub const SDL_BITMAPORDER_1234: _bindgen_ty_2 = _bindgen_ty_2::SDL_BITMAPORDER_1234;
 #[repr(u32)]
 #[doc = " Bitmap pixel order, high bit -> low bit."]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_2 {
+pub enum SDL_BitmapOrder {
     SDL_BITMAPORDER_NONE = 0,
     SDL_BITMAPORDER_4321 = 1,
     SDL_BITMAPORDER_1234 = 2,
 }
-pub const SDL_PACKEDORDER_NONE: _bindgen_ty_3 = _bindgen_ty_3::SDL_PACKEDORDER_NONE;
-pub const SDL_PACKEDORDER_XRGB: _bindgen_ty_3 = _bindgen_ty_3::SDL_PACKEDORDER_XRGB;
-pub const SDL_PACKEDORDER_RGBX: _bindgen_ty_3 = _bindgen_ty_3::SDL_PACKEDORDER_RGBX;
-pub const SDL_PACKEDORDER_ARGB: _bindgen_ty_3 = _bindgen_ty_3::SDL_PACKEDORDER_ARGB;
-pub const SDL_PACKEDORDER_RGBA: _bindgen_ty_3 = _bindgen_ty_3::SDL_PACKEDORDER_RGBA;
-pub const SDL_PACKEDORDER_XBGR: _bindgen_ty_3 = _bindgen_ty_3::SDL_PACKEDORDER_XBGR;
-pub const SDL_PACKEDORDER_BGRX: _bindgen_ty_3 = _bindgen_ty_3::SDL_PACKEDORDER_BGRX;
-pub const SDL_PACKEDORDER_ABGR: _bindgen_ty_3 = _bindgen_ty_3::SDL_PACKEDORDER_ABGR;
-pub const SDL_PACKEDORDER_BGRA: _bindgen_ty_3 = _bindgen_ty_3::SDL_PACKEDORDER_BGRA;
 #[repr(u32)]
 #[doc = " Packed component order, high bit -> low bit."]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_3 {
+pub enum SDL_PackedOrder {
     SDL_PACKEDORDER_NONE = 0,
     SDL_PACKEDORDER_XRGB = 1,
     SDL_PACKEDORDER_RGBX = 2,
@@ -5705,17 +5836,10 @@ pub enum _bindgen_ty_3 {
     SDL_PACKEDORDER_ABGR = 7,
     SDL_PACKEDORDER_BGRA = 8,
 }
-pub const SDL_ARRAYORDER_NONE: _bindgen_ty_4 = _bindgen_ty_4::SDL_ARRAYORDER_NONE;
-pub const SDL_ARRAYORDER_RGB: _bindgen_ty_4 = _bindgen_ty_4::SDL_ARRAYORDER_RGB;
-pub const SDL_ARRAYORDER_RGBA: _bindgen_ty_4 = _bindgen_ty_4::SDL_ARRAYORDER_RGBA;
-pub const SDL_ARRAYORDER_ARGB: _bindgen_ty_4 = _bindgen_ty_4::SDL_ARRAYORDER_ARGB;
-pub const SDL_ARRAYORDER_BGR: _bindgen_ty_4 = _bindgen_ty_4::SDL_ARRAYORDER_BGR;
-pub const SDL_ARRAYORDER_BGRA: _bindgen_ty_4 = _bindgen_ty_4::SDL_ARRAYORDER_BGRA;
-pub const SDL_ARRAYORDER_ABGR: _bindgen_ty_4 = _bindgen_ty_4::SDL_ARRAYORDER_ABGR;
 #[repr(u32)]
 #[doc = " Array component order, low byte -> high byte."]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_4 {
+pub enum SDL_ArrayOrder {
     SDL_ARRAYORDER_NONE = 0,
     SDL_ARRAYORDER_RGB = 1,
     SDL_ARRAYORDER_RGBA = 2,
@@ -5724,19 +5848,10 @@ pub enum _bindgen_ty_4 {
     SDL_ARRAYORDER_BGRA = 5,
     SDL_ARRAYORDER_ABGR = 6,
 }
-pub const SDL_PACKEDLAYOUT_NONE: _bindgen_ty_5 = _bindgen_ty_5::SDL_PACKEDLAYOUT_NONE;
-pub const SDL_PACKEDLAYOUT_332: _bindgen_ty_5 = _bindgen_ty_5::SDL_PACKEDLAYOUT_332;
-pub const SDL_PACKEDLAYOUT_4444: _bindgen_ty_5 = _bindgen_ty_5::SDL_PACKEDLAYOUT_4444;
-pub const SDL_PACKEDLAYOUT_1555: _bindgen_ty_5 = _bindgen_ty_5::SDL_PACKEDLAYOUT_1555;
-pub const SDL_PACKEDLAYOUT_5551: _bindgen_ty_5 = _bindgen_ty_5::SDL_PACKEDLAYOUT_5551;
-pub const SDL_PACKEDLAYOUT_565: _bindgen_ty_5 = _bindgen_ty_5::SDL_PACKEDLAYOUT_565;
-pub const SDL_PACKEDLAYOUT_8888: _bindgen_ty_5 = _bindgen_ty_5::SDL_PACKEDLAYOUT_8888;
-pub const SDL_PACKEDLAYOUT_2101010: _bindgen_ty_5 = _bindgen_ty_5::SDL_PACKEDLAYOUT_2101010;
-pub const SDL_PACKEDLAYOUT_1010102: _bindgen_ty_5 = _bindgen_ty_5::SDL_PACKEDLAYOUT_1010102;
 #[repr(u32)]
 #[doc = " Packed component layout."]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_5 {
+pub enum SDL_PackedLayout {
     SDL_PACKEDLAYOUT_NONE = 0,
     SDL_PACKEDLAYOUT_332 = 1,
     SDL_PACKEDLAYOUT_4444 = 2,
@@ -5746,6 +5861,30 @@ pub enum _bindgen_ty_5 {
     SDL_PACKEDLAYOUT_8888 = 6,
     SDL_PACKEDLAYOUT_2101010 = 7,
     SDL_PACKEDLAYOUT_1010102 = 8,
+}
+impl SDL_PixelFormatEnum {
+    pub const SDL_PIXELFORMAT_RGB444: SDL_PixelFormatEnum =
+        SDL_PixelFormatEnum::SDL_PIXELFORMAT_XRGB4444;
+}
+impl SDL_PixelFormatEnum {
+    pub const SDL_PIXELFORMAT_BGR444: SDL_PixelFormatEnum =
+        SDL_PixelFormatEnum::SDL_PIXELFORMAT_XBGR4444;
+}
+impl SDL_PixelFormatEnum {
+    pub const SDL_PIXELFORMAT_RGB555: SDL_PixelFormatEnum =
+        SDL_PixelFormatEnum::SDL_PIXELFORMAT_XRGB1555;
+}
+impl SDL_PixelFormatEnum {
+    pub const SDL_PIXELFORMAT_BGR555: SDL_PixelFormatEnum =
+        SDL_PixelFormatEnum::SDL_PIXELFORMAT_XBGR1555;
+}
+impl SDL_PixelFormatEnum {
+    pub const SDL_PIXELFORMAT_RGB888: SDL_PixelFormatEnum =
+        SDL_PixelFormatEnum::SDL_PIXELFORMAT_XRGB8888;
+}
+impl SDL_PixelFormatEnum {
+    pub const SDL_PIXELFORMAT_BGR888: SDL_PixelFormatEnum =
+        SDL_PixelFormatEnum::SDL_PIXELFORMAT_XBGR8888;
 }
 impl SDL_PixelFormatEnum {
     pub const SDL_PIXELFORMAT_RGBA32: SDL_PixelFormatEnum =
@@ -5773,9 +5912,10 @@ pub enum SDL_PixelFormatEnum {
     SDL_PIXELFORMAT_INDEX4MSB = 304088064,
     SDL_PIXELFORMAT_INDEX8 = 318769153,
     SDL_PIXELFORMAT_RGB332 = 336660481,
-    SDL_PIXELFORMAT_RGB444 = 353504258,
-    SDL_PIXELFORMAT_RGB555 = 353570562,
-    SDL_PIXELFORMAT_BGR555 = 357764866,
+    SDL_PIXELFORMAT_XRGB4444 = 353504258,
+    SDL_PIXELFORMAT_XBGR4444 = 357698562,
+    SDL_PIXELFORMAT_XRGB1555 = 353570562,
+    SDL_PIXELFORMAT_XBGR1555 = 357764866,
     SDL_PIXELFORMAT_ARGB4444 = 355602434,
     SDL_PIXELFORMAT_RGBA4444 = 356651010,
     SDL_PIXELFORMAT_ABGR4444 = 359796738,
@@ -5788,9 +5928,9 @@ pub enum SDL_PixelFormatEnum {
     SDL_PIXELFORMAT_BGR565 = 357896194,
     SDL_PIXELFORMAT_RGB24 = 386930691,
     SDL_PIXELFORMAT_BGR24 = 390076419,
-    SDL_PIXELFORMAT_RGB888 = 370546692,
+    SDL_PIXELFORMAT_XRGB8888 = 370546692,
     SDL_PIXELFORMAT_RGBX8888 = 371595268,
-    SDL_PIXELFORMAT_BGR888 = 374740996,
+    SDL_PIXELFORMAT_XBGR8888 = 374740996,
     SDL_PIXELFORMAT_BGRX8888 = 375789572,
     SDL_PIXELFORMAT_ARGB8888 = 372645892,
     SDL_PIXELFORMAT_RGBA8888 = 373694468,
@@ -6571,6 +6711,10 @@ pub enum SDL_BlendMode {
     #[doc = "dstRGB = srcRGB * dstRGB"]
     #[doc = "dstA = dstA"]
     SDL_BLENDMODE_MOD = 4,
+    #[doc = "< color multiply"]
+    #[doc = "dstRGB = (srcRGB * dstRGB) + (dstRGB * (1-srcA))"]
+    #[doc = "dstA = (srcA * dstA) + (dstA * (1-srcA))"]
+    SDL_BLENDMODE_MUL = 8,
     SDL_BLENDMODE_INVALID = 2147483647,
 }
 #[repr(u32)]
@@ -6659,8 +6803,8 @@ pub struct SDL_Surface {
     pub userdata: *mut libc::c_void,
     #[doc = "< Read-only"]
     pub locked: libc::c_int,
-    #[doc = "< Read-only"]
-    pub lock_data: *mut libc::c_void,
+    #[doc = "< Private"]
+    pub list_blitmap: *mut libc::c_void,
     #[doc = "< Read-only"]
     pub clip_rect: SDL_Rect,
     #[doc = "< Private"]
@@ -6761,13 +6905,13 @@ fn bindgen_test_layout_SDL_Surface() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<SDL_Surface>())).lock_data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<SDL_Surface>())).list_blitmap as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
             stringify!(SDL_Surface),
             "::",
-            stringify!(lock_data)
+            stringify!(list_blitmap)
         )
     );
     assert_eq!(
@@ -6957,6 +7101,12 @@ extern "C" {
     #[doc = "  \\note If RLE is enabled, colorkey and alpha blending blits are much faster,"]
     #[doc = "        but the surface must be locked before directly accessing the pixels."]
     pub fn SDL_SetSurfaceRLE(surface: *mut SDL_Surface, flag: libc::c_int) -> libc::c_int;
+}
+extern "C" {
+    #[doc = "  \\brief Returns whether the surface is RLE enabled"]
+    #[doc = ""]
+    #[doc = "  \\return SDL_TRUE if the surface is RLE enabled, or SDL_FALSE if the surface is NULL or not RLE enabled"]
+    pub fn SDL_HasSurfaceRLE(surface: *mut SDL_Surface) -> SDL_bool;
 }
 extern "C" {
     #[doc = "  \\brief Sets the color key (transparent pixel) in a blittable surface."]
@@ -7365,6 +7515,8 @@ pub enum SDL_WindowFlags {
     SDL_WINDOW_POPUP_MENU = 524288,
     #[doc = "< window usable for Vulkan surface"]
     SDL_WINDOW_VULKAN = 268435456,
+    #[doc = "< window usable for Metal view"]
+    SDL_WINDOW_METAL = 536870912,
 }
 #[repr(u32)]
 #[doc = "  \\brief Event subtype for window events"]
@@ -7417,6 +7569,10 @@ pub enum SDL_DisplayEventID {
     SDL_DISPLAYEVENT_NONE = 0,
     #[doc = "< Display orientation has changed to data1"]
     SDL_DISPLAYEVENT_ORIENTATION = 1,
+    #[doc = "< Display has been added to the system"]
+    SDL_DISPLAYEVENT_CONNECTED = 2,
+    #[doc = "< Display has been removed from the system"]
+    SDL_DISPLAYEVENT_DISCONNECTED = 3,
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -7727,7 +7883,8 @@ extern "C" {
     #[doc = "               ::SDL_WINDOW_HIDDEN,        ::SDL_WINDOW_BORDERLESS,"]
     #[doc = "               ::SDL_WINDOW_RESIZABLE,     ::SDL_WINDOW_MAXIMIZED,"]
     #[doc = "               ::SDL_WINDOW_MINIMIZED,     ::SDL_WINDOW_INPUT_GRABBED,"]
-    #[doc = "               ::SDL_WINDOW_ALLOW_HIGHDPI, ::SDL_WINDOW_VULKAN."]
+    #[doc = "               ::SDL_WINDOW_ALLOW_HIGHDPI, ::SDL_WINDOW_VULKAN"]
+    #[doc = "               ::SDL_WINDOW_METAL."]
     #[doc = ""]
     #[doc = "  \\return The created window, or NULL if window creation failed."]
     #[doc = ""]
@@ -7745,6 +7902,9 @@ extern "C" {
     #[doc = ""]
     #[doc = "  If SDL_WINDOW_VULKAN is specified and there isn't a working Vulkan driver,"]
     #[doc = "  SDL_CreateWindow() will fail because SDL_Vulkan_LoadLibrary() will fail."]
+    #[doc = ""]
+    #[doc = "  If SDL_WINDOW_METAL is specified on an OS that does not support Metal,"]
+    #[doc = "  SDL_CreateWindow() will fail."]
     #[doc = ""]
     #[doc = "  \\note On non-Apple devices, SDL requires you to either not link to the"]
     #[doc = "        Vulkan loader or link to a dynamic library version. This limitation"]
@@ -8809,249 +8969,9 @@ pub enum SDL_Scancode {
 #[doc = "  A special exception is the number keys at the top of the keyboard which"]
 #[doc = "  always map to SDLK_0...SDLK_9, regardless of layout."]
 pub type SDL_Keycode = Sint32;
-pub const SDLK_UNKNOWN: _bindgen_ty_6 = _bindgen_ty_6::SDLK_UNKNOWN;
-pub const SDLK_RETURN: _bindgen_ty_6 = _bindgen_ty_6::SDLK_RETURN;
-pub const SDLK_ESCAPE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_ESCAPE;
-pub const SDLK_BACKSPACE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_BACKSPACE;
-pub const SDLK_TAB: _bindgen_ty_6 = _bindgen_ty_6::SDLK_TAB;
-pub const SDLK_SPACE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_SPACE;
-pub const SDLK_EXCLAIM: _bindgen_ty_6 = _bindgen_ty_6::SDLK_EXCLAIM;
-pub const SDLK_QUOTEDBL: _bindgen_ty_6 = _bindgen_ty_6::SDLK_QUOTEDBL;
-pub const SDLK_HASH: _bindgen_ty_6 = _bindgen_ty_6::SDLK_HASH;
-pub const SDLK_PERCENT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_PERCENT;
-pub const SDLK_DOLLAR: _bindgen_ty_6 = _bindgen_ty_6::SDLK_DOLLAR;
-pub const SDLK_AMPERSAND: _bindgen_ty_6 = _bindgen_ty_6::SDLK_AMPERSAND;
-pub const SDLK_QUOTE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_QUOTE;
-pub const SDLK_LEFTPAREN: _bindgen_ty_6 = _bindgen_ty_6::SDLK_LEFTPAREN;
-pub const SDLK_RIGHTPAREN: _bindgen_ty_6 = _bindgen_ty_6::SDLK_RIGHTPAREN;
-pub const SDLK_ASTERISK: _bindgen_ty_6 = _bindgen_ty_6::SDLK_ASTERISK;
-pub const SDLK_PLUS: _bindgen_ty_6 = _bindgen_ty_6::SDLK_PLUS;
-pub const SDLK_COMMA: _bindgen_ty_6 = _bindgen_ty_6::SDLK_COMMA;
-pub const SDLK_MINUS: _bindgen_ty_6 = _bindgen_ty_6::SDLK_MINUS;
-pub const SDLK_PERIOD: _bindgen_ty_6 = _bindgen_ty_6::SDLK_PERIOD;
-pub const SDLK_SLASH: _bindgen_ty_6 = _bindgen_ty_6::SDLK_SLASH;
-pub const SDLK_0: _bindgen_ty_6 = _bindgen_ty_6::SDLK_0;
-pub const SDLK_1: _bindgen_ty_6 = _bindgen_ty_6::SDLK_1;
-pub const SDLK_2: _bindgen_ty_6 = _bindgen_ty_6::SDLK_2;
-pub const SDLK_3: _bindgen_ty_6 = _bindgen_ty_6::SDLK_3;
-pub const SDLK_4: _bindgen_ty_6 = _bindgen_ty_6::SDLK_4;
-pub const SDLK_5: _bindgen_ty_6 = _bindgen_ty_6::SDLK_5;
-pub const SDLK_6: _bindgen_ty_6 = _bindgen_ty_6::SDLK_6;
-pub const SDLK_7: _bindgen_ty_6 = _bindgen_ty_6::SDLK_7;
-pub const SDLK_8: _bindgen_ty_6 = _bindgen_ty_6::SDLK_8;
-pub const SDLK_9: _bindgen_ty_6 = _bindgen_ty_6::SDLK_9;
-pub const SDLK_COLON: _bindgen_ty_6 = _bindgen_ty_6::SDLK_COLON;
-pub const SDLK_SEMICOLON: _bindgen_ty_6 = _bindgen_ty_6::SDLK_SEMICOLON;
-pub const SDLK_LESS: _bindgen_ty_6 = _bindgen_ty_6::SDLK_LESS;
-pub const SDLK_EQUALS: _bindgen_ty_6 = _bindgen_ty_6::SDLK_EQUALS;
-pub const SDLK_GREATER: _bindgen_ty_6 = _bindgen_ty_6::SDLK_GREATER;
-pub const SDLK_QUESTION: _bindgen_ty_6 = _bindgen_ty_6::SDLK_QUESTION;
-pub const SDLK_AT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_AT;
-pub const SDLK_LEFTBRACKET: _bindgen_ty_6 = _bindgen_ty_6::SDLK_LEFTBRACKET;
-pub const SDLK_BACKSLASH: _bindgen_ty_6 = _bindgen_ty_6::SDLK_BACKSLASH;
-pub const SDLK_RIGHTBRACKET: _bindgen_ty_6 = _bindgen_ty_6::SDLK_RIGHTBRACKET;
-pub const SDLK_CARET: _bindgen_ty_6 = _bindgen_ty_6::SDLK_CARET;
-pub const SDLK_UNDERSCORE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_UNDERSCORE;
-pub const SDLK_BACKQUOTE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_BACKQUOTE;
-pub const SDLK_a: _bindgen_ty_6 = _bindgen_ty_6::SDLK_a;
-pub const SDLK_b: _bindgen_ty_6 = _bindgen_ty_6::SDLK_b;
-pub const SDLK_c: _bindgen_ty_6 = _bindgen_ty_6::SDLK_c;
-pub const SDLK_d: _bindgen_ty_6 = _bindgen_ty_6::SDLK_d;
-pub const SDLK_e: _bindgen_ty_6 = _bindgen_ty_6::SDLK_e;
-pub const SDLK_f: _bindgen_ty_6 = _bindgen_ty_6::SDLK_f;
-pub const SDLK_g: _bindgen_ty_6 = _bindgen_ty_6::SDLK_g;
-pub const SDLK_h: _bindgen_ty_6 = _bindgen_ty_6::SDLK_h;
-pub const SDLK_i: _bindgen_ty_6 = _bindgen_ty_6::SDLK_i;
-pub const SDLK_j: _bindgen_ty_6 = _bindgen_ty_6::SDLK_j;
-pub const SDLK_k: _bindgen_ty_6 = _bindgen_ty_6::SDLK_k;
-pub const SDLK_l: _bindgen_ty_6 = _bindgen_ty_6::SDLK_l;
-pub const SDLK_m: _bindgen_ty_6 = _bindgen_ty_6::SDLK_m;
-pub const SDLK_n: _bindgen_ty_6 = _bindgen_ty_6::SDLK_n;
-pub const SDLK_o: _bindgen_ty_6 = _bindgen_ty_6::SDLK_o;
-pub const SDLK_p: _bindgen_ty_6 = _bindgen_ty_6::SDLK_p;
-pub const SDLK_q: _bindgen_ty_6 = _bindgen_ty_6::SDLK_q;
-pub const SDLK_r: _bindgen_ty_6 = _bindgen_ty_6::SDLK_r;
-pub const SDLK_s: _bindgen_ty_6 = _bindgen_ty_6::SDLK_s;
-pub const SDLK_t: _bindgen_ty_6 = _bindgen_ty_6::SDLK_t;
-pub const SDLK_u: _bindgen_ty_6 = _bindgen_ty_6::SDLK_u;
-pub const SDLK_v: _bindgen_ty_6 = _bindgen_ty_6::SDLK_v;
-pub const SDLK_w: _bindgen_ty_6 = _bindgen_ty_6::SDLK_w;
-pub const SDLK_x: _bindgen_ty_6 = _bindgen_ty_6::SDLK_x;
-pub const SDLK_y: _bindgen_ty_6 = _bindgen_ty_6::SDLK_y;
-pub const SDLK_z: _bindgen_ty_6 = _bindgen_ty_6::SDLK_z;
-pub const SDLK_CAPSLOCK: _bindgen_ty_6 = _bindgen_ty_6::SDLK_CAPSLOCK;
-pub const SDLK_F1: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F1;
-pub const SDLK_F2: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F2;
-pub const SDLK_F3: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F3;
-pub const SDLK_F4: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F4;
-pub const SDLK_F5: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F5;
-pub const SDLK_F6: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F6;
-pub const SDLK_F7: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F7;
-pub const SDLK_F8: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F8;
-pub const SDLK_F9: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F9;
-pub const SDLK_F10: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F10;
-pub const SDLK_F11: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F11;
-pub const SDLK_F12: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F12;
-pub const SDLK_PRINTSCREEN: _bindgen_ty_6 = _bindgen_ty_6::SDLK_PRINTSCREEN;
-pub const SDLK_SCROLLLOCK: _bindgen_ty_6 = _bindgen_ty_6::SDLK_SCROLLLOCK;
-pub const SDLK_PAUSE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_PAUSE;
-pub const SDLK_INSERT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_INSERT;
-pub const SDLK_HOME: _bindgen_ty_6 = _bindgen_ty_6::SDLK_HOME;
-pub const SDLK_PAGEUP: _bindgen_ty_6 = _bindgen_ty_6::SDLK_PAGEUP;
-pub const SDLK_DELETE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_DELETE;
-pub const SDLK_END: _bindgen_ty_6 = _bindgen_ty_6::SDLK_END;
-pub const SDLK_PAGEDOWN: _bindgen_ty_6 = _bindgen_ty_6::SDLK_PAGEDOWN;
-pub const SDLK_RIGHT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_RIGHT;
-pub const SDLK_LEFT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_LEFT;
-pub const SDLK_DOWN: _bindgen_ty_6 = _bindgen_ty_6::SDLK_DOWN;
-pub const SDLK_UP: _bindgen_ty_6 = _bindgen_ty_6::SDLK_UP;
-pub const SDLK_NUMLOCKCLEAR: _bindgen_ty_6 = _bindgen_ty_6::SDLK_NUMLOCKCLEAR;
-pub const SDLK_KP_DIVIDE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_DIVIDE;
-pub const SDLK_KP_MULTIPLY: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_MULTIPLY;
-pub const SDLK_KP_MINUS: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_MINUS;
-pub const SDLK_KP_PLUS: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_PLUS;
-pub const SDLK_KP_ENTER: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_ENTER;
-pub const SDLK_KP_1: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_1;
-pub const SDLK_KP_2: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_2;
-pub const SDLK_KP_3: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_3;
-pub const SDLK_KP_4: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_4;
-pub const SDLK_KP_5: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_5;
-pub const SDLK_KP_6: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_6;
-pub const SDLK_KP_7: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_7;
-pub const SDLK_KP_8: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_8;
-pub const SDLK_KP_9: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_9;
-pub const SDLK_KP_0: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_0;
-pub const SDLK_KP_PERIOD: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_PERIOD;
-pub const SDLK_APPLICATION: _bindgen_ty_6 = _bindgen_ty_6::SDLK_APPLICATION;
-pub const SDLK_POWER: _bindgen_ty_6 = _bindgen_ty_6::SDLK_POWER;
-pub const SDLK_KP_EQUALS: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_EQUALS;
-pub const SDLK_F13: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F13;
-pub const SDLK_F14: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F14;
-pub const SDLK_F15: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F15;
-pub const SDLK_F16: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F16;
-pub const SDLK_F17: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F17;
-pub const SDLK_F18: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F18;
-pub const SDLK_F19: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F19;
-pub const SDLK_F20: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F20;
-pub const SDLK_F21: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F21;
-pub const SDLK_F22: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F22;
-pub const SDLK_F23: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F23;
-pub const SDLK_F24: _bindgen_ty_6 = _bindgen_ty_6::SDLK_F24;
-pub const SDLK_EXECUTE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_EXECUTE;
-pub const SDLK_HELP: _bindgen_ty_6 = _bindgen_ty_6::SDLK_HELP;
-pub const SDLK_MENU: _bindgen_ty_6 = _bindgen_ty_6::SDLK_MENU;
-pub const SDLK_SELECT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_SELECT;
-pub const SDLK_STOP: _bindgen_ty_6 = _bindgen_ty_6::SDLK_STOP;
-pub const SDLK_AGAIN: _bindgen_ty_6 = _bindgen_ty_6::SDLK_AGAIN;
-pub const SDLK_UNDO: _bindgen_ty_6 = _bindgen_ty_6::SDLK_UNDO;
-pub const SDLK_CUT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_CUT;
-pub const SDLK_COPY: _bindgen_ty_6 = _bindgen_ty_6::SDLK_COPY;
-pub const SDLK_PASTE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_PASTE;
-pub const SDLK_FIND: _bindgen_ty_6 = _bindgen_ty_6::SDLK_FIND;
-pub const SDLK_MUTE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_MUTE;
-pub const SDLK_VOLUMEUP: _bindgen_ty_6 = _bindgen_ty_6::SDLK_VOLUMEUP;
-pub const SDLK_VOLUMEDOWN: _bindgen_ty_6 = _bindgen_ty_6::SDLK_VOLUMEDOWN;
-pub const SDLK_KP_COMMA: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_COMMA;
-pub const SDLK_KP_EQUALSAS400: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_EQUALSAS400;
-pub const SDLK_ALTERASE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_ALTERASE;
-pub const SDLK_SYSREQ: _bindgen_ty_6 = _bindgen_ty_6::SDLK_SYSREQ;
-pub const SDLK_CANCEL: _bindgen_ty_6 = _bindgen_ty_6::SDLK_CANCEL;
-pub const SDLK_CLEAR: _bindgen_ty_6 = _bindgen_ty_6::SDLK_CLEAR;
-pub const SDLK_PRIOR: _bindgen_ty_6 = _bindgen_ty_6::SDLK_PRIOR;
-pub const SDLK_RETURN2: _bindgen_ty_6 = _bindgen_ty_6::SDLK_RETURN2;
-pub const SDLK_SEPARATOR: _bindgen_ty_6 = _bindgen_ty_6::SDLK_SEPARATOR;
-pub const SDLK_OUT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_OUT;
-pub const SDLK_OPER: _bindgen_ty_6 = _bindgen_ty_6::SDLK_OPER;
-pub const SDLK_CLEARAGAIN: _bindgen_ty_6 = _bindgen_ty_6::SDLK_CLEARAGAIN;
-pub const SDLK_CRSEL: _bindgen_ty_6 = _bindgen_ty_6::SDLK_CRSEL;
-pub const SDLK_EXSEL: _bindgen_ty_6 = _bindgen_ty_6::SDLK_EXSEL;
-pub const SDLK_KP_00: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_00;
-pub const SDLK_KP_000: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_000;
-pub const SDLK_THOUSANDSSEPARATOR: _bindgen_ty_6 = _bindgen_ty_6::SDLK_THOUSANDSSEPARATOR;
-pub const SDLK_DECIMALSEPARATOR: _bindgen_ty_6 = _bindgen_ty_6::SDLK_DECIMALSEPARATOR;
-pub const SDLK_CURRENCYUNIT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_CURRENCYUNIT;
-pub const SDLK_CURRENCYSUBUNIT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_CURRENCYSUBUNIT;
-pub const SDLK_KP_LEFTPAREN: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_LEFTPAREN;
-pub const SDLK_KP_RIGHTPAREN: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_RIGHTPAREN;
-pub const SDLK_KP_LEFTBRACE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_LEFTBRACE;
-pub const SDLK_KP_RIGHTBRACE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_RIGHTBRACE;
-pub const SDLK_KP_TAB: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_TAB;
-pub const SDLK_KP_BACKSPACE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_BACKSPACE;
-pub const SDLK_KP_A: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_A;
-pub const SDLK_KP_B: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_B;
-pub const SDLK_KP_C: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_C;
-pub const SDLK_KP_D: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_D;
-pub const SDLK_KP_E: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_E;
-pub const SDLK_KP_F: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_F;
-pub const SDLK_KP_XOR: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_XOR;
-pub const SDLK_KP_POWER: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_POWER;
-pub const SDLK_KP_PERCENT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_PERCENT;
-pub const SDLK_KP_LESS: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_LESS;
-pub const SDLK_KP_GREATER: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_GREATER;
-pub const SDLK_KP_AMPERSAND: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_AMPERSAND;
-pub const SDLK_KP_DBLAMPERSAND: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_DBLAMPERSAND;
-pub const SDLK_KP_VERTICALBAR: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_VERTICALBAR;
-pub const SDLK_KP_DBLVERTICALBAR: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_DBLVERTICALBAR;
-pub const SDLK_KP_COLON: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_COLON;
-pub const SDLK_KP_HASH: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_HASH;
-pub const SDLK_KP_SPACE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_SPACE;
-pub const SDLK_KP_AT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_AT;
-pub const SDLK_KP_EXCLAM: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_EXCLAM;
-pub const SDLK_KP_MEMSTORE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_MEMSTORE;
-pub const SDLK_KP_MEMRECALL: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_MEMRECALL;
-pub const SDLK_KP_MEMCLEAR: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_MEMCLEAR;
-pub const SDLK_KP_MEMADD: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_MEMADD;
-pub const SDLK_KP_MEMSUBTRACT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_MEMSUBTRACT;
-pub const SDLK_KP_MEMMULTIPLY: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_MEMMULTIPLY;
-pub const SDLK_KP_MEMDIVIDE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_MEMDIVIDE;
-pub const SDLK_KP_PLUSMINUS: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_PLUSMINUS;
-pub const SDLK_KP_CLEAR: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_CLEAR;
-pub const SDLK_KP_CLEARENTRY: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_CLEARENTRY;
-pub const SDLK_KP_BINARY: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_BINARY;
-pub const SDLK_KP_OCTAL: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_OCTAL;
-pub const SDLK_KP_DECIMAL: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_DECIMAL;
-pub const SDLK_KP_HEXADECIMAL: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KP_HEXADECIMAL;
-pub const SDLK_LCTRL: _bindgen_ty_6 = _bindgen_ty_6::SDLK_LCTRL;
-pub const SDLK_LSHIFT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_LSHIFT;
-pub const SDLK_LALT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_LALT;
-pub const SDLK_LGUI: _bindgen_ty_6 = _bindgen_ty_6::SDLK_LGUI;
-pub const SDLK_RCTRL: _bindgen_ty_6 = _bindgen_ty_6::SDLK_RCTRL;
-pub const SDLK_RSHIFT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_RSHIFT;
-pub const SDLK_RALT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_RALT;
-pub const SDLK_RGUI: _bindgen_ty_6 = _bindgen_ty_6::SDLK_RGUI;
-pub const SDLK_MODE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_MODE;
-pub const SDLK_AUDIONEXT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_AUDIONEXT;
-pub const SDLK_AUDIOPREV: _bindgen_ty_6 = _bindgen_ty_6::SDLK_AUDIOPREV;
-pub const SDLK_AUDIOSTOP: _bindgen_ty_6 = _bindgen_ty_6::SDLK_AUDIOSTOP;
-pub const SDLK_AUDIOPLAY: _bindgen_ty_6 = _bindgen_ty_6::SDLK_AUDIOPLAY;
-pub const SDLK_AUDIOMUTE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_AUDIOMUTE;
-pub const SDLK_MEDIASELECT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_MEDIASELECT;
-pub const SDLK_WWW: _bindgen_ty_6 = _bindgen_ty_6::SDLK_WWW;
-pub const SDLK_MAIL: _bindgen_ty_6 = _bindgen_ty_6::SDLK_MAIL;
-pub const SDLK_CALCULATOR: _bindgen_ty_6 = _bindgen_ty_6::SDLK_CALCULATOR;
-pub const SDLK_COMPUTER: _bindgen_ty_6 = _bindgen_ty_6::SDLK_COMPUTER;
-pub const SDLK_AC_SEARCH: _bindgen_ty_6 = _bindgen_ty_6::SDLK_AC_SEARCH;
-pub const SDLK_AC_HOME: _bindgen_ty_6 = _bindgen_ty_6::SDLK_AC_HOME;
-pub const SDLK_AC_BACK: _bindgen_ty_6 = _bindgen_ty_6::SDLK_AC_BACK;
-pub const SDLK_AC_FORWARD: _bindgen_ty_6 = _bindgen_ty_6::SDLK_AC_FORWARD;
-pub const SDLK_AC_STOP: _bindgen_ty_6 = _bindgen_ty_6::SDLK_AC_STOP;
-pub const SDLK_AC_REFRESH: _bindgen_ty_6 = _bindgen_ty_6::SDLK_AC_REFRESH;
-pub const SDLK_AC_BOOKMARKS: _bindgen_ty_6 = _bindgen_ty_6::SDLK_AC_BOOKMARKS;
-pub const SDLK_BRIGHTNESSDOWN: _bindgen_ty_6 = _bindgen_ty_6::SDLK_BRIGHTNESSDOWN;
-pub const SDLK_BRIGHTNESSUP: _bindgen_ty_6 = _bindgen_ty_6::SDLK_BRIGHTNESSUP;
-pub const SDLK_DISPLAYSWITCH: _bindgen_ty_6 = _bindgen_ty_6::SDLK_DISPLAYSWITCH;
-pub const SDLK_KBDILLUMTOGGLE: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KBDILLUMTOGGLE;
-pub const SDLK_KBDILLUMDOWN: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KBDILLUMDOWN;
-pub const SDLK_KBDILLUMUP: _bindgen_ty_6 = _bindgen_ty_6::SDLK_KBDILLUMUP;
-pub const SDLK_EJECT: _bindgen_ty_6 = _bindgen_ty_6::SDLK_EJECT;
-pub const SDLK_SLEEP: _bindgen_ty_6 = _bindgen_ty_6::SDLK_SLEEP;
-pub const SDLK_APP1: _bindgen_ty_6 = _bindgen_ty_6::SDLK_APP1;
-pub const SDLK_APP2: _bindgen_ty_6 = _bindgen_ty_6::SDLK_APP2;
-pub const SDLK_AUDIOREWIND: _bindgen_ty_6 = _bindgen_ty_6::SDLK_AUDIOREWIND;
-pub const SDLK_AUDIOFASTFORWARD: _bindgen_ty_6 = _bindgen_ty_6::SDLK_AUDIOFASTFORWARD;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_6 {
+pub enum SDL_KeyCode {
     SDLK_UNKNOWN = 0,
     SDLK_RETURN = 13,
     SDLK_ESCAPE = 27,
@@ -9310,6 +9230,10 @@ pub enum SDL_Keymod {
     KMOD_CAPS = 8192,
     KMOD_MODE = 16384,
     KMOD_RESERVED = 32768,
+    KMOD_CTRL = 192,
+    KMOD_SHIFT = 3,
+    KMOD_ALT = 768,
+    KMOD_GUI = 3072,
 }
 #[doc = "  \\brief The SDL keysym structure, used in key events."]
 #[doc = ""]
@@ -9888,7 +9812,59 @@ extern "C" {
 }
 extern "C" {
     #[doc = " Return the SDL_Joystick associated with an instance id."]
-    pub fn SDL_JoystickFromInstanceID(joyid: SDL_JoystickID) -> *mut SDL_Joystick;
+    pub fn SDL_JoystickFromInstanceID(instance_id: SDL_JoystickID) -> *mut SDL_Joystick;
+}
+extern "C" {
+    #[doc = " Return the SDL_Joystick associated with a player index."]
+    pub fn SDL_JoystickFromPlayerIndex(player_index: libc::c_int) -> *mut SDL_Joystick;
+}
+extern "C" {
+    #[doc = " Attaches a new virtual joystick."]
+    #[doc = " Returns the joystick's device index, or -1 if an error occurred."]
+    pub fn SDL_JoystickAttachVirtual(
+        type_: SDL_JoystickType,
+        naxes: libc::c_int,
+        nbuttons: libc::c_int,
+        nhats: libc::c_int,
+    ) -> libc::c_int;
+}
+extern "C" {
+    #[doc = " Detaches a virtual joystick"]
+    #[doc = " Returns 0 on success, or -1 if an error occurred."]
+    pub fn SDL_JoystickDetachVirtual(device_index: libc::c_int) -> libc::c_int;
+}
+extern "C" {
+    #[doc = " Indicates whether or not a virtual-joystick is at a given device index."]
+    pub fn SDL_JoystickIsVirtual(device_index: libc::c_int) -> SDL_bool;
+}
+extern "C" {
+    #[doc = " Set values on an opened, virtual-joystick's controls."]
+    #[doc = " Please note that values set here will not be applied until the next"]
+    #[doc = " call to SDL_JoystickUpdate, which can either be called directly,"]
+    #[doc = " or can be called indirectly through various other SDL APIS,"]
+    #[doc = " including, but not limited to the following: SDL_PollEvent,"]
+    #[doc = " SDL_PumpEvents, SDL_WaitEventTimeout, SDL_WaitEvent."]
+    #[doc = ""]
+    #[doc = " Returns 0 on success, -1 on error."]
+    pub fn SDL_JoystickSetVirtualAxis(
+        joystick: *mut SDL_Joystick,
+        axis: libc::c_int,
+        value: Sint16,
+    ) -> libc::c_int;
+}
+extern "C" {
+    pub fn SDL_JoystickSetVirtualButton(
+        joystick: *mut SDL_Joystick,
+        button: libc::c_int,
+        value: Uint8,
+    ) -> libc::c_int;
+}
+extern "C" {
+    pub fn SDL_JoystickSetVirtualHat(
+        joystick: *mut SDL_Joystick,
+        hat: libc::c_int,
+        value: Uint8,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = "  Return the name for this currently opened joystick."]
@@ -9900,6 +9876,10 @@ extern "C" {
     #[doc = ""]
     #[doc = "  For XInput controllers this returns the XInput user index."]
     pub fn SDL_JoystickGetPlayerIndex(joystick: *mut SDL_Joystick) -> libc::c_int;
+}
+extern "C" {
+    #[doc = "  Set the player index of an opened joystick"]
+    pub fn SDL_JoystickSetPlayerIndex(joystick: *mut SDL_Joystick, player_index: libc::c_int);
 }
 extern "C" {
     #[doc = "  Return the GUID for this opened joystick"]
@@ -9919,6 +9899,12 @@ extern "C" {
     #[doc = "  Get the product version of an opened joystick, if available."]
     #[doc = "  If the product version isn't available this function returns 0."]
     pub fn SDL_JoystickGetProductVersion(joystick: *mut SDL_Joystick) -> Uint16;
+}
+extern "C" {
+    #[doc = "  Get the serial number of an opened joystick, if available."]
+    #[doc = ""]
+    #[doc = "  Returns the serial number of the joystick, or NULL if it is not available."]
+    pub fn SDL_JoystickGetSerial(joystick: *mut SDL_Joystick) -> *const libc::c_char;
 }
 extern "C" {
     #[doc = "  Get the type of an opened joystick."]
@@ -10040,7 +10026,7 @@ extern "C" {
     pub fn SDL_JoystickGetButton(joystick: *mut SDL_Joystick, button: libc::c_int) -> Uint8;
 }
 extern "C" {
-    #[doc = "  Trigger a rumble effect"]
+    #[doc = "  Start a rumble effect"]
     #[doc = "  Each call to this function cancels any previous rumble effect, and calling it with 0 intensity stops any rumbling."]
     #[doc = ""]
     #[doc = "  \\param joystick The joystick to vibrate"]
@@ -10057,12 +10043,201 @@ extern "C" {
     ) -> libc::c_int;
 }
 extern "C" {
+    #[doc = "  Start a rumble effect in the joystick's triggers"]
+    #[doc = "  Each call to this function cancels any previous trigger rumble effect, and calling it with 0 intensity stops any rumbling."]
+    #[doc = ""]
+    #[doc = "  \\param joystick The joystick to vibrate"]
+    #[doc = "  \\param left_rumble The intensity of the left trigger rumble motor, from 0 to 0xFFFF"]
+    #[doc = "  \\param right_rumble The intensity of the right trigger rumble motor, from 0 to 0xFFFF"]
+    #[doc = "  \\param duration_ms The duration of the rumble effect, in milliseconds"]
+    #[doc = ""]
+    #[doc = "  \\return 0, or -1 if trigger rumble isn't supported on this joystick"]
+    pub fn SDL_JoystickRumbleTriggers(
+        joystick: *mut SDL_Joystick,
+        left_rumble: Uint16,
+        right_rumble: Uint16,
+        duration_ms: Uint32,
+    ) -> libc::c_int;
+}
+extern "C" {
+    #[doc = "  Return whether a joystick has an LED"]
+    #[doc = ""]
+    #[doc = "  \\param joystick The joystick to query"]
+    #[doc = ""]
+    #[doc = "  \\return SDL_TRUE, or SDL_FALSE if this joystick does not have a modifiable LED"]
+    pub fn SDL_JoystickHasLED(joystick: *mut SDL_Joystick) -> SDL_bool;
+}
+extern "C" {
+    #[doc = "  Update a joystick's LED color."]
+    #[doc = ""]
+    #[doc = "  \\param joystick The joystick to update"]
+    #[doc = "  \\param red The intensity of the red LED"]
+    #[doc = "  \\param green The intensity of the green LED"]
+    #[doc = "  \\param blue The intensity of the blue LED"]
+    #[doc = ""]
+    #[doc = "  \\return 0, or -1 if this joystick does not have a modifiable LED"]
+    pub fn SDL_JoystickSetLED(
+        joystick: *mut SDL_Joystick,
+        red: Uint8,
+        green: Uint8,
+        blue: Uint8,
+    ) -> libc::c_int;
+}
+extern "C" {
     #[doc = "  Close a joystick previously opened with SDL_JoystickOpen()."]
     pub fn SDL_JoystickClose(joystick: *mut SDL_Joystick);
 }
 extern "C" {
     #[doc = "  Return the battery level of this joystick"]
     pub fn SDL_JoystickCurrentPowerLevel(joystick: *mut SDL_Joystick) -> SDL_JoystickPowerLevel;
+}
+#[doc = "  \\brief SDL_sensor.h"]
+#[doc = ""]
+#[doc = "  In order to use these functions, SDL_Init() must have been called"]
+#[doc = "  with the ::SDL_INIT_SENSOR flag.  This causes SDL to scan the system"]
+#[doc = "  for sensors, and load appropriate drivers."]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct _SDL_Sensor {
+    _unused: [u8; 0],
+}
+pub type SDL_Sensor = _SDL_Sensor;
+#[doc = " This is a unique ID for a sensor for the time it is connected to the system,"]
+#[doc = " and is never reused for the lifetime of the application."]
+#[doc = ""]
+#[doc = " The ID value starts at 0 and increments from there. The value -1 is an invalid ID."]
+pub type SDL_SensorID = Sint32;
+#[repr(i32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum SDL_SensorType {
+    #[doc = "< Returned for an invalid sensor"]
+    SDL_SENSOR_INVALID = -1,
+    #[doc = "< Unknown sensor type"]
+    SDL_SENSOR_UNKNOWN = 0,
+    #[doc = "< Accelerometer"]
+    SDL_SENSOR_ACCEL = 1,
+    #[doc = "< Gyroscope"]
+    SDL_SENSOR_GYRO = 2,
+}
+extern "C" {
+    #[doc = " Locking for multi-threaded access to the sensor API"]
+    #[doc = ""]
+    #[doc = " If you are using the sensor API or handling events from multiple threads"]
+    #[doc = " you should use these locking functions to protect access to the sensors."]
+    #[doc = ""]
+    #[doc = " In particular, you are guaranteed that the sensor list won't change, so"]
+    #[doc = " the API functions that take a sensor index will be valid, and sensor"]
+    #[doc = " events will not be delivered."]
+    pub fn SDL_LockSensors();
+}
+extern "C" {
+    pub fn SDL_UnlockSensors();
+}
+extern "C" {
+    #[doc = "  \\brief Count the number of sensors attached to the system right now"]
+    pub fn SDL_NumSensors() -> libc::c_int;
+}
+extern "C" {
+    #[doc = "  \\brief Get the implementation dependent name of a sensor."]
+    #[doc = ""]
+    #[doc = "  This can be called before any sensors are opened."]
+    #[doc = ""]
+    #[doc = "  \\return The sensor name, or NULL if device_index is out of range."]
+    pub fn SDL_SensorGetDeviceName(device_index: libc::c_int) -> *const libc::c_char;
+}
+extern "C" {
+    #[doc = "  \\brief Get the type of a sensor."]
+    #[doc = ""]
+    #[doc = "  This can be called before any sensors are opened."]
+    #[doc = ""]
+    #[doc = "  \\return The sensor type, or SDL_SENSOR_INVALID if device_index is out of range."]
+    pub fn SDL_SensorGetDeviceType(device_index: libc::c_int) -> SDL_SensorType;
+}
+extern "C" {
+    #[doc = "  \\brief Get the platform dependent type of a sensor."]
+    #[doc = ""]
+    #[doc = "  This can be called before any sensors are opened."]
+    #[doc = ""]
+    #[doc = "  \\return The sensor platform dependent type, or -1 if device_index is out of range."]
+    pub fn SDL_SensorGetDeviceNonPortableType(device_index: libc::c_int) -> libc::c_int;
+}
+extern "C" {
+    #[doc = "  \\brief Get the instance ID of a sensor."]
+    #[doc = ""]
+    #[doc = "  This can be called before any sensors are opened."]
+    #[doc = ""]
+    #[doc = "  \\return The sensor instance ID, or -1 if device_index is out of range."]
+    pub fn SDL_SensorGetDeviceInstanceID(device_index: libc::c_int) -> SDL_SensorID;
+}
+extern "C" {
+    #[doc = "  \\brief Open a sensor for use."]
+    #[doc = ""]
+    #[doc = "  The index passed as an argument refers to the N'th sensor on the system."]
+    #[doc = ""]
+    #[doc = "  \\return A sensor identifier, or NULL if an error occurred."]
+    pub fn SDL_SensorOpen(device_index: libc::c_int) -> *mut SDL_Sensor;
+}
+extern "C" {
+    #[doc = " Return the SDL_Sensor associated with an instance id."]
+    pub fn SDL_SensorFromInstanceID(instance_id: SDL_SensorID) -> *mut SDL_Sensor;
+}
+extern "C" {
+    #[doc = "  \\brief Get the implementation dependent name of a sensor."]
+    #[doc = ""]
+    #[doc = "  \\return The sensor name, or NULL if the sensor is NULL."]
+    pub fn SDL_SensorGetName(sensor: *mut SDL_Sensor) -> *const libc::c_char;
+}
+extern "C" {
+    #[doc = "  \\brief Get the type of a sensor."]
+    #[doc = ""]
+    #[doc = "  This can be called before any sensors are opened."]
+    #[doc = ""]
+    #[doc = "  \\return The sensor type, or SDL_SENSOR_INVALID if the sensor is NULL."]
+    pub fn SDL_SensorGetType(sensor: *mut SDL_Sensor) -> SDL_SensorType;
+}
+extern "C" {
+    #[doc = "  \\brief Get the platform dependent type of a sensor."]
+    #[doc = ""]
+    #[doc = "  This can be called before any sensors are opened."]
+    #[doc = ""]
+    #[doc = "  \\return The sensor platform dependent type, or -1 if the sensor is NULL."]
+    pub fn SDL_SensorGetNonPortableType(sensor: *mut SDL_Sensor) -> libc::c_int;
+}
+extern "C" {
+    #[doc = "  \\brief Get the instance ID of a sensor."]
+    #[doc = ""]
+    #[doc = "  This can be called before any sensors are opened."]
+    #[doc = ""]
+    #[doc = "  \\return The sensor instance ID, or -1 if the sensor is NULL."]
+    pub fn SDL_SensorGetInstanceID(sensor: *mut SDL_Sensor) -> SDL_SensorID;
+}
+extern "C" {
+    #[doc = "  Get the current state of an opened sensor."]
+    #[doc = ""]
+    #[doc = "  The number of values and interpretation of the data is sensor dependent."]
+    #[doc = ""]
+    #[doc = "  \\param sensor The sensor to query"]
+    #[doc = "  \\param data A pointer filled with the current sensor state"]
+    #[doc = "  \\param num_values The number of values to write to data"]
+    #[doc = ""]
+    #[doc = "  \\return 0 or -1 if an error occurred."]
+    pub fn SDL_SensorGetData(
+        sensor: *mut SDL_Sensor,
+        data: *mut f32,
+        num_values: libc::c_int,
+    ) -> libc::c_int;
+}
+extern "C" {
+    #[doc = "  Close a sensor previously opened with SDL_SensorOpen()"]
+    pub fn SDL_SensorClose(sensor: *mut SDL_Sensor);
+}
+extern "C" {
+    #[doc = "  Update the current state of the open sensors."]
+    #[doc = ""]
+    #[doc = "  This is called automatically by the event loop if sensor events are enabled."]
+    #[doc = ""]
+    #[doc = "  This needs to be called from the thread that initialized the sensor subsystem."]
+    pub fn SDL_SensorUpdate();
 }
 #[doc = " The gamecontroller structure used to identify an SDL game controller"]
 #[repr(C)]
@@ -10071,6 +10246,18 @@ pub struct _SDL_GameController {
     _unused: [u8; 0],
 }
 pub type SDL_GameController = _SDL_GameController;
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum SDL_GameControllerType {
+    SDL_CONTROLLER_TYPE_UNKNOWN = 0,
+    SDL_CONTROLLER_TYPE_XBOX360 = 1,
+    SDL_CONTROLLER_TYPE_XBOXONE = 2,
+    SDL_CONTROLLER_TYPE_PS3 = 3,
+    SDL_CONTROLLER_TYPE_PS4 = 4,
+    SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO = 5,
+    SDL_CONTROLLER_TYPE_VIRTUAL = 6,
+    SDL_CONTROLLER_TYPE_PS5 = 7,
+}
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum SDL_GameControllerBindType {
@@ -10293,6 +10480,11 @@ extern "C" {
     pub fn SDL_GameControllerNameForIndex(joystick_index: libc::c_int) -> *const libc::c_char;
 }
 extern "C" {
+    #[doc = "  Get the type of a game controller."]
+    #[doc = "  This can be called before any controllers are opened."]
+    pub fn SDL_GameControllerTypeForIndex(joystick_index: libc::c_int) -> SDL_GameControllerType;
+}
+extern "C" {
     #[doc = "  Get the mapping of a game controller."]
     #[doc = "  This can be called before any controllers are opened."]
     #[doc = ""]
@@ -10316,8 +10508,18 @@ extern "C" {
     pub fn SDL_GameControllerFromInstanceID(joyid: SDL_JoystickID) -> *mut SDL_GameController;
 }
 extern "C" {
+    #[doc = " Return the SDL_GameController associated with a player index."]
+    pub fn SDL_GameControllerFromPlayerIndex(player_index: libc::c_int) -> *mut SDL_GameController;
+}
+extern "C" {
     #[doc = "  Return the name for this currently opened controller"]
     pub fn SDL_GameControllerName(gamecontroller: *mut SDL_GameController) -> *const libc::c_char;
+}
+extern "C" {
+    #[doc = "  Return the type of this currently opened controller"]
+    pub fn SDL_GameControllerGetType(
+        gamecontroller: *mut SDL_GameController,
+    ) -> SDL_GameControllerType;
 }
 extern "C" {
     #[doc = "  Get the player index of an opened game controller, or -1 if it's not available"]
@@ -10325,6 +10527,13 @@ extern "C" {
     #[doc = "  For XInput controllers this returns the XInput user index."]
     pub fn SDL_GameControllerGetPlayerIndex(gamecontroller: *mut SDL_GameController)
         -> libc::c_int;
+}
+extern "C" {
+    #[doc = "  Set the player index of an opened game controller"]
+    pub fn SDL_GameControllerSetPlayerIndex(
+        gamecontroller: *mut SDL_GameController,
+        player_index: libc::c_int,
+    );
 }
 extern "C" {
     #[doc = "  Get the USB vendor ID of an opened controller, if available."]
@@ -10340,6 +10549,14 @@ extern "C" {
     #[doc = "  Get the product version of an opened controller, if available."]
     #[doc = "  If the product version isn't available this function returns 0."]
     pub fn SDL_GameControllerGetProductVersion(gamecontroller: *mut SDL_GameController) -> Uint16;
+}
+extern "C" {
+    #[doc = "  Get the serial number of an opened controller, if available."]
+    #[doc = ""]
+    #[doc = "  Returns the serial number of the controller, or NULL if it is not available."]
+    pub fn SDL_GameControllerGetSerial(
+        gamecontroller: *mut SDL_GameController,
+    ) -> *const libc::c_char;
 }
 extern "C" {
     #[doc = "  Returns SDL_TRUE if the controller has been opened and currently connected,"]
@@ -10406,6 +10623,13 @@ extern "C" {
     ) -> SDL_GameControllerButtonBind;
 }
 extern "C" {
+    #[doc = "  Return whether a game controller has a given axis"]
+    pub fn SDL_GameControllerHasAxis(
+        gamecontroller: *mut SDL_GameController,
+        axis: SDL_GameControllerAxis,
+    ) -> SDL_bool;
+}
+extern "C" {
     #[doc = "  Get the current state of an axis control on a game controller."]
     #[doc = ""]
     #[doc = "  The state is a value ranging from -32768 to 32767 (except for the triggers,"]
@@ -10437,7 +10661,13 @@ pub enum SDL_GameControllerButton {
     SDL_CONTROLLER_BUTTON_DPAD_DOWN = 12,
     SDL_CONTROLLER_BUTTON_DPAD_LEFT = 13,
     SDL_CONTROLLER_BUTTON_DPAD_RIGHT = 14,
-    SDL_CONTROLLER_BUTTON_MAX = 15,
+    SDL_CONTROLLER_BUTTON_MISC1 = 15,
+    SDL_CONTROLLER_BUTTON_PADDLE1 = 16,
+    SDL_CONTROLLER_BUTTON_PADDLE2 = 17,
+    SDL_CONTROLLER_BUTTON_PADDLE3 = 18,
+    SDL_CONTROLLER_BUTTON_PADDLE4 = 19,
+    SDL_CONTROLLER_BUTTON_TOUCHPAD = 20,
+    SDL_CONTROLLER_BUTTON_MAX = 21,
 }
 extern "C" {
     #[doc = "  turn this string into a button mapping"]
@@ -10459,6 +10689,13 @@ extern "C" {
     ) -> SDL_GameControllerButtonBind;
 }
 extern "C" {
+    #[doc = "  Return whether a game controller has a given button"]
+    pub fn SDL_GameControllerHasButton(
+        gamecontroller: *mut SDL_GameController,
+        button: SDL_GameControllerButton,
+    ) -> SDL_bool;
+}
+extern "C" {
     #[doc = "  Get the current state of a button on a game controller."]
     #[doc = ""]
     #[doc = "  The button indices start at index 0."]
@@ -10468,7 +10705,89 @@ extern "C" {
     ) -> Uint8;
 }
 extern "C" {
-    #[doc = "  Trigger a rumble effect"]
+    #[doc = "  Get the number of touchpads on a game controller."]
+    pub fn SDL_GameControllerGetNumTouchpads(
+        gamecontroller: *mut SDL_GameController,
+    ) -> libc::c_int;
+}
+extern "C" {
+    #[doc = "  Get the number of supported simultaneous fingers on a touchpad on a game controller."]
+    pub fn SDL_GameControllerGetNumTouchpadFingers(
+        gamecontroller: *mut SDL_GameController,
+        touchpad: libc::c_int,
+    ) -> libc::c_int;
+}
+extern "C" {
+    #[doc = "  Get the current state of a finger on a touchpad on a game controller."]
+    pub fn SDL_GameControllerGetTouchpadFinger(
+        gamecontroller: *mut SDL_GameController,
+        touchpad: libc::c_int,
+        finger: libc::c_int,
+        state: *mut Uint8,
+        x: *mut f32,
+        y: *mut f32,
+        pressure: *mut f32,
+    ) -> libc::c_int;
+}
+extern "C" {
+    #[doc = "  Return whether a game controller has a particular sensor."]
+    #[doc = ""]
+    #[doc = "  \\param gamecontroller The controller to query"]
+    #[doc = "  \\param type The type of sensor to query"]
+    #[doc = ""]
+    #[doc = "  \\return SDL_TRUE if the sensor exists, SDL_FALSE otherwise."]
+    pub fn SDL_GameControllerHasSensor(
+        gamecontroller: *mut SDL_GameController,
+        type_: SDL_SensorType,
+    ) -> SDL_bool;
+}
+extern "C" {
+    #[doc = "  Set whether data reporting for a game controller sensor is enabled"]
+    #[doc = ""]
+    #[doc = "  \\param gamecontroller The controller to update"]
+    #[doc = "  \\param type The type of sensor to enable/disable"]
+    #[doc = "  \\param enabled Whether data reporting should be enabled"]
+    #[doc = ""]
+    #[doc = "  \\return 0 or -1 if an error occurred."]
+    pub fn SDL_GameControllerSetSensorEnabled(
+        gamecontroller: *mut SDL_GameController,
+        type_: SDL_SensorType,
+        enabled: SDL_bool,
+    ) -> libc::c_int;
+}
+extern "C" {
+    #[doc = "  Query whether sensor data reporting is enabled for a game controller"]
+    #[doc = ""]
+    #[doc = "  \\param gamecontroller The controller to query"]
+    #[doc = "  \\param type The type of sensor to query"]
+    #[doc = ""]
+    #[doc = "  \\return SDL_TRUE if the sensor is enabled, SDL_FALSE otherwise."]
+    pub fn SDL_GameControllerIsSensorEnabled(
+        gamecontroller: *mut SDL_GameController,
+        type_: SDL_SensorType,
+    ) -> SDL_bool;
+}
+extern "C" {
+    #[doc = "  Get the current state of a game controller sensor."]
+    #[doc = ""]
+    #[doc = "  The number of values and interpretation of the data is sensor dependent."]
+    #[doc = "  See SDL_sensor.h for the details for each type of sensor."]
+    #[doc = ""]
+    #[doc = "  \\param gamecontroller The controller to query"]
+    #[doc = "  \\param type The type of sensor to query"]
+    #[doc = "  \\param data A pointer filled with the current sensor state"]
+    #[doc = "  \\param num_values The number of values to write to data"]
+    #[doc = ""]
+    #[doc = "  \\return 0 or -1 if an error occurred."]
+    pub fn SDL_GameControllerGetSensorData(
+        gamecontroller: *mut SDL_GameController,
+        type_: SDL_SensorType,
+        data: *mut f32,
+        num_values: libc::c_int,
+    ) -> libc::c_int;
+}
+extern "C" {
+    #[doc = "  Start a rumble effect"]
     #[doc = "  Each call to this function cancels any previous rumble effect, and calling it with 0 intensity stops any rumbling."]
     #[doc = ""]
     #[doc = "  \\param gamecontroller The controller to vibrate"]
@@ -10476,12 +10795,53 @@ extern "C" {
     #[doc = "  \\param high_frequency_rumble The intensity of the high frequency (right) rumble motor, from 0 to 0xFFFF"]
     #[doc = "  \\param duration_ms The duration of the rumble effect, in milliseconds"]
     #[doc = ""]
-    #[doc = "  \\return 0, or -1 if rumble isn't supported on this joystick"]
+    #[doc = "  \\return 0, or -1 if rumble isn't supported on this controller"]
     pub fn SDL_GameControllerRumble(
         gamecontroller: *mut SDL_GameController,
         low_frequency_rumble: Uint16,
         high_frequency_rumble: Uint16,
         duration_ms: Uint32,
+    ) -> libc::c_int;
+}
+extern "C" {
+    #[doc = "  Start a rumble effect in the game controller's triggers"]
+    #[doc = "  Each call to this function cancels any previous trigger rumble effect, and calling it with 0 intensity stops any rumbling."]
+    #[doc = ""]
+    #[doc = "  \\param gamecontroller The controller to vibrate"]
+    #[doc = "  \\param left_rumble The intensity of the left trigger rumble motor, from 0 to 0xFFFF"]
+    #[doc = "  \\param right_rumble The intensity of the right trigger rumble motor, from 0 to 0xFFFF"]
+    #[doc = "  \\param duration_ms The duration of the rumble effect, in milliseconds"]
+    #[doc = ""]
+    #[doc = "  \\return 0, or -1 if rumble isn't supported on this controller"]
+    pub fn SDL_GameControllerRumbleTriggers(
+        gamecontroller: *mut SDL_GameController,
+        left_rumble: Uint16,
+        right_rumble: Uint16,
+        duration_ms: Uint32,
+    ) -> libc::c_int;
+}
+extern "C" {
+    #[doc = "  Return whether a controller has an LED"]
+    #[doc = ""]
+    #[doc = "  \\param gamecontroller The controller to query"]
+    #[doc = ""]
+    #[doc = "  \\return SDL_TRUE, or SDL_FALSE if this controller does not have a modifiable LED"]
+    pub fn SDL_GameControllerHasLED(gamecontroller: *mut SDL_GameController) -> SDL_bool;
+}
+extern "C" {
+    #[doc = "  Update a controller's LED color."]
+    #[doc = ""]
+    #[doc = "  \\param gamecontroller The controller to update"]
+    #[doc = "  \\param red The intensity of the red LED"]
+    #[doc = "  \\param green The intensity of the green LED"]
+    #[doc = "  \\param blue The intensity of the blue LED"]
+    #[doc = ""]
+    #[doc = "  \\return 0, or -1 if this controller does not have a modifiable LED"]
+    pub fn SDL_GameControllerSetLED(
+        gamecontroller: *mut SDL_GameController,
+        red: Uint8,
+        green: Uint8,
+        blue: Uint8,
     ) -> libc::c_int;
 }
 extern "C" {
@@ -10636,6 +10996,8 @@ pub enum SDL_EventType {
     #[doc = "Called on iOS in applicationDidBecomeActive()"]
     #[doc = "Called on Android in onResume()"]
     SDL_APP_DIDENTERFOREGROUND = 262,
+    #[doc = "< The user's locale preferences have changed."]
+    SDL_LOCALECHANGED = 263,
     #[doc = "< Display state change"]
     SDL_DISPLAYEVENT = 336,
     #[doc = "< Window state change"]
@@ -10687,6 +11049,14 @@ pub enum SDL_EventType {
     SDL_CONTROLLERDEVICEREMOVED = 1620,
     #[doc = "< The controller mapping was updated"]
     SDL_CONTROLLERDEVICEREMAPPED = 1621,
+    #[doc = "< Game controller touchpad was touched"]
+    SDL_CONTROLLERTOUCHPADDOWN = 1622,
+    #[doc = "< Game controller touchpad finger was moved"]
+    SDL_CONTROLLERTOUCHPADMOTION = 1623,
+    #[doc = "< Game controller touchpad finger was lifted"]
+    SDL_CONTROLLERTOUCHPADUP = 1624,
+    #[doc = "< Game controller sensor was updated"]
+    SDL_CONTROLLERSENSORUPDATE = 1625,
     SDL_FINGERDOWN = 1792,
     SDL_FINGERUP = 1793,
     SDL_FINGERMOTION = 1794,
@@ -12437,6 +12807,218 @@ fn bindgen_test_layout_SDL_ControllerDeviceEvent() {
         )
     );
 }
+#[doc = "  \\brief Game controller touchpad event structure (event.ctouchpad.*)"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct SDL_ControllerTouchpadEvent {
+    #[doc = "< ::SDL_CONTROLLERTOUCHPADDOWN or ::SDL_CONTROLLERTOUCHPADMOTION or ::SDL_CONTROLLERTOUCHPADUP"]
+    pub type_: Uint32,
+    #[doc = "< In milliseconds, populated using SDL_GetTicks()"]
+    pub timestamp: Uint32,
+    #[doc = "< The joystick instance id"]
+    pub which: SDL_JoystickID,
+    #[doc = "< The index of the touchpad"]
+    pub touchpad: Sint32,
+    #[doc = "< The index of the finger on the touchpad"]
+    pub finger: Sint32,
+    #[doc = "< Normalized in the range 0...1 with 0 being on the left"]
+    pub x: f32,
+    #[doc = "< Normalized in the range 0...1 with 0 being at the top"]
+    pub y: f32,
+    #[doc = "< Normalized in the range 0...1"]
+    pub pressure: f32,
+}
+#[test]
+fn bindgen_test_layout_SDL_ControllerTouchpadEvent() {
+    assert_eq!(
+        ::core::mem::size_of::<SDL_ControllerTouchpadEvent>(),
+        32usize,
+        concat!("Size of: ", stringify!(SDL_ControllerTouchpadEvent))
+    );
+    assert_eq!(
+        ::core::mem::align_of::<SDL_ControllerTouchpadEvent>(),
+        4usize,
+        concat!("Alignment of ", stringify!(SDL_ControllerTouchpadEvent))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::core::ptr::null::<SDL_ControllerTouchpadEvent>())).type_ as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SDL_ControllerTouchpadEvent),
+            "::",
+            stringify!(type_)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::core::ptr::null::<SDL_ControllerTouchpadEvent>())).timestamp as *const _ as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SDL_ControllerTouchpadEvent),
+            "::",
+            stringify!(timestamp)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::core::ptr::null::<SDL_ControllerTouchpadEvent>())).which as *const _ as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SDL_ControllerTouchpadEvent),
+            "::",
+            stringify!(which)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::core::ptr::null::<SDL_ControllerTouchpadEvent>())).touchpad as *const _ as usize
+        },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SDL_ControllerTouchpadEvent),
+            "::",
+            stringify!(touchpad)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::core::ptr::null::<SDL_ControllerTouchpadEvent>())).finger as *const _ as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SDL_ControllerTouchpadEvent),
+            "::",
+            stringify!(finger)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::core::ptr::null::<SDL_ControllerTouchpadEvent>())).x as *const _ as usize },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SDL_ControllerTouchpadEvent),
+            "::",
+            stringify!(x)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::core::ptr::null::<SDL_ControllerTouchpadEvent>())).y as *const _ as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SDL_ControllerTouchpadEvent),
+            "::",
+            stringify!(y)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::core::ptr::null::<SDL_ControllerTouchpadEvent>())).pressure as *const _ as usize
+        },
+        28usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SDL_ControllerTouchpadEvent),
+            "::",
+            stringify!(pressure)
+        )
+    );
+}
+#[doc = "  \\brief Game controller sensor event structure (event.csensor.*)"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct SDL_ControllerSensorEvent {
+    #[doc = "< ::SDL_CONTROLLERSENSORUPDATE"]
+    pub type_: Uint32,
+    #[doc = "< In milliseconds, populated using SDL_GetTicks()"]
+    pub timestamp: Uint32,
+    #[doc = "< The joystick instance id"]
+    pub which: SDL_JoystickID,
+    #[doc = "< The type of the sensor, one of the values of ::SDL_SensorType"]
+    pub sensor: Sint32,
+    #[doc = "< Up to 3 values from the sensor, as defined in SDL_sensor.h"]
+    pub data: [f32; 3usize],
+}
+#[test]
+fn bindgen_test_layout_SDL_ControllerSensorEvent() {
+    assert_eq!(
+        ::core::mem::size_of::<SDL_ControllerSensorEvent>(),
+        28usize,
+        concat!("Size of: ", stringify!(SDL_ControllerSensorEvent))
+    );
+    assert_eq!(
+        ::core::mem::align_of::<SDL_ControllerSensorEvent>(),
+        4usize,
+        concat!("Alignment of ", stringify!(SDL_ControllerSensorEvent))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::core::ptr::null::<SDL_ControllerSensorEvent>())).type_ as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SDL_ControllerSensorEvent),
+            "::",
+            stringify!(type_)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::core::ptr::null::<SDL_ControllerSensorEvent>())).timestamp as *const _ as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SDL_ControllerSensorEvent),
+            "::",
+            stringify!(timestamp)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::core::ptr::null::<SDL_ControllerSensorEvent>())).which as *const _ as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SDL_ControllerSensorEvent),
+            "::",
+            stringify!(which)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::core::ptr::null::<SDL_ControllerSensorEvent>())).sensor as *const _ as usize
+        },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SDL_ControllerSensorEvent),
+            "::",
+            stringify!(sensor)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::core::ptr::null::<SDL_ControllerSensorEvent>())).data as *const _ as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SDL_ControllerSensorEvent),
+            "::",
+            stringify!(data)
+        )
+    );
+}
 #[doc = "  \\brief Audio device event structure (event.adevice.*)"]
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -12557,6 +13139,8 @@ pub struct SDL_TouchFingerEvent {
     pub dy: f32,
     #[doc = "< Normalized in the range 0...1"]
     pub pressure: f32,
+    #[doc = "< The window underneath the finger, if any"]
+    pub windowID: Uint32,
 }
 #[test]
 fn bindgen_test_layout_SDL_TouchFingerEvent() {
@@ -12658,6 +13242,16 @@ fn bindgen_test_layout_SDL_TouchFingerEvent() {
             stringify!(SDL_TouchFingerEvent),
             "::",
             stringify!(pressure)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::core::ptr::null::<SDL_TouchFingerEvent>())).windowID as *const _ as usize },
+        44usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SDL_TouchFingerEvent),
+            "::",
+            stringify!(windowID)
         )
     );
 }
@@ -13275,7 +13869,7 @@ pub union SDL_Event {
     pub type_: Uint32,
     #[doc = "< Common event data"]
     pub common: SDL_CommonEvent,
-    #[doc = "< Window event data"]
+    #[doc = "< Display event data"]
     pub display: SDL_DisplayEvent,
     #[doc = "< Window event data"]
     pub window: SDL_WindowEvent,
@@ -13307,6 +13901,10 @@ pub union SDL_Event {
     pub cbutton: SDL_ControllerButtonEvent,
     #[doc = "< Game Controller device event data"]
     pub cdevice: SDL_ControllerDeviceEvent,
+    #[doc = "< Game Controller touchpad event data"]
+    pub ctouchpad: SDL_ControllerTouchpadEvent,
+    #[doc = "< Game Controller sensor event data"]
+    pub csensor: SDL_ControllerSensorEvent,
     #[doc = "< Audio device event data"]
     pub adevice: SDL_AudioDeviceEvent,
     #[doc = "< Sensor event data"]
@@ -13518,6 +14116,26 @@ fn bindgen_test_layout_SDL_Event() {
             stringify!(SDL_Event),
             "::",
             stringify!(cdevice)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).ctouchpad as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SDL_Event),
+            "::",
+            stringify!(ctouchpad)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::core::ptr::null::<SDL_Event>())).csensor as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SDL_Event),
+            "::",
+            stringify!(csensor)
         )
     );
     assert_eq!(
@@ -13974,6 +14592,7 @@ pub type SDL_Haptic = _SDL_Haptic;
 #[doc = "  \\sa SDL_HAPTIC_POLAR"]
 #[doc = "  \\sa SDL_HAPTIC_CARTESIAN"]
 #[doc = "  \\sa SDL_HAPTIC_SPHERICAL"]
+#[doc = "  \\sa SDL_HAPTIC_STEERING_AXIS"]
 #[doc = "  \\sa SDL_HapticEffect"]
 #[doc = "  \\sa SDL_HapticNumAxes"]
 #[repr(C)]
@@ -15711,26 +16330,6 @@ extern "C" {
     #[doc = "  Unload a shared object from memory."]
     pub fn SDL_UnloadObject(handle: *mut libc::c_void);
 }
-pub const SDL_LOG_CATEGORY_APPLICATION: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_APPLICATION;
-pub const SDL_LOG_CATEGORY_ERROR: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_ERROR;
-pub const SDL_LOG_CATEGORY_ASSERT: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_ASSERT;
-pub const SDL_LOG_CATEGORY_SYSTEM: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_SYSTEM;
-pub const SDL_LOG_CATEGORY_AUDIO: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_AUDIO;
-pub const SDL_LOG_CATEGORY_VIDEO: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_VIDEO;
-pub const SDL_LOG_CATEGORY_RENDER: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_RENDER;
-pub const SDL_LOG_CATEGORY_INPUT: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_INPUT;
-pub const SDL_LOG_CATEGORY_TEST: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_TEST;
-pub const SDL_LOG_CATEGORY_RESERVED1: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_RESERVED1;
-pub const SDL_LOG_CATEGORY_RESERVED2: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_RESERVED2;
-pub const SDL_LOG_CATEGORY_RESERVED3: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_RESERVED3;
-pub const SDL_LOG_CATEGORY_RESERVED4: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_RESERVED4;
-pub const SDL_LOG_CATEGORY_RESERVED5: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_RESERVED5;
-pub const SDL_LOG_CATEGORY_RESERVED6: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_RESERVED6;
-pub const SDL_LOG_CATEGORY_RESERVED7: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_RESERVED7;
-pub const SDL_LOG_CATEGORY_RESERVED8: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_RESERVED8;
-pub const SDL_LOG_CATEGORY_RESERVED9: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_RESERVED9;
-pub const SDL_LOG_CATEGORY_RESERVED10: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_RESERVED10;
-pub const SDL_LOG_CATEGORY_CUSTOM: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGORY_CUSTOM;
 #[repr(u32)]
 #[doc = "  \\brief The predefined log categories"]
 #[doc = ""]
@@ -15739,7 +16338,7 @@ pub const SDL_LOG_CATEGORY_CUSTOM: _bindgen_ty_7 = _bindgen_ty_7::SDL_LOG_CATEGO
 #[doc = "  at the VERBOSE level and all other categories are enabled at the"]
 #[doc = "  CRITICAL level."]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_7 {
+pub enum SDL_LogCategory {
     SDL_LOG_CATEGORY_APPLICATION = 0,
     SDL_LOG_CATEGORY_ERROR = 1,
     SDL_LOG_CATEGORY_ASSERT = 2,
@@ -15868,6 +16467,10 @@ pub enum SDL_MessageBoxFlags {
     SDL_MESSAGEBOX_WARNING = 32,
     #[doc = "< informational dialog"]
     SDL_MESSAGEBOX_INFORMATION = 64,
+    #[doc = "< buttons placed left to right"]
+    SDL_MESSAGEBOX_BUTTONS_LEFT_TO_RIGHT = 128,
+    #[doc = "< buttons placed right to left"]
+    SDL_MESSAGEBOX_BUTTONS_RIGHT_TO_LEFT = 256,
 }
 #[repr(u32)]
 #[doc = " \\brief Flags for SDL_MessageBoxButtonData."]
@@ -16162,6 +16765,67 @@ extern "C" {
         window: *mut SDL_Window,
     ) -> libc::c_int;
 }
+#[doc = "  \\brief A handle to a CAMetalLayer-backed NSView (macOS) or UIView (iOS/tvOS)."]
+#[doc = ""]
+#[doc = "  \\note This can be cast directly to an NSView or UIView."]
+pub type SDL_MetalView = *mut libc::c_void;
+extern "C" {
+    #[doc = "  \\brief Create a CAMetalLayer-backed NSView/UIView and attach it to the"]
+    #[doc = "        specified window."]
+    #[doc = ""]
+    #[doc = "  On macOS, this does *not* associate a MTLDevice with the CAMetalLayer on its"]
+    #[doc = "  own. It is up to user code to do that."]
+    #[doc = ""]
+    #[doc = "  The returned handle can be casted directly to a NSView or UIView."]
+    #[doc = "  To access the backing CAMetalLayer, call SDL_Metal_GetLayer()."]
+    #[doc = ""]
+    #[doc = "  \\note \\a window must be created with the SDL_WINDOW_METAL flag."]
+    #[doc = ""]
+    #[doc = "  \\sa SDL_Metal_DestroyView"]
+    #[doc = "  \\sa SDL_Metal_GetLayer"]
+    pub fn SDL_Metal_CreateView(window: *mut SDL_Window) -> SDL_MetalView;
+}
+extern "C" {
+    #[doc = "  \\brief Destroy an existing SDL_MetalView object."]
+    #[doc = ""]
+    #[doc = "  This should be called before SDL_DestroyWindow, if SDL_Metal_CreateView was"]
+    #[doc = "  called after SDL_CreateWindow."]
+    #[doc = ""]
+    #[doc = "  \\sa SDL_Metal_CreateView"]
+    pub fn SDL_Metal_DestroyView(view: SDL_MetalView);
+}
+extern "C" {
+    #[doc = "  \\brief Get a pointer to the backing CAMetalLayer for the given view."]
+    #[doc = ""]
+    #[doc = "  \\sa SDL_MetalCreateView"]
+    pub fn SDL_Metal_GetLayer(view: SDL_MetalView) -> *mut libc::c_void;
+}
+extern "C" {
+    #[doc = "  \\brief Get the size of a window's underlying drawable in pixels (for use"]
+    #[doc = "         with setting viewport, scissor & etc)."]
+    #[doc = ""]
+    #[doc = "  \\param window   SDL_Window from which the drawable size should be queried"]
+    #[doc = "  \\param w        Pointer to variable for storing the width in pixels,"]
+    #[doc = "                  may be NULL"]
+    #[doc = "  \\param h        Pointer to variable for storing the height in pixels,"]
+    #[doc = "                  may be NULL"]
+    #[doc = ""]
+    #[doc = " This may differ from SDL_GetWindowSize() if we're rendering to a high-DPI"]
+    #[doc = " drawable, i.e. the window was created with SDL_WINDOW_ALLOW_HIGHDPI on a"]
+    #[doc = " platform with high-DPI support (Apple calls this \"Retina\"), and not disabled"]
+    #[doc = " by the \\c SDL_HINT_VIDEO_HIGHDPI_DISABLED hint."]
+    #[doc = ""]
+    #[doc = "  \\note On macOS high-DPI support must be enabled for an application by"]
+    #[doc = "        setting NSHighResolutionCapable to true in its Info.plist."]
+    #[doc = ""]
+    #[doc = "  \\sa SDL_GetWindowSize()"]
+    #[doc = "  \\sa SDL_CreateWindow()"]
+    pub fn SDL_Metal_GetDrawableSize(
+        window: *mut SDL_Window,
+        w: *mut libc::c_int,
+        h: *mut libc::c_int,
+    );
+}
 #[repr(u32)]
 #[doc = "  \\brief The basic state for the system's power supply."]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -16304,6 +16968,17 @@ fn bindgen_test_layout_SDL_RendererInfo() {
             stringify!(max_texture_height)
         )
     );
+}
+#[repr(u32)]
+#[doc = "  \\brief The scaling mode for a texture."]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum SDL_ScaleMode {
+    #[doc = "< nearest pixel sampling"]
+    SDL_ScaleModeNearest = 0,
+    #[doc = "< linear filtering"]
+    SDL_ScaleModeLinear = 1,
+    #[doc = "< anisotropic filtering"]
+    SDL_ScaleModeBest = 2,
 }
 #[repr(u32)]
 #[doc = "  \\brief The access pattern allowed for a texture."]
@@ -16598,6 +17273,37 @@ extern "C" {
     ) -> libc::c_int;
 }
 extern "C" {
+    #[doc = "  \\brief Set the scale mode used for texture scale operations."]
+    #[doc = ""]
+    #[doc = "  \\param texture The texture to update."]
+    #[doc = "  \\param scaleMode ::SDL_ScaleMode to use for texture scaling."]
+    #[doc = ""]
+    #[doc = "  \\return 0 on success, or -1 if the texture is not valid."]
+    #[doc = ""]
+    #[doc = "  \\note If the scale mode is not supported, the closest supported mode is"]
+    #[doc = "        chosen."]
+    #[doc = ""]
+    #[doc = "  \\sa SDL_GetTextureScaleMode()"]
+    pub fn SDL_SetTextureScaleMode(
+        texture: *mut SDL_Texture,
+        scaleMode: SDL_ScaleMode,
+    ) -> libc::c_int;
+}
+extern "C" {
+    #[doc = "  \\brief Get the scale mode used for texture scale operations."]
+    #[doc = ""]
+    #[doc = "  \\param texture   The texture to query."]
+    #[doc = "  \\param scaleMode A pointer filled in with the current scale mode."]
+    #[doc = ""]
+    #[doc = "  \\return 0 on success, or -1 if the texture is not valid."]
+    #[doc = ""]
+    #[doc = "  \\sa SDL_SetTextureScaleMode()"]
+    pub fn SDL_GetTextureScaleMode(
+        texture: *mut SDL_Texture,
+        scaleMode: *mut SDL_ScaleMode,
+    ) -> libc::c_int;
+}
+extern "C" {
     #[doc = "  \\brief Update the given texture rectangle with new pixel data."]
     #[doc = ""]
     #[doc = "  \\param texture   The texture to update"]
@@ -16670,9 +17376,31 @@ extern "C" {
     ) -> libc::c_int;
 }
 extern "C" {
+    #[doc = "  \\brief Lock a portion of the texture for write-only pixel access."]
+    #[doc = "         Expose it as a SDL surface."]
+    #[doc = ""]
+    #[doc = "  \\param texture   The texture to lock for access, which was created with"]
+    #[doc = "                   ::SDL_TEXTUREACCESS_STREAMING."]
+    #[doc = "  \\param rect      A pointer to the rectangle to lock for access. If the rect"]
+    #[doc = "                   is NULL, the entire texture will be locked."]
+    #[doc = "  \\param surface   This is filled in with a SDL surface representing the locked area"]
+    #[doc = "                   Surface is freed internally after calling SDL_UnlockTexture or SDL_DestroyTexture."]
+    #[doc = ""]
+    #[doc = "  \\return 0 on success, or -1 if the texture is not valid or was not created with ::SDL_TEXTUREACCESS_STREAMING."]
+    #[doc = ""]
+    #[doc = "  \\sa SDL_UnlockTexture()"]
+    pub fn SDL_LockTextureToSurface(
+        texture: *mut SDL_Texture,
+        rect: *const SDL_Rect,
+        surface: *mut *mut SDL_Surface,
+    ) -> libc::c_int;
+}
+extern "C" {
     #[doc = "  \\brief Unlock a texture, uploading the changes to video memory, if needed."]
+    #[doc = "         If SDL_LockTextureToSurface() was called for locking, the SDL surface is freed."]
     #[doc = ""]
     #[doc = "  \\sa SDL_LockTexture()"]
+    #[doc = "  \\sa SDL_LockTextureToSurface()"]
     pub fn SDL_UnlockTexture(texture: *mut SDL_Texture);
 }
 extern "C" {
@@ -16795,8 +17523,8 @@ extern "C" {
     #[doc = "  \\brief Set the clip rectangle for the current target."]
     #[doc = ""]
     #[doc = "  \\param renderer The renderer for which clip rectangle should be set."]
-    #[doc = "  \\param rect   A pointer to the rectangle to set as the clip rectangle, or"]
-    #[doc = "                NULL to disable clipping."]
+    #[doc = "  \\param rect   A pointer to the rectangle to set as the clip rectangle,"]
+    #[doc = "                relative to the viewport, or NULL to disable clipping."]
     #[doc = ""]
     #[doc = "  \\return 0 on success, or -1 on error"]
     #[doc = ""]
@@ -17331,140 +18059,6 @@ extern "C" {
     #[doc = "  \\sa SDL_RenderGetMetalLayer()"]
     pub fn SDL_RenderGetMetalCommandEncoder(renderer: *mut SDL_Renderer) -> *mut libc::c_void;
 }
-#[doc = "  \\brief SDL_sensor.h"]
-#[doc = ""]
-#[doc = "  In order to use these functions, SDL_Init() must have been called"]
-#[doc = "  with the ::SDL_INIT_SENSOR flag.  This causes SDL to scan the system"]
-#[doc = "  for sensors, and load appropriate drivers."]
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct _SDL_Sensor {
-    _unused: [u8; 0],
-}
-pub type SDL_Sensor = _SDL_Sensor;
-#[doc = " This is a unique ID for a sensor for the time it is connected to the system,"]
-#[doc = " and is never reused for the lifetime of the application."]
-#[doc = ""]
-#[doc = " The ID value starts at 0 and increments from there. The value -1 is an invalid ID."]
-pub type SDL_SensorID = Sint32;
-#[repr(i32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum SDL_SensorType {
-    #[doc = "< Returned for an invalid sensor"]
-    SDL_SENSOR_INVALID = -1,
-    #[doc = "< Unknown sensor type"]
-    SDL_SENSOR_UNKNOWN = 0,
-    #[doc = "< Accelerometer"]
-    SDL_SENSOR_ACCEL = 1,
-    #[doc = "< Gyroscope"]
-    SDL_SENSOR_GYRO = 2,
-}
-extern "C" {
-    #[doc = "  \\brief Count the number of sensors attached to the system right now"]
-    pub fn SDL_NumSensors() -> libc::c_int;
-}
-extern "C" {
-    #[doc = "  \\brief Get the implementation dependent name of a sensor."]
-    #[doc = ""]
-    #[doc = "  This can be called before any sensors are opened."]
-    #[doc = ""]
-    #[doc = "  \\return The sensor name, or NULL if device_index is out of range."]
-    pub fn SDL_SensorGetDeviceName(device_index: libc::c_int) -> *const libc::c_char;
-}
-extern "C" {
-    #[doc = "  \\brief Get the type of a sensor."]
-    #[doc = ""]
-    #[doc = "  This can be called before any sensors are opened."]
-    #[doc = ""]
-    #[doc = "  \\return The sensor type, or SDL_SENSOR_INVALID if device_index is out of range."]
-    pub fn SDL_SensorGetDeviceType(device_index: libc::c_int) -> SDL_SensorType;
-}
-extern "C" {
-    #[doc = "  \\brief Get the platform dependent type of a sensor."]
-    #[doc = ""]
-    #[doc = "  This can be called before any sensors are opened."]
-    #[doc = ""]
-    #[doc = "  \\return The sensor platform dependent type, or -1 if device_index is out of range."]
-    pub fn SDL_SensorGetDeviceNonPortableType(device_index: libc::c_int) -> libc::c_int;
-}
-extern "C" {
-    #[doc = "  \\brief Get the instance ID of a sensor."]
-    #[doc = ""]
-    #[doc = "  This can be called before any sensors are opened."]
-    #[doc = ""]
-    #[doc = "  \\return The sensor instance ID, or -1 if device_index is out of range."]
-    pub fn SDL_SensorGetDeviceInstanceID(device_index: libc::c_int) -> SDL_SensorID;
-}
-extern "C" {
-    #[doc = "  \\brief Open a sensor for use."]
-    #[doc = ""]
-    #[doc = "  The index passed as an argument refers to the N'th sensor on the system."]
-    #[doc = ""]
-    #[doc = "  \\return A sensor identifier, or NULL if an error occurred."]
-    pub fn SDL_SensorOpen(device_index: libc::c_int) -> *mut SDL_Sensor;
-}
-extern "C" {
-    #[doc = " Return the SDL_Sensor associated with an instance id."]
-    pub fn SDL_SensorFromInstanceID(instance_id: SDL_SensorID) -> *mut SDL_Sensor;
-}
-extern "C" {
-    #[doc = "  \\brief Get the implementation dependent name of a sensor."]
-    #[doc = ""]
-    #[doc = "  \\return The sensor name, or NULL if the sensor is NULL."]
-    pub fn SDL_SensorGetName(sensor: *mut SDL_Sensor) -> *const libc::c_char;
-}
-extern "C" {
-    #[doc = "  \\brief Get the type of a sensor."]
-    #[doc = ""]
-    #[doc = "  This can be called before any sensors are opened."]
-    #[doc = ""]
-    #[doc = "  \\return The sensor type, or SDL_SENSOR_INVALID if the sensor is NULL."]
-    pub fn SDL_SensorGetType(sensor: *mut SDL_Sensor) -> SDL_SensorType;
-}
-extern "C" {
-    #[doc = "  \\brief Get the platform dependent type of a sensor."]
-    #[doc = ""]
-    #[doc = "  This can be called before any sensors are opened."]
-    #[doc = ""]
-    #[doc = "  \\return The sensor platform dependent type, or -1 if the sensor is NULL."]
-    pub fn SDL_SensorGetNonPortableType(sensor: *mut SDL_Sensor) -> libc::c_int;
-}
-extern "C" {
-    #[doc = "  \\brief Get the instance ID of a sensor."]
-    #[doc = ""]
-    #[doc = "  This can be called before any sensors are opened."]
-    #[doc = ""]
-    #[doc = "  \\return The sensor instance ID, or -1 if the sensor is NULL."]
-    pub fn SDL_SensorGetInstanceID(sensor: *mut SDL_Sensor) -> SDL_SensorID;
-}
-extern "C" {
-    #[doc = "  Get the current state of an opened sensor."]
-    #[doc = ""]
-    #[doc = "  The number of values and interpretation of the data is sensor dependent."]
-    #[doc = ""]
-    #[doc = "  \\param sensor The sensor to query"]
-    #[doc = "  \\param data A pointer filled with the current sensor state"]
-    #[doc = "  \\param num_values The number of values to write to data"]
-    #[doc = ""]
-    #[doc = "  \\return 0 or -1 if an error occurred."]
-    pub fn SDL_SensorGetData(
-        sensor: *mut SDL_Sensor,
-        data: *mut f32,
-        num_values: libc::c_int,
-    ) -> libc::c_int;
-}
-extern "C" {
-    #[doc = "  Close a sensor previously opened with SDL_SensorOpen()"]
-    pub fn SDL_SensorClose(sensor: *mut SDL_Sensor);
-}
-extern "C" {
-    #[doc = "  Update the current state of the open sensors."]
-    #[doc = ""]
-    #[doc = "  This is called automatically by the event loop if sensor events are enabled."]
-    #[doc = ""]
-    #[doc = "  This needs to be called from the thread that initialized the sensor subsystem."]
-    pub fn SDL_SensorUpdate();
-}
 extern "C" {
     #[doc = "  \\brief Create a window that can be shaped with the specified position, dimensions, and flags."]
     #[doc = ""]
@@ -17649,6 +18243,24 @@ extern "C" {
     pub fn SDL_IsTablet() -> SDL_bool;
 }
 extern "C" {
+    pub fn SDL_OnApplicationWillTerminate();
+}
+extern "C" {
+    pub fn SDL_OnApplicationDidReceiveMemoryWarning();
+}
+extern "C" {
+    pub fn SDL_OnApplicationWillResignActive();
+}
+extern "C" {
+    pub fn SDL_OnApplicationDidEnterBackground();
+}
+extern "C" {
+    pub fn SDL_OnApplicationWillEnterForeground();
+}
+extern "C" {
+    pub fn SDL_OnApplicationDidBecomeActive();
+}
+extern "C" {
     #[doc = " \\brief Get the number of milliseconds since the SDL library initialization."]
     #[doc = ""]
     #[doc = " \\note This value wraps if the program runs for more than ~49 days."]
@@ -17798,6 +18410,114 @@ extern "C" {
     #[doc = "  library in use. It is an incrementing number based on commits to"]
     #[doc = "  hg.libsdl.org."]
     pub fn SDL_GetRevisionNumber() -> libc::c_int;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct SDL_Locale {
+    #[doc = "< A language name, like \"en\" for English."]
+    pub language: *const libc::c_char,
+    #[doc = "< A country, like \"US\" for America. Can be NULL."]
+    pub country: *const libc::c_char,
+}
+#[test]
+fn bindgen_test_layout_SDL_Locale() {
+    assert_eq!(
+        ::core::mem::size_of::<SDL_Locale>(),
+        16usize,
+        concat!("Size of: ", stringify!(SDL_Locale))
+    );
+    assert_eq!(
+        ::core::mem::align_of::<SDL_Locale>(),
+        8usize,
+        concat!("Alignment of ", stringify!(SDL_Locale))
+    );
+    assert_eq!(
+        unsafe { &(*(::core::ptr::null::<SDL_Locale>())).language as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SDL_Locale),
+            "::",
+            stringify!(language)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::core::ptr::null::<SDL_Locale>())).country as *const _ as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SDL_Locale),
+            "::",
+            stringify!(country)
+        )
+    );
+}
+extern "C" {
+    #[doc = "  \\brief Report the user's preferred locale."]
+    #[doc = ""]
+    #[doc = "  This returns an array of SDL_Locale structs, the final item zeroed out."]
+    #[doc = "  When the caller is done with this array, it should call SDL_free() on"]
+    #[doc = "  the returned value; all the memory involved is allocated in a single"]
+    #[doc = "  block, so a single SDL_free() will suffice."]
+    #[doc = ""]
+    #[doc = "  Returned language strings are in the format xx, where 'xx' is an ISO-639"]
+    #[doc = "  language specifier (such as \"en\" for English, \"de\" for German, etc)."]
+    #[doc = "  Country strings are in the format YY, where \"YY\" is an ISO-3166 country"]
+    #[doc = "  code (such as \"US\" for the United States, \"CA\" for Canada, etc). Country"]
+    #[doc = "  might be NULL if there's no specific guidance on them (so you might get"]
+    #[doc = "  { \"en\", \"US\" } for American English, but { \"en\", NULL } means \"English"]
+    #[doc = "  language, generically\"). Language strings are never NULL, except to"]
+    #[doc = "  terminate the array."]
+    #[doc = ""]
+    #[doc = "  Please note that not all of these strings are 2 characters; some are"]
+    #[doc = "  three or more."]
+    #[doc = ""]
+    #[doc = "  The returned list of locales are in the order of the user's preference."]
+    #[doc = "  For example, a German citizen that is fluent in US English and knows"]
+    #[doc = "  enough Japanese to navigate around Tokyo might have a list like:"]
+    #[doc = "  { \"de\", \"en_US\", \"jp\", NULL }. Someone from England might prefer British"]
+    #[doc = "  English (where \"color\" is spelled \"colour\", etc), but will settle for"]
+    #[doc = "  anything like it: { \"en_GB\", \"en\", NULL }."]
+    #[doc = ""]
+    #[doc = "  This function returns NULL on error, including when the platform does not"]
+    #[doc = "  supply this information at all."]
+    #[doc = ""]
+    #[doc = "  This might be a \"slow\" call that has to query the operating system. It's"]
+    #[doc = "  best to ask for this once and save the results. However, this list can"]
+    #[doc = "  change, usually because the user has changed a system preference outside"]
+    #[doc = "  of your program; SDL will send an SDL_LOCALECHANGED event in this case,"]
+    #[doc = "  if possible, and you can call this function again to get an updated copy"]
+    #[doc = "  of preferred locales."]
+    #[doc = ""]
+    #[doc = "   \\return array of locales, terminated with a locale with a NULL language"]
+    #[doc = "           field. Will return NULL on error."]
+    pub fn SDL_GetPreferredLocales() -> *mut SDL_Locale;
+}
+extern "C" {
+    #[doc = " \\brief Open an URL / URI in the browser or other"]
+    #[doc = ""]
+    #[doc = " Open a URL in a separate, system-provided application. How this works will"]
+    #[doc = "  vary wildly depending on the platform. This will likely launch what"]
+    #[doc = "  makes sense to handle a specific URL's protocol (a web browser for http://,"]
+    #[doc = "  etc), but it might also be able to launch file managers for directories"]
+    #[doc = "  and other things."]
+    #[doc = ""]
+    #[doc = " What happens when you open a URL varies wildly as well: your game window"]
+    #[doc = "  may lose focus (and may or may not lose focus if your game was fullscreen"]
+    #[doc = "  or grabbing input at the time). On mobile devices, your app will likely"]
+    #[doc = "  move to the background or your process might be paused. Any given platform"]
+    #[doc = "  may or may not handle a given URL."]
+    #[doc = ""]
+    #[doc = " If this is unimplemented (or simply unavailable) for a platform, this will"]
+    #[doc = "  fail with an error. A successful result does not mean the URL loaded, just"]
+    #[doc = "  that we launched something to handle it (or at least believe we did)."]
+    #[doc = ""]
+    #[doc = " All this to say: this function can be useful, but you should definitely"]
+    #[doc = "  test it on every platform you target."]
+    #[doc = ""]
+    #[doc = "   \\param url A valid URL to open."]
+    #[doc = "  \\return 0 on success, or -1 on error."]
+    pub fn SDL_OpenURL(url: *const libc::c_char) -> libc::c_int;
 }
 extern "C" {
     #[doc = "  This function initializes  the subsystems specified by \\c flags"]
@@ -20409,7 +21129,7 @@ pub struct _XrmHashBucketRec {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct _bindgen_ty_8 {
+pub struct _bindgen_ty_1 {
     pub ext_data: *mut XExtData,
     pub private1: *mut _XPrivate,
     pub fd: libc::c_int,
@@ -20457,465 +21177,465 @@ pub struct _bindgen_ty_8 {
     pub xdefaults: *mut libc::c_char,
 }
 #[test]
-fn bindgen_test_layout__bindgen_ty_8() {
+fn bindgen_test_layout__bindgen_ty_1() {
     assert_eq!(
-        ::core::mem::size_of::<_bindgen_ty_8>(),
+        ::core::mem::size_of::<_bindgen_ty_1>(),
         296usize,
-        concat!("Size of: ", stringify!(_bindgen_ty_8))
+        concat!("Size of: ", stringify!(_bindgen_ty_1))
     );
     assert_eq!(
-        ::core::mem::align_of::<_bindgen_ty_8>(),
+        ::core::mem::align_of::<_bindgen_ty_1>(),
         8usize,
-        concat!("Alignment of ", stringify!(_bindgen_ty_8))
+        concat!("Alignment of ", stringify!(_bindgen_ty_1))
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).ext_data as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).ext_data as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(ext_data)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).private1 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).private1 as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(private1)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).fd as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).fd as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(fd)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).private2 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).private2 as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(private2)
         )
     );
     assert_eq!(
         unsafe {
-            &(*(::core::ptr::null::<_bindgen_ty_8>())).proto_major_version as *const _ as usize
+            &(*(::core::ptr::null::<_bindgen_ty_1>())).proto_major_version as *const _ as usize
         },
         24usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(proto_major_version)
         )
     );
     assert_eq!(
         unsafe {
-            &(*(::core::ptr::null::<_bindgen_ty_8>())).proto_minor_version as *const _ as usize
+            &(*(::core::ptr::null::<_bindgen_ty_1>())).proto_minor_version as *const _ as usize
         },
         28usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(proto_minor_version)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).vendor as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).vendor as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(vendor)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).private3 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).private3 as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(private3)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).private4 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).private4 as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(private4)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).private5 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).private5 as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(private5)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).private6 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).private6 as *const _ as usize },
         64usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(private6)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).resource_alloc as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).resource_alloc as *const _ as usize },
         72usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(resource_alloc)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).byte_order as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).byte_order as *const _ as usize },
         80usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(byte_order)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).bitmap_unit as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).bitmap_unit as *const _ as usize },
         84usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(bitmap_unit)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).bitmap_pad as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).bitmap_pad as *const _ as usize },
         88usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(bitmap_pad)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).bitmap_bit_order as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).bitmap_bit_order as *const _ as usize },
         92usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(bitmap_bit_order)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).nformats as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).nformats as *const _ as usize },
         96usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(nformats)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).pixmap_format as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).pixmap_format as *const _ as usize },
         104usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(pixmap_format)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).private8 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).private8 as *const _ as usize },
         112usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(private8)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).release as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).release as *const _ as usize },
         116usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(release)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).private9 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).private9 as *const _ as usize },
         120usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(private9)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).private10 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).private10 as *const _ as usize },
         128usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(private10)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).qlen as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).qlen as *const _ as usize },
         136usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(qlen)
         )
     );
     assert_eq!(
         unsafe {
-            &(*(::core::ptr::null::<_bindgen_ty_8>())).last_request_read as *const _ as usize
+            &(*(::core::ptr::null::<_bindgen_ty_1>())).last_request_read as *const _ as usize
         },
         144usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(last_request_read)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).request as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).request as *const _ as usize },
         152usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(request)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).private11 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).private11 as *const _ as usize },
         160usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(private11)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).private12 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).private12 as *const _ as usize },
         168usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(private12)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).private13 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).private13 as *const _ as usize },
         176usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(private13)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).private14 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).private14 as *const _ as usize },
         184usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(private14)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).max_request_size as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).max_request_size as *const _ as usize },
         192usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(max_request_size)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).db as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).db as *const _ as usize },
         200usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(db)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).private15 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).private15 as *const _ as usize },
         208usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(private15)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).display_name as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).display_name as *const _ as usize },
         216usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(display_name)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).default_screen as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).default_screen as *const _ as usize },
         224usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(default_screen)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).nscreens as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).nscreens as *const _ as usize },
         228usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(nscreens)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).screens as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).screens as *const _ as usize },
         232usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(screens)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).motion_buffer as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).motion_buffer as *const _ as usize },
         240usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(motion_buffer)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).private16 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).private16 as *const _ as usize },
         248usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(private16)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).min_keycode as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).min_keycode as *const _ as usize },
         256usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(min_keycode)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).max_keycode as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).max_keycode as *const _ as usize },
         260usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(max_keycode)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).private17 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).private17 as *const _ as usize },
         264usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(private17)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).private18 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).private18 as *const _ as usize },
         272usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(private18)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).private19 as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).private19 as *const _ as usize },
         280usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(private19)
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<_bindgen_ty_8>())).xdefaults as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<_bindgen_ty_1>())).xdefaults as *const _ as usize },
         288usize,
         concat!(
             "Offset of field: ",
-            stringify!(_bindgen_ty_8),
+            stringify!(_bindgen_ty_1),
             "::",
             stringify!(xdefaults)
         )
     );
 }
-pub type _XPrivDisplay = *mut _bindgen_ty_8;
+pub type _XPrivDisplay = *mut _bindgen_ty_1;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct XKeyEvent {
@@ -27472,6 +28192,15 @@ pub type XIOErrorHandler =
 extern "C" {
     pub fn XSetIOErrorHandler(arg1: XIOErrorHandler) -> XIOErrorHandler;
 }
+pub type XIOErrorExitHandler =
+    ::core::option::Option<unsafe extern "C" fn(arg1: *mut Display, arg2: *mut libc::c_void)>;
+extern "C" {
+    pub fn XSetIOErrorExitHandler(
+        arg1: *mut Display,
+        arg2: XIOErrorExitHandler,
+        arg3: *mut libc::c_void,
+    );
+}
 extern "C" {
     pub fn XListPixmapFormats(
         arg1: *mut Display,
@@ -29500,6 +30229,7 @@ pub enum SDL_SYSWM_TYPE {
     SDL_SYSWM_ANDROID = 9,
     SDL_SYSWM_VIVANTE = 10,
     SDL_SYSWM_OS2 = 11,
+    SDL_SYSWM_HAIKU = 12,
 }
 #[doc = "  The custom event structure."]
 #[repr(C)]
