@@ -349,21 +349,21 @@ pub fn allocate_channels(numchans: i32) -> i32 {
     unsafe { mixer::Mix_AllocateChannels(numchans as c_int) as i32 }
 }
 
-static mut CHANNEL_FINISHED_CALLBACK: Option<fn(Channel)> = None;
+static mut CHANNEL_FINISHED_CALLBACK: Option<Box<dyn Fn(Channel) + 'static>> = None;
 
 extern "C" fn c_channel_finished_callback(ch: c_int) {
     unsafe {
         match CHANNEL_FINISHED_CALLBACK {
             None => (),
-            Some(cb) => cb(Channel(ch as i32)),
+            Some(ref cb) => cb(Channel(ch as i32)),
         }
     }
 }
 
 /// When channel playback is halted, then the specified `channel_finished` function is called.
-pub fn set_channel_finished(f: fn(Channel)) {
+pub fn set_channel_finished(f: impl Fn(Channel) + 'static) {
     unsafe {
-        CHANNEL_FINISHED_CALLBACK = Some(f);
+        CHANNEL_FINISHED_CALLBACK = Some(Box::new(f));
         mixer::Mix_ChannelFinished(Some(
             c_channel_finished_callback as extern "C" fn(ch: c_int),
         ));
