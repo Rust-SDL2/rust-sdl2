@@ -242,7 +242,7 @@ impl Axis {
             sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_RIGHTY => Axis::RightY,
             sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_TRIGGERLEFT => Axis::TriggerLeft,
             sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_TRIGGERRIGHT => Axis::TriggerRight,
-            _ => panic!("unhandled controller axis"),
+            _ => return None,
         })
     }
 
@@ -276,6 +276,12 @@ pub enum Button {
     DPadDown = sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN as i32,
     DPadLeft = sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT as i32,
     DPadRight = sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT as i32,
+    Misc1 = sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_MISC1 as i32,
+    Paddle1 = sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE1 as i32,
+    Paddle2 = sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE2 as i32,
+    Paddle3 = sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE3 as i32,
+    Paddle4 = sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE4 as i32,
+    Touchpad = sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_TOUCHPAD as i32,
 }
 
 impl Button {
@@ -330,7 +336,13 @@ impl Button {
             sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN => Button::DPadDown,
             sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT => Button::DPadLeft,
             sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT => Button::DPadRight,
-            _ => panic!("unhandled controller button"),
+            sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_MISC1 => Button::Misc1,
+            sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE1 => Button::Paddle1,
+            sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE2 => Button::Paddle2,
+            sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE3 => Button::Paddle3,
+            sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE4 => Button::Paddle4,
+            sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_TOUCHPAD => Button::Touchpad,
+            _ => return None,
         })
     }
 
@@ -355,6 +367,12 @@ impl Button {
             Button::DPadDown => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN,
             Button::DPadLeft => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT,
             Button::DPadRight => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
+            Button::Misc1 => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_MISC1,
+            Button::Paddle1 => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE1,
+            Button::Paddle2 => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE2,
+            Button::Paddle3 => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE3,
+            Button::Paddle4 => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE4,
+            Button::Touchpad => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_TOUCHPAD,
         }
     }
 }
