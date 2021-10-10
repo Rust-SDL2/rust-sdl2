@@ -342,7 +342,7 @@ impl Button {
             sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE3 => Button::Paddle3,
             sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_PADDLE4 => Button::Paddle4,
             sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_TOUCHPAD => Button::Touchpad,
-            _ => panic!("unhandled controller button"),
+            _ => return None,
         })
     }
 
