@@ -242,7 +242,7 @@ impl Axis {
             sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_RIGHTY => Axis::RightY,
             sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_TRIGGERLEFT => Axis::TriggerLeft,
             sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_TRIGGERRIGHT => Axis::TriggerRight,
-            _ => panic!("unhandled controller axis"),
+            _ => return None,
         })
     }
 
