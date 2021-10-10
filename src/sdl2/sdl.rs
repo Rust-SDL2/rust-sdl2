@@ -121,6 +121,12 @@ impl Sdl {
         GameControllerSubsystem::new(self)
     }
 
+    /// Initializes the game controller subsystem.
+    #[inline]
+    pub fn sensor(&self) -> Result<SensorSubsystem, String> {
+        SensorSubsystem::new(self)
+    }
+
     /// Initializes the timer subsystem.
     #[inline]
     pub fn timer(&self) -> Result<TimerSubsystem, String> {
@@ -278,6 +284,7 @@ subsystem!(VideoSubsystem, sys::SDL_INIT_VIDEO, nosync);
 subsystem!(TimerSubsystem, sys::SDL_INIT_TIMER, sync);
 // The event queue can be read from other threads.
 subsystem!(EventSubsystem, sys::SDL_INIT_EVENTS, sync);
+subsystem!(SensorSubsystem, sys::SDL_INIT_SENSOR, sync);
 
 static mut IS_EVENT_PUMP_ALIVE: bool = false;
 

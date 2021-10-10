@@ -41,11 +41,13 @@ optional = true
 
 [features]
 unsafe_textures = []
-default = []
+#default = ["hidapi"]
 gfx = ["c_vec", "sdl2-sys/gfx"]
 mixer = ["sdl2-sys/mixer"]
 image = ["sdl2-sys/image"]
 ttf = ["sdl2-sys/ttf"]
+# Use hidapi support in SDL. Only 2.0.12 and after
+hidapi = []
 
 use-bindgen = ["sdl2-sys/use-bindgen"]
 use-pkgconfig = ["sdl2-sys/use-pkgconfig"]
@@ -140,6 +142,10 @@ name = "renderer-yuv"
 [[example]]
 required-features = ["ttf", "image"]
 name = "resource-manager"
+
+[[example]]
+required-features = ["hidapi"]
+name = "sensors"
 
 [[example]]
 required-features = ["ttf"]
