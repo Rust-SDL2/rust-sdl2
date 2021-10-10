@@ -10,6 +10,8 @@ enum variants directly in your project, you may be affected. If you only used sd
 
 [PR #1150](https://github.com/Rust-SDL2/rust-sdl2/pull/1150) Do not download SDL2 sources when using bundled feature
 
+[PR #1112](https://github.com/Rust-SDL2/rust-sdl2/pull/1150) Add wrapper functions for `SDL_RenderSetIntegerScale` and `SDL_RenderGetIntegerScale`
+
 ### v0.34.5
 
 [PR #1100](https://github.com/Rust-SDL2/rust-sdl2/pull/1100) Added binding for `SDL_GetDisplayUsableBounds`
