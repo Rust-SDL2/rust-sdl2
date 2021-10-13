@@ -1,7 +1,7 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
-### v0.35 (UNRELEASED)
+### v0.35.0
 
 * **BREAKING CHANGE** Update `sdl2-sys/sdl_bindings.rs` to use enums instead of consts. If you were using `sdl2-sys`'s
 enum variants directly in your project, you may be affected. If you only used sdl2 calls, there should not be any problems.
@@ -10,7 +10,13 @@ enum variants directly in your project, you may be affected. If you only used sd
 
 [PR #1150](https://github.com/Rust-SDL2/rust-sdl2/pull/1150) Do not download SDL2 sources when using bundled feature
 
-[PR #1112](https://github.com/Rust-SDL2/rust-sdl2/pull/1150) Add wrapper functions for `SDL_RenderSetIntegerScale` and `SDL_RenderGetIntegerScale`
+[PR #1112](https://github.com/Rust-SDL2/rust-sdl2/pull/1112) Add wrapper functions for `SDL_RenderSetIntegerScale` and `SDL_RenderGetIntegerScale`
+
+[PR #1156](https://github.com/Rust-SDL2/rust-sdl2/pull/1156) **Maybe breaking change**: new variants to enum `GameController`, and prevent panic with unrecognized buttons.
+
+[PR #1153](https://github.com/Rust-SDL2/rust-sdl2/pull/1153) `SDL_GL_GetCurrentContext` and `SDL_RenderFlush` added.
+
+[PR #1131](https://github.com/Rust-SDL2/rust-sdl2/pull/1131) Added Sensor API.
 
 ### v0.34.5
 
