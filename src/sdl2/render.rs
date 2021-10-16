@@ -47,12 +47,14 @@ use std::fmt;
 use std::marker::PhantomData;
 use std::mem;
 use std::mem::{transmute, MaybeUninit};
+use std::num::NonZeroU32;
 use std::ops::Deref;
 use std::ptr;
 use std::rc::Rc;
 
 use crate::sys;
 use crate::sys::SDL_BlendMode;
+use crate::sys::SDL_RendererFlags;
 use crate::sys::SDL_TextureAccess;
 
 /// Contains the description of an error returned by SDL
@@ -123,14 +125,32 @@ impl TryFrom<u32> for TextureAccess {
     }
 }
 
+bitflags! {
+    #[doc(alias = "SDL_RendererFlags")]
+    pub struct RendererFlags: u32 {
+        /// the renderer is a software fallback
+        const SOFTWARE = SDL_RendererFlags::SDL_RENDERER_SOFTWARE as u32;
+        /// the renderer uses hardware acceleration
+        const ACCELERATED = SDL_RendererFlags::SDL_RENDERER_ACCELERATED as u32;
+        /// present is synchronized with the refresh rate
+        const PRESENT_VSYNC = SDL_RendererFlags::SDL_RENDERER_PRESENTVSYNC as u32;
+        /// the renderer supports rendering to texture
+        const TARGET_TEXTURE = SDL_RendererFlags::SDL_RENDERER_TARGETTEXTURE as u32;
+    }
+}
+
 /// A structure that contains information on the capabilities of a render driver
 /// or the current render context.
+// FIXME: remove deprecated attributes when fields are made private.
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
 pub struct RendererInfo {
     pub name: &'static str,
+    #[deprecated = "direct field access is deprecated and may be removed in a future version. please use the flags() method instead"]
     pub flags: u32,
     pub texture_formats: Vec<PixelFormatEnum>,
+    #[deprecated = "direct field access is deprecated and may be removed in a future version. please use the max_texture_width() method instead"]
     pub max_texture_width: u32,
+    #[deprecated = "direct field access is deprecated and may be removed in a future version. please use the max_texture_height() method instead"]
     pub max_texture_height: u32,
 }
 
@@ -180,6 +200,8 @@ impl TryFrom<u32> for BlendMode {
     }
 }
 
+// FIXME: remove this attribute when deprecation attributes above are removed
+#[allow(deprecated)]
 impl RendererInfo {
     pub unsafe fn from_ll(info: &sys::SDL_RendererInfo) -> RendererInfo {
         let texture_formats: Vec<PixelFormatEnum> = info.texture_formats
@@ -200,6 +222,27 @@ impl RendererInfo {
             max_texture_width: info.max_texture_width as u32,
             max_texture_height: info.max_texture_height as u32,
         }
+    }
+
+    #[inline]
+    pub fn flags(&self) -> RendererFlags {
+        RendererFlags::from_bits_truncate(self.flags)
+    }
+
+    /// Returns the maximum texture width supported by this renderer.
+    /// The renderer may not report this information, in which case this method returns `None`.
+    #[inline]
+    pub fn max_texture_width(&self) -> Option<NonZeroU32> {
+        // SAFETY: u32 is layout-compatible with Option<NonZeroU32>
+        unsafe { transmute(self.max_texture_width) }
+    }
+
+    /// Returns the maximum texture height supported by this renderer.
+    /// The renderer may not report this information, in which case this method returns `None`.
+    #[inline]
+    pub fn max_texture_height(&self) -> Option<NonZeroU32> {
+        // SAFETY: u32 is layout-compatible with Option<NonZeroU32>
+        unsafe { transmute(self.max_texture_height) }
     }
 }
 
