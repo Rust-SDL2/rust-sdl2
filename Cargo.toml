@@ -3,7 +3,7 @@ name = "sdl2"
 description = "SDL2 bindings for Rust"
 repository = "https://github.com/Rust-SDL2/rust-sdl2"
 documentation = "https://rust-sdl2.github.io/rust-sdl2/sdl2/"
-version = "0.35.0"
+version = "0.35.1"
 license = "MIT"
 authors = [ "Tony Aldridge <tony@angry-lawyer.com>", "Cobrand <cobrandw@gmail.com>"]
 keywords = ["SDL", "windowing", "graphics", "api", "engine"]
@@ -22,7 +22,7 @@ lazy_static = "1.4.0"
 
 [dependencies.sdl2-sys]
 path = "sdl2-sys"
-version = "^0.35.0"
+version = "^0.35.1"
 
 [dependencies.c_vec]
 # allow both 1.* and 2.0 versions
