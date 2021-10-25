@@ -41,7 +41,7 @@ optional = true
 
 [features]
 unsafe_textures = []
-#default = ["hidapi"]
+default = []
 gfx = ["c_vec", "sdl2-sys/gfx"]
 mixer = ["sdl2-sys/mixer"]
 image = ["sdl2-sys/image"]
