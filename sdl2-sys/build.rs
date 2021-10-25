@@ -112,16 +112,16 @@ fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
 
         #[cfg(target_os = "linux")]
         {
-            use version_compare::Version;
+            // Add common flag for affected version and above
+            use version_compare::{compare_to, Cmp};
             if let Ok(version) = std::process::Command::new("cc")
                 .arg("-dumpversion")
                 .output()
             {
-                let local_ver =
-                    Version::from(std::str::from_utf8(&version.stdout).unwrap()).unwrap();
-                let affected_ver = Version::from("10").unwrap();
-
-                if local_ver >= affected_ver {
+                let affected =
+                    compare_to(std::str::from_utf8(&version.stdout).unwrap(), "10", Cmp::Ge)
+                        .unwrap_or(true);
+                if affected {
                     cfg.cflag("-fcommon");
                 }
             }
