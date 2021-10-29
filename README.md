@@ -1,4 +1,4 @@
-# Rust-SDL2 [![Build Status][trav-ci-img]][trav-ci] [![crates.io badge][crates-io-badge]][crates-io-url]
+# Rust-SDL2 [![Build Status][workflows-ci-img]] [workflows-ci] [![crates.io badge][crates-io-badge]][crates-io-url]
 
 Bindings for SDL2 in Rust
 
@@ -665,8 +665,8 @@ Any Pull Request is welcome, however small your contribution may be ! There are,
 [changelog]: ./changelog.md
 [crates-io-badge]: https://img.shields.io/crates/v/sdl2.svg
 [crates-io-url]: https://crates.io/crates/sdl2
-[trav-ci-img]: https://travis-ci.org/Rust-SDL2/rust-sdl2.svg?branch=master
-[trav-ci]: https://travis-ci.org/Rust-SDL2/rust-sdl2
+[workflows-ci-img]: https://github.com/Rust-SDL2/rust-sdl2/actions/workflows/CI.yml/badge.svg?branch=master
+[workflows-ci]: https://github.com/Rust-SDL2/rust-sdl2/actions/workflows/CI.yml
 [early-sdl]: https://github.com/brson/rust-sdl
 [homebrew]: http://brew.sh/
 [crates]: http://crates.io/
