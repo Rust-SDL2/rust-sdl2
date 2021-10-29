@@ -657,6 +657,15 @@ On macOS the `RawWindowHandle.ns_view` field is returned null. Libraries consumi
 `wgpu`) should determine a sane default for `ns_view`. If they do not, please file an issue with the associated 
 project.
 
+### raw-window-handle on Android
+
+On some platforms, including Android, SDL2 tries to create the OpenGL context by itself even without creating
+a renderer. This can manifest in errors like `VK_ERROR_NATIVE_WINDOW_IN_USE_KHR` when initializing Vulkan or GLES.
+Add the following code before creating a window to fix the errors:
+```rust
+sdl2::hint::set("SDL_VIDEO_EXTERNAL_CONTEXT", "1")
+```
+
 # When things go wrong
 Rust, and Rust-SDL2, are both still heavily in development, and you may run
 into teething issues when using this. Before panicking, check that you're using
