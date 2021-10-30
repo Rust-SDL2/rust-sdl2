@@ -252,6 +252,7 @@ fn link_sdl2(target_os: &str) {
             println!("cargo:rustc-link-lib=framework=IOKit");
             println!("cargo:rustc-link-lib=framework=Carbon");
             println!("cargo:rustc-link-lib=framework=ForceFeedback");
+            println!("cargo:rustc-link-lib=framework=GameController");
             println!("cargo:rustc-link-lib=framework=CoreVideo");
             println!("cargo:rustc-link-lib=framework=CoreAudio");
             println!("cargo:rustc-link-lib=framework=AudioToolbox");
@@ -264,6 +265,7 @@ fn link_sdl2(target_os: &str) {
             println!("cargo:rustc-link-lib=GLESv2");
             println!("cargo:rustc-link-lib=hidapi");
             println!("cargo:rustc-link-lib=log");
+            println!("cargo:rustc-link-lib=OpenSLES");
         } else {
             // TODO: Add other platform linker options here.
         }
