@@ -591,6 +591,52 @@ impl From<i32> for SwapInterval {
     }
 }
 
+/// Represents orientation of a display.
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
+#[repr(i32)]
+pub enum Orientation {
+    /// The display orientation can’t be determined
+    Unknown = sys::SDL_DisplayOrientation::SDL_ORIENTATION_UNKNOWN as i32,
+    /// The display is in landscape mode, with the right side up, relative to portrait mode
+    Landscape = sys::SDL_DisplayOrientation::SDL_ORIENTATION_LANDSCAPE as i32,
+    /// The display is in landscape mode, with the left side up, relative to portrait mode
+    LandscapeFlipped = sys::SDL_DisplayOrientation::SDL_ORIENTATION_LANDSCAPE_FLIPPED as i32,
+    /// The display is in portrait mode
+    Portrait = sys::SDL_DisplayOrientation::SDL_ORIENTATION_PORTRAIT as i32,
+    /// The display is in portrait mode, upside down
+    PortraitFlipped = sys::SDL_DisplayOrientation::SDL_ORIENTATION_PORTRAIT_FLIPPED as i32,
+}
+
+impl Orientation {
+    pub fn from_ll(orientation: sys::SDL_DisplayOrientation) -> Orientation {
+        match orientation {
+            sys::SDL_DisplayOrientation::SDL_ORIENTATION_UNKNOWN => Orientation::Unknown,
+            sys::SDL_DisplayOrientation::SDL_ORIENTATION_LANDSCAPE => Orientation::Landscape,
+            sys::SDL_DisplayOrientation::SDL_ORIENTATION_LANDSCAPE_FLIPPED => {
+                Orientation::LandscapeFlipped
+            }
+            sys::SDL_DisplayOrientation::SDL_ORIENTATION_PORTRAIT => Orientation::Portrait,
+            sys::SDL_DisplayOrientation::SDL_ORIENTATION_PORTRAIT_FLIPPED => {
+                Orientation::PortraitFlipped
+            }
+        }
+    }
+
+    pub fn to_ll(self) -> sys::SDL_DisplayOrientation {
+        match self {
+            Orientation::Unknown => sys::SDL_DisplayOrientation::SDL_ORIENTATION_UNKNOWN,
+            Orientation::Landscape => sys::SDL_DisplayOrientation::SDL_ORIENTATION_LANDSCAPE,
+            Orientation::LandscapeFlipped => {
+                sys::SDL_DisplayOrientation::SDL_ORIENTATION_LANDSCAPE_FLIPPED
+            }
+            Orientation::Portrait => sys::SDL_DisplayOrientation::SDL_ORIENTATION_PORTRAIT,
+            Orientation::PortraitFlipped => {
+                sys::SDL_DisplayOrientation::SDL_ORIENTATION_PORTRAIT_FLIPPED
+            }
+        }
+    }
+}
+
 /// Represents the "shell" of a `Window`.
 ///
 /// You can set get and set many of the `SDL_Window` properties (i.e., border, size, `PixelFormat`, etc)
@@ -779,6 +825,12 @@ impl VideoSubsystem {
         } else {
             Ok((ddpi, hdpi, vdpi))
         }
+    }
+
+    /// Return orientation of a display or Unknown if orientation could not be determined.
+    #[doc(alias = "SDL_GetDisplayOrientation")]
+    pub fn display_orientation(&self, display_index: i32) -> Orientation {
+        Orientation::from_ll(unsafe { sys::SDL_GetDisplayOrientation(display_index as c_int) })
     }
 
     #[doc(alias = "SDL_IsScreenSaverEnabled")]

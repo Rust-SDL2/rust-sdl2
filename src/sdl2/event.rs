@@ -2,8 +2,6 @@
 Event Handling
  */
 
-use libc::c_int;
-use libc::c_void;
 use std::borrow::ToOwned;
 use std::collections::HashMap;
 use std::convert::TryFrom;
@@ -14,6 +12,9 @@ use std::mem;
 use std::mem::transmute;
 use std::ptr;
 use std::sync::Mutex;
+
+use libc::c_int;
+use libc::c_void;
 
 use crate::controller;
 use crate::controller::{Axis, Button};
@@ -26,10 +27,10 @@ use crate::keyboard::Mod;
 use crate::keyboard::Scancode;
 use crate::mouse;
 use crate::mouse::{MouseButton, MouseState, MouseWheelDirection};
-
 use crate::sys;
 use crate::sys::SDL_EventFilter;
 use crate::sys::SDL_EventType;
+use crate::video::Orientation;
 
 struct CustomEventTypeMaps {
     sdl_id_to_type_id: HashMap<u32, ::std::any::TypeId>,
@@ -272,6 +273,7 @@ pub enum EventType {
     AppWillEnterForeground = SDL_EventType::SDL_APP_WILLENTERFOREGROUND as u32,
     AppDidEnterForeground = SDL_EventType::SDL_APP_DIDENTERFOREGROUND as u32,
 
+    Display = SDL_EventType::SDL_DISPLAYEVENT as u32,
     Window = SDL_EventType::SDL_WINDOWEVENT as u32,
     // TODO: SysWM = sys::SDL_SYSWMEVENT as u32,
     KeyDown = SDL_EventType::SDL_KEYDOWN as u32,
@@ -342,6 +344,7 @@ impl TryFrom<u32> for EventType {
             SDL_APP_WILLENTERFOREGROUND => AppWillEnterForeground,
             SDL_APP_DIDENTERFOREGROUND => AppDidEnterForeground,
 
+            SDL_DISPLAYEVENT => Display,
             SDL_WINDOWEVENT => Window,
 
             SDL_KEYDOWN => KeyDown,
@@ -395,6 +398,66 @@ impl TryFrom<u32> for EventType {
 
             _ => return Err(()),
         })
+    }
+}
+
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+/// An enum of display events.
+pub enum DisplayEvent {
+    None,
+    Orientation(Orientation),
+    Connected,
+    Disconnected,
+}
+
+impl DisplayEvent {
+    #[allow(clippy::match_same_arms)]
+    fn from_ll(id: u8, data1: i32) -> DisplayEvent {
+        if id > sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_DISCONNECTED as u8 {
+            return DisplayEvent::None;
+        }
+        match unsafe { transmute(id as u32) } {
+            sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_NONE => DisplayEvent::None,
+            sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_ORIENTATION => {
+                let orientation = if data1 as u32
+                    > sys::SDL_DisplayOrientation::SDL_ORIENTATION_PORTRAIT_FLIPPED as u32
+                {
+                    Orientation::Unknown
+                } else {
+                    Orientation::from_ll(unsafe { transmute(data1 as u32) })
+                };
+                DisplayEvent::Orientation(orientation)
+            }
+            sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_CONNECTED => DisplayEvent::Connected,
+            sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_DISCONNECTED => DisplayEvent::Disconnected,
+        }
+    }
+
+    fn to_ll(&self) -> (u8, i32) {
+        match *self {
+            DisplayEvent::None => (sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_NONE as u8, 0),
+            DisplayEvent::Orientation(orientation) => (
+                sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_ORIENTATION as u8,
+                orientation.to_ll() as i32,
+            ),
+            DisplayEvent::Connected => {
+                (sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_CONNECTED as u8, 0)
+            }
+            DisplayEvent::Disconnected => (
+                sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_DISCONNECTED as u8,
+                0,
+            ),
+        }
+    }
+
+    pub fn is_same_kind_as(&self, other: &DisplayEvent) -> bool {
+        match (self, other) {
+            (Self::None, Self::None)
+            | (Self::Orientation(_), Self::Orientation(_))
+            | (Self::Connected, Self::Connected)
+            | (Self::Disconnected, Self::Disconnected) => true,
+            _ => false,
+        }
     }
 }
 
@@ -516,6 +579,11 @@ pub enum Event {
         timestamp: u32,
     },
 
+    Display {
+        timestamp: u32,
+        display_index: i32,
+        display_event: DisplayEvent,
+    },
     Window {
         timestamp: u32,
         window_id: u32,
@@ -810,6 +878,7 @@ pub enum Event {
 /// store pointers to types that are `!Send`. Dereferencing these as pointers
 /// requires using `unsafe` and ensuring your own safety guarantees.
 unsafe impl Send for Event {}
+
 /// This does not auto-derive because `User`'s `data` fields can be used to
 /// store pointers to types that are `!Sync`. Dereferencing these as pointers
 /// requires using `unsafe` and ensuring your own safety guarantees.
@@ -876,6 +945,28 @@ impl Event {
                 };
                 unsafe {
                     ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_QuitEvent, 1);
+                    Some(ret.assume_init())
+                }
+            }
+
+            Event::Display {
+                timestamp,
+                display_index,
+                display_event,
+            } => {
+                let (display_event_id, data1) = display_event.to_ll();
+                let event = sys::SDL_DisplayEvent {
+                    type_: SDL_EventType::SDL_DISPLAYEVENT as u32,
+                    timestamp,
+                    display: display_index as u32,
+                    event: display_event_id,
+                    padding1: 0,
+                    padding2: 0,
+                    padding3: 0,
+                    data1,
+                };
+                unsafe {
+                    ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_DisplayEvent, 1);
                     Some(ret.assume_init())
                 }
             }
@@ -1389,6 +1480,15 @@ impl Event {
                     }
                 }
 
+                EventType::Display => {
+                    let event = raw.display;
+
+                    Event::Display {
+                        timestamp: event.timestamp,
+                        display_index: event.display as i32,
+                        display_event: DisplayEvent::from_ll(event.event, event.data1),
+                    }
+                }
                 EventType::Window => {
                     let event = raw.window;
 
@@ -1885,6 +1985,7 @@ impl Event {
             | (Self::AppDidEnterBackground { .. }, Self::AppDidEnterBackground { .. })
             | (Self::AppWillEnterForeground { .. }, Self::AppWillEnterForeground { .. })
             | (Self::AppDidEnterForeground { .. }, Self::AppDidEnterForeground { .. })
+            | (Self::Display { .. }, Self::Display { .. })
             | (Self::Window { .. }, Self::Window { .. })
             | (Self::KeyDown { .. }, Self::KeyDown { .. })
             | (Self::KeyUp { .. }, Self::KeyUp { .. })
@@ -1953,6 +2054,7 @@ impl Event {
             Self::AppDidEnterBackground { timestamp, .. } => timestamp,
             Self::AppWillEnterForeground { timestamp, .. } => timestamp,
             Self::AppDidEnterForeground { timestamp, .. } => timestamp,
+            Self::Display { timestamp, .. } => timestamp,
             Self::Window { timestamp, .. } => timestamp,
             Self::KeyDown { timestamp, .. } => timestamp,
             Self::KeyUp { timestamp, .. } => timestamp,
@@ -2496,7 +2598,7 @@ impl crate::EventPump {
     /// for event in event_pump.poll_iter() {
     ///     use sdl2::event::Event;
     ///     match event {
-    ///         Event::KeyDown {..} => { /*...*/ },
+    ///         Event::KeyDown {..} => { /*...*/ }
     ///         _ => ()
     ///     }
     /// }
@@ -2608,6 +2710,8 @@ mod test {
     use super::super::joystick::HatState;
     use super::super::keyboard::{Keycode, Mod, Scancode};
     use super::super::mouse::{MouseButton, MouseState, MouseWheelDirection};
+    use super::super::video::Orientation;
+    use super::DisplayEvent;
     use super::Event;
     use super::WindowEvent;
 
@@ -2617,6 +2721,15 @@ mod test {
     fn test_to_from_ll() {
         {
             let e = Event::Quit { timestamp: 0 };
+            let e2 = Event::from_ll(e.clone().to_ll().unwrap());
+            assert_eq!(e, e2);
+        }
+        {
+            let e = Event::Display {
+                timestamp: 0,
+                display_index: 1,
+                display_event: DisplayEvent::Orientation(Orientation::LandscapeFlipped),
+            };
             let e2 = Event::from_ll(e.clone().to_ll().unwrap());
             assert_eq!(e, e2);
         }

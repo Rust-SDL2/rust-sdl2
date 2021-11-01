@@ -5,6 +5,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 [PR #1164](https://github.com/Rust-SDL2/rust-sdl2/pull/1164) Added raw-window-handle support for Android
 
+[PR #1165](https://github.com/Rust-SDL2/rust-sdl2/pull/1165) Added binding for `SDL_GetDisplayOrientation` and `SDL_DISPLAYEVENT`
+
 ### v0.35.0
 
 * **BREAKING CHANGE** Update `sdl2-sys/sdl_bindings.rs` to use enums instead of consts. If you were using `sdl2-sys`'s
