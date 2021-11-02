@@ -76,15 +76,13 @@ unsafe impl HasRawWindowHandle for Window {
                     ..IOSHandle::empty()
                 })
             }
+            #[cfg(any(target_os = "android"))]
             SDL_SYSWM_ANDROID => {
-                let window_system = match wm_info.subsystem {
-                    SDL_SYSWM_ANDROID => "Android",
-                    _ => unreachable!(),
-                };
-                panic!(
-                    "raw-window-handle support for {} not yet implemented",
-                    window_system
-                );
+                use self::raw_window_handle::android::AndroidHandle;
+                RawWindowHandle::Android(AndroidHandle {
+                    a_native_window: unsafe { wm_info.info.android }.window as *mut libc::c_void,
+                    ..AndroidHandle::empty()
+                })
             }
             x => {
                 let window_system = match x {
@@ -160,6 +158,9 @@ pub struct SDL_SysWMinfo {
 
     #[cfg(target_os = "ios")]
     pub info: ios::IOSSysWMinfo,
+
+    #[cfg(target_os = "android")]
+    pub info: android::AndroidSysWMinfo,
 }
 
 #[cfg(target_os = "windows")]
@@ -368,6 +369,45 @@ pub mod ios {
     #[repr(C)]
     #[derive(Debug, Copy, Clone)]
     pub struct UIWindow {
+        _unused: [u8; 0],
+    }
+}
+
+#[cfg(target_os = "android")]
+pub mod android {
+    #[repr(C)]
+    #[derive(Copy, Clone)]
+    pub union AndroidSysWMinfo {
+        pub android: AndroidInfo,
+        pub dummy: [u8; 64usize],
+        _bindgen_union_align: [u64; 8usize],
+    }
+
+    impl Default for AndroidSysWMinfo {
+        fn default() -> Self {
+            AndroidSysWMinfo {
+                android: AndroidInfo::default(),
+            }
+        }
+    }
+
+    #[repr(C)]
+    #[derive(Debug, Copy, Clone, PartialEq)]
+    pub struct AndroidInfo {
+        pub window: *mut ANativeWindow,
+    }
+
+    impl Default for AndroidInfo {
+        fn default() -> Self {
+            AndroidInfo {
+                window: 0 as *mut ANativeWindow,
+            }
+        }
+    }
+
+    #[repr(C)]
+    #[derive(Debug, Copy, Clone)]
+    pub struct ANativeWindow {
         _unused: [u8; 0],
     }
 }

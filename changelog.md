@@ -1,6 +1,10 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
+### Unreleased
+
+[PR #1164](https://github.com/Rust-SDL2/rust-sdl2/pull/1164) Added raw-window-handle support for Android
+
 ### v0.35.0
 
 * **BREAKING CHANGE** Update `sdl2-sys/sdl_bindings.rs` to use enums instead of consts. If you were using `sdl2-sys`'s
