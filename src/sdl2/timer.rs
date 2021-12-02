@@ -88,7 +88,7 @@ impl<'b, 'a> Drop for Timer<'b, 'a> {
 }
 
 extern "C" fn c_timer_callback(_interval: u32, param: *mut c_void) -> u32 {
-    let f = param as *mut std::boxed::Box<dyn std::ops::Fn() -> u32>;
+    let f = param as *mut TimerCallback<'_>;
     unsafe { (*f)() }
 }
 
