@@ -1095,10 +1095,9 @@ impl<T: RenderTarget> Canvas<T> {
     /// Sets the drawing area for rendering on the current target.
     #[doc(alias = "SDL_RenderSetViewport")]
     pub fn set_viewport<R: Into<Option<Rect>>>(&mut self, rect: R) {
-        let ptr = match rect.into() {
-            Some(ref rect) => rect.raw(),
-            None => ptr::null(),
-        };
+        let rect = rect.into();
+        // as_ref is important because we need rect to live until the end of the FFI call, but map_or consumes an Option<T>
+        let ptr = rect.as_ref().map_or(ptr::null(), |rect| rect.raw());
         let ret = unsafe { sys::SDL_RenderSetViewport(self.context.raw, ptr) };
         if ret != 0 {
             panic!("Could not set viewport: {}", get_error())
@@ -1119,15 +1118,10 @@ impl<T: RenderTarget> Canvas<T> {
     /// If the rectangle is `None`, clipping will be disabled.
     #[doc(alias = "SDL_RenderSetClipRect")]
     pub fn set_clip_rect<R: Into<Option<Rect>>>(&mut self, rect: R) {
-        let ret = unsafe {
-            sys::SDL_RenderSetClipRect(
-                self.context.raw,
-                match rect.into() {
-                    Some(ref rect) => rect.raw(),
-                    None => ptr::null(),
-                },
-            )
-        };
+        let rect = rect.into();
+        // as_ref is important because we need rect to live until the end of the FFI call, but map_or consumes an Option<T>
+        let ptr = rect.as_ref().map_or(ptr::null(), |rect| rect.raw());
+        let ret = unsafe { sys::SDL_RenderSetClipRect(self.context.raw, ptr) };
         if ret != 0 {
             panic!("Could not set clip rect: {}", get_error())
         }
