@@ -421,16 +421,29 @@ fn copy_dynamic_libraries(sdl2_compiled_path: &PathBuf, target_os: &str) {
         copy_library_file(&src_dll_path, &target_path);
     } else if target_os != "emscripten" {
         // Find all libraries build and copy them, symlinks included.
-        let lib_path = sdl2_compiled_path.join("lib");
-        for entry in std::fs::read_dir(&lib_path).expect("Couldn't readdir lib") {
-            let entry = entry.expect("Error looking at lib dir");
-            if let Ok(file_type) = entry.file_type() {
-                if file_type.is_symlink() {
-                    copy_library_symlink(&entry.path(), &target_path);
-                } else if file_type.is_file() {
-                    copy_library_file(&entry.path(), &target_path)
+        let mut found = false;
+        let lib_dirs = &["lib", "lib64"];
+        for lib_dir in lib_dirs {
+            let lib_path = sdl2_compiled_path.join(lib_dir);
+            if lib_path.exists() {
+                found = true;
+                for entry in std::fs::read_dir(&lib_path)
+                    .unwrap_or_else(|_| panic!("Couldn't readdir {}", lib_dir))
+                {
+                    let entry = entry.expect("Error looking at lib dir");
+                    if let Ok(file_type) = entry.file_type() {
+                        if file_type.is_symlink() {
+                            copy_library_symlink(&entry.path(), &target_path);
+                        } else if file_type.is_file() {
+                            copy_library_file(&entry.path(), &target_path)
+                        }
+                    }
                 }
+                break;
             }
+        }
+        if !found {
+            panic!("Failed to find CMake output dir");
         }
     }
 }
