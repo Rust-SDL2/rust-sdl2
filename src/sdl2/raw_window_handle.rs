@@ -22,11 +22,12 @@ unsafe impl HasRawWindowHandle for Window {
         match wm_info.subsystem {
             #[cfg(target_os = "windows")]
             SDL_SYSWM_WINDOWS => {
-                use self::raw_window_handle::windows::WindowsHandle;
-                RawWindowHandle::Windows(WindowsHandle {
-                    hwnd: unsafe { wm_info.info.win }.window as *mut libc::c_void,
-                    ..WindowsHandle::empty()
-                })
+                use self::raw_window_handle::Win32Handle;
+
+                let mut handle = Win32Handle::empty();
+                handle.hwnd = unsafe { wm_info.info.win }.window as *mut libc::c_void;
+
+                RawWindowHandle::Win32(handle)
             }
             #[cfg(any(
                 target_os = "linux",
@@ -36,12 +37,13 @@ unsafe impl HasRawWindowHandle for Window {
                 target_os = "openbsd",
             ))]
             SDL_SYSWM_WAYLAND => {
-                use self::raw_window_handle::unix::WaylandHandle;
-                RawWindowHandle::Wayland(WaylandHandle {
-                    surface: unsafe { wm_info.info.wl }.surface as *mut libc::c_void,
-                    display: unsafe { wm_info.info.wl }.display as *mut libc::c_void,
-                    ..WaylandHandle::empty()
-                })
+                use self::raw_window_handle::WaylandHandle;
+
+                let mut handle = WaylandHandle::empty();
+                handle.surface = unsafe { wm_info.info.wl }.surface as *mut libc::c_void;
+                handle.display = unsafe { wm_info.info.wl }.display as *mut libc::c_void;
+
+                RawWindowHandle::Wayland(handle)
             }
             #[cfg(any(
                 target_os = "linux",
@@ -51,38 +53,43 @@ unsafe impl HasRawWindowHandle for Window {
                 target_os = "openbsd",
             ))]
             SDL_SYSWM_X11 => {
-                use self::raw_window_handle::unix::XlibHandle;
-                RawWindowHandle::Xlib(XlibHandle {
-                    window: unsafe { wm_info.info.x11 }.window,
-                    display: unsafe { wm_info.info.x11 }.display as *mut libc::c_void,
-                    ..XlibHandle::empty()
-                })
+                use self::raw_window_handle::XlibHandle;
+
+                let mut handle = XlibHandle::empty();
+                handle.window = unsafe { wm_info.info.x11 }.window;
+                handle.display = unsafe { wm_info.info.x11 }.display as *mut libc::c_void;
+
+                RawWindowHandle::Xlib(handle)
             }
             #[cfg(target_os = "macos")]
             SDL_SYSWM_COCOA => {
-                use self::raw_window_handle::macos::MacOSHandle;
-                RawWindowHandle::MacOS(MacOSHandle {
-                    ns_window: unsafe { wm_info.info.cocoa }.window as *mut libc::c_void,
-                    ns_view: 0 as *mut libc::c_void, // consumer of RawWindowHandle should determine this
-                    ..MacOSHandle::empty()
-                })
+                use self::raw_window_handle::AppKitHandle;
+
+                let mut handle = AppKitHandle::empty();
+                handle.ns_window = unsafe { wm_info.info.cocoa }.window as *mut libc::c_void;
+                handle.ns_view = 0 as *mut libc::c_void; // consumer of RawWindowHandle should determine this
+
+                RawWindowHandle::AppKit(handle)
             }
             #[cfg(any(target_os = "ios"))]
             SDL_SYSWM_UIKIT => {
-                use self::raw_window_handle::ios::IOSHandle;
-                RawWindowHandle::IOS(IOSHandle {
-                    ui_window: unsafe { wm_info.info.uikit }.window as *mut libc::c_void,
-                    ui_view: 0 as *mut libc::c_void, // consumer of RawWindowHandle should determine this
-                    ..IOSHandle::empty()
-                })
+                use self::raw_window_handle::UiKitHandle;
+
+                let mut handle = UiKitHandle::empty();
+                handle.ui_window = unsafe { wm_info.info.uikit }.window as *mut libc::c_void;
+                handle.ui_view = 0 as *mut libc::c_void; // consumer of RawWindowHandle should determine this
+
+                RawWindowHandle::UiKit(handle)
             }
             #[cfg(any(target_os = "android"))]
             SDL_SYSWM_ANDROID => {
-                use self::raw_window_handle::android::AndroidHandle;
-                RawWindowHandle::Android(AndroidHandle {
-                    a_native_window: unsafe { wm_info.info.android }.window as *mut libc::c_void,
-                    ..AndroidHandle::empty()
-                })
+                use self::raw_window_handle::AndroidNdkHandle;
+
+                let mut handle = AndroidNdkHandle::empty();
+                handle.a_native_window =
+                    unsafe { wm_info.info.android }.window as *mut libc::c_void;
+
+                RawWindowHandle::AndroidNdk(handle)
             }
             x => {
                 let window_system = match x {
