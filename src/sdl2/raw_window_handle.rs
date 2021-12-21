@@ -29,6 +29,15 @@ unsafe impl HasRawWindowHandle for Window {
 
                 RawWindowHandle::Win32(handle)
             }
+            #[cfg(target_os = "windows")]
+            SDL_SYSWM_WINRT => {
+                use self::raw_window_handle::WinRtHandle;
+
+                let mut handle = WinRtHandle::empty();
+                handle.core_window = unsafe { wm_info.info.winrt }.core_window;
+
+                RawWindowHandle::WinRt(handle)
+            }
             #[cfg(any(
                 target_os = "linux",
                 target_os = "dragonfly",
@@ -95,7 +104,6 @@ unsafe impl HasRawWindowHandle for Window {
                 let window_system = match x {
                     SDL_SYSWM_DIRECTFB => "DirectFB",
                     SDL_SYSWM_MIR => "Mir",
-                    SDL_SYSWM_WINRT => "WinRT",
                     SDL_SYSWM_VIVANTE => "Vivante",
                     _ => unreachable!(),
                 };
@@ -175,7 +183,8 @@ pub mod windows {
     #[repr(C)]
     #[derive(Copy, Clone)]
     pub union WindowsSysWMinfo {
-        pub win: Handles,
+        pub win: Win32Handles,
+        pub winrt: WinRtHandles,
         pub dummy: [u8; 64usize],
         _bindgen_union_align: [u64; 8usize],
     }
@@ -183,22 +192,22 @@ pub mod windows {
     impl Default for WindowsSysWMinfo {
         fn default() -> Self {
             WindowsSysWMinfo {
-                win: Handles::default(),
+                win: Win32Handles::default(),
             }
         }
     }
 
     #[repr(C)]
     #[derive(Debug, Copy, Clone, PartialEq)]
-    pub struct Handles {
+    pub struct Win32Handles {
         pub window: *mut HWND,
         pub hdc: *mut HDC,
         pub hinstance: *mut HINSTANCE,
     }
 
-    impl Default for Handles {
+    impl Default for Win32Handles {
         fn default() -> Self {
-            Handles {
+            Win32Handles {
                 window: 0 as *mut HWND,
                 hdc: 0 as *mut HDC,
                 hinstance: 0 as *mut HINSTANCE,
@@ -222,6 +231,20 @@ pub mod windows {
     #[derive(Debug, Default, Copy, Clone, PartialEq)]
     pub struct HINSTANCE {
         pub unused: libc::c_int,
+    }
+
+    #[repr(C)]
+    #[derive(Debug, Copy, Clone, PartialEq)]
+    pub struct WinRtHandles {
+        pub core_window: *mut core::ffi::c_void,
+    }
+
+    impl Default for WinRtHandles {
+        fn default() -> Self {
+            WinRtHandles {
+                core_window: core::ptr::null_mut(),
+            }
+        }
     }
 }
 
