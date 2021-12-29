@@ -36,7 +36,7 @@ fn main() -> Result<(), String> {
 
     let target_bytes = 48_000 * 4;
     let wave = gen_wave(target_bytes);
-    device.queue(&wave);
+    device.queue_audio(&wave)?;
     // Start playback
     device.resume();
 
