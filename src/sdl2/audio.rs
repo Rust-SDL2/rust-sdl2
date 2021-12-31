@@ -750,6 +750,10 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
 
     /// Adds data to the audio queue.
     #[doc(alias = "SDL_QueueAudio")]
+    #[deprecated(
+        since = "0.36.0",
+        note = "Users should instead use AudioQueue::queue_audio"
+    )]
     pub fn queue(&self, data: &[Channel]) -> bool {
         let result = unsafe {
             sys::SDL_QueueAudio(
@@ -759,6 +763,23 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
             )
         };
         result == 0
+    }
+
+    /// Adds data to the audio queue.
+    #[doc(alias = "SDL_QueueAudio")]
+    pub fn queue_audio(&self, data: &[Channel]) -> Result<(), String> {
+        let result = unsafe {
+            sys::SDL_QueueAudio(
+                self.device_id.id(),
+                data.as_ptr() as *const c_void,
+                (data.len() * mem::size_of::<Channel>()) as u32,
+            )
+        };
+        if result == 0 {
+            Ok(())
+        } else {
+            Err(get_error())
+        }
     }
 
     #[doc(alias = "SDL_GetQueuedAudioSize")]
