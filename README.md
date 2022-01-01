@@ -77,27 +77,37 @@ On Linux, you will need to additionally do one of the following:
 * use the feature `use-pkgconfig` so that rustc knows where to look for your SDL2 libraries and its dependencies for static linking. This is required because there is no built-in way to find the resources needed to link statically SDL2 from your system
 * install development libraries with [vcpkg][vcpkg]. Instructions to generate a static binary on Linux and other operating systems using vcpkg are [here][cargo-vcpkg-usage]
 
-### Mac OS X
-#### If you are using homebrew
-On OSX, it's a good idea to install these via
+### macOS
+#### Homebrew
+On macOS, it's a good idea to install these via
 [homebrew][homebrew].
 
-> brew install sdl2
+```
+brew install sdl2
+```
 
-Then add the following to your `~/.bash_profile` if not already present.
+In recent versions of Homebrew, the installed libraries are usually linked into `$(brew --prefix)/lib`.
+If you are running an older version, the symlink for SDL might reside in `/usr/local/lib`.
 
-> export LIBRARY\_PATH="$LIBRARY\_PATH:/usr/local/lib"
+To make linking libraries installed by Homebrew easier, do the following for your respective shell.
 
-##### Otherwise if you are using macports
+Add this line to your `~/.zshenv` or `~/.bash_profile` depending on whether you use ZSH or Bash.
+```
+export LIBRARY_PATH="$LIBRARY_PATH:$(brew --prefix)/lib"
+```
+#### MacPorts
 You can also get sdl2 via `macports`.
 
-> sudo port install libsdl2
+```
+sudo port install libsdl2
+```
 
 Then add the following to your `~/.bash_profile` if not already present.
+```
+export LIBRARY_PATH="$LIBRARY_PATH:/opt/local/lib/"
+```
 
-> export LIBRARY\_PATH="$LIBRARY\_PATH:/opt/local/lib/"
-
-If you're having issues with either homebrew or macports, [see here][pdev-issue].
+If you're having issues with either Homebrew or MacPorts, [see here][pdev-issue].
 
 #### If you are using the SDL2 framework
 
