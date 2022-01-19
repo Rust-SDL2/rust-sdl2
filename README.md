@@ -43,14 +43,14 @@ SDL2 >= 2.0.8 is recommended to use these bindings, but note that SDL2 >= 2.0.5 
 
 Since 0.31, this crate supports a feature named "bundled" which compiles SDL2 from source and links it automatically. While this should work for any architecture, you **will** need a C compiler (like `gcc`, `clang`, or MS's own compiler) to use this feature properly.
 
-By default, macOS and Linux only load libraries from system directories like `/usr/lib`. If you wish to distribute the newly built libSDL2.so/libSDL2.dylib alongside your executable, you will need to add rpath to your executable. Add the following line to `build.rs` script:
+By default, macOS and Linux only load libraries from system directories like `/usr/lib`. If you wish to distribute the newly built libSDL2.so/libSDL2.dylib alongside your executable, you will need to add rpath to your executable. Add the following lines to `build.rs` script:
 * on macOS:
 ```rust
-    println!("cargo:rustc-link-arg=-Wl,-rpath,@loader_path");
-```
-* on Linux:
-```rust
-    println!("cargo:rustc-link-arg=-Wl,-rpath,$ORIGIN");
+[cfg(target_os="macos")]
+println!("cargo:rustc-link-arg=-Wl,-rpath,@loader_path");
+
+[cfg(target_os="linux")]
+println!("cargo:rustc-link-arg=-Wl,-rpath,$ORIGIN");
 ```
 
 ### Linux
