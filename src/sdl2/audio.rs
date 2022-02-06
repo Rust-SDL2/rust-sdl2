@@ -751,7 +751,7 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
     /// Adds data to the audio queue.
     #[doc(alias = "SDL_QueueAudio")]
     #[deprecated(
-        since = "0.36.0",
+        since = "0.35.2",
         note = "Users should instead use AudioQueue::queue_audio"
     )]
     pub fn queue(&self, data: &[Channel]) -> bool {

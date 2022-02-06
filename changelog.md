@@ -1,7 +1,15 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
-### Unreleased
+### v0.35.2
+
+[PR #1173](https://github.com/Rust-SDL2/rust-sdl2/pull/1173) Fix segfault when using timer callbacks
+
+[PR #1183](https://github.com/Rust-SDL2/rust-sdl2/pull/1183) WinRT support for raw-window-handle
+
+[PR #1182](https://github.com/Rust-SDL2/rust-sdl2/pull/1182) Updated raw-window-handle to 0.4
+
+[PR #1189](https://github.com/Rust-SDL2/rust-sdl2/pull/1189) Added `AudioQueue::queue_audio` and deprecated `AudioQueue::queue`
 
 [PR #1164](https://github.com/Rust-SDL2/rust-sdl2/pull/1164) Added raw-window-handle support for Android
 
