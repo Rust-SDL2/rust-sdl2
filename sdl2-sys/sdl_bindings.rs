@@ -7588,6 +7588,17 @@ pub enum SDL_DisplayOrientation {
     #[doc = "< The display is in portrait mode, upside down"]
     SDL_ORIENTATION_PORTRAIT_FLIPPED = 4,
 }
+#[repr(u32)]
+#[doc = "  \\brief Window flash operation"]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum SDL_FlashOperation {
+    #[doc = "< Cancel any window flash state"]
+    SDL_FLASH_CANCEL = 0,
+    #[doc = "< Flash the window briefly to get attention"]
+    SDL_FLASH_BRIEFLY = 1,
+    #[doc = "< Flash the window until it gets focus"]
+    SDL_FLASH_UNTIL_FOCUSED = 2,
+}
 #[doc = "  \\brief An opaque handle to an OpenGL context."]
 pub type SDL_GLContext = *mut libc::c_void;
 #[repr(u32)]
@@ -8466,6 +8477,14 @@ extern "C" {
         callback: SDL_HitTest,
         callback_data: *mut libc::c_void,
     ) -> libc::c_int;
+}
+extern "C" {
+    #[doc = " \\Request a window to demand attention from the user."]
+    #[doc = ""]
+    #[doc = " \\param window the window to be flashed"]
+    #[doc = " \\param operation the flash operation"]
+    #[doc = " \\returns 0 on success or a negative error code on failure; call SDL_GetError() for more information."]
+    pub fn SDL_FlashWindow(window: *mut SDL_Window, operation: SDL_FlashOperation) -> libc::c_int;
 }
 extern "C" {
     #[doc = "  \\brief Destroy a window."]
