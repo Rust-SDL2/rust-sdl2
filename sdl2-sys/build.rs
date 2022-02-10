@@ -45,6 +45,7 @@ fn init_submodule(sdl_path: &Path) {
 #[cfg(feature = "use-pkgconfig")]
 fn pkg_config_print(statik: bool, lib_name: &str) {
     pkg_config::Config::new()
+        .print_system_libs(false)
         .statik(statik)
         .probe(lib_name)
         .unwrap();
