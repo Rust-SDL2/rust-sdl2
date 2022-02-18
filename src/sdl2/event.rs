@@ -1430,7 +1430,7 @@ impl Event {
         }
     }
 
-    fn from_ll(raw: sys::SDL_Event) -> Event {
+    pub fn from_ll(raw: sys::SDL_Event) -> Event {
         let raw_type = unsafe { raw.type_ };
 
         // if event type has not been defined, treat it as a UserEvent
