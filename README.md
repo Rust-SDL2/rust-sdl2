@@ -46,10 +46,10 @@ Since 0.31, this crate supports a feature named "bundled" which compiles SDL2 fr
 By default, macOS and Linux only load libraries from system directories like `/usr/lib`. If you wish to distribute the newly built libSDL2.so/libSDL2.dylib alongside your executable, you will need to add rpath to your executable. Add the following lines to `build.rs` script:
 
 ```rust
-[cfg(target_os="macos")]
+#[cfg(target_os="macos")]
 println!("cargo:rustc-link-arg=-Wl,-rpath,@loader_path");
 
-[cfg(target_os="linux")]
+#[cfg(target_os="linux")]
 println!("cargo:rustc-link-arg=-Wl,-rpath,$ORIGIN");
 ```
 
