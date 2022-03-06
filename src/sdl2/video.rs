@@ -637,6 +637,36 @@ impl Orientation {
     }
 }
 
+/// Represents a setting for a window flash operation.
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
+#[repr(i32)]
+pub enum FlashOperation {
+    /// Cancel any window flash state
+    Cancel = sys::SDL_FlashOperation::SDL_FLASH_CANCEL as i32,
+    /// Flash the window briefly to get attention
+    Briefly = sys::SDL_FlashOperation::SDL_FLASH_BRIEFLY as i32,
+    /// Flash the window until it gets focus
+    UntilFocused = sys::SDL_FlashOperation::SDL_FLASH_UNTIL_FOCUSED as i32,
+}
+
+impl FlashOperation {
+    pub fn from_ll(flash_operation: sys::SDL_FlashOperation) -> FlashOperation {
+        match flash_operation {
+            sys::SDL_FlashOperation::SDL_FLASH_CANCEL => FlashOperation::Cancel,
+            sys::SDL_FlashOperation::SDL_FLASH_BRIEFLY => FlashOperation::Briefly,
+            sys::SDL_FlashOperation::SDL_FLASH_UNTIL_FOCUSED => FlashOperation::UntilFocused,
+        }
+    }
+
+    pub fn to_ll(self) -> sys::SDL_FlashOperation {
+        match self {
+            FlashOperation::Cancel => sys::SDL_FlashOperation::SDL_FLASH_CANCEL,
+            FlashOperation::Briefly => sys::SDL_FlashOperation::SDL_FLASH_BRIEFLY,
+            FlashOperation::UntilFocused => sys::SDL_FlashOperation::SDL_FLASH_UNTIL_FOCUSED,
+        }
+    }
+}
+
 /// Represents the "shell" of a `Window`.
 ///
 /// You can set get and set many of the `SDL_Window` properties (i.e., border, size, `PixelFormat`, etc)
@@ -1766,6 +1796,17 @@ impl Window {
             Err(get_error())
         } else {
             Ok(opacity)
+        }
+    }
+
+    /// Requests a window to demand attention from the user.
+    #[doc(alias = "SDL_FlashWindow")]
+    pub fn flash(&mut self, operation: FlashOperation) -> Result<(), String> {
+        let result = unsafe { sys::SDL_FlashWindow(self.context.raw, operation.to_ll()) };
+        if result == 0 {
+            Ok(())
+        } else {
+            Err(get_error())
         }
     }
 }
