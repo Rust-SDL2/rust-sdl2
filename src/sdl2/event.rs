@@ -487,6 +487,8 @@ pub enum WindowEvent {
     Close,
     TakeFocus,
     HitTest,
+    ICCProfChanged,
+    DisplayChanged(i32),
 }
 
 impl WindowEvent {
@@ -510,6 +512,8 @@ impl WindowEvent {
             14 => WindowEvent::Close,
             15 => WindowEvent::TakeFocus,
             16 => WindowEvent::HitTest,
+            17 => WindowEvent::ICCProfChanged,
+            18 => WindowEvent::DisplayChanged(data1),
             _ => WindowEvent::None,
         }
     }
@@ -533,6 +537,8 @@ impl WindowEvent {
             WindowEvent::Close => (14, 0, 0),
             WindowEvent::TakeFocus => (15, 0, 0),
             WindowEvent::HitTest => (16, 0, 0),
+            WindowEvent::ICCProfChanged => (17, 0, 0),
+            WindowEvent::DisplayChanged(d1) => (18, d1, 0),
         }
     }
 
@@ -554,7 +560,9 @@ impl WindowEvent {
             | (Self::FocusLost, Self::FocusLost)
             | (Self::Close, Self::Close)
             | (Self::TakeFocus, Self::TakeFocus)
-            | (Self::HitTest, Self::HitTest) => true,
+            | (Self::HitTest, Self::HitTest)
+            | (Self::ICCProfChanged, Self::ICCProfChanged)
+            | (Self::DisplayChanged(_), Self::DisplayChanged(_)) => true,
             _ => false,
         }
     }
