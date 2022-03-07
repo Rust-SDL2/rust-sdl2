@@ -32,6 +32,7 @@ use crate::common::{validate_int, IntegerOrSdlError};
 use crate::get_error;
 use crate::pixels;
 use crate::pixels::PixelFormatEnum;
+use crate::rect::FPoint;
 use crate::rect::Point;
 use crate::rect::Rect;
 use crate::surface;
@@ -47,7 +48,7 @@ use std::fmt;
 use std::marker::PhantomData;
 use std::mem;
 use std::mem::{transmute, MaybeUninit};
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 use std::ptr;
 use std::rc::Rc;
 
@@ -97,6 +98,106 @@ impl Error for TargetRenderError {
             SdlError(self::SdlError(ref e)) => e.as_str(),
             NotSupported => "The renderer does not support the use of render targets",
         }
+    }
+}
+
+#[derive(Copy, Clone)]
+pub struct Vertex {
+    raw: sys::SDL_Vertex,
+}
+
+pub trait VertexIndex {}
+
+impl VertexIndex for u8 {}
+impl VertexIndex for u16 {}
+impl VertexIndex for u32 {}
+
+impl ::std::fmt::Debug for Vertex {
+    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
+        return write!(
+            fmt,
+            "Vertex {{ position: {:?}, color: {:?}, tex_coord: {:?} }}",
+            self.position(),
+            self.color(),
+            self.tex_coord(),
+        );
+    }
+}
+
+impl Deref for Vertex {
+    type Target = sys::SDL_Vertex;
+
+    fn deref(&self) -> &sys::SDL_Vertex {
+        &self.raw
+    }
+}
+
+impl DerefMut for Vertex {
+    fn deref_mut(&mut self) -> &mut sys::SDL_Vertex {
+        &mut self.raw
+    }
+}
+
+impl AsRef<sys::SDL_Vertex> for Vertex {
+    fn as_ref(&self) -> &sys::SDL_Vertex {
+        &self.raw
+    }
+}
+
+impl AsMut<sys::SDL_Vertex> for Vertex {
+    fn as_mut(&mut self) -> &mut sys::SDL_Vertex {
+        &mut self.raw
+    }
+}
+
+impl From<sys::SDL_Vertex> for Vertex {
+    fn from(prim: sys::SDL_Vertex) -> Vertex {
+        Vertex { raw: prim }
+    }
+}
+
+impl Into<sys::SDL_Vertex> for Vertex {
+    fn into(self) -> sys::SDL_Vertex {
+        self.raw
+    }
+}
+
+impl Vertex {
+    pub fn new(position: FPoint, color: pixels::Color, tex_coord: FPoint) -> Vertex {
+        Vertex {
+            raw: sys::SDL_Vertex {
+                position: position.into(),
+                color: color.into(),
+                tex_coord: tex_coord.into(),
+            },
+        }
+    }
+
+    pub fn from_ll(raw: sys::SDL_Vertex) -> Vertex {
+        Vertex::new(raw.position.into(), raw.color.into(), raw.tex_coord.into())
+    }
+
+    #[doc(alias = "SDL_Vertex")]
+    pub fn raw_slice(slice: &[Vertex]) -> *const sys::SDL_Vertex {
+        slice.as_ptr() as *const sys::SDL_Vertex
+    }
+    // this can prevent introducing UB until
+    // https://github.com/rust-lang/rust-clippy/issues/5953 is fixed
+    #[allow(clippy::trivially_copy_pass_by_ref)]
+    pub fn raw(&self) -> *const sys::SDL_Vertex {
+        &self.raw
+    }
+
+    pub fn position(self) -> FPoint {
+        self.raw.position.into()
+    }
+
+    pub fn color(self) -> pixels::Color {
+        self.raw.color.into()
+    }
+
+    pub fn tex_coord(self) -> FPoint {
+        self.raw.tex_coord.into()
     }
 }
 
@@ -1462,6 +1563,70 @@ impl<T: RenderTarget> Canvas<T> {
         };
 
         if ret != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Render a list of triangles, optionally using a texture and indices into the vertex array.
+    #[doc(alias = "SDL_RenderGeometry")]
+    pub fn geometry(
+        &mut self,
+        texture: &Texture,
+        vertices: &[Vertex],
+        indices: &[u32],
+    ) -> Result<(), String> {
+        let result = unsafe {
+            sys::SDL_RenderGeometry(
+                self.context.raw,
+                texture.raw,
+                Vertex::raw_slice(vertices),
+                vertices.len() as c_int,
+                indices.as_ptr() as *const i32,
+                indices.len() as c_int,
+            )
+        };
+
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Render a list of triangles, optionally using a texture and indices into the vertex arrays.
+    #[doc(alias = "SDL_RenderGeometryRaw")]
+    pub fn geometry_raw<I: VertexIndex>(
+        &mut self,
+        texture: &Texture,
+        xy: &[f32],
+        xy_stride: i32,
+        color: &[sys::SDL_Color],
+        color_stride: i32,
+        uv: &[f32],
+        uv_stride: i32,
+        num_vertices: i32,
+        indices: &[I],
+    ) -> Result<(), String> {
+        let result = unsafe {
+            sys::SDL_RenderGeometryRaw(
+                self.context.raw,
+                texture.raw,
+                xy.as_ptr(),
+                xy_stride as c_int,
+                color.as_ptr(),
+                color_stride as c_int,
+                uv.as_ptr(),
+                uv_stride as c_int,
+                num_vertices as c_int,
+                indices.as_ptr() as *const c_void,
+                indices.len() as c_int,
+                std::mem::size_of::<I>() as i32,
+            )
+        };
+
+        if result != 0 {
             Err(get_error())
         } else {
             Ok(())
