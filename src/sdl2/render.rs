@@ -2181,6 +2181,115 @@ impl InternalTexture {
         }
     }
 
+    #[doc(alias = "SDL_UpdateNVTexture")]
+    pub fn update_nv<R>(
+        &mut self,
+        rect: R,
+        y_plane: &[u8],
+        y_pitch: usize,
+        uv_plane: &[u8],
+        uv_pitch: usize,
+    ) -> Result<(), UpdateTextureYUVError>
+    where
+        R: Into<Option<Rect>>,
+    {
+        use self::UpdateTextureYUVError::*;
+
+        let rect = rect.into();
+
+        let rect_raw_ptr = match rect {
+            Some(ref rect) => rect.raw(),
+            None => ptr::null(),
+        };
+
+        if let Some(ref r) = rect {
+            if r.x() % 2 != 0 {
+                return Err(XMustBeMultipleOfTwoForFormat(r.x()));
+            } else if r.y() % 2 != 0 {
+                return Err(YMustBeMultipleOfTwoForFormat(r.y()));
+            } else if r.width() % 2 != 0 {
+                return Err(WidthMustBeMultipleOfTwoForFormat(r.width()));
+            } else if r.height() % 2 != 0 {
+                return Err(HeightMustBeMultipleOfTwoForFormat(r.height()));
+            }
+        };
+
+        // If the destination rectangle lies outside the texture boundaries,
+        // SDL_UpdateNVTexture will write outside allocated texture memory.
+        let tex_info = self.query();
+        if let Some(ref r) = rect {
+            let tex_rect = Rect::new(0, 0, tex_info.width, tex_info.height);
+            let inside = match r.intersection(tex_rect) {
+                Some(intersection) => intersection == *r,
+                None => false,
+            };
+            // The destination rectangle cannot lie outside the texture boundaries
+            if !inside {
+                return Err(RectNotInsideTexture(*r));
+            }
+        }
+
+        // We need the height in order to check the array slice lengths.
+        // Checking the lengths can prevent buffer overruns in SDL_UpdateNVTexture.
+        let height = match rect {
+            Some(ref r) => r.height(),
+            None => tex_info.height,
+        } as usize;
+
+        //let wrong_length =
+        if y_plane.len() != (y_pitch * height) {
+            return Err(InvalidPlaneLength {
+                plane: "y",
+                length: y_plane.len(),
+                pitch: y_pitch,
+                height,
+            });
+        }
+        if uv_plane.len() != (uv_pitch * height) {
+            return Err(InvalidPlaneLength {
+                plane: "uv",
+                length: uv_plane.len(),
+                pitch: uv_pitch,
+                height: height,
+            });
+        }
+
+        let y_pitch = match validate_int(y_pitch as u32, "y_pitch") {
+            Ok(p) => p,
+            Err(_) => {
+                return Err(PitchOverflows {
+                    plane: "y",
+                    value: y_pitch,
+                })
+            }
+        };
+        let uv_pitch = match validate_int(uv_pitch as u32, "uv_pitch") {
+            Ok(p) => p,
+            Err(_) => {
+                return Err(PitchOverflows {
+                    plane: "uv",
+                    value: uv_pitch,
+                })
+            }
+        };
+
+        let result = unsafe {
+            sys::SDL_UpdateNVTexture(
+                self.raw,
+                rect_raw_ptr,
+                y_plane.as_ptr(),
+                y_pitch,
+                uv_plane.as_ptr(),
+                uv_pitch,
+            )
+        };
+        if result != 0 {
+            Err(SdlError(get_error()))
+        } else {
+            Ok(())
+        }
+    }
+
     #[doc(alias = "SDL_LockTexture")]
     pub fn with_lock<F, R, R2>(&mut self, rect: R2, func: F) -> Result<R, String>
     where
@@ -2344,6 +2453,22 @@ impl<'r> Texture<'r> {
     {
         InternalTexture { raw: self.raw }
             .update_yuv(rect, y_plane, y_pitch, u_plane, u_pitch, v_plane, v_pitch)
+    }
+
+    /// Update a rectangle within a planar NV12 or NV21 texture with new pixel data.
+    #[inline]
+    pub fn update_nv<R>(
+        &mut self,
+        rect: R,
+        y_plane: &[u8],
+        y_pitch: usize,
+        uv_plane: &[u8],
+        uv_pitch: usize,
+    ) -> Result<(), UpdateTextureYUVError>
+    where
+        R: Into<Option<Rect>>,
+    {
+        InternalTexture { raw: self.raw }.update_nv(rect, y_plane, y_pitch, uv_plane, uv_pitch)
     }
 
     /// Locks the texture for **write-only** pixel access.
@@ -2541,6 +2666,22 @@ impl Texture {
     {
         InternalTexture { raw: self.raw }
             .update_yuv(rect, y_plane, y_pitch, u_plane, u_pitch, v_plane, v_pitch)
+    }
+
+    /// Update a rectangle within a planar NV12 or NV21 texture with new pixel data.
+    #[inline]
+    pub fn update_nv<R>(
+        &mut self,
+        rect: R,
+        y_plane: &[u8],
+        y_pitch: usize,
+        uv_plane: &[u8],
+        uv_pitch: usize,
+    ) -> Result<(), UpdateTextureYUVError>
+    where
+        R: Into<Option<Rect>>,
+    {
+        InternalTexture { raw: self.raw }.update_nv(rect, y_plane, y_pitch, uv_plane, uv_pitch)
     }
 
     /// Locks the texture for **write-only** pixel access.
