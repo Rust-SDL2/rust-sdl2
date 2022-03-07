@@ -1429,6 +1429,24 @@ impl Window {
         }
     }
 
+    #[doc(alias = "SDL_GetWindowICCProfile")]
+    pub fn icc_profile(&self) -> Result<Vec<u8>, String> {
+        unsafe {
+            let mut size: sys::size_t = 0;
+            let data = sys::SDL_GetWindowICCProfile(
+                self.context.raw,
+                &mut size as *const sys::size_t as *mut _,
+            );
+            if data.is_null() {
+                return Err(get_error());
+            }
+            let mut result = vec![0; size as usize];
+            result.copy_from_slice(std::slice::from_raw_parts(data as *const u8, size as usize));
+            sys::SDL_free(data);
+            Ok(result)
+        }
+    }
+
     #[doc(alias = "SDL_GetWindowPixelFormat")]
     pub fn window_pixel_format(&self) -> PixelFormatEnum {
         unsafe {
