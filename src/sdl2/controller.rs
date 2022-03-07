@@ -571,6 +571,24 @@ impl GameController {
             Ok(())
         }
     }
+
+    /// Send a controller specific effect packet.
+    #[doc(alias = "SDL_GameControllerSendEffect")]
+    pub fn send_effect(&mut self, data: &[u8]) -> Result<(), IntegerOrSdlError> {
+        let result = unsafe {
+            sys::SDL_GameControllerSendEffect(
+                self.raw,
+                data.as_ptr() as *const libc::c_void,
+                data.len() as i32,
+            )
+        };
+
+        if result != 0 {
+            Err(IntegerOrSdlError::SdlError(get_error()))
+        } else {
+            Ok(())
+        }
+    }
 }
 
 #[cfg(feature = "hidapi")]

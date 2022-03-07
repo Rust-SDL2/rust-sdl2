@@ -464,6 +464,24 @@ impl Joystick {
             Ok(())
         }
     }
+
+    /// Send a joystick specific effect packet.
+    #[doc(alias = "SDL_JoystickSendEffect")]
+    pub fn send_effect(&mut self, data: &[u8]) -> Result<(), IntegerOrSdlError> {
+        let result = unsafe {
+            sys::SDL_JoystickSendEffect(
+                self.raw,
+                data.as_ptr() as *const libc::c_void,
+                data.len() as i32,
+            )
+        };
+
+        if result != 0 {
+            Err(IntegerOrSdlError::SdlError(get_error()))
+        } else {
+            Ok(())
+        }
+    }
 }
 
 impl Drop for Joystick {
