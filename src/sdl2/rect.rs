@@ -662,7 +662,7 @@ impl BitOr<Rect> for Rect {
     }
 }
 
-/// Immutable point type, consisting of x and y.
+/// Immutable point type, consisting of integer x and y.
 #[derive(Copy, Clone)]
 pub struct Point {
     raw: sys::SDL_Point,
@@ -894,6 +894,209 @@ impl DivAssign<i32> for Point {
 impl std::iter::Sum for Point {
     fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
         iter.fold(Point::new(0, 0), Point::add)
+    }
+}
+
+/// Immutable point type, consisting of floating point x and y.
+#[derive(Copy, Clone)]
+pub struct FPoint {
+    raw: sys::SDL_FPoint,
+}
+
+impl ::std::fmt::Debug for FPoint {
+    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
+        return write!(fmt, "FPoint {{ x: {}, y: {} }}", self.raw.x, self.raw.y);
+    }
+}
+
+impl PartialEq for FPoint {
+    fn eq(&self, other: &FPoint) -> bool {
+        self.raw.x == other.raw.x && self.raw.y == other.raw.y
+    }
+}
+
+impl Deref for FPoint {
+    type Target = sys::SDL_FPoint;
+
+    /// # Example
+    ///
+    /// ```rust
+    /// use sdl2::rect::FPoint;
+    /// let point = FPoint::new(2.0, 3.0);
+    /// assert_eq!(2.0, point.x);
+    /// ```
+    fn deref(&self) -> &sys::SDL_FPoint {
+        &self.raw
+    }
+}
+
+impl DerefMut for FPoint {
+    /// # Example
+    ///
+    /// ```rust
+    /// use sdl2::rect::FPoint;
+    /// let mut point = FPoint::new(2.0, 3.0);
+    /// point.x = 4.0;
+    /// assert_eq!(4.0, point.x);
+    /// ```
+    fn deref_mut(&mut self) -> &mut sys::SDL_FPoint {
+        &mut self.raw
+    }
+}
+
+impl AsRef<sys::SDL_FPoint> for FPoint {
+    fn as_ref(&self) -> &sys::SDL_FPoint {
+        &self.raw
+    }
+}
+
+impl AsMut<sys::SDL_FPoint> for FPoint {
+    fn as_mut(&mut self) -> &mut sys::SDL_FPoint {
+        &mut self.raw
+    }
+}
+
+impl From<sys::SDL_FPoint> for FPoint {
+    fn from(prim: sys::SDL_FPoint) -> FPoint {
+        FPoint { raw: prim }
+    }
+}
+
+impl From<(f32, f32)> for FPoint {
+    fn from((x, y): (f32, f32)) -> FPoint {
+        FPoint::new(x, y)
+    }
+}
+
+impl Into<sys::SDL_FPoint> for FPoint {
+    fn into(self) -> sys::SDL_FPoint {
+        self.raw
+    }
+}
+
+impl Into<(f32, f32)> for FPoint {
+    fn into(self) -> (f32, f32) {
+        (self.x(), self.y())
+    }
+}
+
+impl FPoint {
+    /// Creates a new FPoint from the given coordinates.
+    pub fn new(x: f32, y: f32) -> FPoint {
+        FPoint {
+            raw: sys::SDL_FPoint { x, y },
+        }
+    }
+
+    pub fn from_ll(raw: sys::SDL_FPoint) -> FPoint {
+        FPoint::new(raw.x, raw.y)
+    }
+
+    #[doc(alias = "SDL_FPoint")]
+    pub fn raw_slice(slice: &[FPoint]) -> *const sys::SDL_FPoint {
+        slice.as_ptr() as *const sys::SDL_FPoint
+    }
+    // this can prevent introducing UB until
+    // https://github.com/rust-lang/rust-clippy/issues/5953 is fixed
+    #[allow(clippy::trivially_copy_pass_by_ref)]
+    pub fn raw(&self) -> *const sys::SDL_FPoint {
+        &self.raw
+    }
+
+    /// Returns a new FPoint by shifting this point's coordinates by the given
+    /// x and y values.
+    pub fn offset(self, x: f32, y: f32) -> FPoint {
+        FPoint::new(self.raw.x + x, self.raw.y + y)
+    }
+
+    /// Returns a new point by multiplying this point's coordinates by the
+    /// given scale factor.
+    pub fn scale(self, f: f32) -> FPoint {
+        FPoint::new(self.raw.x * f, self.raw.y * f)
+    }
+
+    /// Returns the x-coordinate of this point.
+    pub fn x(self) -> f32 {
+        self.raw.x
+    }
+
+    /// Returns the y-coordinate of this point.
+    pub fn y(self) -> f32 {
+        self.raw.y
+    }
+}
+
+impl Add for FPoint {
+    type Output = FPoint;
+
+    fn add(self, rhs: FPoint) -> FPoint {
+        self.offset(rhs.x(), rhs.y())
+    }
+}
+
+impl AddAssign for FPoint {
+    fn add_assign(&mut self, rhs: FPoint) {
+        self.raw.x = self.x() + rhs.x();
+        self.raw.y = self.y() + rhs.y();
+    }
+}
+
+impl Neg for FPoint {
+    type Output = FPoint;
+
+    fn neg(self) -> FPoint {
+        FPoint::new(-self.x(), -self.y())
+    }
+}
+
+impl Sub for FPoint {
+    type Output = FPoint;
+
+    fn sub(self, rhs: FPoint) -> FPoint {
+        self.offset(-rhs.x(), -rhs.y())
+    }
+}
+
+impl SubAssign for FPoint {
+    fn sub_assign(&mut self, rhs: FPoint) {
+        self.raw.x = self.x() - rhs.x();
+        self.raw.y = self.y() - rhs.y();
+    }
+}
+
+impl Mul<f32> for FPoint {
+    type Output = FPoint;
+
+    fn mul(self, rhs: f32) -> FPoint {
+        self.scale(rhs)
+    }
+}
+
+impl MulAssign<f32> for FPoint {
+    fn mul_assign(&mut self, rhs: f32) {
+        self.raw.x = self.x() * rhs;
+        self.raw.y = self.y() * rhs;
+    }
+}
+
+impl Div<f32> for FPoint {
+    type Output = FPoint;
+
+    fn div(self, rhs: f32) -> FPoint {
+        FPoint::new(self.x() / rhs, self.y() / rhs)
+    }
+}
+
+impl DivAssign<f32> for FPoint {
+    fn div_assign(&mut self, rhs: f32) {
+        self.raw.x /= rhs;
+        self.raw.y /= rhs;
+    }
+}
+
+impl std::iter::Sum for FPoint {
+    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+        iter.fold(FPoint::new(0.0, 0.0), FPoint::add)
     }
 }
 
