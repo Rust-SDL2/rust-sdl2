@@ -1688,9 +1688,84 @@ impl Window {
         }
     }
 
+    #[doc(alias = "SDL_SetWindowKeyboardGrab")]
+    pub fn set_keyboard_grab(&mut self, grabbed: bool) {
+        unsafe {
+            sys::SDL_SetWindowKeyboardGrab(
+                self.context.raw,
+                if grabbed {
+                    sys::SDL_bool::SDL_TRUE
+                } else {
+                    sys::SDL_bool::SDL_FALSE
+                },
+            )
+        }
+    }
+
+    #[doc(alias = "SDL_SetWindowMouseGrab")]
+    pub fn set_mouse_grab(&mut self, grabbed: bool) {
+        unsafe {
+            sys::SDL_SetWindowMouseGrab(
+                self.context.raw,
+                if grabbed {
+                    sys::SDL_bool::SDL_TRUE
+                } else {
+                    sys::SDL_bool::SDL_FALSE
+                },
+            )
+        }
+    }
+
     #[doc(alias = "SDL_GetWindowGrab")]
     pub fn grab(&self) -> bool {
         unsafe { sys::SDL_GetWindowGrab(self.context.raw) == sys::SDL_bool::SDL_TRUE }
+    }
+
+    #[doc(alias = "SDL_GetWindowKeyboardGrab")]
+    pub fn keyboard_grab(&self) -> bool {
+        unsafe { sys::SDL_GetWindowKeyboardGrab(self.context.raw) == sys::SDL_bool::SDL_TRUE }
+    }
+
+    #[doc(alias = "SDL_GetWindowMouseGrab")]
+    pub fn mouse_grab(&self) -> bool {
+        unsafe { sys::SDL_GetWindowMouseGrab(self.context.raw) == sys::SDL_bool::SDL_TRUE }
+    }
+
+    #[doc(alias = "SDL_SetWindowMouseRect")]
+    pub fn set_mouse_rect<R>(&self, rect: R) -> Result<(), String>
+    where
+        R: Into<Option<Rect>>,
+    {
+        let rect = rect.into();
+        let rect_raw_ptr = match rect {
+            Some(ref rect) => rect.raw(),
+            None => ptr::null(),
+        };
+
+        unsafe {
+            if sys::SDL_SetWindowMouseRect(self.context.raw, rect_raw_ptr) == 0 {
+                Ok(())
+            } else {
+                Err(get_error())
+            }
+        }
+    }
+
+    #[doc(alias = "SDL_GetWindowMouseRect")]
+    pub fn mouse_rect(&self) -> Option<Rect> {
+        unsafe {
+            let raw_rect = sys::SDL_GetWindowMouseRect(self.context.raw);
+            if raw_rect.is_null() {
+                None
+            } else {
+                Some(Rect::new(
+                    (*raw_rect).x,
+                    (*raw_rect).y,
+                    (*raw_rect).w as u32,
+                    (*raw_rect).h as u32,
+                ))
+            }
+        }
     }
 
     #[doc(alias = "SDL_SetWindowBrightness")]
