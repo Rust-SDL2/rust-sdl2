@@ -180,6 +180,49 @@ impl AudioSubsystem {
             }
         }
     }
+
+    #[doc(alias = "SDL_GetAudioDeviceSpec")]
+    pub fn audio_playback_device_spec(&self, index: u32) -> Result<AudioSpec, String> {
+        let mut spec = sys::SDL_AudioSpec {
+            freq: 0,
+            format: 0,
+            channels: 0,
+            silence: 0,
+            samples: 0,
+            padding: 0,
+            size: 0,
+            callback: None,
+            userdata: ptr::null_mut(),
+        };
+
+        let result = unsafe { sys::SDL_GetAudioDeviceSpec(index as c_int, 0, &mut spec) };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(AudioSpec::convert_from_ll(spec))
+        }
+    }
+    #[doc(alias = "SDL_GetAudioDeviceSpec")]
+    pub fn audio_capture_device_spec(&self, index: u32) -> Result<AudioSpec, String> {
+        let mut spec = sys::SDL_AudioSpec {
+            freq: 0,
+            format: 0,
+            channels: 0,
+            silence: 0,
+            samples: 0,
+            padding: 0,
+            size: 0,
+            callback: None,
+            userdata: ptr::null_mut(),
+        };
+
+        let result = unsafe { sys::SDL_GetAudioDeviceSpec(index as c_int, 1, &mut spec) };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(AudioSpec::convert_from_ll(spec))
+        }
+    }
 }
 
 #[repr(i32)]
