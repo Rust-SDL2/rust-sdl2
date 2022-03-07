@@ -400,6 +400,70 @@ impl Joystick {
             Ok(())
         }
     }
+
+    /// Start a rumble effect in the joystick's triggers.
+    #[doc(alias = "SDL_JoystickRumbleTriggers")]
+    pub fn set_rumble_triggers(
+        &mut self,
+        left_rumble: u16,
+        right_rumble: u16,
+        duration_ms: u32,
+    ) -> Result<(), IntegerOrSdlError> {
+        let result = unsafe {
+            sys::SDL_JoystickRumbleTriggers(self.raw, left_rumble, right_rumble, duration_ms)
+        };
+
+        if result != 0 {
+            Err(IntegerOrSdlError::SdlError(get_error()))
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Query whether a joystick has an LED.
+    #[doc(alias = "SDL_JoystickHasLED")]
+    pub fn has_led(&self) -> bool {
+        let result = unsafe { sys::SDL_JoystickHasLED(self.raw) };
+
+        match result {
+            sys::SDL_bool::SDL_FALSE => false,
+            sys::SDL_bool::SDL_TRUE => true,
+        }
+    }
+
+    /// Query whether a joystick has rumble support.
+    #[doc(alias = "SDL_JoystickHasRumble")]
+    pub fn has_rumble(&self) -> bool {
+        let result = unsafe { sys::SDL_JoystickHasRumble(self.raw) };
+
+        match result {
+            sys::SDL_bool::SDL_FALSE => false,
+            sys::SDL_bool::SDL_TRUE => true,
+        }
+    }
+
+    /// Query whether a joystick has rumble support on triggers.
+    #[doc(alias = "SDL_JoystickHasRumbleTriggers")]
+    pub fn has_rumble_triggers(&self) -> bool {
+        let result = unsafe { sys::SDL_JoystickHasRumbleTriggers(self.raw) };
+
+        match result {
+            sys::SDL_bool::SDL_FALSE => false,
+            sys::SDL_bool::SDL_TRUE => true,
+        }
+    }
+
+    /// Update a joystick's LED color.
+    #[doc(alias = "SDL_JoystickSetLED")]
+    pub fn set_led(&mut self, red: u8, green: u8, blue: u8) -> Result<(), IntegerOrSdlError> {
+        let result = unsafe { sys::SDL_JoystickSetLED(self.raw, red, green, blue) };
+
+        if result != 0 {
+            Err(IntegerOrSdlError::SdlError(get_error()))
+        } else {
+            Ok(())
+        }
+    }
 }
 
 impl Drop for Joystick {

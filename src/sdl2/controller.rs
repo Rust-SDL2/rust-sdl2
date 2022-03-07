@@ -507,6 +507,70 @@ impl GameController {
             Ok(())
         }
     }
+
+    /// Start a rumble effect in the game controller's triggers.
+    #[doc(alias = "SDL_GameControllerRumbleTriggers")]
+    pub fn set_rumble_triggers(
+        &mut self,
+        left_rumble: u16,
+        right_rumble: u16,
+        duration_ms: u32,
+    ) -> Result<(), IntegerOrSdlError> {
+        let result = unsafe {
+            sys::SDL_GameControllerRumbleTriggers(self.raw, left_rumble, right_rumble, duration_ms)
+        };
+
+        if result != 0 {
+            Err(IntegerOrSdlError::SdlError(get_error()))
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Query whether a game controller has an LED.
+    #[doc(alias = "SDL_GameControllerHasLED")]
+    pub fn has_led(&self) -> bool {
+        let result = unsafe { sys::SDL_GameControllerHasLED(self.raw) };
+
+        match result {
+            sys::SDL_bool::SDL_FALSE => false,
+            sys::SDL_bool::SDL_TRUE => true,
+        }
+    }
+
+    /// Query whether a game controller has rumble support.
+    #[doc(alias = "SDL_GameControllerHasRumble")]
+    pub fn has_rumble(&self) -> bool {
+        let result = unsafe { sys::SDL_GameControllerHasRumble(self.raw) };
+
+        match result {
+            sys::SDL_bool::SDL_FALSE => false,
+            sys::SDL_bool::SDL_TRUE => true,
+        }
+    }
+
+    /// Query whether a game controller has rumble support on triggers.
+    #[doc(alias = "SDL_GameControllerHasRumbleTriggers")]
+    pub fn has_rumble_triggers(&self) -> bool {
+        let result = unsafe { sys::SDL_GameControllerHasRumbleTriggers(self.raw) };
+
+        match result {
+            sys::SDL_bool::SDL_FALSE => false,
+            sys::SDL_bool::SDL_TRUE => true,
+        }
+    }
+
+    /// Update a game controller's LED color.
+    #[doc(alias = "SDL_GameControllerSetLED")]
+    pub fn set_led(&mut self, red: u8, green: u8, blue: u8) -> Result<(), IntegerOrSdlError> {
+        let result = unsafe { sys::SDL_GameControllerSetLED(self.raw, red, green, blue) };
+
+        if result != 0 {
+            Err(IntegerOrSdlError::SdlError(get_error()))
+        } else {
+            Ok(())
+        }
+    }
 }
 
 #[cfg(feature = "hidapi")]
@@ -532,7 +596,7 @@ impl GameController {
         }
     }
 
-    #[doc(alias = "SDL_GameControllerHasSensor")]
+    #[doc(alias = "SDL_GameControllerSetSensorEnabled")]
     pub fn sensor_set_enabled(
         &self,
         sensor_type: crate::sensor::SensorType,
@@ -555,6 +619,15 @@ impl GameController {
         } else {
             Ok(())
         }
+    }
+
+    /// Get the data rate (number of events per second) of a game controller sensor.
+    #[doc(alias = "SDL_GameControllerGetSensorDataRate")]
+    pub fn sensor_get_data_rate(&self, sensor_type: SensorType) -> f32 {
+        let result =
+            unsafe { sys::SDL_GameControllerGetSensorDataRate(self.raw, sensor_type.into()) };
+
+        Ok(result)
     }
 
     /// Get data from a sensor.
