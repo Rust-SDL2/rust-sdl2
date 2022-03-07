@@ -1189,6 +1189,40 @@ impl<T: RenderTarget> Canvas<T> {
         (scale_x, scale_y)
     }
 
+    /// Get logical coordinates of point in renderer when given real coordinates of point in window.
+    #[doc(alias = "SDL_RenderWindowToLogical")]
+    pub fn window_to_logical(&self, window_x: i32, window_y: i32) -> (f32, f32) {
+        let mut logical_x = 0.0;
+        let mut logical_y = 0.0;
+        unsafe {
+            sys::SDL_RenderWindowToLogical(
+                self.context.raw,
+                window_x,
+                window_y,
+                &mut logical_x,
+                &mut logical_y,
+            )
+        };
+        (logical_x, logical_y)
+    }
+
+    /// Get real coordinates of point in window when given logical coordinates of point in renderer.
+    #[doc(alias = "SDL_RenderLogicalToWindow")]
+    pub fn logical_to_window(&self, logical_x: f32, logical_y: f32) -> (i32, i32) {
+        let mut window_x = 0;
+        let mut window_y = 0;
+        unsafe {
+            sys::SDL_RenderLogicalToWindow(
+                self.context.raw,
+                logical_x,
+                logical_y,
+                &mut window_x,
+                &mut window_y,
+            )
+        };
+        (window_x, window_y)
+    }
+
     /// Draws a point on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
     #[doc(alias = "SDL_RenderDrawPoint")]
@@ -1613,6 +1647,18 @@ impl<T: RenderTarget> Canvas<T> {
 
         if ret != 0 {
             panic!("Error setting blend: {}", get_error())
+        }
+    }
+
+    /// Toggle VSync.
+    #[doc(alias = "SDL_RenderSetVSync")]
+    pub unsafe fn set_vsync(&self, vsync: i32) -> Result<(), String> {
+        let ret = sys::SDL_RenderSetVSync(self.context.raw, vsync);
+
+        if ret != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
         }
     }
 }
