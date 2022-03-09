@@ -2,7 +2,7 @@ extern crate sdl2;
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use sdl2::pixels::Color;
+use sdl2::pixels::RColor;
 
 pub fn main() -> Result<(), String> {
     let sdl_context = sdl2::init()?;
@@ -51,7 +51,7 @@ pub fn main() -> Result<(), String> {
             tick += 1;
         }
 
-        canvas.set_draw_color(Color::RGB(0, 0, 0));
+        canvas.set_draw_color(RColor::RGB(0, 0, 0));
         canvas.clear();
         canvas.present();
     }

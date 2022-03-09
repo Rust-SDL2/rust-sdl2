@@ -4,7 +4,7 @@ use sdl2::event::Event;
 use sdl2::image::{InitFlag, LoadSurface};
 use sdl2::keyboard::Keycode;
 use sdl2::mouse::Cursor;
-use sdl2::pixels::Color;
+use sdl2::pixels::RColor;
 use sdl2::rect::Rect;
 use sdl2::surface::Surface;
 use std::env;
@@ -35,7 +35,7 @@ pub fn run(png: &Path) -> Result<(), String> {
     canvas.clear();
     canvas.present();
 
-    canvas.set_draw_color(Color::RGBA(255, 255, 255, 255));
+    canvas.set_draw_color(RColor::RGBA(255, 255, 255, 255));
 
     let mut events = sdl_context.event_pump()?;
 

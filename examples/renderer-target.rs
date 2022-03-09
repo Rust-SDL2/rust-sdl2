@@ -2,7 +2,7 @@ extern crate sdl2;
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use sdl2::pixels::{Color, PixelFormatEnum};
+use sdl2::pixels::{PixelFormatEnum, RColor};
 use sdl2::rect::{Point, Rect};
 
 fn main() -> Result<(), String> {
@@ -40,13 +40,13 @@ fn main() -> Result<(), String> {
         canvas
             .with_texture_canvas(&mut texture, |texture_canvas| {
                 texture_canvas.clear();
-                texture_canvas.set_draw_color(Color::RGBA(255, 0, 0, 255));
+                texture_canvas.set_draw_color(RColor::RGBA(255, 0, 0, 255));
                 texture_canvas
                     .fill_rect(Rect::new(0, 0, 400, 300))
                     .expect("could not fill rect");
             })
             .map_err(|e| e.to_string())?;
-        canvas.set_draw_color(Color::RGBA(0, 0, 0, 255));
+        canvas.set_draw_color(RColor::RGBA(0, 0, 0, 255));
         let dst = Some(Rect::new(0, 0, 400, 300));
         canvas.clear();
         canvas.copy_ex(
