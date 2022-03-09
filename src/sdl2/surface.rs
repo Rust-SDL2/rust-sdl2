@@ -487,8 +487,11 @@ impl SurfaceRef {
     }
 
     #[doc(alias = "SDL_SetColorKey")]
-    pub fn set_color_key(&mut self, enable: bool, color: pixels::Color) -> Result<(), String> {
-        let key = color.to_u32(&self.pixel_format());
+    pub fn set_color_key<C>(&mut self, enable: bool, color: C) -> Result<(), String>
+    where
+        C: Copy + Into<pixels::RColor>,
+    {
+        let key = color.into().to_u32(&self.pixel_format());
         let result = unsafe { sys::SDL_SetColorKey(self.raw(), if enable { 1 } else { 0 }, key) };
         if result == 0 {
             Ok(())
@@ -499,7 +502,7 @@ impl SurfaceRef {
 
     /// The function will fail if the surface doesn't have color key enabled.
     #[doc(alias = "SDL_GetColorKey")]
-    pub fn color_key(&self) -> Result<pixels::Color, String> {
+    pub fn color_key(&self) -> Result<pixels::RColor, String> {
         let mut key = 0;
 
         // SDL_GetColorKey does not mutate, but requires a non-const pointer anyway.
@@ -507,15 +510,18 @@ impl SurfaceRef {
         let result = unsafe { sys::SDL_GetColorKey(self.raw(), &mut key) };
 
         if result == 0 {
-            Ok(pixels::Color::from_u32(&self.pixel_format(), key))
+            Ok(pixels::RColor::from_u32(&self.pixel_format(), key))
         } else {
             Err(get_error())
         }
     }
 
     #[doc(alias = "SDL_SetSurfaceColorMod")]
-    pub fn set_color_mod(&mut self, color: pixels::Color) {
-        let (r, g, b) = color.rgb();
+    pub fn set_color_mod<C>(&mut self, color: C)
+    where
+        C: Copy + Into<pixels::RColor>,
+    {
+        let (r, g, b) = color.into().rgb();
         let result = unsafe { sys::SDL_SetSurfaceColorMod(self.raw(), r, g, b) };
 
         if result != 0 {
@@ -525,7 +531,7 @@ impl SurfaceRef {
     }
 
     #[doc(alias = "SDL_GetSurfaceColorMod")]
-    pub fn color_mod(&self) -> pixels::Color {
+    pub fn color_mod(&self) -> pixels::RColor {
         let mut r = 0;
         let mut g = 0;
         let mut b = 0;
@@ -536,7 +542,7 @@ impl SurfaceRef {
             unsafe { sys::SDL_GetSurfaceColorMod(self.raw(), &mut r, &mut g, &mut b) == 0 };
 
         if result {
-            pixels::Color::RGB(r, g, b)
+            pixels::RColor::RGB(r, g, b)
         } else {
             // Should only fail on a null Surface
             panic!("{}", get_error())
@@ -544,16 +550,17 @@ impl SurfaceRef {
     }
 
     #[doc(alias = "SDL_FillRect")]
-    pub fn fill_rect<R>(&mut self, rect: R, color: pixels::Color) -> Result<(), String>
+    pub fn fill_rect<R, C>(&mut self, rect: R, color: C) -> Result<(), String>
     where
         R: Into<Option<Rect>>,
+        C: Into<pixels::RColor>,
     {
         unsafe {
             let rect = rect.into();
             let rect_ptr = mem::transmute(rect.as_ref()); // TODO find a better way to transform
                                                           // Option<&...> into a *const _
             let format = self.pixel_format();
-            let result = sys::SDL_FillRect(self.raw(), rect_ptr, color.to_u32(&format));
+            let result = sys::SDL_FillRect(self.raw(), rect_ptr, color.into().to_u32(&format));
             match result {
                 0 => Ok(()),
                 _ => Err(get_error()),
@@ -562,7 +569,10 @@ impl SurfaceRef {
     }
 
     #[allow(clippy::clone_on_copy)]
-    pub fn fill_rects(&mut self, rects: &[Rect], color: pixels::Color) -> Result<(), String> {
+    pub fn fill_rects<C>(&mut self, rects: &[Rect], color: C) -> Result<(), String>
+    where
+        C: Copy + Into<pixels::RColor>,
+    {
         for rect in rects.iter() {
             if let Err(e) = self.fill_rect(rect.clone(), color) {
                 return Err(e);

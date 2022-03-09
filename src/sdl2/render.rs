@@ -163,18 +163,21 @@ impl Into<sys::SDL_Vertex> for Vertex {
 }
 
 impl Vertex {
-    pub fn new(position: FPoint, color: pixels::Color, tex_coord: FPoint) -> Vertex {
+    pub fn new<C>(position: FPoint, color: C, tex_coord: FPoint) -> Vertex
+    where
+        C: Copy + Into<pixels::RColor>,
+    {
         Vertex {
             raw: sys::SDL_Vertex {
                 position: position.into(),
-                color: color.into(),
+                color: color.into().raw(),
                 tex_coord: tex_coord.into(),
             },
         }
     }
 
     pub fn from_ll(raw: sys::SDL_Vertex) -> Vertex {
-        Vertex::new(raw.position.into(), raw.color.into(), raw.tex_coord.into())
+        Vertex::new(raw.position.into(), raw.color, raw.tex_coord.into())
     }
 
     #[doc(alias = "SDL_Vertex")]
@@ -192,7 +195,7 @@ impl Vertex {
         self.raw.position.into()
     }
 
-    pub fn color(self) -> pixels::Color {
+    pub fn color(self) -> pixels::RColor {
         self.raw.color.into()
     }
 
@@ -408,7 +411,7 @@ impl<'s> RenderTarget for Surface<'s> {
 /// ```rust,no_run
 /// # use sdl2::render::Canvas;
 /// # use sdl2::video::Window;
-/// # use sdl2::pixels::Color;
+/// # use sdl2::pixels::RColor;
 /// # use sdl2::rect::Rect;
 /// # let sdl_context = sdl2::init().unwrap();
 /// # let video_subsystem = sdl_context.video().unwrap();
@@ -420,12 +423,12 @@ impl<'s> RenderTarget for Surface<'s> {
 ///     // render faster than your display rate (usually 60Hz or 144Hz)
 ///     .build().unwrap();
 ///
-/// canvas.set_draw_color(Color::RGB(0, 0, 0));
+/// canvas.set_draw_color(RColor::RGB(0, 0, 0));
 /// // fills the canvas with the color we set in `set_draw_color`.
 /// canvas.clear();
 ///
 /// // change the color of our drawing with a gold-color ...
-/// canvas.set_draw_color(Color::RGB(255, 210, 0));
+/// canvas.set_draw_color(RColor::RGB(255, 210, 0));
 /// // A draw a rectangle which almost fills our window with it !
 /// canvas.fill_rect(Rect::new(10, 10, 780, 580));
 ///
@@ -609,7 +612,7 @@ impl<T: RenderTarget> Canvas<T> {
     /// ```rust,no_run
     /// # use sdl2::render::{Canvas, Texture};
     /// # use sdl2::video::Window;
-    /// # use sdl2::pixels::Color;
+    /// # use sdl2::pixels::RColor;
     /// # use sdl2::rect::Rect;
     /// # let mut canvas : Canvas<Window> = unimplemented!();
     /// let texture_creator = canvas.texture_creator();
@@ -617,9 +620,9 @@ impl<T: RenderTarget> Canvas<T> {
     ///     .create_texture_target(texture_creator.default_pixel_format(), 150, 150)
     ///     .unwrap();
     /// let result = canvas.with_texture_canvas(&mut texture, |texture_canvas| {
-    ///     texture_canvas.set_draw_color(Color::RGBA(0, 0, 0, 255));
+    ///     texture_canvas.set_draw_color(RColor::RGBA(0, 0, 0, 255));
     ///     texture_canvas.clear();
-    ///     texture_canvas.set_draw_color(Color::RGBA(255, 0, 0, 255));
+    ///     texture_canvas.set_draw_color(RColor::RGBA(255, 0, 0, 255));
     ///     texture_canvas.fill_rect(Rect::new(50, 50, 50, 50)).unwrap();
     /// });
     /// ```
@@ -665,7 +668,7 @@ impl<T: RenderTarget> Canvas<T> {
     /// Let's create two textures, one which will be yellow, and the other will be white
     ///
     /// ```rust,no_run
-    /// # use sdl2::pixels::Color;
+    /// # use sdl2::pixels::RColor;
     /// # use sdl2::rect::Rect;
     /// # use sdl2::video::Window;
     /// # use sdl2::render::{Canvas, Texture};
@@ -688,10 +691,10 @@ impl<T: RenderTarget> Canvas<T> {
     ///     canvas.with_multiple_texture_canvas(textures.iter(), |texture_canvas, user_context| {
     ///     match *user_context {
     ///         TextureColor::White => {
-    ///             texture_canvas.set_draw_color(Color::RGB(255, 255, 255));
+    ///             texture_canvas.set_draw_color(RColor::RGB(255, 255, 255));
     ///         },
     ///         TextureColor::Yellow => {
-    ///             texture_canvas.set_draw_color(Color::RGB(255, 255, 0));
+    ///             texture_canvas.set_draw_color(RColor::RGB(255, 255, 0));
     ///         }
     ///     };
     ///     texture_canvas.clear();
@@ -1083,7 +1086,7 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Sets the color used for drawing operations (Rect, Line and Clear).
     #[doc(alias = "SDL_SetRenderDrawColor")]
-    pub fn set_draw_color<C: Into<pixels::Color>>(&mut self, color: C) {
+    pub fn set_draw_color<C: Into<pixels::RColor>>(&mut self, color: C) {
         let (r, g, b, a) = color.into().rgba();
         let ret = unsafe { sys::SDL_SetRenderDrawColor(self.raw, r, g, b, a) };
         // Should only fail on an invalid renderer
@@ -1094,7 +1097,7 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Gets the color used for drawing operations (Rect, Line and Clear).
     #[doc(alias = "SDL_GetRenderDrawColor")]
-    pub fn draw_color(&self) -> pixels::Color {
+    pub fn draw_color(&self) -> pixels::RColor {
         let (mut r, mut g, mut b, mut a) = (0, 0, 0, 0);
         let ret = unsafe {
             sys::SDL_GetRenderDrawColor(self.context.raw, &mut r, &mut g, &mut b, &mut a)
@@ -1103,7 +1106,7 @@ impl<T: RenderTarget> Canvas<T> {
         if ret != 0 {
             panic!("{}", get_error())
         } else {
-            pixels::Color::RGBA(r, g, b, a)
+            pixels::RColor::RGBA(r, g, b, a)
         }
     }
 
@@ -1602,7 +1605,7 @@ impl<T: RenderTarget> Canvas<T> {
         texture: &Texture,
         xy: &[f32],
         xy_stride: i32,
-        color: &[sys::SDL_Color],
+        color: &[pixels::RColor],
         color_stride: i32,
         uv: &[f32],
         uv_stride: i32,
@@ -1615,7 +1618,7 @@ impl<T: RenderTarget> Canvas<T> {
                 texture.raw,
                 xy.as_ptr(),
                 xy_stride as c_int,
-                color.as_ptr(),
+                color.as_ptr() as *const sys::SDL_Color,
                 color_stride as c_int,
                 uv.as_ptr(),
                 uv_stride as c_int,
