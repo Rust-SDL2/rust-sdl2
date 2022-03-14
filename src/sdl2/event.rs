@@ -300,6 +300,9 @@ pub enum EventType {
     ControllerDeviceAdded = SDL_EventType::SDL_CONTROLLERDEVICEADDED as u32,
     ControllerDeviceRemoved = SDL_EventType::SDL_CONTROLLERDEVICEREMOVED as u32,
     ControllerDeviceRemapped = SDL_EventType::SDL_CONTROLLERDEVICEREMAPPED as u32,
+    ControllerTouchpadDown = SDL_EventType::SDL_CONTROLLERTOUCHPADDOWN as u32,
+    ControllerTouchpadMotion = SDL_EventType::SDL_CONTROLLERTOUCHPADMOTION as u32,
+    ControllerTouchpadUp = SDL_EventType::SDL_CONTROLLERTOUCHPADUP as u32,
     #[cfg(feature = "hidapi")]
     ControllerSensorUpdated = SDL_EventType::SDL_CONTROLLERSENSORUPDATE as u32,
 
@@ -371,6 +374,9 @@ impl TryFrom<u32> for EventType {
             SDL_CONTROLLERDEVICEADDED => ControllerDeviceAdded,
             SDL_CONTROLLERDEVICEREMOVED => ControllerDeviceRemoved,
             SDL_CONTROLLERDEVICEREMAPPED => ControllerDeviceRemapped,
+            SDL_CONTROLLERTOUCHPADDOWN => ControllerTouchpadDown,
+            SDL_CONTROLLERTOUCHPADMOTION => ControllerTouchpadMotion,
+            SDL_CONTROLLERTOUCHPADUP => ControllerTouchpadUp,
             #[cfg(feature = "hidapi")]
             SDL_CONTROLLERSENSORUPDATE => ControllerSensorUpdated,
 
@@ -744,6 +750,52 @@ pub enum Event {
         timestamp: u32,
         /// The controller's joystick `id`
         which: u32,
+    },
+
+    ControllerTouchpadDown {
+        timestamp: u32,
+        /// The joystick instance id
+        which: u32,
+        /// The index of the touchpad
+        touchpad: u32,
+        /// The index of the finger on the touchpad
+        finger: u32,
+        /// Normalized in the range 0...1 with 0 being on the left
+        x: f32,
+        /// Normalized in the range 0...1 with 0 being at the top
+        y: f32,
+        /// Normalized in the range 0...1
+        pressure: f32,
+    },
+    ControllerTouchpadMotion {
+        timestamp: u32,
+        /// The joystick instance id
+        which: u32,
+        /// The index of the touchpad
+        touchpad: u32,
+        /// The index of the finger on the touchpad
+        finger: u32,
+        /// Normalized in the range 0...1 with 0 being on the left
+        x: f32,
+        /// Normalized in the range 0...1 with 0 being at the top
+        y: f32,
+        /// Normalized in the range 0...1
+        pressure: f32,
+    },
+    ControllerTouchpadUp {
+        timestamp: u32,
+        /// The joystick instance id
+        which: u32,
+        /// The index of the touchpad
+        touchpad: u32,
+        /// The index of the finger on the touchpad
+        finger: u32,
+        /// Normalized in the range 0...1 with 0 being on the left
+        x: f32,
+        /// Normalized in the range 0...1 with 0 being at the top
+        y: f32,
+        /// Normalized in the range 0...1
+        pressure: f32,
     },
 
     /// Triggered when the gyroscope or accelerometer is updated
@@ -1728,6 +1780,42 @@ impl Event {
                         which: event.which as u32,
                     }
                 }
+                EventType::ControllerTouchpadDown => {
+                    let event = raw.ctouchpad;
+                    Event::ControllerTouchpadDown {
+                        timestamp: event.timestamp,
+                        which: event.which as u32,
+                        touchpad: event.touchpad as u32,
+                        finger: event.finger as u32,
+                        x: event.x,
+                        y: event.y,
+                        pressure: event.pressure,
+                    }
+                }
+                EventType::ControllerTouchpadMotion => {
+                    let event = raw.ctouchpad;
+                    Event::ControllerTouchpadMotion {
+                        timestamp: event.timestamp,
+                        which: event.which as u32,
+                        touchpad: event.touchpad as u32,
+                        finger: event.finger as u32,
+                        x: event.x,
+                        y: event.y,
+                        pressure: event.pressure,
+                    }
+                }
+                EventType::ControllerTouchpadUp => {
+                    let event = raw.ctouchpad;
+                    Event::ControllerTouchpadUp {
+                        timestamp: event.timestamp,
+                        which: event.which as u32,
+                        touchpad: event.touchpad as u32,
+                        finger: event.finger as u32,
+                        x: event.x,
+                        y: event.y,
+                        pressure: event.pressure,
+                    }
+                }
                 #[cfg(feature = "hidapi")]
                 EventType::ControllerSensorUpdated => {
                     let event = raw.csensor;
@@ -2077,6 +2165,9 @@ impl Event {
             Self::ControllerDeviceAdded { timestamp, .. } => timestamp,
             Self::ControllerDeviceRemoved { timestamp, .. } => timestamp,
             Self::ControllerDeviceRemapped { timestamp, .. } => timestamp,
+            Self::ControllerTouchpadDown { timestamp, .. } => timestamp,
+            Self::ControllerTouchpadMotion { timestamp, .. } => timestamp,
+            Self::ControllerTouchpadUp { timestamp, .. } => timestamp,
             #[cfg(feature = "hidapi")]
             Self::ControllerSensorUpdated { timestamp, .. } => timestamp,
             Self::FingerDown { timestamp, .. } => timestamp,
