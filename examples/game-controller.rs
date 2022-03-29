@@ -87,9 +87,36 @@ fn main() -> Result<(), String> {
             }
             Event::ControllerButtonDown { button, .. } => println!("Button {:?} down", button),
             Event::ControllerButtonUp { button, .. } => println!("Button {:?} up", button),
-            Event::ControllerTouchpadDown { touchpad, finger, x, y, ..} => println!("Touchpad {touchpad} down finger:{finger} x:{x} y:{y}"),
-            Event::ControllerTouchpadMotion { touchpad, finger, x, y, ..} => println!("Touchpad {touchpad} move finger:{finger} x:{x} y:{y}"),
-            Event::ControllerTouchpadUp { touchpad, finger, x, y, ..} => println!("Touchpad {touchpad} up   finger:{finger} x:{x} y:{y}"),
+            Event::ControllerTouchpadDown {
+                touchpad,
+                finger,
+                x,
+                y,
+                ..
+            } => println!(
+                "Touchpad {} down finger:{} x:{} y:{}",
+                touchpad, finger, x, y
+            ),
+            Event::ControllerTouchpadMotion {
+                touchpad,
+                finger,
+                x,
+                y,
+                ..
+            } => println!(
+                "Touchpad {} move finger:{} x:{} y:{}",
+                touchpad, finger, x, y
+            ),
+            Event::ControllerTouchpadUp {
+                touchpad,
+                finger,
+                x,
+                y,
+                ..
+            } => println!(
+                "Touchpad {} up   finger:{} x:{} y:{}",
+                touchpad, finger, x, y
+            ),
             Event::Quit { .. } => break,
             _ => (),
         }
