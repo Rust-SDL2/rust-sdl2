@@ -1578,16 +1578,25 @@ impl<T: RenderTarget> Canvas<T> {
         &mut self,
         texture: &Texture,
         vertices: &[Vertex],
-        indices: &[u32],
+        indices: Option<&[u32]>,
     ) -> Result<(), String> {
+        // API expects i32, however the underlying SDL_RenderGeometryRaw call casts to u32
+        let indices_ptr: *const c_int = match indices {
+            Some(i) => i.as_ptr() as *const c_int,
+            None => std::ptr::null(),
+        };
+        let indices_count: c_int = match indices {
+            Some(i) => i.len() as c_int,
+            None => 0,
+        };
         let result = unsafe {
             sys::SDL_RenderGeometry(
                 self.context.raw,
                 texture.raw,
                 Vertex::raw_slice(vertices),
                 vertices.len() as c_int,
-                indices.as_ptr() as *const i32,
-                indices.len() as c_int,
+                indices_ptr,
+                indices_count,
             )
         };
 
@@ -1598,9 +1607,9 @@ impl<T: RenderTarget> Canvas<T> {
         }
     }
 
-    /// Render a list of triangles, optionally using a texture and indices into the vertex arrays.
+    /// Render a list of triangles, using separate arrays for position, color and UV.
     #[doc(alias = "SDL_RenderGeometryRaw")]
-    pub fn geometry_raw<I: VertexIndex>(
+    pub fn geometry_split<I: VertexIndex>(
         &mut self,
         texture: &Texture,
         xy: &[f32],
@@ -1610,8 +1619,20 @@ impl<T: RenderTarget> Canvas<T> {
         uv: &[f32],
         uv_stride: i32,
         num_vertices: i32,
-        indices: &[I],
+        indices: Option<&[I]>,
     ) -> Result<(), String> {
+        let indices_ptr: *const c_void = match indices {
+            Some(i) => i.as_ptr() as *const c_void,
+            None => std::ptr::null(),
+        };
+        let indices_count: c_int = match indices {
+            Some(i) => i.len() as c_int,
+            None => 0,
+        };
+        let indices_size: c_int = match indices {
+            Some(_) => std::mem::size_of::<I>() as c_int,
+            None => 0,
+        };
         let result = unsafe {
             sys::SDL_RenderGeometryRaw(
                 self.context.raw,
@@ -1623,9 +1644,58 @@ impl<T: RenderTarget> Canvas<T> {
                 uv.as_ptr(),
                 uv_stride as c_int,
                 num_vertices as c_int,
-                indices.as_ptr() as *const c_void,
-                indices.len() as c_int,
-                std::mem::size_of::<I>() as i32,
+                indices_ptr,
+                indices_count,
+                indices_size,
+            )
+        };
+
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Render a list of triangles, optionally using a texture and indices into the vertex arrays.
+    /// It is recommended that you use the "memoffset" crate to determine the offsets of fields in your struct.
+    #[doc(alias = "SDL_RenderGeometryRaw")]
+    pub fn geometry_struct<V, I: VertexIndex>(
+        &mut self,
+        texture: &Texture,
+        vertices: &[V],
+        xy_offset: usize,
+        color_offset: usize,
+        uv_offset: usize,
+        indices: Option<&[I]>,
+    ) -> Result<(), String> {
+        let stride = std::mem::size_of::<V>() as c_int;
+        let indices_ptr: *const c_void = match indices {
+            Some(i) => i.as_ptr() as *const c_void,
+            None => std::ptr::null(),
+        };
+        let indices_count: c_int = match indices {
+            Some(i) => i.len() as c_int,
+            None => 0,
+        };
+        let indices_size: c_int = match indices {
+            Some(_) => std::mem::size_of::<I>() as c_int,
+            None => 0,
+        };
+        let result = unsafe {
+            sys::SDL_RenderGeometryRaw(
+                self.context.raw,
+                texture.raw,
+                (vertices.as_ptr() as *const u8).add(xy_offset) as *const f32,
+                stride,
+                (vertices.as_ptr() as *const u8).add(color_offset) as *const sys::SDL_Color,
+                stride,
+                (vertices.as_ptr() as *const u8).add(uv_offset) as *const f32,
+                stride,
+                vertices.len() as c_int,
+                indices_ptr,
+                indices_count,
+                indices_size,
             )
         };
 
