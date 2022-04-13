@@ -1433,10 +1433,7 @@ impl Window {
     pub fn icc_profile(&self) -> Result<Vec<u8>, String> {
         unsafe {
             let mut size: sys::size_t = 0;
-            let data = sys::SDL_GetWindowICCProfile(
-                self.context.raw,
-                &mut size as *const sys::size_t as *mut _,
-            );
+            let data = sys::SDL_GetWindowICCProfile(self.context.raw, &mut size as *mut _);
             if data.is_null() {
                 return Err(get_error());
             }

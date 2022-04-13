@@ -574,7 +574,7 @@ impl GameController {
 
     /// Send a controller specific effect packet.
     #[doc(alias = "SDL_GameControllerSendEffect")]
-    pub fn send_effect(&mut self, data: &[u8]) -> Result<(), IntegerOrSdlError> {
+    pub fn send_effect(&mut self, data: &[u8]) -> Result<(), String> {
         let result = unsafe {
             sys::SDL_GameControllerSendEffect(
                 self.raw,
@@ -584,7 +584,7 @@ impl GameController {
         };
 
         if result != 0 {
-            Err(IntegerOrSdlError::SdlError(get_error()))
+            Err(get_error())
         } else {
             Ok(())
         }
