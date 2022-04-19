@@ -1412,6 +1412,31 @@ impl Window {
         unsafe { sys::SDL_GetWindowFlags(self.context.raw) }
     }
 
+    /// Does the window have input focus?
+    pub fn has_input_focus(&self) -> bool {
+        0 != self.window_flags() & sys::SDL_WindowFlags::SDL_WINDOW_INPUT_FOCUS as u32
+    }
+
+    /// Has the window grabbed input focus?
+    pub fn has_input_grabbed(&self) -> bool {
+        0 != self.window_flags() & sys::SDL_WindowFlags::SDL_WINDOW_INPUT_GRABBED as u32
+    }
+
+    /// Does the window have mouse focus?
+    pub fn has_mouse_focus(&self) -> bool {
+        0 != self.window_flags() & sys::SDL_WindowFlags::SDL_WINDOW_MOUSE_FOCUS as u32
+    }
+
+    /// Is the window maximized?
+    pub fn is_maximized(&self) -> bool {
+        0 != self.window_flags() & sys::SDL_WindowFlags::SDL_WINDOW_MAXIMIZED as u32
+    }
+
+    /// Is the window minimized?
+    pub fn is_minimized(&self) -> bool {
+        0 != self.window_flags() & sys::SDL_WindowFlags::SDL_WINDOW_MINIMIZED as u32
+    }
+
     #[doc(alias = "SDL_SetWindowTitle")]
     pub fn set_title(&mut self, title: &str) -> Result<(), NulError> {
         let title = CString::new(title)?;
