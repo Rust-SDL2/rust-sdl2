@@ -1768,6 +1768,17 @@ impl Window {
             Ok(opacity)
         }
     }
+
+    #[doc(alias = "SDL_FlashWindow")]
+    pub fn flash_window(&mut self, operation: sys::SDL_FlashOperation) -> Result<(), String> {
+        let result = unsafe{ sys::SDL_FlashWindow(self.context.raw, operation) };
+        if result == 0 {
+            Ok(())
+        }
+        else {
+            Err(get_error())
+        }
+    }
 }
 
 #[derive(Copy, Clone)]
