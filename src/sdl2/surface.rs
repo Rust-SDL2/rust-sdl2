@@ -723,6 +723,7 @@ impl SurfaceRef {
     ///
     /// Unless you know what you're doing, use `blit()` instead, which will clip the input rectangles.
     /// This function could crash if the rectangles aren't pre-clipped to the surface, and is therefore unsafe.
+    #[doc(alias = "SDL_LowerBlit")]
     pub unsafe fn lower_blit<R1, R2>(
         &self,
         src_rect: R1,
@@ -743,6 +744,40 @@ impl SurfaceRef {
             sys::SDL_LowerBlit(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
         } {
             0 => Ok(()),
+            _ => Err(get_error()),
+        }
+    }
+
+    /// Performs bilinear scaling between two surfaces of the same format, 32BPP.
+    ///
+    /// Returns the final blit rectangle, if a `dst_rect` was provided.
+    #[doc(alias = "SDL_SoftStretchLinear")]
+    pub unsafe fn soft_stretch_linear<R1, R2>(
+        &self,
+        src_rect: R1,
+        dst: &mut SurfaceRef,
+        dst_rect: R2,
+    ) -> Result<Option<Rect>, String>
+    where
+        R1: Into<Option<Rect>>,
+        R2: Into<Option<Rect>>,
+    {
+        let src_rect = src_rect.into();
+        let dst_rect = dst_rect.into();
+
+        match {
+            let src_rect_ptr = src_rect.as_ref().map(|r| r.raw()).unwrap_or(ptr::null());
+
+            // Copy the rect here to make a mutable copy without requiring
+            // a mutable argument
+            let mut dst_rect = dst_rect;
+            let dst_rect_ptr = dst_rect
+                .as_mut()
+                .map(|r| r.raw_mut())
+                .unwrap_or(ptr::null_mut());
+            sys::SDL_SoftStretchLinear(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
+        } {
+            0 => Ok(dst_rect),
             _ => Err(get_error()),
         }
     }
@@ -785,6 +820,7 @@ impl SurfaceRef {
     ///
     /// Unless you know what you're doing, use `blit_scaled()` instead, which will clip the input rectangles.
     /// This function could crash if the rectangles aren't pre-clipped to the surface, and is therefore unsafe.
+    #[doc(alias = "SDL_LowerBlitScaled")]
     pub unsafe fn lower_blit_scaled<R1, R2>(
         &self,
         src_rect: R1,
