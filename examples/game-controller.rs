@@ -93,30 +93,21 @@ fn main() -> Result<(), String> {
                 x,
                 y,
                 ..
-            } => println!(
-                "Touchpad {} down finger:{} x:{} y:{}",
-                touchpad, finger, x, y
-            ),
+            } => println!("Touchpad {touchpad} down finger:{finger} x:{x} y:{y}"),
             Event::ControllerTouchpadMotion {
                 touchpad,
                 finger,
                 x,
                 y,
                 ..
-            } => println!(
-                "Touchpad {} move finger:{} x:{} y:{}",
-                touchpad, finger, x, y
-            ),
+            } => println!("Touchpad {touchpad} move finger:{finger} x:{x} y:{y}"),
             Event::ControllerTouchpadUp {
                 touchpad,
                 finger,
                 x,
                 y,
                 ..
-            } => println!(
-                "Touchpad {} up   finger:{} x:{} y:{}",
-                touchpad, finger, x, y
-            ),
+            } => println!("Touchpad {touchpad} up   finger:{finger} x:{x} y:{y}"),
             Event::Quit { .. } => break,
             _ => (),
         }
