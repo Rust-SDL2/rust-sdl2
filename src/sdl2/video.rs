@@ -637,6 +637,36 @@ impl Orientation {
     }
 }
 
+/// Represents a setting for a window flash operation.
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
+#[repr(i32)]
+pub enum FlashOperation {
+    /// Cancel any window flash state
+    Cancel = sys::SDL_FlashOperation::SDL_FLASH_CANCEL as i32,
+    /// Flash the window briefly to get attention
+    Briefly = sys::SDL_FlashOperation::SDL_FLASH_BRIEFLY as i32,
+    /// Flash the window until it gets focus
+    UntilFocused = sys::SDL_FlashOperation::SDL_FLASH_UNTIL_FOCUSED as i32,
+}
+
+impl FlashOperation {
+    pub fn from_ll(flash_operation: sys::SDL_FlashOperation) -> FlashOperation {
+        match flash_operation {
+            sys::SDL_FlashOperation::SDL_FLASH_CANCEL => FlashOperation::Cancel,
+            sys::SDL_FlashOperation::SDL_FLASH_BRIEFLY => FlashOperation::Briefly,
+            sys::SDL_FlashOperation::SDL_FLASH_UNTIL_FOCUSED => FlashOperation::UntilFocused,
+        }
+    }
+
+    pub fn to_ll(self) -> sys::SDL_FlashOperation {
+        match self {
+            FlashOperation::Cancel => sys::SDL_FlashOperation::SDL_FLASH_CANCEL,
+            FlashOperation::Briefly => sys::SDL_FlashOperation::SDL_FLASH_BRIEFLY,
+            FlashOperation::UntilFocused => sys::SDL_FlashOperation::SDL_FLASH_UNTIL_FOCUSED,
+        }
+    }
+}
+
 /// Represents the "shell" of a `Window`.
 ///
 /// You can set get and set many of the `SDL_Window` properties (i.e., border, size, `PixelFormat`, etc)
@@ -1399,6 +1429,21 @@ impl Window {
         }
     }
 
+    #[doc(alias = "SDL_GetWindowICCProfile")]
+    pub fn icc_profile(&self) -> Result<Vec<u8>, String> {
+        unsafe {
+            let mut size: sys::size_t = 0;
+            let data = sys::SDL_GetWindowICCProfile(self.context.raw, &mut size as *mut _);
+            if data.is_null() {
+                return Err(get_error());
+            }
+            let mut result = vec![0; size as usize];
+            result.copy_from_slice(std::slice::from_raw_parts(data as *const u8, size as usize));
+            sys::SDL_free(data);
+            Ok(result)
+        }
+    }
+
     #[doc(alias = "SDL_GetWindowPixelFormat")]
     pub fn window_pixel_format(&self) -> PixelFormatEnum {
         unsafe {
@@ -1683,9 +1728,84 @@ impl Window {
         }
     }
 
+    #[doc(alias = "SDL_SetWindowKeyboardGrab")]
+    pub fn set_keyboard_grab(&mut self, grabbed: bool) {
+        unsafe {
+            sys::SDL_SetWindowKeyboardGrab(
+                self.context.raw,
+                if grabbed {
+                    sys::SDL_bool::SDL_TRUE
+                } else {
+                    sys::SDL_bool::SDL_FALSE
+                },
+            )
+        }
+    }
+
+    #[doc(alias = "SDL_SetWindowMouseGrab")]
+    pub fn set_mouse_grab(&mut self, grabbed: bool) {
+        unsafe {
+            sys::SDL_SetWindowMouseGrab(
+                self.context.raw,
+                if grabbed {
+                    sys::SDL_bool::SDL_TRUE
+                } else {
+                    sys::SDL_bool::SDL_FALSE
+                },
+            )
+        }
+    }
+
     #[doc(alias = "SDL_GetWindowGrab")]
     pub fn grab(&self) -> bool {
         unsafe { sys::SDL_GetWindowGrab(self.context.raw) == sys::SDL_bool::SDL_TRUE }
+    }
+
+    #[doc(alias = "SDL_GetWindowKeyboardGrab")]
+    pub fn keyboard_grab(&self) -> bool {
+        unsafe { sys::SDL_GetWindowKeyboardGrab(self.context.raw) == sys::SDL_bool::SDL_TRUE }
+    }
+
+    #[doc(alias = "SDL_GetWindowMouseGrab")]
+    pub fn mouse_grab(&self) -> bool {
+        unsafe { sys::SDL_GetWindowMouseGrab(self.context.raw) == sys::SDL_bool::SDL_TRUE }
+    }
+
+    #[doc(alias = "SDL_SetWindowMouseRect")]
+    pub fn set_mouse_rect<R>(&self, rect: R) -> Result<(), String>
+    where
+        R: Into<Option<Rect>>,
+    {
+        let rect = rect.into();
+        let rect_raw_ptr = match rect {
+            Some(ref rect) => rect.raw(),
+            None => ptr::null(),
+        };
+
+        unsafe {
+            if sys::SDL_SetWindowMouseRect(self.context.raw, rect_raw_ptr) == 0 {
+                Ok(())
+            } else {
+                Err(get_error())
+            }
+        }
+    }
+
+    #[doc(alias = "SDL_GetWindowMouseRect")]
+    pub fn mouse_rect(&self) -> Option<Rect> {
+        unsafe {
+            let raw_rect = sys::SDL_GetWindowMouseRect(self.context.raw);
+            if raw_rect.is_null() {
+                None
+            } else {
+                Some(Rect::new(
+                    (*raw_rect).x,
+                    (*raw_rect).y,
+                    (*raw_rect).w as u32,
+                    (*raw_rect).h as u32,
+                ))
+            }
+        }
     }
 
     #[doc(alias = "SDL_SetWindowBrightness")]
@@ -1791,6 +1911,17 @@ impl Window {
             Err(get_error())
         } else {
             Ok(opacity)
+        }
+    }
+
+    /// Requests a window to demand attention from the user.
+    #[doc(alias = "SDL_FlashWindow")]
+    pub fn flash(&mut self, operation: FlashOperation) -> Result<(), String> {
+        let result = unsafe { sys::SDL_FlashWindow(self.context.raw, operation.to_ll()) };
+        if result == 0 {
+            Ok(())
+        } else {
+            Err(get_error())
         }
     }
 }
