@@ -2352,6 +2352,8 @@ impl Event {
     ///     timestamp: 0,
     ///     window_id: 0,
     ///     which: 0,
+    ///     precise_x: 0.0,
+    ///     precise_y: 0.0,
     ///     x: 0,
     ///     y: 0,
     ///     direction: MouseWheelDirection::Normal,
