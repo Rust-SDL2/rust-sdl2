@@ -208,6 +208,7 @@ fn link_sdl2(target_os: &str) {
             println!("cargo:rustc-flags=-l framework=CoreMotion");
             println!("cargo:rustc-flags=-l framework=Foundation");
             println!("cargo:rustc-flags=-l framework=GameController");
+            println!("cargo:rustc-flags=-l framework=CoreHaptics");
             println!("cargo:rustc-flags=-l framework=OpenGLES");
             println!("cargo:rustc-flags=-l framework=QuartzCore");
             println!("cargo:rustc-flags=-l framework=UIKit");
@@ -253,6 +254,7 @@ fn link_sdl2(target_os: &str) {
             println!("cargo:rustc-link-lib=framework=Carbon");
             println!("cargo:rustc-link-lib=framework=ForceFeedback");
             println!("cargo:rustc-link-lib=framework=GameController");
+            println!("cargo:rustc-link-lib=framework=CoreHaptics");
             println!("cargo:rustc-link-lib=framework=CoreVideo");
             println!("cargo:rustc-link-lib=framework=CoreAudio");
             println!("cargo:rustc-link-lib=framework=AudioToolbox");
