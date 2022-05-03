@@ -3,6 +3,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### v0.35.2
 
+[PR #1225](https://github.com/Rust-SDL2/rust-sdl2/pull/1225) Update wgpu to 0.12 and fix raw-window-handle-with-wgpu example
+
 [PR #1173](https://github.com/Rust-SDL2/rust-sdl2/pull/1173) Fix segfault when using timer callbacks
 
 [PR #1183](https://github.com/Rust-SDL2/rust-sdl2/pull/1183) WinRT support for raw-window-handle
