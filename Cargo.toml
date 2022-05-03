@@ -31,7 +31,7 @@ optional = true
 
 [dev-dependencies]
 rand = "0.7"
-wgpu = { version = "0.10", features = ["spirv"] }
+wgpu = { version = "0.12", features = ["spirv"] }
 pollster = "0.2.4"
 env_logger = "0.9.0"
 
