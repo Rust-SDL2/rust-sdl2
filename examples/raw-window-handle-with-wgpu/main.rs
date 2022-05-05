@@ -99,7 +99,7 @@ fn main() -> Result<(), String> {
             mask: !0,
             alpha_to_coverage_enabled: false,
         },
-        multiview: None
+        multiview: None,
     });
 
     let mut config = wgpu::SurfaceConfiguration {
@@ -138,17 +138,17 @@ fn main() -> Result<(), String> {
         }
 
         let mut frame = match surface.get_current_texture() {
-                Ok(frame) => {frame},
-                Err(err) => {
-                    let reason = match (err) {
-                        SurfaceError::Timeout => { "Timeout" }
-                        SurfaceError::Outdated => { "Outdated" }
-                        SurfaceError::Lost => { "Lost" }
-                        SurfaceError::OutOfMemory => { "OutOfMemory" }
-                    };
-                    panic!("Failed to get current surface texture! Reason: {}", reason)
-                }
-            };
+            Ok(frame) => frame,
+            Err(err) => {
+                let reason = match (err) {
+                    SurfaceError::Timeout => "Timeout",
+                    SurfaceError::Outdated => "Outdated",
+                    SurfaceError::Lost => "Lost",
+                    SurfaceError::OutOfMemory => "OutOfMemory",
+                };
+                panic!("Failed to get current surface texture! Reason: {}", reason)
+            }
+        };
 
         let output = frame
             .texture
