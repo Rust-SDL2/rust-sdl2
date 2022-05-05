@@ -4,6 +4,7 @@ extern crate sdl2;
 extern crate wgpu;
 
 use std::borrow::Cow;
+use wgpu::{SurfaceError, SurfaceTexture};
 
 use sdl2::event::{Event, WindowEvent};
 use sdl2::keyboard::Keycode;
@@ -26,6 +27,7 @@ fn main() -> Result<(), String> {
     let surface = unsafe { instance.create_surface(&window) };
     let adapter_opt = pollster::block_on(instance.request_adapter(&wgpu::RequestAdapterOptions {
         power_preference: wgpu::PowerPreference::HighPerformance,
+        force_fallback_adapter: false,
         compatible_surface: Some(&surface),
     }));
     let adapter = match adapter_opt {
@@ -81,30 +83,15 @@ fn main() -> Result<(), String> {
             module: &shader,
             entry_point: "fs_main",
         }),
-        //rasterization_state: Some(wgpu::RasterizationStateDescriptor {
-        //    depth_bias: 0,
-        //    depth_bias_slope_scale: 0.0,
-        //    depth_bias_clamp: 0.0,
-        //}),
         primitive: wgpu::PrimitiveState {
             topology: wgpu::PrimitiveTopology::TriangleList,
             strip_index_format: None,
             front_face: wgpu::FrontFace::Ccw,
             cull_mode: Some(wgpu::Face::Front),
-            clamp_depth: false,
+            unclipped_depth: false,
             polygon_mode: wgpu::PolygonMode::Fill,
             conservative: false,
         },
-        //color_states: &[wgpu::ColorStateDescriptor {
-        //    format: wgpu::TextureFormat::Bgra8UnormSrgb,
-        //    color_blend: wgpu::BlendDescriptor::REPLACE,
-        //    alpha_blend: wgpu::BlendDescriptor::REPLACE,
-        //    write_mask: wgpu::ColorWrite::ALL,
-        //}],
-        //vertex_state: wgpu::VertexStateDescriptor {
-        //    index_format: wgpu::IndexFormat::Uint16,
-        //    vertex_buffers: &[],
-        //},
         depth_stencil: None,
         label: None,
         multisample: wgpu::MultisampleState {
@@ -112,6 +99,7 @@ fn main() -> Result<(), String> {
             mask: !0,
             alpha_to_coverage_enabled: false,
         },
+        multiview: None
     });
 
     let mut config = wgpu::SurfaceConfiguration {
@@ -149,13 +137,20 @@ fn main() -> Result<(), String> {
             }
         }
 
-        let frame_res = surface.get_current_frame();
-        let frame = match frame_res {
-            Ok(a) => a,
-            Err(e) => return Err(format!("Timeout getting next texture: {}", e)),
-        };
+        let mut frame = match surface.get_current_texture() {
+                Ok(frame) => {frame},
+                Err(err) => {
+                    let reason = match (err) {
+                        SurfaceError::Timeout => { "Timeout" }
+                        SurfaceError::Outdated => { "Outdated" }
+                        SurfaceError::Lost => { "Lost" }
+                        SurfaceError::OutOfMemory => { "OutOfMemory" }
+                    };
+                    panic!("Failed to get current surface texture! Reason: {}", reason)
+                }
+            };
+
         let output = frame
-            .output
             .texture
             .create_view(&wgpu::TextureViewDescriptor::default());
         let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
@@ -179,8 +174,8 @@ fn main() -> Result<(), String> {
             rpass.set_bind_group(0, &bind_group, &[]);
             rpass.draw(0..3, 0..1);
         }
-
         queue.submit([encoder.finish()]);
+        frame.present();
     }
 
     Ok(())
