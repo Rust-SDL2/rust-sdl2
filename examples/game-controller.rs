@@ -4,7 +4,7 @@ fn main() -> Result<(), String> {
     // This is required for certain controllers to work on Windows without the
     // video subsystem enabled:
     sdl2::hint::set("SDL_JOYSTICK_THREAD", "1");
-    
+
     let sdl_context = sdl2::init()?;
     let game_controller_subsystem = sdl_context.game_controller()?;
 
