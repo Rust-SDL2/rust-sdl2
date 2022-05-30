@@ -22,6 +22,13 @@ fn test_events() {
     test1(&ev);
     test2(&ev, &mut ep);
 
+    drop(ev);
+    drop(ep);
+
+    // event subsystem needs to be dropped before we can add Custom User Event (only after a poll)
+    let ev = sdl.event().unwrap();
+    let mut ep = sdl.event_pump().unwrap();
+
     test3(&ev);
     test4(&ev, &mut ep);
 }
