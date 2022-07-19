@@ -8,6 +8,15 @@ unsafe impl HasRawWindowHandle for Window {
     fn raw_window_handle(&self) -> RawWindowHandle {
         use self::SDL_SYSWM_TYPE::*;
 
+        // Check if running on web before continuing,
+        // since SDL_GetWindowWMInfo will fail on emscripten
+        if cfg!(target_os = "emscripten") {
+            use self::raw_window_handle::WebHandle;
+            let mut handle = WebHandle::empty();
+            handle.id = 1;
+            return RawWindowHandle::Web(handle);
+        }
+
         let mut wm_info: SDL_SysWMinfo = unsafe { std::mem::zeroed() };
 
         // Make certain to retrieve version before querying `SDL_GetWindowWMInfo`
