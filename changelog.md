@@ -5,6 +5,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 [PR #1225](https://github.com/Rust-SDL2/rust-sdl2/pull/1225) Update wgpu to 0.12 and fix raw-window-handle-with-wgpu example
 
+[PR #1240](https://github.com/Rust-SDL2/rust-sdl2/pull/1240) **BREAKING CHANGE** Take `PixelMasks` by refrence
+
 ### v0.35.2
 
 [PR #1173](https://github.com/Rust-SDL2/rust-sdl2/pull/1173) Fix segfault when using timer callbacks

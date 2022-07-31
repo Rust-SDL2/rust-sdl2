@@ -125,7 +125,7 @@ impl<'a> Surface<'a> {
         format: pixels::PixelFormatEnum,
     ) -> Result<Surface<'static>, String> {
         let masks = format.into_masks()?;
-        Surface::from_pixelmasks(width, height, masks)
+        Surface::from_pixelmasks(width, height, &masks)
     }
 
     /// Creates a new surface using pixel masks.
@@ -142,7 +142,7 @@ impl<'a> Surface<'a> {
     pub fn from_pixelmasks(
         width: u32,
         height: u32,
-        masks: pixels::PixelMasks,
+        masks: &pixels::PixelMasks,
     ) -> Result<Surface<'static>, String> {
         unsafe {
             if width >= (1 << 31) || height >= (1 << 31) {
@@ -177,7 +177,7 @@ impl<'a> Surface<'a> {
         format: pixels::PixelFormatEnum,
     ) -> Result<Surface<'a>, String> {
         let masks = format.into_masks()?;
-        Surface::from_data_pixelmasks(data, width, height, pitch, masks)
+        Surface::from_data_pixelmasks(data, width, height, pitch, &masks)
     }
 
     /// Creates a new surface from an existing buffer, using pixel masks.
@@ -187,7 +187,7 @@ impl<'a> Surface<'a> {
         width: u32,
         height: u32,
         pitch: u32,
-        masks: pixels::PixelMasks,
+        masks: &pixels::PixelMasks,
     ) -> Result<Surface<'a>, String> {
         unsafe {
             if width >= (1 << 31) || height >= (1 << 31) {
