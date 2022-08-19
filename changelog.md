@@ -24,6 +24,8 @@ when upgrading from a version of rust-sdl2 to another.
 * **BREAKING CHANGE** Update `sdl2-sys/sdl_bindings.rs` to use enums instead of consts. If you were using `sdl2-sys`'s
 enum variants directly in your project, you may be affected. If you only used sdl2 calls, there should not be any problems.
 
+* **BREAKING CHANGE** SDL 2.0.14 or higher is now recommended due to the new binding being added for `SDL_OpenURL`. If you get linking errors, upgrade your SDL2 libraries, or swap to using the `bundled` feature.
+
 [PR #1138](https://github.com/Rust-SDL2/rust-sdl2/pull/1138) Added binding for `SDL_OpenURL`
 
 [PR #1150](https://github.com/Rust-SDL2/rust-sdl2/pull/1150) Do not download SDL2 sources when using bundled feature
