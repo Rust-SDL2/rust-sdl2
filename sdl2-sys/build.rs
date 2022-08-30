@@ -231,7 +231,11 @@ fn link_sdl2(target_os: &str) {
             || (cfg!(feature = "use-pkgconfig") == false && cfg!(feature = "use-vcpkg") == false)
         {
             println!("cargo:rustc-link-lib=static=SDL2main");
-            println!("cargo:rustc-link-lib=static=SDL2");
+            if target_os.contains("windows") {
+                println!("cargo:rustc-link-lib=static=SDL2-static");
+            } else {
+                println!("cargo:rustc-link-lib=static=SDL2");
+            }
         }
 
         // Also linked to any required libraries for each supported platform
