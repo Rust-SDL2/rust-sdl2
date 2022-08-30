@@ -467,10 +467,13 @@ fn main() {
     {
         sdl2_compiled_path = compile_sdl2(sdl2_source_path.as_path(), target_os);
 
-        let sdl2_compiled_lib_path = sdl2_compiled_path.join("lib");
         println!(
             "cargo:rustc-link-search={}",
-            sdl2_compiled_lib_path.display()
+            sdl2_compiled_path.join("lib64").display()
+        );
+        println!(
+            "cargo:rustc-link-search={}",
+            sdl2_compiled_path.join("lib").display()
         );
     }
 
