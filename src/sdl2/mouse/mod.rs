@@ -374,7 +374,7 @@ impl crate::Sdl {
 /// sdl_context.mouse().show_cursor(false);
 /// ```
 pub struct MouseUtil {
-    _sdldrop: ::std::rc::Rc<crate::SdlDrop>,
+    _sdldrop: crate::SdlDrop,
 }
 
 impl MouseUtil {
