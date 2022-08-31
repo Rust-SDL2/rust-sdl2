@@ -136,7 +136,7 @@ impl<'a> Surface<'a> {
     /// use sdl2::surface::Surface;
     ///
     /// let masks = PixelFormatEnum::RGB24.into_masks().unwrap();
-    /// let surface = Surface::from_pixelmasks(512, 512, masks).unwrap();
+    /// let surface = Surface::from_pixelmasks(512, 512, &masks).unwrap();
     /// ```
     #[doc(alias = "SDL_CreateRGBSurface")]
     pub fn from_pixelmasks(
