@@ -642,10 +642,7 @@ impl GameController {
     /// Get the data rate (number of events per second) of a game controller sensor.
     #[doc(alias = "SDL_GameControllerGetSensorDataRate")]
     pub fn sensor_get_data_rate(&self, sensor_type: SensorType) -> f32 {
-        let result =
-            unsafe { sys::SDL_GameControllerGetSensorDataRate(self.raw, sensor_type.into()) };
-
-        Ok(result)
+        unsafe { sys::SDL_GameControllerGetSensorDataRate(self.raw, sensor_type.into()) }
     }
 
     /// Get data from a sensor.
