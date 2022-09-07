@@ -8,6 +8,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 [PR #1240](https://github.com/Rust-SDL2/rust-sdl2/pull/1240) **BREAKING CHANGE** Take `PixelMasks` by refrence
 
+[PR #1254](https://github.com/Rust-SDL2/rust-sdl2/pull/1254) **BREAKING CHANGE** Make `SdlDrop` and `SubsystemDrop` safer; forbid external code from constructing `SdlDrop`
+
 ### v0.35.2
 
 [PR #1173](https://github.com/Rust-SDL2/rust-sdl2/pull/1173) Fix segfault when using timer callbacks
@@ -60,7 +62,7 @@ Various fixes to CI.
 [PR #1033](https://github.com/Rust-SDL2/rust-sdl2/pull/1033) Changed signature of TimerSubsystem::ticks to accept `&self`.
 
 [PR #1057](https://github.com/Rust-SDL2/rust-sdl2/pull/1057): fix memory safety bug in set_error
- 
+
 [PR #1081](https://github.com/Rust-SDL2/rust-sdl2/pull/1081): Allow bundled build to be built in debug mode.  Fixes issue when linking binary with mixed debug+release CRT dependencies.
 
 [PR #1080](https://github.com/Rust-SDL2/rust-sdl2/pull/1080): Fix line endings of patches to lf so patching of sources works on Windows.
