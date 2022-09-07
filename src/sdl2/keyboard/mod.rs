@@ -175,7 +175,7 @@ impl crate::VideoSubsystem {
 /// let focused = sdl_context.keyboard().focused_window_id().is_some();
 /// ```
 pub struct KeyboardUtil {
-    _sdldrop: ::std::rc::Rc<crate::SdlDrop>,
+    _sdldrop: crate::SdlDrop,
 }
 
 impl KeyboardUtil {

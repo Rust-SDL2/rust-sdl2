@@ -1,9 +1,11 @@
 use libc::c_char;
+use std::cell::Cell;
 use std::error;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt;
 use std::mem::transmute;
-use std::rc::Rc;
+use std::os::raw::c_void;
+use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 
 use crate::sys;
 
@@ -45,10 +47,17 @@ impl error::Error for Error {
     }
 }
 
-use std::sync::atomic::AtomicBool;
-/// Only one Sdl context can be alive at a time.
-/// Set to false by default (not alive).
-static IS_SDL_CONTEXT_ALIVE: AtomicBool = AtomicBool::new(false);
+/// True if the main thread has been declared. The main thread is declared when
+/// SDL is first initialized.
+static IS_MAIN_THREAD_DECLARED: AtomicBool = AtomicBool::new(false);
+
+/// Number of active `SdlDrop` objects keeping SDL alive.
+static SDL_COUNT: AtomicU32 = AtomicU32::new(0);
+
+thread_local! {
+    /// True if the current thread is the main thread.
+    static IS_MAIN_THREAD: Cell<bool> = Cell::new(false);
+}
 
 /// The SDL context type. Initialize with `sdl2::init()`.
 ///
@@ -64,31 +73,42 @@ static IS_SDL_CONTEXT_ALIVE: AtomicBool = AtomicBool::new(false);
 /// the main thread.
 #[derive(Clone)]
 pub struct Sdl {
-    sdldrop: Rc<SdlDrop>,
+    sdldrop: SdlDrop,
 }
 
 impl Sdl {
     #[inline]
     #[doc(alias = "SDL_Init")]
     fn new() -> Result<Sdl, String> {
-        unsafe {
-            use std::sync::atomic::Ordering;
+        // Check if we can safely initialize SDL on this thread.
+        let was_main_thread_declared = IS_MAIN_THREAD_DECLARED.swap(true, Ordering::SeqCst);
 
-            // Atomically switch the `IS_SDL_CONTEXT_ALIVE` global to true
-            let was_alive = IS_SDL_CONTEXT_ALIVE.swap(true, Ordering::Relaxed);
-
-            if was_alive {
-                Err("Cannot initialize `Sdl` more than once at a time.".to_owned())
-            } else if sys::SDL_Init(0) == 0 {
-                // Initialize SDL without any explicit subsystems (flags = 0).
-                Ok(Sdl {
-                    sdldrop: Rc::new(SdlDrop),
-                })
+        IS_MAIN_THREAD.with(|is_main_thread| {
+            if was_main_thread_declared {
+                if !is_main_thread.get() {
+                    return Err("Cannot initialize `Sdl` from more than once thread.".to_owned());
+                }
             } else {
-                IS_SDL_CONTEXT_ALIVE.swap(false, Ordering::Relaxed);
-                Err(get_error())
+                is_main_thread.set(true);
+            }
+            Ok(())
+        })?;
+
+        // Initialize SDL.
+        if SDL_COUNT.fetch_add(1, Ordering::Relaxed) == 0 {
+            let result;
+
+            unsafe {
+                result = sys::SDL_Init(0);
+            }
+
+            if result != 0 {
+                SDL_COUNT.store(0, Ordering::Relaxed);
+                return Err(get_error());
             }
         }
+
+        Ok(Sdl { sdldrop: SdlDrop { _anticonstructor: std::ptr::null_mut() }})
     }
 
     /// Initializes the audio subsystem.
@@ -151,27 +171,38 @@ impl Sdl {
 
     #[inline]
     #[doc(hidden)]
-    pub fn sdldrop(&self) -> Rc<SdlDrop> {
+    pub fn sdldrop(&self) -> SdlDrop {
         self.sdldrop.clone()
     }
 }
 
-/// When SDL is no longer in use (the refcount in an `Rc<SdlDrop>` reaches 0), the library is quit.
+/// When SDL is no longer in use, the library is quit.
 #[doc(hidden)]
 #[derive(Debug)]
-pub struct SdlDrop;
+pub struct SdlDrop {
+    // Make it impossible to construct `SdlDrop` without access to this member,
+    // and opt out of Send and Sync.
+    _anticonstructor: *mut c_void,
+}
+
+impl Clone for SdlDrop {
+    fn clone(&self) -> SdlDrop {
+        let prev_count = SDL_COUNT.fetch_add(1, Ordering::Relaxed);
+        assert!(prev_count > 0);
+        SdlDrop { _anticonstructor: std::ptr::null_mut() }
+    }
+}
 
 impl Drop for SdlDrop {
     #[inline]
     #[doc(alias = "SDL_Quit")]
     fn drop(&mut self) {
-        use std::sync::atomic::Ordering;
-
-        let was_alive = IS_SDL_CONTEXT_ALIVE.swap(false, Ordering::Relaxed);
-        assert!(was_alive);
-
-        unsafe {
-            sys::SDL_Quit();
+        let prev_count = SDL_COUNT.fetch_sub(1, Ordering::Relaxed);
+        assert!(prev_count > 0);
+        if prev_count == 1 {
+            unsafe {
+                sys::SDL_Quit();
+            }
         }
     }
 }
@@ -182,35 +213,42 @@ impl Drop for SdlDrop {
 // the event queue. These subsystems implement `Sync`.
 
 macro_rules! subsystem {
-    ($name:ident, $flag:expr) => {
-        impl $name {
-            #[inline]
-            #[doc(alias = "SDL_InitSubSystem")]
-            fn new(sdl: &Sdl) -> Result<$name, String> {
-                let result = unsafe { sys::SDL_InitSubSystem($flag) };
+    ($name:ident, $flag:expr, $counter:ident, nosync) => {
+        static $counter: AtomicU32 = AtomicU32::new(0);
 
-                if result == 0 {
-                    Ok($name {
-                        _subsystem_drop: Rc::new(SubsystemDrop {
-                            _sdldrop: sdl.sdldrop.clone(),
-                            flag: $flag,
-                        }),
-                    })
-                } else {
-                    Err(get_error())
-                }
-            }
-        }
-    };
-    ($name:ident, $flag:expr, nosync) => {
         #[derive(Debug, Clone)]
         pub struct $name {
             /// Subsystems cannot be moved or (usually) used on non-main threads.
             /// Luckily, Rc restricts use to the main thread.
-            _subsystem_drop: Rc<SubsystemDrop>,
+            _subsystem_drop: SubsystemDrop,
         }
 
         impl $name {
+            #[inline]
+            #[doc(alias = "SDL_InitSubSystem")]
+            fn new(sdl: &Sdl) -> Result<$name, String> {
+                if $counter.fetch_add(1, Ordering::Relaxed) == 0 {
+                    let result;
+
+                    unsafe {
+                        result = sys::SDL_InitSubSystem($flag);
+                    }
+
+                    if result != 0 {
+                        $counter.store(0, Ordering::Relaxed);
+                        return Err(get_error());
+                    }
+                }
+
+                Ok($name {
+                    _subsystem_drop: SubsystemDrop {
+                        _sdldrop: sdl.sdldrop.clone(),
+                        counter: &$counter,
+                        flag: $flag,
+                    },
+                })
+            }
+
             /// Obtain an SDL context.
             #[inline]
             pub fn sdl(&self) -> Sdl {
@@ -219,78 +257,69 @@ macro_rules! subsystem {
                 }
             }
         }
-
-        subsystem!($name, $flag);
     };
-    ($name:ident, $flag:expr, sync) => {
-        pub struct $name {
-            /// Subsystems cannot be moved or (usually) used on non-main threads.
-            /// Luckily, Rc restricts use to the main thread.
-            _subsystem_drop: Rc<SubsystemDrop>,
-        }
+    ($name:ident, $flag:expr, $counter:ident, sync) => {
+        subsystem!($name, $flag, $counter, nosync);
         unsafe impl Sync for $name {}
-
-        impl std::clone::Clone for $name {
-            #[inline]
-            fn clone(&self) -> $name {
-                $name {
-                    _subsystem_drop: self._subsystem_drop.clone(),
-                }
-            }
-        }
-
-        impl $name {
-            /// Obtain an SDL context.
-            #[inline]
-            pub fn sdl(&self) -> Sdl {
-                Sdl {
-                    sdldrop: self._subsystem_drop._sdldrop.clone(),
-                }
-            }
-        }
-
-        subsystem!($name, $flag);
     };
 }
 
 /// When a subsystem is no longer in use (the refcount in an `Rc<SubsystemDrop>` reaches 0),
 /// the subsystem is quit.
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 struct SubsystemDrop {
-    _sdldrop: Rc<SdlDrop>,
+    _sdldrop: SdlDrop,
+    counter: &'static AtomicU32,
     flag: u32,
+}
+
+impl Clone for SubsystemDrop {
+    fn clone(&self) -> SubsystemDrop {
+        let prev_count = self.counter.fetch_add(1, Ordering::Relaxed);
+        assert!(prev_count > 0);
+        SubsystemDrop {
+            _sdldrop: self._sdldrop.clone(),
+            counter: self.counter,
+            flag: self.flag,
+        }
+    }
 }
 
 impl Drop for SubsystemDrop {
     #[inline]
     #[doc(alias = "SDL_QuitSubSystem")]
     fn drop(&mut self) {
-        unsafe {
-            sys::SDL_QuitSubSystem(self.flag);
+        let prev_count = self.counter.fetch_sub(1, Ordering::Relaxed);
+        assert!(prev_count > 0);
+        if prev_count == 1 {
+            unsafe {
+                sys::SDL_QuitSubSystem(self.flag);
+            }
         }
     }
 }
 
-subsystem!(AudioSubsystem, sys::SDL_INIT_AUDIO, nosync);
+subsystem!(AudioSubsystem, sys::SDL_INIT_AUDIO, AUDIO_COUNT, nosync);
 subsystem!(
     GameControllerSubsystem,
     sys::SDL_INIT_GAMECONTROLLER,
+    GAMECONTROLLER_COUNT,
     nosync
 );
-subsystem!(HapticSubsystem, sys::SDL_INIT_HAPTIC, nosync);
-subsystem!(JoystickSubsystem, sys::SDL_INIT_JOYSTICK, nosync);
-subsystem!(VideoSubsystem, sys::SDL_INIT_VIDEO, nosync);
+subsystem!(HapticSubsystem, sys::SDL_INIT_HAPTIC, HAPTIC_COUNT, nosync);
+subsystem!(JoystickSubsystem, sys::SDL_INIT_JOYSTICK, JOYSTICK_COUNT, nosync);
+subsystem!(VideoSubsystem, sys::SDL_INIT_VIDEO, VIDEO_COUNT, nosync);
 // Timers can be added on other threads.
-subsystem!(TimerSubsystem, sys::SDL_INIT_TIMER, sync);
+subsystem!(TimerSubsystem, sys::SDL_INIT_TIMER, TIMER_COUNT, sync);
 // The event queue can be read from other threads.
-subsystem!(EventSubsystem, sys::SDL_INIT_EVENTS, sync);
-subsystem!(SensorSubsystem, sys::SDL_INIT_SENSOR, sync);
+subsystem!(EventSubsystem, sys::SDL_INIT_EVENTS, EVENTS_COUNT, sync);
+subsystem!(SensorSubsystem, sys::SDL_INIT_SENSOR, SENSOR_COUNT, sync);
 
-static mut IS_EVENT_PUMP_ALIVE: bool = false;
+static IS_EVENT_PUMP_ALIVE: AtomicBool = AtomicBool::new(false);
 
 /// A thread-safe type that encapsulates SDL event-pumping functions.
 pub struct EventPump {
-    _sdldrop: Rc<SdlDrop>,
+    _event_subsystem: EventSubsystem,
 }
 
 impl EventPump {
@@ -299,24 +328,12 @@ impl EventPump {
     #[doc(alias = "SDL_InitSubSystem")]
     fn new(sdl: &Sdl) -> Result<EventPump, String> {
         // Called on the main SDL thread.
-
-        unsafe {
-            if IS_EVENT_PUMP_ALIVE {
-                Err("an `EventPump` instance is already alive - there can only be one `EventPump` in use at a time.".to_owned())
-            } else {
-                // Initialize the events subsystem, just in case none of the other subsystems have done it yet.
-                let result = sys::SDL_InitSubSystem(sys::SDL_INIT_EVENTS);
-
-                if result == 0 {
-                    IS_EVENT_PUMP_ALIVE = true;
-
-                    Ok(EventPump {
-                        _sdldrop: sdl.sdldrop.clone(),
-                    })
-                } else {
-                    Err(get_error())
-                }
-            }
+        if IS_EVENT_PUMP_ALIVE.load(Ordering::Relaxed) {
+            Err("an `EventPump` instance is already alive - there can only be one `EventPump` in use at a time.".to_owned())
+        } else {
+            let _event_subsystem = sdl.event()?;
+            IS_EVENT_PUMP_ALIVE.store(true, Ordering::Relaxed);
+            Ok(EventPump { _event_subsystem })
         }
     }
 }
@@ -326,12 +343,8 @@ impl Drop for EventPump {
     #[doc(alias = "SDL_QuitSubSystem")]
     fn drop(&mut self) {
         // Called on the main SDL thread.
-
-        unsafe {
-            assert!(IS_EVENT_PUMP_ALIVE);
-            sys::SDL_QuitSubSystem(sys::SDL_INIT_EVENTS);
-            IS_EVENT_PUMP_ALIVE = false;
-        }
+        assert!(IS_EVENT_PUMP_ALIVE.load(Ordering::Relaxed));
+        IS_EVENT_PUMP_ALIVE.store(false, Ordering::Relaxed);
     }
 }
 
