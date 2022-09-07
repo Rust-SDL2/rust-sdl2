@@ -108,7 +108,11 @@ impl Sdl {
             }
         }
 
-        Ok(Sdl { sdldrop: SdlDrop { _anticonstructor: std::ptr::null_mut() }})
+        Ok(Sdl {
+            sdldrop: SdlDrop {
+                _anticonstructor: std::ptr::null_mut(),
+            },
+        })
     }
 
     /// Initializes the audio subsystem.
@@ -189,7 +193,9 @@ impl Clone for SdlDrop {
     fn clone(&self) -> SdlDrop {
         let prev_count = SDL_COUNT.fetch_add(1, Ordering::Relaxed);
         assert!(prev_count > 0);
-        SdlDrop { _anticonstructor: std::ptr::null_mut() }
+        SdlDrop {
+            _anticonstructor: std::ptr::null_mut(),
+        }
     }
 }
 
@@ -307,7 +313,12 @@ subsystem!(
     nosync
 );
 subsystem!(HapticSubsystem, sys::SDL_INIT_HAPTIC, HAPTIC_COUNT, nosync);
-subsystem!(JoystickSubsystem, sys::SDL_INIT_JOYSTICK, JOYSTICK_COUNT, nosync);
+subsystem!(
+    JoystickSubsystem,
+    sys::SDL_INIT_JOYSTICK,
+    JOYSTICK_COUNT,
+    nosync
+);
 subsystem!(VideoSubsystem, sys::SDL_INIT_VIDEO, VIDEO_COUNT, nosync);
 // Timers can be added on other threads.
 subsystem!(TimerSubsystem, sys::SDL_INIT_TIMER, TIMER_COUNT, sync);
