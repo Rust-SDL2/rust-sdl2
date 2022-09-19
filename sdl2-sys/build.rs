@@ -135,6 +135,9 @@ fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
     if cfg!(feature = "static-link") {
         cfg.define("SDL_SHARED", "OFF");
         cfg.define("SDL_STATIC", "ON");
+        // Prevent SDL to provide it own "main" which cause a conflict when this crate linked
+        // to C/C++ program.
+        cfg.define("SDL_MAIN_HANDLED", "ON");
     } else {
         cfg.define("SDL_SHARED", "ON");
         cfg.define("SDL_STATIC", "OFF");
