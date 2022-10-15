@@ -216,7 +216,7 @@ impl MouseState {
     /// ```no_run
     /// use sdl2::mouse::MouseButton;
     ///
-    /// fn is_a_pressed(e: &sdl2::EventPump) -> bool {
+    /// fn is_left_pressed(e: &sdl2::EventPump) -> bool {
     ///     e.mouse_state().left()
     /// }
     /// ```
