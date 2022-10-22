@@ -1508,7 +1508,7 @@ impl Event {
         let raw_type = unsafe { raw.type_ };
 
         // FIXME: Use a constant from sdl2-sys when bindgen will be fixed (see https://github.com/Rust-SDL2/rust-sdl2/issues/1265)
-        const SDL_TOUCH_MOUSEID: u32 = 0xFFFFFFFF;
+        const SDL_TOUCH_MOUSEID: u32 = u32::MAX;
 
         // if event type has not been defined, treat it as a UserEvent
         let event_type: EventType = EventType::try_from(raw_type as u32).unwrap_or(EventType::User);
