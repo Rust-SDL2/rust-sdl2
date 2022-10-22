@@ -644,6 +644,7 @@ pub enum Event {
         y: i32,
         xrel: i32,
         yrel: i32,
+        is_touch: bool
     },
 
     MouseButtonDown {
@@ -654,6 +655,7 @@ pub enum Event {
         clicks: u8,
         x: i32,
         y: i32,
+        is_touch: bool
     },
     MouseButtonUp {
         timestamp: u32,
@@ -663,6 +665,7 @@ pub enum Event {
         clicks: u8,
         x: i32,
         y: i32,
+        is_touch: bool
     },
 
     MouseWheel {
@@ -674,6 +677,7 @@ pub enum Event {
         direction: MouseWheelDirection,
         precise_x: f32,
         precise_y: f32,
+        is_touch: bool
     },
 
     JoyAxisMotion {
@@ -1113,6 +1117,7 @@ impl Event {
                 y,
                 xrel,
                 yrel,
+                is_touch: _
             } => {
                 let state = mousestate.to_sdl_state();
                 let event = sys::SDL_MouseMotionEvent {
@@ -1143,6 +1148,7 @@ impl Event {
                 clicks,
                 x,
                 y,
+                is_touch: _
             } => {
                 let event = sys::SDL_MouseButtonEvent {
                     type_: SDL_EventType::SDL_MOUSEBUTTONDOWN as u32,
@@ -1173,6 +1179,7 @@ impl Event {
                 clicks,
                 x,
                 y,
+                is_touch: _
             } => {
                 let event = sys::SDL_MouseButtonEvent {
                     type_: SDL_EventType::SDL_MOUSEBUTTONUP as u32,
@@ -1205,6 +1212,7 @@ impl Event {
                 direction,
                 precise_x,
                 precise_y,
+                is_touch: _
             } => {
                 let event = sys::SDL_MouseWheelEvent {
                     type_: SDL_EventType::SDL_MOUSEWHEEL as u32,
@@ -1499,6 +1507,9 @@ impl Event {
     pub fn from_ll(raw: sys::SDL_Event) -> Event {
         let raw_type = unsafe { raw.type_ };
 
+        // FIXME: Use a constant from sdl2-sys when bindgen will be fixed (see https://github.com/Rust-SDL2/rust-sdl2/issues/1265)
+        const SDL_TOUCH_MOUSEID: u32 = 0xFFFFFFFF;
+
         // if event type has not been defined, treat it as a UserEvent
         let event_type: EventType = EventType::try_from(raw_type as u32).unwrap_or(EventType::User);
         unsafe {
@@ -1640,6 +1651,7 @@ impl Event {
                         y: event.y,
                         xrel: event.xrel,
                         yrel: event.yrel,
+                        is_touch: event.which == SDL_TOUCH_MOUSEID
                     }
                 }
                 EventType::MouseButtonDown => {
@@ -1653,6 +1665,7 @@ impl Event {
                         clicks: event.clicks,
                         x: event.x,
                         y: event.y,
+                        is_touch: event.which == SDL_TOUCH_MOUSEID
                     }
                 }
                 EventType::MouseButtonUp => {
@@ -1666,6 +1679,7 @@ impl Event {
                         clicks: event.clicks,
                         x: event.x,
                         y: event.y,
+                        is_touch: event.which == SDL_TOUCH_MOUSEID
                     }
                 }
                 EventType::MouseWheel => {
@@ -1680,6 +1694,7 @@ impl Event {
                         direction: mouse::MouseWheelDirection::from_ll(event.direction),
                         precise_x: event.preciseX,
                         precise_y: event.preciseY,
+                        is_touch: event.which == SDL_TOUCH_MOUSEID
                     }
                 }
 
@@ -2885,6 +2900,7 @@ mod test {
                 y: 91,
                 xrel: -1,
                 yrel: 43,
+                is_touch: false
             };
             let e2 = Event::from_ll(e.clone().to_ll().unwrap());
             assert_eq!(e, e2);
@@ -2898,6 +2914,7 @@ mod test {
                 clicks: 1,
                 x: 543,
                 y: 345,
+                is_touch: false
             };
             let e2 = Event::from_ll(e.clone().to_ll().unwrap());
             assert_eq!(e, e2);
@@ -2911,6 +2928,7 @@ mod test {
                 clicks: 1,
                 x: 543,
                 y: 345,
+                is_touch: false
             };
             let e2 = Event::from_ll(e.clone().to_ll().unwrap());
             assert_eq!(e, e2);
@@ -2925,6 +2943,7 @@ mod test {
                 direction: MouseWheelDirection::Flipped,
                 precise_x: 1.6,
                 precise_y: 2.7,
+                is_touch: false
             };
             let e2 = Event::from_ll(e.clone().to_ll().unwrap());
             assert_eq!(e, e2);
