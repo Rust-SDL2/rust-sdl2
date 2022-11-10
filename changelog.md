@@ -3,6 +3,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### Unreleased
 
+[PR #1270](https://github.com/Rust-SDL2/rust-sdl2/pull/1270) **BREAKING CHANGE** Remove &mut self requirement in `TimerSubsystem::delay`; Add `TimerSubsystem::ticks64`
+
 [PR #1225](https://github.com/Rust-SDL2/rust-sdl2/pull/1225) Update wgpu to 0.12 and fix raw-window-handle-with-wgpu example
 [PR #1250](https://github.com/Rust-SDL2/rust-sdl2/pull/1250) Add `lib64` to native library search path when using bundled feature
 
