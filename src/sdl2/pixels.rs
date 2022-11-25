@@ -393,7 +393,7 @@ impl PixelFormatEnum {
             | PixelFormatEnum::BGRA8888
             | PixelFormatEnum::ARGB2101010 => 4,
             // YUV formats
-            PixelFormatEnum::YV12 | PixelFormatEnum::IYUV => 2,
+            PixelFormatEnum::YV12 | PixelFormatEnum::IYUV => 1,
             PixelFormatEnum::YUY2 | PixelFormatEnum::UYVY | PixelFormatEnum::YVYU => 2,
             // Unsupported formats
             PixelFormatEnum::Index8 => 1,
