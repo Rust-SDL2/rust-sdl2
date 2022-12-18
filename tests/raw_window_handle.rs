@@ -119,6 +119,7 @@ mod raw_window_handle_test {
         video_subsystem
             .window("Hello, World!", 800, 600)
             .hidden()
+            .metal_view()
             .build()
             .unwrap()
     }

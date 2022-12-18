@@ -4,7 +4,7 @@ extern crate sdl2;
 extern crate wgpu;
 
 use std::borrow::Cow;
-use wgpu::{SurfaceError, SurfaceTexture};
+use wgpu::SurfaceError;
 
 use sdl2::event::{Event, WindowEvent};
 use sdl2::keyboard::Keycode;
@@ -19,6 +19,7 @@ fn main() -> Result<(), String> {
         .window("Raw Window Handle Example", 800, 600)
         .position_centered()
         .resizable()
+        .metal_view()
         .build()
         .map_err(|e| e.to_string())?;
     let (width, height) = window.size();
@@ -138,10 +139,10 @@ fn main() -> Result<(), String> {
             }
         }
 
-        let mut frame = match surface.get_current_texture() {
+        let frame = match surface.get_current_texture() {
             Ok(frame) => frame,
             Err(err) => {
-                let reason = match (err) {
+                let reason = match err {
                     SurfaceError::Timeout => "Timeout",
                     SurfaceError::Outdated => "Outdated",
                     SurfaceError::Lost => "Lost",

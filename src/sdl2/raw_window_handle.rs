@@ -84,7 +84,11 @@ unsafe impl HasRawWindowHandle for Window {
 
                 let mut handle = AppKitWindowHandle::empty();
                 handle.ns_window = unsafe { wm_info.info.cocoa }.window as *mut libc::c_void;
-                handle.ns_view = 0 as *mut libc::c_void; // consumer of RawWindowHandle should determine this
+                handle.ns_view = if self.context().metal_view.is_null() {
+                    panic!("metal_view not initialized, please call WindowBuilder::metal_view() when building the window");
+                } else {
+                    self.context().metal_view
+                };
 
                 RawWindowHandle::AppKit(handle)
             }
@@ -130,7 +134,7 @@ unsafe impl HasRawDisplayHandle for Window {
         // since SDL_GetWindowWMInfo will fail on emscripten
         if cfg!(target_os = "emscripten") {
             use self::raw_window_handle::WebDisplayHandle;
-            let mut handle = WebDisplayHandle::empty();
+            let handle = WebDisplayHandle::empty();
             return RawDisplayHandle::Web(handle);
         }
 
@@ -187,7 +191,7 @@ unsafe impl HasRawDisplayHandle for Window {
             #[cfg(target_os = "macos")]
             SDL_SYSWM_COCOA => {
                 use self::raw_window_handle::AppKitDisplayHandle;
-                let mut handle = AppKitDisplayHandle::empty();
+                let handle = AppKitDisplayHandle::empty();
                 RawDisplayHandle::AppKit(handle)
             }
             #[cfg(any(target_os = "ios"))]
@@ -204,7 +208,7 @@ unsafe impl HasRawDisplayHandle for Window {
 
                 let mut handle = AndroidDisplayHandle::empty();
                 handle.a_native_window =
-                unsafe { wm_info.info.android }.window as *mut libc::c_void;
+                    unsafe { wm_info.info.android }.window as *mut libc::c_void;
 
                 RawDisplayHandle::Android(handle)
             }
