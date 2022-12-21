@@ -148,6 +148,9 @@ required-features = ["hidapi"]
 name = "sensors"
 
 [[example]]
+name = "snake-like-game"
+
+[[example]]
 required-features = ["ttf"]
 name = "ttf-demo"
 
