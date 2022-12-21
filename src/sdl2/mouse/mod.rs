@@ -107,6 +107,7 @@ impl Cursor {
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum MouseWheelDirection {
     Normal,
     Flipped,
@@ -151,6 +152,7 @@ impl MouseWheelDirection {
 
 #[repr(u8)]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum MouseButton {
     Unknown = 0,
     Left = sys::SDL_BUTTON_LEFT as u8,

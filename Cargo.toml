@@ -19,6 +19,7 @@ path = "src/sdl2/lib.rs"
 bitflags = "1.2.1"
 libc = "0.2.92"
 lazy_static = "1.4.0"
+serde = { version = "1.0", features = ["derive"], optional = true }
 
 [dependencies.sdl2-sys]
 path = "sdl2-sys"
