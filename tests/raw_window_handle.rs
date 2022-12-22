@@ -3,7 +3,9 @@ mod raw_window_handle_test {
     extern crate raw_window_handle;
     extern crate sdl2;
 
-    use self::raw_window_handle::{HasRawWindowHandle, RawWindowHandle, HasRawDisplayHandle, RawDisplayHandle};
+    use self::raw_window_handle::{
+        HasRawDisplayHandle, HasRawWindowHandle, RawDisplayHandle, RawWindowHandle,
+    };
     use self::sdl2::video::Window;
 
     #[cfg(target_os = "windows")]
@@ -40,7 +42,6 @@ mod raw_window_handle_test {
     ))]
     #[test]
     fn get_linux_handle() {
-
         let window = new_hidden_window();
         match window.raw_window_handle() {
             RawWindowHandle::Xlib(x11_handle) => {
@@ -91,9 +92,9 @@ mod raw_window_handle_test {
                     macos_handle.ns_window, 0 as *mut libc::c_void,
                     "ns_window should not be null"
                 );
-                assert_eq!(
+                assert_ne!(
                     macos_handle.ns_view, 0 as *mut libc::c_void,
-                    "nw_view should be null"
+                    "nw_view should not be null"
                 );
                 println!("Successfully received macOS RawWindowHandle!");
             }
@@ -104,7 +105,7 @@ mod raw_window_handle_test {
             ),
         };
         match window.raw_display_handle() {
-            RawDisplayHandle::AppKit(_) => {},
+            RawDisplayHandle::AppKit(_) => {}
             x => assert!(
                 false,
                 "Received wrong RawDisplayHandle type for macOS: {:?}",

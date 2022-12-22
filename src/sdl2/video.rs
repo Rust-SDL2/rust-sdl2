@@ -566,7 +566,11 @@ impl Drop for WindowContext {
 impl WindowContext {
     #[inline]
     /// Unsafe if the `*mut SDL_Window` is used after the `WindowContext` is dropped
-    pub unsafe fn from_ll(subsystem: VideoSubsystem, raw: *mut sys::SDL_Window, metal_view: sys::SDL_MetalView) -> WindowContext {
+    pub unsafe fn from_ll(
+        subsystem: VideoSubsystem,
+        raw: *mut sys::SDL_Window,
+        metal_view: sys::SDL_MetalView,
+    ) -> WindowContext {
         WindowContext {
             subsystem: subsystem.clone(),
             raw,
@@ -1153,7 +1157,7 @@ impl WindowBuilder {
                 self.window_flags,
             );
             let mut metal_view = 0 as sys::SDL_MetalView;
-            #[cfg(target_os="macos")]
+            #[cfg(target_os = "macos")]
             if self.create_metal_view {
                 metal_view = sys::SDL_Metal_CreateView(raw);
             }
@@ -1283,7 +1287,11 @@ impl Window {
     }
 
     #[inline]
-    pub unsafe fn from_ll(subsystem: VideoSubsystem, raw: *mut sys::SDL_Window, metal_view: sys::SDL_MetalView) -> Window {
+    pub unsafe fn from_ll(
+        subsystem: VideoSubsystem,
+        raw: *mut sys::SDL_Window,
+        metal_view: sys::SDL_MetalView,
+    ) -> Window {
         let context = WindowContext::from_ll(subsystem, raw, metal_view);
         context.into()
     }

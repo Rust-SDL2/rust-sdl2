@@ -1,6 +1,8 @@
 extern crate raw_window_handle;
 
-use self::raw_window_handle::{HasRawWindowHandle, RawWindowHandle, HasRawDisplayHandle, RawDisplayHandle};
+use self::raw_window_handle::{
+    HasRawDisplayHandle, HasRawWindowHandle, RawDisplayHandle, RawWindowHandle,
+};
 use crate::{sys::SDL_Window, video::Window};
 
 unsafe impl HasRawWindowHandle for Window {
