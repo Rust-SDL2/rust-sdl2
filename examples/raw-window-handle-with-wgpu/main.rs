@@ -4,7 +4,7 @@ extern crate sdl2;
 extern crate wgpu;
 
 use std::borrow::Cow;
-use wgpu::{SurfaceError, SurfaceTexture};
+use wgpu::SurfaceError;
 
 use sdl2::event::{Event, WindowEvent};
 use sdl2::keyboard::Keycode;
@@ -19,6 +19,7 @@ fn main() -> Result<(), String> {
         .window("Raw Window Handle Example", 800, 600)
         .position_centered()
         .resizable()
+        .metal_view()
         .build()
         .map_err(|e| e.to_string())?;
     let (width, height) = window.size();
@@ -47,7 +48,7 @@ fn main() -> Result<(), String> {
         Err(e) => return Err(e.to_string()),
     };
 
-    let shader = device.create_shader_module(&wgpu::ShaderModuleDescriptor {
+    let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
         label: Some("shader"),
         source: wgpu::ShaderSource::Wgsl(Cow::Borrowed(include_str!("shader.wgsl"))),
     });
@@ -75,11 +76,11 @@ fn main() -> Result<(), String> {
             entry_point: "vs_main",
         },
         fragment: Some(wgpu::FragmentState {
-            targets: &[wgpu::ColorTargetState {
+            targets: &[Some(wgpu::ColorTargetState {
                 format: wgpu::TextureFormat::Bgra8UnormSrgb,
                 blend: None,
                 write_mask: wgpu::ColorWrites::ALL,
-            }],
+            })],
             module: &shader,
             entry_point: "fs_main",
         }),
@@ -104,10 +105,11 @@ fn main() -> Result<(), String> {
 
     let mut config = wgpu::SurfaceConfiguration {
         usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
-        format: surface.get_preferred_format(&adapter).unwrap(),
+        format: surface.get_supported_formats(&adapter)[0],
         width,
         height,
-        present_mode: wgpu::PresentMode::Mailbox,
+        present_mode: wgpu::PresentMode::Fifo,
+        alpha_mode: wgpu::CompositeAlphaMode::Auto,
     };
     surface.configure(&device, &config);
 
@@ -137,10 +139,10 @@ fn main() -> Result<(), String> {
             }
         }
 
-        let mut frame = match surface.get_current_texture() {
+        let frame = match surface.get_current_texture() {
             Ok(frame) => frame,
             Err(err) => {
-                let reason = match (err) {
+                let reason = match err {
                     SurfaceError::Timeout => "Timeout",
                     SurfaceError::Outdated => "Outdated",
                     SurfaceError::Lost => "Lost",
@@ -159,14 +161,14 @@ fn main() -> Result<(), String> {
 
         {
             let mut rpass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
-                color_attachments: &[wgpu::RenderPassColorAttachment {
+                color_attachments: &[Some(wgpu::RenderPassColorAttachment {
                     view: &output,
                     resolve_target: None,
                     ops: wgpu::Operations {
                         load: wgpu::LoadOp::Clear(wgpu::Color::GREEN),
                         store: true,
                     },
-                }],
+                })],
                 depth_stencil_attachment: None,
                 label: None,
             });

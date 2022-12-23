@@ -547,23 +547,34 @@ impl GLContext {
 pub struct WindowContext {
     subsystem: VideoSubsystem,
     raw: *mut sys::SDL_Window,
+    pub(crate) metal_view: sys::SDL_MetalView,
 }
 
 impl Drop for WindowContext {
     #[inline]
     #[doc(alias = "SDL_DestroyWindow")]
     fn drop(&mut self) {
-        unsafe { sys::SDL_DestroyWindow(self.raw) };
+        unsafe {
+            if !self.metal_view.is_null() {
+                sys::SDL_Metal_DestroyView(self.metal_view);
+            }
+            sys::SDL_DestroyWindow(self.raw)
+        };
     }
 }
 
 impl WindowContext {
     #[inline]
     /// Unsafe if the `*mut SDL_Window` is used after the `WindowContext` is dropped
-    pub unsafe fn from_ll(subsystem: VideoSubsystem, raw: *mut sys::SDL_Window) -> WindowContext {
+    pub unsafe fn from_ll(
+        subsystem: VideoSubsystem,
+        raw: *mut sys::SDL_Window,
+        metal_view: sys::SDL_MetalView,
+    ) -> WindowContext {
         WindowContext {
             subsystem: subsystem.clone(),
             raw,
+            metal_view,
         }
     }
 }
@@ -1098,6 +1109,7 @@ pub struct WindowBuilder {
     x: WindowPos,
     y: WindowPos,
     window_flags: u32,
+    create_metal_view: bool,
     /// The window builder cannot be built on a non-main thread, so prevent cross-threaded moves and references.
     /// `!Send` and `!Sync`,
     subsystem: VideoSubsystem,
@@ -1114,6 +1126,7 @@ impl WindowBuilder {
             y: WindowPos::Undefined,
             window_flags: 0,
             subsystem: v.clone(),
+            create_metal_view: false,
         }
     }
 
@@ -1143,11 +1156,16 @@ impl WindowBuilder {
                 raw_height,
                 self.window_flags,
             );
+            let mut metal_view = 0 as sys::SDL_MetalView;
+            #[cfg(target_os = "macos")]
+            if self.create_metal_view {
+                metal_view = sys::SDL_Metal_CreateView(raw);
+            }
 
             if raw.is_null() {
                 Err(SdlError(get_error()))
             } else {
-                Ok(Window::from_ll(self.subsystem.clone(), raw))
+                Ok(Window::from_ll(self.subsystem.clone(), raw, metal_view))
             }
         }
     }
@@ -1243,6 +1261,14 @@ impl WindowBuilder {
         self.window_flags |= sys::SDL_WindowFlags::SDL_WINDOW_ALLOW_HIGHDPI as u32;
         self
     }
+
+    /// Create a SDL_MetalView when constructing the window.
+    /// This is required when using the raw_window_handle feature on MacOS.
+    /// Has no effect no other platforms.
+    pub fn metal_view(&mut self) -> &mut WindowBuilder {
+        self.create_metal_view = true;
+        self
+    }
 }
 
 impl From<Window> for CanvasBuilder {
@@ -1261,8 +1287,12 @@ impl Window {
     }
 
     #[inline]
-    pub unsafe fn from_ll(subsystem: VideoSubsystem, raw: *mut sys::SDL_Window) -> Window {
-        let context = WindowContext::from_ll(subsystem, raw);
+    pub unsafe fn from_ll(
+        subsystem: VideoSubsystem,
+        raw: *mut sys::SDL_Window,
+        metal_view: sys::SDL_MetalView,
+    ) -> Window {
+        let context = WindowContext::from_ll(subsystem, raw, metal_view);
         context.into()
     }
 
