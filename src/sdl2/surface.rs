@@ -357,6 +357,7 @@ impl SurfaceRef {
         (self.width(), self.height())
     }
 
+    /// Gets the rect of the surface.
     pub fn rect(&self) -> Rect {
         Rect::new(0, 0, self.width(), self.height())
     }
