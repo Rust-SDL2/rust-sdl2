@@ -9,6 +9,7 @@ use crate::sys::SDL_Scancode;
 
 #[repr(i32)]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum Scancode {
     A = SDL_Scancode::SDL_SCANCODE_A as i32,
     B = SDL_Scancode::SDL_SCANCODE_B as i32,

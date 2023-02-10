@@ -198,6 +198,7 @@ impl GameControllerSubsystem {
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[repr(i32)]
 pub enum Axis {
     LeftX = sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTX as i32,
@@ -264,6 +265,7 @@ impl Axis {
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[repr(i32)]
 pub enum Button {
     A = sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A as i32,

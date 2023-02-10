@@ -577,6 +577,7 @@ impl Display for Guid {
 /// the same time... To simplify things I turn it into an enum which
 /// is how the SDL2 docs present it anyway (using macros).
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum HatState {
     Centered = 0,
     Up = 0x01,

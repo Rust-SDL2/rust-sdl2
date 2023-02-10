@@ -482,6 +482,7 @@ impl DisplayMode {
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum FullscreenType {
     Off = 0,
     True = 0x00_00_00_01,
