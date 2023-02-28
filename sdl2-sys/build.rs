@@ -97,7 +97,7 @@ fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
     if let Ok(profile) = env::var("SDL2_BUILD_PROFILE") {
         cfg.profile(&profile);
     } else {
-        cfg.profile("release");
+        cfg.profile("Release");
     }
 
     // Allow specifying custom toolchain specifically for SDL2.
