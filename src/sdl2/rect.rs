@@ -306,7 +306,8 @@ impl Rect {
         self.raw.y = clamp_position(clamp_position(bottom) - self.raw.h);
     }
 
-    /// Centers the rectangle on the given point.
+    /// Centers the rectangle on the given point (in place).
+    #[inline]
     pub fn center_on<P>(&mut self, point: P)
     where
         P: Into<(i32, i32)>,
@@ -314,6 +315,16 @@ impl Rect {
         let (x, y) = point.into();
         self.raw.x = clamp_position(clamp_position(x) - self.raw.w / 2);
         self.raw.y = clamp_position(clamp_position(y) - self.raw.h / 2);
+    }
+
+    /// Centers the rectangle on the given point.
+    #[inline]
+    pub fn centered_on<P>(mut self, point: P) -> Rect
+    where
+        P: Into<(i32, i32)>,
+    {
+        self.center_on(point);
+        self
     }
 
     /// Move this rect and clamp the positions to prevent over/underflow.
@@ -904,6 +915,15 @@ mod test {
     /// Used to compare "literal" (unclamped) rect values.
     fn tuple(x: i32, y: i32, w: u32, h: u32) -> (i32, i32, u32, u32) {
         (x, y, w, h)
+    }
+
+    #[test]
+    fn centered() {
+        // Tests both center_on and centered_on
+        assert_eq!(
+            Rect::new(0, 0, 10, 10).centered_on((0, 0)),
+            Rect::new(-5, -5, 10, 10)
+        );
     }
 
     #[test]
