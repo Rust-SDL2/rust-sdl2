@@ -150,11 +150,13 @@ impl Rect {
     }
 
     /// The horizontal position of this rectangle.
+    #[inline]
     pub fn x(&self) -> i32 {
         self.raw.x
     }
 
     /// The vertical position of this rectangle.
+    #[inline]
     pub fn y(&self) -> i32 {
         self.raw.y
     }
@@ -222,6 +224,58 @@ impl Rect {
     /// Returns the y-position of the bottom side of this rectangle.
     pub fn bottom(&self) -> i32 {
         self.raw.y + self.raw.h
+    }
+
+    /// Shifts this rectangle to the left by `offset`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::rect::Rect;
+    /// assert_eq!(Rect::new(0, 0, 10, 10).left_shifted(5), Rect::new(-5, 0, 10, 10));
+    /// ```
+    pub fn left_shifted(mut self, offset: i32) -> Rect {
+        self.offset(-offset, self.y());
+        self
+    }
+
+    /// Shifts this rectangle to the right by `offset`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::rect::Rect;
+    /// assert_eq!(Rect::new(0, 0, 10, 10).right_shifted(5), Rect::new(5, 0, 10, 10));
+    /// ```
+    pub fn right_shifted(mut self, offset: i32) -> Rect {
+        self.offset(offset, self.y());
+        self
+    }
+
+    /// Shifts this rectangle to the top by `offset`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::rect::Rect;
+    /// assert_eq!(Rect::new(0, 0, 10, 10).top_shifted(5), Rect::new(0, -5, 10, 10));
+    /// ```
+    pub fn top_shifted(mut self, offset: i32) -> Rect {
+        self.offset(self.x(), -offset);
+        self
+    }
+
+    /// Shifts this rectangle to the bottom by `offset`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::rect::Rect;
+    /// assert_eq!(Rect::new(0, 0, 10, 10).bottom_shifted(5), Rect::new(0, 5, 10, 10));
+    /// ```
+    pub fn bottom_shifted(mut self, offset: i32) -> Rect {
+        self.offset(self.x(), offset);
+        self
     }
 
     /// Returns the center position of this rectangle.
@@ -318,6 +372,7 @@ impl Rect {
 
     /// Move this rect and clamp the positions to prevent over/underflow.
     /// This also clamps the size to prevent overflow.
+    #[inline]
     pub fn offset(&mut self, x: i32, y: i32) {
         match self.raw.x.checked_add(x) {
             Some(val) => self.raw.x = clamp_position(val),
@@ -1015,6 +1070,17 @@ mod test {
             tuple(max_int_value() as i32, max_int_value() as i32, 1, 1),
             Rect::new(max_int_value() as i32 + 1, max_int_value() as i32 + 1, 1, 1).into()
         );
+    }
+
+    #[test]
+    fn shifted() {
+        // Groups all functions into a single assertion
+        let rect = Rect::new(0, 0, 10, 10)
+            .left_shifted(5)
+            .right_shifted(5)
+            .top_shifted(5)
+            .bottom_shifted(5);
+        assert_eq!(rect, Rect::new(0, 0, 10, 10));
     }
 
     #[test]
