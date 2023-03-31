@@ -596,45 +596,57 @@ extern crate vulkano;
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use sdl2::video::VkInstance;
-use std::ffi::CString;
-use vulkano::instance::{Instance, InstanceExtensions};
-use vulkano::swapchain::Surface;
-use vulkano::{Handle, Version, VulkanObject};
+use std::sync::Arc;
+use vulkano::instance::{Instance, InstanceCreateInfo, InstanceExtensions};
+use vulkano::swapchain::{Surface, SurfaceApi};
+use vulkano::{Handle, VulkanLibrary, VulkanObject};
 
 fn main() {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
 
-    let window = video_subsystem.window("Window", 800, 600)
+    let window = video_subsystem
+        .window("Window Title - My Vulkano-SDL2 application", 1024, 768)
         .vulkan()
         .build()
         .unwrap();
 
-    let instance_extensions_strings: Vec<CString> = window
-        .vulkan_instance_extensions()
-        .unwrap()
-        .iter()
-        .map(|&v| CString::new(v).unwrap())
-        .collect();
-    let instance_extension =
-        InstanceExtensions::from(instance_extensions_strings.iter().map(AsRef::as_ref));
-    let instance = Instance::new(None, Version::V1_2, &instance_extension, None).unwrap();
-    let surface_handle = window
-        .vulkan_create_surface(instance.internal_object().as_raw() as VkInstance)
+    let instance_extensions =
+        InstanceExtensions::from_iter(window.vulkan_instance_extensions().unwrap());
+
+    let instance = Instance::new(VulkanLibrary::new().unwrap(), {
+        let mut instance_info = InstanceCreateInfo::application_from_cargo_toml();
+        instance_info.enabled_extensions = instance_extensions;
+        instance_info
+    })
         .unwrap();
+
+    let surface_handle = window
+        .vulkan_create_surface(instance.handle().as_raw() as _)
+        .unwrap();
+
+    // SAFETY: that's just the way it is
     let surface = unsafe {
-        Surface::from_raw_surface(instance, Handle::from_raw(surface_handle), window.context())
+        Surface::from_handle(
+            Arc::clone(&instance),
+            <_ as Handle>::from_raw(surface_handle),
+            SurfaceApi::Xlib,
+            None,
+        )
     };
 
     let mut event_pump = sdl_context.event_pump().unwrap();
 
     'running: loop {
-         for event in event_pump.poll_iter() {
+        for event in event_pump.poll_iter() {
             match event {
-                Event::Quit {..} | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
-                    break 'running
-                },
+                Event::Quit { .. }
+                | Event::KeyDown {
+                    keycode: Some(Keycode::Escape),
+                    ..
+                } => {
+                    break 'running;
+                }
                 _ => {}
             }
         }
