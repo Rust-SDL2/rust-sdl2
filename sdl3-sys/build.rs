@@ -58,50 +58,50 @@ fn get_pkg_config() {
         false
     };
 
-    pkg_config_print(statik, "sdl2");
+    pkg_config_print(statik, "sdl3");
     if cfg!(feature = "image") {
-        pkg_config_print(statik, "SDL2_image");
+        pkg_config_print(statik, "SDL3_image");
     }
     if cfg!(feature = "ttf") {
-        pkg_config_print(statik, "SDL2_ttf");
+        pkg_config_print(statik, "SDL3_ttf");
     }
     if cfg!(feature = "mixer") {
-        pkg_config_print(statik, "SDL2_mixer");
+        pkg_config_print(statik, "SDL3_mixer");
     }
     if cfg!(feature = "gfx") {
-        pkg_config_print(statik, "SDL2_gfx");
+        pkg_config_print(statik, "SDL3_gfx");
     }
 }
 
 #[cfg(feature = "use-vcpkg")]
 fn get_vcpkg_config() {
-    vcpkg::find_package("sdl2").unwrap();
+    vcpkg::find_package("sdl3").unwrap();
     if cfg!(feature = "image") {
-        vcpkg::find_package("sdl2-image").unwrap();
+        vcpkg::find_package("sdl3-image").unwrap();
     }
     if cfg!(feature = "ttf") {
-        vcpkg::find_package("sdl2-ttf").unwrap();
+        vcpkg::find_package("sdl3-ttf").unwrap();
     }
     if cfg!(feature = "mixer") {
-        vcpkg::find_package("sdl2-mixer").unwrap();
+        vcpkg::find_package("sdl3-mixer").unwrap();
     }
     if cfg!(feature = "gfx") {
-        vcpkg::find_package("sdl2-gfx").unwrap();
+        vcpkg::find_package("sdl3-gfx").unwrap();
     }
 }
 
 // compile a shared or static lib depending on the feature
 #[cfg(feature = "bundled")]
-fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
-    let mut cfg = cmake::Config::new(sdl2_build_path);
-    if let Ok(profile) = env::var("SDL2_BUILD_PROFILE") {
+fn compile_sdl3(sdl3_build_path: &Path, target_os: &str) -> PathBuf {
+    let mut cfg = cmake::Config::new(sdl3_build_path);
+    if let Ok(profile) = env::var("SDL3_BUILD_PROFILE") {
         cfg.profile(&profile);
     } else {
         cfg.profile("release");
     }
 
-    // Allow specifying custom toolchain specifically for SDL2.
-    if let Ok(toolchain) = env::var("SDL2_TOOLCHAIN") {
+    // Allow specifying custom toolchain specifically for SDL3.
+    if let Ok(toolchain) = env::var("SDL3_TOOLCHAIN") {
         cfg.define("CMAKE_TOOLCHAIN_FILE", &toolchain);
     } else {
         // Override __FLTUSED__ to keep the _fltused symbol from getting defined in the static build.
@@ -150,7 +150,7 @@ fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
 fn compute_include_paths(fallback_path: String) -> Vec<String> {
     let mut include_paths: Vec<String> = vec![];
 
-    if let Ok(include_path) = env::var("SDL2_INCLUDE_PATH") {
+    if let Ok(include_path) = env::var("SDL3_INCLUDE_PATH") {
         include_paths.push(include_path);
     };
 
@@ -159,7 +159,7 @@ fn compute_include_paths(fallback_path: String) -> Vec<String> {
         // don't print the "cargo:xxx" directives, we're just trying to get the include paths here
         let pkg_config_library = pkg_config::Config::new()
             .print_system_libs(false)
-            .probe("sdl2")
+            .probe("sdl3")
             .unwrap();
         for path in pkg_config_library.include_paths {
             include_paths.push(format!("{}", path.display()));
@@ -171,7 +171,7 @@ fn compute_include_paths(fallback_path: String) -> Vec<String> {
         // don't print the "cargo:xxx" directives, we're just trying to get the include paths here
         let vcpkg_library = vcpkg::Config::new()
             .cargo_metadata(false)
-            .probe("sdl2")
+            .probe("sdl3")
             .unwrap();
         for path in vcpkg_library.include_paths {
             include_paths.push(format!("{}", path.display()));
@@ -185,7 +185,7 @@ fn compute_include_paths(fallback_path: String) -> Vec<String> {
     include_paths
 }
 
-fn link_sdl2(target_os: &str) {
+fn link_sdl3(target_os: &str) {
     #[cfg(all(feature = "use-pkgconfig", not(feature = "bundled")))]
     {
         // prints the appropriate linking parameters when using pkg-config
@@ -221,9 +221,9 @@ fn link_sdl2(target_os: &str) {
         // however pkg_config isn't used with the feature "bundled"
         if cfg!(feature = "bundled") || cfg!(not(feature = "use-pkgconfig")) {
             if cfg!(feature = "use_mac_framework") && target_os == "darwin" {
-                println!("cargo:rustc-flags=-l framework=SDL2");
+                println!("cargo:rustc-flags=-l framework=SDL3");
             } else if target_os != "emscripten" {
-                println!("cargo:rustc-flags=-l SDL2");
+                println!("cargo:rustc-flags=-l SDL3");
             }
         }
     }
@@ -233,11 +233,11 @@ fn link_sdl2(target_os: &str) {
         if cfg!(feature = "bundled")
             || (cfg!(feature = "use-pkgconfig") == false && cfg!(feature = "use-vcpkg") == false)
         {
-            println!("cargo:rustc-link-lib=static=SDL2main");
+            println!("cargo:rustc-link-lib=static=SDL3main");
             if target_os.contains("windows") {
-                println!("cargo:rustc-link-lib=static=SDL2-static");
+                println!("cargo:rustc-link-lib=static=SDL3-static");
             } else {
-                println!("cargo:rustc-link-lib=static=SDL2");
+                println!("cargo:rustc-link-lib=static=SDL3");
             }
         }
 
@@ -285,7 +285,7 @@ fn link_sdl2(target_os: &str) {
     // Linking directly with file is not possible with cargo since the
     // ':filename' syntax is used for renaming of libraries, which basically
     // leaves it up to the user to make a symlink to the shared object so
-    // -lSDL2_mixer can find it.
+    // -lSDL3_mixer can find it.
     #[cfg(all(not(feature = "use-pkgconfig"), not(feature = "static-link")))]
     {
         if cfg!(feature = "mixer") {
@@ -293,14 +293,14 @@ fn link_sdl2(target_os: &str) {
                 || target_os.contains("freebsd")
                 || target_os.contains("openbsd")
             {
-                println!("cargo:rustc-flags=-l SDL2_mixer");
+                println!("cargo:rustc-flags=-l SDL3_mixer");
             } else if target_os.contains("windows") {
-                println!("cargo:rustc-flags=-l SDL2_mixer");
+                println!("cargo:rustc-flags=-l SDL3_mixer");
             } else if target_os.contains("darwin") {
                 if cfg!(any(mac_framework, feature = "use_mac_framework")) {
-                    println!("cargo:rustc-flags=-l framework=SDL2_mixer");
+                    println!("cargo:rustc-flags=-l framework=SDL3_mixer");
                 } else {
-                    println!("cargo:rustc-flags=-l SDL2_mixer");
+                    println!("cargo:rustc-flags=-l SDL3_mixer");
                 }
             }
         }
@@ -309,14 +309,14 @@ fn link_sdl2(target_os: &str) {
                 || target_os.contains("freebsd")
                 || target_os.contains("openbsd")
             {
-                println!("cargo:rustc-flags=-l SDL2_image");
+                println!("cargo:rustc-flags=-l SDL3_image");
             } else if target_os.contains("windows") {
-                println!("cargo:rustc-flags=-l SDL2_image");
+                println!("cargo:rustc-flags=-l SDL3_image");
             } else if target_os.contains("darwin") {
                 if cfg!(any(mac_framework, feature = "use_mac_framework")) {
-                    println!("cargo:rustc-flags=-l framework=SDL2_image");
+                    println!("cargo:rustc-flags=-l framework=SDL3_image");
                 } else {
-                    println!("cargo:rustc-flags=-l SDL2_image");
+                    println!("cargo:rustc-flags=-l SDL3_image");
                 }
             }
         }
@@ -325,14 +325,14 @@ fn link_sdl2(target_os: &str) {
                 || target_os.contains("freebsd")
                 || target_os.contains("openbsd")
             {
-                println!("cargo:rustc-flags=-l SDL2_ttf");
+                println!("cargo:rustc-flags=-l SDL3_ttf");
             } else if target_os.contains("windows") {
-                println!("cargo:rustc-flags=-l SDL2_ttf");
+                println!("cargo:rustc-flags=-l SDL3_ttf");
             } else if target_os.contains("darwin") {
                 if cfg!(any(mac_framework, feature = "use_mac_framework")) {
-                    println!("cargo:rustc-flags=-l framework=SDL2_ttf");
+                    println!("cargo:rustc-flags=-l framework=SDL3_ttf");
                 } else {
-                    println!("cargo:rustc-flags=-l SDL2_ttf");
+                    println!("cargo:rustc-flags=-l SDL3_ttf");
                 }
             }
         }
@@ -341,14 +341,14 @@ fn link_sdl2(target_os: &str) {
                 || target_os.contains("freebsd")
                 || target_os.contains("openbsd")
             {
-                println!("cargo:rustc-flags=-l SDL2_gfx");
+                println!("cargo:rustc-flags=-l SDL3_gfx");
             } else if target_os.contains("windows") {
-                println!("cargo:rustc-flags=-l SDL2_gfx");
+                println!("cargo:rustc-flags=-l SDL3_gfx");
             } else if target_os.contains("darwin") {
                 if cfg!(any(mac_framework, feature = "use_mac_framework")) {
-                    println!("cargo:rustc-flags=-l framework=SDL2_gfx");
+                    println!("cargo:rustc-flags=-l framework=SDL3_gfx");
                 } else {
-                    println!("cargo:rustc-flags=-l SDL2_gfx");
+                    println!("cargo:rustc-flags=-l SDL3_gfx");
                 }
             }
         }
@@ -406,26 +406,26 @@ fn copy_library_file(src_path: &Path, target_path: &Path) {
         let dst_path = path.join(src_path.file_name().expect("Path missing filename"));
 
         fs::copy(&src_path, &dst_path).expect(&format!(
-            "Failed to copy SDL2 dynamic library from {} to {}",
+            "Failed to copy SDL3 dynamic library from {} to {}",
             src_path.to_string_lossy(),
             dst_path.to_string_lossy()
         ));
     }
 }
 
-fn copy_dynamic_libraries(sdl2_compiled_path: &PathBuf, target_os: &str) {
+fn copy_dynamic_libraries(sdl3_compiled_path: &PathBuf, target_os: &str) {
     let target_path = find_cargo_target_dir();
 
     // Windows binaries do not embed library search paths, so successfully
     // linking the DLL isn't sufficient to find it at runtime -- it must be
     // either on PATH or in the current working directory when we run binaries
     // linked against it. In other words, to run the test suite we need to
-    // copy sdl2.dll out of its build tree and down to the top level cargo
+    // copy sdl3.dll out of its build tree and down to the top level cargo
     // binary output directory.
     if target_os.contains("windows") {
-        let sdl2_dll_name = "SDL2.dll";
-        let sdl2_bin_path = sdl2_compiled_path.join("bin");
-        let src_dll_path = sdl2_bin_path.join(sdl2_dll_name);
+        let sdl3_dll_name = "SDL3.dll";
+        let sdl3_bin_path = sdl3_compiled_path.join("bin");
+        let src_dll_path = sdl3_bin_path.join(sdl3_dll_name);
 
         copy_library_file(&src_dll_path, &target_path);
     } else if target_os != "emscripten" {
@@ -433,7 +433,7 @@ fn copy_dynamic_libraries(sdl2_compiled_path: &PathBuf, target_os: &str) {
         let mut found = false;
         let lib_dirs = &["lib", "lib64"];
         for lib_dir in lib_dirs {
-            let lib_path = sdl2_compiled_path.join(lib_dir);
+            let lib_path = sdl3_compiled_path.join(lib_dir);
             if lib_path.exists() {
                 found = true;
                 for entry in std::fs::read_dir(&lib_path)
@@ -462,25 +462,25 @@ fn main() {
     let host = env::var("HOST").expect("Cargo build scripts always have HOST");
     let target_os = get_os_from_triple(target.as_str()).unwrap();
 
-    let sdl2_source_path = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap()).join("SDL");
-    init_submodule(sdl2_source_path.as_path());
+    let sdl3_source_path = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap()).join("SDL");
+    init_submodule(sdl3_source_path.as_path());
 
-    let sdl2_compiled_path: PathBuf;
+    let sdl3_compiled_path: PathBuf;
     #[cfg(feature = "bundled")]
     {
-        sdl2_compiled_path = compile_sdl2(sdl2_source_path.as_path(), target_os);
+        sdl3_compiled_path = compile_sdl3(sdl3_source_path.as_path(), target_os);
 
         println!(
             "cargo:rustc-link-search={}",
-            sdl2_compiled_path.join("lib64").display()
+            sdl3_compiled_path.join("lib64").display()
         );
         println!(
             "cargo:rustc-link-search={}",
-            sdl2_compiled_path.join("lib").display()
+            sdl3_compiled_path.join("lib").display()
         );
     }
 
-    let sdl2_includes = sdl2_source_path
+    let sdl3_includes = sdl3_source_path
         .join("include")
         .to_str()
         .unwrap()
@@ -491,11 +491,11 @@ fn main() {
         let include_paths: Vec<String>;
         #[cfg(feature = "bundled")]
         {
-            include_paths = vec![sdl2_includes];
+            include_paths = vec![sdl3_includes];
         }
         #[cfg(not(feature = "bundled"))]
         {
-            include_paths = compute_include_paths(sdl2_includes)
+            include_paths = compute_include_paths(sdl3_includes)
         }
         generate_bindings(target.as_str(), host.as_str(), include_paths.as_slice());
         println!("cargo:include={}", include_paths.join(":"));
@@ -504,10 +504,10 @@ fn main() {
     #[cfg(not(feature = "bindgen"))]
     {
         copy_pregenerated_bindings();
-        println!("cargo:include={}", sdl2_includes);
+        println!("cargo:include={}", sdl3_includes);
     }
 
-    link_sdl2(target_os);
+    link_sdl3(target_os);
 
     // Android builds shared libhidapi.so even for static builds.
     #[cfg(all(
@@ -515,7 +515,7 @@ fn main() {
         any(not(feature = "static-link"), target_os = "android")
     ))]
     {
-        copy_dynamic_libraries(&sdl2_compiled_path, target_os);
+        copy_dynamic_libraries(&sdl3_compiled_path, target_os);
     }
 }
 
@@ -579,7 +579,7 @@ fn copy_pregenerated_bindings() {
 }
 
 #[cfg(feature = "bindgen")]
-// headers_path is a list of directories where the SDL2 headers are expected
+// headers_path is a list of directories where the SDL3 headers are expected
 // to be found by bindgen (should point to the include/ directories)
 fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
     let target_os = get_os_from_triple(target).unwrap();
@@ -693,7 +693,7 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
         }
     };
 
-    // SDL2 hasn't a default configuration for Linux
+    // SDL3 hasn't a default configuration for Linux
     if target_os == "linux-gnu" {
         bindings = bindings.clang_arg("-DSDL_VIDEO_DRIVER_X11");
         bindings = bindings.clang_arg("-DSDL_VIDEO_DRIVER_WAYLAND");
@@ -725,11 +725,11 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
 
     let bindings = bindings
         .header("wrapper.h")
-        .blacklist_type("FP_NAN")
-        .blacklist_type("FP_INFINITE")
-        .blacklist_type("FP_ZERO")
-        .blacklist_type("FP_SUBNORMAL")
-        .blacklist_type("FP_NORMAL")
+        .blocklist_type("FP_NAN")
+        .blocklist_type("FP_INFINITE")
+        .blocklist_type("FP_ZERO")
+        .blocklist_type("FP_SUBNORMAL")
+        .blocklist_type("FP_NORMAL")
         .derive_debug(false)
         .generate()
         .expect("Unable to generate bindings!");
@@ -743,16 +743,16 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
     if cfg!(feature = "image") {
         let image_bindings = image_bindings
             .header("wrapper_image.h")
-            .blacklist_type("FP_NAN")
-            .blacklist_type("FP_INFINITE")
-            .blacklist_type("FP_ZERO")
-            .blacklist_type("FP_SUBNORMAL")
-            .blacklist_type("FP_NORMAL")
-            .whitelist_type("IMG.*")
-            .whitelist_function("IMG.*")
-            .whitelist_var("IMG.*")
-            .blacklist_type("SDL_.*")
-            .blacklist_type("_IO.*|FILE")
+            .blocklist_type("FP_NAN")
+            .blocklist_type("FP_INFINITE")
+            .blocklist_type("FP_ZERO")
+            .blocklist_type("FP_SUBNORMAL")
+            .blocklist_type("FP_NORMAL")
+            .allowlist_type("IMG.*")
+            .allowlist_function("IMG.*")
+            .allowlist_var("IMG.*")
+            .blocklist_type("SDL_.*")
+            .blocklist_type("_IO.*|FILE")
             .generate()
             .expect("Unable to generate image_bindings!");
 
@@ -766,16 +766,16 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
     if cfg!(feature = "ttf") {
         let ttf_bindings = ttf_bindings
             .header("wrapper_ttf.h")
-            .blacklist_type("FP_NAN")
-            .blacklist_type("FP_INFINITE")
-            .blacklist_type("FP_ZERO")
-            .blacklist_type("FP_SUBNORMAL")
-            .blacklist_type("FP_NORMAL")
-            .whitelist_type("TTF.*")
-            .whitelist_function("TTF.*")
-            .whitelist_var("TTF.*")
-            .blacklist_type("SDL_.*")
-            .blacklist_type("_IO.*|FILE")
+            .blocklist_type("FP_NAN")
+            .blocklist_type("FP_INFINITE")
+            .blocklist_type("FP_ZERO")
+            .blocklist_type("FP_SUBNORMAL")
+            .blocklist_type("FP_NORMAL")
+            .allowlist_type("TTF.*")
+            .allowlist_function("TTF.*")
+            .allowlist_var("TTF.*")
+            .blocklist_type("SDL_.*")
+            .blocklist_type("_IO.*|FILE")
             .generate()
             .expect("Unable to generate ttf_bindings!");
 
@@ -789,19 +789,19 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
     if cfg!(feature = "mixer") {
         let mixer_bindings = mixer_bindings
             .header("wrapper_mixer.h")
-            .blacklist_type("FP_NAN")
-            .blacklist_type("FP_INFINITE")
-            .blacklist_type("FP_ZERO")
-            .blacklist_type("FP_SUBNORMAL")
-            .blacklist_type("FP_NORMAL")
-            .whitelist_type("MIX.*")
-            .whitelist_type("Mix.*")
-            .whitelist_type("MUS.*")
-            .whitelist_function("Mix.*")
-            .whitelist_var("MIX.*")
-            .whitelist_var("MUS.*")
-            .blacklist_type("SDL_.*")
-            .blacklist_type("_IO.*|FILE")
+            .blocklist_type("FP_NAN")
+            .blocklist_type("FP_INFINITE")
+            .blocklist_type("FP_ZERO")
+            .blocklist_type("FP_SUBNORMAL")
+            .blocklist_type("FP_NORMAL")
+            .allowlist_type("MIX.*")
+            .allowlist_type("Mix.*")
+            .allowlist_type("MUS.*")
+            .allowlist_function("Mix.*")
+            .allowlist_var("MIX.*")
+            .allowlist_var("MUS.*")
+            .blocklist_type("SDL_.*")
+            .blocklist_type("_IO.*|FILE")
             .generate()
             .expect("Unable to generate mixer_bindings!");
 
@@ -815,15 +815,15 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
     if cfg!(feature = "gfx") {
         let gfx_framerate_bindings = gfx_framerate_bindings
             .header("wrapper_gfx_framerate.h")
-            .blacklist_type("FP_NAN")
-            .blacklist_type("FP_INFINITE")
-            .blacklist_type("FP_ZERO")
-            .blacklist_type("FP_SUBNORMAL")
-            .blacklist_type("FP_NORMAL")
-            .whitelist_type("FPS.*")
-            .whitelist_function("SDL_.*rame.*")
-            .whitelist_var("FPS.*")
-            .blacklist_type("_IO.*|FILE")
+            .blocklist_type("FP_NAN")
+            .blocklist_type("FP_INFINITE")
+            .blocklist_type("FP_ZERO")
+            .blocklist_type("FP_SUBNORMAL")
+            .blocklist_type("FP_NORMAL")
+            .allowlist_type("FPS.*")
+            .allowlist_function("SDL_.*rame.*")
+            .allowlist_var("FPS.*")
+            .blocklist_type("_IO.*|FILE")
             .generate()
             .expect("Unable to generate gfx_framerate_bindings!");
 
@@ -835,31 +835,31 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
 
         let gfx_primitives_bindings = gfx_primitives_bindings
             .header("wrapper_gfx_primitives.h")
-            .blacklist_type("FP_NAN")
-            .blacklist_type("FP_INFINITE")
-            .blacklist_type("FP_ZERO")
-            .blacklist_type("FP_SUBNORMAL")
-            .blacklist_type("FP_NORMAL")
-            .blacklist_type("SDL_.*")
-            .whitelist_function("pixel.*")
-            .whitelist_function("rectangle.*")
-            .whitelist_function("rounded.*")
-            .whitelist_function("box.*")
-            .whitelist_function(".*line(Color|RGBA).*")
-            .whitelist_function("thick.*")
-            .whitelist_function(".*circle.*")
-            .whitelist_function("arc.*")
-            .whitelist_function("filled.*")
-            .whitelist_function(".*ellipse.*")
-            .whitelist_function("pie.*")
-            .whitelist_function(".*trigon.*")
-            .whitelist_function(".*polygon.*")
-            .whitelist_function("textured.*")
-            .whitelist_function("bezier.*")
-            .whitelist_function("character.*")
-            .whitelist_function("string.*")
-            .whitelist_function("gfx.*")
-            .blacklist_type("_IO.*|FILE")
+            .blocklist_type("FP_NAN")
+            .blocklist_type("FP_INFINITE")
+            .blocklist_type("FP_ZERO")
+            .blocklist_type("FP_SUBNORMAL")
+            .blocklist_type("FP_NORMAL")
+            .blocklist_type("SDL_.*")
+            .allowlist_function("pixel.*")
+            .allowlist_function("rectangle.*")
+            .allowlist_function("rounded.*")
+            .allowlist_function("box.*")
+            .allowlist_function(".*line(Color|RGBA).*")
+            .allowlist_function("thick.*")
+            .allowlist_function(".*circle.*")
+            .allowlist_function("arc.*")
+            .allowlist_function("filled.*")
+            .allowlist_function(".*ellipse.*")
+            .allowlist_function("pie.*")
+            .allowlist_function(".*trigon.*")
+            .allowlist_function(".*polygon.*")
+            .allowlist_function("textured.*")
+            .allowlist_function("bezier.*")
+            .allowlist_function("character.*")
+            .allowlist_function("string.*")
+            .allowlist_function("gfx.*")
+            .blocklist_type("_IO.*|FILE")
             .generate()
             .expect("Unable to generate gfx_primitives_bindings!");
 
@@ -871,13 +871,13 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
 
         let gfx_imagefilter_bindings = gfx_imagefilter_bindings
             .header("wrapper_gfx_imagefilter.h")
-            .whitelist_function("SDL_image.*")
-            .blacklist_type("FP_NAN")
-            .blacklist_type("FP_INFINITE")
-            .blacklist_type("FP_ZERO")
-            .blacklist_type("FP_SUBNORMAL")
-            .blacklist_type("FP_NORMAL")
-            .blacklist_type("_IO.*|FILE")
+            .allowlist_function("SDL_image.*")
+            .blocklist_type("FP_NAN")
+            .blocklist_type("FP_INFINITE")
+            .blocklist_type("FP_ZERO")
+            .blocklist_type("FP_SUBNORMAL")
+            .blocklist_type("FP_NORMAL")
+            .blocklist_type("_IO.*|FILE")
             .generate()
             .expect("Unable to generate gfx_imagefilter_bindings!");
 
@@ -889,17 +889,17 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
 
         let gfx_rotozoom_bindings = gfx_rotozoom_bindings
             .header("wrapper_gfx_rotozoom.h")
-            .blacklist_type("SDL_.*")
-            .whitelist_function("rotozoom.*")
-            .whitelist_function("zoom.*")
-            .whitelist_function("shrink.*")
-            .whitelist_function("rotate.*")
-            .blacklist_type("FP_NAN")
-            .blacklist_type("FP_INFINITE")
-            .blacklist_type("FP_ZERO")
-            .blacklist_type("FP_SUBNORMAL")
-            .blacklist_type("FP_NORMAL")
-            .blacklist_type("_IO.*|FILE")
+            .blocklist_type("SDL_.*")
+            .allowlist_function("rotozoom.*")
+            .allowlist_function("zoom.*")
+            .allowlist_function("shrink.*")
+            .allowlist_function("rotate.*")
+            .blocklist_type("FP_NAN")
+            .blocklist_type("FP_INFINITE")
+            .blocklist_type("FP_ZERO")
+            .blocklist_type("FP_SUBNORMAL")
+            .blocklist_type("FP_NORMAL")
+            .blocklist_type("_IO.*|FILE")
             .generate()
             .expect("Unable to generate gfx_rotozoom_bindings!");
 
