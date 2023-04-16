@@ -720,9 +720,9 @@ impl VideoSubsystem {
         }
     }
 
-    #[doc(alias = "SDL_GetNumVideoDisplays")]
-    pub fn num_video_displays(&self) -> Result<i32, String> {
-        let result = unsafe { sys::SDL_GetNumVideoDisplays() };
+    #[doc(alias = "SDL_GetNumVideoDrivers")]
+    pub fn num_video_drivers(&self) -> Result<i32, String> {
+        let result = unsafe { sys::SDL_GetNumVideoDrivers() };
         if result < 0 {
             Err(get_error())
         } else {
@@ -1605,14 +1605,6 @@ impl Window {
         let mut w: c_int = 0;
         let mut h: c_int = 0;
         unsafe { sys::SDL_GetWindowSize(self.context.raw, &mut w, &mut h) };
-        (w as u32, h as u32)
-    }
-
-    #[doc(alias = "SDL_GL_GetDrawableSize")]
-    pub fn drawable_size(&self) -> (u32, u32) {
-        let mut w: c_int = 0;
-        let mut h: c_int = 0;
-        unsafe { sys::SDL_GL_GetDrawableSize(self.context.raw, &mut w, &mut h) };
         (w as u32, h as u32)
     }
 

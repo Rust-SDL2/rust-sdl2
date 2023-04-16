@@ -521,13 +521,14 @@ fn main() {
 
 #[cfg(not(feature = "bindgen"))]
 fn copy_pregenerated_bindings() {
+    // disabled to avoid having to copy the bindings into the crate
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
     let crate_path = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
-    fs::copy(
-        crate_path.join("sdl_bindings.rs"),
-        out_path.join("sdl_bindings.rs"),
-    )
-    .expect("Couldn't find pregenerated bindings!");
+    // fs::copy(
+    //     crate_path.join("sdl_bindings.rs"),
+    //     out_path.join("sdl_bindings.rs"),
+    // )
+    // .expect("Couldn't find pregenerated bindings!");
 
     if cfg!(feature = "image") {
         fs::copy(
