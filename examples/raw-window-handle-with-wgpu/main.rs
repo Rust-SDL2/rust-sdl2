@@ -24,8 +24,16 @@ fn main() -> Result<(), String> {
         .map_err(|e| e.to_string())?;
     let (width, height) = window.size();
 
-    let instance = wgpu::Instance::new(wgpu::Backends::PRIMARY);
-    let surface = unsafe { instance.create_surface(&window) };
+    let instance = wgpu::Instance::new(wgpu::InstanceDescriptor {
+        backends: wgpu::Backends::PRIMARY,
+        dx12_shader_compiler: Default::default(),
+    });
+    let surface = unsafe {
+        match instance.create_surface(&window) {
+            Ok(s) => s,
+            Err(e) => return Err(e.to_string()),
+        }
+    };
     let adapter_opt = pollster::block_on(instance.request_adapter(&wgpu::RequestAdapterOptions {
         power_preference: wgpu::PowerPreference::HighPerformance,
         force_fallback_adapter: false,
@@ -103,13 +111,23 @@ fn main() -> Result<(), String> {
         multiview: None,
     });
 
+    let surface_caps = surface.get_capabilities(&adapter);
+
+    let surface_format = surface_caps
+        .formats
+        .iter()
+        .copied()
+        .find(|f| f.describe().srgb)
+        .unwrap_or(surface_caps.formats[0]);
+
     let mut config = wgpu::SurfaceConfiguration {
         usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
-        format: surface.get_supported_formats(&adapter)[0],
+        format: surface_format,
         width,
         height,
         present_mode: wgpu::PresentMode::Fifo,
         alpha_mode: wgpu::CompositeAlphaMode::Auto,
+        view_formats: Vec::default(),
     };
     surface.configure(&device, &config);
 
