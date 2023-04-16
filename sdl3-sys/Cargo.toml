@@ -1,26 +1,26 @@
 [package]
 
-name = "sdl2-sys"
-description = "Raw SDL2 bindings for Rust, used internally rust-sdl2"
-repository = "https://github.com/rust-sdl2/rust-sdl2"
-version = "0.35.2"
+name = "sdl3-sys"
+description = "Raw SDL3 bindings for Rust, used internally sdl3-rs"
+repository = "https://github.com/revmischa/sdl3-rs"
+version = "0.0.2"
 authors = ["Tony Aldridge <tony@angry-lawyer.com>"]
 keywords = ["SDL", "windowing", "graphics", "ffi"]
 categories = ["rendering","external-ffi-bindings","game-engines","multimedia"]
 license = "MIT"
-links = "SDL2"
+links = "SDL3"
 build = "build.rs"
-edition = "2018"
+edition = "2021"
 
 [lib]
-name = "sdl2_sys"
+name = "sdl3_sys"
 path = "src/lib.rs"
 
 [dependencies]
 libc = "^0.2"
 
 [build-dependencies.bindgen]
-version = "^0.53"
+version = "^0.65.1"
 optional = true
 
 [build-dependencies.pkg-config]

@@ -1,18 +1,18 @@
 //! # Getting started
 //!
 //! ```rust,no_run
-//! extern crate sdl2;
+//! extern crate sdl3;
 //!
-//! use sdl2::pixels::Color;
-//! use sdl2::event::Event;
-//! use sdl2::keyboard::Keycode;
+//! use sdl3::pixels::Color;
+//! use sdl3::event::Event;
+//! use sdl3::keyboard::Keycode;
 //! use std::time::Duration;
 //!
 //! pub fn main() {
-//!     let sdl_context = sdl2::init().unwrap();
+//!     let sdl_context = sdl3::init().unwrap();
 //!     let video_subsystem = sdl_context.video().unwrap();
 //!
-//!     let window = video_subsystem.window("rust-sdl2 demo", 800, 600)
+//!     let window = video_subsystem.window("rust-sdl3 demo", 800, 600)
 //!         .position_centered()
 //!         .build()
 //!         .unwrap();
@@ -45,7 +45,7 @@
 //! }
 //! ```
 
-#![crate_name = "sdl2"]
+#![crate_name = "sdl3"]
 #![crate_type = "lib"]
 #![allow(clippy::cast_lossless, clippy::transmute_ptr_to_ref)]
 
@@ -56,7 +56,7 @@ extern crate lazy_static;
 
 #[macro_use]
 extern crate bitflags;
-pub extern crate sdl2_sys as sys;
+pub extern crate sdl3_sys as sys;
 
 #[cfg(feature = "gfx")]
 extern crate c_vec;

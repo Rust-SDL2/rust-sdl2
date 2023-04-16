@@ -71,9 +71,9 @@ impl crate::EventSubsystem {
     ///
     /// # Example
     /// ```no_run
-    /// use sdl2::event::Event;
+    /// use sdl3::event::Event;
     ///
-    /// let sdl_context = sdl2::init().unwrap();
+    /// let sdl_context = sdl3::init().unwrap();
     /// let event_subsystem = sdl_context.event().unwrap();
     ///
     /// // Read up to 1024 events
@@ -134,11 +134,11 @@ impl crate::EventSubsystem {
     ///
     /// # Example
     /// ```
-    /// let sdl = sdl2::init().unwrap();
+    /// let sdl = sdl3::init().unwrap();
     /// let ev = sdl.event().unwrap();
     ///
     /// let custom_event_type_id = unsafe { ev.register_event().unwrap() };
-    /// let event = sdl2::event::Event::User {
+    /// let event = sdl3::event::Event::User {
     ///    timestamp: 0,
     ///    window_id: 0,
     ///    type_: custom_event_type_id,
@@ -206,7 +206,7 @@ impl crate::EventSubsystem {
     ///     a: i32
     /// }
     ///
-    /// let sdl = sdl2::init().unwrap();
+    /// let sdl = sdl3::init().unwrap();
     /// let ev = sdl.event().unwrap();
     /// let mut ep = sdl.event_pump().unwrap();
     ///
@@ -243,7 +243,7 @@ impl crate::EventSubsystem {
     ///
     /// # Example: dump every event to stderr
     /// ```
-    /// let sdl = sdl2::init().unwrap();
+    /// let sdl = sdl3::init().unwrap();
     /// let ev = sdl.event().unwrap();
     ///
     /// // `let _ = ...` is insufficient, as it is dropped immediately.
@@ -2001,7 +2001,7 @@ impl Event {
                 EventType::User => {
                     if raw_type < 32_768 {
                         // The type is unknown to us.
-                        // It's a newer SDL2 type.
+                        // It's a newer sdl3 type.
                         let event = raw.common;
 
                         Event::Unknown {
@@ -2064,7 +2064,7 @@ impl Event {
     /// # Example:
     ///
     /// ```
-    /// use sdl2::event::Event;
+    /// use sdl3::event::Event;
     ///
     /// let ev1 = Event::JoyButtonDown {
     ///     timestamp: 0,
@@ -2140,7 +2140,7 @@ impl Event {
     /// # Example
     ///
     /// ```
-    /// use sdl2::event::Event;
+    /// use sdl3::event::Event;
     ///
     /// let ev = Event::JoyButtonDown {
     ///     timestamp: 12,
@@ -2211,7 +2211,7 @@ impl Event {
     /// # Example
     ///
     /// ```
-    /// use sdl2::event::Event;
+    /// use sdl3::event::Event;
     ///
     /// let ev = Event::JoyButtonDown {
     ///     timestamp: 0,
@@ -2251,7 +2251,7 @@ impl Event {
     /// # Example
     ///
     /// ```
-    /// use sdl2::event::Event;
+    /// use sdl3::event::Event;
     ///
     /// let ev = Event::Quit {
     ///     timestamp: 0,
@@ -2289,8 +2289,8 @@ impl Event {
     /// # Example
     ///
     /// ```
-    /// use sdl2::event::Event;
-    /// use sdl2::keyboard::Mod;
+    /// use sdl3::event::Event;
+    /// use sdl3::keyboard::Mod;
     ///
     /// let ev = Event::KeyDown {
     ///     timestamp: 0,
@@ -2319,7 +2319,7 @@ impl Event {
     /// # Example
     ///
     /// ```
-    /// use sdl2::event::Event;
+    /// use sdl3::event::Event;
     ///
     /// let ev = Event::TextInput {
     ///     timestamp: 0,
@@ -2345,8 +2345,8 @@ impl Event {
     /// # Example
     ///
     /// ```
-    /// use sdl2::event::Event;
-    /// use sdl2::mouse::MouseWheelDirection;
+    /// use sdl3::event::Event;
+    /// use sdl3::mouse::MouseWheelDirection;
     ///
     /// let ev = Event::MouseWheel {
     ///     timestamp: 0,
@@ -2380,7 +2380,7 @@ impl Event {
     /// # Example
     ///
     /// ```
-    /// use sdl2::event::Event;
+    /// use sdl3::event::Event;
     ///
     /// let ev = Event::ControllerDeviceAdded {
     ///     timestamp: 0,
@@ -2410,7 +2410,7 @@ impl Event {
     /// # Example
     ///
     /// ```
-    /// use sdl2::event::Event;
+    /// use sdl3::event::Event;
     ///
     /// let ev = Event::JoyButtonUp {
     ///     timestamp: 0,
@@ -2442,7 +2442,7 @@ impl Event {
     /// # Example
     ///
     /// ```
-    /// use sdl2::event::Event;
+    /// use sdl3::event::Event;
     ///
     /// let ev = Event::FingerMotion {
     ///     timestamp: 0,
@@ -2473,7 +2473,7 @@ impl Event {
     /// # Example
     ///
     /// ```
-    /// use sdl2::event::Event;
+    /// use sdl3::event::Event;
     ///
     /// let ev = Event::DollarGesture {
     ///     timestamp: 0,
@@ -2503,7 +2503,7 @@ impl Event {
     /// # Example
     ///
     /// ```
-    /// use sdl2::event::Event;
+    /// use sdl3::event::Event;
     ///
     /// let ev = Event::DropBegin {
     ///     timestamp: 0,
@@ -2531,7 +2531,7 @@ impl Event {
     /// # Example
     ///
     /// ```
-    /// use sdl2::event::Event;
+    /// use sdl3::event::Event;
     ///
     /// let ev = Event::AudioDeviceAdded {
     ///     timestamp: 0,
@@ -2557,7 +2557,7 @@ impl Event {
     /// # Example
     ///
     /// ```
-    /// use sdl2::event::Event;
+    /// use sdl3::event::Event;
     ///
     /// let ev = Event::RenderTargetsReset {
     ///     timestamp: 0,
@@ -2581,7 +2581,7 @@ impl Event {
     /// # Example
     ///
     /// ```
-    /// use sdl2::event::Event;
+    /// use sdl3::event::Event;
     ///
     /// let ev = Event::User {
     ///     timestamp: 0,
@@ -2610,7 +2610,7 @@ impl Event {
     /// # Example
     ///
     /// ```
-    /// use sdl2::event::Event;
+    /// use sdl3::event::Event;
     ///
     /// let ev = Event::Unknown {
     ///     timestamp: 0,
@@ -2701,11 +2701,11 @@ impl crate::EventPump {
     ///
     /// # Example
     /// ```no_run
-    /// let sdl_context = sdl2::init().unwrap();
+    /// let sdl_context = sdl3::init().unwrap();
     /// let mut event_pump = sdl_context.event_pump().unwrap();
     ///
     /// for event in event_pump.poll_iter() {
-    ///     use sdl2::event::Event;
+    ///     use sdl3::event::Event;
     ///     match event {
     ///         Event::KeyDown {..} => { /*...*/ }
     ///         _ => ()
@@ -3130,7 +3130,7 @@ impl EventSender {
     ///     a: i32
     /// }
     ///
-    /// let sdl = sdl2::init().unwrap();
+    /// let sdl = sdl3::init().unwrap();
     /// let ev = sdl.event().unwrap();
     /// let mut ep = sdl.event_pump().unwrap();
     ///
@@ -3250,7 +3250,7 @@ impl<'a, CB: EventWatchCallback + 'a> Drop for EventWatch<'a, CB> {
 
 extern "C" fn event_callback_marshall<CB: EventWatchCallback>(
     user_data: *mut c_void,
-    event: *mut sdl2_sys::SDL_Event,
+    event: *mut sdl3_sys::SDL_Event,
 ) -> i32 {
     let f: &mut CB = unsafe { &mut *(user_data as *mut _) };
     let event = Event::from_ll(unsafe { *event });
