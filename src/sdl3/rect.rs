@@ -432,7 +432,7 @@ impl Rect {
     /// Calculate a minimal rectangle enclosing a set of points.
     /// If a clipping rectangle is given, only points that are within it will be
     /// considered.
-    #[doc(alias = "SDL_EnclosePoints")]
+    #[doc(alias = "SDL_GetRectEnclosingPoints")]
     pub fn from_enclose_points<R: Into<Option<Rect>>>(
         points: &[Point],
         clipping_rect: R,
@@ -454,7 +454,7 @@ impl Rect {
         };
 
         let result = unsafe {
-            sys::SDL_EnclosePoints(
+            sys::SDL_GetRectEnclosingPoints(
                 Point::raw_slice(points),
                 points.len() as i32,
                 clip_ptr,
@@ -486,9 +486,9 @@ impl Rect {
     /// assert!(rect.has_intersection(Rect::new(2, 2, 5, 5)));
     /// assert!(!rect.has_intersection(Rect::new(5, 0, 5, 5)));
     /// ```
-    #[doc(alias = "SDL_HasIntersection")]
+    #[doc(alias = "SDL_HasRectIntersection")]
     pub fn has_intersection(&self, other: Rect) -> bool {
-        unsafe { sys::SDL_HasIntersection(self.raw(), other.raw()) != sys::SDL_bool::SDL_FALSE }
+        unsafe { sys::SDL_HasRectIntersection(self.raw(), other.raw()) != sys::SDL_bool::SDL_FALSE }
     }
 
     /// Calculates the intersection of two rectangles.
@@ -509,12 +509,12 @@ impl Rect {
     ///            Some(Rect::new(2, 2, 3, 3)));
     /// assert_eq!(rect.intersection(Rect::new(5, 0, 5, 5)), None);
     /// ```
-    #[doc(alias = "SDL_IntersectRect")]
+    #[doc(alias = "SDL_GetRectIntersection")]
     pub fn intersection(&self, other: Rect) -> Option<Rect> {
         let mut out = mem::MaybeUninit::uninit();
 
         let success = unsafe {
-            sys::SDL_IntersectRect(self.raw(), other.raw(), out.as_mut_ptr())
+            sys::SDL_GetRectIntersection(self.raw(), other.raw(), out.as_mut_ptr())
                 != sys::SDL_bool::SDL_FALSE
         };
 
@@ -540,14 +540,14 @@ impl Rect {
     /// assert_eq!(rect.union(Rect::new(2, 2, 5, 5)), Rect::new(0, 0, 7, 7));
     /// assert_eq!(rect.union(Rect::new(5, 0, 5, 5)), Rect::new(0, 0, 10, 5));
     /// ```
-    #[doc(alias = "SDL_UnionRect")]
+    #[doc(alias = "SDL_GetRectUnion")]
     pub fn union(&self, other: Rect) -> Rect {
         let mut out = mem::MaybeUninit::uninit();
 
         unsafe {
             // If `self` and `other` are both empty, `out` remains uninitialized.
             // Because empty rectangles aren't allowed in Rect, we don't need to worry about this.
-            sys::SDL_UnionRect(self.raw(), other.raw(), out.as_mut_ptr())
+            sys::SDL_GetRectUnion(self.raw(), other.raw(), out.as_mut_ptr())
         };
 
         let out = unsafe { out.assume_init() };
@@ -557,13 +557,13 @@ impl Rect {
 
     /// Calculates the intersection of a rectangle and a line segment and
     /// returns the points of their intersection.
-    #[doc(alias = "SDL_IntersectRectAndLine")]
+    #[doc(alias = "SDL_GetRectAndLineIntersection")]
     pub fn intersect_line(&self, start: Point, end: Point) -> Option<(Point, Point)> {
         let (mut start_x, mut start_y) = (start.x(), start.y());
         let (mut end_x, mut end_y) = (end.x(), end.y());
 
         let intersected = unsafe {
-            sys::SDL_IntersectRectAndLine(
+            sys::SDL_GetRectAndLineIntersection(
                 self.raw(),
                 &mut start_x,
                 &mut start_y,

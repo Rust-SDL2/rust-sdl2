@@ -54,7 +54,7 @@ impl TimerSubsystem {
     /// Gets the number of milliseconds elapsed since the timer subsystem was initialized.
     ///
     /// It's recommended that you use another library for timekeeping, such as `time`.
-    #[doc(alias = "SDL_GetTicks64")]
+    #[doc(alias = "SDL_GetTicks")]
     pub fn ticks64(&self) -> u64 {
         // This is thread-safe as long as the ticks subsystem is inited, and
         // tying this to `TimerSubsystem` ensures the timer subsystem can
@@ -62,7 +62,7 @@ impl TimerSubsystem {
         // thread-unsafe `SDL_TicksInit()`.
         //
         // This binding is offered for completeness but is debatably a relic.
-        unsafe { sys::SDL_GetTicks64() }
+        unsafe { sys::SDL_GetTicks() }
     }
 
     /// Sleeps the current thread for the specified amount of milliseconds.

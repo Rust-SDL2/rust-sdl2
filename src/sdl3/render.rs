@@ -1053,13 +1053,13 @@ impl<T: RenderTarget> Canvas<T> {
     }
 
     /// Gets the output size of a rendering context.
-    #[doc(alias = "SDL_GetRendererOutputSize")]
+    #[doc(alias = "SDL_GetCurrentRenderOutputSize")]
     pub fn output_size(&self) -> Result<(u32, u32), String> {
         let mut width = 0;
         let mut height = 0;
 
         let result =
-            unsafe { sys::SDL_GetRendererOutputSize(self.context.raw, &mut width, &mut height) };
+            unsafe { sys::SDL_GetCurrentRenderOutputSize(self.context.raw, &mut width, &mut height) };
 
         if result == 0 {
             Ok((width as u32, height as u32))
@@ -1069,12 +1069,12 @@ impl<T: RenderTarget> Canvas<T> {
     }
 
     /// Sets a device independent resolution for rendering.
-    #[doc(alias = "SDL_RenderSetLogicalSize")]
+    #[doc(alias = "SDL_SetRenderLogicalPresentation")]
     pub fn set_logical_size(&mut self, width: u32, height: u32) -> Result<(), IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
         let width = validate_int(width, "width")?;
         let height = validate_int(height, "height")?;
-        let result = unsafe { sys::SDL_RenderSetLogicalSize(self.context.raw, width, height) };
+        let result = unsafe { sys::SDL_SetRenderLogicalPresentation(self.context.raw, width, height) };
         match result {
             0 => Ok(()),
             _ => Err(SdlError(get_error())),
@@ -1082,33 +1082,33 @@ impl<T: RenderTarget> Canvas<T> {
     }
 
     /// Gets device independent resolution for rendering.
-    #[doc(alias = "SDL_RenderGetLogicalSize")]
+    #[doc(alias = "SDL_GetRenderLogicalPresentation")]
     pub fn logical_size(&self) -> (u32, u32) {
         let mut width = 0;
         let mut height = 0;
 
-        unsafe { sys::SDL_RenderGetLogicalSize(self.context.raw, &mut width, &mut height) };
+        unsafe { sys::SDL_GetRenderLogicalPresentation(self.context.raw, &mut width, &mut height) };
 
         (width as u32, height as u32)
     }
 
     /// Sets the drawing area for rendering on the current target.
-    #[doc(alias = "SDL_RenderSetViewport")]
+    #[doc(alias = "SDL_SetRenderViewport")]
     pub fn set_viewport<R: Into<Option<Rect>>>(&mut self, rect: R) {
         let rect = rect.into();
         // as_ref is important because we need rect to live until the end of the FFI call, but map_or consumes an Option<T>
         let ptr = rect.as_ref().map_or(ptr::null(), |rect| rect.raw());
-        let ret = unsafe { sys::SDL_RenderSetViewport(self.context.raw, ptr) };
+        let ret = unsafe { sys::SDL_SetRenderViewport(self.context.raw, ptr) };
         if ret != 0 {
             panic!("Could not set viewport: {}", get_error())
         }
     }
 
     /// Gets the drawing area for the current target.
-    #[doc(alias = "SDL_RenderGetViewport")]
+    #[doc(alias = "SDL_GetRenderViewport")]
     pub fn viewport(&self) -> Rect {
         let mut rect = mem::MaybeUninit::uninit();
-        unsafe { sys::SDL_RenderGetViewport(self.context.raw, rect.as_mut_ptr()) };
+        unsafe { sys::SDL_GetRenderViewport(self.context.raw, rect.as_mut_ptr()) };
         let rect = unsafe { rect.assume_init() };
         Rect::from_ll(rect)
     }
@@ -1116,12 +1116,12 @@ impl<T: RenderTarget> Canvas<T> {
     /// Sets the clip rectangle for rendering on the specified target.
     ///
     /// If the rectangle is `None`, clipping will be disabled.
-    #[doc(alias = "SDL_RenderSetClipRect")]
+    #[doc(alias = "SDL_SetRenderClipRect")]
     pub fn set_clip_rect<R: Into<Option<Rect>>>(&mut self, rect: R) {
         let rect = rect.into();
         // as_ref is important because we need rect to live until the end of the FFI call, but map_or consumes an Option<T>
         let ptr = rect.as_ref().map_or(ptr::null(), |rect| rect.raw());
-        let ret = unsafe { sys::SDL_RenderSetClipRect(self.context.raw, ptr) };
+        let ret = unsafe { sys::SDL_SetRenderClipRect(self.context.raw, ptr) };
         if ret != 0 {
             panic!("Could not set clip rect: {}", get_error())
         }
@@ -1130,10 +1130,10 @@ impl<T: RenderTarget> Canvas<T> {
     /// Gets the clip rectangle for the current target.
     ///
     /// Returns `None` if clipping is disabled.
-    #[doc(alias = "SDL_RenderGetClipRect")]
+    #[doc(alias = "SDL_GetRenderClipRect")]
     pub fn clip_rect(&self) -> Option<Rect> {
         let mut raw = mem::MaybeUninit::uninit();
-        unsafe { sys::SDL_RenderGetClipRect(self.context.raw, raw.as_mut_ptr()) };
+        unsafe { sys::SDL_GetRenderClipRect(self.context.raw, raw.as_mut_ptr()) };
         let raw = unsafe { raw.assume_init() };
         if raw.w == 0 || raw.h == 0 {
             None
@@ -1169,9 +1169,9 @@ impl<T: RenderTarget> Canvas<T> {
     }
 
     /// Sets the drawing scale for rendering on the current target.
-    #[doc(alias = "SDL_RenderSetScale")]
+    #[doc(alias = "SDL_SetRenderScale")]
     pub fn set_scale(&mut self, scale_x: f32, scale_y: f32) -> Result<(), String> {
-        let ret = unsafe { sys::SDL_RenderSetScale(self.context.raw, scale_x, scale_y) };
+        let ret = unsafe { sys::SDL_SetRenderScale(self.context.raw, scale_x, scale_y) };
         // Should only fail on an invalid renderer
         if ret != 0 {
             Err(get_error())
@@ -1181,20 +1181,20 @@ impl<T: RenderTarget> Canvas<T> {
     }
 
     /// Gets the drawing scale for the current target.
-    #[doc(alias = "SDL_RenderGetScale")]
+    #[doc(alias = "SDL_GetRenderScale")]
     pub fn scale(&self) -> (f32, f32) {
         let mut scale_x = 0.0;
         let mut scale_y = 0.0;
-        unsafe { sys::SDL_RenderGetScale(self.context.raw, &mut scale_x, &mut scale_y) };
+        unsafe { sys::SDL_GetRenderScale(self.context.raw, &mut scale_x, &mut scale_y) };
         (scale_x, scale_y)
     }
 
     /// Draws a point on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    #[doc(alias = "SDL_RenderDrawPoint")]
+    #[doc(alias = "SDL_RenderPoint")]
     pub fn draw_point<P: Into<Point>>(&mut self, point: P) -> Result<(), String> {
         let point = point.into();
-        let result = unsafe { sys::SDL_RenderDrawPoint(self.context.raw, point.x(), point.y()) };
+        let result = unsafe { sys::SDL_RenderPoint(self.context.raw, point.x(), point.y()) };
         if result != 0 {
             Err(get_error())
         } else {
@@ -1204,11 +1204,11 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Draws multiple points on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    #[doc(alias = "SDL_RenderDrawPoints")]
+    #[doc(alias = "SDL_RenderPoints")]
     pub fn draw_points<'a, P: Into<&'a [Point]>>(&mut self, points: P) -> Result<(), String> {
         let points = points.into();
         let result = unsafe {
-            sys::SDL_RenderDrawPoints(
+            sys::SDL_RenderPoints(
                 self.context.raw,
                 Point::raw_slice(points),
                 points.len() as c_int,
@@ -1223,7 +1223,7 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Draws a line on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    #[doc(alias = "SDL_RenderDrawLine")]
+    #[doc(alias = "SDL_RenderLine")]
     pub fn draw_line<P1: Into<Point>, P2: Into<Point>>(
         &mut self,
         start: P1,
@@ -1232,7 +1232,7 @@ impl<T: RenderTarget> Canvas<T> {
         let start = start.into();
         let end = end.into();
         let result = unsafe {
-            sys::SDL_RenderDrawLine(self.context.raw, start.x(), start.y(), end.x(), end.y())
+            sys::SDL_RenderLine(self.context.raw, start.x(), start.y(), end.x(), end.y())
         };
         if result != 0 {
             Err(get_error())
@@ -1243,11 +1243,11 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Draws a series of connected lines on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    #[doc(alias = "SDL_RenderDrawLines")]
+    #[doc(alias = "SDL_RenderLines")]
     pub fn draw_lines<'a, P: Into<&'a [Point]>>(&mut self, points: P) -> Result<(), String> {
         let points = points.into();
         let result = unsafe {
-            sys::SDL_RenderDrawLines(
+            sys::SDL_RenderLines(
                 self.context.raw,
                 Point::raw_slice(points),
                 points.len() as c_int,
@@ -1262,9 +1262,9 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Draws a rectangle on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    #[doc(alias = "SDL_RenderDrawRect")]
+    #[doc(alias = "SDL_RenderRect")]
     pub fn draw_rect(&mut self, rect: Rect) -> Result<(), String> {
-        let result = unsafe { sys::SDL_RenderDrawRect(self.context.raw, rect.raw()) };
+        let result = unsafe { sys::SDL_RenderRect(self.context.raw, rect.raw()) };
         if result != 0 {
             Err(get_error())
         } else {
@@ -1274,10 +1274,10 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Draws some number of rectangles on the current rendering target.
     /// Errors if drawing fails for any reason (e.g. driver failure)
-    #[doc(alias = "SDL_RenderDrawRects")]
+    #[doc(alias = "SDL_RenderRects")]
     pub fn draw_rects(&mut self, rects: &[Rect]) -> Result<(), String> {
         let result = unsafe {
-            sys::SDL_RenderDrawRects(
+            sys::SDL_RenderRects(
                 self.context.raw,
                 Rect::raw_slice(rects),
                 rects.len() as c_int,
@@ -1336,14 +1336,14 @@ impl<T: RenderTarget> Canvas<T> {
     ///
     /// Errors if drawing fails for any reason (e.g. driver failure),
     /// or if the provided texture does not belong to the renderer.
-    #[doc(alias = "SDL_RenderCopy")]
+    #[doc(alias = "SDL_RenderTexture")]
     pub fn copy<R1, R2>(&mut self, texture: &Texture, src: R1, dst: R2) -> Result<(), String>
     where
         R1: Into<Option<Rect>>,
         R2: Into<Option<Rect>>,
     {
         let ret = unsafe {
-            sys::SDL_RenderCopy(
+            sys::SDL_RenderTexture(
                 self.context.raw,
                 texture.raw,
                 match src.into() {
@@ -1377,7 +1377,7 @@ impl<T: RenderTarget> Canvas<T> {
     /// Errors if drawing fails for any reason (e.g. driver failure),
     /// if the provided texture does not belong to the renderer,
     /// or if the driver does not support RenderCopyEx.
-    #[doc(alias = "SDL_RenderCopyEx")]
+    #[doc(alias = "SDL_RenderTextureRotated")]
     pub fn copy_ex<R1, R2, P>(
         &mut self,
         texture: &Texture,
@@ -1407,7 +1407,7 @@ impl<T: RenderTarget> Canvas<T> {
         };
 
         let ret = unsafe {
-            sys::SDL_RenderCopyEx(
+            sys::SDL_RenderTextureRotated(
                 self.context.raw,
                 texture.raw,
                 match src.into() {

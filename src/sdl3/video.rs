@@ -830,7 +830,7 @@ impl VideoSubsystem {
         }
     }
 
-    #[doc(alias = "SDL_GetClosestDisplayMode")]
+    #[doc(alias = "SDL_GetClosestFullscreenDisplayMode")]
     pub fn closest_display_mode(
         &self,
         display_index: i32,
@@ -840,7 +840,7 @@ impl VideoSubsystem {
         let mut dm = mem::MaybeUninit::uninit();
 
         let result = unsafe {
-            sys::SDL_GetClosestDisplayMode(display_index as c_int, &input, dm.as_mut_ptr())
+            sys::SDL_GetClosestFullscreenDisplayMode(display_index as c_int, &input, dm.as_mut_ptr())
         };
 
         if result.is_null() {
@@ -874,9 +874,9 @@ impl VideoSubsystem {
         Orientation::from_ll(unsafe { sys::SDL_GetDisplayOrientation(display_index as c_int) })
     }
 
-    #[doc(alias = "SDL_IsScreenSaverEnabled")]
+    #[doc(alias = "SDL_ScreenSaverEnabled")]
     pub fn is_screen_saver_enabled(&self) -> bool {
-        unsafe { sys::SDL_IsScreenSaverEnabled() == sys::SDL_bool::SDL_TRUE }
+        unsafe { sys::SDL_ScreenSaverEnabled() == sys::SDL_bool::SDL_TRUE }
     }
 
     #[doc(alias = "SDL_EnableScreenSaver")]
@@ -1147,6 +1147,7 @@ impl WindowBuilder {
 
         let raw_width = self.width as c_int;
         let raw_height = self.height as c_int;
+        println!("raw_width: {}, raw_height: {}", raw_width, raw_height);
         unsafe {
             let raw = sys::SDL_CreateWindow(
                 title.as_ptr() as *const c_char,
@@ -1252,7 +1253,7 @@ impl WindowBuilder {
 
     /// Sets the window to have grabbed input focus.
     pub fn input_grabbed(&mut self) -> &mut WindowBuilder {
-        self.window_flags |= sys::SDL_WindowFlags::SDL_WINDOW_INPUT_GRABBED as u32;
+        self.window_flags |= sys::SDL_WindowFlags::SDL_WINDOW_MOUSE_GRABBED as u32;
         self
     }
 
@@ -1413,9 +1414,9 @@ impl Window {
         }
     }
 
-    #[doc(alias = "SDL_GetWindowDisplayIndex")]
+    #[doc(alias = "SDL_GetDisplayForWindow")]
     pub fn display_index(&self) -> Result<i32, String> {
-        let result = unsafe { sys::SDL_GetWindowDisplayIndex(self.context.raw) };
+        let result = unsafe { sys::SDL_GetDisplayForWindow(self.context.raw) };
         if result < 0 {
             Err(get_error())
         } else {
@@ -1423,13 +1424,13 @@ impl Window {
         }
     }
 
-    #[doc(alias = "SDL_SetWindowDisplayMode")]
+    #[doc(alias = "SDL_SetWindowFullscreenMode")]
     pub fn set_display_mode<D>(&mut self, display_mode: D) -> Result<(), String>
     where
         D: Into<Option<DisplayMode>>,
     {
         unsafe {
-            let result = sys::SDL_SetWindowDisplayMode(
+            let result = sys::SDL_SetWindowFullscreenMode(
                 self.context.raw,
                 match display_mode.into() {
                     Some(ref mode) => &mode.to_ll(),
@@ -1444,12 +1445,12 @@ impl Window {
         }
     }
 
-    #[doc(alias = "SDL_GetWindowDisplayMode")]
+    #[doc(alias = "SDL_GetWindowFullscreenMode")]
     pub fn display_mode(&self) -> Result<DisplayMode, String> {
         let mut dm = mem::MaybeUninit::uninit();
 
         let result =
-            unsafe { sys::SDL_GetWindowDisplayMode(self.context.raw, dm.as_mut_ptr()) == 0 };
+            unsafe { sys::SDL_GetWindowFullscreenMode(self.context.raw, dm.as_mut_ptr()) == 0 };
 
         if result {
             let dm = unsafe { dm.assume_init() };
@@ -1494,7 +1495,7 @@ impl Window {
 
     /// Has the window grabbed input focus?
     pub fn has_input_grabbed(&self) -> bool {
-        0 != self.window_flags() & sys::SDL_WindowFlags::SDL_WINDOW_INPUT_GRABBED as u32
+        0 != self.window_flags() & sys::SDL_WindowFlags::SDL_WINDOW_MOUSE_GRABBED as u32
     }
 
     /// Does the window have mouse focus?

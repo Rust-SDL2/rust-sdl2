@@ -7,13 +7,13 @@ use crate::HapticSubsystem;
 
 impl HapticSubsystem {
     /// Attempt to open the joystick at index `joystick_index` and return its haptic device.
-    #[doc(alias = "SDL_JoystickOpen")]
+    #[doc(alias = "SDL_OpenJoystick")]
     pub fn open_from_joystick_id(&self, joystick_index: u32) -> Result<Haptic, IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
         let joystick_index = validate_int(joystick_index, "joystick_index")?;
 
         let haptic = unsafe {
-            let joystick = sys::SDL_JoystickOpen(joystick_index);
+            let joystick = sys::SDL_OpenJoystick(joystick_index);
             sys::SDL_HapticOpenFromJoystick(joystick)
         };
 

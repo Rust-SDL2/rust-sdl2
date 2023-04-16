@@ -33,9 +33,9 @@ pub struct Cursor {
 
 impl Drop for Cursor {
     #[inline]
-    #[doc(alias = "SDL_FreeCursor")]
+    #[doc(alias = "SDL_DestroyCursor")]
     fn drop(&mut self) {
-        unsafe { sys::SDL_FreeCursor(self.raw) };
+        unsafe { sys::SDL_DestroyCursor(self.raw) };
     }
 }
 

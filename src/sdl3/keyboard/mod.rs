@@ -227,9 +227,9 @@ impl TextInputUtil {
         }
     }
 
-    #[doc(alias = "SDL_IsTextInputActive")]
+    #[doc(alias = "SDL_TextInputActive")]
     pub fn is_active(&self) -> bool {
-        unsafe { sys::SDL_IsTextInputActive() == sys::SDL_bool::SDL_TRUE }
+        unsafe { sys::SDL_TextInputActive() == sys::SDL_bool::SDL_TRUE }
     }
 
     #[doc(alias = "SDL_StopTextInput")]
@@ -251,8 +251,8 @@ impl TextInputUtil {
         unsafe { sys::SDL_HasScreenKeyboardSupport() == sys::SDL_bool::SDL_TRUE }
     }
 
-    #[doc(alias = "SDL_IsScreenKeyboardShown")]
+    #[doc(alias = "SDL_ScreenKeyboardShown")]
     pub fn is_screen_keyboard_shown(&self, window: &Window) -> bool {
-        unsafe { sys::SDL_IsScreenKeyboardShown(window.raw()) == sys::SDL_bool::SDL_TRUE }
+        unsafe { sys::SDL_ScreenKeyboardShown(window.raw()) == sys::SDL_bool::SDL_TRUE }
     }
 }

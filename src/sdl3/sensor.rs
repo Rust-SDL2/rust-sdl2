@@ -23,7 +23,7 @@ use crate::get_error;
 use crate::SensorSubsystem;
 use libc::c_char;
 use std::ffi::CStr;
-use sys::SDL_SensorGetData;
+use sys::SDL_GetSensorData;
 use sys::SDL_SensorType;
 
 impl SensorSubsystem {
@@ -40,12 +40,12 @@ impl SensorSubsystem {
     }
 
     /// Attempt to open the sensor at index `sensor_index` and return it.
-    #[doc(alias = "SDL_SensorOpen")]
+    #[doc(alias = "SDL_OpenSensor")]
     pub fn open(&self, sensor_index: u32) -> Result<Sensor, IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
         let sensor_index = validate_int(sensor_index, "sensor_index")?;
 
-        let sensor = unsafe { sys::SDL_SensorOpen(sensor_index) };
+        let sensor = unsafe { sys::SDL_OpenSensor(sensor_index) };
 
         if sensor.is_null() {
             Err(SdlError(get_error()))
@@ -59,9 +59,9 @@ impl SensorSubsystem {
 
     /// Force sensor update when not using the event loop
     #[inline]
-    #[doc(alias = "SDL_SensorUpdate")]
+    #[doc(alias = "SDL_UpdateSensors")]
     pub fn update(&self) {
-        unsafe { sys::SDL_SensorUpdate() };
+        unsafe { sys::SDL_UpdateSensors() };
     }
 }
 
@@ -106,16 +106,16 @@ impl Sensor {
 
     /// Return the name of the sensor or an empty string if no name
     /// is found.
-    #[doc(alias = "SDL_SensorGetName")]
+    #[doc(alias = "SDL_GetSensorName")]
     pub fn name(&self) -> String {
-        let name = unsafe { sys::SDL_SensorGetName(self.raw) };
+        let name = unsafe { sys::SDL_GetSensorName(self.raw) };
 
         c_str_to_string(name)
     }
 
-    #[doc(alias = "SDL_SensorGetInstanceID")]
+    #[doc(alias = "SDL_GetSensorInstanceID")]
     pub fn instance_id(&self) -> u32 {
-        let result = unsafe { sys::SDL_SensorGetInstanceID(self.raw) };
+        let result = unsafe { sys::SDL_GetSensorInstanceID(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
@@ -126,9 +126,9 @@ impl Sensor {
     }
 
     /// Return the type of the sensor or `Unknown` if unsupported.
-    #[doc(alias = "SDL_SensorGetType")]
+    #[doc(alias = "SDL_GetSensorType")]
     pub fn sensor_type(&self) -> SensorType {
-        let result = unsafe { sys::SDL_SensorGetType(self.raw) };
+        let result = unsafe { sys::SDL_GetSensorType(self.raw) };
 
         match result {
             sys::SDL_SensorType::SDL_SENSOR_INVALID => {
@@ -143,10 +143,10 @@ impl Sensor {
     /// Get the current data from the sensor.
     ///
     /// Output depends on the type of the sensor. See module documentation for units and axis.
-    #[doc(alias = "SDL_SensorGetType")]
+    #[doc(alias = "SDL_GetSensorType")]
     pub fn get_data(&self) -> Result<SensorData, IntegerOrSdlError> {
         let mut data = [0f32; 16];
-        let result = unsafe { SDL_SensorGetData(self.raw, data.as_mut_ptr(), data.len() as i32) };
+        let result = unsafe { SDL_GetSensorData(self.raw, data.as_mut_ptr(), data.len() as i32) };
 
         if result != 0 {
             Err(IntegerOrSdlError::SdlError(get_error()))
@@ -168,9 +168,9 @@ pub enum SensorData {
 }
 
 impl Drop for Sensor {
-    #[doc(alias = "SDL_SensorClose")]
+    #[doc(alias = "SDL_CloseSensor")]
     fn drop(&mut self) {
-        unsafe { sys::SDL_SensorClose(self.raw) }
+        unsafe { sys::SDL_CloseSensor(self.raw) }
     }
 }
 

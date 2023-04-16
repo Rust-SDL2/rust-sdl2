@@ -308,7 +308,7 @@ impl Drop for SubsystemDrop {
 subsystem!(AudioSubsystem, sys::SDL_INIT_AUDIO, AUDIO_COUNT, nosync);
 subsystem!(
     GameControllerSubsystem,
-    sys::SDL_INIT_GAMECONTROLLER,
+    sys::SDL_INIT_GAMEPAD,
     GAMECONTROLLER_COUNT,
     nosync
 );

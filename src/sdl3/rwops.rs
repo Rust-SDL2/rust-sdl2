@@ -175,9 +175,9 @@ impl<'a> io::Seek for RWops<'a> {
     fn seek(&mut self, pos: io::SeekFrom) -> io::Result<u64> {
         // whence code is different from SeekStyle
         let (whence, offset) = match pos {
-            io::SeekFrom::Start(pos) => (sys::RW_SEEK_SET, pos as i64),
-            io::SeekFrom::End(pos) => (sys::RW_SEEK_END, pos),
-            io::SeekFrom::Current(pos) => (sys::RW_SEEK_CUR, pos),
+            io::SeekFrom::Start(pos) => (sys::SDL_RW_SEEK_SET, pos as i64),
+            io::SeekFrom::End(pos) => (sys::SDL_RW_SEEK_END, pos),
+            io::SeekFrom::Current(pos) => (sys::SDL_RW_SEEK_CUR, pos),
         };
         let ret = unsafe { ((*self.raw).seek.unwrap())(self.raw, offset, transmute(whence)) };
         if ret == -1 {

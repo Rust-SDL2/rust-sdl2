@@ -23,12 +23,12 @@ impl JoystickSubsystem {
     }
 
     /// Attempt to open the joystick at index `joystick_index` and return it.
-    #[doc(alias = "SDL_JoystickOpen")]
+    #[doc(alias = "SDL_OpenJoystick")]
     pub fn open(&self, joystick_index: u32) -> Result<Joystick, IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
         let joystick_index = validate_int(joystick_index, "joystick_index")?;
 
-        let joystick = unsafe { sys::SDL_JoystickOpen(joystick_index) };
+        let joystick = unsafe { sys::SDL_OpenJoystick(joystick_index) };
 
         if joystick.is_null() {
             Err(SdlError(get_error()))
@@ -92,9 +92,9 @@ impl JoystickSubsystem {
 
     /// Force joystick update when not using the event loop
     #[inline]
-    #[doc(alias = "SDL_JoystickUpdate")]
+    #[doc(alias = "SDL_UpdateJoysticks")]
     pub fn update(&self) {
-        unsafe { sys::SDL_JoystickUpdate() };
+        unsafe { sys::SDL_UpdateJoysticks() };
     }
 }
 
@@ -148,23 +148,23 @@ impl Joystick {
 
     /// Return the name of the joystick or an empty string if no name
     /// is found.
-    #[doc(alias = "SDL_JoystickName")]
+    #[doc(alias = "SDL_GetJoystickName")]
     pub fn name(&self) -> String {
-        let name = unsafe { sys::SDL_JoystickName(self.raw) };
+        let name = unsafe { sys::SDL_GetJoystickName(self.raw) };
 
         c_str_to_string(name)
     }
 
     /// Return true if the joystick has been opened and currently
     /// connected.
-    #[doc(alias = "SDL_JoystickGetAttached")]
+    #[doc(alias = "SDL_JoystickConnected")]
     pub fn attached(&self) -> bool {
-        unsafe { sys::SDL_JoystickGetAttached(self.raw) != sys::SDL_bool::SDL_FALSE }
+        unsafe { sys::SDL_JoystickConnected(self.raw) != sys::SDL_bool::SDL_FALSE }
     }
 
-    #[doc(alias = "SDL_JoystickInstanceID")]
+    #[doc(alias = "SDL_GetJoystickInstanceID")]
     pub fn instance_id(&self) -> u32 {
-        let result = unsafe { sys::SDL_JoystickInstanceID(self.raw) };
+        let result = unsafe { sys::SDL_GetJoystickInstanceID(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
@@ -175,9 +175,9 @@ impl Joystick {
     }
 
     /// Retrieve the joystick's GUID
-    #[doc(alias = "SDL_JoystickGetGUID")]
+    #[doc(alias = "SDL_GetJoystickGUID")]
     pub fn guid(&self) -> Guid {
-        let raw = unsafe { sys::SDL_JoystickGetGUID(self.raw) };
+        let raw = unsafe { sys::SDL_GetJoystickGUID(self.raw) };
 
         let guid = Guid { raw };
 
@@ -190,12 +190,12 @@ impl Joystick {
     }
 
     /// Retrieve the battery level of this joystick
-    #[doc(alias = "SDL_JoystickCurrentPowerLevel")]
+    #[doc(alias = "SDL_GetJoystickPowerLevel")]
     pub fn power_level(&self) -> Result<PowerLevel, IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
         clear_error();
 
-        let result = unsafe { sys::SDL_JoystickCurrentPowerLevel(self.raw) };
+        let result = unsafe { sys::SDL_GetJoystickPowerLevel(self.raw) };
 
         let state = PowerLevel::from_ll(result);
 
@@ -213,9 +213,9 @@ impl Joystick {
     }
 
     /// Retrieve the number of axes for this joystick
-    #[doc(alias = "SDL_JoystickNumAxes")]
+    #[doc(alias = "SDL_GetNumJoystickAxes")]
     pub fn num_axes(&self) -> u32 {
-        let result = unsafe { sys::SDL_JoystickNumAxes(self.raw) };
+        let result = unsafe { sys::SDL_GetNumJoystickAxes(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
@@ -228,7 +228,7 @@ impl Joystick {
     /// Gets the position of the given `axis`.
     ///
     /// The function will fail if the joystick doesn't have the provided axis.
-    #[doc(alias = "SDL_JoystickGetAxis")]
+    #[doc(alias = "SDL_GetJoystickAxis")]
     pub fn axis(&self, axis: u32) -> Result<i16, IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
         // This interface is a bit messed up: 0 is a valid position
@@ -238,7 +238,7 @@ impl Joystick {
         clear_error();
 
         let axis = validate_int(axis, "axis")?;
-        let pos = unsafe { sys::SDL_JoystickGetAxis(self.raw, axis) };
+        let pos = unsafe { sys::SDL_GetJoystickAxis(self.raw, axis) };
 
         if pos != 0 {
             Ok(pos)
@@ -254,9 +254,9 @@ impl Joystick {
     }
 
     /// Retrieve the number of buttons for this joystick
-    #[doc(alias = "SDL_JoystickNumButtons")]
+    #[doc(alias = "SDL_GetNumJoystickButtons")]
     pub fn num_buttons(&self) -> u32 {
-        let result = unsafe { sys::SDL_JoystickNumButtons(self.raw) };
+        let result = unsafe { sys::SDL_GetNumJoystickButtons(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
@@ -269,7 +269,7 @@ impl Joystick {
     /// Return `Ok(true)` if `button` is pressed.
     ///
     /// The function will fail if the joystick doesn't have the provided button.
-    #[doc(alias = "SDL_JoystickGetButton")]
+    #[doc(alias = "SDL_GetJoystickButton")]
     pub fn button(&self, button: u32) -> Result<bool, IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
         // Same deal as axis, 0 can mean both unpressed or
@@ -277,7 +277,7 @@ impl Joystick {
         clear_error();
 
         let button = validate_int(button, "button")?;
-        let pressed = unsafe { sys::SDL_JoystickGetButton(self.raw, button) };
+        let pressed = unsafe { sys::SDL_GetJoystickButton(self.raw, button) };
 
         match pressed {
             1 => Ok(true),
@@ -328,9 +328,9 @@ impl Joystick {
     }
 
     /// Retrieve the number of balls for this joystick
-    #[doc(alias = "SDL_JoystickNumHats")]
+    #[doc(alias = "SDL_GetNumJoystickHats")]
     pub fn num_hats(&self) -> u32 {
-        let result = unsafe { sys::SDL_JoystickNumHats(self.raw) };
+        let result = unsafe { sys::SDL_GetNumJoystickHats(self.raw) };
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
@@ -341,7 +341,7 @@ impl Joystick {
     }
 
     /// Return the position of `hat` for this joystick
-    #[doc(alias = "SDL_JoystickGetHat")]
+    #[doc(alias = "SDL_GetJoystickHat")]
     pub fn hat(&self, hat: u32) -> Result<HatState, IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
         // Guess what? This function as well uses 0 to report an error
@@ -350,7 +350,7 @@ impl Joystick {
         clear_error();
 
         let hat = validate_int(hat, "hat")?;
-        let result = unsafe { sys::SDL_JoystickGetHat(self.raw, hat) };
+        let result = unsafe { sys::SDL_GetJoystickHat(self.raw, hat) };
 
         let state = HatState::from_raw(result as u8);
 
@@ -378,7 +378,7 @@ impl Joystick {
     /// the rumble effect to keep playing for a long time, as this results in
     /// the effect ending immediately after starting due to an overflow.
     /// Use some smaller, "huge enough" number instead.
-    #[doc(alias = "SDL_JoystickRumble")]
+    #[doc(alias = "SDL_RumbleJoystick")]
     pub fn set_rumble(
         &mut self,
         low_frequency_rumble: u16,
@@ -386,7 +386,7 @@ impl Joystick {
         duration_ms: u32,
     ) -> Result<(), IntegerOrSdlError> {
         let result = unsafe {
-            sys::SDL_JoystickRumble(
+            sys::SDL_RumbleJoystick(
                 self.raw,
                 low_frequency_rumble,
                 high_frequency_rumble,
@@ -402,7 +402,7 @@ impl Joystick {
     }
 
     /// Start a rumble effect in the joystick's triggers.
-    #[doc(alias = "SDL_JoystickRumbleTriggers")]
+    #[doc(alias = "SDL_RumbleJoystickTriggers")]
     pub fn set_rumble_triggers(
         &mut self,
         left_rumble: u16,
@@ -410,7 +410,7 @@ impl Joystick {
         duration_ms: u32,
     ) -> Result<(), IntegerOrSdlError> {
         let result = unsafe {
-            sys::SDL_JoystickRumbleTriggers(self.raw, left_rumble, right_rumble, duration_ms)
+            sys::SDL_RumbleJoystickTriggers(self.raw, left_rumble, right_rumble, duration_ms)
         };
 
         if result != 0 {
@@ -454,9 +454,9 @@ impl Joystick {
     }
 
     /// Update a joystick's LED color.
-    #[doc(alias = "SDL_JoystickSetLED")]
+    #[doc(alias = "SDL_SetJoystickLED")]
     pub fn set_led(&mut self, red: u8, green: u8, blue: u8) -> Result<(), IntegerOrSdlError> {
-        let result = unsafe { sys::SDL_JoystickSetLED(self.raw, red, green, blue) };
+        let result = unsafe { sys::SDL_SetJoystickLED(self.raw, red, green, blue) };
 
         if result != 0 {
             Err(IntegerOrSdlError::SdlError(get_error()))
@@ -466,10 +466,10 @@ impl Joystick {
     }
 
     /// Send a joystick specific effect packet.
-    #[doc(alias = "SDL_JoystickSendEffect")]
+    #[doc(alias = "SDL_SendJoystickEffect")]
     pub fn send_effect(&mut self, data: &[u8]) -> Result<(), IntegerOrSdlError> {
         let result = unsafe {
-            sys::SDL_JoystickSendEffect(
+            sys::SDL_SendJoystickEffect(
                 self.raw,
                 data.as_ptr() as *const libc::c_void,
                 data.len() as i32,
@@ -485,10 +485,10 @@ impl Joystick {
 }
 
 impl Drop for Joystick {
-    #[doc(alias = "SDL_JoystickClose")]
+    #[doc(alias = "SDL_CloseJoystick")]
     fn drop(&mut self) {
         if self.attached() {
-            unsafe { sys::SDL_JoystickClose(self.raw) }
+            unsafe { sys::SDL_CloseJoystick(self.raw) }
         }
     }
 }
@@ -510,11 +510,11 @@ impl Eq for Guid {}
 
 impl Guid {
     /// Create a GUID from a string representation.
-    #[doc(alias = "SDL_JoystickGetGUIDFromString")]
+    #[doc(alias = "SDL_GetJoystickGUIDFromString")]
     pub fn from_string(guid: &str) -> Result<Guid, NulError> {
         let guid = CString::new(guid)?;
 
-        let raw = unsafe { sys::SDL_JoystickGetGUIDFromString(guid.as_ptr() as *const c_char) };
+        let raw = unsafe { sys::SDL_GetJoystickGUIDFromString(guid.as_ptr() as *const c_char) };
 
         Ok(Guid { raw })
     }
@@ -531,7 +531,7 @@ impl Guid {
     }
 
     /// Return a String representation of GUID
-    #[doc(alias = "SDL_JoystickGetGUIDString")]
+    #[doc(alias = "SDL_GetJoystickGUIDString")]
     pub fn string(&self) -> String {
         // Doc says "buf should supply at least 33bytes". I took that
         // to mean that 33bytes should be enough in all cases, but
@@ -542,7 +542,7 @@ impl Guid {
         let c_str = buf.as_mut_ptr();
 
         unsafe {
-            sys::SDL_JoystickGetGUIDString(self.raw, c_str, len);
+            sys::SDL_GetJoystickGUIDString(self.raw, c_str, len);
         }
 
         // The buffer should always be NUL terminated (the

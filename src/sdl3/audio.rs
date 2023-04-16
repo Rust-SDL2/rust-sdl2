@@ -451,10 +451,10 @@ impl AudioSpecWAV {
 }
 
 impl Drop for AudioSpecWAV {
-    #[doc(alias = "SDL_FreeWAV")]
+    #[doc(alias = "SDL_free")]
     fn drop(&mut self) {
         unsafe {
-            sys::SDL_FreeWAV(self.audio_buf);
+            sys::SDL_free(self.audio_buf);
         }
     }
 }

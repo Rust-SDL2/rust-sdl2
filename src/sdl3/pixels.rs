@@ -11,7 +11,7 @@ pub struct Palette {
 impl Palette {
     #[inline]
     /// Creates a new, uninitialized palette
-    #[doc(alias = "SDL_AllocPalette")]
+    #[doc(alias = "SDL_CreatePalette")]
     pub fn new(mut capacity: usize) -> Result<Self, String> {
         use crate::common::*;
 
@@ -30,7 +30,7 @@ impl Palette {
             }
         };
 
-        let raw = unsafe { sys::SDL_AllocPalette(ncolors) };
+        let raw = unsafe { sys::SDL_CreatePalette(ncolors) };
 
         if raw.is_null() {
             Err(get_error())
@@ -73,10 +73,10 @@ impl Palette {
 }
 
 impl Drop for Palette {
-    #[doc(alias = "SDL_FreePalette")]
+    #[doc(alias = "SDL_DestroyPalette")]
     fn drop(&mut self) {
         unsafe {
-            sys::SDL_FreePalette(self.raw);
+            sys::SDL_DestroyPalette(self.raw);
         }
     }
 }
@@ -266,10 +266,10 @@ impl PixelFormatEnum {
 }
 
 impl PixelFormatEnum {
-    #[doc(alias = "SDL_MasksToPixelFormatEnum")]
+    #[doc(alias = "SDL_GetPixelFormatEnumForMasks")]
     pub fn from_masks(masks: PixelMasks) -> PixelFormatEnum {
         unsafe {
-            let format = sys::SDL_MasksToPixelFormatEnum(
+            let format = sys::SDL_GetPixelFormatEnumForMasks(
                 masks.bpp as i32,
                 masks.rmask,
                 masks.gmask,
@@ -280,7 +280,7 @@ impl PixelFormatEnum {
         }
     }
 
-    #[doc(alias = "SDL_PixelFormatEnumToMasks")]
+    #[doc(alias = "SDL_GetMasksForPixelFormatEnum")]
     pub fn into_masks(self) -> Result<PixelMasks, String> {
         let format: u32 = self as u32;
         let mut bpp = 0;
@@ -289,7 +289,7 @@ impl PixelFormatEnum {
         let mut bmask = 0;
         let mut amask = 0;
         let result = unsafe {
-            sys::SDL_PixelFormatEnumToMasks(
+            sys::SDL_GetMasksForPixelFormatEnum(
                 format, &mut bpp, &mut rmask, &mut gmask, &mut bmask, &mut amask,
             )
         };
@@ -478,10 +478,10 @@ impl TryFrom<u32> for PixelFormatEnum {
 impl TryFrom<PixelFormatEnum> for PixelFormat {
     type Error = String;
 
-    #[doc(alias = "SDL_AllocFormat")]
+    #[doc(alias = "SDL_CreatePixelFormat")]
     fn try_from(pfe: PixelFormatEnum) -> Result<Self, Self::Error> {
         unsafe {
-            let pf_ptr = sys::SDL_AllocFormat(pfe as u32);
+            let pf_ptr = sys::SDL_CreatePixelFormat(pfe as u32);
             if pf_ptr.is_null() {
                 Err(get_error())
             } else {

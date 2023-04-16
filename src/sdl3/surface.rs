@@ -29,10 +29,10 @@ pub struct SurfaceContext<'a> {
 
 impl<'a> Drop for SurfaceContext<'a> {
     #[inline]
-    #[doc(alias = "SDL_FreeSurface")]
+    #[doc(alias = "SDL_DestroySurface")]
     fn drop(&mut self) {
         unsafe {
-            sys::SDL_FreeSurface(self.raw);
+            sys::SDL_DestroySurface(self.raw);
         }
     }
 }
@@ -487,10 +487,10 @@ impl SurfaceRef {
         }
     }
 
-    #[doc(alias = "SDL_SetColorKey")]
+    #[doc(alias = "SDL_SetSurfaceColorKey")]
     pub fn set_color_key(&mut self, enable: bool, color: pixels::Color) -> Result<(), String> {
         let key = color.to_u32(&self.pixel_format());
-        let result = unsafe { sys::SDL_SetColorKey(self.raw(), if enable { 1 } else { 0 }, key) };
+        let result = unsafe { sys::SDL_SetSurfaceColorKey(self.raw(), if enable { 1 } else { 0 }, key) };
         if result == 0 {
             Ok(())
         } else {
@@ -499,13 +499,13 @@ impl SurfaceRef {
     }
 
     /// The function will fail if the surface doesn't have color key enabled.
-    #[doc(alias = "SDL_GetColorKey")]
+    #[doc(alias = "SDL_GetSurfaceColorKey")]
     pub fn color_key(&self) -> Result<pixels::Color, String> {
         let mut key = 0;
 
-        // SDL_GetColorKey does not mutate, but requires a non-const pointer anyway.
+        // SDL_GetSurfaceColorKey does not mutate, but requires a non-const pointer anyway.
 
-        let result = unsafe { sys::SDL_GetColorKey(self.raw(), &mut key) };
+        let result = unsafe { sys::SDL_GetSurfaceColorKey(self.raw(), &mut key) };
 
         if result == 0 {
             Ok(pixels::Color::from_u32(&self.pixel_format(), key))
@@ -544,7 +544,7 @@ impl SurfaceRef {
         }
     }
 
-    #[doc(alias = "SDL_FillRect")]
+    #[doc(alias = "SDL_FillSurfaceRect")]
     pub fn fill_rect<R>(&mut self, rect: R, color: pixels::Color) -> Result<(), String>
     where
         R: Into<Option<Rect>>,
@@ -554,7 +554,7 @@ impl SurfaceRef {
             let rect_ptr = mem::transmute(rect.as_ref()); // TODO find a better way to transform
                                                           // Option<&...> into a *const _
             let format = self.pixel_format();
-            let result = sys::SDL_FillRect(self.raw(), rect_ptr, color.to_u32(&format));
+            let result = sys::SDL_FillSurfaceRect(self.raw(), rect_ptr, color.to_u32(&format));
             match result {
                 0 => Ok(()),
                 _ => Err(get_error()),
@@ -621,14 +621,14 @@ impl SurfaceRef {
     /// Sets the clip rectangle for the surface.
     ///
     /// If the rectangle is `None`, clipping will be disabled.
-    #[doc(alias = "SDL_SetClipRect")]
+    #[doc(alias = "SDL_SetSurfaceClipRect")]
     pub fn set_clip_rect<R>(&mut self, rect: R) -> bool
     where
         R: Into<Option<Rect>>,
     {
         let rect = rect.into();
         unsafe {
-            sys::SDL_SetClipRect(
+            sys::SDL_SetSurfaceClipRect(
                 self.raw(),
                 match rect {
                     Some(rect) => rect.raw(),
@@ -641,10 +641,10 @@ impl SurfaceRef {
     /// Gets the clip rectangle for the surface.
     ///
     /// Returns `None` if clipping is disabled.
-    #[doc(alias = "SDL_GetClipRect")]
+    #[doc(alias = "SDL_GetSurfaceClipRect")]
     pub fn clip_rect(&self) -> Option<Rect> {
         let mut raw = mem::MaybeUninit::uninit();
-        unsafe { sys::SDL_GetClipRect(self.raw(), raw.as_mut_ptr()) };
+        unsafe { sys::SDL_GetSurfaceClipRect(self.raw(), raw.as_mut_ptr()) };
         let raw = unsafe { raw.assume_init() };
 
         if raw.w == 0 || raw.h == 0 {
@@ -686,7 +686,7 @@ impl SurfaceRef {
     /// Performs surface blitting (surface copying).
     ///
     /// Returns the final blit rectangle, if a `dst_rect` was provided.
-    #[doc(alias = "SDL_UpperBlit")]
+    #[doc(alias = "SDL_BlitSurface")]
     pub fn blit<R1, R2>(
         &self,
         src_rect: R1,
@@ -710,7 +710,7 @@ impl SurfaceRef {
                 .as_mut()
                 .map(|r| r.raw_mut())
                 .unwrap_or(ptr::null_mut());
-            let result = sys::SDL_UpperBlit(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr);
+            let result = sys::SDL_BlitSurface(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr);
 
             if result == 0 {
                 Ok(dst_rect)
@@ -724,7 +724,7 @@ impl SurfaceRef {
     ///
     /// Unless you know what you're doing, use `blit()` instead, which will clip the input rectangles.
     /// This function could crash if the rectangles aren't pre-clipped to the surface, and is therefore unsafe.
-    #[doc(alias = "SDL_LowerBlit")]
+    #[doc(alias = "SDL_BlitSurfaceUnchecked")]
     pub unsafe fn lower_blit<R1, R2>(
         &self,
         src_rect: R1,
@@ -742,7 +742,7 @@ impl SurfaceRef {
             // The rectangles don't change, but the function requires mutable pointers.
             let src_rect_ptr = src_rect.as_ref().map(|r| r.raw()).unwrap_or(ptr::null()) as *mut _;
             let dst_rect_ptr = dst_rect.as_ref().map(|r| r.raw()).unwrap_or(ptr::null()) as *mut _;
-            sys::SDL_LowerBlit(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
+            sys::SDL_BlitSurfaceUnchecked(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
         } {
             0 => Ok(()),
             _ => Err(get_error()),
@@ -786,7 +786,7 @@ impl SurfaceRef {
     /// Performs scaled surface bliting (surface copying).
     ///
     /// Returns the final blit rectangle, if a `dst_rect` was provided.
-    #[doc(alias = "SDL_UpperBlitScaled")]
+    #[doc(alias = "SDL_BlitSurfaceScaled")]
     pub fn blit_scaled<R1, R2>(
         &self,
         src_rect: R1,
@@ -810,7 +810,7 @@ impl SurfaceRef {
                 .as_mut()
                 .map(|r| r.raw_mut())
                 .unwrap_or(ptr::null_mut());
-            sys::SDL_UpperBlitScaled(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
+            sys::SDL_BlitSurfaceScaled(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
         } {
             0 => Ok(dst_rect),
             _ => Err(get_error()),
@@ -821,7 +821,7 @@ impl SurfaceRef {
     ///
     /// Unless you know what you're doing, use `blit_scaled()` instead, which will clip the input rectangles.
     /// This function could crash if the rectangles aren't pre-clipped to the surface, and is therefore unsafe.
-    #[doc(alias = "SDL_LowerBlitScaled")]
+    #[doc(alias = "SDL_BlitSurfaceUncheckedScaled")]
     pub unsafe fn lower_blit_scaled<R1, R2>(
         &self,
         src_rect: R1,
@@ -844,7 +844,7 @@ impl SurfaceRef {
                 .as_ref()
                 .map(|r| r.raw())
                 .unwrap_or(ptr::null()) as *mut _;
-            sys::SDL_LowerBlitScaled(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
+            sys::SDL_BlitSurfaceUncheckedScaled(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
         } {
             0 => Ok(()),
             _ => Err(get_error()),

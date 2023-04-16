@@ -15,7 +15,7 @@ pub fn validate_int(value: u32, name: &'static str) -> Result<::libc::c_int, Int
     // for the values to be negative.
     // In the cases that SDL doesn't check negativity, passing negative values
     // could be unsafe.
-    // For example, `SDL_JoystickGetButton` uses the index argument to access an
+    // For example, `SDL_GetJoystickButton` uses the index argument to access an
     // array without checking if it's negative, which could potentially lead to
     // segmentation faults.
     if value >= 1 << 31 {
