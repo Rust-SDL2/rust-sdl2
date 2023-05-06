@@ -232,10 +232,6 @@ pub enum AudioFormat {
     U8 = sys::AUDIO_U8 as i32,
     /// Signed 8-bit samples
     S8 = sys::AUDIO_S8 as i32,
-    /// Unsigned 16-bit samples, little-endian
-    U16LSB = sys::AUDIO_U16LSB as i32,
-    /// Unsigned 16-bit samples, big-endian
-    U16MSB = sys::AUDIO_U16MSB as i32,
     /// Signed 16-bit samples, little-endian
     S16LSB = sys::AUDIO_S16LSB as i32,
     /// Signed 16-bit samples, big-endian
@@ -256,8 +252,6 @@ impl AudioFormat {
         match raw as u32 {
             sys::AUDIO_U8 => Some(U8),
             sys::AUDIO_S8 => Some(S8),
-            sys::AUDIO_U16LSB => Some(U16LSB),
-            sys::AUDIO_U16MSB => Some(U16MSB),
             sys::AUDIO_S16LSB => Some(S16LSB),
             sys::AUDIO_S16MSB => Some(S16MSB),
             sys::AUDIO_S32LSB => Some(S32LSB),
@@ -276,11 +270,6 @@ impl AudioFormat {
 
 #[cfg(target_endian = "little")]
 impl AudioFormat {
-    /// Unsigned 16-bit samples, native endian
-    #[inline]
-    pub const fn u16_sys() -> AudioFormat {
-        AudioFormat::U16LSB
-    }
     /// Signed 16-bit samples, native endian
     #[inline]
     pub const fn s16_sys() -> AudioFormat {
@@ -454,7 +443,7 @@ impl Drop for AudioSpecWAV {
     #[doc(alias = "SDL_free")]
     fn drop(&mut self) {
         unsafe {
-            sys::SDL_free(self.audio_buf);
+            sys::SDL_free(self.audio_buf as *mut _);
         }
     }
 }
@@ -516,13 +505,6 @@ impl AudioFormatNum for i16 {
         AudioFormat::s16_sys()
     }
     const SILENCE: i16 = 0;
-}
-/// `AUDIO_U16`
-impl AudioFormatNum for u16 {
-    fn audio_format() -> AudioFormat {
-        AudioFormat::u16_sys()
-    }
-    const SILENCE: u16 = 0x8000;
 }
 /// `AUDIO_S32`
 impl AudioFormatNum for i32 {
@@ -781,14 +763,14 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
 
     /// Pauses playback of the audio device.
     #[doc(alias = "SDL_PauseAudioDevice")]
-    pub fn pause(&self) {
-        unsafe { sys::SDL_PauseAudioDevice(self.device_id.id(), 1) }
+    pub fn pause(&self) -> i32 {
+        unsafe { sys::SDL_PauseAudioDevice(self.device_id.id()) }
     }
 
     /// Starts playback of the audio device.
-    #[doc(alias = "SDL_PauseAudioDevice")]
-    pub fn resume(&self) {
-        unsafe { sys::SDL_PauseAudioDevice(self.device_id.id(), 0) }
+    #[doc(alias = "SDL_PlayAudioDevice")]
+    pub fn resume(&self) -> i32 {
+        unsafe { sys::SDL_PlayAudioDevice(self.device_id.id()) }
     }
 
     /// Adds data to the audio queue.
@@ -962,14 +944,14 @@ impl<CB: AudioCallback> AudioDevice<CB> {
 
     /// Pauses playback of the audio device.
     #[doc(alias = "SDL_PauseAudioDevice")]
-    pub fn pause(&self) {
-        unsafe { sys::SDL_PauseAudioDevice(self.device_id.id(), 1) }
+    pub fn pause(&self) -> i32 {
+        unsafe { sys::SDL_PauseAudioDevice(self.device_id.id()) }
     }
 
     /// Starts playback of the audio device.
-    #[doc(alias = "SDL_PauseAudioDevice")]
-    pub fn resume(&self) {
-        unsafe { sys::SDL_PauseAudioDevice(self.device_id.id(), 0) }
+    #[doc(alias = "SDL_PlayAudioDevice")]
+    pub fn resume(&self) -> i32 {
+        unsafe { sys::SDL_PlayAudioDevice(self.device_id.id()) }
     }
 
     /// Locks the audio device using `SDL_LockAudioDevice`.
@@ -1026,140 +1008,5 @@ impl<'a, CB: AudioCallback> Drop for AudioDeviceLockGuard<'a, CB> {
     }
 }
 
-#[derive(Copy, Clone)]
-pub struct AudioCVT {
-    raw: sys::SDL_AudioCVT,
-}
-
-impl AudioCVT {
-    #[doc(alias = "SDL_BuildAudioCVT")]
-    pub fn new(
-        src_format: AudioFormat,
-        src_channels: u8,
-        src_rate: i32,
-        dst_format: AudioFormat,
-        dst_channels: u8,
-        dst_rate: i32,
-    ) -> Result<AudioCVT, String> {
-        use std::mem::MaybeUninit;
-
-        let mut raw: MaybeUninit<sys::SDL_AudioCVT> = mem::MaybeUninit::uninit();
-
-        unsafe {
-            let ret = sys::SDL_BuildAudioCVT(
-                raw.as_mut_ptr(),
-                src_format.to_ll(),
-                src_channels,
-                src_rate as c_int,
-                dst_format.to_ll(),
-                dst_channels,
-                dst_rate as c_int,
-            );
-            if ret == 1 || ret == 0 {
-                let raw = raw.assume_init();
-                Ok(AudioCVT { raw })
-            } else {
-                Err(get_error())
-            }
-        }
-    }
-
-    #[doc(alias = "SDL_ConvertAudio")]
-    pub fn convert(&self, mut src: Vec<u8>) -> Vec<u8> {
-        //! Convert audio data to a desired audio format.
-        //!
-        //! Passes raw audio data from src to the SDL library for conversion, returning the result
-        //! of the conversion.
-        unsafe {
-            if self.raw.needed != 0 {
-                use std::convert::TryInto;
-                use std::slice::from_raw_parts_mut;
-
-                let mut raw = self.raw;
-
-                // Calculate the size of the buffer we're handing to SDL.
-                // This is more a suggestion, and not really a guarantee...
-                let dst_size = self.capacity(src.len());
-
-                // Bounce into SDL2 heap allocation as SDL_ConvertAudio may rewrite the pointer.
-                raw.len = src.len().try_into().expect("Buffer length overflow");
-                raw.buf = sys::SDL_malloc(dst_size as _) as *mut _;
-                if raw.buf.is_null() {
-                    panic!("Failed SDL_malloc needed for SDL_ConvertAudio");
-                }
-                // raw.buf is dst_size long, but we want to copy into only the first src.len bytes.
-                assert!(src.len() <= dst_size);
-                from_raw_parts_mut(raw.buf, src.len()).copy_from_slice(src.as_ref());
-
-                let ret = sys::SDL_ConvertAudio(&mut raw);
-                // There's no reason for SDL_ConvertAudio to fail.
-                // The only time it can fail is if buf is NULL, which it never is.
-                if ret != 0 {
-                    panic!("{}", get_error())
-                }
-
-                // Bounce back into src, trying to re-use the same buffer.
-                let outlen: usize = raw.len_cvt.try_into().expect("Buffer size rollover");
-                debug_assert!(outlen <= dst_size);
-                src.resize(outlen, 0);
-                src.copy_from_slice(from_raw_parts_mut(raw.buf, outlen));
-                sys::SDL_free(raw.buf as *mut _);
-
-                src
-            } else {
-                // The buffer remains unmodified
-                src
-            }
-        }
-    }
-
-    /// Checks if any conversion is needed. i.e. if the buffer that goes
-    /// into `convert()` is unchanged from the result.
-    pub fn is_conversion_needed(&self) -> bool {
-        self.raw.needed != 0
-    }
-
-    /// Gets the buffer capacity that can contain both the original and
-    /// converted data.
-    pub fn capacity(&self, src_len: usize) -> usize {
-        src_len
-            .checked_mul(self.raw.len_mult as usize)
-            .expect("Integer overflow")
-    }
-}
-
 #[cfg(test)]
-mod test {
-    use super::{AudioCVT, AudioFormat};
-
-    #[test]
-    fn test_audio_cvt() {
-        use std::iter::repeat;
-
-        // 0,1,2,3, ...
-        let buffer: Vec<u8> = (0..255).collect();
-
-        // 0,0,1,1,2,2,3,3, ...
-        let new_buffer_expected: Vec<u8> = (0..255).flat_map(|v| repeat(v).take(2)).collect();
-
-        let cvt = AudioCVT::new(AudioFormat::U8, 1, 44100, AudioFormat::U8, 2, 44100).unwrap();
-        assert!(cvt.is_conversion_needed());
-
-        // since we're going from mono to stereo, our capacity must be at least twice the original (255) vec size
-        assert!(
-            cvt.capacity(255) >= 255 * 2,
-            "capacity must be able to hold the converted audio sample"
-        );
-
-        let new_buffer = cvt.convert(buffer);
-        assert_eq!(
-            new_buffer.len(),
-            new_buffer_expected.len(),
-            "capacity must be exactly equal to twice the original vec size"
-        );
-
-        // // this has been commented, see https://discourse.libsdl.org/t/change-of-behavior-in-audiocvt-sdl-convertaudio-from-2-0-5-to-2-0-6/24682
-        // // to maybe re-enable it someday
-        // assert_eq!(new_buffer, new_buffer_expected);
-    }
-}
+mod test {}
