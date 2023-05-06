@@ -1,20 +1,21 @@
 # SDL3-RS [![Build Status][workflows-ci-img]][workflows-ci] [![crates.io badge][crates-io-badge]][crates-io-url]
 
-Bindings for SDL3 in Rust
+Bindings for SDL3 in Rust. Work in progress.
 
 # Overview
 
-This is an interface to use SDL from Rust.
+This is an interface to use SDL3 from Rust.
 
 Low-level C components are wrapped in Rust code to make them more idiomatic and
 abstract away inappropriate manual memory management.
 
 sdl3-rs uses the MIT license.
 
-This is a fork of [Rust-sdl3](https://github.com/Rust-sdl3/rust-sdl3).
+This is a fork of [Rust-sdl2](https://github.com/Rust-sdl2/rust-sdl2) migrated
+according to the [SDL2->SDL3 migration guide](https://github.com/libsdl-org/SDL/blob/main/docs/README-migration.md).
 
 If you want a library compatible with earlier versions of SDL, please see
-[here][early-sdl]
+[here][early-sdl] or [Rust-sdl2](https://github.com/Rust-sdl2/rust-sdl2).
 
 # Documentation
 
@@ -157,19 +158,16 @@ Instructions to generate a static binary on macOS and other operating systems us
 
 ### Windows (MSVC)
 
-1. Download MSVC development libraries from http://www.libsdl.org/ (sdl3-devel-2.0.x-VC.zip).
-2. Unpack sdl3-devel-2.0.x-VC.zip to a folder of your choosing (You can delete it afterwards).
+1. Download MSVC development libraries from http://www.libsdl.org/ (sdl3-devel-3.0.x-VC.zip).
+2. Unpack sdl3-devel-3.0.x-VC.zip to a folder of your choosing (You can delete it afterwards).
 3. Copy all lib files from
 
-   > sdl3-devel-2.0.x-VC\sdl3-2.0.x\lib\x64\
+   > sdl3-devel-3.0.x-VC\sdl3-3.0.x\lib\x64\
 
-   to (for Rust 1.6 and above)
+   to
 
    > C:\Program Files\Rust\\**lib**\rustlib\x86_64-pc-windows-msvc\lib
 
-   or to (for Rust versions 1.5 and below)
-
-   > C:\Program Files\Rust\\**bin**\rustlib\x86_64-pc-windows-msvc\lib
 
    or to your library folder of choice, and ensure you have a system environment variable of
 
@@ -183,7 +181,7 @@ Where current toolchain is likely `stable-x86_64-pc-windows-msvc`.
 
 4. Copy sdl3.dll from
 
-   > sdl3-devel-2.0.x-VC\sdl3-2.0.x\lib\x64\
+   > sdl3-devel-3.0.x-VC\sdl3-3.0.x\lib\x64\
 
    into your cargo project, right next to your Cargo.toml.
 
@@ -204,7 +202,7 @@ The MSVC development libraries provided by http://libsdl.org/ don't include a st
 2. Unpack to a folder of your choosing (You can delete it afterwards).
 3. Copy all lib files from
 
-   > sdl3-devel-2.0.x-mingw\sdl3-2.0.x\x86_64-w64-mingw32\lib
+   > sdl3-devel-2.0.x-mingw\sdl3-3.0.x\x86_64-w64-mingw32\lib
 
    to (for Rust 1.6 and above)
 
@@ -226,7 +224,7 @@ Where current toolchain is likely `stable-x86_64-pc-windows-gnu`.
 
 4. Copy sdl3.dll from
 
-   > sdl3-devel-2.0.x-mingw\sdl3-2.0.x\x86_64-w64-mingw32\bin
+   > sdl3-devel-3.0.x-mingw\sdl3-3.0.x\x86_64-w64-mingw32\bin
 
    into your cargo project, right next to your Cargo.toml.
 
@@ -364,7 +362,7 @@ add the following your `Cargo.toml`:
 
 ```toml
 [dependencies.sdl3]
-version = "0.35"
+version = "0.0.1"
 default-features = false
 features = ["ttf","image","gfx","mixer","static-link","use-vcpkg"]
 
@@ -386,14 +384,14 @@ download through Crates.io:
 
 ```toml
     [dependencies]
-    sdl3 = "0.35"
+    sdl3 = "0.0.1"
 ```
 
 Alternatively, pull it from GitHub to obtain the latest version from master
 
 ```toml
     [dependencies.sdl3]
-    git = "https://github.com/rust-sdl3/rust-sdl3"
+    git = "https://github.com/revmischa/sdl3-rs"
 ```
 
 Otherwise, clone this repo and run [cargo][crates]
@@ -407,13 +405,13 @@ adding this instead:
 
 ```toml
     [dependencies.sdl3]
-    version = "0.35"
+    version = "0.0.1"
     default-features = false
     features = ["ttf","image","gfx","mixer"]
 ```
 
 Those features need their respective libraries, which
-can be found at these locations : (the install process
+can be found at these locations: (the install process
 is the same as sdl3)
 
 - [image, ttf, mixer](https://www.libsdl.org/projects/)
@@ -693,7 +691,7 @@ fn main() {
 
 ```toml
 [dependencies.sdl3]
-version = "0.32"
+version = "0.0.1"
 features = ["raw-window-handle"]
 ```
 
@@ -721,16 +719,21 @@ sdl3::hint::set("SDL_VIDEO_EXTERNAL_CONTEXT", "1")
 
 # When things go wrong
 
-Rust, and Rust-sdl3, are both still heavily in development, and you may run
+Rust, and sdl3-rs, are both still heavily in development, and you may run
 into teething issues when using this. Before panicking, check that you're using
-the latest version of both Rust and Cargo, check that you've updated Rust-sdl3
+the latest version of both Rust and Cargo, check that you've updated sdl3-rs
 to the latest version, and run `cargo clean`. If that fails, please let us know
 on the issue tracker.
 
 # Contributing
 
-Any Pull Request is welcome, however small your contribution may be ! There are, however, conditions to contribute:
+We're looking for people to help get SDL3 support in Rust built, tested, and completed. You can help out!
 
+If you see anything wrong, missing, or sub-optimal, please feel free to open a PR with your improvements.
+
+If you would like to discuss ideas or ask questions, join the #rust channel on [Discord](https://discord.gg/qMyEpKVnCD).
+
+## Once SDL3 is stable:
 - New features must be properly documented, be it via examples or inline documentation (via `cargo doc`). Documentation must be for the end user as well as your next fellow contributor.
 - Breaking changes must have a proper argumentation with it. While the pre-1.0 state of this crate allows us to be somewhat unstable, **useless breaking changes will be denied**.
 - Minor changes, breaking changes and new features added via Pull Request must be added in the [changelog][changelog] file. It is now **mandatory** to log your changes in the changelog. A short description with a link to your commit/pull request within GitHub is fine. Internal, documentation or meta-changes (travis build change, README instructions updates, ...) don't have to be added in the changelog.
@@ -744,7 +747,7 @@ Any Pull Request is welcome, however small your contribution may be ! There are,
 [homebrew]: http://brew.sh/
 [crates]: http://crates.io/
 [examples]: https://github.com/jdeseno/rs-sdl3-examples
-[dep-sdl3-include-issue]: https://github.com/Rust-sdl3/rust-sdl3/pull/968
+[dep-sdl3-include-issue]: https://github.com/Rust-sdl2/rust-sdl2/pull/968
 [gl-rs]: https://github.com/bjz/gl-rs
 [pdev-issue]: https://github.com/PistonDevelopers/rust-empty/issues/175
 [vcpkg]: https://github.com/microsoft/vcpkg
