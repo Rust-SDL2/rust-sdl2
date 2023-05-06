@@ -1,6 +1,6 @@
 # SDL3-RS [![Build Status][workflows-ci-img]][workflows-ci] [![crates.io badge][crates-io-badge]][crates-io-url]
 
-Bindings for SDL3 in Rust
+Bindings for SDL3 in Rust. Work in progress.
 
 # Overview
 
@@ -11,10 +11,11 @@ abstract away inappropriate manual memory management.
 
 sdl3-rs uses the MIT license.
 
-This is a fork of [Rust-sdl3](https://github.com/Rust-sdl3/rust-sdl3).
+This is a fork of [Rust-sdl2](https://github.com/Rust-sdl2/rust-sdl2) migrated
+according to the [SDL2->SDL3 migration guide](https://github.com/libsdl-org/SDL/blob/main/docs/README-migration.md).
 
 If you want a library compatible with earlier versions of SDL, please see
-[here][early-sdl]
+[here][early-sdl] or [Rust-sdl2](https://github.com/Rust-sdl2/rust-sdl2).
 
 # Documentation
 
