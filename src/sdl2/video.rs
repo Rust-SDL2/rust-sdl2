@@ -1518,7 +1518,7 @@ impl Window {
         0 != self.window_flags() & sys::SDL_WindowFlags::SDL_WINDOW_MINIMIZED as u32
     }
 
-    /// Is the windows always on top?
+    /// Is the window always on top?
     pub fn is_always_on_top(&self) -> bool {
         0 != self.window_flags() & sys::SDL_WindowFlags::SDL_WINDOW_ALWAYS_ON_TOP as u32
     }
@@ -1966,7 +1966,7 @@ impl Window {
         }
     }
 
-    /// Makes window appear on top others
+    /// Makes window appear on top of others
     #[doc(alias = "SDL_SetWindowAlwaysOnTop")]
     pub fn set_always_on_top(&mut self, on_top: bool) {
         unsafe {
