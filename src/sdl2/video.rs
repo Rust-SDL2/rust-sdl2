@@ -1262,6 +1262,12 @@ impl WindowBuilder {
         self
     }
 
+    /// Window should always above others (>= SDL 2.0.5)
+    pub fn always_on_top(&mut self) -> &mut WindowBuilder {
+        self.window_flags |= sys::SDL_WindowFlags::SDL_WINDOW_ALWAYS_ON_TOP as u32;
+        self
+    }
+
     /// Create a SDL_MetalView when constructing the window.
     /// This is required when using the raw_window_handle feature on MacOS.
     /// Has no effect no other platforms.
@@ -1510,6 +1516,11 @@ impl Window {
     /// Is the window minimized?
     pub fn is_minimized(&self) -> bool {
         0 != self.window_flags() & sys::SDL_WindowFlags::SDL_WINDOW_MINIMIZED as u32
+    }
+
+    /// Is the windows always on top?
+    pub fn is_always_on_top(&self) -> bool {
+        0 != self.window_flags() & sys::SDL_WindowFlags::SDL_WINDOW_ALWAYS_ON_TOP as u32
     }
 
     #[doc(alias = "SDL_SetWindowTitle")]
@@ -1953,6 +1964,21 @@ impl Window {
         } else {
             Err(get_error())
         }
+    }
+
+    /// Makes window appear on top others
+    #[doc(alias = "SDL_SetWindowAlwaysOnTop")]
+    pub fn set_always_on_top(&mut self, on_top: bool) {
+        unsafe {
+            sys::SDL_SetWindowAlwaysOnTop(
+                self.context.raw,
+                if on_top {
+                    sys::SDL_bool::SDL_TRUE
+                } else {
+                    sys::SDL_bool::SDL_FALSE
+                },
+            )
+        };
     }
 }
 
