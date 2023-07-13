@@ -246,6 +246,8 @@ pub enum PixelFormatEnum {
     YUY2 = sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_YUY2 as i32,
     UYVY = sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_UYVY as i32,
     YVYU = sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_YVYU as i32,
+    NV12 = sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_NV12 as i32,
+    NV21 = sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_NV21 as i32,
 }
 
 // Endianness-agnostic aliases for 32-bit formats
@@ -318,6 +320,13 @@ impl PixelFormatEnum {
                 // U and V have half the width and height of Y.
                 pitch * height + 2 * (pitch / 2 * height / 2)
             }
+            PixelFormatEnum::NV12 | PixelFormatEnum::NV21 => {
+                // NV12 is 4:2:0.
+                // `pitch` is the width of the Y component, and
+                // `height` is the height of the Y component.
+                // U and V have half the width and height of Y.
+                pitch * height + 2 * (pitch / 2 * height / 2)
+            }
             _ => pitch * height,
         }
     }
@@ -350,11 +359,13 @@ impl PixelFormatEnum {
             | PixelFormatEnum::BGRA8888
             | PixelFormatEnum::ARGB2101010 => num_of_pixels * 4,
             // YUV formats
-            // FIXME: rounding error here?
+            // rounding error handled by image size constraints
             PixelFormatEnum::YV12 | PixelFormatEnum::IYUV => num_of_pixels / 2 * 3,
             PixelFormatEnum::YUY2 | PixelFormatEnum::UYVY | PixelFormatEnum::YVYU => {
                 num_of_pixels * 2
             }
+            // rounding error handled by image size constraints
+            PixelFormatEnum::NV12 | PixelFormatEnum::NV21 => num_of_pixels / 2 * 3,
             // Unsupported formats
             PixelFormatEnum::Index8 => num_of_pixels,
             PixelFormatEnum::Unknown
@@ -395,6 +406,7 @@ impl PixelFormatEnum {
             // YUV formats
             PixelFormatEnum::YV12 | PixelFormatEnum::IYUV => 1,
             PixelFormatEnum::YUY2 | PixelFormatEnum::UYVY | PixelFormatEnum::YVYU => 2,
+            PixelFormatEnum::NV12 | PixelFormatEnum::NV21 => 1,
             // Unsupported formats
             PixelFormatEnum::Index8 => 1,
             PixelFormatEnum::Unknown
@@ -470,6 +482,8 @@ impl TryFrom<u32> for PixelFormatEnum {
             sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_YUY2 => YUY2,
             sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_UYVY => UYVY,
             sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_YVYU => YVYU,
+            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_NV12 => NV12,
+            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_NV21 => NV21,
             _ => return Err(()),
         })
     }
@@ -526,6 +540,8 @@ fn test_pixel_format_enum() {
         PixelFormatEnum::YUY2,
         PixelFormatEnum::UYVY,
         PixelFormatEnum::YVYU,
+        PixelFormatEnum::NV12,
+        PixelFormatEnum::NV21,
         PixelFormatEnum::Index8,
         // These don't seem to be supported;
         // the round-trip

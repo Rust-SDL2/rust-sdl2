@@ -812,7 +812,10 @@ fn ll_create_texture(
     // If the pixel format is YUV 4:2:0 and planar, the width and height must
     // be multiples-of-two. See issue #334 for details.
     match pixel_format {
-        PixelFormatEnum::YV12 | PixelFormatEnum::IYUV => {
+        PixelFormatEnum::YV12
+        | PixelFormatEnum::IYUV
+        | PixelFormatEnum::NV12
+        | PixelFormatEnum::NV21 => {
             if w % 2 != 0 || h % 2 != 0 {
                 return Err(WidthMustBeMultipleOfTwoForFormat(width, pixel_format));
             }
@@ -1965,7 +1968,10 @@ impl InternalTexture {
         // See issue #334 for details.
         let TextureQuery { format, .. } = self.query();
         match format {
-            PixelFormatEnum::YV12 | PixelFormatEnum::IYUV => {
+            PixelFormatEnum::YV12
+            | PixelFormatEnum::IYUV
+            | PixelFormatEnum::NV12
+            | PixelFormatEnum::NV21 => {
                 if let Some(r) = rect {
                     if r.x() % 2 != 0 {
                         return Err(XMustBeMultipleOfTwoForFormat(r.x(), format));
