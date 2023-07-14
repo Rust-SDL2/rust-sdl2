@@ -1,5 +1,4 @@
 //! Rectangles and points.
-#![allow(const_err)]
 
 use crate::sys;
 use std::convert::{AsMut, AsRef};
