@@ -1156,15 +1156,16 @@ impl WindowBuilder {
                 raw_height,
                 self.window_flags,
             );
-            let mut metal_view = 0 as sys::SDL_MetalView;
-            #[cfg(target_os = "macos")]
-            if self.create_metal_view {
-                metal_view = sys::SDL_Metal_CreateView(raw);
-            }
 
             if raw.is_null() {
                 Err(SdlError(get_error()))
             } else {
+                let metal_view = match self.create_metal_view {
+                    #[cfg(target_os = "macos")]
+                    true => sys::SDL_Metal_CreateView(raw),
+                    _ => 0 as sys::SDL_MetalView,
+                };
+
                 Ok(Window::from_ll(self.subsystem.clone(), raw, metal_view))
             }
         }
