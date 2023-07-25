@@ -12,6 +12,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 [PR #1254](https://github.com/Rust-SDL2/rust-sdl2/pull/1254) **BREAKING CHANGE** Make `SdlDrop` and `SubsystemDrop` safer; forbid external code from constructing `SdlDrop`
 
+[PR #1318](https://github.com/Rust-SDL2/rust-sdl2/pull/1318) Add NV12, NV21 to PixelFormatEnum
+
 ### v0.35.2
 
 [PR #1173](https://github.com/Rust-SDL2/rust-sdl2/pull/1173) Fix segfault when using timer callbacks
