@@ -625,7 +625,7 @@ fn main() {
         .vulkan_create_surface(instance.handle().as_raw() as _)
         .unwrap();
 
-    // SAFETY: that's just the way it is
+    // SAFETY: Be sure not to drop the `window` before the `Surface` or vulkan `Swapchain`! (SIGSEGV otherwise)
     let surface = unsafe {
         Surface::from_handle(
             Arc::clone(&instance),
