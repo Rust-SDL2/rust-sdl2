@@ -1134,7 +1134,7 @@ impl WindowBuilder {
     #[doc(alias = "SDL_CreateWindow")]
     pub fn build(&self) -> Result<Window, WindowBuildError> {
         use self::WindowBuildError::*;
-        let title = match CString::new(self.title.clone()) {
+        let title = match CString::new(self.title.as_bytes()) {
             Ok(t) => t,
             Err(err) => return Err(InvalidTitle(err)),
         };
