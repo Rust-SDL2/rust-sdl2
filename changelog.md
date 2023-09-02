@@ -14,6 +14,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 [PR #1318](https://github.com/Rust-SDL2/rust-sdl2/pull/1318) Add NV12, NV21 to PixelFormatEnum
 
+[PR #1332](https://github.com/Rust-SDL2/rust-sdl2/pull/1332) Fix `size_hint` implementations for `{audio,video,render}::DriverIterator`
+
 ### v0.35.2
 
 [PR #1173](https://github.com/Rust-SDL2/rust-sdl2/pull/1173) Fix segfault when using timer callbacks
