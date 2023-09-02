@@ -2588,6 +2588,18 @@ impl Iterator for DriverIterator {
         let remaining = (self.length - self.index) as usize;
         (remaining, Some(remaining))
     }
+
+    #[inline]
+    fn nth(&mut self, n: usize) -> Option<RendererInfo> {
+        use std::convert::TryInto;
+
+        self.index = match n.try_into().ok().and_then(|n| self.index.checked_add(n)) {
+            Some(index) if index < self.length => index,
+            _ => self.length,
+        };
+
+        self.next()
+    }
 }
 
 impl DoubleEndedIterator for DriverIterator {
@@ -2600,6 +2612,18 @@ impl DoubleEndedIterator for DriverIterator {
 
             Some(get_render_driver_info(self.length))
         }
+    }
+
+    #[inline]
+    fn nth_back(&mut self, n: usize) -> Option<RendererInfo> {
+        use std::convert::TryInto;
+
+        self.length = match n.try_into().ok().and_then(|n| self.length.checked_sub(n)) {
+            Some(length) if length > self.index => length,
+            _ => self.index,
+        };
+
+        self.next_back()
     }
 }
 
