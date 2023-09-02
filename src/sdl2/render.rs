@@ -2576,8 +2576,8 @@ impl Iterator for DriverIterator {
 
     #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
-        let l = self.length as usize;
-        (l, Some(l))
+        let remaining = (self.length - self.index) as usize;
+        (remaining, Some(remaining))
     }
 }
 
