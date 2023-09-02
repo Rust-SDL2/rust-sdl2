@@ -1990,6 +1990,20 @@ pub struct DriverIterator {
     index: i32,
 }
 
+// panics if SDL_GetVideoDriver returns a null pointer,
+// which only happens if index is outside the range
+// 0..SDL_GetNumVideoDrivers()
+fn get_video_driver(index: i32) -> &'static str {
+    use std::str;
+
+    unsafe {
+        let buf = sys::SDL_GetVideoDriver(index);
+        assert!(!buf.is_null());
+
+        str::from_utf8(CStr::from_ptr(buf as *const _).to_bytes()).unwrap()
+    }
+}
+
 impl Iterator for DriverIterator {
     type Item = &'static str;
 
@@ -1998,15 +2012,10 @@ impl Iterator for DriverIterator {
         if self.index >= self.length {
             None
         } else {
-            use std::str;
+            let driver = get_video_driver(self.index);
+            self.index += 1;
 
-            unsafe {
-                let buf = sys::SDL_GetVideoDriver(self.index);
-                assert!(!buf.is_null());
-                self.index += 1;
-
-                Some(str::from_utf8(CStr::from_ptr(buf as *const _).to_bytes()).unwrap())
-            }
+            Some(driver)
         }
     }
 
@@ -2014,6 +2023,19 @@ impl Iterator for DriverIterator {
     fn size_hint(&self) -> (usize, Option<usize>) {
         let remaining = (self.length - self.index) as usize;
         (remaining, Some(remaining))
+    }
+}
+
+impl DoubleEndedIterator for DriverIterator {
+    #[inline]
+    fn next_back(&mut self) -> Option<&'static str> {
+        if self.index >= self.length {
+            None
+        } else {
+            self.length -= 1;
+
+            Some(get_video_driver(self.length))
+        }
     }
 }
 

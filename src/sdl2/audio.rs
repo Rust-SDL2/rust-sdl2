@@ -352,6 +352,18 @@ pub struct DriverIterator {
     index: i32,
 }
 
+// panics if SDL_GetAudioDriver returns a null pointer,
+// which only happens if index is outside the range
+// 0..SDL_GetNumAudioDrivers()
+fn get_audio_driver(index: i32) -> &'static str {
+    unsafe {
+        let buf = sys::SDL_GetAudioDriver(index);
+        assert!(!buf.is_null());
+
+        CStr::from_ptr(buf as *const _).to_str().unwrap()
+    }
+}
+
 impl Iterator for DriverIterator {
     type Item = &'static str;
 
@@ -360,13 +372,10 @@ impl Iterator for DriverIterator {
         if self.index >= self.length {
             None
         } else {
-            unsafe {
-                let buf = sys::SDL_GetAudioDriver(self.index);
-                assert!(!buf.is_null());
-                self.index += 1;
+            let driver = get_audio_driver(self.index);
+            self.index += 1;
 
-                Some(CStr::from_ptr(buf as *const _).to_str().unwrap())
-            }
+            Some(driver)
         }
     }
 
@@ -374,6 +383,19 @@ impl Iterator for DriverIterator {
     fn size_hint(&self) -> (usize, Option<usize>) {
         let remaining = (self.length - self.index) as usize;
         (remaining, Some(remaining))
+    }
+}
+
+impl DoubleEndedIterator for DriverIterator {
+    #[inline]
+    fn next_back(&mut self) -> Option<&'static str> {
+        if self.index >= self.length {
+            None
+        } else {
+            self.length -= 1;
+
+            Some(get_audio_driver(self.length))
+        }
     }
 }
 
