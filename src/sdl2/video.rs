@@ -2019,6 +2019,8 @@ impl Iterator for DriverIterator {
 
 impl ExactSizeIterator for DriverIterator {}
 
+impl std::iter::FusedIterator for DriverIterator {}
+
 /// Gets an iterator of all video drivers compiled into the SDL2 library.
 #[inline]
 #[doc(alias = "SDL_GetVideoDriver")]

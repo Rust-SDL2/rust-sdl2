@@ -2583,6 +2583,8 @@ impl Iterator for DriverIterator {
 
 impl ExactSizeIterator for DriverIterator {}
 
+impl std::iter::FusedIterator for DriverIterator {}
+
 /// Gets an iterator of all render drivers compiled into the SDL2 library.
 #[inline]
 #[doc(alias = "SDL_GetNumRenderDrivers")]

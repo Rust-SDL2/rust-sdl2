@@ -379,6 +379,8 @@ impl Iterator for DriverIterator {
 
 impl ExactSizeIterator for DriverIterator {}
 
+impl std::iter::FusedIterator for DriverIterator {}
+
 /// Gets an iterator of all audio drivers compiled into the SDL2 library.
 #[doc(alias = "SDL_GetAudioDriver")]
 #[inline]
