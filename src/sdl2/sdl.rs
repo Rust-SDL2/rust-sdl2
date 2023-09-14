@@ -86,7 +86,7 @@ impl Sdl {
         IS_MAIN_THREAD.with(|is_main_thread| {
             if was_main_thread_declared {
                 if !is_main_thread.get() {
-                    return Err("Cannot initialize `Sdl` from more than once thread.".to_owned());
+                    return Err("Cannot initialize `Sdl` from more than one thread.".to_owned());
                 }
             } else {
                 is_main_thread.set(true);
@@ -209,6 +209,7 @@ impl Drop for SdlDrop {
             unsafe {
                 sys::SDL_Quit();
             }
+            IS_MAIN_THREAD_DECLARED.swap(false, Ordering::SeqCst);
         }
     }
 }
