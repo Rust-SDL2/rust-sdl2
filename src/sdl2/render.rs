@@ -2556,6 +2556,17 @@ pub struct DriverIterator {
     index: i32,
 }
 
+// panics if SDL_GetRenderDriverInfo returns a nonzero value,
+// which should only happen if index is outside the range
+// 0..SDL_GetNumRenderDrivers()
+fn get_render_driver_info(index: i32) -> RendererInfo {
+    let mut out = mem::MaybeUninit::uninit();
+    let result = unsafe { sys::SDL_GetRenderDriverInfo(index, out.as_mut_ptr()) };
+    assert_eq!(result, 0);
+
+    unsafe { RendererInfo::from_ll(&out.assume_init()) }
+}
+
 impl Iterator for DriverIterator {
     type Item = RendererInfo;
 
@@ -2565,12 +2576,10 @@ impl Iterator for DriverIterator {
         if self.index >= self.length {
             None
         } else {
-            let mut out = mem::MaybeUninit::uninit();
-            let result = unsafe { sys::SDL_GetRenderDriverInfo(self.index, out.as_mut_ptr()) == 0 };
-            assert!(result, "{}", 0);
+            let driver = get_render_driver_info(self.index);
             self.index += 1;
 
-            unsafe { Some(RendererInfo::from_ll(&out.assume_init())) }
+            Some(driver)
         }
     }
 
@@ -2579,9 +2588,48 @@ impl Iterator for DriverIterator {
         let remaining = (self.length - self.index) as usize;
         (remaining, Some(remaining))
     }
+
+    #[inline]
+    fn nth(&mut self, n: usize) -> Option<RendererInfo> {
+        use std::convert::TryInto;
+
+        self.index = match n.try_into().ok().and_then(|n| self.index.checked_add(n)) {
+            Some(index) if index < self.length => index,
+            _ => self.length,
+        };
+
+        self.next()
+    }
+}
+
+impl DoubleEndedIterator for DriverIterator {
+    #[inline]
+    fn next_back(&mut self) -> Option<RendererInfo> {
+        if self.index >= self.length {
+            None
+        } else {
+            self.length -= 1;
+
+            Some(get_render_driver_info(self.length))
+        }
+    }
+
+    #[inline]
+    fn nth_back(&mut self, n: usize) -> Option<RendererInfo> {
+        use std::convert::TryInto;
+
+        self.length = match n.try_into().ok().and_then(|n| self.length.checked_sub(n)) {
+            Some(length) if length > self.index => length,
+            _ => self.index,
+        };
+
+        self.next_back()
+    }
 }
 
 impl ExactSizeIterator for DriverIterator {}
+
+impl std::iter::FusedIterator for DriverIterator {}
 
 /// Gets an iterator of all render drivers compiled into the SDL2 library.
 #[inline]

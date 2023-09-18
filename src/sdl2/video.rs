@@ -1990,6 +1990,20 @@ pub struct DriverIterator {
     index: i32,
 }
 
+// panics if SDL_GetVideoDriver returns a null pointer,
+// which only happens if index is outside the range
+// 0..SDL_GetNumVideoDrivers()
+fn get_video_driver(index: i32) -> &'static str {
+    use std::str;
+
+    unsafe {
+        let buf = sys::SDL_GetVideoDriver(index);
+        assert!(!buf.is_null());
+
+        str::from_utf8(CStr::from_ptr(buf as *const _).to_bytes()).unwrap()
+    }
+}
+
 impl Iterator for DriverIterator {
     type Item = &'static str;
 
@@ -1998,15 +2012,10 @@ impl Iterator for DriverIterator {
         if self.index >= self.length {
             None
         } else {
-            use std::str;
+            let driver = get_video_driver(self.index);
+            self.index += 1;
 
-            unsafe {
-                let buf = sys::SDL_GetVideoDriver(self.index);
-                assert!(!buf.is_null());
-                self.index += 1;
-
-                Some(str::from_utf8(CStr::from_ptr(buf as *const _).to_bytes()).unwrap())
-            }
+            Some(driver)
         }
     }
 
@@ -2015,9 +2024,48 @@ impl Iterator for DriverIterator {
         let remaining = (self.length - self.index) as usize;
         (remaining, Some(remaining))
     }
+
+    #[inline]
+    fn nth(&mut self, n: usize) -> Option<&'static str> {
+        use std::convert::TryInto;
+
+        self.index = match n.try_into().ok().and_then(|n| self.index.checked_add(n)) {
+            Some(index) if index < self.length => index,
+            _ => self.length,
+        };
+
+        self.next()
+    }
+}
+
+impl DoubleEndedIterator for DriverIterator {
+    #[inline]
+    fn next_back(&mut self) -> Option<&'static str> {
+        if self.index >= self.length {
+            None
+        } else {
+            self.length -= 1;
+
+            Some(get_video_driver(self.length))
+        }
+    }
+
+    #[inline]
+    fn nth_back(&mut self, n: usize) -> Option<&'static str> {
+        use std::convert::TryInto;
+
+        self.length = match n.try_into().ok().and_then(|n| self.length.checked_sub(n)) {
+            Some(length) if length > self.index => length,
+            _ => self.index,
+        };
+
+        self.next_back()
+    }
 }
 
 impl ExactSizeIterator for DriverIterator {}
+
+impl std::iter::FusedIterator for DriverIterator {}
 
 /// Gets an iterator of all video drivers compiled into the SDL2 library.
 #[inline]
