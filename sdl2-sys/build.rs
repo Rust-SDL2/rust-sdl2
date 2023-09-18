@@ -132,6 +132,15 @@ fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
         cfg.define("VIDEO_OPENGLES", "OFF");
     }
 
+    if target_os == "android" {
+        cfg.define(
+            "ANDROID_NDK",
+            env::var("ANDROID_NDK_HOME").expect(
+                "ANDROID_NDK_HOME environment variable must be set when compiling for Android",
+            ),
+        );
+    }
+
     if cfg!(feature = "static-link") {
         cfg.define("SDL_SHARED", "OFF");
         cfg.define("SDL_STATIC", "ON");
