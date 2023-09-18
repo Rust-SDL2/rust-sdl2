@@ -18,6 +18,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 [PR #1333](https://github.com/Rust-SDL2/rust-sdl2/pull/1333) Implement `FusedIterator`, `DoubleEndedIterator`, `and nth[_back]` for `{audio,video,render}::DriverIterator`
 
+[PR #1337](https://github.com/Rust-SDL2/rust-sdl2/pull/1337) Fix "Cannot initialize Sdl from more than one thread" for tests / CI
+
 ### v0.35.2
 
 [PR #1173](https://github.com/Rust-SDL2/rust-sdl2/pull/1173) Fix segfault when using timer callbacks
