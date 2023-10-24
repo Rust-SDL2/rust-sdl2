@@ -96,8 +96,10 @@ fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
     let mut cfg = cmake::Config::new(sdl2_build_path);
     if let Ok(profile) = env::var("SDL2_BUILD_PROFILE") {
         cfg.profile(&profile);
+        cfg.define("CMAKE_CONFIGURATION_TYPES", &profile);
     } else {
         cfg.profile("Release");
+        cfg.define("CMAKE_CONFIGURATION_TYPES", "Release");
     }
 
     // Allow specifying custom toolchain specifically for SDL2.
