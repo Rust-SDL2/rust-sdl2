@@ -1113,6 +1113,7 @@ pub struct WindowBuilder {
     /// The window builder cannot be built on a non-main thread, so prevent cross-threaded moves and references.
     /// `!Send` and `!Sync`,
     subsystem: VideoSubsystem,
+    shaped: bool,
 }
 
 impl WindowBuilder {
@@ -1127,6 +1128,7 @@ impl WindowBuilder {
             window_flags: 0,
             subsystem: v.clone(),
             create_metal_view: false,
+            shaped: false,
         }
     }
 
@@ -1148,14 +1150,25 @@ impl WindowBuilder {
         let raw_width = self.width as c_int;
         let raw_height = self.height as c_int;
         unsafe {
-            let raw = sys::SDL_CreateWindow(
-                title.as_ptr() as *const c_char,
-                to_ll_windowpos(self.x),
-                to_ll_windowpos(self.y),
-                raw_width,
-                raw_height,
-                self.window_flags,
-            );
+            let raw = if self.shaped {
+                sys::SDL_CreateShapedWindow(
+                    title.as_ptr() as *const c_char,
+                    to_ll_windowpos(self.x) as u32,
+                    to_ll_windowpos(self.y) as u32,
+                    raw_width as u32,
+                    raw_height as u32,
+                    self.window_flags,
+                )
+            } else {
+                sys::SDL_CreateWindow(
+                    title.as_ptr() as *const c_char,
+                    to_ll_windowpos(self.x),
+                    to_ll_windowpos(self.y),
+                    raw_width,
+                    raw_height,
+                    self.window_flags,
+                )
+            };
 
             if raw.is_null() {
                 Err(SdlError(get_error()))
@@ -1274,6 +1287,12 @@ impl WindowBuilder {
     /// Has no effect no other platforms.
     pub fn metal_view(&mut self) -> &mut WindowBuilder {
         self.create_metal_view = true;
+        self
+    }
+
+    /// Sets shaped state, to create via SDL_CreateShapedWindow instead of SDL_CreateWindow
+    pub fn set_shaped(&mut self) -> &mut WindowBuilder {
+        self.shaped = true;
         self
     }
 }
@@ -1531,6 +1550,30 @@ impl Window {
             sys::SDL_SetWindowTitle(self.context.raw, title.as_ptr() as *const c_char);
         }
         Ok(())
+    }
+
+    /// Set the shape of the window
+    /// To be effective:
+    /// - shaped must have been set using windows builder
+    /// - binarizationCutoff: specify the cutoff value for the shape's alpha
+    ///   channel: At or above that cutoff value, a pixel is visible in the
+    ///   shape. Below that, it's not part of the shape.
+    pub fn set_window_shape_alpha<S: AsRef<SurfaceRef>>(
+        &mut self,
+        shape: S,
+        binarizationCutoff: u8,
+    ) -> Result<(), i32> {
+        let mode = sys::WindowShapeMode::ShapeModeBinarizeAlpha;
+        let parameters = sys::SDL_WindowShapeParams { binarizationCutoff };
+        let mut shape_mode = sys::SDL_WindowShapeMode { mode, parameters };
+        let result = unsafe {
+            sys::SDL_SetWindowShape(self.context.raw, shape.as_ref().raw(), &mut shape_mode)
+        };
+        if result == 0 {
+            Ok(())
+        } else {
+            Err(result)
+        }
     }
 
     #[doc(alias = "SDL_GetWindowTitle")]
