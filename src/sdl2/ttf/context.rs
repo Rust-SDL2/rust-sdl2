@@ -124,7 +124,10 @@ pub fn init() -> Result<Sdl2TtfContext, InitError> {
         } else if ttf::TTF_Init() == 0 {
             Ok(Sdl2TtfContext)
         } else {
-            Err(InitError::InitializationError(io::Error::last_os_error()))
+            Err(InitError::InitializationError(io::Error::new(
+                io::ErrorKind::Other,
+                get_error(),
+            )))
         }
     }
 }

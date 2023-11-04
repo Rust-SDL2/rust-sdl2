@@ -20,6 +20,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 [PR #1337](https://github.com/Rust-SDL2/rust-sdl2/pull/1337) Fix "Cannot initialize Sdl from more than one thread" for tests / CI
 
+[PR #1348](https://github.com/Rust-SDL2/rust-sdl2/pull/1348) Use `SDL_GetError` for `sdl2::ttf::init` instead of the last OS error
+
 ### v0.35.2
 
 [PR #1173](https://github.com/Rust-SDL2/rust-sdl2/pull/1173) Fix segfault when using timer callbacks
