@@ -1561,10 +1561,10 @@ impl Window {
     pub fn set_window_shape_alpha<S: AsRef<SurfaceRef>>(
         &mut self,
         shape: S,
-        binarizationCutoff: u8,
+        binarization_cutoff: u8,
     ) -> Result<(), i32> {
         let mode = sys::WindowShapeMode::ShapeModeBinarizeAlpha;
-        let parameters = sys::SDL_WindowShapeParams { binarizationCutoff };
+        let parameters = sys::SDL_WindowShapeParams { binarizationCutoff: binarization_cutoff };
         let mut shape_mode = sys::SDL_WindowShapeMode { mode, parameters };
         let result = unsafe {
             sys::SDL_SetWindowShape(self.context.raw, shape.as_ref().raw(), &mut shape_mode)

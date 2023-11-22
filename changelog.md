@@ -1,11 +1,14 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
-### Unreleased
+### v0.36.0
 
 [PR #1270](https://github.com/Rust-SDL2/rust-sdl2/pull/1270) **BREAKING CHANGE** Remove &mut self requirement in `TimerSubsystem::delay`; Add `TimerSubsystem::ticks64`
 
-[PR #1225](https://github.com/Rust-SDL2/rust-sdl2/pull/1225) Update wgpu to 0.12 and fix raw-window-handle-with-wgpu example
+[PR #1275](https://github.com/Rust-SDL2/rust-sdl2/pull/1275) **BREAKING CHANGE** Update raw-window-handle to 0.5
+
+[PR #1225](https://github.com/Rust-SDL2/rust-sdl2/pull/1225) Update wgpu to 0.12 in examples
+
 [PR #1250](https://github.com/Rust-SDL2/rust-sdl2/pull/1250) Add `lib64` to native library search path when using bundled feature
 
 [PR #1240](https://github.com/Rust-SDL2/rust-sdl2/pull/1240) **BREAKING CHANGE** Take `PixelMasks` by refrence
@@ -19,6 +22,12 @@ when upgrading from a version of rust-sdl2 to another.
 [PR #1333](https://github.com/Rust-SDL2/rust-sdl2/pull/1333) Implement `FusedIterator`, `DoubleEndedIterator`, `and nth[_back]` for `{audio,video,render}::DriverIterator`
 
 [PR #1337](https://github.com/Rust-SDL2/rust-sdl2/pull/1337) Fix "Cannot initialize Sdl from more than one thread" for tests / CI
+
+[PR #1337](https://github.com/Rust-SDL2/rust-sdl2/pull/1337) Fix "Cannot initialize Sdl from more than one thread" for tests / CI
+
+[PR #1346](https://github.com/Rust-SDL2/rust-sdl2/pull/1346) Add basic Shaped Window support
+
+[PR #1314](https://github.com/Rust-SDL2/rust-sdl2/pull/1314) Add "ALWAYS ON TOP" support for X11
 
 ### v0.35.2
 

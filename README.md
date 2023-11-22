@@ -2,7 +2,7 @@
 
 Bindings for SDL2 in Rust
 
-### [Changelog for 0.35.0](changelog.md#v0350)
+### [Changelog for 0.36.0](changelog.md#v0360)
 
 # Overview
 
@@ -334,7 +334,7 @@ add the following your `Cargo.toml`:
 
 ```toml
 [dependencies.sdl2]
-version = "0.35"
+version = "0.36"
 default-features = false
 features = ["ttf","image","gfx","mixer","static-link","use-vcpkg"]
 
@@ -356,7 +356,7 @@ download through Crates.io:
 
 ```toml
     [dependencies]
-    sdl2 = "0.35"
+    sdl2 = "0.36"
 ```
 
 Alternatively, pull it from GitHub to obtain the latest version from master
@@ -377,7 +377,7 @@ adding this instead:
 
 ```toml
     [dependencies.sdl2]
-    version = "0.35"
+    version = "0.36"
     default-features = false
     features = ["ttf","image","gfx","mixer"]
 ```
