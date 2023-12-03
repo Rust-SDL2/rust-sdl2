@@ -251,20 +251,23 @@ fn link_sdl2(target_os: &str) {
                 println!("cargo:rustc-link-lib=SDL2");
             }
 
-            if cfg!(feature = "gfx") {
-                println!("cargo:rustc-link-lib=SDL2_gfx");
-            }
+            // bundled not support the other feature
+            if !cfg!(feature = "bundled") {
+                if cfg!(feature = "gfx") {
+                    println!("cargo:rustc-link-lib=SDL2_gfx");
+                }
 
-            if cfg!(feature = "mixer") {
-                println!("cargo:rustc-link-lib=SDL2_mixer");
-            }
+                if cfg!(feature = "mixer") {
+                    println!("cargo:rustc-link-lib=SDL2_mixer");
+                }
 
-            if cfg!(feature = "image") {
-                println!("cargo:rustc-link-lib=SDL2_image");
-            }
+                if cfg!(feature = "image") {
+                    println!("cargo:rustc-link-lib=SDL2_image");
+                }
 
-            if cfg!(feature = "ttf") {
-                println!("cargo:rustc-link-lib=SDL2_ttf");
+                if cfg!(feature = "ttf") {
+                    println!("cargo:rustc-link-lib=SDL2_ttf");
+                }
             }
         }
 
