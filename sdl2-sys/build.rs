@@ -244,11 +244,27 @@ fn link_sdl2(target_os: &str) {
         if cfg!(feature = "bundled")
             || (cfg!(feature = "use-pkgconfig") == false && cfg!(feature = "use-vcpkg") == false)
         {
-            println!("cargo:rustc-link-lib=static=SDL2main");
-            if target_os.contains("windows") {
-                println!("cargo:rustc-link-lib=static=SDL2-static");
+            println!("cargo:rustc-link-lib=SDL2main");
+            if target_os == "windows-msvc" {
+                println!("cargo:rustc-link-lib=SDL2-static");
             } else {
-                println!("cargo:rustc-link-lib=static=SDL2");
+                println!("cargo:rustc-link-lib=SDL2");
+            }
+
+            if cfg!(feature = "gfx") {
+                println!("cargo:rustc-link-lib=SDL2_gfx");
+            }
+
+            if cfg!(feature = "mixer") {
+                println!("cargo:rustc-link-lib=SDL2_mixer");
+            }
+
+            if cfg!(feature = "image") {
+                println!("cargo:rustc-link-lib=SDL2_image");
+            }
+
+            if cfg!(feature = "ttf") {
+                println!("cargo:rustc-link-lib=SDL2_ttf");
             }
         }
 
