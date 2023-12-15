@@ -1,6 +1,6 @@
 extern crate raw_window_handle;
 
-use self::raw_window_handle::{
+pub use self::raw_window_handle::{
     HasRawDisplayHandle, HasRawWindowHandle, RawDisplayHandle, RawWindowHandle,
 };
 use crate::{sys::SDL_Window, video::Window};
