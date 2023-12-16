@@ -34,6 +34,8 @@ use crate::pixels;
 use crate::pixels::PixelFormatEnum;
 use crate::rect::Point;
 use crate::rect::Rect;
+use crate::rect::FPoint;
+use crate::rect::FRect;
 use crate::surface;
 use crate::surface::{Surface, SurfaceContext, SurfaceRef};
 use crate::video::{Window, WindowContext};
@@ -1321,6 +1323,145 @@ impl<T: RenderTarget> Canvas<T> {
             sys::SDL_RenderFillRects(
                 self.context.raw,
                 Rect::raw_slice(rects),
+                rects.len() as c_int,
+            )
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Draws a point on the current rendering target.
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    #[doc(alias = "SDL_RenderDrawPointF")]
+    pub fn draw_fpoint<P: Into<FPoint>>(&mut self, point: P) -> Result<(), String> {
+        let point = point.into();
+        let result = unsafe { sys::SDL_RenderDrawPointF(self.context.raw, point.x(), point.y()) };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Draws multiple points on the current rendering target.
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    #[doc(alias = "SDL_RenderDrawPointsF")]
+    pub fn draw_fpoints<'a, P: Into<&'a [FPoint]>>(&mut self, points: P) -> Result<(), String> {
+        let points = points.into();
+        let result = unsafe {
+            sys::SDL_RenderDrawPointsF(
+                self.context.raw,
+                FPoint::raw_slice(points),
+                points.len() as c_int,
+            )
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Draws a line on the current rendering target.
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    #[doc(alias = "SDL_RenderDrawLineF")]
+    pub fn draw_fline<P1: Into<FPoint>, P2: Into<FPoint>>(
+        &mut self,
+        start: P1,
+        end: P2,
+    ) -> Result<(), String> {
+        let start = start.into();
+        let end = end.into();
+        let result = unsafe {
+            sys::SDL_RenderDrawLineF(self.context.raw, start.x(), start.y(), end.x(), end.y())
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Draws a series of connected lines on the current rendering target.
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    #[doc(alias = "SDL_RenderDrawLinesF")]
+    pub fn draw_flines<'a, P: Into<&'a [FPoint]>>(&mut self, points: P) -> Result<(), String> {
+        let points = points.into();
+        let result = unsafe {
+            sys::SDL_RenderDrawLinesF(
+                self.context.raw,
+                FPoint::raw_slice(points),
+                points.len() as c_int,
+            )
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Draws a rectangle on the current rendering target.
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    #[doc(alias = "SDL_RenderDrawRectF")]
+    pub fn draw_frect(&mut self, rect: FRect) -> Result<(), String> {
+        let result = unsafe { sys::SDL_RenderDrawRectF(self.context.raw, rect.raw()) };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Draws some number of rectangles on the current rendering target.
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    #[doc(alias = "SDL_RenderDrawRectsF")]
+    pub fn draw_frects(&mut self, rects: &[FRect]) -> Result<(), String> {
+        let result = unsafe {
+            sys::SDL_RenderDrawRectsF(
+                self.context.raw,
+                FRect::raw_slice(rects),
+                rects.len() as c_int,
+            )
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Fills a rectangle on the current rendering target with the drawing
+    /// color.
+    /// Passing None will fill the entire rendering target.
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    #[doc(alias = "SDL_RenderFillRectF")]
+    pub fn fill_frect<R: Into<Option<FRect>>>(&mut self, rect: R) -> Result<(), String> {
+        let result = unsafe {
+            sys::SDL_RenderFillRectF(
+                self.context.raw,
+                rect.into().as_ref().map(|r| r.raw()).unwrap_or(ptr::null()),
+            )
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Fills some number of rectangles on the current rendering target with
+    /// the drawing color.
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    #[doc(alias = "SDL_RenderFillRectsF")]
+    pub fn fill_frects(&mut self, rects: &[FRect]) -> Result<(), String> {
+        let result = unsafe {
+            sys::SDL_RenderFillRectsF(
+                self.context.raw,
+                FRect::raw_slice(rects),
                 rects.len() as c_int,
             )
         };
