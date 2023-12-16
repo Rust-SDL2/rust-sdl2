@@ -590,16 +590,17 @@ To use Vulkan, you need a Vulkan library for Rust. This example uses the
 types for raw Vulkan object handles. The procedure to interface SDL2's Vulkan functions with these
 will be different for each one.
 
+First, make sure you enable the [`raw-window-handle`](#support-for-raw-window-handle) feature.
+
 ```rust
 extern crate sdl2;
 extern crate vulkano;
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use std::sync::Arc;
 use vulkano::instance::{Instance, InstanceCreateInfo, InstanceExtensions};
-use vulkano::swapchain::{Surface, SurfaceApi};
-use vulkano::{Handle, VulkanLibrary, VulkanObject};
+use vulkano::swapchain::Surface;
+use vulkano::VulkanLibrary;
 
 fn main() {
     let sdl_context = sdl2::init().unwrap();
@@ -614,26 +615,18 @@ fn main() {
     let instance_extensions =
         InstanceExtensions::from_iter(window.vulkan_instance_extensions().unwrap());
 
-    let instance = Instance::new(VulkanLibrary::new().unwrap(), {
-        let mut instance_info = InstanceCreateInfo::application_from_cargo_toml();
-        instance_info.enabled_extensions = instance_extensions;
-        instance_info
-    })
-        .unwrap();
+    let instance = Instance::new(
+        VulkanLibrary::new().unwrap(),
+        InstanceCreateInfo {
+            enabled_extensions: instance_extensions,
+            ..Default::default()
+        },
+    )
+    .unwrap();
 
-    let surface_handle = window
-        .vulkan_create_surface(instance.handle().as_raw() as _)
-        .unwrap();
-
-    // SAFETY: Be sure not to drop the `window` before the `Surface` or vulkan `Swapchain`! (SIGSEGV otherwise)
-    let surface = unsafe {
-        Surface::from_handle(
-            Arc::clone(&instance),
-            <_ as Handle>::from_raw(surface_handle),
-            SurfaceApi::Xlib,
-            None,
-        )
-    };
+    // SAFETY: Be sure not to drop the `window` before the `Surface` or vulkan `Swapchain`!
+    // (SIGSEGV otherwise)
+    let surface = unsafe { Surface::from_window_ref(instance.clone(), &window) };
 
     let mut event_pump = sdl_context.event_pump().unwrap();
 
@@ -653,8 +646,6 @@ fn main() {
         ::std::thread::sleep(::std::time::Duration::new(0, 1_000_000_000u32 / 60));
     }
 }
-
-
 ```
 
 # Support for raw-window-handle
