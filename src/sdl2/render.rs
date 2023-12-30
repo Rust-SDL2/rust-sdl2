@@ -1480,6 +1480,112 @@ impl<T: RenderTarget> Canvas<T> {
     ///
     /// Errors if drawing fails for any reason (e.g. driver failure),
     /// or if the provided texture does not belong to the renderer.
+    #[doc(alias = "SDL_RenderCopyF")]
+    pub fn copy_f<R1, R2>(&mut self, texture: &Texture, src: R1, dst: R2) -> Result<(), String>
+    where
+        R1: Into<Option<Rect>>,
+        R2: Into<Option<FRect>>,
+    {
+        let ret = unsafe {
+            sys::SDL_RenderCopyF(
+                self.context.raw,
+                texture.raw,
+                match src.into() {
+                    Some(ref rect) => rect.raw(),
+                    None => ptr::null(),
+                },
+                match dst.into() {
+                    Some(ref rect) => rect.raw(),
+                    None => ptr::null(),
+                },
+            )
+        };
+
+        if ret != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Copies a portion of the texture to the current rendering target,
+    /// optionally rotating it by angle around the given center and also
+    /// flipping it top-bottom and/or left-right.
+    ///
+    /// * If `src` is `None`, the entire texture is copied.
+    /// * If `dst` is `None`, the texture will be stretched to fill the given
+    ///   rectangle.
+    /// * If `center` is `None`, rotation will be done around the center point
+    ///   of `dst`, or `src` if `dst` is None.
+    ///
+    /// Errors if drawing fails for any reason (e.g. driver failure),
+    /// if the provided texture does not belong to the renderer,
+    /// or if the driver does not support RenderCopyEx.
+    #[doc(alias = "SDL_RenderCopyExF")]
+    pub fn copy_ex_f<R1, R2, P>(
+        &mut self,
+        texture: &Texture,
+        src: R1,
+        dst: R2,
+        angle: f64,
+        center: P,
+        flip_horizontal: bool,
+        flip_vertical: bool,
+    ) -> Result<(), String>
+    where
+        R1: Into<Option<Rect>>,
+        R2: Into<Option<FRect>>,
+        P: Into<Option<FPoint>>,
+    {
+        use crate::sys::SDL_RendererFlip::*;
+        let flip = unsafe {
+            match (flip_horizontal, flip_vertical) {
+                (false, false) => SDL_FLIP_NONE,
+                (true, false) => SDL_FLIP_HORIZONTAL,
+                (false, true) => SDL_FLIP_VERTICAL,
+                (true, true) => transmute::<u32, sys::SDL_RendererFlip>(
+                    transmute::<sys::SDL_RendererFlip, u32>(SDL_FLIP_HORIZONTAL)
+                        | transmute::<sys::SDL_RendererFlip, u32>(SDL_FLIP_VERTICAL),
+                ),
+            }
+        };
+
+        let ret = unsafe {
+            sys::SDL_RenderCopyExF(
+                self.context.raw,
+                texture.raw,
+                match src.into() {
+                    Some(ref rect) => rect.raw(),
+                    None => ptr::null(),
+                },
+                match dst.into() {
+                    Some(ref rect) => rect.raw(),
+                    None => ptr::null(),
+                },
+                angle as c_double,
+                match center.into() {
+                    Some(ref point) => point.raw(),
+                    None => ptr::null(),
+                },
+                flip,
+            )
+        };
+
+        if ret != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Copies a portion of the texture to the current rendering target.
+    ///
+    /// * If `src` is `None`, the entire texture is copied.
+    /// * If `dst` is `None`, the texture will be stretched to fill the given
+    ///   rectangle.
+    ///
+    /// Errors if drawing fails for any reason (e.g. driver failure),
+    /// or if the provided texture does not belong to the renderer.
     #[doc(alias = "SDL_RenderCopy")]
     pub fn copy<R1, R2>(&mut self, texture: &Texture, src: R1, dst: R2) -> Result<(), String>
     where
