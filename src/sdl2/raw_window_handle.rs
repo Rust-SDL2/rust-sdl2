@@ -156,7 +156,7 @@ unsafe impl HasRawDisplayHandle for Window {
             SDL_SYSWM_WINDOWS | SDL_SYSWM_WINRT => {
                 use self::raw_window_handle::WindowsDisplayHandle;
 
-                let mut handle = WindowsDisplayHandle::empty();
+                let handle = WindowsDisplayHandle::empty();
 
                 RawDisplayHandle::Windows(handle)
             }
@@ -200,7 +200,7 @@ unsafe impl HasRawDisplayHandle for Window {
             SDL_SYSWM_UIKIT => {
                 use self::raw_window_handle::UiKitDisplayHandle;
 
-                let mut handle = UiKitDisplayHandle::empty();
+                let handle = UiKitDisplayHandle::empty();
 
                 RawDisplayHandle::UiKit(handle)
             }
@@ -208,9 +208,7 @@ unsafe impl HasRawDisplayHandle for Window {
             SDL_SYSWM_ANDROID => {
                 use self::raw_window_handle::AndroidDisplayHandle;
 
-                let mut handle = AndroidDisplayHandle::empty();
-                handle.a_native_window =
-                    unsafe { wm_info.info.android }.window as *mut libc::c_void;
+                let handle = AndroidDisplayHandle::empty();
 
                 RawDisplayHandle::Android(handle)
             }
