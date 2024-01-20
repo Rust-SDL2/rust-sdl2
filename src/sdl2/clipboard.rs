@@ -96,5 +96,4 @@ impl ClipboardUtil {
     pub fn has_primary_selection_text(&self) -> bool {
         unsafe { sys::SDL_HasPrimarySelectionText() == sys::SDL_bool::SDL_TRUE }
     }
-
 }
