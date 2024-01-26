@@ -688,6 +688,7 @@ impl FlashOperation {
 /// Note: If a `Window` goes out of scope but it cloned its context,
 /// then the `SDL_Window` will not be destroyed until there are no more references to the `WindowContext`.
 /// This may happen when a `TextureCreator<Window>` outlives the `Canvas<Window>`
+#[derive(Clone)]
 pub struct Window {
     context: Rc<WindowContext>,
 }
@@ -1324,7 +1325,7 @@ impl Window {
 
     #[inline]
     /// Create a new `Window` without taking ownership of the `WindowContext`
-    pub const unsafe fn from_ref(context: Rc<WindowContext>) -> Window {
+    pub const fn from_ref(context: Rc<WindowContext>) -> Window {
         Window { context }
     }
 
