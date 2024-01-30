@@ -1,6 +1,12 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
+### Unreleased
+
+[PR #1368](https://github.com/Rust-SDL2/rust-sdl2/pull/1368) Remove unnecessary unsafe in Window interface. Make Window `Clone`.
+
+[PR #1366](https://github.com/Rust-SDL2/rust-sdl2/pull/1366) Add Primary Selection bindings.
+
 ### v0.36.0
 
 [PR #1270](https://github.com/Rust-SDL2/rust-sdl2/pull/1270) **BREAKING CHANGE** Remove &mut self requirement in `TimerSubsystem::delay`; Add `TimerSubsystem::ticks64`
