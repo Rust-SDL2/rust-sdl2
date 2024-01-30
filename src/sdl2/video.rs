@@ -1564,7 +1564,9 @@ impl Window {
         binarization_cutoff: u8,
     ) -> Result<(), i32> {
         let mode = sys::WindowShapeMode::ShapeModeBinarizeAlpha;
-        let parameters = sys::SDL_WindowShapeParams { binarizationCutoff: binarization_cutoff };
+        let parameters = sys::SDL_WindowShapeParams {
+            binarizationCutoff: binarization_cutoff,
+        };
         let mut shape_mode = sys::SDL_WindowShapeMode { mode, parameters };
         let result = unsafe {
             sys::SDL_SetWindowShape(self.context.raw, shape.as_ref().raw(), &mut shape_mode)

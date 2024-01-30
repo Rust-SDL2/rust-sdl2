@@ -5371,6 +5371,51 @@ extern "C" {
     #[doc = " \\sa SDL_SetClipboardText"]
     pub fn SDL_HasClipboardText() -> SDL_bool;
 }
+extern "C" {
+    #[doc = " Put UTF-8 text into the primary selection."]
+    #[doc = ""]
+    #[doc = "\\param text the text to store in the primary selection"]
+    #[doc = "\\returns 0 on success or a negative error code on failure; call"]
+    #[doc = "         SDL_GetError() for more information."]
+    #[doc = ""]
+    #[doc = "\\since This function is available since SDL 2.26.0."]
+    #[doc = ""]
+    #[doc = "\\sa SDL_GetPrimarySelectionText"]
+    #[doc = "\\sa SDL_HasPrimarySelectionText"]
+    pub fn SDL_SetPrimarySelectionText(text: *const libc::c_char) -> libc::c_int;
+}
+extern "C" {
+    #[doc = " Get UTF-8 text from the primary selection, which must be freed with"]
+    #[doc = "SDL_free()."]
+    #[doc = ""]
+    #[doc = "This functions returns empty string if there was not enough memory left for"]
+    #[doc = "a copy of the primary selection's content."]
+    #[doc = ""]
+    #[doc = "\\returns the primary selection text on success or an empty string on"]
+    #[doc = "         failure; call SDL_GetError() for more information. Caller must"]
+    #[doc = "         call SDL_free() on the returned pointer when done with it (even if"]
+    #[doc = "         there was an error)."]
+    #[doc = ""]
+    #[doc = "\\since This function is available since SDL 2.26.0."]
+    #[doc = ""]
+    #[doc = "\\sa SDL_HasPrimarySelectionText"]
+    #[doc = "\\sa SDL_SetPrimarySelectionText"]
+    pub fn SDL_GetPrimarySelectionText() -> *mut libc::c_char;
+}
+extern "C" {
+
+    #[doc = "Query whether the primary selection exists and contains a non-empty text"]
+    #[doc = "string."]
+    #[doc = ""]
+    #[doc = "\\returns SDL_TRUE if the primary selection has text, or SDL_FALSE if it"]
+    #[doc = "         does not."]
+    #[doc = ""]
+    #[doc = "\\since This function is available since SDL 2.26.0."]
+    #[doc = ""]
+    #[doc = "\\sa SDL_GetPrimarySelectionText"]
+    #[doc = "\\sa SDL_SetPrimarySelectionText"]
+    pub fn SDL_HasPrimarySelectionText() -> SDL_bool;
+}
 pub type __m64 = [libc::c_longlong; 1usize];
 pub type __v1di = [libc::c_longlong; 1usize];
 pub type __v2si = [libc::c_int; 2usize];

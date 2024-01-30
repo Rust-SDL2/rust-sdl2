@@ -62,4 +62,38 @@ impl ClipboardUtil {
     pub fn has_clipboard_text(&self) -> bool {
         unsafe { sys::SDL_HasClipboardText() == sys::SDL_bool::SDL_TRUE }
     }
+
+    #[doc(alias = "SDL_SetPrimarySelectionText")]
+    pub fn set_primary_selection_text(&self, text: &str) -> Result<(), String> {
+        unsafe {
+            let text = CString::new(text).unwrap();
+            let result = sys::SDL_SetPrimarySelectionText(text.as_ptr() as *const c_char);
+
+            if result != 0 {
+                Err(get_error())
+            } else {
+                Ok(())
+            }
+        }
+    }
+
+    #[doc(alias = "SDL_GetPrimarySelectionText")]
+    pub fn primary_selection_text(&self) -> Result<String, String> {
+        unsafe {
+            let buf = sys::SDL_GetPrimarySelectionText();
+
+            if buf.is_null() {
+                Err(get_error())
+            } else {
+                let s = CStr::from_ptr(buf as *const _).to_str().unwrap().to_owned();
+                sys::SDL_free(buf as *mut c_void);
+                Ok(s)
+            }
+        }
+    }
+
+    #[doc(alias = "SDL_HasPrimarySelectionText")]
+    pub fn has_primary_selection_text(&self) -> bool {
+        unsafe { sys::SDL_HasPrimarySelectionText() == sys::SDL_bool::SDL_TRUE }
+    }
 }
