@@ -14,10 +14,12 @@ use super::font::{
 
 /// A context manager for `SDL2_TTF` to manage C code initialization and clean-up.
 #[must_use]
-pub struct Sdl2TtfContext;
+pub struct Sdl2TtfContext<'ttf_module> {
+    _phantom: std::marker::PhantomData<&'ttf_module ()>,
+}
 
 // Clean up the context once it goes out of scope
-impl Drop for Sdl2TtfContext {
+impl<'ttf_module> Drop for Sdl2TtfContext<'ttf_module> {
     fn drop(&mut self) {
         unsafe {
             ttf::TTF_Quit();
@@ -25,34 +27,34 @@ impl Drop for Sdl2TtfContext {
     }
 }
 
-impl Sdl2TtfContext {
+impl<'ttf_module> Sdl2TtfContext<'ttf_module> {
     /// Loads a font from the given file with the given size in points.
-    pub fn load_font<'ttf, P: AsRef<Path>>(
-        &'ttf self,
+    pub fn load_font<P: AsRef<Path>>(
+        &self,
         path: P,
         point_size: u16,
-    ) -> Result<Font<'ttf, 'static>, String> {
+    ) -> Result<Font<'ttf_module, 'static>, String> {
         internal_load_font(path, point_size)
     }
 
     /// Loads the font at the given index of the file, with the given
     /// size in points.
-    pub fn load_font_at_index<'ttf, P: AsRef<Path>>(
-        &'ttf self,
+    pub fn load_font_at_index<P: AsRef<Path>>(
+        &self,
         path: P,
         index: u32,
         point_size: u16,
-    ) -> Result<Font<'ttf, 'static>, String> {
+    ) -> Result<Font<'ttf_module, 'static>, String> {
         internal_load_font_at_index(path, index, point_size)
     }
 
     /// Loads a font from the given SDL2 rwops object with the given size in
     /// points.
-    pub fn load_font_from_rwops<'ttf, 'r>(
-        &'ttf self,
+    pub fn load_font_from_rwops<'r>(
+        &self,
         rwops: RWops<'r>,
         point_size: u16,
-    ) -> Result<Font<'ttf, 'r>, String> {
+    ) -> Result<Font<'ttf_module, 'r>, String> {
         let raw = unsafe { ttf::TTF_OpenFontRW(rwops.raw(), 0, point_size as c_int) };
         if (raw as *mut ()).is_null() {
             Err(get_error())
@@ -63,12 +65,12 @@ impl Sdl2TtfContext {
 
     /// Loads the font at the given index of the SDL2 rwops object with
     /// the given size in points.
-    pub fn load_font_at_index_from_rwops<'ttf, 'r>(
-        &'ttf self,
+    pub fn load_font_at_index_from_rwops<'r>(
+        &self,
         rwops: RWops<'r>,
         index: u32,
         point_size: u16,
-    ) -> Result<Font<'ttf, 'r>, String> {
+    ) -> Result<Font<'ttf_module, 'r>, String> {
         let raw = unsafe {
             ttf::TTF_OpenFontIndexRW(rwops.raw(), 0, point_size as c_int, index as c_long)
         };
@@ -117,12 +119,12 @@ impl fmt::Display for InitError {
 
 /// Initializes the truetype font API and returns a context manager which will
 /// clean up the library once it goes out of scope.
-pub fn init() -> Result<Sdl2TtfContext, InitError> {
+pub fn init<'ttf_module>() -> Result<Sdl2TtfContext<'ttf_module>, InitError> {
     unsafe {
         if ttf::TTF_WasInit() == 1 {
             Err(InitError::AlreadyInitializedError)
         } else if ttf::TTF_Init() == 0 {
-            Ok(Sdl2TtfContext)
+            Ok(Sdl2TtfContext { _phantom: std::marker::PhantomData })
         } else {
             Err(InitError::InitializationError(io::Error::last_os_error()))
         }
