@@ -95,7 +95,7 @@ pub enum InitError {
     AlreadyInitializedError,
 }
 
-impl error::Error for InitError {   
+impl error::Error for InitError {
     fn cause(&self) -> Option<&dyn error::Error> {
         match *self {
             InitError::AlreadyInitializedError => None,
@@ -117,7 +117,9 @@ pub fn init<'ttf_module>() -> Result<Sdl2TtfContext<'ttf_module>, InitError> {
         if ttf::TTF_WasInit() == 1 {
             Err(InitError::AlreadyInitializedError)
         } else if ttf::TTF_Init() == 0 {
-            Ok(Sdl2TtfContext { _phantom: std::marker::PhantomData })
+            Ok(Sdl2TtfContext {
+                _phantom: std::marker::PhantomData,
+            })
         } else {
             Err(InitError::InitializationError(io::Error::last_os_error()))
         }
