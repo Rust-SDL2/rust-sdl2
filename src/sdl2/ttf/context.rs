@@ -95,14 +95,7 @@ pub enum InitError {
     AlreadyInitializedError,
 }
 
-impl error::Error for InitError {
-    fn description(&self) -> &str {
-        match *self {
-            InitError::AlreadyInitializedError => "SDL2_TTF has already been initialized",
-            InitError::InitializationError(ref error) => error.description(),
-        }
-    }
-
+impl error::Error for InitError {   
     fn cause(&self) -> Option<&dyn error::Error> {
         match *self {
             InitError::AlreadyInitializedError => None,
