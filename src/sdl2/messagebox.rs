@@ -232,6 +232,9 @@ where
         })
         .collect();
     let result = unsafe {
+        let scheme = scheme.map(|scheme| sys::SDL_MessageBoxColorScheme {
+            colors: scheme.into(),
+        });
         let msg_box_data = sys::SDL_MessageBoxData {
             flags: flags.bits(),
             window: window.map_or(ptr::null_mut(), |win| win.raw()),
@@ -239,13 +242,10 @@ where
             message: message.as_ptr() as *const c_char,
             numbuttons: raw_buttons.len() as c_int,
             buttons: raw_buttons.as_ptr(),
-            colorScheme: if let Some(scheme) = scheme {
-                &sys::SDL_MessageBoxColorScheme {
-                    colors: From::from(scheme),
-                } as *const _
-            } else {
-                ptr::null()
-            },
+            colorScheme: scheme
+                .as_ref()
+                .map(|p| p as *const _)
+                .unwrap_or(ptr::null()),
         };
         sys::SDL_ShowMessageBox(&msg_box_data as *const _, &mut button_id as &mut _)
     } == 0;
