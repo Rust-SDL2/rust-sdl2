@@ -2,7 +2,7 @@ extern crate sdl2;
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use sdl2::pixels::Color;
+use sdl2::pixels::RColor;
 use sdl2::rect::Rect;
 use sdl2::video::Window;
 use std::time::Duration;
@@ -29,11 +29,11 @@ fn set_window_gradient(
         let c: u8 = 255 - (i as u8);
         let i = i as i32;
         let color = match gradient {
-            Gradient::Red => Color::RGB(c, 0, 0),
-            Gradient::Cyan => Color::RGB(0, c, c),
-            Gradient::Green => Color::RGB(0, c, 0),
-            Gradient::Blue => Color::RGB(0, 0, c),
-            Gradient::White => Color::RGB(c, c, c),
+            Gradient::Red => RColor::RGB(c, 0, 0),
+            Gradient::Cyan => RColor::RGB(0, c, c),
+            Gradient::Green => RColor::RGB(0, c, 0),
+            Gradient::Blue => RColor::RGB(0, 0, c),
+            Gradient::White => RColor::RGB(c, c, c),
         };
         surface.fill_rect(Rect::new(i * 4, 0, 4, WINDOW_HEIGHT), color)?;
     }
