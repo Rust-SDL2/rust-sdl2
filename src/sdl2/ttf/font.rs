@@ -2,7 +2,6 @@ use get_error;
 use pixels::Color;
 use rwops::RWops;
 use std::error;
-use std::error::Error;
 use std::ffi::NulError;
 use std::ffi::{CStr, CString};
 use std::fmt;
@@ -58,13 +57,6 @@ pub enum FontError {
 }
 
 impl error::Error for FontError {
-    fn description(&self) -> &str {
-        match *self {
-            FontError::InvalidLatin1Text(ref error) => error.description(),
-            FontError::SdlError(ref message) => message,
-        }
-    }
-
     fn cause(&self) -> Option<&dyn error::Error> {
         match *self {
             FontError::InvalidLatin1Text(ref error) => Some(error),
@@ -77,7 +69,7 @@ impl fmt::Display for FontError {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         match *self {
             FontError::InvalidLatin1Text(ref err) => {
-                write!(f, "Invalid Latin-1 bytes: {}", err.description())
+                write!(f, "Invalid Latin-1 bytes: {}", err)
             }
             FontError::SdlError(ref msg) => {
                 write!(f, "SDL2 error: {}", msg)

@@ -81,7 +81,7 @@ fn main() -> Result<(), String> {
 }
 
 type TextureManager<'l, T> = ResourceManager<'l, String, Texture<'l>, TextureCreator<T>>;
-type FontManager<'l> = ResourceManager<'l, FontDetails, Font<'l, 'static>, Sdl2TtfContext>;
+type FontManager<'l> = ResourceManager<'l, FontDetails, Font<'l, 'static>, Sdl2TtfContext<'l>>;
 
 // Generic struct to cache any resource loaded by a ResourceLoader
 pub struct ResourceManager<'l, K, R, L>
@@ -134,7 +134,7 @@ impl<'l, T> ResourceLoader<'l, Texture<'l>> for TextureCreator<T> {
 }
 
 // Font Context knows how to load Fonts
-impl<'l> ResourceLoader<'l, Font<'l, 'static>> for Sdl2TtfContext {
+impl<'l> ResourceLoader<'l, Font<'l, 'static>> for Sdl2TtfContext<'l> {
     type Args = FontDetails;
     fn load(&'l self, details: &FontDetails) -> Result<Font<'l, 'static>, String> {
         println!("LOADED A FONT");
