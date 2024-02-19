@@ -281,6 +281,27 @@ impl Chunk {
         }
     }
 
+    /// Load chunk from a static byte buffer.
+    pub fn from_static_bytes(buf: &'static [u8]) -> Result<Chunk, String> {
+        let rw = unsafe {
+            sys::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int)
+        };
+
+        if rw.is_null() {
+            return Err(get_error());
+        }
+
+        let raw = unsafe { mixer::Mix_LoadWAV_RW(rw, 0) };
+        if raw.is_null() {
+            Err(get_error())
+        } else {
+            Ok(Chunk {
+                raw: raw,
+                owned: true,
+            })
+        }
+    }
+
     /// Set chunk->volume to volume.
     pub fn set_volume(&mut self, volume: i32) -> i32 {
         unsafe { mixer::Mix_VolumeChunk(self.raw, volume as c_int) as i32 }
