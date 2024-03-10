@@ -8,6 +8,7 @@ use crate::sys;
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(i32)]
+#[non_exhaustive]
 pub enum Keycode {
     Backspace = sys::SDL_KeyCode::SDLK_BACKSPACE as i32,
     Tab = sys::SDL_KeyCode::SDLK_TAB as i32,
@@ -487,7 +488,12 @@ impl Keycode {
             sys::SDL_KeyCode::SDLK_KBDILLUMUP => KbdIllumUp,
             sys::SDL_KeyCode::SDLK_EJECT => Eject,
             sys::SDL_KeyCode::SDLK_SLEEP => Sleep,
-            _ => return None,
+            _ => {
+                if char::from_u32(n)?.is_control() {
+                    return None;
+                }
+                unsafe { transmute(n) }
+            }
         })
     }
 }
