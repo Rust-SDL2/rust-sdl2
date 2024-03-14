@@ -520,7 +520,7 @@ impl Scancode {
     #[doc(alias = "SDL_GetScancodeFromKey")]
     pub fn from_keycode(keycode: Keycode) -> Option<Scancode> {
         unsafe {
-            match sys::SDL_GetScancodeFromKey(keycode as i32) {
+            match sys::SDL_GetScancodeFromKey(keycode.into()) {
                 SDL_Scancode::SDL_SCANCODE_UNKNOWN => None,
                 scancode_id => Scancode::from_i32(scancode_id as i32),
             }
