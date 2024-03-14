@@ -7,7 +7,7 @@ use std::mem::transmute;
 use crate::sys;
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
-pub struct Keycode(pub i32);
+pub struct Keycode(i32);
 
 #[allow(non_upper_case_globals)]
 impl Keycode {
@@ -249,6 +249,10 @@ impl Keycode {
 }
 
 impl Keycode {
+    pub fn into_i32(&self) -> i32 {
+        return self.0;
+    }
+
     pub fn from_i32(n: i32) -> Option<Keycode> {
         if n != 0 {
             return Some(Keycode(n));
@@ -262,6 +266,22 @@ use std::fmt;
 impl fmt::Display for Keycode {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         write!(f, "{}", self.name())
+    }
+}
+
+use std::ops::Deref;
+
+impl Deref for Keycode {
+    type Target = i32;
+
+    fn deref(&self) -> &i32 {
+        &self.0
+    }
+}
+
+impl Into<i32> for Keycode {
+    fn into(self) -> i32 {
+        self.into_i32()
     }
 }
 
@@ -301,7 +321,7 @@ impl Keycode {
         // The name string pointer's contents _might_ change, depending on the last call to SDL_GetKeyName.
         // Knowing this, we must always return a new string.
         unsafe {
-            let buf = sys::SDL_GetKeyName(self.0);
+            let buf = sys::SDL_GetKeyName(self.into());
             CStr::from_ptr(buf as *const _).to_str().unwrap().to_owned()
         }
     }
