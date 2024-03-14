@@ -960,7 +960,7 @@ where
         .unwrap_or(sys::SDL_Scancode::SDL_SCANCODE_UNKNOWN);
     let keycode = keycode
         .into()
-        .map(|kc| kc as sys::SDL_Keycode)
+        .map(|kc| kc.0 as sys::SDL_Keycode)
         .unwrap_or(sys::SDL_KeyCode::SDLK_UNKNOWN as i32);
     let keymod = keymod.bits() as u16;
     sys::SDL_Keysym {
