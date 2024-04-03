@@ -442,6 +442,30 @@ impl GameController {
         }
     }
 
+    /// Return the USB vendor ID of an opened controller, if available.
+    #[doc(alias = "SDL_GameControllerGetVendor")]
+    pub fn vendor_id(&self) -> Option<u16> {
+        let result = unsafe { sys::SDL_GameControllerGetVendor(self.raw) };
+
+        if result == 0 {
+            None
+        } else {
+            Some(result)
+        }
+    }
+
+    /// Return the USB product ID of an opened controller, if available.
+    #[doc(alias = "SDL_GameControllerGetProduct")]
+    pub fn product_id(&self) -> Option<u16> {
+        let result = unsafe { sys::SDL_GameControllerGetProduct(self.raw) };
+
+        if result == 0 {
+            None
+        } else {
+            Some(result)
+        }
+    }
+
     /// Get the position of the given `axis`
     #[doc(alias = "SDL_GameControllerGetAxis")]
     pub fn axis(&self, axis: Axis) -> i16 {
