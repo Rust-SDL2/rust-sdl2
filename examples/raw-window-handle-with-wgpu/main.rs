@@ -27,9 +27,10 @@ fn main() -> Result<(), String> {
     let instance = wgpu::Instance::new(wgpu::InstanceDescriptor {
         backends: wgpu::Backends::PRIMARY,
         dx12_shader_compiler: Default::default(),
+        ..Default::default()
     });
     let surface = unsafe {
-        match instance.create_surface(&window) {
+        match instance.create_surface_unsafe(wgpu::SurfaceTargetUnsafe::from_window(&window).unwrap()) {
             Ok(s) => s,
             Err(e) => return Err(e.to_string()),
         }
@@ -46,9 +47,9 @@ fn main() -> Result<(), String> {
 
     let (device, queue) = match pollster::block_on(adapter.request_device(
         &wgpu::DeviceDescriptor {
-            limits: wgpu::Limits::default(),
+            required_limits: wgpu::Limits::default(),
             label: Some("device"),
-            features: wgpu::Features::empty(),
+            required_features: wgpu::Features::empty(),
         },
         None,
     )) {
@@ -117,7 +118,7 @@ fn main() -> Result<(), String> {
         .formats
         .iter()
         .copied()
-        .find(|f| f.describe().srgb)
+        .find(|f| f.is_srgb())
         .unwrap_or(surface_caps.formats[0]);
 
     let mut config = wgpu::SurfaceConfiguration {
@@ -128,6 +129,7 @@ fn main() -> Result<(), String> {
         present_mode: wgpu::PresentMode::Fifo,
         alpha_mode: wgpu::CompositeAlphaMode::Auto,
         view_formats: Vec::default(),
+        desired_maximum_frame_latency: 2,
     };
     surface.configure(&device, &config);
 
@@ -166,7 +168,8 @@ fn main() -> Result<(), String> {
                     SurfaceError::Lost => "Lost",
                     SurfaceError::OutOfMemory => "OutOfMemory",
                 };
-                panic!("Failed to get current surface texture! Reason: {}", reason)
+                println!("Failed to get current surface texture! Reason: {}", reason);
+                continue 'running;
             }
         };
 
@@ -184,11 +187,13 @@ fn main() -> Result<(), String> {
                     resolve_target: None,
                     ops: wgpu::Operations {
                         load: wgpu::LoadOp::Clear(wgpu::Color::GREEN),
-                        store: true,
+                        store: wgpu::StoreOp::Store,
                     },
                 })],
                 depth_stencil_attachment: None,
                 label: None,
+                timestamp_writes: None,
+                occlusion_query_set: None,
             });
             rpass.set_pipeline(&render_pipeline);
             rpass.set_bind_group(0, &bind_group, &[]);
