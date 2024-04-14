@@ -32,6 +32,7 @@ use crate::common::{validate_int, IntegerOrSdlError};
 use crate::get_error;
 use crate::pixels;
 use crate::pixels::PixelFormatEnum;
+use crate::rect::FPoint;
 use crate::rect::Point;
 use crate::rect::Rect;
 use crate::surface;
@@ -47,7 +48,7 @@ use std::fmt;
 use std::marker::PhantomData;
 use std::mem;
 use std::mem::{transmute, MaybeUninit};
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 use std::ptr;
 use std::rc::Rc;
 
@@ -97,6 +98,109 @@ impl Error for TargetRenderError {
             SdlError(self::SdlError(ref e)) => e.as_str(),
             NotSupported => "The renderer does not support the use of render targets",
         }
+    }
+}
+
+#[derive(Copy, Clone)]
+pub struct Vertex {
+    raw: sys::SDL_Vertex,
+}
+
+pub trait VertexIndex {}
+
+impl VertexIndex for u8 {}
+impl VertexIndex for u16 {}
+impl VertexIndex for u32 {}
+
+impl ::std::fmt::Debug for Vertex {
+    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
+        return write!(
+            fmt,
+            "Vertex {{ position: {:?}, color: {:?}, tex_coord: {:?} }}",
+            self.position(),
+            self.color(),
+            self.tex_coord(),
+        );
+    }
+}
+
+impl Deref for Vertex {
+    type Target = sys::SDL_Vertex;
+
+    fn deref(&self) -> &sys::SDL_Vertex {
+        &self.raw
+    }
+}
+
+impl DerefMut for Vertex {
+    fn deref_mut(&mut self) -> &mut sys::SDL_Vertex {
+        &mut self.raw
+    }
+}
+
+impl AsRef<sys::SDL_Vertex> for Vertex {
+    fn as_ref(&self) -> &sys::SDL_Vertex {
+        &self.raw
+    }
+}
+
+impl AsMut<sys::SDL_Vertex> for Vertex {
+    fn as_mut(&mut self) -> &mut sys::SDL_Vertex {
+        &mut self.raw
+    }
+}
+
+impl From<sys::SDL_Vertex> for Vertex {
+    fn from(prim: sys::SDL_Vertex) -> Vertex {
+        Vertex { raw: prim }
+    }
+}
+
+impl Into<sys::SDL_Vertex> for Vertex {
+    fn into(self) -> sys::SDL_Vertex {
+        self.raw
+    }
+}
+
+impl Vertex {
+    pub fn new<C>(position: FPoint, color: C, tex_coord: FPoint) -> Vertex
+    where
+        C: Copy + Into<pixels::RColor>,
+    {
+        Vertex {
+            raw: sys::SDL_Vertex {
+                position: position.into(),
+                color: color.into().raw(),
+                tex_coord: tex_coord.into(),
+            },
+        }
+    }
+
+    pub fn from_ll(raw: sys::SDL_Vertex) -> Vertex {
+        Vertex::new(raw.position.into(), raw.color, raw.tex_coord.into())
+    }
+
+    #[doc(alias = "SDL_Vertex")]
+    pub fn raw_slice(slice: &[Vertex]) -> *const sys::SDL_Vertex {
+        slice.as_ptr() as *const sys::SDL_Vertex
+    }
+    // this can prevent introducing UB until
+    // https://github.com/rust-lang/rust-clippy/issues/5953 is fixed
+    #[allow(clippy::trivially_copy_pass_by_ref)]
+    pub fn raw(&self) -> *const sys::SDL_Vertex {
+        &self.raw
+    }
+
+    pub fn position(self) -> FPoint {
+        self.raw.position.into()
+    }
+
+    pub fn color(self) -> pixels::RColor {
+        self.raw.color.into()
+    }
+
+    pub fn tex_coord(self) -> FPoint {
+        self.raw.tex_coord.into()
     }
 }
 
@@ -307,7 +411,7 @@ impl<'s> RenderTarget for Surface<'s> {
 /// ```rust,no_run
 /// # use sdl2::render::Canvas;
 /// # use sdl2::video::Window;
-/// # use sdl2::pixels::Color;
+/// # use sdl2::pixels::RColor;
 /// # use sdl2::rect::Rect;
 /// # let sdl_context = sdl2::init().unwrap();
 /// # let video_subsystem = sdl_context.video().unwrap();
@@ -319,12 +423,12 @@ impl<'s> RenderTarget for Surface<'s> {
 ///     // render faster than your display rate (usually 60Hz or 144Hz)
 ///     .build().unwrap();
 ///
-/// canvas.set_draw_color(Color::RGB(0, 0, 0));
+/// canvas.set_draw_color(RColor::RGB(0, 0, 0));
 /// // fills the canvas with the color we set in `set_draw_color`.
 /// canvas.clear();
 ///
 /// // change the color of our drawing with a gold-color ...
-/// canvas.set_draw_color(Color::RGB(255, 210, 0));
+/// canvas.set_draw_color(RColor::RGB(255, 210, 0));
 /// // A draw a rectangle which almost fills our window with it !
 /// canvas.fill_rect(Rect::new(10, 10, 780, 580));
 ///
@@ -508,7 +612,7 @@ impl<T: RenderTarget> Canvas<T> {
     /// ```rust,no_run
     /// # use sdl2::render::{Canvas, Texture};
     /// # use sdl2::video::Window;
-    /// # use sdl2::pixels::Color;
+    /// # use sdl2::pixels::RColor;
     /// # use sdl2::rect::Rect;
     /// # let mut canvas : Canvas<Window> = unimplemented!();
     /// let texture_creator = canvas.texture_creator();
@@ -516,9 +620,9 @@ impl<T: RenderTarget> Canvas<T> {
     ///     .create_texture_target(texture_creator.default_pixel_format(), 150, 150)
     ///     .unwrap();
     /// let result = canvas.with_texture_canvas(&mut texture, |texture_canvas| {
-    ///     texture_canvas.set_draw_color(Color::RGBA(0, 0, 0, 255));
+    ///     texture_canvas.set_draw_color(RColor::RGBA(0, 0, 0, 255));
     ///     texture_canvas.clear();
-    ///     texture_canvas.set_draw_color(Color::RGBA(255, 0, 0, 255));
+    ///     texture_canvas.set_draw_color(RColor::RGBA(255, 0, 0, 255));
     ///     texture_canvas.fill_rect(Rect::new(50, 50, 50, 50)).unwrap();
     /// });
     /// ```
@@ -564,7 +668,7 @@ impl<T: RenderTarget> Canvas<T> {
     /// Let's create two textures, one which will be yellow, and the other will be white
     ///
     /// ```rust,no_run
-    /// # use sdl2::pixels::Color;
+    /// # use sdl2::pixels::RColor;
     /// # use sdl2::rect::Rect;
     /// # use sdl2::video::Window;
     /// # use sdl2::render::{Canvas, Texture};
@@ -587,10 +691,10 @@ impl<T: RenderTarget> Canvas<T> {
     ///     canvas.with_multiple_texture_canvas(textures.iter(), |texture_canvas, user_context| {
     ///     match *user_context {
     ///         TextureColor::White => {
-    ///             texture_canvas.set_draw_color(Color::RGB(255, 255, 255));
+    ///             texture_canvas.set_draw_color(RColor::RGB(255, 255, 255));
     ///         },
     ///         TextureColor::Yellow => {
-    ///             texture_canvas.set_draw_color(Color::RGB(255, 255, 0));
+    ///             texture_canvas.set_draw_color(RColor::RGB(255, 255, 0));
     ///         }
     ///     };
     ///     texture_canvas.clear();
@@ -985,7 +1089,7 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Sets the color used for drawing operations (Rect, Line and Clear).
     #[doc(alias = "SDL_SetRenderDrawColor")]
-    pub fn set_draw_color<C: Into<pixels::Color>>(&mut self, color: C) {
+    pub fn set_draw_color<C: Into<pixels::RColor>>(&mut self, color: C) {
         let (r, g, b, a) = color.into().rgba();
         let ret = unsafe { sys::SDL_SetRenderDrawColor(self.raw, r, g, b, a) };
         // Should only fail on an invalid renderer
@@ -996,7 +1100,7 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Gets the color used for drawing operations (Rect, Line and Clear).
     #[doc(alias = "SDL_GetRenderDrawColor")]
-    pub fn draw_color(&self) -> pixels::Color {
+    pub fn draw_color(&self) -> pixels::RColor {
         let (mut r, mut g, mut b, mut a) = (0, 0, 0, 0);
         let ret = unsafe {
             sys::SDL_GetRenderDrawColor(self.context.raw, &mut r, &mut g, &mut b, &mut a)
@@ -1005,7 +1109,7 @@ impl<T: RenderTarget> Canvas<T> {
         if ret != 0 {
             panic!("{}", get_error())
         } else {
-            pixels::Color::RGBA(r, g, b, a)
+            pixels::RColor::RGBA(r, g, b, a)
         }
     }
 
@@ -1190,6 +1294,40 @@ impl<T: RenderTarget> Canvas<T> {
         let mut scale_y = 0.0;
         unsafe { sys::SDL_RenderGetScale(self.context.raw, &mut scale_x, &mut scale_y) };
         (scale_x, scale_y)
+    }
+
+    /// Get logical coordinates of point in renderer when given real coordinates of point in window.
+    #[doc(alias = "SDL_RenderWindowToLogical")]
+    pub fn window_to_logical(&self, window_x: i32, window_y: i32) -> (f32, f32) {
+        let mut logical_x = 0.0;
+        let mut logical_y = 0.0;
+        unsafe {
+            sys::SDL_RenderWindowToLogical(
+                self.context.raw,
+                window_x,
+                window_y,
+                &mut logical_x,
+                &mut logical_y,
+            )
+        };
+        (logical_x, logical_y)
+    }
+
+    /// Get real coordinates of point in window when given logical coordinates of point in renderer.
+    #[doc(alias = "SDL_RenderLogicalToWindow")]
+    pub fn logical_to_window(&self, logical_x: f32, logical_y: f32) -> (i32, i32) {
+        let mut window_x = 0;
+        let mut window_y = 0;
+        unsafe {
+            sys::SDL_RenderLogicalToWindow(
+                self.context.raw,
+                logical_x,
+                logical_y,
+                &mut window_x,
+                &mut window_y,
+            )
+        };
+        (window_x, window_y)
     }
 
     /// Draws a point on the current rendering target.
@@ -1437,6 +1575,140 @@ impl<T: RenderTarget> Canvas<T> {
         }
     }
 
+    /// Render a list of triangles, optionally using a texture and indices into the vertex array.
+    #[doc(alias = "SDL_RenderGeometry")]
+    pub fn geometry(
+        &mut self,
+        texture: &Texture,
+        vertices: &[Vertex],
+        indices: Option<&[u32]>,
+    ) -> Result<(), String> {
+        // API expects i32, however the underlying SDL_RenderGeometryRaw call casts to u32
+        let indices_ptr: *const c_int = match indices {
+            Some(i) => i.as_ptr() as *const c_int,
+            None => std::ptr::null(),
+        };
+        let indices_count: c_int = match indices {
+            Some(i) => i.len() as c_int,
+            None => 0,
+        };
+        let result = unsafe {
+            sys::SDL_RenderGeometry(
+                self.context.raw,
+                texture.raw,
+                Vertex::raw_slice(vertices),
+                vertices.len() as c_int,
+                indices_ptr,
+                indices_count,
+            )
+        };
+
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Render a list of triangles, using separate arrays for position, color and UV.
+    #[doc(alias = "SDL_RenderGeometryRaw")]
+    pub fn geometry_split<I: VertexIndex>(
+        &mut self,
+        texture: &Texture,
+        xy: &[f32],
+        xy_stride: i32,
+        color: &[pixels::RColor],
+        color_stride: i32,
+        uv: &[f32],
+        uv_stride: i32,
+        num_vertices: i32,
+        indices: Option<&[I]>,
+    ) -> Result<(), String> {
+        let indices_ptr: *const c_void = match indices {
+            Some(i) => i.as_ptr() as *const c_void,
+            None => std::ptr::null(),
+        };
+        let indices_count: c_int = match indices {
+            Some(i) => i.len() as c_int,
+            None => 0,
+        };
+        let indices_size: c_int = match indices {
+            Some(_) => std::mem::size_of::<I>() as c_int,
+            None => 0,
+        };
+        let result = unsafe {
+            sys::SDL_RenderGeometryRaw(
+                self.context.raw,
+                texture.raw,
+                xy.as_ptr(),
+                xy_stride as c_int,
+                color.as_ptr() as *const sys::SDL_Color,
+                color_stride as c_int,
+                uv.as_ptr(),
+                uv_stride as c_int,
+                num_vertices as c_int,
+                indices_ptr,
+                indices_count,
+                indices_size,
+            )
+        };
+
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Render a list of triangles, optionally using a texture and indices into the vertex arrays.
+    /// It is recommended that you use the "memoffset" crate to determine the offsets of fields in your struct.
+    #[doc(alias = "SDL_RenderGeometryRaw")]
+    pub fn geometry_struct<V, I: VertexIndex>(
+        &mut self,
+        texture: &Texture,
+        vertices: &[V],
+        xy_offset: usize,
+        color_offset: usize,
+        uv_offset: usize,
+        indices: Option<&[I]>,
+    ) -> Result<(), String> {
+        let stride = std::mem::size_of::<V>() as c_int;
+        let indices_ptr: *const c_void = match indices {
+            Some(i) => i.as_ptr() as *const c_void,
+            None => std::ptr::null(),
+        };
+        let indices_count: c_int = match indices {
+            Some(i) => i.len() as c_int,
+            None => 0,
+        };
+        let indices_size: c_int = match indices {
+            Some(_) => std::mem::size_of::<I>() as c_int,
+            None => 0,
+        };
+        let result = unsafe {
+            sys::SDL_RenderGeometryRaw(
+                self.context.raw,
+                texture.raw,
+                (vertices.as_ptr() as *const u8).add(xy_offset) as *const f32,
+                stride,
+                (vertices.as_ptr() as *const u8).add(color_offset) as *const sys::SDL_Color,
+                stride,
+                (vertices.as_ptr() as *const u8).add(uv_offset) as *const f32,
+                stride,
+                vertices.len() as c_int,
+                indices_ptr,
+                indices_count,
+                indices_size,
+            )
+        };
+
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
     /// Reads pixels from the current rendering target.
     /// # Remarks
     /// WARNING: This is a very slow operation, and should not be used frequently.
@@ -1616,6 +1888,18 @@ impl<T: RenderTarget> Canvas<T> {
 
         if ret != 0 {
             panic!("Error setting blend: {}", get_error())
+        }
+    }
+
+    /// Toggle VSync.
+    #[doc(alias = "SDL_RenderSetVSync")]
+    pub unsafe fn set_vsync(&self, vsync: i32) -> Result<(), String> {
+        let ret = sys::SDL_RenderSetVSync(self.context.raw, vsync);
+
+        if ret != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
         }
     }
 }
@@ -2141,6 +2425,115 @@ impl InternalTexture {
         }
     }
 
+    #[doc(alias = "SDL_UpdateNVTexture")]
+    pub fn update_nv<R>(
+        &mut self,
+        rect: R,
+        y_plane: &[u8],
+        y_pitch: usize,
+        uv_plane: &[u8],
+        uv_pitch: usize,
+    ) -> Result<(), UpdateTextureYUVError>
+    where
+        R: Into<Option<Rect>>,
+    {
+        use self::UpdateTextureYUVError::*;
+
+        let rect = rect.into();
+
+        let rect_raw_ptr = match rect {
+            Some(ref rect) => rect.raw(),
+            None => ptr::null(),
+        };
+
+        if let Some(ref r) = rect {
+            if r.x() % 2 != 0 {
+                return Err(XMustBeMultipleOfTwoForFormat(r.x()));
+            } else if r.y() % 2 != 0 {
+                return Err(YMustBeMultipleOfTwoForFormat(r.y()));
+            } else if r.width() % 2 != 0 {
+                return Err(WidthMustBeMultipleOfTwoForFormat(r.width()));
+            } else if r.height() % 2 != 0 {
+                return Err(HeightMustBeMultipleOfTwoForFormat(r.height()));
+            }
+        };
+
+        // If the destination rectangle lies outside the texture boundaries,
+        // SDL_UpdateNVTexture will write outside allocated texture memory.
+        let tex_info = self.query();
+        if let Some(ref r) = rect {
+            let tex_rect = Rect::new(0, 0, tex_info.width, tex_info.height);
+            let inside = match r.intersection(tex_rect) {
+                Some(intersection) => intersection == *r,
+                None => false,
+            };
+            // The destination rectangle cannot lie outside the texture boundaries
+            if !inside {
+                return Err(RectNotInsideTexture(*r));
+            }
+        }
+
+        // We need the height in order to check the array slice lengths.
+        // Checking the lengths can prevent buffer overruns in SDL_UpdateNVTexture.
+        let height = match rect {
+            Some(ref r) => r.height(),
+            None => tex_info.height,
+        } as usize;
+
+        //let wrong_length =
+        if y_plane.len() != (y_pitch * height) {
+            return Err(InvalidPlaneLength {
+                plane: "y",
+                length: y_plane.len(),
+                pitch: y_pitch,
+                height,
+            });
+        }
+        if uv_plane.len() != (uv_pitch * height) {
+            return Err(InvalidPlaneLength {
+                plane: "uv",
+                length: uv_plane.len(),
+                pitch: uv_pitch,
+                height: height,
+            });
+        }
+
+        let y_pitch = match validate_int(y_pitch as u32, "y_pitch") {
+            Ok(p) => p,
+            Err(_) => {
+                return Err(PitchOverflows {
+                    plane: "y",
+                    value: y_pitch,
+                })
+            }
+        };
+        let uv_pitch = match validate_int(uv_pitch as u32, "uv_pitch") {
+            Ok(p) => p,
+            Err(_) => {
+                return Err(PitchOverflows {
+                    plane: "uv",
+                    value: uv_pitch,
+                })
+            }
+        };
+
+        let result = unsafe {
+            sys::SDL_UpdateNVTexture(
+                self.raw,
+                rect_raw_ptr,
+                y_plane.as_ptr(),
+                y_pitch,
+                uv_plane.as_ptr(),
+                uv_pitch,
+            )
+        };
+        if result != 0 {
+            Err(SdlError(get_error()))
+        } else {
+            Ok(())
+        }
+    }
+
     #[doc(alias = "SDL_LockTexture")]
     pub fn with_lock<F, R, R2>(&mut self, rect: R2, func: F) -> Result<R, String>
     where
@@ -2304,6 +2697,22 @@ impl<'r> Texture<'r> {
     {
         InternalTexture { raw: self.raw }
             .update_yuv(rect, y_plane, y_pitch, u_plane, u_pitch, v_plane, v_pitch)
+    }
+
+    /// Update a rectangle within a planar NV12 or NV21 texture with new pixel data.
+    #[inline]
+    pub fn update_nv<R>(
+        &mut self,
+        rect: R,
+        y_plane: &[u8],
+        y_pitch: usize,
+        uv_plane: &[u8],
+        uv_pitch: usize,
+    ) -> Result<(), UpdateTextureYUVError>
+    where
+        R: Into<Option<Rect>>,
+    {
+        InternalTexture { raw: self.raw }.update_nv(rect, y_plane, y_pitch, uv_plane, uv_pitch)
     }
 
     /// Locks the texture for **write-only** pixel access.
@@ -2501,6 +2910,22 @@ impl Texture {
     {
         InternalTexture { raw: self.raw }
             .update_yuv(rect, y_plane, y_pitch, u_plane, u_pitch, v_plane, v_pitch)
+    }
+
+    /// Update a rectangle within a planar NV12 or NV21 texture with new pixel data.
+    #[inline]
+    pub fn update_nv<R>(
+        &mut self,
+        rect: R,
+        y_plane: &[u8],
+        y_pitch: usize,
+        uv_plane: &[u8],
+        uv_pitch: usize,
+    ) -> Result<(), UpdateTextureYUVError>
+    where
+        R: Into<Option<Rect>>,
+    {
+        InternalTexture { raw: self.raw }.update_nv(rect, y_plane, y_pitch, uv_plane, uv_pitch)
     }
 
     /// Locks the texture for **write-only** pixel access.

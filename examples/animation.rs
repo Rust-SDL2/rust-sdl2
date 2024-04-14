@@ -24,7 +24,7 @@ fn main() -> Result<(), String> {
         .map_err(|e| e.to_string())?;
     let texture_creator = canvas.texture_creator();
 
-    canvas.set_draw_color(sdl2::pixels::Color::RGBA(0, 0, 0, 255));
+    canvas.set_draw_color(sdl2::pixels::RColor::RGBA(0, 0, 0, 255));
 
     let timer = sdl_context.timer()?;
 

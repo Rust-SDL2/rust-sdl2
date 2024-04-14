@@ -29,6 +29,13 @@ impl ToColor for pixels::Color {
     }
 }
 
+impl ToColor for pixels::RColor {
+    #[inline]
+    fn as_rgba(&self) -> (u8, u8, u8, u8) {
+        self.rgba()
+    }
+}
+
 impl ToColor for (u8, u8, u8, u8) {
     #[inline]
     fn as_rgba(&self) -> (u8, u8, u8, u8) {

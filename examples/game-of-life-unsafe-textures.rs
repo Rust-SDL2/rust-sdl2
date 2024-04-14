@@ -9,7 +9,7 @@ use sdl2::keyboard::Keycode;
 #[cfg(feature = "unsafe_textures")]
 use sdl2::mouse::MouseButton;
 #[cfg(feature = "unsafe_textures")]
-use sdl2::pixels::Color;
+use sdl2::pixels::RColor;
 #[cfg(feature = "unsafe_textures")]
 use sdl2::rect::{Point, Rect};
 #[cfg(feature = "unsafe_textures")]
@@ -140,20 +140,20 @@ fn dummy_texture<'a>(canvas: &mut Canvas<Window>) -> Result<(Texture, Texture), 
         ];
         canvas
             .with_multiple_texture_canvas(textures.iter(), |texture_canvas, user_context| {
-                texture_canvas.set_draw_color(Color::RGB(0, 0, 0));
+                texture_canvas.set_draw_color(RColor::RGB(0, 0, 0));
                 texture_canvas.clear();
                 match *user_context {
                     TextureColor::Yellow => {
                         for i in 0..SQUARE_SIZE {
                             for j in 0..SQUARE_SIZE {
                                 if (i + j) % 4 == 0 {
-                                    texture_canvas.set_draw_color(Color::RGB(255, 255, 0));
+                                    texture_canvas.set_draw_color(RColor::RGB(255, 255, 0));
                                     texture_canvas
                                         .draw_point(Point::new(i as i32, j as i32))
                                         .expect("could not draw point");
                                 }
                                 if (i + j * 2) % 9 == 0 {
-                                    texture_canvas.set_draw_color(Color::RGB(200, 200, 0));
+                                    texture_canvas.set_draw_color(RColor::RGB(200, 200, 0));
                                     texture_canvas
                                         .draw_point(Point::new(i as i32, j as i32))
                                         .expect("could not draw point");
@@ -169,13 +169,13 @@ fn dummy_texture<'a>(canvas: &mut Canvas<Window>) -> Result<(Texture, Texture), 
                                 if (i + j) % 7 == 0 {
                                     // this doesn't mean anything, there was some trial and error to find
                                     // something that wasn't too ugly
-                                    texture_canvas.set_draw_color(Color::RGB(192, 192, 192));
+                                    texture_canvas.set_draw_color(RColor::RGB(192, 192, 192));
                                     texture_canvas
                                         .draw_point(Point::new(i as i32, j as i32))
                                         .expect("could not draw point");
                                 }
                                 if (i + j * 2) % 5 == 0 {
-                                    texture_canvas.set_draw_color(Color::RGB(64, 64, 64));
+                                    texture_canvas.set_draw_color(RColor::RGB(64, 64, 64));
                                     texture_canvas
                                         .draw_point(Point::new(i as i32, j as i32))
                                         .expect("could not draw point");
@@ -191,13 +191,13 @@ fn dummy_texture<'a>(canvas: &mut Canvas<Window>) -> Result<(Texture, Texture), 
                         if (i + j) % 7 == 0 {
                             // this doesn't mean anything, there was some trial and serror to find
                             // something that wasn't too ugly
-                            texture_canvas.set_draw_color(Color::RGB(192, 192, 192));
+                            texture_canvas.set_draw_color(RColor::RGB(192, 192, 192));
                             texture_canvas
                                 .draw_point(Point::new(i as i32, j as i32))
                                 .expect("could not draw point");
                         }
                         if (i + j * 2) % 5 == 0 {
-                            texture_canvas.set_draw_color(Color::RGB(64, 64, 64));
+                            texture_canvas.set_draw_color(RColor::RGB(64, 64, 64));
                             texture_canvas
                                 .draw_point(Point::new(i as i32, j as i32))
                                 .expect("could not draw point");
@@ -239,7 +239,7 @@ pub fn main() -> Result<(), String> {
         .map_err(|e| e.to_string())?;
 
     println!("Using SDL_Renderer \"{}\"", canvas.info().name);
-    canvas.set_draw_color(Color::RGB(0, 0, 0));
+    canvas.set_draw_color(RColor::RGB(0, 0, 0));
     // clears the canvas with the color we set in `set_draw_color`.
     canvas.clear();
     // However the canvas has not been updated to the window yet, everything has been processed to
@@ -294,7 +294,7 @@ pub fn main() -> Result<(), String> {
             frame = 0;
         }
 
-        canvas.set_draw_color(Color::RGB(0, 0, 0));
+        canvas.set_draw_color(RColor::RGB(0, 0, 0));
         canvas.clear();
         for (i, unit) in (&game).into_iter().enumerate() {
             let i = i as u32;

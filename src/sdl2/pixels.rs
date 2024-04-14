@@ -1,6 +1,8 @@
 use crate::sys;
-use std::convert::TryFrom;
+use std::convert::{AsMut, AsRef, TryFrom};
+use std::hash::{Hash, Hasher};
 use std::mem::transmute;
+use std::ops::{Deref, DerefMut};
 
 use crate::get_error;
 
@@ -41,7 +43,10 @@ impl Palette {
 
     /// Creates a palette from the provided colors
     #[doc(alias = "SDL_SetPaletteColors")]
-    pub fn with_colors(colors: &[Color]) -> Result<Self, String> {
+    pub fn with_colors<C>(colors: &[C]) -> Result<Self, String>
+    where
+        C: Copy + Into<RColor>,
+    {
         let pal = Self::new(colors.len())?;
 
         // Already validated, so don't check again
@@ -49,7 +54,7 @@ impl Palette {
 
         let result = unsafe {
             let mut raw_colors: Vec<sys::SDL_Color> =
-                colors.iter().map(|color| color.raw()).collect();
+                colors.iter().map(|color| (*color).into().raw).collect();
 
             let pal_ptr = (&mut raw_colors[0]) as *mut sys::SDL_Color;
 
@@ -85,7 +90,7 @@ impl_raw_accessors!((Palette, *mut sys::SDL_Palette));
 
 #[test]
 fn create_palette() {
-    let colors: Vec<_> = (0..0xff).map(|u| Color::RGB(u, 0, 0xff - u)).collect();
+    let colors: Vec<_> = (0..0xff).map(|u| RColor::RGB(u, 0, 0xff - u)).collect();
 
     let palette = Palette::with_colors(&colors).unwrap();
 
@@ -93,6 +98,7 @@ fn create_palette() {
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+#[deprecated(since = "0.35.3", note = "Users should instead use RColor")]
 pub struct Color {
     pub r: u8,
     pub g: u8,
@@ -100,6 +106,7 @@ pub struct Color {
     pub a: u8,
 }
 
+#[allow(deprecated)]
 impl Color {
     #[inline]
     #[allow(non_snake_case)]
@@ -163,27 +170,184 @@ impl Color {
     pub const CYAN: Color = Color::RGBA(0, 255, 255, 255);
 }
 
+#[allow(deprecated)]
 impl Into<sys::SDL_Color> for Color {
     fn into(self) -> sys::SDL_Color {
         self.raw()
     }
 }
 
+#[allow(deprecated)]
 impl From<sys::SDL_Color> for Color {
     fn from(raw: sys::SDL_Color) -> Color {
         Color::RGBA(raw.r, raw.g, raw.b, raw.a)
     }
 }
 
+#[allow(deprecated)]
 impl From<(u8, u8, u8)> for Color {
     fn from((r, g, b): (u8, u8, u8)) -> Color {
         Color::RGB(r, g, b)
     }
 }
 
+#[allow(deprecated)]
 impl From<(u8, u8, u8, u8)> for Color {
     fn from((r, g, b, a): (u8, u8, u8, u8)) -> Color {
         Color::RGBA(r, g, b, a)
+    }
+}
+
+#[allow(deprecated)]
+impl Into<RColor> for Color {
+    fn into(self) -> RColor {
+        RColor::RGBA(self.r, self.g, self.b, self.a)
+    }
+}
+
+#[derive(Copy, Clone)]
+pub struct RColor {
+    raw: sys::SDL_Color,
+}
+
+impl RColor {
+    #[inline]
+    #[allow(non_snake_case)]
+    pub const fn RGB(r: u8, g: u8, b: u8) -> RColor {
+        RColor {
+            raw: sys::SDL_Color { r, g, b, a: 0xff },
+        }
+    }
+
+    #[inline]
+    #[allow(non_snake_case)]
+    pub const fn RGBA(r: u8, g: u8, b: u8, a: u8) -> RColor {
+        RColor {
+            raw: sys::SDL_Color { r, g, b, a },
+        }
+    }
+
+    #[doc(alias = "SDL_MapRGBA")]
+    pub fn to_u32(self, format: &PixelFormat) -> u32 {
+        unsafe { sys::SDL_MapRGBA(format.raw, self.raw.r, self.raw.g, self.raw.b, self.raw.a) }
+    }
+
+    #[doc(alias = "SDL_GetRGBA")]
+    pub fn from_u32(format: &PixelFormat, pixel: u32) -> RColor {
+        let (mut r, mut g, mut b, mut a) = (0, 0, 0, 0);
+
+        unsafe { sys::SDL_GetRGBA(pixel, format.raw, &mut r, &mut g, &mut b, &mut a) };
+        RColor::RGBA(r, g, b, a)
+    }
+
+    pub fn invert(self) -> RColor {
+        RColor::RGBA(
+            255 - self.raw.r,
+            255 - self.raw.g,
+            255 - self.raw.b,
+            255 - self.raw.a,
+        )
+    }
+
+    #[inline]
+    pub const fn rgb(self) -> (u8, u8, u8) {
+        (self.raw.r, self.raw.g, self.raw.b)
+    }
+
+    #[inline]
+    pub const fn rgba(self) -> (u8, u8, u8, u8) {
+        (self.raw.r, self.raw.g, self.raw.b, self.raw.a)
+    }
+
+    #[inline]
+    pub const fn raw(self) -> sys::SDL_Color {
+        self.raw
+    }
+
+    pub const WHITE: RColor = RColor::RGBA(255, 255, 255, 255);
+    pub const BLACK: RColor = RColor::RGBA(0, 0, 0, 255);
+    pub const GRAY: RColor = RColor::RGBA(128, 128, 128, 255);
+    pub const GREY: RColor = RColor::GRAY;
+    pub const RED: RColor = RColor::RGBA(255, 0, 0, 255);
+    pub const GREEN: RColor = RColor::RGBA(0, 255, 0, 255);
+    pub const BLUE: RColor = RColor::RGBA(0, 0, 255, 255);
+    pub const MAGENTA: RColor = RColor::RGBA(255, 0, 255, 255);
+    pub const YELLOW: RColor = RColor::RGBA(255, 255, 0, 255);
+    pub const CYAN: RColor = RColor::RGBA(0, 255, 255, 255);
+}
+
+impl ::std::fmt::Debug for RColor {
+    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
+        return write!(
+            fmt,
+            "RColor {{ r: {}, g: {}, b: {}, a: {} }}",
+            self.raw.r, self.raw.g, self.raw.b, self.raw.a
+        );
+    }
+}
+
+impl PartialEq for RColor {
+    fn eq(&self, other: &RColor) -> bool {
+        self.raw.r == other.raw.r
+            && self.raw.g == other.raw.g
+            && self.raw.b == other.raw.b
+            && self.raw.a == other.raw.a
+    }
+}
+
+impl Eq for RColor {}
+
+impl Hash for RColor {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.raw.r.hash(state);
+        self.raw.g.hash(state);
+        self.raw.b.hash(state);
+        self.raw.a.hash(state);
+    }
+}
+
+impl Deref for RColor {
+    type Target = sys::SDL_Color;
+
+    fn deref(&self) -> &sys::SDL_Color {
+        &self.raw
+    }
+}
+
+impl DerefMut for RColor {
+    fn deref_mut(&mut self) -> &mut sys::SDL_Color {
+        &mut self.raw
+    }
+}
+
+impl AsRef<sys::SDL_Color> for RColor {
+    fn as_ref(&self) -> &sys::SDL_Color {
+        &self.raw
+    }
+}
+
+impl AsMut<sys::SDL_Color> for RColor {
+    fn as_mut(&mut self) -> &mut sys::SDL_Color {
+        &mut self.raw
+    }
+}
+
+impl Into<sys::SDL_Color> for RColor {
+    fn into(self) -> sys::SDL_Color {
+        self.raw
+    }
+}
+
+impl From<sys::SDL_Color> for RColor {
+    fn from(raw: sys::SDL_Color) -> RColor {
+        RColor { raw }
+    }
+}
+
+#[allow(deprecated)]
+impl Into<Color> for RColor {
+    fn into(self) -> Color {
+        Color::RGBA(self.raw.r, self.raw.g, self.raw.b, self.raw.a)
     }
 }
 
