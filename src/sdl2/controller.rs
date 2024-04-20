@@ -116,6 +116,14 @@ impl GameControllerSubsystem {
         }
     }
 
+    /// Return the type of the controller at index `joystick_index`.
+    #[doc(alias = "SDL_GameControllerTypeForIndex")]
+    pub fn type_for_index(&self, joystick_index: u32) -> Result<GameControllerType, IntegerOrSdlError> {
+        let joystick_index = validate_int(joystick_index, "joystick_index")?;
+        let raw_type = unsafe { sys::SDL_GameControllerTypeForIndex(joystick_index) };
+        Ok(GameControllerType::from_ll(raw_type))
+    }
+
     /// If state is `true` controller events are processed, otherwise
     /// they're ignored.
     #[doc(alias = "SDL_GameControllerEventState")]
@@ -194,6 +202,67 @@ impl GameControllerSubsystem {
     #[doc(alias = "SDL_GameControllerUpdate")]
     pub fn update(&self) {
         unsafe { sys::SDL_GameControllerUpdate() };
+    }
+}
+
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+#[repr(i32)]
+pub enum GameControllerType {
+    Unknown = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_UNKNOWN as i32,
+    Xbox360 = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_XBOX360 as i32,
+    Xboxone = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_XBOXONE as i32,
+    PS3 = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_PS3 as i32,
+    PS4 = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_PS4 as i32,
+    NintendoSwitchPro = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO as i32,
+    Virtual = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_VIRTUAL as i32,
+    PS5 = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_PS5 as i32,
+    AmazonLuna = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_AMAZON_LUNA as i32,
+    GoogleStadia = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_GOOGLE_STADIA as i32,
+    NvidiaShield = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NVIDIA_SHIELD as i32,
+    NintendoSwitchJoyconLeft = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT as i32,
+    NintendoSwitchJoyconRight = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT as i32,
+    NintendoSwitchJoyconPair = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR as i32,
+}
+
+impl GameControllerType {
+    pub fn from_ll(bitflags: sys::SDL_GameControllerType) -> GameControllerType {
+        match bitflags {
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_UNKNOWN => GameControllerType::Unknown,
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_XBOX360 => GameControllerType::Xbox360,
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_XBOXONE => GameControllerType::Xboxone,
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_PS3 => GameControllerType::PS3,
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_PS4 => GameControllerType::PS4,
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO => GameControllerType::NintendoSwitchPro,
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_VIRTUAL => GameControllerType::Virtual,
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_PS5 => GameControllerType::PS5,
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_AMAZON_LUNA => GameControllerType::AmazonLuna,
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_GOOGLE_STADIA => GameControllerType::GoogleStadia,
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NVIDIA_SHIELD => GameControllerType::NvidiaShield,
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT => GameControllerType::NintendoSwitchJoyconLeft,
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT => GameControllerType::NintendoSwitchJoyconRight,
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR => GameControllerType::NintendoSwitchJoyconPair,
+
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_MAX => GameControllerType::Unknown,
+        }
+    }
+
+    pub fn to_ll(self) -> sys::SDL_GameControllerType {
+        match self {
+            GameControllerType::Unknown => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_UNKNOWN,
+            GameControllerType::Xbox360 => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_XBOX360,
+            GameControllerType::Xboxone => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_XBOXONE,
+            GameControllerType::PS3 => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_PS3,
+            GameControllerType::PS4 => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_PS4,
+            GameControllerType::NintendoSwitchPro => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO,
+            GameControllerType::Virtual => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_VIRTUAL,
+            GameControllerType::PS5 => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_PS5,
+            GameControllerType::AmazonLuna => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_AMAZON_LUNA,
+            GameControllerType::GoogleStadia => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_GOOGLE_STADIA,
+            GameControllerType::NvidiaShield => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NVIDIA_SHIELD,
+            GameControllerType::NintendoSwitchJoyconLeft => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT,
+            GameControllerType::NintendoSwitchJoyconRight => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT,
+            GameControllerType::NintendoSwitchJoyconPair => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR,
+        }
     }
 }
 
@@ -408,6 +477,13 @@ impl GameController {
         let name = unsafe { sys::SDL_GameControllerName(self.raw) };
 
         c_str_to_string(name)
+    }
+
+    /// Return the type of the controller
+    #[doc(alias = "SDL_GameControllerGetType")]
+    pub fn r#type(&self) -> GameControllerType {
+        let raw_type = unsafe { sys::SDL_GameControllerGetType(self.raw) };
+        GameControllerType::from_ll(raw_type)
     }
 
     /// Return a String describing the controller's button and axis
