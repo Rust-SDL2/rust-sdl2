@@ -36,7 +36,7 @@ fn init_submodule(sdl_path: &Path) {
     if !sdl_path.join("CMakeLists.txt").exists() {
         Command::new("git")
             .args(&["submodule", "update", "--init"])
-            .current_dir(sdl_path.clone())
+            .current_dir(sdl_path)
             .status()
             .expect("Git is needed to retrieve the SDL source files");
     }
@@ -650,35 +650,35 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
     // Set correct target triple for bindgen when cross-compiling
     if target != host {
         bindings = bindings.clang_arg("-target");
-        bindings = bindings.clang_arg(target.clone());
+        bindings = bindings.clang_arg(target);
 
         if cfg!(feature = "image") {
             image_bindings = image_bindings.clang_arg("-target");
-            image_bindings = image_bindings.clang_arg(target.clone());
+            image_bindings = image_bindings.clang_arg(target);
         }
 
         if cfg!(feature = "ttf") {
             ttf_bindings = ttf_bindings.clang_arg("-target");
-            ttf_bindings = ttf_bindings.clang_arg(target.clone());
+            ttf_bindings = ttf_bindings.clang_arg(target);
         }
 
         if cfg!(feature = "mixer") {
             mixer_bindings = mixer_bindings.clang_arg("-target");
-            mixer_bindings = mixer_bindings.clang_arg(target.clone());
+            mixer_bindings = mixer_bindings.clang_arg(target);
         }
 
         if cfg!(feature = "gfx") {
             gfx_framerate_bindings = gfx_framerate_bindings.clang_arg("-target");
-            gfx_framerate_bindings = gfx_framerate_bindings.clang_arg(target.clone());
+            gfx_framerate_bindings = gfx_framerate_bindings.clang_arg(target);
 
             gfx_primitives_bindings = gfx_primitives_bindings.clang_arg("-target");
-            gfx_primitives_bindings = gfx_primitives_bindings.clang_arg(target.clone());
+            gfx_primitives_bindings = gfx_primitives_bindings.clang_arg(target);
 
             gfx_imagefilter_bindings = gfx_imagefilter_bindings.clang_arg("-target");
-            gfx_imagefilter_bindings = gfx_imagefilter_bindings.clang_arg(target.clone());
+            gfx_imagefilter_bindings = gfx_imagefilter_bindings.clang_arg(target);
 
             gfx_rotozoom_bindings = gfx_rotozoom_bindings.clang_arg("-target");
-            gfx_rotozoom_bindings = gfx_rotozoom_bindings.clang_arg(target.clone());
+            gfx_rotozoom_bindings = gfx_rotozoom_bindings.clang_arg(target);
         }
     }
 
