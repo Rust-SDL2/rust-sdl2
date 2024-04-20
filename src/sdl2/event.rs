@@ -414,6 +414,7 @@ pub enum DisplayEvent {
     Orientation(Orientation),
     Connected,
     Disconnected,
+    Moved,
 }
 
 impl DisplayEvent {
@@ -436,6 +437,7 @@ impl DisplayEvent {
             }
             sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_CONNECTED => DisplayEvent::Connected,
             sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_DISCONNECTED => DisplayEvent::Disconnected,
+            sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_MOVED => DisplayEvent::Moved,
         }
     }
 
@@ -453,6 +455,10 @@ impl DisplayEvent {
                 sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_DISCONNECTED as u8,
                 0,
             ),
+            DisplayEvent::Moved => (
+                sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_MOVED as u8,
+                0,
+            ),
         }
     }
 
@@ -462,6 +468,7 @@ impl DisplayEvent {
             | (Self::Orientation(_), Self::Orientation(_))
             | (Self::Connected, Self::Connected)
             | (Self::Disconnected, Self::Disconnected) => true,
+            | (Self::Moved, Self::Moved) => true,
             _ => false,
         }
     }
@@ -674,6 +681,8 @@ pub enum Event {
         direction: MouseWheelDirection,
         precise_x: f32,
         precise_y: f32,
+        mouse_x: i32,
+        mouse_y: i32,
     },
 
     JoyAxisMotion {
@@ -1205,6 +1214,8 @@ impl Event {
                 direction,
                 precise_x,
                 precise_y,
+                mouse_x,
+                mouse_y,
             } => {
                 let event = sys::SDL_MouseWheelEvent {
                     type_: SDL_EventType::SDL_MOUSEWHEEL as u32,
@@ -1216,6 +1227,8 @@ impl Event {
                     direction: direction.to_ll(),
                     preciseX: precise_x,
                     preciseY: precise_y,
+                    mouseX: mouse_x,
+                    mouseY: mouse_y,
                 };
                 unsafe {
                     ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_MouseWheelEvent, 1);
@@ -1680,6 +1693,8 @@ impl Event {
                         direction: mouse::MouseWheelDirection::from_ll(event.direction),
                         precise_x: event.preciseX,
                         precise_y: event.preciseY,
+                        mouse_x: event.mouseX,
+                        mouse_y: event.mouseY,
                     }
                 }
 
@@ -2357,6 +2372,8 @@ impl Event {
     ///     x: 0,
     ///     y: 0,
     ///     direction: MouseWheelDirection::Normal,
+    ///     mouse_x: 0,
+    ///     mouse_y: 0,
     /// };
     /// assert!(ev.is_mouse());
     ///
@@ -2925,6 +2942,8 @@ mod test {
                 direction: MouseWheelDirection::Flipped,
                 precise_x: 1.6,
                 precise_y: 2.7,
+                mouse_x: 24,
+                mouse_y: 92,
             };
             let e2 = Event::from_ll(e.clone().to_ll().unwrap());
             assert_eq!(e, e2);
