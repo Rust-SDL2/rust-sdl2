@@ -141,8 +141,6 @@ impl RelativeMouseState {
     /// }
     /// ```
     pub fn pressed_mouse_buttons(&self) -> PressedMouseButtonIterator {
-        PressedMouseButtonIterator {
-            iter: self.mouse_buttons(),
-        }
+        self.mouse_buttons().into_pressed_buttons_iter()
     }
 }

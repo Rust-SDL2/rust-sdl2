@@ -2,6 +2,7 @@ use crate::get_error;
 use crate::surface::SurfaceRef;
 use crate::video;
 use crate::EventPump;
+use std::iter::FilterMap;
 use std::mem::transmute;
 
 use crate::sys;
@@ -302,9 +303,7 @@ impl MouseState {
     /// }
     /// ```
     pub fn pressed_mouse_buttons(&self) -> PressedMouseButtonIterator {
-        PressedMouseButtonIterator {
-            iter: self.mouse_buttons(),
-        }
+        self.mouse_buttons().into_pressed_buttons_iter()
     }
 }
 
@@ -329,20 +328,14 @@ impl<'a> Iterator for MouseButtonIterator<'a> {
     }
 }
 
-pub struct PressedMouseButtonIterator<'a> {
-    iter: MouseButtonIterator<'a>,
-}
-
-impl<'a> Iterator for PressedMouseButtonIterator<'a> {
-    type Item = MouseButton;
-
-    fn next(&mut self) -> Option<MouseButton> {
-        self.iter
-            .by_ref()
-            .filter_map(|(mouse_button, pressed)| pressed.then_some(mouse_button))
-            .next()
+impl<'a> MouseButtonIterator<'a> {
+    fn into_pressed_buttons_iter(self) -> PressedMouseButtonIterator<'a> {
+        self.filter_map(|(mouse_button, pressed)| pressed.then_some(mouse_button))
     }
 }
+
+pub type PressedMouseButtonIterator<'a> =
+    FilterMap<MouseButtonIterator<'a>, fn((MouseButton, bool)) -> Option<MouseButton>>;
 
 impl crate::Sdl {
     #[inline]
