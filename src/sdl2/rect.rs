@@ -74,11 +74,12 @@ pub struct Rect {
 
 impl ::std::fmt::Debug for Rect {
     fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
-        return write!(
-            fmt,
-            "Rect {{ x: {}, y: {}, w: {}, h: {} }}",
-            self.raw.x, self.raw.y, self.raw.w, self.raw.h
-        );
+        fmt.debug_struct("Rect")
+            .field("x", &self.raw.x)
+            .field("y", &self.raw.y)
+            .field("w", &self.raw.w)
+            .field("h", &self.raw.h)
+            .finish()
     }
 }
 
@@ -735,7 +736,10 @@ pub struct Point {
 
 impl ::std::fmt::Debug for Point {
     fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
-        return write!(fmt, "Point {{ x: {}, y: {} }}", self.raw.x, self.raw.y);
+        fmt.debug_struct("Point")
+            .field("x", &self.raw.x)
+            .field("y", &self.raw.y)
+            .finish()
     }
 }
 
