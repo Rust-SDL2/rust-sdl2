@@ -454,13 +454,7 @@ impl DisplayEvent {
     }
 
     pub fn is_same_kind_as(&self, other: &DisplayEvent) -> bool {
-        match (self, other) {
-            (Self::None, Self::None)
-            | (Self::Orientation(_), Self::Orientation(_))
-            | (Self::Connected, Self::Connected)
-            | (Self::Disconnected, Self::Disconnected) => true,
-            _ => false,
-        }
+        mem::discriminant(self) == mem::discriminant(other)
     }
 }
 
@@ -540,28 +534,7 @@ impl WindowEvent {
     }
 
     pub fn is_same_kind_as(&self, other: &WindowEvent) -> bool {
-        match (self, other) {
-            (Self::None, Self::None)
-            | (Self::Shown, Self::Shown)
-            | (Self::Hidden, Self::Hidden)
-            | (Self::Exposed, Self::Exposed)
-            | (Self::Moved(_, _), Self::Moved(_, _))
-            | (Self::Resized(_, _), Self::Resized(_, _))
-            | (Self::SizeChanged(_, _), Self::SizeChanged(_, _))
-            | (Self::Minimized, Self::Minimized)
-            | (Self::Maximized, Self::Maximized)
-            | (Self::Restored, Self::Restored)
-            | (Self::Enter, Self::Enter)
-            | (Self::Leave, Self::Leave)
-            | (Self::FocusGained, Self::FocusGained)
-            | (Self::FocusLost, Self::FocusLost)
-            | (Self::Close, Self::Close)
-            | (Self::TakeFocus, Self::TakeFocus)
-            | (Self::HitTest, Self::HitTest)
-            | (Self::ICCProfChanged, Self::ICCProfChanged)
-            | (Self::DisplayChanged(_), Self::DisplayChanged(_)) => true,
-            _ => false,
-        }
+        mem::discriminant(self) == mem::discriminant(other)
     }
 }
 
