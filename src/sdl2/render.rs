@@ -1397,17 +1397,13 @@ impl<T: RenderTarget> Canvas<T> {
         P: Into<Option<Point>>,
     {
         use crate::sys::SDL_RendererFlip::*;
-        let flip = unsafe {
-            match (flip_horizontal, flip_vertical) {
-                (false, false) => SDL_FLIP_NONE,
-                (true, false) => SDL_FLIP_HORIZONTAL,
-                (false, true) => SDL_FLIP_VERTICAL,
-                (true, true) => transmute::<u32, sys::SDL_RendererFlip>(
-                    transmute::<sys::SDL_RendererFlip, u32>(SDL_FLIP_HORIZONTAL)
-                        | transmute::<sys::SDL_RendererFlip, u32>(SDL_FLIP_VERTICAL),
-                ),
-            }
-        };
+        let mut flip = 0;
+        if flip_horizontal {
+            flip |= SDL_FLIP_HORIZONTAL as u32;
+        }
+        if flip_vertical {
+            flip |= SDL_FLIP_VERTICAL as u32;
+        }
 
         let ret = unsafe {
             sys::SDL_RenderCopyEx(
