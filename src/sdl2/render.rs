@@ -1446,37 +1446,35 @@ impl<T: RenderTarget> Canvas<T> {
         rect: R,
         format: pixels::PixelFormatEnum,
     ) -> Result<Vec<u8>, String> {
-        unsafe {
-            let rect = rect.into();
-            let (actual_rect, w, h) = match rect {
-                Some(ref rect) => (rect.raw(), rect.width() as usize, rect.height() as usize),
-                None => {
-                    let (w, h) = self.output_size()?;
-                    (ptr::null(), w as usize, h as usize)
-                }
-            };
-
-            let pitch = w * format.byte_size_per_pixel(); // calculated pitch
-            let size = format.byte_size_of_pixels(w * h);
-            let mut pixels = Vec::with_capacity(size);
-            pixels.set_len(size);
-
-            // Pass the interior of `pixels: Vec<u8>` to SDL
-            let ret = {
-                sys::SDL_RenderReadPixels(
-                    self.context.raw,
-                    actual_rect,
-                    format as u32,
-                    pixels.as_mut_ptr() as *mut c_void,
-                    pitch as c_int,
-                )
-            };
-
-            if ret == 0 {
-                Ok(pixels)
-            } else {
-                Err(get_error())
+        let rect = rect.into();
+        let (actual_rect, w, h) = match rect {
+            Some(ref rect) => (rect.raw(), rect.width() as usize, rect.height() as usize),
+            None => {
+                let (w, h) = self.output_size()?;
+                (ptr::null(), w as usize, h as usize)
             }
+        };
+
+        let pitch = w * format.byte_size_per_pixel(); // calculated pitch
+        let size = format.byte_size_of_pixels(w * h);
+        let mut pixels = Vec::with_capacity(size);
+
+        // Pass the interior of `pixels: Vec<u8>` to SDL
+        let ret = unsafe {
+            sys::SDL_RenderReadPixels(
+                self.context.raw,
+                actual_rect,
+                format as u32,
+                pixels.as_mut_ptr() as *mut c_void,
+                pitch as c_int,
+            )
+        };
+
+        if ret == 0 {
+            unsafe { pixels.set_len(size) };
+            Ok(pixels)
+        } else {
+            Err(get_error())
         }
     }
 
