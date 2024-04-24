@@ -24387,7 +24387,7 @@ extern "C" {
         dstrect: *const SDL_Rect,
         angle: f64,
         center: *const SDL_Point,
-        flip: u32,
+        flip: SDL_RendererFlip,
     ) -> libc::c_int;
 }
 extern "C" {

@@ -1396,6 +1396,22 @@ impl<T: RenderTarget> Canvas<T> {
         R2: Into<Option<Rect>>,
         P: Into<Option<Point>>,
     {
+        // This function doesn't use sys::SDL_RenderCopyEx because its signature does not allow
+        // SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL for parameter 'flip'. Here, a u32 is used
+        // instead of SDL_RendererFlip, which does allow that value.
+
+        extern "C" {
+            fn SDL_RenderCopyEx(
+                renderer: *mut sys::SDL_Renderer,
+                texture: *mut sys::SDL_Texture,
+                srcrect: *const sys::SDL_Rect,
+                dstrect: *const sys::SDL_Rect,
+                angle: f64,
+                center: *const sys::SDL_Point,
+                flip: u32,
+            ) -> libc::c_int;
+        }
+
         use crate::sys::SDL_RendererFlip::*;
         let mut flip = 0;
         if flip_horizontal {
@@ -1406,7 +1422,7 @@ impl<T: RenderTarget> Canvas<T> {
         }
 
         let ret = unsafe {
-            sys::SDL_RenderCopyEx(
+            SDL_RenderCopyEx(
                 self.context.raw,
                 texture.raw,
                 match src.into() {
