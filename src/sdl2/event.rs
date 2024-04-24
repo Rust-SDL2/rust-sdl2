@@ -2765,6 +2765,175 @@ impl<'a> Iterator for EventWaitTimeoutIterator<'a> {
     }
 }
 
+/// A sendible type that can push events to the event queue.
+pub struct EventSender {
+    _priv: (),
+}
+
+impl EventSender {
+    /// Pushes an event to the event queue.
+    #[doc(alias = "SDL_PushEvent")]
+    pub fn push_event(&self, event: Event) -> Result<(), String> {
+        match event.to_ll() {
+            Some(mut raw_event) => {
+                let ok = unsafe { sys::SDL_PushEvent(&mut raw_event) == 1 };
+                if ok {
+                    Ok(())
+                } else {
+                    Err(get_error())
+                }
+            }
+            None => Err("Cannot push unsupported event type to the queue".to_owned()),
+        }
+    }
+
+    /// Push a custom event
+    ///
+    /// If the event type ``T`` was not registered using
+    /// [EventSubsystem::register_custom_event]
+    /// (../struct.EventSubsystem.html#method.register_custom_event),
+    /// this method will panic.
+    ///
+    /// # Example: pushing and receiving a custom event
+    /// ```
+    /// struct SomeCustomEvent {
+    ///     a: i32
+    /// }
+    ///
+    /// let sdl = sdl2::init().unwrap();
+    /// let ev = sdl.event().unwrap();
+    /// let mut ep = sdl.event_pump().unwrap();
+    ///
+    /// ev.register_custom_event::<SomeCustomEvent>().unwrap();
+    ///
+    /// let event = SomeCustomEvent { a: 42 };
+    ///
+    /// ev.push_custom_event(event);
+    ///
+    /// let received = ep.poll_event().unwrap(); // or within a for event in ep.poll_iter()
+    /// if received.is_user_event() {
+    ///     let e2 = received.as_user_event_type::<SomeCustomEvent>().unwrap();
+    ///     assert_eq!(e2.a, 42);
+    /// }
+    /// ```
+    pub fn push_custom_event<T: ::std::any::Any>(&self, event: T) -> Result<(), String> {
+        use std::any::TypeId;
+        let cet = CUSTOM_EVENT_TYPES.lock().unwrap();
+        let type_id = TypeId::of::<Box<T>>();
+
+        let user_event_id = *match cet.type_id_to_sdl_id.get(&type_id) {
+            Some(id) => id,
+            None => {
+                return Err("Type is not registered as a custom event type!".to_owned());
+            }
+        };
+
+        let event_box = Box::new(event);
+        let event = Event::User {
+            timestamp: 0,
+            window_id: 0,
+            type_: user_event_id,
+            code: 0,
+            data1: Box::into_raw(event_box) as *mut c_void,
+            data2: ::std::ptr::null_mut(),
+        };
+        drop(cet);
+
+        self.push_event(event)?;
+
+        Ok(())
+    }
+}
+
+/// A callback trait for [`EventSubsystem::add_event_watch`].
+pub trait EventWatchCallback {
+    fn callback(&mut self, event: Event);
+}
+
+/// An handler for the event watch callback.
+/// One must bind this struct in a variable as long as you want to keep the callback active.
+/// For further information, see [`EventSubsystem::add_event_watch`].
+pub struct EventWatch<'a, CB: EventWatchCallback + 'a> {
+    activated: bool,
+    callback: Box<CB>,
+    _phantom: PhantomData<&'a CB>,
+}
+
+impl<'a, CB: EventWatchCallback + 'a> EventWatch<'a, CB> {
+    fn add(callback: CB) -> EventWatch<'a, CB> {
+        let f = Box::new(callback);
+        let mut watch = EventWatch {
+            activated: false,
+            callback: f,
+            _phantom: PhantomData,
+        };
+        watch.activate();
+        watch
+    }
+
+    /// Activates the event watch.
+    /// Does nothing if it is already activated.
+    pub fn activate(&mut self) {
+        if !self.activated {
+            self.activated = true;
+            unsafe { sys::SDL_AddEventWatch(self.filter(), self.callback()) };
+        }
+    }
+
+    /// Deactivates the event watch.
+    /// Does nothing if it is already activated.
+    pub fn deactivate(&mut self) {
+        if self.activated {
+            self.activated = false;
+            unsafe { sys::SDL_DelEventWatch(self.filter(), self.callback()) };
+        }
+    }
+
+    /// Returns if the event watch is activated.
+    pub fn activated(&self) -> bool {
+        self.activated
+    }
+
+    /// Set the activation state of the event watch.
+    pub fn set_activated(&mut self, activate: bool) {
+        if activate {
+            self.activate();
+        } else {
+            self.deactivate();
+        }
+    }
+
+    fn filter(&self) -> SDL_EventFilter {
+        Some(event_callback_marshall::<CB> as _)
+    }
+
+    fn callback(&mut self) -> *mut c_void {
+        &mut *self.callback as *mut _ as *mut c_void
+    }
+}
+
+impl<'a, CB: EventWatchCallback + 'a> Drop for EventWatch<'a, CB> {
+    fn drop(&mut self) {
+        self.deactivate();
+    }
+}
+
+extern "C" fn event_callback_marshall<CB: EventWatchCallback>(
+    user_data: *mut c_void,
+    event: *mut sdl2_sys::SDL_Event,
+) -> i32 {
+    let f: &mut CB = unsafe { &mut *(user_data as *mut _) };
+    let event = Event::from_ll(unsafe { *event });
+    f.callback(event);
+    0
+}
+
+impl<F: FnMut(Event)> EventWatchCallback for F {
+    fn callback(&mut self, event: Event) {
+        self(event)
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::super::controller::{Axis, Button};
@@ -3044,174 +3213,5 @@ mod test {
         } else {
             panic!()
         }
-    }
-}
-
-/// A sendible type that can push events to the event queue.
-pub struct EventSender {
-    _priv: (),
-}
-
-impl EventSender {
-    /// Pushes an event to the event queue.
-    #[doc(alias = "SDL_PushEvent")]
-    pub fn push_event(&self, event: Event) -> Result<(), String> {
-        match event.to_ll() {
-            Some(mut raw_event) => {
-                let ok = unsafe { sys::SDL_PushEvent(&mut raw_event) == 1 };
-                if ok {
-                    Ok(())
-                } else {
-                    Err(get_error())
-                }
-            }
-            None => Err("Cannot push unsupported event type to the queue".to_owned()),
-        }
-    }
-
-    /// Push a custom event
-    ///
-    /// If the event type ``T`` was not registered using
-    /// [EventSubsystem::register_custom_event]
-    /// (../struct.EventSubsystem.html#method.register_custom_event),
-    /// this method will panic.
-    ///
-    /// # Example: pushing and receiving a custom event
-    /// ```
-    /// struct SomeCustomEvent {
-    ///     a: i32
-    /// }
-    ///
-    /// let sdl = sdl2::init().unwrap();
-    /// let ev = sdl.event().unwrap();
-    /// let mut ep = sdl.event_pump().unwrap();
-    ///
-    /// ev.register_custom_event::<SomeCustomEvent>().unwrap();
-    ///
-    /// let event = SomeCustomEvent { a: 42 };
-    ///
-    /// ev.push_custom_event(event);
-    ///
-    /// let received = ep.poll_event().unwrap(); // or within a for event in ep.poll_iter()
-    /// if received.is_user_event() {
-    ///     let e2 = received.as_user_event_type::<SomeCustomEvent>().unwrap();
-    ///     assert_eq!(e2.a, 42);
-    /// }
-    /// ```
-    pub fn push_custom_event<T: ::std::any::Any>(&self, event: T) -> Result<(), String> {
-        use std::any::TypeId;
-        let cet = CUSTOM_EVENT_TYPES.lock().unwrap();
-        let type_id = TypeId::of::<Box<T>>();
-
-        let user_event_id = *match cet.type_id_to_sdl_id.get(&type_id) {
-            Some(id) => id,
-            None => {
-                return Err("Type is not registered as a custom event type!".to_owned());
-            }
-        };
-
-        let event_box = Box::new(event);
-        let event = Event::User {
-            timestamp: 0,
-            window_id: 0,
-            type_: user_event_id,
-            code: 0,
-            data1: Box::into_raw(event_box) as *mut c_void,
-            data2: ::std::ptr::null_mut(),
-        };
-        drop(cet);
-
-        self.push_event(event)?;
-
-        Ok(())
-    }
-}
-
-/// A callback trait for [`EventSubsystem::add_event_watch`].
-pub trait EventWatchCallback {
-    fn callback(&mut self, event: Event);
-}
-
-/// An handler for the event watch callback.
-/// One must bind this struct in a variable as long as you want to keep the callback active.
-/// For further information, see [`EventSubsystem::add_event_watch`].
-pub struct EventWatch<'a, CB: EventWatchCallback + 'a> {
-    activated: bool,
-    callback: Box<CB>,
-    _phantom: PhantomData<&'a CB>,
-}
-
-impl<'a, CB: EventWatchCallback + 'a> EventWatch<'a, CB> {
-    fn add(callback: CB) -> EventWatch<'a, CB> {
-        let f = Box::new(callback);
-        let mut watch = EventWatch {
-            activated: false,
-            callback: f,
-            _phantom: PhantomData,
-        };
-        watch.activate();
-        watch
-    }
-
-    /// Activates the event watch.
-    /// Does nothing if it is already activated.
-    pub fn activate(&mut self) {
-        if !self.activated {
-            self.activated = true;
-            unsafe { sys::SDL_AddEventWatch(self.filter(), self.callback()) };
-        }
-    }
-
-    /// Deactivates the event watch.
-    /// Does nothing if it is already activated.
-    pub fn deactivate(&mut self) {
-        if self.activated {
-            self.activated = false;
-            unsafe { sys::SDL_DelEventWatch(self.filter(), self.callback()) };
-        }
-    }
-
-    /// Returns if the event watch is activated.
-    pub fn activated(&self) -> bool {
-        self.activated
-    }
-
-    /// Set the activation state of the event watch.
-    pub fn set_activated(&mut self, activate: bool) {
-        if activate {
-            self.activate();
-        } else {
-            self.deactivate();
-        }
-    }
-
-    fn filter(&self) -> SDL_EventFilter {
-        Some(event_callback_marshall::<CB> as _)
-    }
-
-    fn callback(&mut self) -> *mut c_void {
-        &mut *self.callback as *mut _ as *mut c_void
-    }
-}
-
-impl<'a, CB: EventWatchCallback + 'a> Drop for EventWatch<'a, CB> {
-    fn drop(&mut self) {
-        self.deactivate();
-    }
-}
-
-extern "C" fn event_callback_marshall<CB: EventWatchCallback>(
-    user_data: *mut c_void,
-    event: *mut sdl2_sys::SDL_Event,
-) -> i32 {
-    let f: &mut CB = unsafe { &mut *(user_data as *mut _) };
-    let event = Event::from_ll(unsafe { *event });
-    f.callback(event);
-    0
-}
-
-impl<F: FnMut(Event)> EventWatchCallback for F {
-    fn callback(&mut self, event: Event) {
-        self(event)
     }
 }
