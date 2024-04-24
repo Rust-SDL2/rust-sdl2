@@ -337,12 +337,10 @@ impl<'a> Iterator for PressedMouseButtonIterator<'a> {
     type Item = MouseButton;
 
     fn next(&mut self) -> Option<MouseButton> {
-        while let Some((mouse_button, pressed)) = self.iter.next() {
-            if pressed {
-                return Some(mouse_button);
-            }
-        }
-        None
+        self.iter
+            .by_ref()
+            .filter_map(|(mouse_button, pressed)| pressed.then_some(mouse_button))
+            .next()
     }
 }
 
