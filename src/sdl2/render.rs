@@ -96,6 +96,13 @@ impl Error for TargetRenderError {
             NotSupported => "The renderer does not support the use of render targets",
         }
     }
+
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        match self {
+            Self::SdlError(err) => Some(err),
+            Self::NotSupported => None,
+        }
+    }
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
