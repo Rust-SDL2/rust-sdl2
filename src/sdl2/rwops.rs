@@ -4,7 +4,6 @@ use libc::{c_char, c_int, size_t};
 use std::ffi::CString;
 use std::io;
 use std::marker::PhantomData;
-use std::mem::transmute;
 use std::path::Path;
 
 use crate::sys;
@@ -179,7 +178,7 @@ impl<'a> io::Seek for RWops<'a> {
             io::SeekFrom::End(pos) => (sys::RW_SEEK_END, pos),
             io::SeekFrom::Current(pos) => (sys::RW_SEEK_CUR, pos),
         };
-        let ret = unsafe { ((*self.raw).seek.unwrap())(self.raw, offset, transmute(whence)) };
+        let ret = unsafe { ((*self.raw).seek.unwrap())(self.raw, offset, whence as i32) };
         if ret == -1 {
             Err(io::Error::last_os_error())
         } else {
