@@ -511,7 +511,7 @@ impl Keycode {
             match sys::SDL_GetKeyFromScancode(transmute::<u32, sys::SDL_Scancode>(scancode as u32))
             {
                 UNKNOWN => None,
-                keycode_id => Keycode::from_i32(keycode_id as i32),
+                keycode_id => Keycode::from_i32(keycode_id),
             }
         }
     }
@@ -523,7 +523,7 @@ impl Keycode {
             match CString::new(name) {
                 Ok(name) => match sys::SDL_GetKeyFromName(name.as_ptr() as *const c_char) {
                     UNKNOWN => None,
-                    keycode_id => Some(Keycode::from_i32(keycode_id as i32).unwrap()),
+                    keycode_id => Some(Keycode::from_i32(keycode_id).unwrap()),
                 },
                 // string contains a nul byte - it won't match anything.
                 Err(_) => None,
@@ -537,7 +537,7 @@ impl Keycode {
         // Knowing this, we must always return a new string.
         unsafe {
             let buf = sys::SDL_GetKeyName(self as i32);
-            CStr::from_ptr(buf as *const _).to_str().unwrap().to_owned()
+            CStr::from_ptr(buf).to_str().unwrap().to_owned()
         }
     }
 }

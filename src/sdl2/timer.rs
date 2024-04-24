@@ -189,7 +189,7 @@ mod test {
 
         ::std::thread::sleep(Duration::from_millis(50));
         let flag = local_flag.lock().unwrap();
-        assert_eq!(*flag, true);
+        assert!(*flag);
     }
 
     fn test_timer_can_be_recreated() {

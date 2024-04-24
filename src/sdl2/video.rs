@@ -34,7 +34,7 @@ impl<'a> Deref for WindowSurfaceRef<'a> {
 impl<'a> DerefMut for WindowSurfaceRef<'a> {
     #[inline]
     fn deref_mut(&mut self) -> &mut SurfaceRef {
-        &mut self.0
+        self.0
     }
 }
 
@@ -463,10 +463,10 @@ impl DisplayMode {
 
     pub fn from_ll(raw: &sys::SDL_DisplayMode) -> DisplayMode {
         DisplayMode::new(
-            PixelFormatEnum::try_from(raw.format as u32).unwrap_or(PixelFormatEnum::Unknown),
-            raw.w as i32,
-            raw.h as i32,
-            raw.refresh_rate as i32,
+            PixelFormatEnum::try_from(raw.format).unwrap_or(PixelFormatEnum::Unknown),
+            raw.w,
+            raw.h,
+            raw.refresh_rate,
         )
     }
 
@@ -565,7 +565,9 @@ impl Drop for WindowContext {
 
 impl WindowContext {
     #[inline]
-    /// Unsafe if the `*mut SDL_Window` is used after the `WindowContext` is dropped
+    /// # Safety
+    ///
+    /// Unsound if the `*mut SDL_Window` is used after the `WindowContext` is dropped
     pub unsafe fn from_ll(
         subsystem: VideoSubsystem,
         raw: *mut sys::SDL_Window,

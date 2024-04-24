@@ -68,15 +68,13 @@ pub enum TargetRenderError {
 
 impl fmt::Display for SdlError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let &SdlError(ref e) = self;
-        write!(f, "SDL error: {}", e)
+        write!(f, "SDL error: {}", self.0)
     }
 }
 
 impl Error for SdlError {
     fn description(&self) -> &str {
-        let &SdlError(ref e) = self;
-        e
+        &self.0
     }
 }
 
@@ -185,9 +183,7 @@ impl RendererInfo {
         let texture_formats: Vec<PixelFormatEnum> = info.texture_formats
             [0..(info.num_texture_formats as usize)]
             .iter()
-            .map(|&format| {
-                PixelFormatEnum::try_from(format as u32).unwrap_or(PixelFormatEnum::Unknown)
-            })
+            .map(|&format| PixelFormatEnum::try_from(format).unwrap_or(PixelFormatEnum::Unknown))
             .collect();
 
         // The driver name is always a static string, compiled into SDL2.
@@ -611,7 +607,7 @@ impl<T: RenderTarget> Canvas<T> {
     {
         if self.render_target_supported() {
             let target = unsafe { self.get_raw_target() };
-            for &(ref texture, ref user_context) in textures {
+            for (texture, user_context) in textures {
                 unsafe { self.set_raw_target(texture.raw) }.map_err(TargetRenderError::SdlError)?;
                 f(self, user_context);
             }
@@ -1871,7 +1867,7 @@ impl InternalTexture {
             panic!("{}", get_error())
         } else {
             TextureQuery {
-                format: PixelFormatEnum::try_from(format as u32).unwrap(),
+                format: PixelFormatEnum::try_from(format).unwrap(),
                 access: TextureAccess::try_from(access as u32).unwrap(),
                 width: width as u32,
                 height: height as u32,

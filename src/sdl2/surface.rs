@@ -565,9 +565,7 @@ impl SurfaceRef {
     #[allow(clippy::clone_on_copy)]
     pub fn fill_rects(&mut self, rects: &[Rect], color: pixels::Color) -> Result<(), String> {
         for rect in rects.iter() {
-            if let Err(e) = self.fill_rect(rect.clone(), color) {
-                return Err(e);
-            }
+            self.fill_rect(rect.clone(), color)?
         }
 
         Ok(())

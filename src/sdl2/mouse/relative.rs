@@ -21,11 +21,7 @@ impl RelativeMouseState {
             sys::SDL_GetRelativeMouseState(&mut x, &mut y)
         };
 
-        RelativeMouseState {
-            mouse_state,
-            x: x as i32,
-            y: y as i32,
-        }
+        RelativeMouseState { mouse_state, x, y }
     }
 
     pub fn from_sdl_state(state: u32) -> RelativeMouseState {

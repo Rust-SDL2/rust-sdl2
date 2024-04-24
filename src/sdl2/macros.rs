@@ -18,7 +18,7 @@ macro_rules! impl_raw_constructor(
         impl $t {
             #[inline]
             pub const unsafe fn from_ll($($r:$rt),+) -> $t {
-                $te { $($r: $r),+ }
+                $te { $($r),+ }
             }
         }
         )+

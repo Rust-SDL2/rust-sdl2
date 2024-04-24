@@ -56,7 +56,7 @@ static SDL_COUNT: AtomicU32 = AtomicU32::new(0);
 
 thread_local! {
     /// True if the current thread is the main thread.
-    static IS_MAIN_THREAD: Cell<bool> = Cell::new(false);
+    static IS_MAIN_THREAD: Cell<bool> = const { Cell::new(false) };
 }
 
 /// The SDL context type. Initialize with `sdl2::init()`.

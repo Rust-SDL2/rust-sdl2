@@ -110,10 +110,7 @@ impl crate::EventSubsystem {
             } else {
                 events.set_len(result as usize);
 
-                events
-                    .into_iter()
-                    .map(|event_raw| Event::from_ll(event_raw))
-                    .collect()
+                events.into_iter().map(Event::from_ll).collect()
             }
         }
     }
@@ -962,7 +959,7 @@ where
         .into()
         .map(|kc| kc as sys::SDL_Keycode)
         .unwrap_or(sys::SDL_KeyCode::SDLK_UNKNOWN as i32);
-    let keymod = keymod.bits() as u16;
+    let keymod = keymod.bits();
     sys::SDL_Keysym {
         scancode,
         sym: keycode,
@@ -987,10 +984,10 @@ impl Event {
                 timestamp,
             } => {
                 let event = sys::SDL_UserEvent {
-                    type_: type_ as u32,
+                    type_,
                     timestamp,
                     windowID: window_id,
-                    code: code as i32,
+                    code,
                     data1,
                     data2,
                 };
@@ -1500,7 +1497,7 @@ impl Event {
         let raw_type = unsafe { raw.type_ };
 
         // if event type has not been defined, treat it as a UserEvent
-        let event_type: EventType = EventType::try_from(raw_type as u32).unwrap_or(EventType::User);
+        let event_type: EventType = EventType::try_from(raw_type).unwrap_or(EventType::User);
         unsafe {
             match event_type {
                 EventType::Quit => {
@@ -1571,7 +1568,7 @@ impl Event {
                     Event::KeyDown {
                         timestamp: event.timestamp,
                         window_id: event.windowID,
-                        keycode: Keycode::from_i32(event.keysym.sym as i32),
+                        keycode: Keycode::from_i32(event.keysym.sym),
                         scancode: Scancode::from_i32(event.keysym.scancode as i32),
                         keymod: keyboard::Mod::from_bits_truncate(event.keysym.mod_),
                         repeat: event.repeat != 0,
@@ -1583,7 +1580,7 @@ impl Event {
                     Event::KeyUp {
                         timestamp: event.timestamp,
                         window_id: event.windowID,
-                        keycode: Keycode::from_i32(event.keysym.sym as i32),
+                        keycode: Keycode::from_i32(event.keysym.sym),
                         scancode: Scancode::from_i32(event.keysym.scancode as i32),
                         keymod: keyboard::Mod::from_bits_truncate(event.keysym.mod_),
                         repeat: event.repeat != 0,
@@ -1634,7 +1631,7 @@ impl Event {
                     Event::MouseMotion {
                         timestamp: event.timestamp,
                         window_id: event.windowID,
-                        which: event.which as u32,
+                        which: event.which,
                         mousestate: mouse::MouseState::from_sdl_state(event.state),
                         x: event.x,
                         y: event.y,
@@ -1648,7 +1645,7 @@ impl Event {
                     Event::MouseButtonDown {
                         timestamp: event.timestamp,
                         window_id: event.windowID,
-                        which: event.which as u32,
+                        which: event.which,
                         mouse_btn: mouse::MouseButton::from_ll(event.button),
                         clicks: event.clicks,
                         x: event.x,
@@ -1661,7 +1658,7 @@ impl Event {
                     Event::MouseButtonUp {
                         timestamp: event.timestamp,
                         window_id: event.windowID,
-                        which: event.which as u32,
+                        which: event.which,
                         mouse_btn: mouse::MouseButton::from_ll(event.button),
                         clicks: event.clicks,
                         x: event.x,
@@ -1674,7 +1671,7 @@ impl Event {
                     Event::MouseWheel {
                         timestamp: event.timestamp,
                         window_id: event.windowID,
-                        which: event.which as u32,
+                        which: event.which,
                         x: event.x,
                         y: event.y,
                         direction: mouse::MouseWheelDirection::from_ll(event.direction),
@@ -2026,10 +2023,7 @@ impl Event {
     }
 
     pub fn is_user_event(&self) -> bool {
-        match *self {
-            Event::User { .. } => true,
-            _ => false,
-        }
+        matches!(self, Event::User { .. })
     }
 
     pub fn as_user_event_type<T: ::std::any::Any>(&self) -> Option<T> {
@@ -2271,17 +2265,17 @@ impl Event {
     /// assert!(another_ev.is_window() == false); // Not a window event!
     /// ```
     pub fn is_window(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::Quit { .. }
-            | Self::AppTerminating { .. }
-            | Self::AppLowMemory { .. }
-            | Self::AppWillEnterBackground { .. }
-            | Self::AppDidEnterBackground { .. }
-            | Self::AppWillEnterForeground { .. }
-            | Self::AppDidEnterForeground { .. }
-            | Self::Window { .. } => true,
-            _ => false,
-        }
+                | Self::AppTerminating { .. }
+                | Self::AppLowMemory { .. }
+                | Self::AppWillEnterBackground { .. }
+                | Self::AppDidEnterBackground { .. }
+                | Self::AppWillEnterForeground { .. }
+                | Self::AppDidEnterForeground { .. }
+                | Self::Window { .. }
+        )
     }
 
     /// Returns `true` if this is a keyboard event.
@@ -2308,10 +2302,7 @@ impl Event {
     /// assert!(another_ev.is_keyboard() == false); // Not a keyboard event!
     /// ```
     pub fn is_keyboard(&self) -> bool {
-        match self {
-            Self::KeyDown { .. } | Self::KeyUp { .. } => true,
-            _ => false,
-        }
+        matches!(self, Self::KeyDown { .. } | Self::KeyUp { .. })
     }
 
     /// Returns `true` if this is a text event.
@@ -2334,10 +2325,7 @@ impl Event {
     /// assert!(another_ev.is_text() == false); // Not a text event!
     /// ```
     pub fn is_text(&self) -> bool {
-        match self {
-            Self::TextEditing { .. } | Self::TextInput { .. } => true,
-            _ => false,
-        }
+        matches!(self, Self::TextEditing { .. } | Self::TextInput { .. })
     }
 
     /// Returns `true` if this is a mouse event.
@@ -2366,13 +2354,13 @@ impl Event {
     /// assert!(another_ev.is_mouse() == false); // Not a mouse event!
     /// ```
     pub fn is_mouse(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::MouseMotion { .. }
-            | Self::MouseButtonDown { .. }
-            | Self::MouseButtonUp { .. }
-            | Self::MouseWheel { .. } => true,
-            _ => false,
-        }
+                | Self::MouseButtonDown { .. }
+                | Self::MouseButtonUp { .. }
+                | Self::MouseWheel { .. }
+        )
     }
 
     /// Returns `true` if this is a controller event.
@@ -2394,15 +2382,15 @@ impl Event {
     /// assert!(another_ev.is_controller() == false); // Not a controller event!
     /// ```
     pub fn is_controller(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::ControllerAxisMotion { .. }
-            | Self::ControllerButtonDown { .. }
-            | Self::ControllerButtonUp { .. }
-            | Self::ControllerDeviceAdded { .. }
-            | Self::ControllerDeviceRemoved { .. }
-            | Self::ControllerDeviceRemapped { .. } => true,
-            _ => false,
-        }
+                | Self::ControllerButtonDown { .. }
+                | Self::ControllerButtonUp { .. }
+                | Self::ControllerDeviceAdded { .. }
+                | Self::ControllerDeviceRemoved { .. }
+                | Self::ControllerDeviceRemapped { .. }
+        )
     }
 
     /// Returns `true` if this is a joy event.
@@ -2425,16 +2413,16 @@ impl Event {
     /// assert!(another_ev.is_joy() == false); // Not a joy event!
     /// ```
     pub fn is_joy(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::JoyAxisMotion { .. }
-            | Self::JoyBallMotion { .. }
-            | Self::JoyHatMotion { .. }
-            | Self::JoyButtonDown { .. }
-            | Self::JoyButtonUp { .. }
-            | Self::JoyDeviceAdded { .. }
-            | Self::JoyDeviceRemoved { .. } => true,
-            _ => false,
-        }
+                | Self::JoyBallMotion { .. }
+                | Self::JoyHatMotion { .. }
+                | Self::JoyButtonDown { .. }
+                | Self::JoyButtonUp { .. }
+                | Self::JoyDeviceAdded { .. }
+                | Self::JoyDeviceRemoved { .. }
+        )
     }
 
     /// Returns `true` if this is a finger event.
@@ -2462,10 +2450,10 @@ impl Event {
     /// assert!(another_ev.is_finger() == false); // Not a finger event!
     /// ```
     pub fn is_finger(&self) -> bool {
-        match self {
-            Self::FingerDown { .. } | Self::FingerUp { .. } | Self::FingerMotion { .. } => true,
-            _ => false,
-        }
+        matches!(
+            self,
+            Self::FingerDown { .. } | Self::FingerUp { .. } | Self::FingerMotion { .. }
+        )
     }
 
     /// Returns `true` if this is a dollar event.
@@ -2492,10 +2480,7 @@ impl Event {
     /// assert!(another_ev.is_dollar() == false); // Not a dollar event!
     /// ```
     pub fn is_dollar(&self) -> bool {
-        match self {
-            Self::DollarGesture { .. } | Self::DollarRecord { .. } => true,
-            _ => false,
-        }
+        matches!(self, Self::DollarGesture { .. } | Self::DollarRecord { .. })
     }
 
     /// Returns `true` if this is a drop event.
@@ -2517,13 +2502,13 @@ impl Event {
     /// assert!(another_ev.is_drop() == false); // Not a drop event!
     /// ```
     pub fn is_drop(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::DropFile { .. }
-            | Self::DropText { .. }
-            | Self::DropBegin { .. }
-            | Self::DropComplete { .. } => true,
-            _ => false,
-        }
+                | Self::DropText { .. }
+                | Self::DropBegin { .. }
+                | Self::DropComplete { .. }
+        )
     }
 
     /// Returns `true` if this is an audio event.
@@ -2546,10 +2531,10 @@ impl Event {
     /// assert!(another_ev.is_audio() == false); // Not an audio event!
     /// ```
     pub fn is_audio(&self) -> bool {
-        match self {
-            Self::AudioDeviceAdded { .. } | Self::AudioDeviceRemoved { .. } => true,
-            _ => false,
-        }
+        matches!(
+            self,
+            Self::AudioDeviceAdded { .. } | Self::AudioDeviceRemoved { .. }
+        )
     }
 
     /// Returns `true` if this is a render event.
@@ -2570,10 +2555,10 @@ impl Event {
     /// assert!(another_ev.is_render() == false); // Not a render event!
     /// ```
     pub fn is_render(&self) -> bool {
-        match self {
-            Self::RenderTargetsReset { .. } | Self::RenderDeviceReset { .. } => true,
-            _ => false,
-        }
+        matches!(
+            self,
+            Self::RenderTargetsReset { .. } | Self::RenderDeviceReset { .. }
+        )
     }
 
     /// Returns `true` if this is a user event.
@@ -2599,10 +2584,7 @@ impl Event {
     /// assert!(another_ev.is_user() == false); // Not a user event!
     /// ```
     pub fn is_user(&self) -> bool {
-        match self {
-            Self::User { .. } => true,
-            _ => false,
-        }
+        matches!(self, Self::User { .. })
     }
 
     /// Returns `true` if this is an unknown event.
@@ -2624,10 +2606,7 @@ impl Event {
     /// assert!(another_ev.is_unknown() == false); // Not an unknown event!
     /// ```
     pub fn is_unknown(&self) -> bool {
-        match self {
-            Self::Unknown { .. } => true,
-            _ => false,
-        }
+        matches!(self, Self::Unknown { .. })
     }
 }
 
@@ -3177,7 +3156,7 @@ impl EventSender {
 
 /// A callback trait for [`EventSubsystem::add_event_watch`].
 pub trait EventWatchCallback {
-    fn callback(&mut self, event: Event) -> ();
+    fn callback(&mut self, event: Event);
 }
 
 /// An handler for the event watch callback.
@@ -3258,8 +3237,8 @@ extern "C" fn event_callback_marshall<CB: EventWatchCallback>(
     0
 }
 
-impl<F: FnMut(Event) -> ()> EventWatchCallback for F {
-    fn callback(&mut self, event: Event) -> () {
+impl<F: FnMut(Event)> EventWatchCallback for F {
+    fn callback(&mut self, event: Event) {
         self(event)
     }
 }

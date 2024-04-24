@@ -87,7 +87,7 @@ impl JoystickSubsystem {
     /// Return `true` if joystick events are processed.
     #[doc(alias = "SDL_JoystickEventState")]
     pub fn event_state(&self) -> bool {
-        unsafe { sys::SDL_JoystickEventState(sys::SDL_QUERY as i32) == sys::SDL_ENABLE as i32 }
+        unsafe { sys::SDL_JoystickEventState(sys::SDL_QUERY) == sys::SDL_ENABLE as i32 }
     }
 
     /// Force joystick update when not using the event loop

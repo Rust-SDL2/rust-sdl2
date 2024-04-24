@@ -50,14 +50,8 @@ impl Cursor {
         hot_y: i32,
     ) -> Result<Cursor, String> {
         unsafe {
-            let raw = sys::SDL_CreateCursor(
-                data.as_ptr(),
-                mask.as_ptr(),
-                width as i32,
-                height as i32,
-                hot_x as i32,
-                hot_y as i32,
-            );
+            let raw =
+                sys::SDL_CreateCursor(data.as_ptr(), mask.as_ptr(), width, height, hot_x, hot_y);
 
             if raw.is_null() {
                 Err(get_error())
@@ -188,11 +182,7 @@ impl MouseState {
         let mut y = 0;
         let mouse_state: u32 = unsafe { sys::SDL_GetMouseState(&mut x, &mut y) };
 
-        MouseState {
-            mouse_state,
-            x: x as i32,
-            y: y as i32,
-        }
+        MouseState { mouse_state, x, y }
     }
 
     pub fn from_sdl_state(state: u32) -> MouseState {
