@@ -67,6 +67,7 @@ fn clamped_mul(a: i32, b: i32) -> i32 {
 /// recommended to use `Option<Rect>`, with `None` representing an empty
 /// rectangle (see, for example, the output of the
 /// [`intersection`](#method.intersection) method).
+#[repr(transparent)]
 #[derive(Clone, Copy)]
 pub struct Rect {
     raw: sys::SDL_Rect,
@@ -728,6 +729,7 @@ impl BitOr<Rect> for Rect {
 }
 
 /// Immutable point type, consisting of x and y.
+#[repr(transparent)]
 #[derive(Copy, Clone)]
 pub struct Point {
     raw: sys::SDL_Point,
