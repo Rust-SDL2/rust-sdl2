@@ -329,7 +329,7 @@ subsystem!(SensorSubsystem, sys::SDL_INIT_SENSOR, SENSOR_COUNT, sync);
 
 static IS_EVENT_PUMP_ALIVE: AtomicBool = AtomicBool::new(false);
 
-/// A thread-safe type that encapsulates SDL event-pumping functions.
+/// A type that encapsulates SDL event-pumping functions.
 pub struct EventPump {
     _event_subsystem: EventSubsystem,
 }
