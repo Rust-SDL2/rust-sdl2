@@ -555,15 +555,11 @@ fn main() {
 
     #[cfg(feature = "bindgen")]
     {
-        let include_paths: Vec<String>;
-        #[cfg(feature = "bundled")]
-        {
-            include_paths = vec![sdl2_includes];
-        }
-        #[cfg(not(feature = "bundled"))]
-        {
-            include_paths = compute_include_paths(sdl2_includes)
-        }
+        let include_paths: Vec<String> = if cfg!(feature = "bundled") {
+            vec![sdl2_includes]
+        } else {
+            compute_include_paths(sdl2_includes)
+        };
         generate_bindings(target.as_str(), host.as_str(), include_paths.as_slice());
         println!("cargo:include={}", include_paths.join(":"));
     }
