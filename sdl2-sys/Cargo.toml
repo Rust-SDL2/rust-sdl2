@@ -40,7 +40,7 @@ version = "^1"
 optional = true
 
 [build-dependencies]
-version-compare = "0.1"
+version-compare = "0.2"
 cfg-if = "^1.0"
 
 [features]
