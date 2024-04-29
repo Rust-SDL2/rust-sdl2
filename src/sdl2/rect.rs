@@ -67,6 +67,8 @@ fn clamped_mul(a: i32, b: i32) -> i32 {
 /// recommended to use `Option<Rect>`, with `None` representing an empty
 /// rectangle (see, for example, the output of the
 /// [`intersection`](#method.intersection) method).
+// Uses repr(transparent) to allow pointer casting between Rect and SDL_Rect (see
+// `Rect::raw_slice`)
 #[repr(transparent)]
 #[derive(Clone, Copy)]
 pub struct Rect {
@@ -729,6 +731,8 @@ impl BitOr<Rect> for Rect {
 }
 
 /// Immutable point type, consisting of x and y.
+// Uses repr(transparent) to allow pointer casting between Point and SDL_Point (see
+// `Point::raw_slice`)
 #[repr(transparent)]
 #[derive(Copy, Clone)]
 pub struct Point {
