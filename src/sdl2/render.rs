@@ -1396,33 +1396,21 @@ impl<T: RenderTarget> Canvas<T> {
         R2: Into<Option<Rect>>,
         P: Into<Option<Point>>,
     {
-        // This function doesn't use sys::SDL_RenderCopyEx because its signature does not allow
-        // SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL for parameter 'flip'. Here, a u32 is used
-        // instead of SDL_RendererFlip, which does allow that value.
-
-        extern "C" {
-            fn SDL_RenderCopyEx(
-                renderer: *mut sys::SDL_Renderer,
-                texture: *mut sys::SDL_Texture,
-                srcrect: *const sys::SDL_Rect,
-                dstrect: *const sys::SDL_Rect,
-                angle: f64,
-                center: *const sys::SDL_Point,
-                flip: u32,
-            ) -> libc::c_int;
-        }
-
         use crate::sys::SDL_RendererFlip::*;
-        let mut flip = 0;
-        if flip_horizontal {
-            flip |= SDL_FLIP_HORIZONTAL as u32;
-        }
-        if flip_vertical {
-            flip |= SDL_FLIP_VERTICAL as u32;
-        }
+        let flip = unsafe {
+            match (flip_horizontal, flip_vertical) {
+                (false, false) => SDL_FLIP_NONE,
+                (true, false) => SDL_FLIP_HORIZONTAL,
+                (false, true) => SDL_FLIP_VERTICAL,
+                (true, true) => transmute::<u32, sys::SDL_RendererFlip>(
+                    transmute::<sys::SDL_RendererFlip, u32>(SDL_FLIP_HORIZONTAL)
+                        | transmute::<sys::SDL_RendererFlip, u32>(SDL_FLIP_VERTICAL),
+                ),
+            }
+        };
 
         let ret = unsafe {
-            SDL_RenderCopyEx(
+            sys::SDL_RenderCopyEx(
                 self.context.raw,
                 texture.raw,
                 match src.into() {
