@@ -1,3 +1,6 @@
+// 0 should not be used in bitflags, but here it is. Removing it will break existing code.
+#![allow(clippy::bad_bit_mask)]
+
 use std::error;
 use std::ffi::{CString, NulError};
 use std::fmt;

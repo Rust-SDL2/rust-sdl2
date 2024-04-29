@@ -1,8 +1,10 @@
+// 0 should not be used in bitflags, but here it is. Removing it will break existing code.
+#![allow(clippy::bad_bit_mask)]
+
 use get_error;
 use pixels::Color;
 use rwops::RWops;
 use std::error;
-use std::error::Error;
 use std::ffi::NulError;
 use std::ffi::{CStr, CString};
 use std::fmt;
@@ -65,7 +67,7 @@ impl error::Error for FontError {
         }
     }
 
-    fn cause(&self) -> Option<&dyn error::Error> {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match *self {
             FontError::InvalidLatin1Text(ref error) => Some(error),
             FontError::SdlError(_) => None,
@@ -77,7 +79,7 @@ impl fmt::Display for FontError {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         match *self {
             FontError::InvalidLatin1Text(ref err) => {
-                write!(f, "Invalid Latin-1 bytes: {}", err.description())
+                write!(f, "Invalid Latin-1 bytes: {}", err)
             }
             FontError::SdlError(ref msg) => {
                 write!(f, "SDL2 error: {}", msg)
@@ -266,7 +268,7 @@ pub fn internal_load_font<'ttf, P: AsRef<Path>>(
             Err(get_error())
         } else {
             Ok(Font {
-                raw: raw,
+                raw,
                 rwops: None,
                 _marker: PhantomData,
             })
@@ -280,7 +282,7 @@ where
     R: Into<Option<RWops<'r>>>,
 {
     Font {
-        raw: raw,
+        raw,
         rwops: rwops.into(),
         _marker: PhantomData,
     }
@@ -299,7 +301,7 @@ pub fn internal_load_font_at_index<'ttf, P: AsRef<Path>>(
             Err(get_error())
         } else {
             Ok(Font {
-                raw: raw,
+                raw,
                 rwops: None,
                 _marker: PhantomData,
             })
@@ -333,7 +335,7 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
     }
 
     /// Starts specifying a rendering of the given UTF-8-encoded character.
-    pub fn render_char<'a>(&'a self, ch: char) -> PartialRendering<'a, 'static> {
+    pub fn render_char(&self, ch: char) -> PartialRendering<'_, 'static> {
         let mut s = String::new();
         s.push(ch);
         PartialRendering {
@@ -528,11 +530,11 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
         };
         if ret == 0 {
             Some(GlyphMetrics {
-                minx: minx as i32,
-                maxx: maxx as i32,
-                miny: miny as i32,
-                maxy: maxy as i32,
-                advance: advance as i32,
+                minx,
+                maxx,
+                miny,
+                maxy,
+                advance,
             })
         } else {
             None

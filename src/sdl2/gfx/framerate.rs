@@ -18,13 +18,13 @@ impl FPSManager {
             let size = mem::size_of::<gfx::framerate::FPSmanager>() as size_t;
             let raw = libc::malloc(size) as *mut gfx::framerate::FPSmanager;
             gfx::framerate::SDL_initFramerate(raw);
-            FPSManager { raw: raw }
+            FPSManager { raw }
         }
     }
 
     /// Set the framerate in Hz.
     pub fn set_framerate(&mut self, rate: u32) -> Result<(), String> {
-        let ret = unsafe { gfx::framerate::SDL_setFramerate(self.raw, rate as u32) };
+        let ret = unsafe { gfx::framerate::SDL_setFramerate(self.raw, rate) };
         match ret {
             0 => Ok(()),
             _ => Err(get_error()),

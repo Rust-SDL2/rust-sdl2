@@ -27,22 +27,22 @@ impl Drop for Sdl2TtfContext {
 
 impl Sdl2TtfContext {
     /// Loads a font from the given file with the given size in points.
-    pub fn load_font<'ttf, P: AsRef<Path>>(
-        &'ttf self,
+    pub fn load_font<P: AsRef<Path>>(
+        &self,
         path: P,
         point_size: u16,
-    ) -> Result<Font<'ttf, 'static>, String> {
+    ) -> Result<Font<'_, 'static>, String> {
         internal_load_font(path, point_size)
     }
 
     /// Loads the font at the given index of the file, with the given
     /// size in points.
-    pub fn load_font_at_index<'ttf, P: AsRef<Path>>(
-        &'ttf self,
+    pub fn load_font_at_index<P: AsRef<Path>>(
+        &self,
         path: P,
         index: u32,
         point_size: u16,
-    ) -> Result<Font<'ttf, 'static>, String> {
+    ) -> Result<Font<'_, 'static>, String> {
         internal_load_font_at_index(path, index, point_size)
     }
 
