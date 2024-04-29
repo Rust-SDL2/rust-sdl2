@@ -47,14 +47,9 @@ impl Palette {
         // Already validated, so don't check again
         let ncolors = colors.len() as ::libc::c_int;
 
-        let result = unsafe {
-            let mut raw_colors: Vec<sys::SDL_Color> =
-                colors.iter().map(|color| color.raw()).collect();
+        let colors = colors.iter().map(|color| color.raw()).collect::<Vec<_>>();
 
-            let pal_ptr = (&mut raw_colors[0]) as *mut sys::SDL_Color;
-
-            sys::SDL_SetPaletteColors(pal.raw, pal_ptr, 0, ncolors)
-        };
+        let result = unsafe { sys::SDL_SetPaletteColors(pal.raw, colors.as_ptr(), 0, ncolors) };
 
         if result < 0 {
             Err(get_error())
