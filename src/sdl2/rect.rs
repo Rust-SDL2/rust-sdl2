@@ -485,7 +485,7 @@ impl Rect {
     }
 
     pub fn raw_mut(&mut self) -> *mut sys::SDL_Rect {
-        self.raw() as *mut _
+        &mut self.raw
     }
 
     #[doc(alias = "SDL_Rect")]

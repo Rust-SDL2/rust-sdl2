@@ -510,20 +510,21 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
 
     /// Returns the glyph metrics of the given character in this font face.
     pub fn find_glyph_metrics(&self, ch: char) -> Option<GlyphMetrics> {
-        let minx = 0;
-        let maxx = 0;
-        let miny = 0;
-        let maxy = 0;
-        let advance = 0;
+        let mut minx = 0;
+        let mut maxx = 0;
+        let mut miny = 0;
+        let mut maxy = 0;
+        let mut advance = 0;
+
         let ret = unsafe {
             ttf::TTF_GlyphMetrics(
                 self.raw,
                 ch as u16,
-                &minx as *const _ as *mut _,
-                &maxx as *const _ as *mut _,
-                &miny as *const _ as *mut _,
-                &maxy as *const _ as *mut _,
-                &advance as *const _ as *mut _,
+                &mut minx,
+                &mut maxx,
+                &mut miny,
+                &mut maxy,
+                &mut advance,
             )
         };
         if ret == 0 {
