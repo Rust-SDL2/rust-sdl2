@@ -74,28 +74,28 @@ impl<'a> Deref for Surface<'a> {
 
     #[inline]
     fn deref(&self) -> &SurfaceRef {
-        unsafe { mem::transmute(self.context.raw) }
+        self.as_ref()
     }
 }
 
 impl<'a> DerefMut for Surface<'a> {
     #[inline]
     fn deref_mut(&mut self) -> &mut SurfaceRef {
-        unsafe { mem::transmute(self.context.raw) }
+        self.as_mut()
     }
 }
 
 impl<'a> AsRef<SurfaceRef> for Surface<'a> {
     #[inline]
     fn as_ref(&self) -> &SurfaceRef {
-        unsafe { mem::transmute(self.context.raw) }
+        unsafe { &*(self.context.raw as *const SurfaceRef) }
     }
 }
 
 impl<'a> AsMut<SurfaceRef> for Surface<'a> {
     #[inline]
     fn as_mut(&mut self) -> &mut SurfaceRef {
-        unsafe { mem::transmute(self.context.raw) }
+        unsafe { &mut *(self.context.raw as *mut SurfaceRef) }
     }
 }
 
