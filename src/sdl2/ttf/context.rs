@@ -97,6 +97,7 @@ impl error::Error for InitError {
     fn description(&self) -> &str {
         match *self {
             InitError::AlreadyInitializedError => "SDL2_TTF has already been initialized",
+            #[allow(deprecated)]
             InitError::InitializationError(ref error) => error.description(),
         }
     }
