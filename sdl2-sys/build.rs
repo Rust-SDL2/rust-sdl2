@@ -36,7 +36,7 @@ fn init_submodule(sdl_path: &Path) {
     if !sdl_path.join("CMakeLists.txt").exists() {
         Command::new("git")
             .args(&["submodule", "update", "--init"])
-            .current_dir(sdl_path.clone())
+            .current_dir(sdl_path)
             .status()
             .expect("Git is needed to retrieve the SDL source files");
     }
