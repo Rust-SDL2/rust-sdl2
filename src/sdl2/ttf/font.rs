@@ -92,10 +92,9 @@ impl<'a> RenderableText<'a> {
     fn convert(&self) -> FontResult<CString> {
         match *self {
             RenderableText::Utf8(text) => Ok(CString::new(text).unwrap()),
-            RenderableText::Latin1(bytes) => match CString::new(bytes) {
-                Err(err) => Err(FontError::InvalidLatin1Text(err)),
-                Ok(cstring) => Ok(cstring),
-            },
+            RenderableText::Latin1(bytes) => {
+                CString::new(bytes).map_err(FontError::InvalidLatin1Text)
+            }
             RenderableText::Char(ch) => {
                 Ok(CString::new(ch.encode_utf8(&mut [0; 4]).as_bytes()).unwrap())
             }
