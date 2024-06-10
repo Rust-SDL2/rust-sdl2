@@ -361,18 +361,12 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
 
     /// Returns the width and height of the given text when rendered using this
     /// font.
-    #[allow(unused_mut)]
     pub fn size_of_latin1(&self, text: &[u8]) -> FontResult<(u32, u32)> {
         let c_string = RenderableText::Latin1(text).convert()?;
         let (res, size) = unsafe {
-            let mut w: i32 = 0; // mutated by C code
-            let mut h: i32 = 0; // mutated by C code
-            let ret = ttf::TTF_SizeText(
-                self.raw,
-                c_string.as_ptr(),
-                &w as *const _ as *mut i32,
-                &h as *const _ as *mut i32,
-            );
+            let mut w: i32 = 0;
+            let mut h: i32 = 0;
+            let ret = ttf::TTF_SizeText(self.raw, c_string.as_ptr(), &mut w, &mut h);
             (ret, (w as u32, h as u32))
         };
         if res == 0 {
