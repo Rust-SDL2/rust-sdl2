@@ -157,7 +157,7 @@ impl crate::EventSubsystem {
     /// Returns an error, if no more user events can be created.
     pub unsafe fn register_events(&self, nr: u32) -> Result<Vec<u32>, String> {
         let result = sys::SDL_RegisterEvents(nr as ::libc::c_int);
-        const ERR_NR: u32 = ::std::u32::MAX - 1;
+        const ERR_NR: u32 = u32::MAX - 1;
 
         match result {
             ERR_NR => Err("No more user events can be created; SDL_LASTEVENT reached".to_owned()),
@@ -436,8 +436,8 @@ impl DisplayEvent {
         }
     }
 
-    fn to_ll(&self) -> (u8, i32) {
-        match *self {
+    fn to_ll(self) -> (u8, i32) {
+        match self {
             DisplayEvent::None => (sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_NONE as u8, 0),
             DisplayEvent::Orientation(orientation) => (
                 sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_ORIENTATION as u8,
@@ -509,8 +509,8 @@ impl WindowEvent {
         }
     }
 
-    fn to_ll(&self) -> (u8, i32, i32) {
-        match *self {
+    fn to_ll(self) -> (u8, i32, i32) {
+        match self {
             WindowEvent::None => (0, 0, 0),
             WindowEvent::Shown => (1, 0, 0),
             WindowEvent::Hidden => (2, 0, 0),

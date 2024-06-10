@@ -19,7 +19,7 @@ impl Palette {
             // This is kind of a hack. We have to cast twice because
             // ncolors is a c_int, and validate_int only takes a u32.
             // FIXME: Modify validate_int to make this unnecessary
-            let u32_max = u32::max_value() as usize;
+            let u32_max = u32::MAX as usize;
             if capacity > u32_max {
                 capacity = u32_max;
             }

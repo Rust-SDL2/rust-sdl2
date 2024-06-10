@@ -92,7 +92,7 @@ impl fmt::Display for FontError {
 enum RenderableText<'a> {
     Utf8(&'a str),
     Latin1(&'a [u8]),
-    Char(String),
+    Char(char),
 }
 impl<'a> RenderableText<'a> {
     /// Converts the given text to a c-style string if possible.
@@ -103,7 +103,9 @@ impl<'a> RenderableText<'a> {
                 Err(err) => Err(FontError::InvalidLatin1Text(err)),
                 Ok(cstring) => Ok(cstring),
             },
-            RenderableText::Char(ref string) => Ok(CString::new(string.as_bytes()).unwrap()),
+            RenderableText::Char(ch) => {
+                Ok(CString::new(ch.encode_utf8(&mut [0; 4]).as_bytes()).unwrap())
+            }
         }
     }
 }
@@ -336,10 +338,8 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
 
     /// Starts specifying a rendering of the given UTF-8-encoded character.
     pub fn render_char(&self, ch: char) -> PartialRendering<'_, 'static> {
-        let mut s = String::new();
-        s.push(ch);
         PartialRendering {
-            text: RenderableText::Char(s),
+            text: RenderableText::Char(ch),
             font: self,
         }
     }
@@ -387,9 +387,7 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
     /// Returns the width and height of the given text when rendered using this
     /// font.
     pub fn size_of_char(&self, ch: char) -> FontResult<(u32, u32)> {
-        let mut s = String::new();
-        s.push(ch);
-        self.size_of(&s)
+        self.size_of(ch.encode_utf8(&mut [0; 4]))
     }
 
     /// Returns the font's style flags.
@@ -473,29 +471,41 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
         unsafe { ttf::TTF_FontFaceIsFixedWidth(self.raw) != 0 }
     }
 
-    /// Returns the family name of the current font face.
-    pub fn face_family_name(&self) -> Option<String> {
+    /// Returns the family name of the current font face without doing any heap allocations.
+    pub fn face_family_name_borrowed(&self) -> Option<&'ttf CStr> {
         unsafe {
             // not owns buffer
             let cname = ttf::TTF_FontFaceFamilyName(self.raw);
             if cname.is_null() {
                 None
             } else {
-                Some(String::from_utf8_lossy(CStr::from_ptr(cname).to_bytes()).to_string())
+                Some(CStr::from_ptr(cname))
+            }
+        }
+    }
+
+    /// Returns the family name of the current font face.
+    pub fn face_family_name(&self) -> Option<String> {
+        self.face_family_name_borrowed()
+            .map(|cstr| String::from_utf8_lossy(cstr.to_bytes()).into_owned())
+    }
+
+    /// Returns the name of the current font face without doing any heap allocations.
+    pub fn face_style_name_borrowed(&self) -> Option<&'ttf CStr> {
+        unsafe {
+            let cname = ttf::TTF_FontFaceStyleName(self.raw);
+            if cname.is_null() {
+                None
+            } else {
+                Some(CStr::from_ptr(cname))
             }
         }
     }
 
     /// Returns the name of the current font face.
     pub fn face_style_name(&self) -> Option<String> {
-        unsafe {
-            let cname = ttf::TTF_FontFaceStyleName(self.raw);
-            if cname.is_null() {
-                None
-            } else {
-                Some(String::from_utf8_lossy(CStr::from_ptr(cname).to_bytes()).to_string())
-            }
-        }
+        self.face_style_name_borrowed()
+            .map(|cstr| String::from_utf8_lossy(cstr.to_bytes()).into_owned())
     }
 
     /// Returns the index of the given character in this font face.
