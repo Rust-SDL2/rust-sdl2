@@ -3,8 +3,8 @@ use std::cell::Cell;
 use std::error;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt;
+use std::marker::PhantomData;
 use std::mem::transmute;
-use std::os::raw::c_void;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 
 use crate::sys;
@@ -110,7 +110,7 @@ impl Sdl {
 
         Ok(Sdl {
             sdldrop: SdlDrop {
-                _anticonstructor: std::ptr::null_mut(),
+                marker: PhantomData,
             },
         })
     }
@@ -186,7 +186,7 @@ impl Sdl {
 pub struct SdlDrop {
     // Make it impossible to construct `SdlDrop` without access to this member,
     // and opt out of Send and Sync.
-    _anticonstructor: *mut c_void,
+    marker: PhantomData<*mut ()>,
 }
 
 impl Clone for SdlDrop {
@@ -194,7 +194,7 @@ impl Clone for SdlDrop {
         let prev_count = SDL_COUNT.fetch_add(1, Ordering::Relaxed);
         assert!(prev_count > 0);
         SdlDrop {
-            _anticonstructor: std::ptr::null_mut(),
+            marker: PhantomData,
         }
     }
 }
@@ -209,7 +209,7 @@ impl Drop for SdlDrop {
             unsafe {
                 sys::SDL_Quit();
             }
-            IS_MAIN_THREAD_DECLARED.swap(false, Ordering::SeqCst);
+            IS_MAIN_THREAD_DECLARED.store(false, Ordering::SeqCst);
         }
     }
 }
