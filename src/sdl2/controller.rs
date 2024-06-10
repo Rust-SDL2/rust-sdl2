@@ -41,14 +41,10 @@ impl fmt::Display for AddMappingError {
 }
 
 impl error::Error for AddMappingError {
-    fn description(&self) -> &str {
-        use self::AddMappingError::*;
-
-        match *self {
-            InvalidMapping(_) => "invalid mapping",
-            InvalidFilePath(_) => "invalid file path",
-            ReadError(_) => "read error",
-            SdlError(ref e) => e,
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
+        match self {
+            Self::InvalidMapping(err) => Some(err),
+            Self::InvalidFilePath(_) | Self::ReadError(_) | Self::SdlError(_) => None,
         }
     }
 }

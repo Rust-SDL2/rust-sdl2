@@ -60,13 +60,6 @@ pub enum FontError {
 }
 
 impl error::Error for FontError {
-    fn description(&self) -> &str {
-        match *self {
-            FontError::InvalidLatin1Text(ref error) => error.description(),
-            FontError::SdlError(ref message) => message,
-        }
-    }
-
     fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match *self {
             FontError::InvalidLatin1Text(ref error) => Some(error),

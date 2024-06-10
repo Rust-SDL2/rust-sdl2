@@ -128,14 +128,12 @@ impl fmt::Display for ShowMessageError {
 }
 
 impl error::Error for ShowMessageError {
-    fn description(&self) -> &str {
-        use self::ShowMessageError::*;
-
-        match *self {
-            InvalidTitle(_) => "invalid title",
-            InvalidMessage(_) => "invalid message",
-            InvalidButton(..) => "invalid button",
-            SdlError(ref e) => e,
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
+        match self {
+            Self::InvalidTitle(err) => Some(err),
+            Self::InvalidMessage(err) => Some(err),
+            Self::InvalidButton(err, _) => Some(err),
+            Self::SdlError(_) => None,
         }
     }
 }

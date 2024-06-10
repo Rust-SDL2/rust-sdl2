@@ -33,19 +33,7 @@ impl fmt::Display for Error {
     }
 }
 
-impl error::Error for Error {
-    fn description(&self) -> &str {
-        use self::Error::*;
-
-        match *self {
-            NoMemError => "out of memory",
-            ReadError => "error reading from datastream",
-            WriteError => "error writing to datastream",
-            SeekError => "error seeking in datastream",
-            UnsupportedError => "unknown SDL error",
-        }
-    }
-}
+impl error::Error for Error {}
 
 /// True if the main thread has been declared. The main thread is declared when
 /// SDL is first initialized.

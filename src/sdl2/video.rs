@@ -1091,14 +1091,10 @@ impl fmt::Display for WindowBuildError {
 }
 
 impl Error for WindowBuildError {
-    fn description(&self) -> &str {
-        use self::WindowBuildError::*;
-
-        match *self {
-            HeightOverflows(_) => "window height overflow",
-            WidthOverflows(_) => "window width overflow",
-            InvalidTitle(_) => "invalid window title",
-            SdlError(ref e) => e,
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        match self {
+            Self::InvalidTitle(err) => Some(err),
+            Self::HeightOverflows(_) | Self::WidthOverflows(_) | Self::SdlError(_) => None,
         }
     }
 }

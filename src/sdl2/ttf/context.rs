@@ -94,14 +94,7 @@ pub enum InitError {
 }
 
 impl error::Error for InitError {
-    fn description(&self) -> &str {
-        match *self {
-            InitError::AlreadyInitializedError => "SDL2_TTF has already been initialized",
-            InitError::InitializationError(ref error) => error.description(),
-        }
-    }
-
-    fn cause(&self) -> Option<&dyn error::Error> {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match *self {
             InitError::AlreadyInitializedError => None,
             InitError::InitializationError(ref error) => Some(error),
@@ -110,8 +103,13 @@ impl error::Error for InitError {
 }
 
 impl fmt::Display for InitError {
-    fn fmt(&self, formatter: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        formatter.write_str("SDL2_TTF has already been initialized")
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::AlreadyInitializedError => {
+                write!(f, "SDL2_TTF has already been initialized")
+            }
+            Self::InitializationError(error) => write!(f, "SDL2_TTF initialization error: {error}"),
+        }
     }
 }
 

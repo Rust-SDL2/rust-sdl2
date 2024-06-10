@@ -72,11 +72,7 @@ impl fmt::Display for SdlError {
     }
 }
 
-impl Error for SdlError {
-    fn description(&self) -> &str {
-        &self.0
-    }
-}
+impl Error for SdlError {}
 
 impl fmt::Display for TargetRenderError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -89,14 +85,6 @@ impl fmt::Display for TargetRenderError {
 }
 
 impl Error for TargetRenderError {
-    fn description(&self) -> &str {
-        use self::TargetRenderError::*;
-        match *self {
-            SdlError(self::SdlError(ref e)) => e.as_str(),
-            NotSupported => "The renderer does not support the use of render targets",
-        }
-    }
-
     fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self {
             Self::SdlError(err) => Some(err),
@@ -781,18 +769,7 @@ impl fmt::Display for TextureValueError {
     }
 }
 
-impl Error for TextureValueError {
-    fn description(&self) -> &str {
-        use self::TextureValueError::*;
-
-        match *self {
-            WidthOverflows(_) => "texture width overflow",
-            HeightOverflows(_) => "texture height overflow",
-            WidthMustBeMultipleOfTwoForFormat(..) => "texture width must be multiple of two",
-            SdlError(ref e) => e,
-        }
-    }
-}
+impl Error for TextureValueError {}
 
 #[doc(alias = "SDL_CreateTexture")]
 fn ll_create_texture(
@@ -1763,21 +1740,7 @@ impl fmt::Display for UpdateTextureError {
     }
 }
 
-impl Error for UpdateTextureError {
-    fn description(&self) -> &str {
-        use self::UpdateTextureError::*;
-
-        match *self {
-            PitchOverflows(_) => "pitch overflow",
-            PitchMustBeMultipleOfTwoForFormat(..) => "pitch must be multiple of two",
-            XMustBeMultipleOfTwoForFormat(..) => "x must be multiple of two",
-            YMustBeMultipleOfTwoForFormat(..) => "y must be multiple of two",
-            WidthMustBeMultipleOfTwoForFormat(..) => "width must be multiple of two",
-            HeightMustBeMultipleOfTwoForFormat(..) => "height must be multiple of two",
-            SdlError(ref e) => e,
-        }
-    }
-}
+impl Error for UpdateTextureError {}
 
 #[derive(Debug, Clone)]
 pub enum UpdateTextureYUVError {
@@ -1837,22 +1800,7 @@ impl fmt::Display for UpdateTextureYUVError {
     }
 }
 
-impl Error for UpdateTextureYUVError {
-    fn description(&self) -> &str {
-        use self::UpdateTextureYUVError::*;
-
-        match *self {
-            PitchOverflows { .. } => "pitch overflow",
-            InvalidPlaneLength { .. } => "invalid plane length",
-            XMustBeMultipleOfTwoForFormat(_) => "x must be multiple of two",
-            YMustBeMultipleOfTwoForFormat(_) => "y must be multiple of two",
-            WidthMustBeMultipleOfTwoForFormat(_) => "width must be multiple of two",
-            HeightMustBeMultipleOfTwoForFormat(_) => "height must be multiple of two",
-            RectNotInsideTexture(_) => "rect must be inside texture",
-            SdlError(ref e) => e,
-        }
-    }
-}
+impl Error for UpdateTextureYUVError {}
 
 struct InternalTexture {
     raw: *mut sys::SDL_Texture,
