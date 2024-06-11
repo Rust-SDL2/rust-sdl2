@@ -4,11 +4,11 @@ use crate::sys;
 use std::convert::{AsMut, AsRef, TryFrom, TryInto};
 use std::hash::{Hash, Hasher};
 use std::mem;
+use std::num::TryFromIntError;
 use std::ops::{
     Add, AddAssign, BitAnd, BitOr, Deref, DerefMut, Div, DivAssign, Mul, MulAssign, Neg, Sub,
     SubAssign,
 };
-use std::num::TryFromIntError;
 use std::ptr;
 
 /// The maximal integer value that can be used for rectangles.
@@ -709,17 +709,22 @@ impl From<(i32, i32, u32, u32)> for Rect {
 ///
 /// assert_eq!(rect1, rect2);
 /// ```
-impl<T> TryFrom<[T; 4]> for Rect where
-	T: TryInto<u32> + TryInto<i32>,
-	// need to do this to support Infallible conversions
-	TryFromIntError: From<<T as TryInto<i32>>::Error>,
-	TryFromIntError: From<<T as TryInto<u32>>::Error>,
+impl<T> TryFrom<[T; 4]> for Rect
+where
+    T: TryInto<u32> + TryInto<i32>,
+    // need to do this to support Infallible conversions
+    TryFromIntError: From<<T as TryInto<i32>>::Error>,
+    TryFromIntError: From<<T as TryInto<u32>>::Error>,
 {
-	type Error = TryFromIntError;
-	fn try_from([x, y, width, height]: [T; 4]) -> Result<Self, TryFromIntError> {
-		Ok(Rect::new(x.try_into()?, y.try_into()?,
-					 width.try_into()?, height.try_into()?))
-	}
+    type Error = TryFromIntError;
+    fn try_from([x, y, width, height]: [T; 4]) -> Result<Self, TryFromIntError> {
+        Ok(Rect::new(
+            x.try_into()?,
+            y.try_into()?,
+            width.try_into()?,
+            height.try_into()?,
+        ))
+    }
 }
 
 impl AsRef<sys::SDL_Rect> for Rect {
