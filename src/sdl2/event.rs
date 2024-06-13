@@ -2391,6 +2391,22 @@ impl Event {
         }
     }
 
+    /// Returns `true` if this mouse event is coming from touch.
+    ///
+    /// If used on any other kind of event, non-mouse related, this returns `false`.
+    pub fn is_touch(&self) -> bool {
+        // FIXME: Use a constant from sdl2-sys when bindgen will be fixed (see https://github.com/Rust-SDL2/rust-sdl2/issues/1265)
+        const SDL_TOUCH_MOUSEID: u32 = 0xFFFFFFFF;
+
+        match self {
+            Self::MouseMotion { which: SDL_TOUCH_MOUSEID, .. }
+            | Self::MouseButtonDown { which: SDL_TOUCH_MOUSEID, .. }
+            | Self::MouseButtonUp { which: SDL_TOUCH_MOUSEID, .. }
+            | Self::MouseWheel { which: SDL_TOUCH_MOUSEID, .. } => true,
+            _ => false,
+        }
+    }
+
     /// Returns `true` if this is a controller event.
     ///
     /// # Example
