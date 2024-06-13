@@ -3,6 +3,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### Unreleased
 
+[PR #1389](https://github.com/Rust-SDL2/rust-sdl2/pull/1389) Fix some undefined behavior.
+
 [PR #1378](https://github.com/Rust-SDL2/rust-sdl2/pull/1378) **BREAKING CHANGE** Change `Keycode` to be a struct rather than an enum. Fix `Keycode::from_scancode` for non-QWERTY keyboard layouts.
 
 [PR #1368](https://github.com/Rust-SDL2/rust-sdl2/pull/1368) Remove unnecessary unsafe in Window interface. Make Window `Clone`.

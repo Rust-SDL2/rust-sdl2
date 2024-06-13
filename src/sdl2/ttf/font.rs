@@ -361,18 +361,12 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
 
     /// Returns the width and height of the given text when rendered using this
     /// font.
-    #[allow(unused_mut)]
     pub fn size_of_latin1(&self, text: &[u8]) -> FontResult<(u32, u32)> {
         let c_string = RenderableText::Latin1(text).convert()?;
         let (res, size) = unsafe {
-            let mut w: i32 = 0; // mutated by C code
-            let mut h: i32 = 0; // mutated by C code
-            let ret = ttf::TTF_SizeText(
-                self.raw,
-                c_string.as_ptr(),
-                &w as *const _ as *mut i32,
-                &h as *const _ as *mut i32,
-            );
+            let mut w: i32 = 0;
+            let mut h: i32 = 0;
+            let ret = ttf::TTF_SizeText(self.raw, c_string.as_ptr(), &mut w, &mut h);
             (ret, (w as u32, h as u32))
         };
         if res == 0 {
@@ -510,20 +504,21 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
 
     /// Returns the glyph metrics of the given character in this font face.
     pub fn find_glyph_metrics(&self, ch: char) -> Option<GlyphMetrics> {
-        let minx = 0;
-        let maxx = 0;
-        let miny = 0;
-        let maxy = 0;
-        let advance = 0;
+        let mut minx = 0;
+        let mut maxx = 0;
+        let mut miny = 0;
+        let mut maxy = 0;
+        let mut advance = 0;
+
         let ret = unsafe {
             ttf::TTF_GlyphMetrics(
                 self.raw,
                 ch as u16,
-                &minx as *const _ as *mut _,
-                &maxx as *const _ as *mut _,
-                &miny as *const _ as *mut _,
-                &maxy as *const _ as *mut _,
-                &advance as *const _ as *mut _,
+                &mut minx,
+                &mut maxx,
+                &mut miny,
+                &mut maxy,
+                &mut advance,
             )
         };
         if ret == 0 {

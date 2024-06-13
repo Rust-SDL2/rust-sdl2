@@ -75,6 +75,9 @@ fn clamp_f32_size(val: f32) -> f32 {
 /// recommended to use `Option<Rect>`, with `None` representing an empty
 /// rectangle (see, for example, the output of the
 /// [`intersection`](#method.intersection) method).
+// Uses repr(transparent) to allow pointer casting between Rect and SDL_Rect (see
+// `Rect::raw_slice`)
+#[repr(transparent)]
 #[derive(Clone, Copy)]
 pub struct Rect {
     raw: sys::SDL_Rect,
@@ -490,7 +493,7 @@ impl Rect {
     }
 
     pub fn raw_mut(&mut self) -> *mut sys::SDL_Rect {
-        self.raw() as *mut _
+        &mut self.raw
     }
 
     #[doc(alias = "SDL_Rect")]
@@ -736,6 +739,9 @@ impl BitOr<Rect> for Rect {
 }
 
 /// Immutable point type, consisting of x and y.
+// Uses repr(transparent) to allow pointer casting between Point and SDL_Point (see
+// `Point::raw_slice`)
+#[repr(transparent)]
 #[derive(Copy, Clone)]
 pub struct Point {
     raw: sys::SDL_Point,

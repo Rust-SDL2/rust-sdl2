@@ -101,6 +101,6 @@ pub fn log(message: &str) {
     let message = message.replace('%', "%%");
     let message = CString::new(message).unwrap();
     unsafe {
-        crate::sys::SDL_Log(message.into_raw());
+        crate::sys::SDL_Log(message.as_ptr());
     }
 }

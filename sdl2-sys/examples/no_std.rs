@@ -11,7 +11,9 @@ fn main() {
             panic!("failed to initialize sdl2 with video");
         };
         _window = SDL_CreateWindow(
-            b"hello_sdl2" as *const _ as *const i8,
+            // If you use Rust 1.77 or newer, you can also use a C string literal
+            // c"hello_sdl2".as_ptr(),
+            b"hello_sdl2\0".as_ptr() as *const i8,
             SDL_WINDOWPOS_UNDEFINED_MASK as i32,
             SDL_WINDOWPOS_UNDEFINED_MASK as i32,
             640,
