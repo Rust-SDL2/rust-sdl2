@@ -669,11 +669,19 @@ pub enum Event {
         timestamp: u32,
         window_id: u32,
         which: u32,
+        /// How much did we scroll in X, with integer precision
         x: i32,
+        /// How much did we scroll in Y, with integer precision
         y: i32,
         direction: MouseWheelDirection,
+        /// How much did we scroll in X, with floating precision (added in 2.0.18)
         precise_x: f32,
+        /// How much did we scroll in Y, with floating precision (added in 2.0.18)
         precise_y: f32,
+        /// The X position of the mouse from the window's origin
+        mouse_x: i32,
+        /// The X position of the mouse from the window's origin
+        mouse_y: i32
     },
 
     JoyAxisMotion {
@@ -1205,6 +1213,8 @@ impl Event {
                 direction,
                 precise_x,
                 precise_y,
+                mouse_x,
+                mouse_y
             } => {
                 let event = sys::SDL_MouseWheelEvent {
                     type_: SDL_EventType::SDL_MOUSEWHEEL as u32,
@@ -1216,6 +1226,8 @@ impl Event {
                     direction: direction.to_ll(),
                     preciseX: precise_x,
                     preciseY: precise_y,
+                    mouseX: mouse_x,
+                    mouseY: mouse_y,
                 };
                 unsafe {
                     ptr::copy(&event, ret.as_mut_ptr() as *mut sys::SDL_MouseWheelEvent, 1);
@@ -1680,6 +1692,8 @@ impl Event {
                         direction: mouse::MouseWheelDirection::from_ll(event.direction),
                         precise_x: event.preciseX,
                         precise_y: event.preciseY,
+                        mouse_x: event.mouseX,
+                        mouse_y: event.mouseY,
                     }
                 }
 
@@ -2356,6 +2370,8 @@ impl Event {
     ///     precise_y: 0.0,
     ///     x: 0,
     ///     y: 0,
+    ///     mouse_x: 0,
+    ///     mouse_y: 0,
     ///     direction: MouseWheelDirection::Normal,
     /// };
     /// assert!(ev.is_mouse());
@@ -2925,6 +2941,8 @@ mod test {
                 direction: MouseWheelDirection::Flipped,
                 precise_x: 1.6,
                 precise_y: 2.7,
+                mouse_x: 0,
+                mouse_y: 5,
             };
             let e2 = Event::from_ll(e.clone().to_ll().unwrap());
             assert_eq!(e, e2);
