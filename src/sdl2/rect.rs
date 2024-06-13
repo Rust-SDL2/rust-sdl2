@@ -231,10 +231,10 @@ impl Rect {
     ///
     /// ```
     /// use sdl2::rect::Rect;
-    /// assert_eq!(Rect::new(0, 0, 10, 10).left_shifted(5), Rect::new(-5, 0, 10, 10));
+    /// assert_eq!(Rect::new(5, 5, 10, 10).left_shifted(5), Rect::new(0, 5, 10, 10));
     /// ```
     pub fn left_shifted(mut self, offset: i32) -> Rect {
-        self.offset(-offset, self.y());
+        self.offset(-offset, 0);
         self
     }
 
@@ -244,10 +244,10 @@ impl Rect {
     ///
     /// ```
     /// use sdl2::rect::Rect;
-    /// assert_eq!(Rect::new(0, 0, 10, 10).right_shifted(5), Rect::new(5, 0, 10, 10));
+    /// assert_eq!(Rect::new(5, 5, 10, 10).right_shifted(5), Rect::new(10, 5, 10, 10));
     /// ```
     pub fn right_shifted(mut self, offset: i32) -> Rect {
-        self.offset(offset, self.y());
+        self.offset(offset, 0);
         self
     }
 
@@ -257,10 +257,10 @@ impl Rect {
     ///
     /// ```
     /// use sdl2::rect::Rect;
-    /// assert_eq!(Rect::new(0, 0, 10, 10).top_shifted(5), Rect::new(0, -5, 10, 10));
+    /// assert_eq!(Rect::new(5, 5, 10, 10).top_shifted(5), Rect::new(5, 0, 10, 10));
     /// ```
     pub fn top_shifted(mut self, offset: i32) -> Rect {
-        self.offset(self.x(), -offset);
+        self.offset(0, -offset);
         self
     }
 
@@ -270,10 +270,10 @@ impl Rect {
     ///
     /// ```
     /// use sdl2::rect::Rect;
-    /// assert_eq!(Rect::new(0, 0, 10, 10).bottom_shifted(5), Rect::new(0, 5, 10, 10));
+    /// assert_eq!(Rect::new(5, 5, 10, 10).bottom_shifted(5), Rect::new(5, 10, 10, 10));
     /// ```
     pub fn bottom_shifted(mut self, offset: i32) -> Rect {
-        self.offset(self.x(), offset);
+        self.offset(0, offset);
         self
     }
 
@@ -1094,12 +1094,12 @@ mod test {
     #[test]
     fn shifted() {
         // Groups all functions into a single assertion
-        let rect = Rect::new(0, 0, 10, 10)
+        let rect = Rect::new(5, 5, 10, 10)
             .left_shifted(5)
             .right_shifted(5)
             .top_shifted(5)
             .bottom_shifted(5);
-        assert_eq!(rect, Rect::new(0, 0, 10, 10));
+        assert_eq!(rect, Rect::new(5, 5, 10, 10));
     }
 
     #[test]
