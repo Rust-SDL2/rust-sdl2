@@ -32,6 +32,7 @@ macro_rules! add_msvc_includes_to_bindings {
     };
 }
 
+#[cfg(feature = "bundled")]
 fn init_submodule(sdl_path: &Path) {
     if !sdl_path.join("CMakeLists.txt").exists() {
         Command::new("git")
@@ -493,11 +494,11 @@ fn main() {
     let target_os = get_os_from_triple(target.as_str()).unwrap();
 
     let sdl2_source_path = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap()).join("SDL");
-    init_submodule(sdl2_source_path.as_path());
 
     let sdl2_compiled_path: PathBuf;
     #[cfg(feature = "bundled")]
     {
+        init_submodule(sdl2_source_path.as_path());
         sdl2_compiled_path = compile_sdl2(sdl2_source_path.as_path(), target_os);
 
         println!(
