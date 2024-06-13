@@ -3,8 +3,8 @@
 name = "sdl2-sys"
 description = "Raw SDL2 bindings for Rust, used internally rust-sdl2"
 repository = "https://github.com/rust-sdl2/rust-sdl2"
-version = "0.36.0"
-authors = ["Tony Aldridge <tony@angry-lawyer.com>"]
+version = "0.37.0"
+authors = ["Tony Aldridge <tony@angry-lawyer.com>", "Cobrand <cobrandw@gmail.com>"]
 keywords = ["SDL", "windowing", "graphics", "ffi"]
 categories = ["rendering","external-ffi-bindings","game-engines","multimedia"]
 license = "MIT AND Zlib"
