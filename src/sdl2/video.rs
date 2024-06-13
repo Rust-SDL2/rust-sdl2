@@ -1553,6 +1553,18 @@ impl Window {
         Ok(())
     }
 
+    #[doc(alias = "SDL_SetWindowResizable")]
+    pub fn set_resizable(&mut self, resizable: bool) {
+        let resizable = if resizable {
+            SDL_bool::SDL_TRUE
+        } else {
+            SDL_bool::SDL_FALSE
+        };
+        unsafe {
+            sys::SDL_SetWindowResizable(self.context.raw, resizable);
+        }
+    }
+
     /// Set the shape of the window
     /// To be effective:
     /// - shaped must have been set using windows builder
