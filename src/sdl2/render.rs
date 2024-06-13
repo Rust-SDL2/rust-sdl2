@@ -70,17 +70,11 @@ pub enum TargetRenderError {
 
 impl fmt::Display for SdlError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let &SdlError(ref e) = self;
-        write!(f, "SDL error: {}", e)
+        write!(f, "SDL error: {}", self.0)
     }
 }
 
-impl Error for SdlError {
-    fn description(&self) -> &str {
-        let &SdlError(ref e) = self;
-        e
-    }
-}
+impl Error for SdlError {}
 
 impl fmt::Display for TargetRenderError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -93,11 +87,10 @@ impl fmt::Display for TargetRenderError {
 }
 
 impl Error for TargetRenderError {
-    fn description(&self) -> &str {
-        use self::TargetRenderError::*;
-        match *self {
-            SdlError(self::SdlError(ref e)) => e.as_str(),
-            NotSupported => "The renderer does not support the use of render targets",
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        match self {
+            Self::SdlError(err) => Some(err),
+            Self::NotSupported => None,
         }
     }
 }
@@ -187,9 +180,7 @@ impl RendererInfo {
         let texture_formats: Vec<PixelFormatEnum> = info.texture_formats
             [0..(info.num_texture_formats as usize)]
             .iter()
-            .map(|&format| {
-                PixelFormatEnum::try_from(format as u32).unwrap_or(PixelFormatEnum::Unknown)
-            })
+            .map(|&format| PixelFormatEnum::try_from(format).unwrap_or(PixelFormatEnum::Unknown))
             .collect();
 
         // The driver name is always a static string, compiled into SDL2.
@@ -613,7 +604,7 @@ impl<T: RenderTarget> Canvas<T> {
     {
         if self.render_target_supported() {
             let target = unsafe { self.get_raw_target() };
-            for &(ref texture, ref user_context) in textures {
+            for (texture, user_context) in textures {
                 unsafe { self.set_raw_target(texture.raw) }.map_err(TargetRenderError::SdlError)?;
                 f(self, user_context);
             }
@@ -780,18 +771,7 @@ impl fmt::Display for TextureValueError {
     }
 }
 
-impl Error for TextureValueError {
-    fn description(&self) -> &str {
-        use self::TextureValueError::*;
-
-        match *self {
-            WidthOverflows(_) => "texture width overflow",
-            HeightOverflows(_) => "texture height overflow",
-            WidthMustBeMultipleOfTwoForFormat(..) => "texture width must be multiple of two",
-            SdlError(ref e) => e,
-        }
-    }
-}
+impl Error for TextureValueError {}
 
 #[doc(alias = "SDL_CreateTexture")]
 fn ll_create_texture(
@@ -2005,21 +1985,7 @@ impl fmt::Display for UpdateTextureError {
     }
 }
 
-impl Error for UpdateTextureError {
-    fn description(&self) -> &str {
-        use self::UpdateTextureError::*;
-
-        match *self {
-            PitchOverflows(_) => "pitch overflow",
-            PitchMustBeMultipleOfTwoForFormat(..) => "pitch must be multiple of two",
-            XMustBeMultipleOfTwoForFormat(..) => "x must be multiple of two",
-            YMustBeMultipleOfTwoForFormat(..) => "y must be multiple of two",
-            WidthMustBeMultipleOfTwoForFormat(..) => "width must be multiple of two",
-            HeightMustBeMultipleOfTwoForFormat(..) => "height must be multiple of two",
-            SdlError(ref e) => e,
-        }
-    }
-}
+impl Error for UpdateTextureError {}
 
 #[derive(Debug, Clone)]
 pub enum UpdateTextureYUVError {
@@ -2079,22 +2045,7 @@ impl fmt::Display for UpdateTextureYUVError {
     }
 }
 
-impl Error for UpdateTextureYUVError {
-    fn description(&self) -> &str {
-        use self::UpdateTextureYUVError::*;
-
-        match *self {
-            PitchOverflows { .. } => "pitch overflow",
-            InvalidPlaneLength { .. } => "invalid plane length",
-            XMustBeMultipleOfTwoForFormat(_) => "x must be multiple of two",
-            YMustBeMultipleOfTwoForFormat(_) => "y must be multiple of two",
-            WidthMustBeMultipleOfTwoForFormat(_) => "width must be multiple of two",
-            HeightMustBeMultipleOfTwoForFormat(_) => "height must be multiple of two",
-            RectNotInsideTexture(_) => "rect must be inside texture",
-            SdlError(ref e) => e,
-        }
-    }
-}
+impl Error for UpdateTextureYUVError {}
 
 struct InternalTexture {
     raw: *mut sys::SDL_Texture,
@@ -2116,7 +2067,7 @@ impl InternalTexture {
             panic!("{}", get_error())
         } else {
             TextureQuery {
-                format: PixelFormatEnum::try_from(format as u32).unwrap(),
+                format: PixelFormatEnum::try_from(format).unwrap(),
                 access: TextureAccess::try_from(access as u32).unwrap(),
                 width: width as u32,
                 height: height as u32,

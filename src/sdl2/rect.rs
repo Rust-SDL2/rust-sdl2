@@ -15,7 +15,7 @@ use std::ptr;
 /// This value is smaller than strictly needed, but is useful in ensuring that
 /// rect sizes will never have to be truncated when clamping.
 pub fn max_int_value() -> u32 {
-    i32::max_value() as u32 / 2
+    i32::MAX as u32 / 2
 }
 
 /// The minimal integer value that can be used for rectangle positions
@@ -24,7 +24,7 @@ pub fn max_int_value() -> u32 {
 /// This value is needed, because otherwise the width of a rectangle created
 /// from a point would be able to exceed the maximum width.
 pub fn min_int_value() -> i32 {
-    i32::min_value() / 2
+    i32::MIN / 2
 }
 
 fn clamp_size(val: u32) -> u32 {
@@ -85,11 +85,12 @@ pub struct Rect {
 
 impl ::std::fmt::Debug for Rect {
     fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
-        return write!(
-            fmt,
-            "Rect {{ x: {}, y: {}, w: {}, h: {} }}",
-            self.raw.x, self.raw.y, self.raw.w, self.raw.h
-        );
+        fmt.debug_struct("Rect")
+            .field("x", &self.raw.x)
+            .field("y", &self.raw.y)
+            .field("w", &self.raw.w)
+            .field("h", &self.raw.h)
+            .finish()
     }
 }
 
@@ -117,7 +118,7 @@ impl Rect {
     /// Creates a new rectangle from the given values.
     ///
     /// The width and height are clamped to ensure that the right and bottom
-    /// sides of the rectangle does not exceed i32::max_value() (the value
+    /// sides of the rectangle does not exceed i32::MAX (the value
     /// 2147483647, the maximal positive size of an i32).  This means that the
     /// rect size will behave oddly if you move it very far to the right or
     /// downwards on the screen.
@@ -137,7 +138,7 @@ impl Rect {
     /// Creates a new rectangle centered on the given position.
     ///
     /// The width and height are clamped to ensure that the right and bottom
-    /// sides of the rectangle does not exceed i32::max_value() (the value
+    /// sides of the rectangle does not exceed i32::MAX (the value
     /// 2147483647, the maximal positive size of an i32).  This means that the
     /// rect size will behave oddly if you move it very far to the right or
     /// downwards on the screen.
@@ -187,19 +188,19 @@ impl Rect {
     }
 
     /// Sets the horizontal position of this rectangle to the given value,
-    /// clamped to be less than or equal to i32::max_value() / 2.
+    /// clamped to be less than or equal to i32::MAX / 2.
     pub fn set_x(&mut self, x: i32) {
         self.raw.x = clamp_position(x);
     }
 
     /// Sets the vertical position of this rectangle to the given value,
-    /// clamped to be less than or equal to i32::max_value() / 2.
+    /// clamped to be less than or equal to i32::MAX / 2.
     pub fn set_y(&mut self, y: i32) {
         self.raw.y = clamp_position(y);
     }
 
     /// Sets the width of this rectangle to the given value,
-    /// clamped to be less than or equal to i32::max_value() / 2.
+    /// clamped to be less than or equal to i32::MAX / 2.
     ///
     /// `Rect`s must always be non-empty, so a `width` argument of 0 will be
     /// replaced with 1.
@@ -208,7 +209,7 @@ impl Rect {
     }
 
     /// Sets the height of this rectangle to the given value,
-    /// clamped to be less than or equal to i32::max_value() / 2.
+    /// clamped to be less than or equal to i32::MAX / 2.
     ///
     /// `Rect`s must always be non-empty, so a `height` argument of 0 will be
     /// replaced with 1.
@@ -359,13 +360,13 @@ impl Rect {
     }
 
     /// Sets the position of the right side of this rectangle to the given
-    /// value, clamped to be less than or equal to i32::max_value() / 2.
+    /// value, clamped to be less than or equal to i32::MAX / 2.
     pub fn set_right(&mut self, right: i32) {
         self.raw.x = clamp_position(clamp_position(right) - self.raw.w);
     }
 
     /// Sets the position of the bottom side of this rectangle to the given
-    /// value, clamped to be less than or equal to i32::max_value() / 2.
+    /// value, clamped to be less than or equal to i32::MAX / 2.
     pub fn set_bottom(&mut self, bottom: i32) {
         self.raw.y = clamp_position(clamp_position(bottom) - self.raw.h);
     }
@@ -401,7 +402,7 @@ impl Rect {
                 if x >= 0 {
                     self.raw.x = max_int_value() as i32;
                 } else {
-                    self.raw.x = i32::min_value();
+                    self.raw.x = i32::MIN;
                 }
             }
         }
@@ -411,7 +412,7 @@ impl Rect {
                 if y >= 0 {
                     self.raw.y = max_int_value() as i32;
                 } else {
-                    self.raw.y = i32::min_value();
+                    self.raw.y = i32::MIN;
                 }
             }
         }
@@ -509,10 +510,7 @@ impl Rect {
     /// If a clipping rectangle is given, only points that are within it will be
     /// considered.
     #[doc(alias = "SDL_EnclosePoints")]
-    pub fn from_enclose_points<R: Into<Option<Rect>>>(
-        points: &[Point],
-        clipping_rect: R,
-    ) -> Option<Rect>
+    pub fn from_enclose_points<R>(points: &[Point], clipping_rect: R) -> Option<Rect>
     where
         R: Into<Option<Rect>>,
     {
@@ -685,15 +683,15 @@ impl DerefMut for Rect {
     }
 }
 
-impl Into<sys::SDL_Rect> for Rect {
-    fn into(self) -> sys::SDL_Rect {
-        self.raw
+impl From<Rect> for sys::SDL_Rect {
+    fn from(val: Rect) -> Self {
+        val.raw
     }
 }
 
-impl Into<(i32, i32, u32, u32)> for Rect {
-    fn into(self) -> (i32, i32, u32, u32) {
-        (self.raw.x, self.raw.y, self.raw.w as u32, self.raw.h as u32)
+impl From<Rect> for (i32, i32, u32, u32) {
+    fn from(val: Rect) -> Self {
+        (val.raw.x, val.raw.y, val.raw.w as u32, val.raw.h as u32)
     }
 }
 
@@ -749,7 +747,10 @@ pub struct Point {
 
 impl ::std::fmt::Debug for Point {
     fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
-        return write!(fmt, "Point {{ x: {}, y: {} }}", self.raw.x, self.raw.y);
+        fmt.debug_struct("Point")
+            .field("x", &self.raw.x)
+            .field("y", &self.raw.y)
+            .finish()
     }
 }
 
@@ -821,15 +822,15 @@ impl From<(i32, i32)> for Point {
     }
 }
 
-impl Into<sys::SDL_Point> for Point {
-    fn into(self) -> sys::SDL_Point {
-        self.raw
+impl From<Point> for sys::SDL_Point {
+    fn from(val: Point) -> Self {
+        val.raw
     }
 }
 
-impl Into<(i32, i32)> for Point {
-    fn into(self) -> (i32, i32) {
-        (self.x(), self.y())
+impl From<Point> for (i32, i32) {
+    fn from(val: Point) -> Self {
+        (val.x(), val.y())
     }
 }
 
@@ -1856,8 +1857,8 @@ mod test {
             )),
             Rect::from_enclose_points(
                 &[
-                    Point::new(i32::min_value(), i32::min_value()),
-                    Point::new(i32::max_value(), i32::max_value())
+                    Point::new(i32::MIN, i32::MIN),
+                    Point::new(i32::MAX, i32::MAX)
                 ],
                 None
             )
@@ -1907,7 +1908,7 @@ mod test {
     fn clamp_position_min() {
         assert_eq!(
             tuple(min_int_value(), min_int_value(), 1, 1),
-            Rect::new(i32::min_value(), i32::min_value(), 1, 1).into()
+            Rect::new(i32::MIN, i32::MIN, 1, 1).into()
         );
     }
 
@@ -1923,7 +1924,7 @@ mod test {
     fn clamp_i32_max() {
         assert_eq!(
             tuple(0, 0, max_int_value(), max_int_value()),
-            Rect::new(0, 0, i32::max_value() as u32, i32::max_value() as u32).into()
+            Rect::new(0, 0, i32::MAX as u32, i32::MAX as u32).into()
         )
     }
 

@@ -21,11 +21,7 @@ impl RelativeMouseState {
             sys::SDL_GetRelativeMouseState(&mut x, &mut y)
         };
 
-        RelativeMouseState {
-            mouse_state,
-            x: x as i32,
-            y: y as i32,
-        }
+        RelativeMouseState { mouse_state, x, y }
     }
 
     pub fn from_sdl_state(state: u32) -> RelativeMouseState {
@@ -145,8 +141,6 @@ impl RelativeMouseState {
     /// }
     /// ```
     pub fn pressed_mouse_buttons(&self) -> PressedMouseButtonIterator {
-        PressedMouseButtonIterator {
-            iter: self.mouse_buttons(),
-        }
+        self.mouse_buttons().into_pressed_buttons_iter()
     }
 }

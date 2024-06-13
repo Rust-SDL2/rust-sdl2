@@ -68,13 +68,10 @@ pub fn set_video_minimize_on_focus_loss_with_priority(value: bool, priority: &Hi
 /// assert_eq!(sdl2::hint::get_video_minimize_on_focus_loss(), false);
 /// ```
 pub fn get_video_minimize_on_focus_loss() -> bool {
-    match get(VIDEO_MINIMIZE_ON_FOCUS_LOSS) {
-        Some(value) => match &*value {
-            "1" => true,
-            _ => false,
-        },
-        _ => true,
-    }
+    matches!(
+        get(VIDEO_MINIMIZE_ON_FOCUS_LOSS).as_deref(),
+        Some("1") | None
+    )
 }
 
 #[doc(alias = "SDL_SetHint")]

@@ -156,7 +156,7 @@ pub fn init(flags: InitFlag) -> Result<Sdl2MixerContext, String> {
     } else {
         // Flags not matching won't always set the error message text
         // according to sdl docs
-        if get_error() == "" {
+        if get_error().is_empty() {
             let un_init_flags = return_flags ^ flags;
             let error_str = &("Could not init: ".to_string() + &un_init_flags.to_string());
             let _ = ::set_error(error_str);
@@ -274,10 +274,7 @@ impl Chunk {
         if raw.is_null() {
             Err(get_error())
         } else {
-            Ok(Chunk {
-                raw: raw,
-                owned: true,
-            })
+            Ok(Chunk { raw, owned: true })
         }
     }
 
@@ -307,10 +304,7 @@ impl<'a> LoaderRWops<'a> for RWops<'a> {
         if raw.is_null() {
             Err(get_error())
         } else {
-            Ok(Chunk {
-                raw: raw,
-                owned: true,
-            })
+            Ok(Chunk { raw, owned: true })
         }
     }
 
@@ -321,7 +315,7 @@ impl<'a> LoaderRWops<'a> for RWops<'a> {
             Err(get_error())
         } else {
             Ok(Music {
-                raw: raw,
+                raw,
                 owned: true,
                 _marker: PhantomData,
             })
@@ -355,7 +349,7 @@ extern "C" fn c_channel_finished_callback(ch: c_int) {
     unsafe {
         match CHANNEL_FINISHED_CALLBACK {
             None => (),
-            Some(ref cb) => cb(Channel(ch as i32)),
+            Some(ref cb) => cb(Channel(ch)),
         }
     }
 }
@@ -514,10 +508,7 @@ impl Channel {
         if raw.is_null() {
             None
         } else {
-            Some(Chunk {
-                raw: raw,
-                owned: false,
-            })
+            Some(Chunk { raw, owned: false })
         }
     }
 
@@ -791,7 +782,7 @@ impl<'a> Music<'a> {
             Err(get_error())
         } else {
             Ok(Music {
-                raw: raw,
+                raw,
                 owned: true,
                 _marker: PhantomData,
             })
@@ -813,7 +804,7 @@ impl<'a> Music<'a> {
             Err(get_error())
         } else {
             Ok(Music {
-                raw: raw,
+                raw,
                 owned: true,
                 _marker: PhantomData,
             })

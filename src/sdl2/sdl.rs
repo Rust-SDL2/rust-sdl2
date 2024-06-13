@@ -33,19 +33,7 @@ impl fmt::Display for Error {
     }
 }
 
-impl error::Error for Error {
-    fn description(&self) -> &str {
-        use self::Error::*;
-
-        match *self {
-            NoMemError => "out of memory",
-            ReadError => "error reading from datastream",
-            WriteError => "error writing to datastream",
-            SeekError => "error seeking in datastream",
-            UnsupportedError => "unknown SDL error",
-        }
-    }
-}
+impl error::Error for Error {}
 
 /// True if the main thread has been declared. The main thread is declared when
 /// SDL is first initialized.
@@ -56,7 +44,7 @@ static SDL_COUNT: AtomicU32 = AtomicU32::new(0);
 
 thread_local! {
     /// True if the current thread is the main thread.
-    static IS_MAIN_THREAD: Cell<bool> = Cell::new(false);
+    static IS_MAIN_THREAD: Cell<bool> = const { Cell::new(false) };
 }
 
 /// The SDL context type. Initialize with `sdl2::init()`.

@@ -8,6 +8,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 [PR #1378](https://github.com/Rust-SDL2/rust-sdl2/pull/1378) **BREAKING CHANGE** Change `Keycode` to be a struct rather than an enum. Fix `Keycode::from_scancode` for non-QWERTY keyboard layouts.
 
+[PR #1390](https://github.com/Rust-SDL2/rust-sdl2/pull/1390) Apply clippy fixes, fix deprecations and other code quality improvements.
+
 [PR #1368](https://github.com/Rust-SDL2/rust-sdl2/pull/1368) Remove unnecessary unsafe in Window interface. Make Window `Clone`.
 
 [PR #1366](https://github.com/Rust-SDL2/rust-sdl2/pull/1366) Add Primary Selection bindings.
@@ -22,7 +24,7 @@ when upgrading from a version of rust-sdl2 to another.
 
 [PR #1250](https://github.com/Rust-SDL2/rust-sdl2/pull/1250) Add `lib64` to native library search path when using bundled feature
 
-[PR #1240](https://github.com/Rust-SDL2/rust-sdl2/pull/1240) **BREAKING CHANGE** Take `PixelMasks` by refrence
+[PR #1240](https://github.com/Rust-SDL2/rust-sdl2/pull/1240) **BREAKING CHANGE** Take `PixelMasks` by reference
 
 [PR #1254](https://github.com/Rust-SDL2/rust-sdl2/pull/1254) **BREAKING CHANGE** Make `SdlDrop` and `SubsystemDrop` safer; forbid external code from constructing `SdlDrop`
 
@@ -31,8 +33,6 @@ when upgrading from a version of rust-sdl2 to another.
 [PR #1332](https://github.com/Rust-SDL2/rust-sdl2/pull/1332) Fix `size_hint` implementations for `{audio,video,render}::DriverIterator`
 
 [PR #1333](https://github.com/Rust-SDL2/rust-sdl2/pull/1333) Implement `FusedIterator`, `DoubleEndedIterator`, `and nth[_back]` for `{audio,video,render}::DriverIterator`
-
-[PR #1337](https://github.com/Rust-SDL2/rust-sdl2/pull/1337) Fix "Cannot initialize Sdl from more than one thread" for tests / CI
 
 [PR #1337](https://github.com/Rust-SDL2/rust-sdl2/pull/1337) Fix "Cannot initialize Sdl from more than one thread" for tests / CI
 

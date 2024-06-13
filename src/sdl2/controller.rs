@@ -41,14 +41,10 @@ impl fmt::Display for AddMappingError {
 }
 
 impl error::Error for AddMappingError {
-    fn description(&self) -> &str {
-        use self::AddMappingError::*;
-
-        match *self {
-            InvalidMapping(_) => "invalid mapping",
-            InvalidFilePath(_) => "invalid file path",
-            ReadError(_) => "read error",
-            SdlError(ref e) => e,
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
+        match self {
+            Self::InvalidMapping(err) => Some(err),
+            Self::InvalidFilePath(_) | Self::ReadError(_) | Self::SdlError(_) => None,
         }
     }
 }
@@ -126,9 +122,7 @@ impl GameControllerSubsystem {
     /// Return `true` if controller events are processed.
     #[doc(alias = "SDL_GameControllerEventState")]
     pub fn event_state(&self) -> bool {
-        unsafe {
-            sys::SDL_GameControllerEventState(sys::SDL_QUERY as i32) == sys::SDL_ENABLE as i32
-        }
+        unsafe { sys::SDL_GameControllerEventState(sys::SDL_QUERY) == sys::SDL_ENABLE as i32 }
     }
 
     /// Add a new controller input mapping from a mapping string.
@@ -172,7 +166,7 @@ impl GameControllerSubsystem {
 
     /// Load controller input mappings from an SDL [`RWops`] object.
     #[doc(alias = "SDL_GameControllerAddMappingsFromRW")]
-    pub fn load_mappings_from_rw<'a>(&self, rw: RWops<'a>) -> Result<i32, AddMappingError> {
+    pub fn load_mappings_from_rw(&self, rw: RWops<'_>) -> Result<i32, AddMappingError> {
         use self::AddMappingError::*;
 
         let result = unsafe { sys::SDL_GameControllerAddMappingsFromRW(rw.raw(), 0) };

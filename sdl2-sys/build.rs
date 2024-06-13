@@ -36,8 +36,8 @@ macro_rules! add_msvc_includes_to_bindings {
 fn init_submodule(sdl_path: &Path) {
     if !sdl_path.join("CMakeLists.txt").exists() {
         Command::new("git")
-            .args(&["submodule", "update", "--init"])
-            .current_dir(sdl_path.clone())
+            .args(["submodule", "update", "--init"])
+            .current_dir(sdl_path)
             .status()
             .expect("Git is needed to retrieve the SDL source files");
     }
@@ -436,15 +436,17 @@ fn copy_library_file(src_path: &Path, target_path: &Path) {
     for path in &[target_path, &deps_path] {
         let dst_path = path.join(src_path.file_name().expect("Path missing filename"));
 
-        fs::copy(&src_path, &dst_path).expect(&format!(
-            "Failed to copy SDL2 dynamic library from {} to {}",
-            src_path.to_string_lossy(),
-            dst_path.to_string_lossy()
-        ));
+        fs::copy(src_path, &dst_path).unwrap_or_else(|_| {
+            panic!(
+                "Failed to copy SDL2 dynamic library from {} to {}",
+                src_path.to_string_lossy(),
+                dst_path.to_string_lossy()
+            )
+        });
     }
 }
 
-fn copy_dynamic_libraries(sdl2_compiled_path: &PathBuf, target_os: &str) {
+fn copy_dynamic_libraries(sdl2_compiled_path: &Path, target_os: &str) {
     let target_path = find_cargo_target_dir();
 
     // Windows binaries do not embed library search paths, so successfully
@@ -651,35 +653,35 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
     // Set correct target triple for bindgen when cross-compiling
     if target != host {
         bindings = bindings.clang_arg("-target");
-        bindings = bindings.clang_arg(target.clone());
+        bindings = bindings.clang_arg(target);
 
         if cfg!(feature = "image") {
             image_bindings = image_bindings.clang_arg("-target");
-            image_bindings = image_bindings.clang_arg(target.clone());
+            image_bindings = image_bindings.clang_arg(target);
         }
 
         if cfg!(feature = "ttf") {
             ttf_bindings = ttf_bindings.clang_arg("-target");
-            ttf_bindings = ttf_bindings.clang_arg(target.clone());
+            ttf_bindings = ttf_bindings.clang_arg(target);
         }
 
         if cfg!(feature = "mixer") {
             mixer_bindings = mixer_bindings.clang_arg("-target");
-            mixer_bindings = mixer_bindings.clang_arg(target.clone());
+            mixer_bindings = mixer_bindings.clang_arg(target);
         }
 
         if cfg!(feature = "gfx") {
             gfx_framerate_bindings = gfx_framerate_bindings.clang_arg("-target");
-            gfx_framerate_bindings = gfx_framerate_bindings.clang_arg(target.clone());
+            gfx_framerate_bindings = gfx_framerate_bindings.clang_arg(target);
 
             gfx_primitives_bindings = gfx_primitives_bindings.clang_arg("-target");
-            gfx_primitives_bindings = gfx_primitives_bindings.clang_arg(target.clone());
+            gfx_primitives_bindings = gfx_primitives_bindings.clang_arg(target);
 
             gfx_imagefilter_bindings = gfx_imagefilter_bindings.clang_arg("-target");
-            gfx_imagefilter_bindings = gfx_imagefilter_bindings.clang_arg(target.clone());
+            gfx_imagefilter_bindings = gfx_imagefilter_bindings.clang_arg(target);
 
             gfx_rotozoom_bindings = gfx_rotozoom_bindings.clang_arg("-target");
-            gfx_rotozoom_bindings = gfx_rotozoom_bindings.clang_arg(target.clone());
+            gfx_rotozoom_bindings = gfx_rotozoom_bindings.clang_arg(target);
         }
     }
 
@@ -943,5 +945,5 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
 }
 
 fn get_os_from_triple(triple: &str) -> Option<&str> {
-    triple.splitn(3, "-").nth(2)
+    triple.splitn(3, '-').nth(2)
 }

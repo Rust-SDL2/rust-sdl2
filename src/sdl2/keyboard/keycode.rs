@@ -511,7 +511,7 @@ impl Keycode {
         // Knowing this, we must always return a new string.
         unsafe {
             let buf = sys::SDL_GetKeyName(self.into());
-            CStr::from_ptr(buf as *const _).to_str().unwrap().to_owned()
+            CStr::from_ptr(buf).to_str().unwrap().to_owned()
         }
     }
 }

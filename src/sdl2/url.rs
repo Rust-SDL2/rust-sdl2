@@ -26,12 +26,10 @@ impl fmt::Display for OpenUrlError {
 }
 
 impl error::Error for OpenUrlError {
-    fn description(&self) -> &str {
-        use self::OpenUrlError::*;
-
-        match *self {
-            InvalidUrl(_) => "invalid URL",
-            SdlError(ref e) => e,
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
+        match self {
+            Self::InvalidUrl(err) => Some(err),
+            Self::SdlError(_) => None,
         }
     }
 }

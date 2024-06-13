@@ -110,10 +110,7 @@ impl crate::EventSubsystem {
             } else {
                 events.set_len(result as usize);
 
-                events
-                    .into_iter()
-                    .map(|event_raw| Event::from_ll(event_raw))
-                    .collect()
+                events.into_iter().map(Event::from_ll).collect()
             }
         }
     }
@@ -160,7 +157,7 @@ impl crate::EventSubsystem {
     /// Returns an error, if no more user events can be created.
     pub unsafe fn register_events(&self, nr: u32) -> Result<Vec<u32>, String> {
         let result = sys::SDL_RegisterEvents(nr as ::libc::c_int);
-        const ERR_NR: u32 = ::std::u32::MAX - 1;
+        const ERR_NR: u32 = u32::MAX - 1;
 
         match result {
             ERR_NR => Err("No more user events can be created; SDL_LASTEVENT reached".to_owned()),
@@ -439,8 +436,8 @@ impl DisplayEvent {
         }
     }
 
-    fn to_ll(&self) -> (u8, i32) {
-        match *self {
+    fn to_ll(self) -> (u8, i32) {
+        match self {
             DisplayEvent::None => (sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_NONE as u8, 0),
             DisplayEvent::Orientation(orientation) => (
                 sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_ORIENTATION as u8,
@@ -457,13 +454,7 @@ impl DisplayEvent {
     }
 
     pub fn is_same_kind_as(&self, other: &DisplayEvent) -> bool {
-        match (self, other) {
-            (Self::None, Self::None)
-            | (Self::Orientation(_), Self::Orientation(_))
-            | (Self::Connected, Self::Connected)
-            | (Self::Disconnected, Self::Disconnected) => true,
-            _ => false,
-        }
+        mem::discriminant(self) == mem::discriminant(other)
     }
 }
 
@@ -518,8 +509,8 @@ impl WindowEvent {
         }
     }
 
-    fn to_ll(&self) -> (u8, i32, i32) {
-        match *self {
+    fn to_ll(self) -> (u8, i32, i32) {
+        match self {
             WindowEvent::None => (0, 0, 0),
             WindowEvent::Shown => (1, 0, 0),
             WindowEvent::Hidden => (2, 0, 0),
@@ -543,28 +534,7 @@ impl WindowEvent {
     }
 
     pub fn is_same_kind_as(&self, other: &WindowEvent) -> bool {
-        match (self, other) {
-            (Self::None, Self::None)
-            | (Self::Shown, Self::Shown)
-            | (Self::Hidden, Self::Hidden)
-            | (Self::Exposed, Self::Exposed)
-            | (Self::Moved(_, _), Self::Moved(_, _))
-            | (Self::Resized(_, _), Self::Resized(_, _))
-            | (Self::SizeChanged(_, _), Self::SizeChanged(_, _))
-            | (Self::Minimized, Self::Minimized)
-            | (Self::Maximized, Self::Maximized)
-            | (Self::Restored, Self::Restored)
-            | (Self::Enter, Self::Enter)
-            | (Self::Leave, Self::Leave)
-            | (Self::FocusGained, Self::FocusGained)
-            | (Self::FocusLost, Self::FocusLost)
-            | (Self::Close, Self::Close)
-            | (Self::TakeFocus, Self::TakeFocus)
-            | (Self::HitTest, Self::HitTest)
-            | (Self::ICCProfChanged, Self::ICCProfChanged)
-            | (Self::DisplayChanged(_), Self::DisplayChanged(_)) => true,
-            _ => false,
-        }
+        mem::discriminant(self) == mem::discriminant(other)
     }
 }
 
@@ -970,7 +940,7 @@ where
         .into()
         .map(|kc| kc.into())
         .unwrap_or(sys::SDL_KeyCode::SDLK_UNKNOWN as i32);
-    let keymod = keymod.bits() as u16;
+    let keymod = keymod.bits();
     sys::SDL_Keysym {
         scancode,
         sym: keycode,
@@ -995,10 +965,10 @@ impl Event {
                 timestamp,
             } => {
                 let event = sys::SDL_UserEvent {
-                    type_: type_ as u32,
+                    type_,
                     timestamp,
                     windowID: window_id,
-                    code: code as i32,
+                    code,
                     data1,
                     data2,
                 };
@@ -1512,7 +1482,7 @@ impl Event {
         let raw_type = unsafe { raw.type_ };
 
         // if event type has not been defined, treat it as a UserEvent
-        let event_type: EventType = EventType::try_from(raw_type as u32).unwrap_or(EventType::User);
+        let event_type: EventType = EventType::try_from(raw_type).unwrap_or(EventType::User);
         unsafe {
             match event_type {
                 EventType::Quit => {
@@ -1583,7 +1553,7 @@ impl Event {
                     Event::KeyDown {
                         timestamp: event.timestamp,
                         window_id: event.windowID,
-                        keycode: Keycode::from_i32(event.keysym.sym as i32),
+                        keycode: Keycode::from_i32(event.keysym.sym),
                         scancode: Scancode::from_i32(event.keysym.scancode as i32),
                         keymod: keyboard::Mod::from_bits_truncate(event.keysym.mod_),
                         repeat: event.repeat != 0,
@@ -1595,7 +1565,7 @@ impl Event {
                     Event::KeyUp {
                         timestamp: event.timestamp,
                         window_id: event.windowID,
-                        keycode: Keycode::from_i32(event.keysym.sym as i32),
+                        keycode: Keycode::from_i32(event.keysym.sym),
                         scancode: Scancode::from_i32(event.keysym.scancode as i32),
                         keymod: keyboard::Mod::from_bits_truncate(event.keysym.mod_),
                         repeat: event.repeat != 0,
@@ -1646,7 +1616,7 @@ impl Event {
                     Event::MouseMotion {
                         timestamp: event.timestamp,
                         window_id: event.windowID,
-                        which: event.which as u32,
+                        which: event.which,
                         mousestate: mouse::MouseState::from_sdl_state(event.state),
                         x: event.x,
                         y: event.y,
@@ -1660,7 +1630,7 @@ impl Event {
                     Event::MouseButtonDown {
                         timestamp: event.timestamp,
                         window_id: event.windowID,
-                        which: event.which as u32,
+                        which: event.which,
                         mouse_btn: mouse::MouseButton::from_ll(event.button),
                         clicks: event.clicks,
                         x: event.x,
@@ -1673,7 +1643,7 @@ impl Event {
                     Event::MouseButtonUp {
                         timestamp: event.timestamp,
                         window_id: event.windowID,
-                        which: event.which as u32,
+                        which: event.which,
                         mouse_btn: mouse::MouseButton::from_ll(event.button),
                         clicks: event.clicks,
                         x: event.x,
@@ -1686,7 +1656,7 @@ impl Event {
                     Event::MouseWheel {
                         timestamp: event.timestamp,
                         window_id: event.windowID,
-                        which: event.which as u32,
+                        which: event.which,
                         x: event.x,
                         y: event.y,
                         direction: mouse::MouseWheelDirection::from_ll(event.direction),
@@ -2040,10 +2010,7 @@ impl Event {
     }
 
     pub fn is_user_event(&self) -> bool {
-        match *self {
-            Event::User { .. } => true,
-            _ => false,
-        }
+        matches!(self, Event::User { .. })
     }
 
     pub fn as_user_event_type<T: ::std::any::Any>(&self) -> Option<T> {
@@ -2285,17 +2252,17 @@ impl Event {
     /// assert!(another_ev.is_window() == false); // Not a window event!
     /// ```
     pub fn is_window(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::Quit { .. }
-            | Self::AppTerminating { .. }
-            | Self::AppLowMemory { .. }
-            | Self::AppWillEnterBackground { .. }
-            | Self::AppDidEnterBackground { .. }
-            | Self::AppWillEnterForeground { .. }
-            | Self::AppDidEnterForeground { .. }
-            | Self::Window { .. } => true,
-            _ => false,
-        }
+                | Self::AppTerminating { .. }
+                | Self::AppLowMemory { .. }
+                | Self::AppWillEnterBackground { .. }
+                | Self::AppDidEnterBackground { .. }
+                | Self::AppWillEnterForeground { .. }
+                | Self::AppDidEnterForeground { .. }
+                | Self::Window { .. }
+        )
     }
 
     /// Returns `true` if this is a keyboard event.
@@ -2322,10 +2289,7 @@ impl Event {
     /// assert!(another_ev.is_keyboard() == false); // Not a keyboard event!
     /// ```
     pub fn is_keyboard(&self) -> bool {
-        match self {
-            Self::KeyDown { .. } | Self::KeyUp { .. } => true,
-            _ => false,
-        }
+        matches!(self, Self::KeyDown { .. } | Self::KeyUp { .. })
     }
 
     /// Returns `true` if this is a text event.
@@ -2348,10 +2312,7 @@ impl Event {
     /// assert!(another_ev.is_text() == false); // Not a text event!
     /// ```
     pub fn is_text(&self) -> bool {
-        match self {
-            Self::TextEditing { .. } | Self::TextInput { .. } => true,
-            _ => false,
-        }
+        matches!(self, Self::TextEditing { .. } | Self::TextInput { .. })
     }
 
     /// Returns `true` if this is a mouse event.
@@ -2382,13 +2343,13 @@ impl Event {
     /// assert!(another_ev.is_mouse() == false); // Not a mouse event!
     /// ```
     pub fn is_mouse(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::MouseMotion { .. }
-            | Self::MouseButtonDown { .. }
-            | Self::MouseButtonUp { .. }
-            | Self::MouseWheel { .. } => true,
-            _ => false,
-        }
+                | Self::MouseButtonDown { .. }
+                | Self::MouseButtonUp { .. }
+                | Self::MouseWheel { .. }
+        )
     }
 
     /// Returns `true` if this mouse event is coming from touch.
@@ -2438,15 +2399,15 @@ impl Event {
     /// assert!(another_ev.is_controller() == false); // Not a controller event!
     /// ```
     pub fn is_controller(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::ControllerAxisMotion { .. }
-            | Self::ControllerButtonDown { .. }
-            | Self::ControllerButtonUp { .. }
-            | Self::ControllerDeviceAdded { .. }
-            | Self::ControllerDeviceRemoved { .. }
-            | Self::ControllerDeviceRemapped { .. } => true,
-            _ => false,
-        }
+                | Self::ControllerButtonDown { .. }
+                | Self::ControllerButtonUp { .. }
+                | Self::ControllerDeviceAdded { .. }
+                | Self::ControllerDeviceRemoved { .. }
+                | Self::ControllerDeviceRemapped { .. }
+        )
     }
 
     /// Returns `true` if this is a joy event.
@@ -2469,16 +2430,16 @@ impl Event {
     /// assert!(another_ev.is_joy() == false); // Not a joy event!
     /// ```
     pub fn is_joy(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::JoyAxisMotion { .. }
-            | Self::JoyBallMotion { .. }
-            | Self::JoyHatMotion { .. }
-            | Self::JoyButtonDown { .. }
-            | Self::JoyButtonUp { .. }
-            | Self::JoyDeviceAdded { .. }
-            | Self::JoyDeviceRemoved { .. } => true,
-            _ => false,
-        }
+                | Self::JoyBallMotion { .. }
+                | Self::JoyHatMotion { .. }
+                | Self::JoyButtonDown { .. }
+                | Self::JoyButtonUp { .. }
+                | Self::JoyDeviceAdded { .. }
+                | Self::JoyDeviceRemoved { .. }
+        )
     }
 
     /// Returns `true` if this is a finger event.
@@ -2506,10 +2467,10 @@ impl Event {
     /// assert!(another_ev.is_finger() == false); // Not a finger event!
     /// ```
     pub fn is_finger(&self) -> bool {
-        match self {
-            Self::FingerDown { .. } | Self::FingerUp { .. } | Self::FingerMotion { .. } => true,
-            _ => false,
-        }
+        matches!(
+            self,
+            Self::FingerDown { .. } | Self::FingerUp { .. } | Self::FingerMotion { .. }
+        )
     }
 
     /// Returns `true` if this is a dollar event.
@@ -2536,10 +2497,7 @@ impl Event {
     /// assert!(another_ev.is_dollar() == false); // Not a dollar event!
     /// ```
     pub fn is_dollar(&self) -> bool {
-        match self {
-            Self::DollarGesture { .. } | Self::DollarRecord { .. } => true,
-            _ => false,
-        }
+        matches!(self, Self::DollarGesture { .. } | Self::DollarRecord { .. })
     }
 
     /// Returns `true` if this is a drop event.
@@ -2561,13 +2519,13 @@ impl Event {
     /// assert!(another_ev.is_drop() == false); // Not a drop event!
     /// ```
     pub fn is_drop(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::DropFile { .. }
-            | Self::DropText { .. }
-            | Self::DropBegin { .. }
-            | Self::DropComplete { .. } => true,
-            _ => false,
-        }
+                | Self::DropText { .. }
+                | Self::DropBegin { .. }
+                | Self::DropComplete { .. }
+        )
     }
 
     /// Returns `true` if this is an audio event.
@@ -2590,10 +2548,10 @@ impl Event {
     /// assert!(another_ev.is_audio() == false); // Not an audio event!
     /// ```
     pub fn is_audio(&self) -> bool {
-        match self {
-            Self::AudioDeviceAdded { .. } | Self::AudioDeviceRemoved { .. } => true,
-            _ => false,
-        }
+        matches!(
+            self,
+            Self::AudioDeviceAdded { .. } | Self::AudioDeviceRemoved { .. }
+        )
     }
 
     /// Returns `true` if this is a render event.
@@ -2614,10 +2572,10 @@ impl Event {
     /// assert!(another_ev.is_render() == false); // Not a render event!
     /// ```
     pub fn is_render(&self) -> bool {
-        match self {
-            Self::RenderTargetsReset { .. } | Self::RenderDeviceReset { .. } => true,
-            _ => false,
-        }
+        matches!(
+            self,
+            Self::RenderTargetsReset { .. } | Self::RenderDeviceReset { .. }
+        )
     }
 
     /// Returns `true` if this is a user event.
@@ -2643,10 +2601,7 @@ impl Event {
     /// assert!(another_ev.is_user() == false); // Not a user event!
     /// ```
     pub fn is_user(&self) -> bool {
-        match self {
-            Self::User { .. } => true,
-            _ => false,
-        }
+        matches!(self, Self::User { .. })
     }
 
     /// Returns `true` if this is an unknown event.
@@ -2668,10 +2623,7 @@ impl Event {
     /// assert!(another_ev.is_unknown() == false); // Not an unknown event!
     /// ```
     pub fn is_unknown(&self) -> bool {
-        match self {
-            Self::Unknown { .. } => true,
-            _ => false,
-        }
+        matches!(self, Self::Unknown { .. })
     }
 }
 
@@ -2854,6 +2806,175 @@ impl<'a> Iterator for EventWaitTimeoutIterator<'a> {
     type Item = Event;
     fn next(&mut self) -> Option<Event> {
         unsafe { wait_event_timeout(self.timeout) }
+    }
+}
+
+/// A sendible type that can push events to the event queue.
+pub struct EventSender {
+    _priv: (),
+}
+
+impl EventSender {
+    /// Pushes an event to the event queue.
+    #[doc(alias = "SDL_PushEvent")]
+    pub fn push_event(&self, event: Event) -> Result<(), String> {
+        match event.to_ll() {
+            Some(mut raw_event) => {
+                let ok = unsafe { sys::SDL_PushEvent(&mut raw_event) == 1 };
+                if ok {
+                    Ok(())
+                } else {
+                    Err(get_error())
+                }
+            }
+            None => Err("Cannot push unsupported event type to the queue".to_owned()),
+        }
+    }
+
+    /// Push a custom event
+    ///
+    /// If the event type ``T`` was not registered using
+    /// [EventSubsystem::register_custom_event]
+    /// (../struct.EventSubsystem.html#method.register_custom_event),
+    /// this method will panic.
+    ///
+    /// # Example: pushing and receiving a custom event
+    /// ```
+    /// struct SomeCustomEvent {
+    ///     a: i32
+    /// }
+    ///
+    /// let sdl = sdl2::init().unwrap();
+    /// let ev = sdl.event().unwrap();
+    /// let mut ep = sdl.event_pump().unwrap();
+    ///
+    /// ev.register_custom_event::<SomeCustomEvent>().unwrap();
+    ///
+    /// let event = SomeCustomEvent { a: 42 };
+    ///
+    /// ev.push_custom_event(event);
+    ///
+    /// let received = ep.poll_event().unwrap(); // or within a for event in ep.poll_iter()
+    /// if received.is_user_event() {
+    ///     let e2 = received.as_user_event_type::<SomeCustomEvent>().unwrap();
+    ///     assert_eq!(e2.a, 42);
+    /// }
+    /// ```
+    pub fn push_custom_event<T: ::std::any::Any>(&self, event: T) -> Result<(), String> {
+        use std::any::TypeId;
+        let cet = CUSTOM_EVENT_TYPES.lock().unwrap();
+        let type_id = TypeId::of::<Box<T>>();
+
+        let user_event_id = *match cet.type_id_to_sdl_id.get(&type_id) {
+            Some(id) => id,
+            None => {
+                return Err("Type is not registered as a custom event type!".to_owned());
+            }
+        };
+
+        let event_box = Box::new(event);
+        let event = Event::User {
+            timestamp: 0,
+            window_id: 0,
+            type_: user_event_id,
+            code: 0,
+            data1: Box::into_raw(event_box) as *mut c_void,
+            data2: ::std::ptr::null_mut(),
+        };
+        drop(cet);
+
+        self.push_event(event)?;
+
+        Ok(())
+    }
+}
+
+/// A callback trait for [`EventSubsystem::add_event_watch`].
+pub trait EventWatchCallback {
+    fn callback(&mut self, event: Event);
+}
+
+/// An handler for the event watch callback.
+/// One must bind this struct in a variable as long as you want to keep the callback active.
+/// For further information, see [`EventSubsystem::add_event_watch`].
+pub struct EventWatch<'a, CB: EventWatchCallback + 'a> {
+    activated: bool,
+    callback: Box<CB>,
+    _phantom: PhantomData<&'a CB>,
+}
+
+impl<'a, CB: EventWatchCallback + 'a> EventWatch<'a, CB> {
+    fn add(callback: CB) -> EventWatch<'a, CB> {
+        let f = Box::new(callback);
+        let mut watch = EventWatch {
+            activated: false,
+            callback: f,
+            _phantom: PhantomData,
+        };
+        watch.activate();
+        watch
+    }
+
+    /// Activates the event watch.
+    /// Does nothing if it is already activated.
+    pub fn activate(&mut self) {
+        if !self.activated {
+            self.activated = true;
+            unsafe { sys::SDL_AddEventWatch(self.filter(), self.callback()) };
+        }
+    }
+
+    /// Deactivates the event watch.
+    /// Does nothing if it is already activated.
+    pub fn deactivate(&mut self) {
+        if self.activated {
+            self.activated = false;
+            unsafe { sys::SDL_DelEventWatch(self.filter(), self.callback()) };
+        }
+    }
+
+    /// Returns if the event watch is activated.
+    pub fn activated(&self) -> bool {
+        self.activated
+    }
+
+    /// Set the activation state of the event watch.
+    pub fn set_activated(&mut self, activate: bool) {
+        if activate {
+            self.activate();
+        } else {
+            self.deactivate();
+        }
+    }
+
+    fn filter(&self) -> SDL_EventFilter {
+        Some(event_callback_marshall::<CB> as _)
+    }
+
+    fn callback(&mut self) -> *mut c_void {
+        &mut *self.callback as *mut _ as *mut c_void
+    }
+}
+
+impl<'a, CB: EventWatchCallback + 'a> Drop for EventWatch<'a, CB> {
+    fn drop(&mut self) {
+        self.deactivate();
+    }
+}
+
+extern "C" fn event_callback_marshall<CB: EventWatchCallback>(
+    user_data: *mut c_void,
+    event: *mut sdl2_sys::SDL_Event,
+) -> i32 {
+    let f: &mut CB = unsafe { &mut *(user_data as *mut _) };
+    let event = Event::from_ll(unsafe { *event });
+    f.callback(event);
+    0
+}
+
+impl<F: FnMut(Event)> EventWatchCallback for F {
+    fn callback(&mut self, event: Event) {
+        self(event)
     }
 }
 
@@ -3138,174 +3259,5 @@ mod test {
         } else {
             panic!()
         }
-    }
-}
-
-/// A sendible type that can push events to the event queue.
-pub struct EventSender {
-    _priv: (),
-}
-
-impl EventSender {
-    /// Pushes an event to the event queue.
-    #[doc(alias = "SDL_PushEvent")]
-    pub fn push_event(&self, event: Event) -> Result<(), String> {
-        match event.to_ll() {
-            Some(mut raw_event) => {
-                let ok = unsafe { sys::SDL_PushEvent(&mut raw_event) == 1 };
-                if ok {
-                    Ok(())
-                } else {
-                    Err(get_error())
-                }
-            }
-            None => Err("Cannot push unsupported event type to the queue".to_owned()),
-        }
-    }
-
-    /// Push a custom event
-    ///
-    /// If the event type ``T`` was not registered using
-    /// [EventSubsystem::register_custom_event]
-    /// (../struct.EventSubsystem.html#method.register_custom_event),
-    /// this method will panic.
-    ///
-    /// # Example: pushing and receiving a custom event
-    /// ```
-    /// struct SomeCustomEvent {
-    ///     a: i32
-    /// }
-    ///
-    /// let sdl = sdl2::init().unwrap();
-    /// let ev = sdl.event().unwrap();
-    /// let mut ep = sdl.event_pump().unwrap();
-    ///
-    /// ev.register_custom_event::<SomeCustomEvent>().unwrap();
-    ///
-    /// let event = SomeCustomEvent { a: 42 };
-    ///
-    /// ev.push_custom_event(event);
-    ///
-    /// let received = ep.poll_event().unwrap(); // or within a for event in ep.poll_iter()
-    /// if received.is_user_event() {
-    ///     let e2 = received.as_user_event_type::<SomeCustomEvent>().unwrap();
-    ///     assert_eq!(e2.a, 42);
-    /// }
-    /// ```
-    pub fn push_custom_event<T: ::std::any::Any>(&self, event: T) -> Result<(), String> {
-        use std::any::TypeId;
-        let cet = CUSTOM_EVENT_TYPES.lock().unwrap();
-        let type_id = TypeId::of::<Box<T>>();
-
-        let user_event_id = *match cet.type_id_to_sdl_id.get(&type_id) {
-            Some(id) => id,
-            None => {
-                return Err("Type is not registered as a custom event type!".to_owned());
-            }
-        };
-
-        let event_box = Box::new(event);
-        let event = Event::User {
-            timestamp: 0,
-            window_id: 0,
-            type_: user_event_id,
-            code: 0,
-            data1: Box::into_raw(event_box) as *mut c_void,
-            data2: ::std::ptr::null_mut(),
-        };
-        drop(cet);
-
-        self.push_event(event)?;
-
-        Ok(())
-    }
-}
-
-/// A callback trait for [`EventSubsystem::add_event_watch`].
-pub trait EventWatchCallback {
-    fn callback(&mut self, event: Event) -> ();
-}
-
-/// An handler for the event watch callback.
-/// One must bind this struct in a variable as long as you want to keep the callback active.
-/// For further information, see [`EventSubsystem::add_event_watch`].
-pub struct EventWatch<'a, CB: EventWatchCallback + 'a> {
-    activated: bool,
-    callback: Box<CB>,
-    _phantom: PhantomData<&'a CB>,
-}
-
-impl<'a, CB: EventWatchCallback + 'a> EventWatch<'a, CB> {
-    fn add(callback: CB) -> EventWatch<'a, CB> {
-        let f = Box::new(callback);
-        let mut watch = EventWatch {
-            activated: false,
-            callback: f,
-            _phantom: PhantomData,
-        };
-        watch.activate();
-        watch
-    }
-
-    /// Activates the event watch.
-    /// Does nothing if it is already activated.
-    pub fn activate(&mut self) {
-        if !self.activated {
-            self.activated = true;
-            unsafe { sys::SDL_AddEventWatch(self.filter(), self.callback()) };
-        }
-    }
-
-    /// Deactivates the event watch.
-    /// Does nothing if it is already activated.
-    pub fn deactivate(&mut self) {
-        if self.activated {
-            self.activated = false;
-            unsafe { sys::SDL_DelEventWatch(self.filter(), self.callback()) };
-        }
-    }
-
-    /// Returns if the event watch is activated.
-    pub fn activated(&self) -> bool {
-        self.activated
-    }
-
-    /// Set the activation state of the event watch.
-    pub fn set_activated(&mut self, activate: bool) {
-        if activate {
-            self.activate();
-        } else {
-            self.deactivate();
-        }
-    }
-
-    fn filter(&self) -> SDL_EventFilter {
-        Some(event_callback_marshall::<CB> as _)
-    }
-
-    fn callback(&mut self) -> *mut c_void {
-        &mut *self.callback as *mut _ as *mut c_void
-    }
-}
-
-impl<'a, CB: EventWatchCallback + 'a> Drop for EventWatch<'a, CB> {
-    fn drop(&mut self) {
-        self.deactivate();
-    }
-}
-
-extern "C" fn event_callback_marshall<CB: EventWatchCallback>(
-    user_data: *mut c_void,
-    event: *mut sdl2_sys::SDL_Event,
-) -> i32 {
-    let f: &mut CB = unsafe { &mut *(user_data as *mut _) };
-    let event = Event::from_ll(unsafe { *event });
-    f.callback(event);
-    0
-}
-
-impl<F: FnMut(Event) -> ()> EventWatchCallback for F {
-    fn callback(&mut self, event: Event) -> () {
-        self(event)
     }
 }

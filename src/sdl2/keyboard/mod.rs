@@ -1,8 +1,12 @@
+// 0 should not be used in bitflags, but here it is. Removing it will break existing code.
+#![allow(clippy::bad_bit_mask)]
+
 use crate::rect::Rect;
 use crate::video::Window;
 use crate::EventPump;
 
 use std::fmt;
+use std::iter::FilterMap;
 use std::mem::transmute;
 
 use crate::sys;
@@ -99,9 +103,7 @@ impl<'a> KeyboardState<'a> {
     /// }
     /// ```
     pub fn pressed_scancodes(&self) -> PressedScancodeIterator {
-        PressedScancodeIterator {
-            iter: self.scancodes(),
-        }
+        self.scancodes().into_pressed_scancode_iter()
     }
 }
 
@@ -131,23 +133,14 @@ impl<'a> Iterator for ScancodeIterator<'a> {
     }
 }
 
-pub struct PressedScancodeIterator<'a> {
-    iter: ScancodeIterator<'a>,
-}
-
-impl<'a> Iterator for PressedScancodeIterator<'a> {
-    type Item = Scancode;
-
-    fn next(&mut self) -> Option<Scancode> {
-        while let Some((scancode, pressed)) = self.iter.next() {
-            if pressed {
-                return Some(scancode);
-            }
-        }
-
-        None
+impl<'a> ScancodeIterator<'a> {
+    fn into_pressed_scancode_iter(self) -> PressedScancodeIterator<'a> {
+        self.filter_map(|(scancode, pressed)| pressed.then_some(scancode))
     }
 }
+
+pub type PressedScancodeIterator<'a> =
+    FilterMap<ScancodeIterator<'a>, fn((Scancode, bool)) -> Option<Scancode>>;
 
 impl crate::Sdl {
     #[inline]

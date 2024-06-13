@@ -27,22 +27,22 @@ impl Drop for Sdl2TtfContext {
 
 impl Sdl2TtfContext {
     /// Loads a font from the given file with the given size in points.
-    pub fn load_font<'ttf, P: AsRef<Path>>(
-        &'ttf self,
+    pub fn load_font<P: AsRef<Path>>(
+        &self,
         path: P,
         point_size: u16,
-    ) -> Result<Font<'ttf, 'static>, String> {
+    ) -> Result<Font<'_, 'static>, String> {
         internal_load_font(path, point_size)
     }
 
     /// Loads the font at the given index of the file, with the given
     /// size in points.
-    pub fn load_font_at_index<'ttf, P: AsRef<Path>>(
-        &'ttf self,
+    pub fn load_font_at_index<P: AsRef<Path>>(
+        &self,
         path: P,
         index: u32,
         point_size: u16,
-    ) -> Result<Font<'ttf, 'static>, String> {
+    ) -> Result<Font<'_, 'static>, String> {
         internal_load_font_at_index(path, index, point_size)
     }
 
@@ -94,14 +94,7 @@ pub enum InitError {
 }
 
 impl error::Error for InitError {
-    fn description(&self) -> &str {
-        match *self {
-            InitError::AlreadyInitializedError => "SDL2_TTF has already been initialized",
-            InitError::InitializationError(ref error) => error.description(),
-        }
-    }
-
-    fn cause(&self) -> Option<&dyn error::Error> {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match *self {
             InitError::AlreadyInitializedError => None,
             InitError::InitializationError(ref error) => Some(error),
@@ -110,8 +103,13 @@ impl error::Error for InitError {
 }
 
 impl fmt::Display for InitError {
-    fn fmt(&self, formatter: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        formatter.write_str("SDL2_TTF has already been initialized")
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::AlreadyInitializedError => {
+                write!(f, "SDL2_TTF has already been initialized")
+            }
+            Self::InitializationError(error) => write!(f, "SDL2_TTF initialization error: {error}"),
+        }
     }
 }
 

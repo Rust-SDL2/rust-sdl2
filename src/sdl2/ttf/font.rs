@@ -1,8 +1,10 @@
+// 0 should not be used in bitflags, but here it is. Removing it will break existing code.
+#![allow(clippy::bad_bit_mask)]
+
 use get_error;
 use pixels::Color;
 use rwops::RWops;
 use std::error;
-use std::error::Error;
 use std::ffi::NulError;
 use std::ffi::{CStr, CString};
 use std::fmt;
@@ -58,14 +60,7 @@ pub enum FontError {
 }
 
 impl error::Error for FontError {
-    fn description(&self) -> &str {
-        match *self {
-            FontError::InvalidLatin1Text(ref error) => error.description(),
-            FontError::SdlError(ref message) => message,
-        }
-    }
-
-    fn cause(&self) -> Option<&dyn error::Error> {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match *self {
             FontError::InvalidLatin1Text(ref error) => Some(error),
             FontError::SdlError(_) => None,
@@ -77,7 +72,7 @@ impl fmt::Display for FontError {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         match *self {
             FontError::InvalidLatin1Text(ref err) => {
-                write!(f, "Invalid Latin-1 bytes: {}", err.description())
+                write!(f, "Invalid Latin-1 bytes: {}", err)
             }
             FontError::SdlError(ref msg) => {
                 write!(f, "SDL2 error: {}", msg)
@@ -90,18 +85,19 @@ impl fmt::Display for FontError {
 enum RenderableText<'a> {
     Utf8(&'a str),
     Latin1(&'a [u8]),
-    Char(String),
+    Char(char),
 }
 impl<'a> RenderableText<'a> {
     /// Converts the given text to a c-style string if possible.
     fn convert(&self) -> FontResult<CString> {
         match *self {
             RenderableText::Utf8(text) => Ok(CString::new(text).unwrap()),
-            RenderableText::Latin1(bytes) => match CString::new(bytes) {
-                Err(err) => Err(FontError::InvalidLatin1Text(err)),
-                Ok(cstring) => Ok(cstring),
-            },
-            RenderableText::Char(ref string) => Ok(CString::new(string.as_bytes()).unwrap()),
+            RenderableText::Latin1(bytes) => {
+                CString::new(bytes).map_err(FontError::InvalidLatin1Text)
+            }
+            RenderableText::Char(ch) => {
+                Ok(CString::new(ch.encode_utf8(&mut [0; 4]).as_bytes()).unwrap())
+            }
         }
     }
 }
@@ -266,7 +262,7 @@ pub fn internal_load_font<'ttf, P: AsRef<Path>>(
             Err(get_error())
         } else {
             Ok(Font {
-                raw: raw,
+                raw,
                 rwops: None,
                 _marker: PhantomData,
             })
@@ -280,7 +276,7 @@ where
     R: Into<Option<RWops<'r>>>,
 {
     Font {
-        raw: raw,
+        raw,
         rwops: rwops.into(),
         _marker: PhantomData,
     }
@@ -299,7 +295,7 @@ pub fn internal_load_font_at_index<'ttf, P: AsRef<Path>>(
             Err(get_error())
         } else {
             Ok(Font {
-                raw: raw,
+                raw,
                 rwops: None,
                 _marker: PhantomData,
             })
@@ -333,11 +329,9 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
     }
 
     /// Starts specifying a rendering of the given UTF-8-encoded character.
-    pub fn render_char<'a>(&'a self, ch: char) -> PartialRendering<'a, 'static> {
-        let mut s = String::new();
-        s.push(ch);
+    pub fn render_char(&self, ch: char) -> PartialRendering<'_, 'static> {
         PartialRendering {
-            text: RenderableText::Char(s),
+            text: RenderableText::Char(ch),
             font: self,
         }
     }
@@ -379,9 +373,7 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
     /// Returns the width and height of the given text when rendered using this
     /// font.
     pub fn size_of_char(&self, ch: char) -> FontResult<(u32, u32)> {
-        let mut s = String::new();
-        s.push(ch);
-        self.size_of(&s)
+        self.size_of(ch.encode_utf8(&mut [0; 4]))
     }
 
     /// Returns the font's style flags.
@@ -465,29 +457,41 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
         unsafe { ttf::TTF_FontFaceIsFixedWidth(self.raw) != 0 }
     }
 
-    /// Returns the family name of the current font face.
-    pub fn face_family_name(&self) -> Option<String> {
+    /// Returns the family name of the current font face without doing any heap allocations.
+    pub fn face_family_name_borrowed(&self) -> Option<&'ttf CStr> {
         unsafe {
             // not owns buffer
             let cname = ttf::TTF_FontFaceFamilyName(self.raw);
             if cname.is_null() {
                 None
             } else {
-                Some(String::from_utf8_lossy(CStr::from_ptr(cname).to_bytes()).to_string())
+                Some(CStr::from_ptr(cname))
+            }
+        }
+    }
+
+    /// Returns the family name of the current font face.
+    pub fn face_family_name(&self) -> Option<String> {
+        self.face_family_name_borrowed()
+            .map(|cstr| String::from_utf8_lossy(cstr.to_bytes()).into_owned())
+    }
+
+    /// Returns the name of the current font face without doing any heap allocations.
+    pub fn face_style_name_borrowed(&self) -> Option<&'ttf CStr> {
+        unsafe {
+            let cname = ttf::TTF_FontFaceStyleName(self.raw);
+            if cname.is_null() {
+                None
+            } else {
+                Some(CStr::from_ptr(cname))
             }
         }
     }
 
     /// Returns the name of the current font face.
     pub fn face_style_name(&self) -> Option<String> {
-        unsafe {
-            let cname = ttf::TTF_FontFaceStyleName(self.raw);
-            if cname.is_null() {
-                None
-            } else {
-                Some(String::from_utf8_lossy(CStr::from_ptr(cname).to_bytes()).to_string())
-            }
-        }
+        self.face_style_name_borrowed()
+            .map(|cstr| String::from_utf8_lossy(cstr.to_bytes()).into_owned())
     }
 
     /// Returns the index of the given character in this font face.
@@ -523,11 +527,11 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
         };
         if ret == 0 {
             Some(GlyphMetrics {
-                minx: minx as i32,
-                maxx: maxx as i32,
-                miny: miny as i32,
-                maxy: maxy as i32,
-                advance: advance as i32,
+                minx,
+                maxx,
+                miny,
+                maxy,
+                advance,
             })
         } else {
             None
