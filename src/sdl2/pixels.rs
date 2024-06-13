@@ -10,7 +10,9 @@ pub struct Palette {
 
 impl Palette {
     #[inline]
-    /// Creates a new, uninitialized palette
+    /// Create a palette structure with the specified number of color entries.
+    ///
+    /// The palette entries are initialized to white.
     #[doc(alias = "SDL_AllocPalette")]
     pub fn new(mut capacity: usize) -> Result<Self, String> {
         use crate::common::*;
