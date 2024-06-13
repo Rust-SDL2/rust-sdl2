@@ -681,7 +681,7 @@ pub enum Event {
         /// The X position of the mouse from the window's origin
         mouse_x: i32,
         /// The X position of the mouse from the window's origin
-        mouse_y: i32
+        mouse_y: i32,
     },
 
     JoyAxisMotion {
@@ -1214,7 +1214,7 @@ impl Event {
                 precise_x,
                 precise_y,
                 mouse_x,
-                mouse_y
+                mouse_y,
             } => {
                 let event = sys::SDL_MouseWheelEvent {
                     type_: SDL_EventType::SDL_MOUSEWHEEL as u32,
@@ -2399,10 +2399,22 @@ impl Event {
         const SDL_TOUCH_MOUSEID: u32 = 0xFFFFFFFF;
 
         match self {
-            Self::MouseMotion { which: SDL_TOUCH_MOUSEID, .. }
-            | Self::MouseButtonDown { which: SDL_TOUCH_MOUSEID, .. }
-            | Self::MouseButtonUp { which: SDL_TOUCH_MOUSEID, .. }
-            | Self::MouseWheel { which: SDL_TOUCH_MOUSEID, .. } => true,
+            Self::MouseMotion {
+                which: SDL_TOUCH_MOUSEID,
+                ..
+            }
+            | Self::MouseButtonDown {
+                which: SDL_TOUCH_MOUSEID,
+                ..
+            }
+            | Self::MouseButtonUp {
+                which: SDL_TOUCH_MOUSEID,
+                ..
+            }
+            | Self::MouseWheel {
+                which: SDL_TOUCH_MOUSEID,
+                ..
+            } => true,
             _ => false,
         }
     }

@@ -1681,10 +1681,7 @@ impl FPoint {
     /// Creates a new point from the given coordinates.
     pub fn new(x: f32, y: f32) -> FPoint {
         FPoint {
-            raw: sys::SDL_FPoint {
-                x,
-                y,
-            },
+            raw: sys::SDL_FPoint { x, y },
         }
     }
 
@@ -1805,7 +1802,7 @@ impl std::iter::Sum for FPoint {
 
 #[cfg(test)]
 mod test {
-    use super::{max_int_value, min_int_value, Point, Rect, FPoint, FRect};
+    use super::{max_int_value, min_int_value, FPoint, FRect, Point, Rect};
 
     /// Used to compare "literal" (unclamped) rect values.
     fn tuple(x: i32, y: i32, w: u32, h: u32) -> (i32, i32, u32, u32) {
@@ -2077,7 +2074,10 @@ mod test {
     #[test]
     fn frect_intersection() {
         let rect = FRect::new(0.0, 0.0, 10.0, 10.0);
-        assert_eq!(rect & FRect::new(9.0, 9.0, 10.0, 10.0), Some(FRect::new(9.0, 9.0, 1.0, 1.0)));
+        assert_eq!(
+            rect & FRect::new(9.0, 9.0, 10.0, 10.0),
+            Some(FRect::new(9.0, 9.0, 1.0, 1.0))
+        );
         assert_eq!(rect & FRect::new(11.0, 11.0, 10.0, 10.0), None);
     }
 
@@ -2092,7 +2092,8 @@ mod test {
     #[test]
     fn frect_intersect_line() {
         assert_eq!(
-            FRect::new(1.0, 1.0, 5.0, 5.0).intersect_line(FPoint::new(0.0, 0.0), FPoint::new(10.0, 10.0)),
+            FRect::new(1.0, 1.0, 5.0, 5.0)
+                .intersect_line(FPoint::new(0.0, 0.0), FPoint::new(10.0, 10.0)),
             Some((FPoint::new(1.0, 1.0), FPoint::new(5.0, 5.0)))
         );
     }
@@ -2116,7 +2117,10 @@ mod test {
 
     #[test]
     fn frect_from() {
-        assert_eq!(FRect::from((-11.0, 5.0, 50.0, 20.0)), FRect::new(-11.0, 5.0, 50.0, 20.0));
+        assert_eq!(
+            FRect::from((-11.0, 5.0, 50.0, 20.0)),
+            FRect::new(-11.0, 5.0, 50.0, 20.0)
+        );
     }
 
     #[test]
@@ -2133,7 +2137,10 @@ mod test {
 
     #[test]
     fn fpoint_add() {
-        assert_eq!(FPoint::new(-5.0, 7.0), FPoint::new(-11.0, 5.0) + FPoint::new(6.0, 2.0));
+        assert_eq!(
+            FPoint::new(-5.0, 7.0),
+            FPoint::new(-11.0, 5.0) + FPoint::new(6.0, 2.0)
+        );
     }
 
     #[test]
@@ -2145,7 +2152,10 @@ mod test {
 
     #[test]
     fn fpoint_sub() {
-        assert_eq!(FPoint::new(-17.0, 3.0), FPoint::new(-11.0, 5.0) - FPoint::new(6.0, 2.0));
+        assert_eq!(
+            FPoint::new(-17.0, 3.0),
+            FPoint::new(-11.0, 5.0) - FPoint::new(6.0, 2.0)
+        );
     }
 
     #[test]
@@ -2181,7 +2191,9 @@ mod test {
 
     #[test]
     fn fpoint_sum() {
-        let points_sum: FPoint = vec![FPoint::new(-11.0, 5.0), FPoint::new(6.0, 2.0)].into_iter().sum();
+        let points_sum: FPoint = vec![FPoint::new(-11.0, 5.0), FPoint::new(6.0, 2.0)]
+            .into_iter()
+            .sum();
         assert_eq!(FPoint::new(-5.0, 7.0), points_sum);
     }
 }

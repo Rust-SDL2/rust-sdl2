@@ -1,8 +1,8 @@
 extern crate raw_window_handle;
 
 use self::raw_window_handle::{
-    RawDisplayHandle, RawWindowHandle,
-    HasWindowHandle, HasDisplayHandle, DisplayHandle, WindowHandle, HandleError
+    DisplayHandle, HandleError, HasDisplayHandle, HasWindowHandle, RawDisplayHandle,
+    RawWindowHandle, WindowHandle,
 };
 use crate::{sys::SDL_Window, video::Window};
 
@@ -16,7 +16,7 @@ impl HasWindowHandle for Window {
             use self::raw_window_handle::WebWindowHandle;
             let handle = WebWindowHandle::new(1);
             let handle = RawWindowHandle::Web(handle);
-            let handle = unsafe{WindowHandle::borrow_raw(handle)};
+            let handle = unsafe { WindowHandle::borrow_raw(handle) };
             return Ok(handle);
         }
 
@@ -50,7 +50,7 @@ impl HasWindowHandle for Window {
                 handle.hinstance = hinstance;
 
                 let handle = RawWindowHandle::Win32(handle);
-                let handle = unsafe {WindowHandle::borrow_raw(handle)};
+                let handle = unsafe { WindowHandle::borrow_raw(handle) };
                 Ok(handle)
             }
             #[cfg(target_os = "windows")]
@@ -67,7 +67,7 @@ impl HasWindowHandle for Window {
                 };
                 let handle = WinRtWindowHandle::new(core_window);
                 let handle = RawWindowHandle::WinRt(handle);
-                let handle = unsafe {WindowHandle::borrow_raw(handle)};
+                let handle = unsafe { WindowHandle::borrow_raw(handle) };
 
                 Ok(handle)
             }
@@ -81,21 +81,18 @@ impl HasWindowHandle for Window {
             SDL_SYSWM_WAYLAND => {
                 use self::raw_window_handle::WaylandWindowHandle;
 
-                let surf = unsafe {wm_info.info.wl}.surface as *mut libc::c_void;
+                let surf = unsafe { wm_info.info.wl }.surface as *mut libc::c_void;
                 let surf = core::ptr::NonNull::<libc::c_void>::new(surf);
 
                 match surf {
                     Some(surf) => {
                         let handle = WaylandWindowHandle::new(surf);
                         let handle = RawWindowHandle::Wayland(handle);
-                        let handle = unsafe {WindowHandle::borrow_raw(handle)};
+                        let handle = unsafe { WindowHandle::borrow_raw(handle) };
                         Ok(handle)
                     }
-                    None => {
-                        Err(HandleError::Unavailable)
-                    }
+                    None => Err(HandleError::Unavailable),
                 }
-
             }
             #[cfg(any(
                 target_os = "linux",
@@ -110,7 +107,7 @@ impl HasWindowHandle for Window {
                 let window = unsafe { wm_info.info.x11 }.window;
                 let xlib_handle = XlibWindowHandle::new(window);
                 let raw_handle = RawWindowHandle::Xlib(xlib_handle);
-                let handle = unsafe{WindowHandle::borrow_raw(raw_handle)};
+                let handle = unsafe { WindowHandle::borrow_raw(raw_handle) };
 
                 Ok(handle)
             }
@@ -125,10 +122,10 @@ impl HasWindowHandle for Window {
                         panic!("metal_view not initialized, please call WindowBuilder::metal_view() when building the window");
                     }
                 };
-                
+
                 let handle = AppKitWindowHandle::new(ns_view);
                 let handle = RawWindowHandle::AppKit(handle);
-                let handle = unsafe {WindowHandle::borrow_raw(handle)};
+                let handle = unsafe { WindowHandle::borrow_raw(handle) };
 
                 Ok(handle)
             }
@@ -150,15 +147,14 @@ impl HasWindowHandle for Window {
                 // Someone with an IOS device please test
                 let handle = UiKitWindowHandle::new(ui_window);
                 let handle = RawWindowHandle::UiKit(handle);
-                let handle = unsafe {WindowHandle::borrow_raw(handle)};
+                let handle = unsafe { WindowHandle::borrow_raw(handle) };
                 Ok(handle)
             }
             #[cfg(any(target_os = "android"))]
             SDL_SYSWM_ANDROID => {
                 use self::raw_window_handle::AndroidNdkWindowHandle;
 
-                let a_native_window =
-                    unsafe { wm_info.info.android }.window as *mut libc::c_void;
+                let a_native_window = unsafe { wm_info.info.android }.window as *mut libc::c_void;
                 let a_native_window = core::ptr::NonNull::<libc::c_void>::new(a_native_window);
                 let a_native_window = match a_native_window {
                     Some(anw) => anw,
@@ -168,7 +164,7 @@ impl HasWindowHandle for Window {
                 };
                 let handle = AndroidNdkWindowHandle::new(a_native_window);
                 let handle = RawWindowHandle::AndroidNdk(handle);
-                let handle = unsafe{WindowHandle::borrow_raw(handle)};
+                let handle = unsafe { WindowHandle::borrow_raw(handle) };
                 Ok(handle)
             }
             x => {
@@ -195,7 +191,7 @@ impl HasDisplayHandle for Window {
             use self::raw_window_handle::WebDisplayHandle;
             let handle = WebDisplayHandle::new();
             let handle = RawDisplayHandle::Web(handle);
-            let handle = unsafe{DisplayHandle::borrow_raw(handle)};
+            let handle = unsafe { DisplayHandle::borrow_raw(handle) };
             return Ok(handle);
         }
 
@@ -217,7 +213,7 @@ impl HasDisplayHandle for Window {
 
                 let handle = WindowsDisplayHandle::new();
                 let handle = RawDisplayHandle::Windows(handle);
-                let handle = unsafe {DisplayHandle::borrow_raw(handle)};
+                let handle = unsafe { DisplayHandle::borrow_raw(handle) };
 
                 Ok(handle)
             }
@@ -237,12 +233,10 @@ impl HasDisplayHandle for Window {
                     Some(display) => {
                         let mut handle = WaylandDisplayHandle::new(display);
                         let handle = RawDisplayHandle::Wayland(handle);
-                        let handle = unsafe{DisplayHandle::borrow_raw(handle)};
+                        let handle = unsafe { DisplayHandle::borrow_raw(handle) };
                         Ok(handle)
                     }
-                    None => {
-                        Err(HandleError::Unavailable)
-                    }
+                    None => Err(HandleError::Unavailable),
                 }
             }
             #[cfg(any(
@@ -260,7 +254,7 @@ impl HasDisplayHandle for Window {
                 let window = unsafe { wm_info.info.x11 }.window as i32;
                 let handle = XlibDisplayHandle::new(display, window);
                 let handle = RawDisplayHandle::Xlib(handle);
-                let handle = unsafe {DisplayHandle::borrow_raw(handle)};
+                let handle = unsafe { DisplayHandle::borrow_raw(handle) };
 
                 Ok(handle)
             }
@@ -269,7 +263,7 @@ impl HasDisplayHandle for Window {
                 use self::raw_window_handle::AppKitDisplayHandle;
                 let handle = AppKitDisplayHandle::new();
                 let handle = RawDisplayHandle::AppKit(handle);
-                let handle = unsafe {DisplayHandle::borrow_raw(handle)};
+                let handle = unsafe { DisplayHandle::borrow_raw(handle) };
                 Ok(handle)
             }
             #[cfg(any(target_os = "ios"))]
@@ -278,7 +272,7 @@ impl HasDisplayHandle for Window {
 
                 let handle = UiKitDisplayHandle::new();
                 let handle = RawDisplayHandle::UiKit(handle);
-                let handle = unsafe {DisplayHandle::borrow_raw(handle)};
+                let handle = unsafe { DisplayHandle::borrow_raw(handle) };
 
                 Ok(handle)
             }
@@ -288,7 +282,7 @@ impl HasDisplayHandle for Window {
 
                 let handle = AndroidDisplayHandle::new();
                 let handle = RawDisplayHandle::Android(handle);
-                let handle = unsafe {DisplayHandle::borrow_raw(handle)};
+                let handle = unsafe { DisplayHandle::borrow_raw(handle) };
 
                 Ok(handle)
             }
