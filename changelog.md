@@ -2,6 +2,7 @@ In this file will be listed the changes, especially the breaking ones that one s
 when upgrading from a version of rust-sdl2 to another.
 
 ### Unreleased
+[PR #1404](https://github.com/Rust-SDL2/rust-sdl2/pull/1404) Make `SdlDrop` a zero sized type.
 
 [PR #1389](https://github.com/Rust-SDL2/rust-sdl2/pull/1389) Fix some undefined behavior.
 
