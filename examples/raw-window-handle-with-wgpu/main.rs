@@ -30,7 +30,9 @@ fn main() -> Result<(), String> {
         ..Default::default()
     });
     let surface = unsafe {
-        match instance.create_surface_unsafe(wgpu::SurfaceTargetUnsafe::from_window(&window).unwrap()) {
+        match instance
+            .create_surface_unsafe(wgpu::SurfaceTargetUnsafe::from_window(&window).unwrap())
+        {
             Ok(s) => s,
             Err(e) => return Err(e.to_string()),
         }

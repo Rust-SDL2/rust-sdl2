@@ -32,6 +32,8 @@ use crate::common::{validate_int, IntegerOrSdlError};
 use crate::get_error;
 use crate::pixels;
 use crate::pixels::PixelFormatEnum;
+use crate::rect::FPoint;
+use crate::rect::FRect;
 use crate::rect::Point;
 use crate::rect::Rect;
 use crate::surface;
@@ -1325,6 +1327,251 @@ impl<T: RenderTarget> Canvas<T> {
             )
         };
         if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Draws a point on the current rendering target.
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    #[doc(alias = "SDL_RenderDrawPointF")]
+    pub fn draw_fpoint<P: Into<FPoint>>(&mut self, point: P) -> Result<(), String> {
+        let point = point.into();
+        let result = unsafe { sys::SDL_RenderDrawPointF(self.context.raw, point.x(), point.y()) };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Draws multiple points on the current rendering target.
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    #[doc(alias = "SDL_RenderDrawPointsF")]
+    pub fn draw_fpoints<'a, P: Into<&'a [FPoint]>>(&mut self, points: P) -> Result<(), String> {
+        let points = points.into();
+        let result = unsafe {
+            sys::SDL_RenderDrawPointsF(
+                self.context.raw,
+                FPoint::raw_slice(points),
+                points.len() as c_int,
+            )
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Draws a line on the current rendering target.
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    #[doc(alias = "SDL_RenderDrawLineF")]
+    pub fn draw_fline<P1: Into<FPoint>, P2: Into<FPoint>>(
+        &mut self,
+        start: P1,
+        end: P2,
+    ) -> Result<(), String> {
+        let start = start.into();
+        let end = end.into();
+        let result = unsafe {
+            sys::SDL_RenderDrawLineF(self.context.raw, start.x(), start.y(), end.x(), end.y())
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Draws a series of connected lines on the current rendering target.
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    #[doc(alias = "SDL_RenderDrawLinesF")]
+    pub fn draw_flines<'a, P: Into<&'a [FPoint]>>(&mut self, points: P) -> Result<(), String> {
+        let points = points.into();
+        let result = unsafe {
+            sys::SDL_RenderDrawLinesF(
+                self.context.raw,
+                FPoint::raw_slice(points),
+                points.len() as c_int,
+            )
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Draws a rectangle on the current rendering target.
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    #[doc(alias = "SDL_RenderDrawRectF")]
+    pub fn draw_frect(&mut self, rect: FRect) -> Result<(), String> {
+        let result = unsafe { sys::SDL_RenderDrawRectF(self.context.raw, rect.raw()) };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Draws some number of rectangles on the current rendering target.
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    #[doc(alias = "SDL_RenderDrawRectsF")]
+    pub fn draw_frects(&mut self, rects: &[FRect]) -> Result<(), String> {
+        let result = unsafe {
+            sys::SDL_RenderDrawRectsF(
+                self.context.raw,
+                FRect::raw_slice(rects),
+                rects.len() as c_int,
+            )
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Fills a rectangle on the current rendering target with the drawing
+    /// color.
+    /// Passing None will fill the entire rendering target.
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    #[doc(alias = "SDL_RenderFillRectF")]
+    pub fn fill_frect<R: Into<Option<FRect>>>(&mut self, rect: R) -> Result<(), String> {
+        let result = unsafe {
+            sys::SDL_RenderFillRectF(
+                self.context.raw,
+                rect.into().as_ref().map(|r| r.raw()).unwrap_or(ptr::null()),
+            )
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Fills some number of rectangles on the current rendering target with
+    /// the drawing color.
+    /// Errors if drawing fails for any reason (e.g. driver failure)
+    #[doc(alias = "SDL_RenderFillRectsF")]
+    pub fn fill_frects(&mut self, rects: &[FRect]) -> Result<(), String> {
+        let result = unsafe {
+            sys::SDL_RenderFillRectsF(
+                self.context.raw,
+                FRect::raw_slice(rects),
+                rects.len() as c_int,
+            )
+        };
+        if result != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Copies a portion of the texture to the current rendering target.
+    ///
+    /// * If `src` is `None`, the entire texture is copied.
+    /// * If `dst` is `None`, the texture will be stretched to fill the given
+    ///   rectangle.
+    ///
+    /// Errors if drawing fails for any reason (e.g. driver failure),
+    /// or if the provided texture does not belong to the renderer.
+    #[doc(alias = "SDL_RenderCopyF")]
+    pub fn copy_f<R1, R2>(&mut self, texture: &Texture, src: R1, dst: R2) -> Result<(), String>
+    where
+        R1: Into<Option<Rect>>,
+        R2: Into<Option<FRect>>,
+    {
+        let ret = unsafe {
+            sys::SDL_RenderCopyF(
+                self.context.raw,
+                texture.raw,
+                match src.into() {
+                    Some(ref rect) => rect.raw(),
+                    None => ptr::null(),
+                },
+                match dst.into() {
+                    Some(ref rect) => rect.raw(),
+                    None => ptr::null(),
+                },
+            )
+        };
+
+        if ret != 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Copies a portion of the texture to the current rendering target,
+    /// optionally rotating it by angle around the given center and also
+    /// flipping it top-bottom and/or left-right.
+    ///
+    /// * If `src` is `None`, the entire texture is copied.
+    /// * If `dst` is `None`, the texture will be stretched to fill the given
+    ///   rectangle.
+    /// * If `center` is `None`, rotation will be done around the center point
+    ///   of `dst`, or `src` if `dst` is None.
+    ///
+    /// Errors if drawing fails for any reason (e.g. driver failure),
+    /// if the provided texture does not belong to the renderer,
+    /// or if the driver does not support RenderCopyEx.
+    #[doc(alias = "SDL_RenderCopyExF")]
+    pub fn copy_ex_f<R1, R2, P>(
+        &mut self,
+        texture: &Texture,
+        src: R1,
+        dst: R2,
+        angle: f64,
+        center: P,
+        flip_horizontal: bool,
+        flip_vertical: bool,
+    ) -> Result<(), String>
+    where
+        R1: Into<Option<Rect>>,
+        R2: Into<Option<FRect>>,
+        P: Into<Option<FPoint>>,
+    {
+        use crate::sys::SDL_RendererFlip::*;
+        let flip = unsafe {
+            match (flip_horizontal, flip_vertical) {
+                (false, false) => SDL_FLIP_NONE,
+                (true, false) => SDL_FLIP_HORIZONTAL,
+                (false, true) => SDL_FLIP_VERTICAL,
+                (true, true) => transmute::<u32, sys::SDL_RendererFlip>(
+                    transmute::<sys::SDL_RendererFlip, u32>(SDL_FLIP_HORIZONTAL)
+                        | transmute::<sys::SDL_RendererFlip, u32>(SDL_FLIP_VERTICAL),
+                ),
+            }
+        };
+
+        let ret = unsafe {
+            sys::SDL_RenderCopyExF(
+                self.context.raw,
+                texture.raw,
+                match src.into() {
+                    Some(ref rect) => rect.raw(),
+                    None => ptr::null(),
+                },
+                match dst.into() {
+                    Some(ref rect) => rect.raw(),
+                    None => ptr::null(),
+                },
+                angle as c_double,
+                match center.into() {
+                    Some(ref point) => point.raw(),
+                    None => ptr::null(),
+                },
+                flip,
+            )
+        };
+
+        if ret != 0 {
             Err(get_error())
         } else {
             Ok(())

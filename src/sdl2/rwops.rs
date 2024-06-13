@@ -145,7 +145,7 @@ impl<'a> io::Read for RWops<'a> {
                 self.raw,
                 buf.as_ptr() as *mut c_void,
                 1,
-                out_len as sys::size_t,
+                out_len as libc::size_t,
             )
         };
         Ok(ret as usize)
@@ -160,7 +160,7 @@ impl<'a> io::Write for RWops<'a> {
                 self.raw,
                 buf.as_ptr() as *const c_void,
                 1,
-                in_len as sys::size_t,
+                in_len as libc::size_t,
             )
         };
         Ok(ret as usize)

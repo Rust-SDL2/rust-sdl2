@@ -1489,7 +1489,7 @@ impl Window {
     #[doc(alias = "SDL_GetWindowICCProfile")]
     pub fn icc_profile(&self) -> Result<Vec<u8>, String> {
         unsafe {
-            let mut size: sys::size_t = 0;
+            let mut size: libc::size_t = 0;
             let data = sys::SDL_GetWindowICCProfile(self.context.raw, &mut size as *mut _);
             if data.is_null() {
                 return Err(get_error());
@@ -1556,9 +1556,9 @@ impl Window {
     #[doc(alias = "SDL_SetWindowResizable")]
     pub fn set_resizable(&mut self, resizable: bool) {
         let resizable = if resizable {
-            SDL_bool::SDL_TRUE
+            sys::SDL_bool::SDL_TRUE
         } else {
-            SDL_bool::SDL_FALSE
+            sys::SDL_bool::SDL_FALSE
         };
         unsafe {
             sys::SDL_SetWindowResizable(self.context.raw, resizable);
