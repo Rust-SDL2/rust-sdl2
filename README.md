@@ -18,6 +18,7 @@ Rust-SDL2 uses the MIT license, but SDL2 itselfais  in under the zlib license.
 * `image` to link against SDL2\_image and have access to image reading and writing features
 * `mixer` to link against SDL2\_mixer and have access to sound mixing features
 * `ttf` to link against SDL2\_ttf and have access to various font features
+* `raw-window-handle` to enable the crate `raw-window-handle`, which is useful to interop with various other backends.
 * `unsafe-textures` to not have a lifetime in `Texture` structs. Texture are only freed when the program exits, or can be done manually through `unsafe`.
 * `use-bindgen` to customize bindings instead of using pre-generated `sdl_bindings` which were created from a Linux environment. It generates your own custom SDL2 bindings, tailored to your distro. Useful for specific window-related scenarios.
 * `use-vcpkg` to pull SDL2 from vcpkg instead of looking in your system.
