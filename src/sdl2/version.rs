@@ -1,13 +1,11 @@
-/*!
-Querying SDL Version
- */
+//! Querying SDL Version
 
 use std::ffi::CStr;
 use std::fmt;
 
 use crate::sys;
 
-/// A structure that contains information about the version of SDL in use.
+/// A structure that contains a version of SDL.
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, PartialOrd, Ord)]
 pub struct Version {
     /// major version
@@ -27,7 +25,7 @@ impl Version {
         patch: sys::SDL_PATCHLEVEL as u8,
     };
 
-    /// Convert a raw *SDL_version to Version.
+    /// Convert a raw SDL_version to Version.
     pub fn from_ll(v: sys::SDL_version) -> Version {
         Version {
             major: v.major,
