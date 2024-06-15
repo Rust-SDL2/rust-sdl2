@@ -145,6 +145,15 @@ use_sdl2_mac_framework = ["sdl2/use_mac_framework"]
 Similarly for iOS you can follow the same process using the `use_ios_framework` feature. However
 official builds of the iOS framework are not available so you must compile your own SDL2.framework.
 
+Using the iOS framework also requires adding the 'Frameworks' directory to your rpath so that the
+dynamic linker can find SDL2.framework inside your app bundle. This is done by adding this to your
+`build.rs`:
+
+```rust
+#[cfg(target_os="ios")]
+println!("cargo:rustc-link-arg=-Wl,-rpath,@loader_path/Frameworks");
+```
+
 #### Static linking on macOS using vcpkg
 
 Instructions to generate a static binary on macOS and other operating systems using [vcpkg][vcpkg] are [here][cargo-vcpkg-usage].
