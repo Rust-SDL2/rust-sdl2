@@ -555,6 +555,7 @@ impl Drop for WindowContext {
     #[doc(alias = "SDL_DestroyWindow")]
     fn drop(&mut self) {
         unsafe {
+            #[cfg(target_os = "macos")]
             if !self.metal_view.is_null() {
                 sys::SDL_Metal_DestroyView(self.metal_view);
             }
