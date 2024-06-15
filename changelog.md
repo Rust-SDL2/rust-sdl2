@@ -1,6 +1,10 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
+### Next
+
+[PR #1407](https://github.com/Rust-SDL2/rust-sdl2/pull/1407) Add new use_ios_framework for linking to SDL2.framework on iOS
+
 ### v0.37.0
 
 [PR #1406](https://github.com/Rust-SDL2/rust-sdl2/pull/1406) Update bindings to SDL 2.0.26, add Event.is\_touch() for mouse events, upgrade wgpu to 0.20 in examples

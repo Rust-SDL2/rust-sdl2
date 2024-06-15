@@ -25,6 +25,7 @@ Rust-SDL2 uses the MIT license, but SDL2 itselfais  in under the zlib license.
 * `use-pkgconfig` use pkg-config to detect where your library is located on your system. Mostly useful on unix systems for static linking.
 * `static-link` to link to SDL2 statically instead of dynamically.
 * `use_mac_framework` to use SDL2 from a Framework, on macOS only
+* `use_ios_framework` to use SDL2 from a Framework, on iOS only
 * `bundled`, which pulls the SDL repository and compiles it from source. More information below.
 
 # Documentation
@@ -140,6 +141,18 @@ following in your `Cargo.toml` file:
 [features]
 default = []
 use_sdl2_mac_framework = ["sdl2/use_mac_framework"]
+```
+
+Similarly for iOS you can follow the same process using the `use_ios_framework` feature. However
+official builds of the iOS framework are not available so you must compile your own SDL2.framework.
+
+Using the iOS framework also requires adding the 'Frameworks' directory to your rpath so that the
+dynamic linker can find SDL2.framework inside your app bundle. This is done by adding this to your
+`build.rs`:
+
+```rust
+#[cfg(target_os="ios")]
+println!("cargo:rustc-link-arg=-Wl,-rpath,@loader_path/Frameworks");
 ```
 
 #### Static linking on macOS using vcpkg

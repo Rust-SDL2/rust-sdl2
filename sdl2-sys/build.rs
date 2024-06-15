@@ -232,7 +232,9 @@ fn link_sdl2(target_os: &str) {
         // pkg-config automatically prints this output when probing,
         // however pkg_config isn't used with the feature "bundled"
         if cfg!(feature = "bundled") || cfg!(not(feature = "use-pkgconfig")) {
-            if cfg!(feature = "use_mac_framework") && target_os == "darwin" {
+            let use_mac_framework = cfg!(feature = "use_mac_framework") && target_os == "darwin";
+            let use_ios_framework = cfg!(feature = "use_ios_framework") && target_os == "ios";
+            if use_mac_framework || use_ios_framework {
                 println!("cargo:rustc-flags=-l framework=SDL2");
             } else if target_os != "emscripten" {
                 println!("cargo:rustc-flags=-l SDL2");
@@ -328,7 +330,15 @@ fn link_sdl2(target_os: &str) {
             } else if target_os.contains("windows") {
                 println!("cargo:rustc-flags=-l SDL2_mixer");
             } else if target_os.contains("darwin") {
-                if cfg!(any(mac_framework, feature = "use_mac_framework")) {
+                let use_framework = cfg!(any(mac_framework, feature = "use_mac_framework"));
+                if use_framework {
+                    println!("cargo:rustc-flags=-l framework=SDL2_mixer");
+                } else {
+                    println!("cargo:rustc-flags=-l SDL2_mixer");
+                }
+            } else if target_os.contains("ios") {
+                let use_framework = cfg!(any(ios_framework, feature = "use_ios_framework"));
+                if use_framework {
                     println!("cargo:rustc-flags=-l framework=SDL2_mixer");
                 } else {
                     println!("cargo:rustc-flags=-l SDL2_mixer");
@@ -344,7 +354,15 @@ fn link_sdl2(target_os: &str) {
             } else if target_os.contains("windows") {
                 println!("cargo:rustc-flags=-l SDL2_image");
             } else if target_os.contains("darwin") {
-                if cfg!(any(mac_framework, feature = "use_mac_framework")) {
+                let use_framework = cfg!(any(mac_framework, feature = "use_mac_framework"));
+                if use_framework {
+                    println!("cargo:rustc-flags=-l framework=SDL2_image");
+                } else {
+                    println!("cargo:rustc-flags=-l SDL2_image");
+                }
+            } else if target_os.contains("ios") {
+                let use_framework = cfg!(any(ios_framework, feature = "use_ios_framework"));
+                if use_framework {
                     println!("cargo:rustc-flags=-l framework=SDL2_image");
                 } else {
                     println!("cargo:rustc-flags=-l SDL2_image");
@@ -360,7 +378,15 @@ fn link_sdl2(target_os: &str) {
             } else if target_os.contains("windows") {
                 println!("cargo:rustc-flags=-l SDL2_ttf");
             } else if target_os.contains("darwin") {
-                if cfg!(any(mac_framework, feature = "use_mac_framework")) {
+                let use_framework = cfg!(any(mac_framework, feature = "use_mac_framework"));
+                if use_framework {
+                    println!("cargo:rustc-flags=-l framework=SDL2_ttf");
+                } else {
+                    println!("cargo:rustc-flags=-l SDL2_ttf");
+                }
+            } else if target_os.contains("ios") {
+                let use_framework = cfg!(any(ios_framework, feature = "use_ios_framework"));
+                if use_framework {
                     println!("cargo:rustc-flags=-l framework=SDL2_ttf");
                 } else {
                     println!("cargo:rustc-flags=-l SDL2_ttf");
@@ -376,7 +402,15 @@ fn link_sdl2(target_os: &str) {
             } else if target_os.contains("windows") {
                 println!("cargo:rustc-flags=-l SDL2_gfx");
             } else if target_os.contains("darwin") {
-                if cfg!(any(mac_framework, feature = "use_mac_framework")) {
+                let use_framework = cfg!(any(mac_framework, feature = "use_mac_framework"));
+                if use_framework {
+                    println!("cargo:rustc-flags=-l framework=SDL2_gfx");
+                } else {
+                    println!("cargo:rustc-flags=-l SDL2_gfx");
+                }
+            } else if target_os.contains("ios") {
+                let use_framework = cfg!(any(ios_framework, feature = "use_ios_framework"));
+                if use_framework {
                     println!("cargo:rustc-flags=-l framework=SDL2_gfx");
                 } else {
                     println!("cargo:rustc-flags=-l SDL2_gfx");
