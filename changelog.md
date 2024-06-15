@@ -3,6 +3,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### Next
 
+[PR #1408](https://github.com/Rust-SDL2/rust-sdl2/pull/1408) Allow comparing `Version`s, add constant with the version the bindings were compiled with.
+
 [PR #1407](https://github.com/Rust-SDL2/rust-sdl2/pull/1407) Add new use_ios_framework for linking to SDL2.framework on iOS
 
 ### v0.37.0
