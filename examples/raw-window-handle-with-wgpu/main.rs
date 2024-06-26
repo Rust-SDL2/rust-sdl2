@@ -4,6 +4,7 @@ extern crate sdl2;
 extern crate wgpu;
 
 use std::borrow::Cow;
+use std::collections::HashMap;
 use wgpu::SurfaceError;
 
 use sdl2::event::{Event, WindowEvent};
@@ -79,12 +80,18 @@ fn main() -> Result<(), String> {
         push_constant_ranges: &[],
     });
 
+    let compilation_options = wgpu::PipelineCompilationOptions {
+        constants: &HashMap::new(),
+        zero_initialize_workgroup_memory: true,
+    };
+
     let render_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
         layout: Some(&pipeline_layout),
         vertex: wgpu::VertexState {
             buffers: &[],
             module: &shader,
             entry_point: "vs_main",
+            compilation_options: compilation_options.clone(),
         },
         fragment: Some(wgpu::FragmentState {
             targets: &[Some(wgpu::ColorTargetState {
@@ -94,6 +101,7 @@ fn main() -> Result<(), String> {
             })],
             module: &shader,
             entry_point: "fs_main",
+            compilation_options: compilation_options.clone(),
         }),
         primitive: wgpu::PrimitiveState {
             topology: wgpu::PrimitiveTopology::TriangleList,
