@@ -3,6 +3,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### Next
 
+[PR #1413](https://github.com/Rust-SDL2/rust-sdl2/pull/1413) **BREAKING CHANGE** Replace `From` implementation of `SwapInterval` that could panic with `TryFrom`.
+
 [PR #1416](https://github.com/Rust-SDL2/rust-sdl2/pull/1416) Apply clippy fixes, fix deprecations and other code quality improvements.
 
 [PR #1408](https://github.com/Rust-SDL2/rust-sdl2/pull/1408) Allow comparing `Version`s, add constant with the version the bindings were compiled with.
