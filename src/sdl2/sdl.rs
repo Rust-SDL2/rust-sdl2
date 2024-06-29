@@ -378,7 +378,7 @@ pub fn init() -> Result<Sdl, String> {
 pub fn get_error() -> String {
     unsafe {
         let err = sys::SDL_GetError();
-        CStr::from_ptr(err as *const _).to_str().unwrap().to_owned()
+        CStr::from_ptr(err).to_str().unwrap().to_owned()
     }
 }
 
@@ -388,7 +388,7 @@ pub fn set_error(err: &str) -> Result<(), NulError> {
     unsafe {
         sys::SDL_SetError(
             b"%s\0".as_ptr() as *const c_char,
-            c_string.as_ptr() as *const c_char,
+            c_string.as_ptr(),
         );
     }
     Ok(())
@@ -397,7 +397,7 @@ pub fn set_error(err: &str) -> Result<(), NulError> {
 #[doc(alias = "SDL_Error")]
 pub fn set_error_from_code(err: Error) {
     unsafe {
-        sys::SDL_Error(transmute(err));
+        sys::SDL_Error(transmute::<Error, sys::SDL_errorcode>(err));
     }
 }
 

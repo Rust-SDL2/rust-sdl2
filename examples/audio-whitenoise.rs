@@ -48,7 +48,7 @@ fn main() -> Result<(), String> {
     {
         // Acquire a lock. This lets us read and modify callback data.
         let mut lock = device.lock();
-        (*lock).volume = 0.25;
+        lock.volume = 0.25;
         // Lock guard is dropped here
     }
 

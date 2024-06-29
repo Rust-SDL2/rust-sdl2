@@ -1,6 +1,4 @@
-/*!
-Event Handling
- */
+//! Event Handling
 
 use std::borrow::ToOwned;
 use std::collections::HashMap;
@@ -2359,25 +2357,22 @@ impl Event {
         // FIXME: Use a constant from sdl2-sys when bindgen will be fixed (see https://github.com/Rust-SDL2/rust-sdl2/issues/1265)
         const SDL_TOUCH_MOUSEID: u32 = 0xFFFFFFFF;
 
-        match self {
+        matches!(
+            self,
             Self::MouseMotion {
                 which: SDL_TOUCH_MOUSEID,
                 ..
-            }
-            | Self::MouseButtonDown {
+            } | Self::MouseButtonDown {
+                which: SDL_TOUCH_MOUSEID,
+                ..
+            } | Self::MouseButtonUp {
+                which: SDL_TOUCH_MOUSEID,
+                ..
+            } | Self::MouseWheel {
                 which: SDL_TOUCH_MOUSEID,
                 ..
             }
-            | Self::MouseButtonUp {
-                which: SDL_TOUCH_MOUSEID,
-                ..
-            }
-            | Self::MouseWheel {
-                which: SDL_TOUCH_MOUSEID,
-                ..
-            } => true,
-            _ => false,
-        }
+        )
     }
 
     /// Returns `true` if this is a controller event.

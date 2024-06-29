@@ -82,9 +82,9 @@ impl SensorType {
     }
 }
 
-impl Into<SDL_SensorType> for SensorType {
-    fn into(self) -> SDL_SensorType {
-        match self {
+impl From<SensorType> for SDL_SensorType {
+    fn from(val: SensorType) -> Self {
+        match val {
             SensorType::Unknown => SDL_SensorType::SDL_SENSOR_UNKNOWN,
             SensorType::Gyroscope => SDL_SensorType::SDL_SENSOR_GYRO,
             SensorType::Accelerometer => SDL_SensorType::SDL_SENSOR_ACCEL,
@@ -119,7 +119,7 @@ impl Sensor {
 
         if result < 0 {
             // Should only fail if the joystick is NULL.
-            panic!("{}", get_error())
+            panic!("{}", get_error());
         } else {
             result as u32
         }
@@ -180,11 +180,6 @@ fn c_str_to_string(c_str: *const c_char) -> String {
     if c_str.is_null() {
         String::new()
     } else {
-        unsafe {
-            CStr::from_ptr(c_str as *const _)
-                .to_str()
-                .unwrap()
-                .to_owned()
-        }
+        unsafe { CStr::from_ptr(c_str).to_str().unwrap().to_owned() }
     }
 }

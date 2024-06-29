@@ -439,14 +439,15 @@ impl Keycode {
 
 impl Keycode {
     pub fn into_i32(&self) -> i32 {
-        return self.0;
+        self.0
     }
 
     pub fn from_i32(n: i32) -> Option<Keycode> {
         if n != 0 {
-            return Some(Keycode(n));
+            Some(Keycode(n))
+        } else {
+            None
         }
-        return None;
     }
 }
 
@@ -468,9 +469,9 @@ impl Deref for Keycode {
     }
 }
 
-impl Into<i32> for Keycode {
-    fn into(self) -> i32 {
-        self.into_i32()
+impl From<Keycode> for i32 {
+    fn from(val: Keycode) -> Self {
+        val.into_i32()
     }
 }
 
@@ -485,7 +486,7 @@ impl Keycode {
             match sys::SDL_GetKeyFromScancode(transmute::<u32, sys::SDL_Scancode>(scancode as u32))
             {
                 UNKNOWN => None,
-                keycode_id => Keycode::from_i32(keycode_id as i32),
+                keycode_id => Keycode::from_i32(keycode_id),
             }
         }
     }
@@ -497,7 +498,7 @@ impl Keycode {
             match CString::new(name) {
                 Ok(name) => match sys::SDL_GetKeyFromName(name.as_ptr() as *const c_char) {
                     UNKNOWN => None,
-                    keycode_id => Some(Keycode::from_i32(keycode_id as i32).unwrap()),
+                    keycode_id => Some(Keycode::from_i32(keycode_id).unwrap()),
                 },
                 // string contains a nul byte - it won't match anything.
                 Err(_) => None,

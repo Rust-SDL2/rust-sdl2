@@ -2,7 +2,6 @@ extern crate sdl2;
 
 use sdl2::audio::{AudioCallback, AudioSpecDesired};
 use sdl2::AudioSubsystem;
-use std::i16;
 use std::sync::mpsc;
 use std::time::Duration;
 

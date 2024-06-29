@@ -11,7 +11,7 @@ fn main() -> Result<(), String> {
     if args.len() < 2 {
         println!("Usage: ./demo music.[mp3|wav|ogg] [sound-effect.[mp3|wav|ogg]]")
     } else {
-        let sound_file = args.get(2).map(|sound_file| Path::new(sound_file));
+        let sound_file = args.get(2).map(Path::new);
         demo(Path::new(&args[1]), sound_file)?;
     }
 
@@ -23,7 +23,7 @@ fn demo(music_file: &Path, sound_file: Option<&Path>) -> Result<(), String> {
 
     let sdl = sdl2::init()?;
     let _audio = sdl.audio()?;
-    let mut timer = sdl.timer()?;
+    let timer = sdl.timer()?;
 
     let frequency = 44_100;
     let format = AUDIO_S16LSB; // signed 16 bit samples, in little-endian byte order
@@ -77,9 +77,9 @@ fn demo(music_file: &Path, sound_file: Option<&Path>) -> Result<(), String> {
                 // (played at half the volume to save people's ears).
                 let buffer = (0..frequency)
                     .map(|i| {
-                        (0.1 * i16::max_value() as f32
-                            * (2.0 * 3.14 * 500.0 * (i as f32 / frequency as f32)).sin())
-                            as i16
+                        (0.1 * i16::MAX as f32
+                            * (2.0 * std::f32::consts::PI * 500.0 * (i as f32 / frequency as f32))
+                                .sin()) as i16
                     })
                     .collect();
                 sdl2::mixer::Chunk::from_raw_buffer(buffer)

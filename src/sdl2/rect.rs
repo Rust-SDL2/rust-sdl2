@@ -991,11 +991,12 @@ pub struct FRect {
 
 impl ::std::fmt::Debug for FRect {
     fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
-        return write!(
-            fmt,
-            "FRect {{ x: {}, y: {}, w: {}, h: {} }}",
-            self.raw.x, self.raw.y, self.raw.w, self.raw.h
-        );
+        fmt.debug_struct("FRect")
+            .field("x", &self.raw.x)
+            .field("y", &self.raw.y)
+            .field("w", &self.raw.w)
+            .field("h", &self.raw.h)
+            .finish()
     }
 }
 
@@ -1056,12 +1057,12 @@ impl FRect {
 
     /// The width of this rectangle.
     pub fn width(&self) -> f32 {
-        self.raw.w as f32
+        self.raw.w
     }
 
     /// The height of this rectangle.
     pub fn height(&self) -> f32 {
-        self.raw.h as f32
+        self.raw.h
     }
 
     /// Returns the width and height of this rectangle.
@@ -1372,10 +1373,7 @@ impl FRect {
     /// If a clipping rectangle is given, only points that are within it will be
     /// considered.
     #[doc(alias = "SDL_EncloseFPoints")]
-    pub fn from_enclose_points<R: Into<Option<FRect>>>(
-        points: &[FPoint],
-        clipping_rect: R,
-    ) -> Option<FRect>
+    pub fn from_enclose_points<R>(points: &[FPoint], clipping_rect: R) -> Option<FRect>
     where
         R: Into<Option<FRect>>,
     {
@@ -1548,15 +1546,15 @@ impl DerefMut for FRect {
     }
 }
 
-impl Into<sys::SDL_FRect> for FRect {
-    fn into(self) -> sys::SDL_FRect {
-        self.raw
+impl From<FRect> for sys::SDL_FRect {
+    fn from(val: FRect) -> Self {
+        val.raw
     }
 }
 
-impl Into<(f32, f32, f32, f32)> for FRect {
-    fn into(self) -> (f32, f32, f32, f32) {
-        (self.raw.x, self.raw.y, self.raw.w, self.raw.h)
+impl From<FRect> for (f32, f32, f32, f32) {
+    fn from(val: FRect) -> Self {
+        (val.raw.x, val.raw.y, val.raw.w, val.raw.h)
     }
 }
 
@@ -1609,7 +1607,10 @@ pub struct FPoint {
 
 impl ::std::fmt::Debug for FPoint {
     fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
-        return write!(fmt, "FPoint {{ x: {}, y: {} }}", self.raw.x, self.raw.y);
+        fmt.debug_struct("FPoint")
+            .field("x", &self.raw.x)
+            .field("y", &self.raw.y)
+            .finish()
     }
 }
 
@@ -1672,15 +1673,15 @@ impl From<(f32, f32)> for FPoint {
     }
 }
 
-impl Into<sys::SDL_FPoint> for FPoint {
-    fn into(self) -> sys::SDL_FPoint {
-        self.raw
+impl From<FPoint> for sys::SDL_FPoint {
+    fn from(val: FPoint) -> Self {
+        val.raw
     }
 }
 
-impl Into<(f32, f32)> for FPoint {
-    fn into(self) -> (f32, f32) {
-        (self.x(), self.y())
+impl From<FPoint> for (f32, f32) {
+    fn from(val: FPoint) -> Self {
+        (val.x(), val.y())
     }
 }
 
