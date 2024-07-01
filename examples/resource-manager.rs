@@ -101,7 +101,7 @@ where
     pub fn new(loader: &'l L) -> Self {
         ResourceManager {
             cache: HashMap::new(),
-            loader: loader,
+            loader,
         }
     }
 

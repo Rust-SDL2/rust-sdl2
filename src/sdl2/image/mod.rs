@@ -35,10 +35,10 @@ bitflags! {
     /// InitFlags are passed to init() to control which subsystem
     /// functionality to load.
     pub struct InitFlag : u32 {
-        const JPG  = image::IMG_InitFlags_IMG_INIT_JPG as u32;
-        const PNG  = image::IMG_InitFlags_IMG_INIT_PNG as u32;
-        const TIF  = image::IMG_InitFlags_IMG_INIT_TIF as u32;
-        const WEBP = image::IMG_InitFlags_IMG_INIT_WEBP as u32;
+        const JPG  = image::IMG_InitFlags_IMG_INIT_JPG;
+        const PNG  = image::IMG_InitFlags_IMG_INIT_PNG;
+        const TIF  = image::IMG_InitFlags_IMG_INIT_TIF;
+        const WEBP = image::IMG_InitFlags_IMG_INIT_WEBP;
     }
 }
 

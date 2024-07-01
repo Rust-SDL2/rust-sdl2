@@ -147,7 +147,7 @@ impl<'a> io::Read for RWops<'a> {
                 out_len as libc::size_t,
             )
         };
-        Ok(ret as usize)
+        Ok(ret)
     }
 }
 
@@ -162,7 +162,7 @@ impl<'a> io::Write for RWops<'a> {
                 in_len as libc::size_t,
             )
         };
-        Ok(ret as usize)
+        Ok(ret)
     }
 
     fn flush(&mut self) -> io::Result<()> {

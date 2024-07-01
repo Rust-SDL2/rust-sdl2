@@ -13,14 +13,14 @@ fn main() -> Result<(), String> {
 
     // Iterate over all available joysticks and stop once we manage to open one.
     let joystick_index = (0..available)
-        .find_map(|id| match joystick_subsystem.open(id) {
+        .find(|&id| match joystick_subsystem.open(id) {
             Ok(c) => {
                 println!("Success: opened \"{}\"", c.name());
-                Some(id)
+                true
             }
             Err(e) => {
                 println!("failed: {:?}", e);
-                None
+                false
             }
         })
         .expect("Couldn't open any joystick");

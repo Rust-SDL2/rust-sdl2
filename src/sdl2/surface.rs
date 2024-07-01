@@ -196,7 +196,7 @@ impl<'a> Surface<'a> {
                 Err("Pitch is too large.".to_owned())
             } else {
                 let raw = sys::SDL_CreateRGBSurfaceFrom(
-                    data.as_mut_ptr() as *mut _,
+                    data.as_mut_ptr() as *mut libc::c_void,
                     width as c_int,
                     height as c_int,
                     masks.bpp as c_int,
@@ -378,7 +378,7 @@ impl SurfaceRef {
                 panic!("could not lock surface");
             }
 
-            let raw_pixels = self.raw_ref().pixels as *const _;
+            let raw_pixels = self.raw_ref().pixels as *const u8;
             let len = self.raw_ref().pitch as usize * (self.raw_ref().h as usize);
             let pixels = ::std::slice::from_raw_parts(raw_pixels, len);
             let rv = f(pixels);
@@ -395,7 +395,7 @@ impl SurfaceRef {
                 panic!("could not lock surface");
             }
 
-            let raw_pixels = self.raw_ref().pixels as *mut _;
+            let raw_pixels = self.raw_ref().pixels as *mut u8;
             let len = self.raw_ref().pitch as usize * (self.raw_ref().h as usize);
             let pixels = ::std::slice::from_raw_parts_mut(raw_pixels, len);
             let rv = f(pixels);
@@ -411,7 +411,7 @@ impl SurfaceRef {
             None
         } else {
             unsafe {
-                let raw_pixels = self.raw_ref().pixels as *const _;
+                let raw_pixels = self.raw_ref().pixels as *const u8;
                 let len = self.raw_ref().pitch as usize * (self.raw_ref().h as usize);
 
                 Some(::std::slice::from_raw_parts(raw_pixels, len))
@@ -426,7 +426,7 @@ impl SurfaceRef {
             None
         } else {
             unsafe {
-                let raw_pixels = self.raw_ref().pixels as *mut _;
+                let raw_pixels = self.raw_ref().pixels as *mut u8;
                 let len = self.raw_ref().pitch as usize * (self.raw_ref().h as usize);
 
                 Some(::std::slice::from_raw_parts_mut(raw_pixels, len))
