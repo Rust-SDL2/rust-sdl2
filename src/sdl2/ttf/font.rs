@@ -497,7 +497,7 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
     /// Returns the index of the given character in this font face.
     pub fn find_glyph(&self, ch: char) -> Option<u16> {
         unsafe {
-            let ret = ttf::TTF_GlyphIsProvided(self.raw, ch as u16);
+            let ret = ttf::TTF_GlyphIsProvided32(self.raw, ch as u32);
             if ret == 0 {
                 None
             } else {
@@ -515,9 +515,9 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
         let mut advance = 0;
 
         let ret = unsafe {
-            ttf::TTF_GlyphMetrics(
+            ttf::TTF_GlyphMetrics32(
                 self.raw,
-                ch as u16,
+                ch as u32,
                 &mut minx,
                 &mut maxx,
                 &mut miny,
