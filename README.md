@@ -10,7 +10,7 @@ Rust-SDL2 is a library for talking to the new SDL2.0 libraries from Rust.
 Low-level C components are wrapped in Rust code to make them more idiomatic and
 abstract away inappropriate manual memory management.
 
-Rust-SDL2 uses the MIT license, but SDL2 itselfais  in under the zlib license.
+Rust-SDL2 uses the MIT license, but SDL2 itself is under the zlib license.
 
 ## Available rust features 
 
