@@ -1,4 +1,5 @@
 /// Minimal example for getting sdl2 and wgpu working together with raw-window-handle.
+/// This example requires the sdl2 `raw-window-handle` feature
 extern crate pollster;
 extern crate sdl2;
 extern crate wgpu;
