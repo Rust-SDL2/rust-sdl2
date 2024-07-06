@@ -114,7 +114,10 @@ impl GameControllerSubsystem {
 
     /// Return the type of the controller at index `joystick_index`.
     #[doc(alias = "SDL_GameControllerTypeForIndex")]
-    pub fn type_for_index(&self, joystick_index: u32) -> Result<GameControllerType, IntegerOrSdlError> {
+    pub fn type_for_index(
+        &self,
+        joystick_index: u32,
+    ) -> Result<GameControllerType, IntegerOrSdlError> {
         let joystick_index = validate_int(joystick_index, "joystick_index")?;
         let raw_type = unsafe { sys::SDL_GameControllerTypeForIndex(joystick_index) };
         Ok(GameControllerType::from_ll(raw_type))
@@ -213,9 +216,12 @@ pub enum GameControllerType {
     GoogleStadia = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_GOOGLE_STADIA as i32,
     NvidiaShield = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NVIDIA_SHIELD as i32,
     NintendoSwitchPro = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO as i32,
-    NintendoSwitchJoyconLeft = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT as i32,
-    NintendoSwitchJoyconRight = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT as i32,
-    NintendoSwitchJoyconPair = sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR as i32,
+    NintendoSwitchJoyconLeft =
+        sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT as i32,
+    NintendoSwitchJoyconRight =
+        sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT as i32,
+    NintendoSwitchJoyconPair =
+        sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR as i32,
 }
 
 impl GameControllerType {
@@ -228,13 +234,27 @@ impl GameControllerType {
             sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_PS3 => GameControllerType::PS3,
             sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_PS4 => GameControllerType::PS4,
             sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_PS5 => GameControllerType::PS5,
-            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_AMAZON_LUNA => GameControllerType::AmazonLuna,
-            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_GOOGLE_STADIA => GameControllerType::GoogleStadia,
-            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NVIDIA_SHIELD => GameControllerType::NvidiaShield,
-            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO => GameControllerType::NintendoSwitchPro,
-            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT => GameControllerType::NintendoSwitchJoyconLeft,
-            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT => GameControllerType::NintendoSwitchJoyconRight,
-            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR => GameControllerType::NintendoSwitchJoyconPair,
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_AMAZON_LUNA => {
+                GameControllerType::AmazonLuna
+            }
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_GOOGLE_STADIA => {
+                GameControllerType::GoogleStadia
+            }
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NVIDIA_SHIELD => {
+                GameControllerType::NvidiaShield
+            }
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO => {
+                GameControllerType::NintendoSwitchPro
+            }
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT => {
+                GameControllerType::NintendoSwitchJoyconLeft
+            }
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT => {
+                GameControllerType::NintendoSwitchJoyconRight
+            }
+            sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR => {
+                GameControllerType::NintendoSwitchJoyconPair
+            }
 
             sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_MAX => GameControllerType::Unknown,
         }
@@ -249,13 +269,27 @@ impl GameControllerType {
             GameControllerType::PS3 => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_PS3,
             GameControllerType::PS4 => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_PS4,
             GameControllerType::PS5 => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_PS5,
-            GameControllerType::AmazonLuna => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_AMAZON_LUNA,
-            GameControllerType::GoogleStadia => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_GOOGLE_STADIA,
-            GameControllerType::NvidiaShield => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NVIDIA_SHIELD,
-            GameControllerType::NintendoSwitchPro => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO,
-            GameControllerType::NintendoSwitchJoyconLeft => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT,
-            GameControllerType::NintendoSwitchJoyconRight => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT,
-            GameControllerType::NintendoSwitchJoyconPair => sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR,
+            GameControllerType::AmazonLuna => {
+                sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_AMAZON_LUNA
+            }
+            GameControllerType::GoogleStadia => {
+                sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_GOOGLE_STADIA
+            }
+            GameControllerType::NvidiaShield => {
+                sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NVIDIA_SHIELD
+            }
+            GameControllerType::NintendoSwitchPro => {
+                sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO
+            }
+            GameControllerType::NintendoSwitchJoyconLeft => {
+                sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT
+            }
+            GameControllerType::NintendoSwitchJoyconRight => {
+                sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT
+            }
+            GameControllerType::NintendoSwitchJoyconPair => {
+                sys::SDL_GameControllerType::SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR
+            }
         }
     }
 }

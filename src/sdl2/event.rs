@@ -450,10 +450,7 @@ impl DisplayEvent {
                 sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_DISCONNECTED as u8,
                 0,
             ),
-            DisplayEvent::Moved => (
-                sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_MOVED as u8,
-                0,
-            ),
+            DisplayEvent::Moved => (sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_MOVED as u8, 0),
         }
     }
 
