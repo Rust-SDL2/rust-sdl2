@@ -36,13 +36,4 @@ impl fmt::Display for IntegerOrSdlError {
     }
 }
 
-impl Error for IntegerOrSdlError {
-    fn description(&self) -> &str {
-        use self::IntegerOrSdlError::*;
-
-        match *self {
-            IntegerOverflows(_, _) => "integer overflow",
-            SdlError(ref e) => e,
-        }
-    }
-}
+impl Error for IntegerOrSdlError {}

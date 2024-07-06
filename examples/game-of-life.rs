@@ -40,7 +40,7 @@ mod game_of_life {
             }
 
             GameOfLife {
-                playground: playground,
+                playground,
                 state: State::Paused,
             }
         }
@@ -90,13 +90,18 @@ mod game_of_life {
                         }
                     }
                 }
-                if count > 3 || count < 2 {
-                    *square = false;
-                } else if count == 3 {
-                    *square = true;
-                } else if count == 2 {
-                    *square = *square;
-                }
+                match count {
+                    ..=1 => {
+                        *square = false;
+                    }
+                    2 => {}
+                    3 => {
+                        *square = true;
+                    }
+                    4.. => {
+                        *square = false;
+                    }
+                };
             }
             self.playground = new_playground;
         }
@@ -127,7 +132,7 @@ fn dummy_texture<'a>(
         .map_err(|e| e.to_string())?;
     // let's change the textures we just created
     {
-        let textures = vec![
+        let textures = [
             (&mut square_texture1, TextureColor::Yellow),
             (&mut square_texture2, TextureColor::White),
         ];

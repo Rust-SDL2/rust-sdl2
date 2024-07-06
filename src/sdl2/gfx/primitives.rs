@@ -626,5 +626,5 @@ where
 
 /// Sets current global font character rotation steps.
 pub fn set_font_rotation(rotation: u32) {
-    unsafe { primitives::gfxPrimitivesSetFontRotation(rotation as u32) }
+    unsafe { primitives::gfxPrimitivesSetFontRotation(rotation) }
 }

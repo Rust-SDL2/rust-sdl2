@@ -4,7 +4,6 @@ use libc::{c_char, c_int, size_t};
 use std::ffi::CString;
 use std::io;
 use std::marker::PhantomData;
-use std::mem::transmute;
 use std::path::Path;
 
 use crate::sys;
@@ -145,10 +144,10 @@ impl<'a> io::Read for RWops<'a> {
                 self.raw,
                 buf.as_ptr() as *mut c_void,
                 1,
-                out_len as sys::size_t,
+                out_len as libc::size_t,
             )
         };
-        Ok(ret as usize)
+        Ok(ret)
     }
 }
 
@@ -160,10 +159,10 @@ impl<'a> io::Write for RWops<'a> {
                 self.raw,
                 buf.as_ptr() as *const c_void,
                 1,
-                in_len as sys::size_t,
+                in_len as libc::size_t,
             )
         };
-        Ok(ret as usize)
+        Ok(ret)
     }
 
     fn flush(&mut self) -> io::Result<()> {
@@ -179,7 +178,7 @@ impl<'a> io::Seek for RWops<'a> {
             io::SeekFrom::End(pos) => (sys::RW_SEEK_END, pos),
             io::SeekFrom::Current(pos) => (sys::RW_SEEK_CUR, pos),
         };
-        let ret = unsafe { ((*self.raw).seek.unwrap())(self.raw, offset, transmute(whence)) };
+        let ret = unsafe { ((*self.raw).seek.unwrap())(self.raw, offset, whence as i32) };
         if ret == -1 {
             Err(io::Error::last_os_error())
         } else {

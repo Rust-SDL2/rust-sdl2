@@ -34,7 +34,7 @@ impl<'a> Deref for WindowSurfaceRef<'a> {
 impl<'a> DerefMut for WindowSurfaceRef<'a> {
     #[inline]
     fn deref_mut(&mut self) -> &mut SurfaceRef {
-        &mut self.0
+        self.0
     }
 }
 
@@ -463,10 +463,10 @@ impl DisplayMode {
 
     pub fn from_ll(raw: &sys::SDL_DisplayMode) -> DisplayMode {
         DisplayMode::new(
-            PixelFormatEnum::try_from(raw.format as u32).unwrap_or(PixelFormatEnum::Unknown),
-            raw.w as i32,
-            raw.h as i32,
-            raw.refresh_rate as i32,
+            PixelFormatEnum::try_from(raw.format).unwrap_or(PixelFormatEnum::Unknown),
+            raw.w,
+            raw.h,
+            raw.refresh_rate,
         )
     }
 
@@ -547,6 +547,7 @@ impl GLContext {
 pub struct WindowContext {
     subsystem: VideoSubsystem,
     raw: *mut sys::SDL_Window,
+    #[allow(dead_code)]
     pub(crate) metal_view: sys::SDL_MetalView,
 }
 
@@ -555,6 +556,7 @@ impl Drop for WindowContext {
     #[doc(alias = "SDL_DestroyWindow")]
     fn drop(&mut self) {
         unsafe {
+            #[cfg(target_os = "macos")]
             if !self.metal_view.is_null() {
                 sys::SDL_Metal_DestroyView(self.metal_view);
             }
@@ -565,7 +567,9 @@ impl Drop for WindowContext {
 
 impl WindowContext {
     #[inline]
-    /// Unsafe if the `*mut SDL_Window` is used after the `WindowContext` is dropped
+    /// # Safety
+    ///
+    /// Unsound if the `*mut SDL_Window` is used after the `WindowContext` is dropped
     pub unsafe fn from_ll(
         subsystem: VideoSubsystem,
         raw: *mut sys::SDL_Window,
@@ -1089,14 +1093,10 @@ impl fmt::Display for WindowBuildError {
 }
 
 impl Error for WindowBuildError {
-    fn description(&self) -> &str {
-        use self::WindowBuildError::*;
-
-        match *self {
-            HeightOverflows(_) => "window height overflow",
-            WidthOverflows(_) => "window width overflow",
-            InvalidTitle(_) => "invalid window title",
-            SdlError(ref e) => e,
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        match self {
+            Self::InvalidTitle(err) => Some(err),
+            Self::HeightOverflows(_) | Self::WidthOverflows(_) | Self::SdlError(_) => None,
         }
     }
 }
@@ -1489,7 +1489,7 @@ impl Window {
     #[doc(alias = "SDL_GetWindowICCProfile")]
     pub fn icc_profile(&self) -> Result<Vec<u8>, String> {
         unsafe {
-            let mut size: sys::size_t = 0;
+            let mut size: libc::size_t = 0;
             let data = sys::SDL_GetWindowICCProfile(self.context.raw, &mut size as *mut _);
             if data.is_null() {
                 return Err(get_error());
@@ -1551,6 +1551,18 @@ impl Window {
             sys::SDL_SetWindowTitle(self.context.raw, title.as_ptr() as *const c_char);
         }
         Ok(())
+    }
+
+    #[doc(alias = "SDL_SetWindowResizable")]
+    pub fn set_resizable(&mut self, resizable: bool) {
+        let resizable = if resizable {
+            sys::SDL_bool::SDL_TRUE
+        } else {
+            sys::SDL_bool::SDL_FALSE
+        };
+        unsafe {
+            sys::SDL_SetWindowResizable(self.context.raw, resizable);
+        }
     }
 
     /// Set the shape of the window

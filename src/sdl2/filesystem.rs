@@ -43,13 +43,11 @@ impl fmt::Display for PrefPathError {
 }
 
 impl error::Error for PrefPathError {
-    fn description(&self) -> &str {
-        use self::PrefPathError::*;
-
-        match *self {
-            InvalidOrganizationName(_) => "invalid organization name",
-            InvalidApplicationName(_) => "invalid application name",
-            SdlError(ref e) => e,
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
+        match self {
+            Self::InvalidOrganizationName(err) => Some(err),
+            Self::InvalidApplicationName(err) => Some(err),
+            Self::SdlError(_) => None,
         }
     }
 }

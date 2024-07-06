@@ -83,7 +83,7 @@ unsafe extern "C" fn rust_sdl2_log_fn(
     let category = Category::from_ll(category as u32);
     let priority = Priority::from_ll(priority);
     let message = CStr::from_ptr(message).to_string_lossy();
-    custom_log_fn(priority, category, &*message);
+    custom_log_fn(priority, category, &message);
 }
 
 #[doc(alias = "SDL_LogSetOutputFunction")]
@@ -101,6 +101,6 @@ pub fn log(message: &str) {
     let message = message.replace('%', "%%");
     let message = CString::new(message).unwrap();
     unsafe {
-        crate::sys::SDL_Log(message.into_raw());
+        crate::sys::SDL_Log(message.as_ptr());
     }
 }

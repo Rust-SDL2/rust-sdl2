@@ -1,7 +1,35 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
-### Unreleased
+### Next
+
+[PR #1416](https://github.com/Rust-SDL2/rust-sdl2/pull/1416) Apply clippy fixes, fix deprecations and other code quality improvements.
+
+[PR #1408](https://github.com/Rust-SDL2/rust-sdl2/pull/1408) Allow comparing `Version`s, add constant with the version the bindings were compiled with.
+
+[PR #1407](https://github.com/Rust-SDL2/rust-sdl2/pull/1407) Add new use_ios_framework for linking to SDL2.framework on iOS
+
+### v0.37.0
+
+[PR #1406](https://github.com/Rust-SDL2/rust-sdl2/pull/1406) Update bindings to SDL 2.0.26, add Event.is\_touch() for mouse events, upgrade wgpu to 0.20 in examples
+
+[PR #1398](https://github.com/Rust-SDL2/rust-sdl2/pull/1398) Fix bug in rect.shift logic
+
+[PR #1404](https://github.com/Rust-SDL2/rust-sdl2/pull/1404) Make `SdlDrop` a zero sized type.
+
+[PR #1394](https://github.com/Rust-SDL2/rust-sdl2/pull/1394) Do not pull the SDL repository if not using bundled in build.rs
+
+[PR #1394](https://github.com/Rust-SDL2/rust-sdl2/pull/1394) Fix static linking
+
+[PR #1389](https://github.com/Rust-SDL2/rust-sdl2/pull/1389) Fix some undefined behavior.
+
+[PR #1378](https://github.com/Rust-SDL2/rust-sdl2/pull/1378) **BREAKING CHANGE** Change `Keycode` to be a struct rather than an enum. Fix `Keycode::from_scancode` for non-QWERTY keyboard layouts.
+
+[PR #1390](https://github.com/Rust-SDL2/rust-sdl2/pull/1390) Apply clippy fixes, fix deprecations and other code quality improvements.
+
+[PR #1385](https://github.com/Rust-SDL2/rust-sdl2/pull/1385) Upgrade raw-window-handle to 0.6.0
+
+[PR #1380](https://github.com/Rust-SDL2/rust-sdl2/pull/1380) Add controller vendor\_id() and product\_id()
 
 [PR #1368](https://github.com/Rust-SDL2/rust-sdl2/pull/1368) Remove unnecessary unsafe in Window interface. Make Window `Clone`.
 
@@ -17,7 +45,7 @@ when upgrading from a version of rust-sdl2 to another.
 
 [PR #1250](https://github.com/Rust-SDL2/rust-sdl2/pull/1250) Add `lib64` to native library search path when using bundled feature
 
-[PR #1240](https://github.com/Rust-SDL2/rust-sdl2/pull/1240) **BREAKING CHANGE** Take `PixelMasks` by refrence
+[PR #1240](https://github.com/Rust-SDL2/rust-sdl2/pull/1240) **BREAKING CHANGE** Take `PixelMasks` by reference
 
 [PR #1254](https://github.com/Rust-SDL2/rust-sdl2/pull/1254) **BREAKING CHANGE** Make `SdlDrop` and `SubsystemDrop` safer; forbid external code from constructing `SdlDrop`
 
@@ -26,8 +54,6 @@ when upgrading from a version of rust-sdl2 to another.
 [PR #1332](https://github.com/Rust-SDL2/rust-sdl2/pull/1332) Fix `size_hint` implementations for `{audio,video,render}::DriverIterator`
 
 [PR #1333](https://github.com/Rust-SDL2/rust-sdl2/pull/1333) Implement `FusedIterator`, `DoubleEndedIterator`, `and nth[_back]` for `{audio,video,render}::DriverIterator`
-
-[PR #1337](https://github.com/Rust-SDL2/rust-sdl2/pull/1337) Fix "Cannot initialize Sdl from more than one thread" for tests / CI
 
 [PR #1337](https://github.com/Rust-SDL2/rust-sdl2/pull/1337) Fix "Cannot initialize Sdl from more than one thread" for tests / CI
 

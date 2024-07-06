@@ -97,37 +97,18 @@ pub fn get_linked_version() -> Version {
 
 bitflags!(
     pub struct InitFlag : u32 {
-        const FLAC = mixer::MIX_InitFlags_MIX_INIT_FLAC as u32;
-        const MOD  = mixer::MIX_InitFlags_MIX_INIT_MOD as u32;
-        const MP3  = mixer::MIX_InitFlags_MIX_INIT_MP3 as u32;
-        const OGG  = mixer::MIX_InitFlags_MIX_INIT_OGG as u32;
-        const MID  = mixer::MIX_InitFlags_MIX_INIT_MID as u32;
-        const OPUS = mixer::MIX_InitFlags_MIX_INIT_OPUS as u32;
+        const FLAC = mixer::MIX_InitFlags_MIX_INIT_FLAC;
+        const MOD  = mixer::MIX_InitFlags_MIX_INIT_MOD;
+        const MP3  = mixer::MIX_InitFlags_MIX_INIT_MP3;
+        const OGG  = mixer::MIX_InitFlags_MIX_INIT_OGG;
+        const MID  = mixer::MIX_InitFlags_MIX_INIT_MID;
+        const OPUS = mixer::MIX_InitFlags_MIX_INIT_OPUS;
     }
 );
 
-impl ToString for InitFlag {
-    fn to_string(&self) -> String {
-        let mut string = "".to_string();
-        if self.contains(InitFlag::FLAC) {
-            string = string + &"INIT_FLAC ".to_string();
-        }
-        if self.contains(InitFlag::MOD) {
-            string = string + &"INIT_MOD ".to_string();
-        }
-        if self.contains(InitFlag::MP3) {
-            string = string + &"INIT_MP3 ".to_string();
-        }
-        if self.contains(InitFlag::OGG) {
-            string = string + &"INIT_OGG ".to_string();
-        }
-        if self.contains(InitFlag::MID) {
-            string = string + &"INIT_MID ".to_string();
-        }
-        if self.contains(InitFlag::OPUS) {
-            string = string + &"INIT_OPUS ".to_string();
-        }
-        string
+impl fmt::Display for InitFlag {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        <Self as fmt::Debug>::fmt(self, f)
     }
 }
 
@@ -156,7 +137,7 @@ pub fn init(flags: InitFlag) -> Result<Sdl2MixerContext, String> {
     } else {
         // Flags not matching won't always set the error message text
         // according to sdl docs
-        if get_error() == "" {
+        if get_error().is_empty() {
             let un_init_flags = return_flags ^ flags;
             let error_str = &("Could not init: ".to_string() + &un_init_flags.to_string());
             let _ = ::set_error(error_str);
@@ -264,8 +245,7 @@ impl Chunk {
     /// It's your responsibility to provide the audio data in the right format, as no conversion
     /// will take place when using this method.
     pub fn from_raw_buffer<T: AudioFormatNum>(buffer: Box<[T]>) -> Result<Chunk, String> {
-        use std::mem::size_of;
-        let len: u32 = (buffer.len() * size_of::<T>()).try_into().unwrap();
+        let len: u32 = std::mem::size_of_val(&*buffer).try_into().unwrap();
         let raw = unsafe { mixer::Mix_QuickLoad_RAW(Box::into_raw(buffer) as *mut u8, len) };
         Self::from_owned_raw(raw)
     }
@@ -274,10 +254,7 @@ impl Chunk {
         if raw.is_null() {
             Err(get_error())
         } else {
-            Ok(Chunk {
-                raw: raw,
-                owned: true,
-            })
+            Ok(Chunk { raw, owned: true })
         }
     }
 
@@ -307,10 +284,7 @@ impl<'a> LoaderRWops<'a> for RWops<'a> {
         if raw.is_null() {
             Err(get_error())
         } else {
-            Ok(Chunk {
-                raw: raw,
-                owned: true,
-            })
+            Ok(Chunk { raw, owned: true })
         }
     }
 
@@ -321,7 +295,7 @@ impl<'a> LoaderRWops<'a> for RWops<'a> {
             Err(get_error())
         } else {
             Ok(Music {
-                raw: raw,
+                raw,
                 owned: true,
                 _marker: PhantomData,
             })
@@ -355,7 +329,7 @@ extern "C" fn c_channel_finished_callback(ch: c_int) {
     unsafe {
         match CHANNEL_FINISHED_CALLBACK {
             None => (),
-            Some(ref cb) => cb(Channel(ch as i32)),
+            Some(ref cb) => cb(Channel(ch)),
         }
     }
 }
@@ -514,10 +488,7 @@ impl Channel {
         if raw.is_null() {
             None
         } else {
-            Some(Chunk {
-                raw: raw,
-                owned: false,
-            })
+            Some(Chunk { raw, owned: false })
         }
     }
 
@@ -791,7 +762,7 @@ impl<'a> Music<'a> {
             Err(get_error())
         } else {
             Ok(Music {
-                raw: raw,
+                raw,
                 owned: true,
                 _marker: PhantomData,
             })
@@ -813,7 +784,7 @@ impl<'a> Music<'a> {
             Err(get_error())
         } else {
             Ok(Music {
-                raw: raw,
+                raw,
                 owned: true,
                 _marker: PhantomData,
             })

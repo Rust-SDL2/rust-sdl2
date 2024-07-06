@@ -3,8 +3,8 @@ use std::cell::Cell;
 use std::error;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt;
+use std::marker::PhantomData;
 use std::mem::transmute;
-use std::os::raw::c_void;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 
 use crate::sys;
@@ -33,19 +33,7 @@ impl fmt::Display for Error {
     }
 }
 
-impl error::Error for Error {
-    fn description(&self) -> &str {
-        use self::Error::*;
-
-        match *self {
-            NoMemError => "out of memory",
-            ReadError => "error reading from datastream",
-            WriteError => "error writing to datastream",
-            SeekError => "error seeking in datastream",
-            UnsupportedError => "unknown SDL error",
-        }
-    }
-}
+impl error::Error for Error {}
 
 /// True if the main thread has been declared. The main thread is declared when
 /// SDL is first initialized.
@@ -56,7 +44,7 @@ static SDL_COUNT: AtomicU32 = AtomicU32::new(0);
 
 thread_local! {
     /// True if the current thread is the main thread.
-    static IS_MAIN_THREAD: Cell<bool> = Cell::new(false);
+    static IS_MAIN_THREAD: Cell<bool> = const { Cell::new(false) };
 }
 
 /// The SDL context type. Initialize with `sdl2::init()`.
@@ -110,7 +98,7 @@ impl Sdl {
 
         Ok(Sdl {
             sdldrop: SdlDrop {
-                _anticonstructor: std::ptr::null_mut(),
+                marker: PhantomData,
             },
         })
     }
@@ -186,7 +174,7 @@ impl Sdl {
 pub struct SdlDrop {
     // Make it impossible to construct `SdlDrop` without access to this member,
     // and opt out of Send and Sync.
-    _anticonstructor: *mut c_void,
+    marker: PhantomData<*mut ()>,
 }
 
 impl Clone for SdlDrop {
@@ -194,7 +182,7 @@ impl Clone for SdlDrop {
         let prev_count = SDL_COUNT.fetch_add(1, Ordering::Relaxed);
         assert!(prev_count > 0);
         SdlDrop {
-            _anticonstructor: std::ptr::null_mut(),
+            marker: PhantomData,
         }
     }
 }
@@ -209,7 +197,7 @@ impl Drop for SdlDrop {
             unsafe {
                 sys::SDL_Quit();
             }
-            IS_MAIN_THREAD_DECLARED.swap(false, Ordering::SeqCst);
+            IS_MAIN_THREAD_DECLARED.store(false, Ordering::SeqCst);
         }
     }
 }
@@ -329,7 +317,7 @@ subsystem!(SensorSubsystem, sys::SDL_INIT_SENSOR, SENSOR_COUNT, sync);
 
 static IS_EVENT_PUMP_ALIVE: AtomicBool = AtomicBool::new(false);
 
-/// A thread-safe type that encapsulates SDL event-pumping functions.
+/// A type that encapsulates SDL event-pumping functions.
 pub struct EventPump {
     _event_subsystem: EventSubsystem,
 }
@@ -390,7 +378,7 @@ pub fn init() -> Result<Sdl, String> {
 pub fn get_error() -> String {
     unsafe {
         let err = sys::SDL_GetError();
-        CStr::from_ptr(err as *const _).to_str().unwrap().to_owned()
+        CStr::from_ptr(err).to_str().unwrap().to_owned()
     }
 }
 
@@ -398,10 +386,7 @@ pub fn get_error() -> String {
 pub fn set_error(err: &str) -> Result<(), NulError> {
     let c_string = CString::new(err)?;
     unsafe {
-        sys::SDL_SetError(
-            b"%s\0".as_ptr() as *const c_char,
-            c_string.as_ptr() as *const c_char,
-        );
+        sys::SDL_SetError(b"%s\0".as_ptr() as *const c_char, c_string.as_ptr());
     }
     Ok(())
 }
@@ -409,7 +394,7 @@ pub fn set_error(err: &str) -> Result<(), NulError> {
 #[doc(alias = "SDL_Error")]
 pub fn set_error_from_code(err: Error) {
     unsafe {
-        sys::SDL_Error(transmute(err));
+        sys::SDL_Error(transmute::<Error, sys::SDL_errorcode>(err));
     }
 }
 

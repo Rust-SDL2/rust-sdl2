@@ -774,10 +774,7 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
 
         let mut obtained = MaybeUninit::uninit();
         unsafe {
-            let device = match device.into() {
-                Some(device) => Some(CString::new(device).unwrap()),
-                None => None,
-            };
+            let device = device.into().map(|device| CString::new(device).unwrap());
             // Warning: map_or consumes its argument; `device.map_or()` would therefore consume the
             // CString and drop it, making device_ptr a dangling pointer! To avoid that we downgrade
             // device to an Option<&_> first.
@@ -801,7 +798,7 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
                     Ok(AudioQueue {
                         subsystem: a.clone(),
                         device_id,
-                        phantom: PhantomData::default(),
+                        phantom: PhantomData,
                         spec,
                     })
                 }
@@ -850,7 +847,7 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
             sys::SDL_QueueAudio(
                 self.device_id.id(),
                 data.as_ptr() as *const c_void,
-                (data.len() * mem::size_of::<Channel>()) as u32,
+                mem::size_of_val(data) as u32,
             )
         };
         result == 0
@@ -863,7 +860,7 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
             sys::SDL_QueueAudio(
                 self.device_id.id(),
                 data.as_ptr() as *const c_void,
-                (data.len() * mem::size_of::<Channel>()) as u32,
+                mem::size_of_val(data) as u32,
             )
         };
         if result == 0 {
@@ -918,10 +915,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
 
         let mut obtained = MaybeUninit::uninit();
         unsafe {
-            let device = match device.into() {
-                Some(device) => Some(CString::new(device).unwrap()),
-                None => None,
-            };
+            let device = device.into().map(|device| CString::new(device).unwrap());
             // Warning: map_or consumes its argument; `device.map_or()` would therefore consume the
             // CString and drop it, making device_ptr a dangling pointer! To avoid that we downgrade
             // device to an Option<&_> first.

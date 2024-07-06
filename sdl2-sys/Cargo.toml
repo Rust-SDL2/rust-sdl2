@@ -3,8 +3,8 @@
 name = "sdl2-sys"
 description = "Raw SDL2 bindings for Rust, used internally rust-sdl2"
 repository = "https://github.com/rust-sdl2/rust-sdl2"
-version = "0.36.0"
-authors = ["Tony Aldridge <tony@angry-lawyer.com>"]
+version = "0.37.0"
+authors = ["Tony Aldridge <tony@angry-lawyer.com>", "Cobrand <cobrandw@gmail.com>"]
 keywords = ["SDL", "windowing", "graphics", "ffi"]
 categories = ["rendering","external-ffi-bindings","game-engines","multimedia"]
 license = "MIT AND Zlib"
@@ -20,7 +20,7 @@ path = "src/lib.rs"
 libc = "^0.2"
 
 [build-dependencies.bindgen]
-version = "^0.53"
+version = "^0.69"
 optional = true
 
 [build-dependencies.pkg-config]
@@ -32,7 +32,7 @@ version = "^0.2.12"
 optional = true
 
 [build-dependencies.cmake]
-version = "^0.1"
+version = "^0.1.47"
 optional = true
 
 [build-dependencies.flate2]
@@ -51,6 +51,7 @@ use-vcpkg = ["vcpkg"]
 use-bindgen = ["bindgen"]
 static-link = []
 use_mac_framework = []
+use_ios_framework = []
 bundled = ["cmake"]
 mixer = []
 image = []

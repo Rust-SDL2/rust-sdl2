@@ -1,14 +1,12 @@
-/*!
-Querying SDL Version
- */
+//! Querying SDL Version
 
 use std::ffi::CStr;
 use std::fmt;
 
 use crate::sys;
 
-/// A structure that contains information about the version of SDL in use.
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+/// A structure that contains a version of SDL.
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, PartialOrd, Ord)]
 pub struct Version {
     /// major version
     pub major: u8,
@@ -19,7 +17,15 @@ pub struct Version {
 }
 
 impl Version {
-    /// Convert a raw *SDL_version to Version.
+    /// The version of SDL that was used to generate the bindings. This may differ from the version
+    /// used at runtime, use [`version`] to get that.
+    pub const COMPILE_TIME_VERSION: Self = Self {
+        major: sys::SDL_MAJOR_VERSION as u8,
+        minor: sys::SDL_MINOR_VERSION as u8,
+        patch: sys::SDL_PATCHLEVEL as u8,
+    };
+
+    /// Convert a raw SDL_version to Version.
     pub fn from_ll(v: sys::SDL_version) -> Version {
         Version {
             major: v.major,

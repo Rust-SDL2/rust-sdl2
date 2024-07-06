@@ -69,7 +69,7 @@ fn main() -> Result<(), String> {
 
         // initialize the audio callback
         Sound {
-            data: data,
+            data,
             volume: 0.25,
             pos: 0,
         }

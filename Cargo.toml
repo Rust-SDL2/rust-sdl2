@@ -2,8 +2,8 @@
 name = "sdl2"
 description = "SDL2 bindings for Rust"
 repository = "https://github.com/Rust-SDL2/rust-sdl2"
-documentation = "https://rust-sdl2.github.io/rust-sdl2/sdl2/"
-version = "0.36.0"
+documentation = "https://docs.rs/sdl2"
+version = "0.37.0"
 license = "MIT"
 authors = [ "Tony Aldridge <tony@angry-lawyer.com>", "Cobrand <cobrandw@gmail.com>"]
 keywords = ["SDL", "windowing", "graphics", "api", "engine"]
@@ -22,7 +22,7 @@ lazy_static = "1.4.0"
 
 [dependencies.sdl2-sys]
 path = "sdl2-sys"
-version = "^0.36.0"
+version = "^0.37.0"
 
 [dependencies.c_vec]
 # allow both 1.* and 2.0 versions
@@ -31,12 +31,12 @@ optional = true
 
 [dev-dependencies]
 rand = "0.7"
-wgpu = { version = "0.15", features = ["spirv"] }
+wgpu = { version = "0.20", features = ["spirv"] }
 pollster = "0.2.4"
-env_logger = "0.9.0"
+env_logger = "0.11.0"
 
 [dependencies.raw-window-handle]
-version = "0.5.0"
+version = "0.6.0"
 optional = true
 
 [features]
@@ -53,6 +53,7 @@ use-bindgen = ["sdl2-sys/use-bindgen"]
 use-pkgconfig = ["sdl2-sys/use-pkgconfig"]
 use-vcpkg = ["sdl2-sys/use-vcpkg"]
 use_mac_framework = ["sdl2-sys/use_mac_framework"]
+use_ios_framework = ["sdl2-sys/use_ios_framework"]
 bundled = ["sdl2-sys/bundled"]
 static-link = ["sdl2-sys/static-link"]
 
@@ -164,7 +165,7 @@ dependencies = ["sdl2"]
 # dependencies required when building examples and tests for this crate
 dev-dependencies = ["sdl2", "sdl2-image[libjpeg-turbo,tiff,libwebp]", "sdl2-ttf", "sdl2-gfx", "sdl2-mixer"]
 git = "https://github.com/microsoft/vcpkg"
-rev = "a42af01" # release 2023.11.20
+rev = "2024.05.24" # release 2024.05.24 # to check for a new one, check https://github.com/microsoft/vcpkg/releases
 
 [package.metadata.vcpkg.target]
 x86_64-pc-windows-msvc = { triplet = "x64-windows-static-md" }
