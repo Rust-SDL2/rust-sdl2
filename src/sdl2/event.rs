@@ -2338,8 +2338,6 @@ impl Event {
     ///     mouse_x: 0,
     ///     mouse_y: 0,
     ///     direction: MouseWheelDirection::Normal,
-    ///     mouse_x: 0,
-    ///     mouse_y: 0,
     /// };
     /// assert!(ev.is_mouse());
     ///
