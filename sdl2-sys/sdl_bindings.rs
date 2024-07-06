@@ -471,6 +471,8 @@ pub const SDL_HINT_MOUSE_RELATIVE_SCALING: &[u8; 27] = b"SDL_MOUSE_RELATIVE_SCAL
 pub const SDL_HINT_MOUSE_RELATIVE_SPEED_SCALE: &[u8; 31] = b"SDL_MOUSE_RELATIVE_SPEED_SCALE\0";
 pub const SDL_HINT_MOUSE_RELATIVE_SYSTEM_SCALE: &[u8; 32] = b"SDL_MOUSE_RELATIVE_SYSTEM_SCALE\0";
 pub const SDL_HINT_MOUSE_RELATIVE_WARP_MOTION: &[u8; 31] = b"SDL_MOUSE_RELATIVE_WARP_MOTION\0";
+pub const SDL_HINT_MOUSE_RELATIVE_CURSOR_VISIBLE: &[u8; 34] =
+    b"SDL_MOUSE_RELATIVE_CURSOR_VISIBLE\0";
 pub const SDL_HINT_MOUSE_TOUCH_EVENTS: &[u8; 23] = b"SDL_MOUSE_TOUCH_EVENTS\0";
 pub const SDL_HINT_MOUSE_AUTO_CAPTURE: &[u8; 23] = b"SDL_MOUSE_AUTO_CAPTURE\0";
 pub const SDL_HINT_NO_SIGNAL_HANDLERS: &[u8; 23] = b"SDL_NO_SIGNAL_HANDLERS\0";
@@ -578,7 +580,7 @@ pub const SDL_INVALID_SHAPE_ARGUMENT: i32 = -2;
 pub const SDL_WINDOW_LACKS_SHAPE: i32 = -3;
 pub const SDL_MAJOR_VERSION: u32 = 2;
 pub const SDL_MINOR_VERSION: u32 = 30;
-pub const SDL_PATCHLEVEL: u32 = 2;
+pub const SDL_PATCHLEVEL: u32 = 5;
 pub const SDL_INIT_TIMER: u32 = 1;
 pub const SDL_INIT_AUDIO: u32 = 16;
 pub const SDL_INIT_VIDEO: u32 = 32;
@@ -8775,7 +8777,7 @@ extern "C" {
     pub fn SDL_JoystickUpdate();
 }
 extern "C" {
-    #[doc = " Enable/disable joystick event polling.\n\n If joystick events are disabled, you must call SDL_JoystickUpdate()\n yourself and manually check the state of the joystick when you want\n joystick information.\n\n It is recommended that you leave joystick event handling enabled.\n\n **WARNING**: Calling this function may delete all events currently in SDL's\n event queue.\n\n \\param state can be one of `SDL_QUERY`, `SDL_IGNORE`, or `SDL_ENABLE`\n \\returns 1 if enabled, 0 if disabled, or a negative error code on failure;\n          call SDL_GetError() for more information.\n\n          If `state` is `SDL_QUERY` then the current state is returned,\n          otherwise the new processing state is returned.\n\n \\since This function is available since SDL 2.0.0.\n\n \\sa SDL_GameControllerEventState"]
+    #[doc = " Enable/disable joystick event polling.\n\n If joystick events are disabled, you must call SDL_JoystickUpdate()\n yourself and manually check the state of the joystick when you want\n joystick information.\n\n It is recommended that you leave joystick event handling enabled.\n\n **WARNING**: Calling this function may delete all events currently in SDL's\n event queue.\n\n While `param` is meant to be one of `SDL_QUERY`, `SDL_IGNORE`, or\n `SDL_ENABLE`, this function accepts any value, with any non-zero value that\n isn't `SDL_QUERY` being treated as `SDL_ENABLE`.\n\n If SDL was built with events disabled (extremely uncommon!), this will\n do nothing and always return `SDL_IGNORE`.\n\n \\param state can be one of `SDL_QUERY`, `SDL_IGNORE`, or `SDL_ENABLE`\n \\returns If `state` is `SDL_QUERY` then the current state is returned,\n          otherwise `state` is returned (even if it was not one of the\n          allowed values).\n\n \\since This function is available since SDL 2.0.0.\n\n \\sa SDL_GameControllerEventState"]
     pub fn SDL_JoystickEventState(state: libc::c_int) -> libc::c_int;
 }
 extern "C" {
