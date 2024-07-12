@@ -622,10 +622,6 @@ impl Error for SwapIntervalConversionError {}
 impl From<i32> for SwapInterval {
     /// This function is deprecated, use [`SwapInterval::try_from`] instead and handle the error.
     fn from(i: i32) -> Self {
-        println!(
-            "SwapInterval::from is deprecated (could be called from .into()), \
-             use SwapInterval::try_from instead and handle the error"
-        );
         Self::try_from(i).unwrap()
     }
 }
