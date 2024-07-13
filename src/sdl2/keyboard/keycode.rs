@@ -1,8 +1,14 @@
 #![allow(unreachable_patterns)]
 
+use alloc::borrow::ToOwned;
+use alloc::string::String;
 use libc::c_char;
-use std::ffi::{CStr, CString};
-use std::mem::transmute;
+
+use core::mem::transmute;
+use core::ffi::CStr;
+use core::fmt;
+use core::ops::Deref;
+use alloc::ffi::CString;
 
 use crate::sys;
 
@@ -451,15 +457,12 @@ impl Keycode {
     }
 }
 
-use std::fmt;
-
 impl fmt::Display for Keycode {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         write!(f, "{}", self.name())
     }
 }
 
-use std::ops::Deref;
 
 impl Deref for Keycode {
     type Target = i32;

@@ -1,9 +1,11 @@
+use alloc::borrow::ToOwned;
 use crate::get_error;
 use libc::c_char;
 use libc::c_void;
-use std::error;
-use std::ffi::{CStr, CString, NulError};
-use std::fmt;
+use core::ffi::CStr;
+use alloc::ffi::{CString, NulError};
+use alloc::string::String;
+use core::fmt;
 
 use crate::sys;
 
@@ -38,16 +40,6 @@ impl fmt::Display for PrefPathError {
             InvalidOrganizationName(ref e) => write!(f, "Invalid organization name: {}", e),
             InvalidApplicationName(ref e) => write!(f, "Invalid application name: {}", e),
             SdlError(ref e) => write!(f, "SDL error: {}", e),
-        }
-    }
-}
-
-impl error::Error for PrefPathError {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        match self {
-            Self::InvalidOrganizationName(err) => Some(err),
-            Self::InvalidApplicationName(err) => Some(err),
-            Self::SdlError(_) => None,
         }
     }
 }

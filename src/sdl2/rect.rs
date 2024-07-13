@@ -1,14 +1,14 @@
 //! Rectangles and points.
 
 use crate::sys;
-use std::convert::{AsMut, AsRef};
-use std::hash::{Hash, Hasher};
-use std::mem;
-use std::ops::{
+use core::convert::{AsMut, AsRef};
+use core::hash::{Hash, Hasher};
+use core::mem;
+use core::ops::{
     Add, AddAssign, BitAnd, BitOr, Deref, DerefMut, Div, DivAssign, Mul, MulAssign, Neg, Sub,
     SubAssign,
 };
-use std::ptr;
+use core::ptr;
 
 /// The maximal integer value that can be used for rectangles.
 ///
@@ -83,8 +83,8 @@ pub struct Rect {
     raw: sys::SDL_Rect,
 }
 
-impl ::std::fmt::Debug for Rect {
-    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
+impl ::core::fmt::Debug for Rect {
+    fn fmt(&self, fmt: &mut ::core::fmt::Formatter) -> Result<(), ::core::fmt::Error> {
         fmt.debug_struct("Rect")
             .field("x", &self.raw.x)
             .field("y", &self.raw.y)
@@ -745,8 +745,8 @@ pub struct Point {
     raw: sys::SDL_Point,
 }
 
-impl ::std::fmt::Debug for Point {
-    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
+impl ::core::fmt::Debug for Point {
+    fn fmt(&self, fmt: &mut ::core::fmt::Formatter) -> Result<(), ::core::fmt::Error> {
         fmt.debug_struct("Point")
             .field("x", &self.raw.x)
             .field("y", &self.raw.y)
@@ -971,7 +971,7 @@ impl DivAssign<i32> for Point {
     }
 }
 
-impl std::iter::Sum for Point {
+impl core::iter::Sum for Point {
     fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
         iter.fold(Point::new(0, 0), Point::add)
     }
@@ -989,8 +989,8 @@ pub struct FRect {
     raw: sys::SDL_FRect,
 }
 
-impl ::std::fmt::Debug for FRect {
-    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
+impl ::core::fmt::Debug for FRect {
+    fn fmt(&self, fmt: &mut ::core::fmt::Formatter) -> Result<(), ::core::fmt::Error> {
         fmt.debug_struct("FRect")
             .field("x", &self.raw.x)
             .field("y", &self.raw.y)
@@ -1605,8 +1605,8 @@ pub struct FPoint {
     raw: sys::SDL_FPoint,
 }
 
-impl ::std::fmt::Debug for FPoint {
-    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
+impl ::core::fmt::Debug for FPoint {
+    fn fmt(&self, fmt: &mut ::core::fmt::Formatter) -> Result<(), ::core::fmt::Error> {
         fmt.debug_struct("FPoint")
             .field("x", &self.raw.x)
             .field("y", &self.raw.y)
@@ -1802,7 +1802,7 @@ impl DivAssign<f32> for FPoint {
     }
 }
 
-impl std::iter::Sum for FPoint {
+impl core::iter::Sum for FPoint {
     fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
         iter.fold(FPoint::new(0.0, 0.0), FPoint::add)
     }

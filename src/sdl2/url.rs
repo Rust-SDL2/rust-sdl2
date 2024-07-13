@@ -1,8 +1,8 @@
 //! Opening URLs in default system handlers
 
-use std::error;
-use std::ffi::{CString, NulError};
-use std::fmt;
+use alloc::ffi::{CString, NulError};
+use alloc::string::String;
+use core::fmt;
 
 use crate::get_error;
 
@@ -21,15 +21,6 @@ impl fmt::Display for OpenUrlError {
         match *self {
             InvalidUrl(ref e) => write!(f, "Invalid URL: {}", e),
             SdlError(ref e) => write!(f, "SDL error: {}", e),
-        }
-    }
-}
-
-impl error::Error for OpenUrlError {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        match self {
-            Self::InvalidUrl(err) => Some(err),
-            Self::SdlError(_) => None,
         }
     }
 }

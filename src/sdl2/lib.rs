@@ -48,6 +48,15 @@
 #![crate_name = "sdl2"]
 #![crate_type = "lib"]
 
+#![no_std]
+
+#[macro_use]
+extern crate alloc;
+
+extern crate spin;
+
+extern crate hashbrown;
+
 pub extern crate libc;
 
 #[macro_use]

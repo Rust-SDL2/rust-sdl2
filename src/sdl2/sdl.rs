@@ -1,11 +1,13 @@
+use alloc::borrow::ToOwned;
+use alloc::string::String;
 use libc::c_char;
-use std::cell::Cell;
-use std::error;
-use std::ffi::{CStr, CString, NulError};
-use std::fmt;
-use std::marker::PhantomData;
-use std::mem::transmute;
-use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
+use core::ffi::CStr;
+use alloc::ffi::{CString, NulError};
+use core::fmt;
+use core::marker::PhantomData;
+use core::mem::transmute;
+
+use core::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 
 use crate::sys;
 
@@ -33,19 +35,12 @@ impl fmt::Display for Error {
     }
 }
 
-impl error::Error for Error {}
-
 /// True if the main thread has been declared. The main thread is declared when
 /// SDL is first initialized.
 static IS_MAIN_THREAD_DECLARED: AtomicBool = AtomicBool::new(false);
 
 /// Number of active `SdlDrop` objects keeping SDL alive.
 static SDL_COUNT: AtomicU32 = AtomicU32::new(0);
-
-thread_local! {
-    /// True if the current thread is the main thread.
-    static IS_MAIN_THREAD: Cell<bool> = const { Cell::new(false) };
-}
 
 /// The SDL context type. Initialize with `sdl2::init()`.
 ///
@@ -65,24 +60,10 @@ pub struct Sdl {
 }
 
 impl Sdl {
+    /// Safety: must be initialized in the main thread.
     #[inline]
     #[doc(alias = "SDL_Init")]
-    fn new() -> Result<Sdl, String> {
-        // Check if we can safely initialize SDL on this thread.
-        let was_main_thread_declared = IS_MAIN_THREAD_DECLARED.swap(true, Ordering::SeqCst);
-
-        IS_MAIN_THREAD.with(|is_main_thread| {
-            if was_main_thread_declared {
-                if !is_main_thread.get() {
-                    return Err("Cannot initialize `Sdl` from more than one thread.".to_owned());
-                }
-            } else {
-                is_main_thread.set(true);
-            }
-            Ok(())
-        })?;
-
-        // Initialize SDL.
+    unsafe fn new() -> Result<Sdl, String> {
         if SDL_COUNT.fetch_add(1, Ordering::Relaxed) == 0 {
             let result;
 
@@ -357,6 +338,7 @@ pub fn get_platform() -> &'static str {
 
 /// Initializes the SDL library.
 /// This must be called before using any other SDL function.
+/// Safety: This function must be called from the main thread.
 ///
 /// # Example
 /// ```no_run
@@ -371,7 +353,7 @@ pub fn get_platform() -> &'static str {
 /// ```
 #[inline]
 #[doc(alias = "SDL_GetError")]
-pub fn init() -> Result<Sdl, String> {
+pub unsafe fn init() -> Result<Sdl, String> {
     Sdl::new()
 }
 

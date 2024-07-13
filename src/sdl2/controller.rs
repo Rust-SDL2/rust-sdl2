@@ -1,21 +1,20 @@
+use alloc::borrow::ToOwned;
 use crate::rwops::RWops;
 use libc::c_char;
-use std::error;
-use std::ffi::{CStr, CString, NulError};
-use std::fmt;
-use std::io;
-use std::path::Path;
+use core::ffi::CStr;
+use alloc::ffi::{CString, NulError};
+use alloc::string::String;
 
 #[cfg(feature = "hidapi")]
 use crate::sensor::SensorType;
 #[cfg(feature = "hidapi")]
-use std::convert::TryInto;
+use core::convert::TryInto;
 
 use crate::common::{validate_int, IntegerOrSdlError};
 use crate::get_error;
 use crate::joystick;
 use crate::GameControllerSubsystem;
-use std::mem::transmute;
+use core::mem::transmute;
 
 use crate::sys;
 
@@ -27,8 +26,8 @@ pub enum AddMappingError {
     SdlError(String),
 }
 
-impl fmt::Display for AddMappingError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl core::fmt::Display for AddMappingError {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         use self::AddMappingError::*;
 
         match *self {
@@ -36,15 +35,6 @@ impl fmt::Display for AddMappingError {
             InvalidFilePath(ref value) => write!(f, "Invalid file path ({})", value),
             ReadError(ref e) => write!(f, "Read error: {}", e),
             SdlError(ref e) => write!(f, "SDL error: {}", e),
-        }
-    }
-}
-
-impl error::Error for AddMappingError {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        match self {
-            Self::InvalidMapping(err) => Some(err),
-            Self::InvalidFilePath(_) | Self::ReadError(_) | Self::SdlError(_) => None,
         }
     }
 }
@@ -145,22 +135,10 @@ impl GameControllerSubsystem {
     }
 
     /// Load controller input mappings from a file.
-    pub fn load_mappings<P: AsRef<Path>>(&self, path: P) -> Result<i32, AddMappingError> {
+    pub fn load_mappings(&self, path: &str) -> Result<i32, AddMappingError> {
         use self::AddMappingError::*;
 
         let rw = RWops::from_file(path, "r").map_err(InvalidFilePath)?;
-        self.load_mappings_from_rw(rw)
-    }
-
-    /// Load controller input mappings from a [`Read`](std::io::Read) object.
-    pub fn load_mappings_from_read<R: io::Read>(
-        &self,
-        read: &mut R,
-    ) -> Result<i32, AddMappingError> {
-        use self::AddMappingError::*;
-
-        let mut buffer = Vec::with_capacity(1024);
-        let rw = RWops::from_read(read, &mut buffer).map_err(ReadError)?;
         self.load_mappings_from_rw(rw)
     }
 

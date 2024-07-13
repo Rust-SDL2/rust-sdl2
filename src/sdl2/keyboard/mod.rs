@@ -5,9 +5,9 @@ use crate::rect::Rect;
 use crate::video::Window;
 use crate::EventPump;
 
-use std::fmt;
-use std::iter::FilterMap;
-use std::mem::transmute;
+use core::fmt;
+use core::iter::FilterMap;
+use core::mem::transmute;
 
 use crate::sys;
 
@@ -51,7 +51,7 @@ impl<'a> KeyboardState<'a> {
             let mut count = 0;
             let state_ptr = sys::SDL_GetKeyboardState(&mut count);
 
-            ::std::slice::from_raw_parts(state_ptr, count as usize)
+            ::core::slice::from_raw_parts(state_ptr, count as usize)
         };
 
         KeyboardState { keyboard_state }

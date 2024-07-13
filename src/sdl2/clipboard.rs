@@ -1,7 +1,10 @@
+use alloc::borrow::ToOwned;
 use crate::get_error;
 use libc::c_char;
 use libc::c_void;
-use std::ffi::{CStr, CString};
+use core::ffi::CStr;
+use alloc::ffi::CString;
+use alloc::string::String;
 
 use crate::sys;
 

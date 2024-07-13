@@ -1,10 +1,9 @@
 use crate::get_error;
+use alloc::string::String;
 use libc::c_void;
 use libc::{c_char, c_int, size_t};
-use std::ffi::CString;
-use std::io;
-use std::marker::PhantomData;
-use std::path::Path;
+use alloc::ffi::CString;
+use core::marker::PhantomData;
 
 use crate::sys;
 
@@ -31,9 +30,9 @@ impl<'a> RWops<'a> {
 
     /// Creates an SDL file stream.
     #[doc(alias = "SDL_RWFromFile")]
-    pub fn from_file<P: AsRef<Path>>(path: P, mode: &str) -> Result<RWops<'static>, String> {
+    pub fn from_file(path: &str, mode: &str) -> Result<RWops<'static>, String> {
         let raw = unsafe {
-            let path_c = CString::new(path.as_ref().to_str().unwrap()).unwrap();
+            let path_c = CString::new(path).unwrap();
             let mode_c = CString::new(mode).unwrap();
             sys::SDL_RWFromFile(
                 path_c.as_ptr() as *const c_char,
@@ -66,23 +65,6 @@ impl<'a> RWops<'a> {
                 raw,
                 _marker: PhantomData,
             })
-        }
-    }
-
-    /// Reads a `Read` object into a buffer and then passes it to `RWops.from_bytes`.
-    ///
-    /// The buffer must be provided to this function and must live as long as the
-    /// `RWops`, but the `RWops` does not take ownership of it.
-    pub fn from_read<T>(r: &mut T, buffer: &'a mut Vec<u8>) -> Result<RWops<'a>, String>
-    where
-        T: io::Read + Sized,
-    {
-        match r.read_to_end(buffer) {
-            Ok(_size) => RWops::from_bytes(buffer),
-            Err(ioerror) => {
-                let msg = format!("IO error: {}", ioerror);
-                Err(msg)
-            }
         }
     }
 
@@ -134,55 +116,3 @@ impl<'a> Drop for RWops<'a> {
     }
 }
 
-impl<'a> io::Read for RWops<'a> {
-    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        let out_len = buf.len() as size_t;
-        // FIXME: it's better to use as_mut_ptr().
-        // number of objects read, or 0 at error or end of file.
-        let ret = unsafe {
-            ((*self.raw).read.unwrap())(
-                self.raw,
-                buf.as_ptr() as *mut c_void,
-                1,
-                out_len as libc::size_t,
-            )
-        };
-        Ok(ret)
-    }
-}
-
-impl<'a> io::Write for RWops<'a> {
-    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        let in_len = buf.len() as size_t;
-        let ret = unsafe {
-            ((*self.raw).write.unwrap())(
-                self.raw,
-                buf.as_ptr() as *const c_void,
-                1,
-                in_len as libc::size_t,
-            )
-        };
-        Ok(ret)
-    }
-
-    fn flush(&mut self) -> io::Result<()> {
-        Ok(())
-    }
-}
-
-impl<'a> io::Seek for RWops<'a> {
-    fn seek(&mut self, pos: io::SeekFrom) -> io::Result<u64> {
-        // whence code is different from SeekStyle
-        let (whence, offset) = match pos {
-            io::SeekFrom::Start(pos) => (sys::RW_SEEK_SET, pos as i64),
-            io::SeekFrom::End(pos) => (sys::RW_SEEK_END, pos),
-            io::SeekFrom::Current(pos) => (sys::RW_SEEK_CUR, pos),
-        };
-        let ret = unsafe { ((*self.raw).seek.unwrap())(self.raw, offset, whence as i32) };
-        if ret == -1 {
-            Err(io::Error::last_os_error())
-        } else {
-            Ok(ret as u64)
-        }
-    }
-}

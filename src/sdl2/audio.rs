@@ -53,13 +53,17 @@
 //! ```
 
 use libc::{c_char, c_int, c_void};
-use std::convert::TryFrom;
-use std::ffi::{CStr, CString};
-use std::marker::PhantomData;
-use std::mem;
-use std::ops::{Deref, DerefMut};
-use std::path::Path;
-use std::ptr;
+use alloc::borrow::ToOwned;
+use alloc::ffi::CString;
+use alloc::string::String;
+use alloc::boxed::Box;
+use alloc::vec::Vec;
+use core::convert::TryFrom;
+use core::ffi::CStr;
+use core::marker::PhantomData;
+use core::mem;
+use core::ops::{Deref, DerefMut};
+use core::ptr;
 
 use crate::get_error;
 use crate::rwops::RWops;
@@ -387,7 +391,7 @@ impl Iterator for DriverIterator {
 
     #[inline]
     fn nth(&mut self, n: usize) -> Option<&'static str> {
-        use std::convert::TryInto;
+        use core::convert::TryInto;
 
         self.index = match n.try_into().ok().and_then(|n| self.index.checked_add(n)) {
             Some(index) if index < self.length => index,
@@ -412,7 +416,7 @@ impl DoubleEndedIterator for DriverIterator {
 
     #[inline]
     fn nth_back(&mut self, n: usize) -> Option<&'static str> {
-        use std::convert::TryInto;
+        use core::convert::TryInto;
 
         self.length = match n.try_into().ok().and_then(|n| self.length.checked_sub(n)) {
             Some(length) if length > self.index => length,
@@ -425,7 +429,7 @@ impl DoubleEndedIterator for DriverIterator {
 
 impl ExactSizeIterator for DriverIterator {}
 
-impl std::iter::FusedIterator for DriverIterator {}
+impl core::iter::FusedIterator for DriverIterator {}
 
 /// Gets an iterator of all audio drivers compiled into the SDL2 library.
 #[doc(alias = "SDL_GetAudioDriver")]
@@ -451,7 +455,7 @@ pub struct AudioSpecWAV {
 
 impl AudioSpecWAV {
     /// Loads a WAVE from the file path.
-    pub fn load_wav<P: AsRef<Path>>(path: P) -> Result<AudioSpecWAV, String> {
+    pub fn load_wav(path: &str) -> Result<AudioSpecWAV, String> {
         let mut file = RWops::from_file(path, "rb")?;
         AudioSpecWAV::load_wav_rw(&mut file)
     }
@@ -459,8 +463,8 @@ impl AudioSpecWAV {
     /// Loads a WAVE from the data source.
     #[doc(alias = "SDL_LoadWAV_RW")]
     pub fn load_wav_rw(src: &mut RWops) -> Result<AudioSpecWAV, String> {
-        use std::mem::MaybeUninit;
-        use std::ptr::null_mut;
+        use core::mem::MaybeUninit;
+        use core::ptr::null_mut;
 
         let mut desired = MaybeUninit::uninit();
         let mut audio_buf: *mut u8 = null_mut();
@@ -489,7 +493,7 @@ impl AudioSpecWAV {
     }
 
     pub fn buffer(&self) -> &[u8] {
-        use std::slice::from_raw_parts;
+        use core::slice::from_raw_parts;
         unsafe {
             let ptr = self.audio_buf as *const u8;
             let len = self.audio_len as usize;
@@ -592,8 +596,8 @@ extern "C" fn audio_callback_marshall<CB: AudioCallback>(
     stream: *mut u8,
     len: c_int,
 ) {
-    use std::mem::size_of;
-    use std::slice::from_raw_parts_mut;
+    use core::mem::size_of;
+    use core::slice::from_raw_parts_mut;
     unsafe {
         let cb_userdata: &mut Option<CB> = &mut *(userdata as *mut _);
         let buf: &mut [CB::Channel] = from_raw_parts_mut(
@@ -763,7 +767,7 @@ impl<'a, Channel: AudioFormatNum> AudioQueue<Channel> {
         device: D,
         spec: &AudioSpecDesired,
     ) -> Result<AudioQueue<Channel>, String> {
-        use std::mem::MaybeUninit;
+        use core::mem::MaybeUninit;
 
         let desired = AudioSpecDesired::convert_queue_to_ll::<
             Channel,
@@ -907,7 +911,7 @@ impl<CB: AudioCallback> AudioDevice<CB> {
         F: FnOnce(AudioSpec) -> CB,
         D: Into<Option<&'a str>>,
     {
-        use std::mem::MaybeUninit;
+        use core::mem::MaybeUninit;
 
         let mut userdata: Box<Option<CB>> = Box::new(None);
         let desired =
@@ -1083,7 +1087,7 @@ impl AudioCVT {
         dst_channels: u8,
         dst_rate: i32,
     ) -> Result<AudioCVT, String> {
-        use std::mem::MaybeUninit;
+        use core::mem::MaybeUninit;
 
         let mut raw: MaybeUninit<sys::SDL_AudioCVT> = mem::MaybeUninit::uninit();
 
@@ -1114,8 +1118,8 @@ impl AudioCVT {
         //! of the conversion.
         unsafe {
             if self.raw.needed != 0 {
-                use std::convert::TryInto;
-                use std::slice::from_raw_parts_mut;
+                use core::convert::TryInto;
+                use core::slice::from_raw_parts_mut;
 
                 let mut raw = self.raw;
 
@@ -1172,11 +1176,13 @@ impl AudioCVT {
 
 #[cfg(test)]
 mod test {
+    use alloc::vec::Vec;
+
     use super::{AudioCVT, AudioFormat};
 
     #[test]
     fn test_audio_cvt() {
-        use std::iter::repeat;
+        use core::iter::repeat;
 
         // 0,1,2,3, ...
         let buffer: Vec<u8> = (0..255).collect();

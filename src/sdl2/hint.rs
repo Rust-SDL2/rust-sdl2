@@ -1,6 +1,9 @@
+use alloc::borrow::ToOwned;
 use crate::sys;
 use libc::c_char;
-use std::ffi::{CStr, CString};
+use core::ffi::CStr;
+use alloc::ffi::CString;
+use alloc::string::String;
 
 const VIDEO_MINIMIZE_ON_FOCUS_LOSS: &str = "SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS";
 
@@ -88,7 +91,7 @@ pub fn set(name: &str, value: &str) -> bool {
 
 #[doc(alias = "SDL_GetHint")]
 pub fn get(name: &str) -> Option<String> {
-    use std::str;
+    use core::str;
 
     let name = CString::new(name).unwrap();
 

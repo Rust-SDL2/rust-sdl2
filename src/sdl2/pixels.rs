@@ -1,6 +1,10 @@
+use alloc::string::String;
+use alloc::vec::Vec;
+use core::fmt::Write;
+
 use crate::sys;
-use std::convert::TryFrom;
-use std::mem::transmute;
+use core::convert::TryFrom;
+use core::mem::transmute;
 
 use crate::get_error;
 
@@ -28,7 +32,12 @@ impl Palette {
 
             match validate_int(capacity as u32, "capacity") {
                 Ok(len) => len,
-                Err(e) => return Err(format!("{}", e)),
+                Err(e) => {
+                    let mut buf = String::new();
+                    write!(&mut buf, "{}", e)
+                        .map_err(|_| String::from("Formatting error."))?;
+                    return Err(buf)
+                }
             }
         };
 
@@ -558,7 +567,7 @@ fn test_pixel_format_enum() {
         //PixelFormatEnum::Index4MSB
     ];
 
-    let _sdl_context = crate::sdl::init().unwrap();
+    let _sdl_context = unsafe { crate::sdl::init().unwrap() };
     for format in pixel_formats {
         // If we don't support making a surface of a specific format,
         // that's fine, just keep going the best we can.

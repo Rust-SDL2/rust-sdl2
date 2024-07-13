@@ -15,7 +15,7 @@ lazy_static! {
 #[test]
 fn test_events() {
     let _lock = CONTEXT_MUTEX.lock();
-    let sdl = sdl2::init().unwrap();
+    let sdl = unsafe { sdl2::init().unwrap() };
     let ev = sdl.event().unwrap();
     let mut ep = sdl.event_pump().unwrap();
 
@@ -122,7 +122,7 @@ fn test4(ev: &sdl2::EventSubsystem, ep: &mut sdl2::EventPump) {
 #[test]
 fn test_event_sender_no_subsystem() {
     let _lock = CONTEXT_MUTEX.lock();
-    let sdl = sdl2::init().unwrap();
+    let sdl = unsafe { sdl2::init().unwrap() };
     let ev = sdl.event().unwrap();
     let tx = ev.event_sender();
 

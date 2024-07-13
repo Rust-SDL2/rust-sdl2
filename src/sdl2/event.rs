@@ -1,15 +1,20 @@
 //! Event Handling
 
-use std::borrow::ToOwned;
-use std::collections::HashMap;
-use std::convert::TryFrom;
-use std::ffi::CStr;
-use std::iter::FromIterator;
-use std::marker::PhantomData;
-use std::mem;
-use std::mem::transmute;
-use std::ptr;
-use std::sync::Mutex;
+use alloc::borrow::ToOwned;
+use alloc::boxed::Box;
+use alloc::string::ToString;
+use core::convert::TryFrom;
+use core::ffi::CStr;
+use core::iter::FromIterator;
+use core::marker::PhantomData;
+use core::mem;
+use core::mem::transmute;
+use core::ptr;
+use alloc::vec::Vec;
+use alloc::string::String;
+
+use hashbrown::HashMap;
+use spin::Mutex;
 
 use libc::c_int;
 use libc::c_void;
@@ -31,8 +36,8 @@ use crate::sys::SDL_EventType;
 use crate::video::Orientation;
 
 struct CustomEventTypeMaps {
-    sdl_id_to_type_id: HashMap<u32, ::std::any::TypeId>,
-    type_id_to_sdl_id: HashMap<::std::any::TypeId, u32>,
+    sdl_id_to_type_id: HashMap<u32, core::any::TypeId>,
+    type_id_to_sdl_id: HashMap<core::any::TypeId, u32>,
 }
 
 impl CustomEventTypeMaps {
@@ -173,10 +178,10 @@ impl crate::EventSubsystem {
     /// # Example
     /// See [push_custom_event](#method.push_custom_event)
     #[inline(always)]
-    pub fn register_custom_event<T: ::std::any::Any>(&self) -> Result<(), String> {
-        use std::any::TypeId;
+    pub fn register_custom_event<T: core::any::Any>(&self) -> Result<(), String> {
+        use core::any::TypeId;
         let event_id = *(unsafe { self.register_events(1) })?.first().unwrap();
-        let mut cet = CUSTOM_EVENT_TYPES.lock().unwrap();
+        let mut cet = CUSTOM_EVENT_TYPES.lock();
         let type_id = TypeId::of::<Box<T>>();
 
         if cet.type_id_to_sdl_id.contains_key(&type_id) {
@@ -217,7 +222,7 @@ impl crate::EventSubsystem {
     ///     assert_eq!(e2.a, 42);
     /// }
     /// ```
-    pub fn push_custom_event<T: ::std::any::Any>(&self, event: T) -> Result<(), String> {
+    pub fn push_custom_event<T: core::any::Any>(&self, event: T) -> Result<(), String> {
         self.event_sender().push_custom_event(event)
     }
 
@@ -2011,8 +2016,8 @@ impl Event {
         matches!(self, Event::User { .. })
     }
 
-    pub fn as_user_event_type<T: ::std::any::Any>(&self) -> Option<T> {
-        use std::any::TypeId;
+    pub fn as_user_event_type<T: ::core::any::Any>(&self) -> Option<T> {
+        use core::any::TypeId;
         let type_id = TypeId::of::<Box<T>>();
 
         let (event_id, event_box_ptr) = match *self {
@@ -2020,7 +2025,7 @@ impl Event {
             _ => return None,
         };
 
-        let cet = CUSTOM_EVENT_TYPES.lock().unwrap();
+        let cet = CUSTOM_EVENT_TYPES.lock();
 
         let event_type_id = match cet.sdl_id_to_type_id.get(&event_id) {
             Some(id) => id,
@@ -2855,9 +2860,9 @@ impl EventSender {
     ///     assert_eq!(e2.a, 42);
     /// }
     /// ```
-    pub fn push_custom_event<T: ::std::any::Any>(&self, event: T) -> Result<(), String> {
-        use std::any::TypeId;
-        let cet = CUSTOM_EVENT_TYPES.lock().unwrap();
+    pub fn push_custom_event<T: ::core::any::Any>(&self, event: T) -> Result<(), String> {
+        use core::any::TypeId;
+        let cet = CUSTOM_EVENT_TYPES.lock();
         let type_id = TypeId::of::<Box<T>>();
 
         let user_event_id = *match cet.type_id_to_sdl_id.get(&type_id) {
@@ -2874,7 +2879,7 @@ impl EventSender {
             type_: user_event_id,
             code: 0,
             data1: Box::into_raw(event_box) as *mut c_void,
-            data2: ::std::ptr::null_mut(),
+            data2: ::core::ptr::null_mut(),
         };
         drop(cet);
 

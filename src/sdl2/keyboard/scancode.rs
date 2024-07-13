@@ -1,8 +1,9 @@
 #![allow(unreachable_patterns)]
 
 use libc::c_char;
-use std::ffi::{CStr, CString};
-use std::mem::transmute;
+use core::ffi::CStr;
+use core::mem::transmute;
+use alloc::ffi::CString;
 
 use crate::sys;
 use crate::sys::SDL_Scancode;
@@ -505,7 +506,7 @@ impl Scancode {
     }
 }
 
-use std::fmt;
+use core::fmt;
 
 impl fmt::Display for Scancode {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
@@ -547,7 +548,7 @@ impl Scancode {
         // Knowing this, we can always return a string slice.
         unsafe {
             let buf = sys::SDL_GetScancodeName(transmute::<u32, SDL_Scancode>(self as u32));
-            ::std::str::from_utf8(CStr::from_ptr(buf as *const _).to_bytes()).unwrap()
+            ::core::str::from_utf8(CStr::from_ptr(buf as *const _).to_bytes()).unwrap()
         }
     }
 }

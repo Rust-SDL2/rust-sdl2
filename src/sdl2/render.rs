@@ -39,19 +39,20 @@ use crate::rect::Rect;
 use crate::surface;
 use crate::surface::{Surface, SurfaceContext, SurfaceRef};
 use crate::video::{Window, WindowContext};
+use alloc::string::String;
+use alloc::vec::Vec;
 use libc::c_void;
 use libc::{c_double, c_int};
-use std::convert::TryFrom;
-use std::error::Error;
-use std::ffi::CStr;
-use std::fmt;
+use core::convert::TryFrom;
+use core::ffi::CStr;
+use core::fmt;
 #[cfg(not(feature = "unsafe_textures"))]
-use std::marker::PhantomData;
-use std::mem;
-use std::mem::{transmute, MaybeUninit};
-use std::ops::Deref;
-use std::ptr;
-use std::rc::Rc;
+use core::marker::PhantomData;
+use core::mem;
+use core::mem::{transmute, MaybeUninit};
+use core::ops::Deref;
+use core::ptr;
+use alloc::rc::Rc;
 
 use crate::sys;
 use crate::sys::SDL_BlendMode;
@@ -74,23 +75,12 @@ impl fmt::Display for SdlError {
     }
 }
 
-impl Error for SdlError {}
-
 impl fmt::Display for TargetRenderError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         use self::TargetRenderError::*;
         match *self {
             SdlError(ref e) => e.fmt(f),
             NotSupported => write!(f, "The renderer does not support the use of render targets"),
-        }
-    }
-}
-
-impl Error for TargetRenderError {
-    fn source(&self) -> Option<&(dyn Error + 'static)> {
-        match self {
-            Self::SdlError(err) => Some(err),
-            Self::NotSupported => None,
         }
     }
 }
@@ -770,8 +760,6 @@ impl fmt::Display for TextureValueError {
         }
     }
 }
-
-impl Error for TextureValueError {}
 
 #[doc(alias = "SDL_CreateTexture")]
 fn ll_create_texture(
@@ -1985,8 +1973,6 @@ impl fmt::Display for UpdateTextureError {
     }
 }
 
-impl Error for UpdateTextureError {}
-
 #[derive(Debug, Clone)]
 pub enum UpdateTextureYUVError {
     PitchOverflows {
@@ -2044,8 +2030,6 @@ impl fmt::Display for UpdateTextureYUVError {
         }
     }
 }
-
-impl Error for UpdateTextureYUVError {}
 
 struct InternalTexture {
     raw: *mut sys::SDL_Texture,
@@ -2360,7 +2344,7 @@ impl InternalTexture {
                     .format
                     .byte_size_from_pitch_and_height(pitch as usize, height);
                 Ok((
-                    ::std::slice::from_raw_parts_mut(pixels as *mut u8, size),
+                    ::core::slice::from_raw_parts_mut(pixels as *mut u8, size),
                     pitch,
                 ))
             } else {
@@ -2787,7 +2771,7 @@ impl Iterator for DriverIterator {
 
     #[inline]
     fn nth(&mut self, n: usize) -> Option<RendererInfo> {
-        use std::convert::TryInto;
+        use core::convert::TryInto;
 
         self.index = match n.try_into().ok().and_then(|n| self.index.checked_add(n)) {
             Some(index) if index < self.length => index,
@@ -2812,7 +2796,7 @@ impl DoubleEndedIterator for DriverIterator {
 
     #[inline]
     fn nth_back(&mut self, n: usize) -> Option<RendererInfo> {
-        use std::convert::TryInto;
+        use core::convert::TryInto;
 
         self.length = match n.try_into().ok().and_then(|n| self.length.checked_sub(n)) {
             Some(length) if length > self.index => length,
@@ -2825,7 +2809,7 @@ impl DoubleEndedIterator for DriverIterator {
 
 impl ExactSizeIterator for DriverIterator {}
 
-impl std::iter::FusedIterator for DriverIterator {}
+impl core::iter::FusedIterator for DriverIterator {}
 
 /// Gets an iterator of all render drivers compiled into the SDL2 library.
 #[inline]

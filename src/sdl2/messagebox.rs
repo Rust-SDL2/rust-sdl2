@@ -1,11 +1,12 @@
 // 0 should not be used in bitflags, but here it is. Removing it will break existing code.
 #![allow(clippy::bad_bit_mask)]
 
-use std::error;
-use std::ffi::{CString, NulError};
-use std::fmt;
-use std::os::raw::{c_char, c_int};
-use std::ptr;
+use alloc::ffi::{CString, NulError};
+use alloc::string::String;
+use alloc::vec::Vec;
+use core::fmt;
+use core::ptr;
+use core::ffi::{c_char, c_int};
 
 use crate::get_error;
 use crate::video::Window;
@@ -123,17 +124,6 @@ impl fmt::Display for ShowMessageError {
             InvalidMessage(ref e) => write!(f, "Invalid message: {}", e),
             InvalidButton(ref e, value) => write!(f, "Invalid button ({}): {}", value, e),
             SdlError(ref e) => write!(f, "SDL error: {}", e),
-        }
-    }
-}
-
-impl error::Error for ShowMessageError {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        match self {
-            Self::InvalidTitle(err) => Some(err),
-            Self::InvalidMessage(err) => Some(err),
-            Self::InvalidButton(err, _) => Some(err),
-            Self::SdlError(_) => None,
         }
     }
 }
