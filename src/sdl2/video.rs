@@ -547,6 +547,7 @@ impl GLContext {
 pub struct WindowContext {
     subsystem: VideoSubsystem,
     raw: *mut sys::SDL_Window,
+    #[allow(dead_code)]
     pub(crate) metal_view: sys::SDL_MetalView,
 }
 
