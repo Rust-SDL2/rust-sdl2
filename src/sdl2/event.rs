@@ -648,7 +648,7 @@ pub enum Event {
         precise_y: f32,
         /// The X position of the mouse from the window's origin
         mouse_x: i32,
-        /// The X position of the mouse from the window's origin
+        /// The Y position of the mouse from the window's origin
         mouse_y: i32,
     },
 
