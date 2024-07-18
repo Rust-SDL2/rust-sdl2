@@ -2,7 +2,7 @@ use crate::sys;
 use crate::sys::SDL_JoystickPowerLevel;
 
 use crate::clear_error;
-use crate::common::{validate_int, Error};
+use crate::common::{validate_int, Error, SdlError};
 use crate::get_error;
 use crate::JoystickSubsystem;
 use libc::c_char;
@@ -203,7 +203,7 @@ impl Joystick {
             if err.is_empty() {
                 Ok(state)
             } else {
-                Err(Error::Sdl(err))
+                Err(Error::Sdl(SdlError::from_string(err)))
             }
         }
     }
@@ -243,7 +243,7 @@ impl Joystick {
             if err.is_empty() {
                 Ok(pos)
             } else {
-                Err(Error::Sdl(err))
+                Err(Error::Sdl(SdlError::from_string(err)))
             }
         }
     }
@@ -282,7 +282,7 @@ impl Joystick {
                     // Button is not pressed
                     Ok(false)
                 } else {
-                    Err(Error::Sdl(err))
+                    Err(Error::Sdl(SdlError::from_string(err)))
                 }
             }
             // Should be unreachable
@@ -354,7 +354,7 @@ impl Joystick {
             if err.is_empty() {
                 Ok(state)
             } else {
-                Err(Error::Sdl(err))
+                Err(Error::Sdl(SdlError::from_string(err)))
             }
         }
     }

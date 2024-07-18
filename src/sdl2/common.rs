@@ -1,9 +1,37 @@
 use std::ffi::{CString, NulError};
 use std::{error, fmt};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
+pub struct SdlError {
+    msg: String,
+}
+
+impl SdlError {
+    pub fn from_last_error() -> Self {
+        let msg = crate::get_error();
+        Self { msg }
+    }
+
+    pub(crate) fn from_string(msg: String) -> Self {
+        Self { msg }
+    }
+
+    pub fn message(&self) -> &str {
+        &self.msg
+    }
+}
+
+impl fmt::Display for SdlError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.msg)
+    }
+}
+
+impl error::Error for SdlError {}
+
+#[derive(Debug, Clone)]
 pub enum Error {
-    Sdl(String),
+    Sdl(SdlError),
     /// An integer was larger than [`i32::MAX`] in a parameter, and it can't be converted to a C int
     IntOverflow(&'static str, u32),
     /// A null byte was found within a parameter, and it can't be sent to SDL
@@ -12,7 +40,7 @@ pub enum Error {
 
 impl Error {
     pub fn from_sdl_error() -> Self {
-        Self::Sdl(crate::get_error())
+        Self::Sdl(SdlError::from_last_error())
     }
 }
 
@@ -32,6 +60,12 @@ impl error::Error for Error {
             Self::Sdl(..) | Self::IntOverflow(..) => None,
             Self::InvalidString(nul, _) => Some(nul),
         }
+    }
+}
+
+impl From<SdlError> for Error {
+    fn from(value: SdlError) -> Self {
+        Self::Sdl(value)
     }
 }
 

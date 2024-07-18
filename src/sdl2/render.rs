@@ -28,7 +28,7 @@
 //! None of the draw methods in `Canvas` are expected to fail.
 //! If they do, a panic is raised and the program is aborted.
 
-use crate::common::{validate_int, Error};
+use crate::common::{validate_int, Error, SdlError};
 use crate::get_error;
 use crate::pixels;
 use crate::pixels::PixelFormatEnum;
@@ -57,24 +57,12 @@ use crate::sys;
 use crate::sys::SDL_BlendMode;
 use crate::sys::SDL_TextureAccess;
 
-/// Contains the description of an error returned by SDL
-#[derive(Debug, Clone)]
-pub struct SdlError(String);
-
 /// Possible errors returned by targeting a `Canvas` to render to a `Texture`
 #[derive(Debug, Clone)]
 pub enum TargetRenderError {
     SdlError(SdlError),
     NotSupported,
 }
-
-impl fmt::Display for SdlError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "SDL error: {}", self.0)
-    }
-}
-
-impl error::Error for SdlError {}
 
 impl fmt::Display for TargetRenderError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -251,7 +239,7 @@ impl<T> RendererContext<T> {
         if sys::SDL_SetRenderTarget(self.raw, raw_texture) == 0 {
             Ok(())
         } else {
-            Err(SdlError(get_error()))
+            Err(SdlError::from_last_error())
         }
     }
 
