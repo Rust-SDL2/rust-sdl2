@@ -28,7 +28,7 @@
 //! None of the draw methods in `Canvas` are expected to fail.
 //! If they do, a panic is raised and the program is aborted.
 
-use crate::common::{validate_int, IntegerOrSdlError};
+use crate::common::{validate_int, Error};
 use crate::get_error;
 use crate::pixels;
 use crate::pixels::PixelFormatEnum;
@@ -42,7 +42,7 @@ use crate::video::{Window, WindowContext};
 use libc::c_void;
 use libc::{c_double, c_int};
 use std::convert::TryFrom;
-use std::error::Error;
+use std::error;
 use std::ffi::CStr;
 use std::fmt;
 #[cfg(not(feature = "unsafe_textures"))]
@@ -74,7 +74,7 @@ impl fmt::Display for SdlError {
     }
 }
 
-impl Error for SdlError {}
+impl error::Error for SdlError {}
 
 impl fmt::Display for TargetRenderError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -86,8 +86,8 @@ impl fmt::Display for TargetRenderError {
     }
 }
 
-impl Error for TargetRenderError {
-    fn source(&self) -> Option<&(dyn Error + 'static)> {
+impl error::Error for TargetRenderError {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match self {
             Self::SdlError(err) => Some(err),
             Self::NotSupported => None,
@@ -685,8 +685,7 @@ impl CanvasBuilder {
 
     /// Builds the renderer.
     #[doc(alias = "SDL_CreateRenderer")]
-    pub fn build(self) -> Result<WindowCanvas, IntegerOrSdlError> {
-        use crate::common::IntegerOrSdlError::*;
+    pub fn build(self) -> Result<WindowCanvas, Error> {
         let index = match self.index {
             None => -1,
             Some(index) => validate_int(index, "index")?,
@@ -694,7 +693,7 @@ impl CanvasBuilder {
         let raw = unsafe { sys::SDL_CreateRenderer(self.window.raw(), index, self.renderer_flags) };
 
         if raw.is_null() {
-            Err(SdlError(get_error()))
+            Err(Error::from_sdl_error())
         } else {
             let context = Rc::new(unsafe { RendererContext::from_ll(raw, self.window.context()) });
             let default_pixel_format = self.window.window_pixel_format();
@@ -771,7 +770,7 @@ impl fmt::Display for TextureValueError {
     }
 }
 
-impl Error for TextureValueError {}
+impl error::Error for TextureValueError {}
 
 #[doc(alias = "SDL_CreateTexture")]
 fn ll_create_texture(
@@ -1055,14 +1054,14 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Sets a device independent resolution for rendering.
     #[doc(alias = "SDL_RenderSetLogicalSize")]
-    pub fn set_logical_size(&mut self, width: u32, height: u32) -> Result<(), IntegerOrSdlError> {
-        use crate::common::IntegerOrSdlError::*;
+    pub fn set_logical_size(&mut self, width: u32, height: u32) -> Result<(), Error> {
         let width = validate_int(width, "width")?;
         let height = validate_int(height, "height")?;
         let result = unsafe { sys::SDL_RenderSetLogicalSize(self.context.raw, width, height) };
-        match result {
-            0 => Ok(()),
-            _ => Err(SdlError(get_error())),
+        if result == 0 {
+            Ok(())
+        } else {
+            Err(Error::from_sdl_error())
         }
     }
 
@@ -1985,7 +1984,7 @@ impl fmt::Display for UpdateTextureError {
     }
 }
 
-impl Error for UpdateTextureError {}
+impl error::Error for UpdateTextureError {}
 
 #[derive(Debug, Clone)]
 pub enum UpdateTextureYUVError {
@@ -2045,7 +2044,7 @@ impl fmt::Display for UpdateTextureYUVError {
     }
 }
 
-impl Error for UpdateTextureYUVError {}
+impl error::Error for UpdateTextureYUVError {}
 
 struct InternalTexture {
     raw: *mut sys::SDL_Texture,

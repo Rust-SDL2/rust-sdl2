@@ -1,15 +1,14 @@
 //! Haptic Functions
 use crate::sys;
 
-use crate::common::{validate_int, IntegerOrSdlError};
-use crate::get_error;
+use crate::common::validate_int;
+use crate::Error;
 use crate::HapticSubsystem;
 
 impl HapticSubsystem {
     /// Attempt to open the joystick at index `joystick_index` and return its haptic device.
     #[doc(alias = "SDL_JoystickOpen")]
-    pub fn open_from_joystick_id(&self, joystick_index: u32) -> Result<Haptic, IntegerOrSdlError> {
-        use crate::common::IntegerOrSdlError::*;
+    pub fn open_from_joystick_id(&self, joystick_index: u32) -> Result<Haptic, Error> {
         let joystick_index = validate_int(joystick_index, "joystick_index")?;
 
         let haptic = unsafe {
@@ -18,7 +17,7 @@ impl HapticSubsystem {
         };
 
         if haptic.is_null() {
-            Err(SdlError(get_error()))
+            Err(Error::from_sdl_error())
         } else {
             unsafe { sys::SDL_HapticRumbleInit(haptic) };
             Ok(Haptic {

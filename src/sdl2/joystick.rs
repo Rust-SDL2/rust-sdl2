@@ -2,12 +2,12 @@ use crate::sys;
 use crate::sys::SDL_JoystickPowerLevel;
 
 use crate::clear_error;
-use crate::common::{validate_int, IntegerOrSdlError};
+use crate::common::{validate_int, Error};
 use crate::get_error;
 use crate::JoystickSubsystem;
 use libc::c_char;
 use std::ffi::{CStr, CString, NulError};
-use std::fmt::{Display, Error, Formatter};
+use std::fmt;
 
 impl JoystickSubsystem {
     /// Retrieve the total number of attached joysticks *and* controllers identified by SDL.
@@ -24,14 +24,13 @@ impl JoystickSubsystem {
 
     /// Attempt to open the joystick at index `joystick_index` and return it.
     #[doc(alias = "SDL_JoystickOpen")]
-    pub fn open(&self, joystick_index: u32) -> Result<Joystick, IntegerOrSdlError> {
-        use crate::common::IntegerOrSdlError::*;
+    pub fn open(&self, joystick_index: u32) -> Result<Joystick, Error> {
         let joystick_index = validate_int(joystick_index, "joystick_index")?;
 
         let joystick = unsafe { sys::SDL_JoystickOpen(joystick_index) };
 
         if joystick.is_null() {
-            Err(SdlError(get_error()))
+            Err(Error::from_sdl_error())
         } else {
             Ok(Joystick {
                 subsystem: self.clone(),
@@ -42,14 +41,13 @@ impl JoystickSubsystem {
 
     /// Return the name of the joystick at index `joystick_index`.
     #[doc(alias = "SDL_JoystickNameForIndex")]
-    pub fn name_for_index(&self, joystick_index: u32) -> Result<String, IntegerOrSdlError> {
-        use crate::common::IntegerOrSdlError::*;
+    pub fn name_for_index(&self, joystick_index: u32) -> Result<String, Error> {
         let joystick_index = validate_int(joystick_index, "joystick_index")?;
 
         let c_str = unsafe { sys::SDL_JoystickNameForIndex(joystick_index) };
 
         if c_str.is_null() {
-            Err(SdlError(get_error()))
+            Err(Error::from_sdl_error())
         } else {
             Ok(unsafe {
                 CStr::from_ptr(c_str as *const _)
@@ -62,8 +60,7 @@ impl JoystickSubsystem {
 
     /// Get the GUID for the joystick at index `joystick_index`
     #[doc(alias = "SDL_JoystickGetDeviceGUID")]
-    pub fn device_guid(&self, joystick_index: u32) -> Result<Guid, IntegerOrSdlError> {
-        use crate::common::IntegerOrSdlError::*;
+    pub fn device_guid(&self, joystick_index: u32) -> Result<Guid, Error> {
         let joystick_index = validate_int(joystick_index, "joystick_index")?;
 
         let raw = unsafe { sys::SDL_JoystickGetDeviceGUID(joystick_index) };
@@ -71,7 +68,7 @@ impl JoystickSubsystem {
         let guid = Guid { raw };
 
         if guid.is_zero() {
-            Err(SdlError(get_error()))
+            Err(Error::from_sdl_error())
         } else {
             Ok(guid)
         }
@@ -191,8 +188,7 @@ impl Joystick {
 
     /// Retrieve the battery level of this joystick
     #[doc(alias = "SDL_JoystickCurrentPowerLevel")]
-    pub fn power_level(&self) -> Result<PowerLevel, IntegerOrSdlError> {
-        use crate::common::IntegerOrSdlError::*;
+    pub fn power_level(&self) -> Result<PowerLevel, Error> {
         clear_error();
 
         let result = unsafe { sys::SDL_JoystickCurrentPowerLevel(self.raw) };
@@ -207,7 +203,7 @@ impl Joystick {
             if err.is_empty() {
                 Ok(state)
             } else {
-                Err(SdlError(err))
+                Err(Error::Sdl(err))
             }
         }
     }
@@ -229,8 +225,7 @@ impl Joystick {
     ///
     /// The function will fail if the joystick doesn't have the provided axis.
     #[doc(alias = "SDL_JoystickGetAxis")]
-    pub fn axis(&self, axis: u32) -> Result<i16, IntegerOrSdlError> {
-        use crate::common::IntegerOrSdlError::*;
+    pub fn axis(&self, axis: u32) -> Result<i16, Error> {
         // This interface is a bit messed up: 0 is a valid position
         // but can also mean that an error occured. As far as I can
         // tell the only way to know if an error happened is to see if
@@ -248,7 +243,7 @@ impl Joystick {
             if err.is_empty() {
                 Ok(pos)
             } else {
-                Err(SdlError(err))
+                Err(Error::Sdl(err))
             }
         }
     }
@@ -270,8 +265,7 @@ impl Joystick {
     ///
     /// The function will fail if the joystick doesn't have the provided button.
     #[doc(alias = "SDL_JoystickGetButton")]
-    pub fn button(&self, button: u32) -> Result<bool, IntegerOrSdlError> {
-        use crate::common::IntegerOrSdlError::*;
+    pub fn button(&self, button: u32) -> Result<bool, Error> {
         // Same deal as axis, 0 can mean both unpressed or
         // error...
         clear_error();
@@ -288,7 +282,7 @@ impl Joystick {
                     // Button is not pressed
                     Ok(false)
                 } else {
-                    Err(SdlError(err))
+                    Err(Error::Sdl(err))
                 }
             }
             // Should be unreachable
@@ -312,8 +306,7 @@ impl Joystick {
     /// Return a pair `(dx, dy)` containing the difference in axis
     /// position since the last poll
     #[doc(alias = "SDL_JoystickGetBall")]
-    pub fn ball(&self, ball: u32) -> Result<(i32, i32), IntegerOrSdlError> {
-        use crate::common::IntegerOrSdlError::*;
+    pub fn ball(&self, ball: u32) -> Result<(i32, i32), Error> {
         let mut dx = 0;
         let mut dy = 0;
 
@@ -323,7 +316,7 @@ impl Joystick {
         if result == 0 {
             Ok((dx, dy))
         } else {
-            Err(SdlError(get_error()))
+            Err(Error::from_sdl_error())
         }
     }
 
@@ -342,8 +335,7 @@ impl Joystick {
 
     /// Return the position of `hat` for this joystick
     #[doc(alias = "SDL_JoystickGetHat")]
-    pub fn hat(&self, hat: u32) -> Result<HatState, IntegerOrSdlError> {
-        use crate::common::IntegerOrSdlError::*;
+    pub fn hat(&self, hat: u32) -> Result<HatState, Error> {
         // Guess what? This function as well uses 0 to report an error
         // but 0 is also a valid value (HatState::Centered). So we
         // have to use the same hack as `axis`...
@@ -362,7 +354,7 @@ impl Joystick {
             if err.is_empty() {
                 Ok(state)
             } else {
-                Err(SdlError(err))
+                Err(Error::Sdl(err))
             }
         }
     }
@@ -384,7 +376,7 @@ impl Joystick {
         low_frequency_rumble: u16,
         high_frequency_rumble: u16,
         duration_ms: u32,
-    ) -> Result<(), IntegerOrSdlError> {
+    ) -> Result<(), Error> {
         let result = unsafe {
             sys::SDL_JoystickRumble(
                 self.raw,
@@ -395,7 +387,7 @@ impl Joystick {
         };
 
         if result != 0 {
-            Err(IntegerOrSdlError::SdlError(get_error()))
+            Err(Error::from_sdl_error())
         } else {
             Ok(())
         }
@@ -408,13 +400,13 @@ impl Joystick {
         left_rumble: u16,
         right_rumble: u16,
         duration_ms: u32,
-    ) -> Result<(), IntegerOrSdlError> {
+    ) -> Result<(), Error> {
         let result = unsafe {
             sys::SDL_JoystickRumbleTriggers(self.raw, left_rumble, right_rumble, duration_ms)
         };
 
         if result != 0 {
-            Err(IntegerOrSdlError::SdlError(get_error()))
+            Err(Error::from_sdl_error())
         } else {
             Ok(())
         }
@@ -455,11 +447,11 @@ impl Joystick {
 
     /// Update a joystick's LED color.
     #[doc(alias = "SDL_JoystickSetLED")]
-    pub fn set_led(&mut self, red: u8, green: u8, blue: u8) -> Result<(), IntegerOrSdlError> {
+    pub fn set_led(&mut self, red: u8, green: u8, blue: u8) -> Result<(), Error> {
         let result = unsafe { sys::SDL_JoystickSetLED(self.raw, red, green, blue) };
 
         if result != 0 {
-            Err(IntegerOrSdlError::SdlError(get_error()))
+            Err(Error::from_sdl_error())
         } else {
             Ok(())
         }
@@ -467,7 +459,7 @@ impl Joystick {
 
     /// Send a joystick specific effect packet.
     #[doc(alias = "SDL_JoystickSendEffect")]
-    pub fn send_effect(&mut self, data: &[u8]) -> Result<(), IntegerOrSdlError> {
+    pub fn send_effect(&mut self, data: &[u8]) -> Result<(), Error> {
         let result = unsafe {
             sys::SDL_JoystickSendEffect(
                 self.raw,
@@ -477,7 +469,7 @@ impl Joystick {
         };
 
         if result != 0 {
-            Err(IntegerOrSdlError::SdlError(get_error()))
+            Err(Error::from_sdl_error())
         } else {
             Ok(())
         }
@@ -566,8 +558,8 @@ impl Guid {
     }
 }
 
-impl Display for Guid {
-    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+impl fmt::Display for Guid {
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         write!(f, "{}", self.string())
     }
 }
