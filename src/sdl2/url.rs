@@ -1,38 +1,8 @@
 //! Opening URLs in default system handlers
 
-use std::error;
-use std::ffi::{CString, NulError};
-use std::fmt;
-
-use crate::get_error;
+use crate::Error;
 
 use crate::sys;
-
-#[derive(Debug, Clone)]
-pub enum OpenUrlError {
-    InvalidUrl(NulError),
-    SdlError(String),
-}
-
-impl fmt::Display for OpenUrlError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use self::OpenUrlError::*;
-
-        match *self {
-            InvalidUrl(ref e) => write!(f, "Invalid URL: {}", e),
-            SdlError(ref e) => write!(f, "SDL error: {}", e),
-        }
-    }
-}
-
-impl error::Error for OpenUrlError {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        match self {
-            Self::InvalidUrl(err) => Some(err),
-            Self::SdlError(_) => None,
-        }
-    }
-}
 
 /// Opens a URL/URI in the default system-provided application.
 ///
@@ -53,19 +23,12 @@ impl error::Error for OpenUrlError {
 ///   .expect("Opening URLs not supported on this platform");
 /// ```
 #[doc(alias = "SDL_OpenURL")]
-pub fn open_url(url: &str) -> Result<(), OpenUrlError> {
-    use self::OpenUrlError::*;
-    let result = unsafe {
-        let url = match CString::new(url) {
-            Ok(s) => s,
-            Err(err) => return Err(InvalidUrl(err)),
-        };
-        sys::SDL_OpenURL(url.as_ptr())
-    } == 0;
+pub fn open_url(url: &str) -> Result<(), Error> {
+    let result = unsafe { sys::SDL_OpenURL(as_cstring!(url)?.as_ptr()) };
 
-    if result {
+    if result == 0 {
         Ok(())
     } else {
-        Err(SdlError(get_error()))
+        Err(Error::from_sdl_error())
     }
 }

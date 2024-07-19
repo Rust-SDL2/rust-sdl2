@@ -1,14 +1,12 @@
 // 0 should not be used in bitflags, but here it is. Removing it will break existing code.
 #![allow(clippy::bad_bit_mask)]
 
-use std::error;
-use std::ffi::{CString, NulError};
-use std::fmt;
 use std::os::raw::{c_char, c_int};
 use std::ptr;
 
-use crate::get_error;
+use crate::common::validate_string;
 use crate::video::Window;
+use crate::Error;
 
 use crate::sys;
 
@@ -104,40 +102,6 @@ impl From<[sys::SDL_MessageBoxColor; 5]> for MessageBoxColorScheme {
     }
 }
 
-#[derive(Debug, Clone)]
-pub enum ShowMessageError {
-    InvalidTitle(NulError),
-    InvalidMessage(NulError),
-    /// Second argument of the tuple (i32) corresponds to the
-    /// first button_id having an error
-    InvalidButton(NulError, i32),
-    SdlError(String),
-}
-
-impl fmt::Display for ShowMessageError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use self::ShowMessageError::*;
-
-        match *self {
-            InvalidTitle(ref e) => write!(f, "Invalid title: {}", e),
-            InvalidMessage(ref e) => write!(f, "Invalid message: {}", e),
-            InvalidButton(ref e, value) => write!(f, "Invalid button ({}): {}", value, e),
-            SdlError(ref e) => write!(f, "SDL error: {}", e),
-        }
-    }
-}
-
-impl error::Error for ShowMessageError {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        match self {
-            Self::InvalidTitle(err) => Some(err),
-            Self::InvalidMessage(err) => Some(err),
-            Self::InvalidButton(err, _) => Some(err),
-            Self::SdlError(_) => None,
-        }
-    }
-}
-
 /// Show a simple message box, meant to be informative only.
 ///
 /// There is no way to know if the user clicked "Ok" or closed the message box,
@@ -149,32 +113,25 @@ pub fn show_simple_message_box<'a, W>(
     title: &str,
     message: &str,
     window: W,
-) -> Result<(), ShowMessageError>
+) -> Result<(), Error>
 where
     W: Into<Option<&'a Window>>,
 {
-    use self::ShowMessageError::*;
+    let title = as_cstring!(title)?;
+    let message = as_cstring!(message)?;
     let result = unsafe {
-        let title = match CString::new(title) {
-            Ok(s) => s,
-            Err(err) => return Err(InvalidTitle(err)),
-        };
-        let message = match CString::new(message) {
-            Ok(s) => s,
-            Err(err) => return Err(InvalidMessage(err)),
-        };
         sys::SDL_ShowSimpleMessageBox(
             flags.bits(),
             title.as_ptr() as *const c_char,
             message.as_ptr() as *const c_char,
             window.into().map_or(ptr::null_mut(), |win| win.raw()),
         )
-    } == 0;
+    };
 
-    if result {
+    if result == 0 {
         Ok(())
     } else {
-        Err(SdlError(get_error()))
+        Err(Error::from_sdl_error())
     }
 }
 
@@ -195,7 +152,7 @@ pub fn show_message_box<'a, 'b, W, M>(
     message: &str,
     window: W,
     scheme: M,
-) -> Result<ClickedButton<'a>, ShowMessageError>
+) -> Result<ClickedButton<'a>, Error>
 where
     W: Into<Option<&'b Window>>,
     M: Into<Option<MessageBoxColorScheme>>,
@@ -203,24 +160,13 @@ where
     let window = window.into();
     let scheme = scheme.into();
 
-    use self::ShowMessageError::*;
     let mut button_id: c_int = 0;
-    let title = match CString::new(title) {
-        Ok(s) => s,
-        Err(err) => return Err(InvalidTitle(err)),
-    };
-    let message = match CString::new(message) {
-        Ok(s) => s,
-        Err(err) => return Err(InvalidMessage(err)),
-    };
-    let button_texts: Result<Vec<_>, (_, i32)> = buttons
+    let title = as_cstring!(title)?;
+    let message = as_cstring!(message)?;
+    let button_texts = buttons
         .iter()
-        .map(|b| CString::new(b.text).map_err(|e| (e, b.button_id)))
-        .collect(); // Create CString for every button; and catch any CString Error
-    let button_texts = match button_texts {
-        Ok(b) => b,
-        Err(e) => return Err(InvalidButton(e.0, e.1)),
-    };
+        .map(|b| validate_string(b.text, "buttons"))
+        .collect::<Result<Vec<_>, _>>()?;
     let raw_buttons: Vec<sys::SDL_MessageBoxButtonData> = buttons
         .iter()
         .zip(button_texts.iter())
@@ -230,25 +176,24 @@ where
             text: b_text.as_ptr(),
         })
         .collect();
-    let result = unsafe {
-        let scheme = scheme.map(|scheme| sys::SDL_MessageBoxColorScheme {
-            colors: scheme.into(),
-        });
-        let msg_box_data = sys::SDL_MessageBoxData {
-            flags: flags.bits(),
-            window: window.map_or(ptr::null_mut(), |win| win.raw()),
-            title: title.as_ptr() as *const c_char,
-            message: message.as_ptr() as *const c_char,
-            numbuttons: raw_buttons.len() as c_int,
-            buttons: raw_buttons.as_ptr(),
-            colorScheme: scheme
-                .as_ref()
-                .map(|p| p as *const _)
-                .unwrap_or(ptr::null()),
-        };
-        sys::SDL_ShowMessageBox(&msg_box_data as *const _, &mut button_id as &mut _)
-    } == 0;
-    if result {
+    let scheme = scheme.map(|scheme| sys::SDL_MessageBoxColorScheme {
+        colors: scheme.into(),
+    });
+    let msg_box_data = sys::SDL_MessageBoxData {
+        flags: flags.bits(),
+        window: window.map_or(ptr::null_mut(), |win| win.raw()),
+        title: title.as_ptr() as *const c_char,
+        message: message.as_ptr() as *const c_char,
+        numbuttons: raw_buttons.len() as c_int,
+        buttons: raw_buttons.as_ptr(),
+        colorScheme: scheme
+            .as_ref()
+            .map(|p| p as *const _)
+            .unwrap_or(ptr::null()),
+    };
+    let result =
+        unsafe { sys::SDL_ShowMessageBox(&msg_box_data as *const _, &mut button_id as &mut _) };
+    if result == 0 {
         match button_id {
             -1 => Ok(ClickedButton::CloseButton),
             id => {
@@ -257,6 +202,6 @@ where
             }
         }
     } else {
-        Err(SdlError(get_error()))
+        Err(Error::from_sdl_error())
     }
 }

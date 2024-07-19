@@ -103,7 +103,7 @@ pub mod ttf;
 
 mod common;
 // Export return types and such from the common module.
-pub use crate::common::IntegerOrSdlError;
+pub use crate::common::Error;
 
 #[cfg(feature = "raw-window-handle")]
 pub mod raw_window_handle;
