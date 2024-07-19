@@ -4,7 +4,7 @@ use std::ffi::{CStr, CString, NulError};
 use std::marker::PhantomData;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 
-use crate::sys;
+use crate::{sys, Error};
 
 /// True if the main thread has been declared. The main thread is declared when
 /// SDL is first initialized.
@@ -354,10 +354,10 @@ pub fn get_error() -> String {
 }
 
 #[doc(alias = "SDL_SetError")]
-pub fn set_error(err: &str) -> Result<(), NulError> {
-    let c_string = CString::new(err)?;
+pub fn set_error(err: &str) -> Result<(), Error> {
+    let err = as_cstring!(err)?;
     unsafe {
-        sys::SDL_SetError(b"%s\0".as_ptr() as *const c_char, c_string.as_ptr());
+        sys::SDL_SetError(b"%s\0".as_ptr() as *const c_char, err.as_ptr());
     }
     Ok(())
 }

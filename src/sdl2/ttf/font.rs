@@ -5,7 +5,6 @@ use crate::Error;
 use pixels::Color;
 use rwops::RWops;
 use std::error;
-use std::ffi::NulError;
 use std::ffi::{CStr, CString};
 use std::fmt;
 use std::marker::PhantomData;

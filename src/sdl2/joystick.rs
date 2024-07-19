@@ -6,7 +6,7 @@ use crate::common::{validate_int, Error, SdlError};
 use crate::get_error;
 use crate::JoystickSubsystem;
 use libc::c_char;
-use std::ffi::{CStr, CString, NulError};
+use std::ffi::CStr;
 use std::fmt;
 
 impl JoystickSubsystem {
@@ -503,8 +503,8 @@ impl Eq for Guid {}
 impl Guid {
     /// Create a GUID from a string representation.
     #[doc(alias = "SDL_JoystickGetGUIDFromString")]
-    pub fn from_string(guid: &str) -> Result<Guid, NulError> {
-        let guid = CString::new(guid)?;
+    pub fn from_string(guid: &str) -> Result<Guid, Error> {
+        let guid = as_cstring!(guid)?;
 
         let raw = unsafe { sys::SDL_JoystickGetGUIDFromString(guid.as_ptr() as *const c_char) };
 
