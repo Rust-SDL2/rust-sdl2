@@ -18,7 +18,7 @@
 /// - -z ... +z is roll from right to left
 use crate::sys;
 
-use crate::common::{validate_int, IntegerOrSdlError};
+use crate::common::{validate_int, Error};
 use crate::get_error;
 use crate::SensorSubsystem;
 use libc::c_char;
@@ -41,14 +41,13 @@ impl SensorSubsystem {
 
     /// Attempt to open the sensor at index `sensor_index` and return it.
     #[doc(alias = "SDL_SensorOpen")]
-    pub fn open(&self, sensor_index: u32) -> Result<Sensor, IntegerOrSdlError> {
-        use crate::common::IntegerOrSdlError::*;
+    pub fn open(&self, sensor_index: u32) -> Result<Sensor, Error> {
         let sensor_index = validate_int(sensor_index, "sensor_index")?;
 
         let sensor = unsafe { sys::SDL_SensorOpen(sensor_index) };
 
         if sensor.is_null() {
-            Err(SdlError(get_error()))
+            Err(Error::from_sdl_error())
         } else {
             Ok(Sensor {
                 subsystem: self.clone(),
@@ -144,12 +143,12 @@ impl Sensor {
     ///
     /// Output depends on the type of the sensor. See module documentation for units and axis.
     #[doc(alias = "SDL_SensorGetType")]
-    pub fn get_data(&self) -> Result<SensorData, IntegerOrSdlError> {
+    pub fn get_data(&self) -> Result<SensorData, Error> {
         let mut data = [0f32; 16];
         let result = unsafe { SDL_SensorGetData(self.raw, data.as_mut_ptr(), data.len() as i32) };
 
         if result != 0 {
-            Err(IntegerOrSdlError::SdlError(get_error()))
+            Err(Error::from_sdl_error())
         } else {
             Ok(match self.sensor_type() {
                 SensorType::Gyroscope => SensorData::Accel([data[0], data[1], data[2]]),
