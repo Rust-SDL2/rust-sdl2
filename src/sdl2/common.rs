@@ -1,7 +1,7 @@
 use std::ffi::{CString, NulError};
-use std::{error, fmt};
+use std::{error, fmt, io};
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct SdlError {
     msg: String,
 }
@@ -29,9 +29,10 @@ impl fmt::Display for SdlError {
 
 impl error::Error for SdlError {}
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum Error {
     Sdl(SdlError),
+    Io(io::Error),
     /// An integer was larger than [`i32::MAX`] in a parameter, and it can't be converted to a C int
     IntOverflow(&'static str, u32),
     /// A null byte was found within a parameter, and it can't be sent to SDL
@@ -48,6 +49,7 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Sdl(msg) => write!(f, "SDL error: {msg}"),
+            Self::Io(err) => write!(f, "IO error: {err}"),
             Self::IntOverflow(name, value) => write!(f, "Integer '{name}' overflows: {value}"),
             Self::InvalidString(name, nul) => write!(f, "Invalid string '{name}': {nul}"),
         }
@@ -58,6 +60,7 @@ impl error::Error for Error {
     fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match self {
             Self::Sdl(..) | Self::IntOverflow(..) => None,
+            Self::Io(err) => Some(err),
             Self::InvalidString(nul, _) => Some(nul),
         }
     }
@@ -66,6 +69,12 @@ impl error::Error for Error {
 impl From<SdlError> for Error {
     fn from(value: SdlError) -> Self {
         Self::Sdl(value)
+    }
+}
+
+impl From<io::Error> for Error {
+    fn from(value: io::Error) -> Self {
+        Self::Io(value)
     }
 }
 

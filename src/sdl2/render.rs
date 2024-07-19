@@ -58,7 +58,7 @@ use crate::sys::SDL_BlendMode;
 use crate::sys::SDL_TextureAccess;
 
 /// Possible errors returned by targeting a `Canvas` to render to a `Texture`
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum TargetRenderError {
     SdlError(SdlError),
     NotSupported,
