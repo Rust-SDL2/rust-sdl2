@@ -77,6 +77,10 @@ impl GameControllerSubsystem {
     /// Attempt to open the controller at index `joystick_index` and return it.
     /// Controller IDs are the same as joystick IDs and the maximum number can
     /// be retrieved using the `SDL_NumJoysticks` function.
+    ///
+    /// **Warning!** The returned [GameController] instance calls automatically `SDL_GameControllerClose`
+    /// on [GameController::drop] which means you must keep the [GameController] instance alive in order to keep the
+    /// controller functional and connected.
     #[doc(alias = "SDL_GameControllerOpen")]
     pub fn open(&self, joystick_index: u32) -> Result<GameController, IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
@@ -384,6 +388,9 @@ pub enum MappingStatus {
 }
 
 /// Wrapper around the `SDL_GameController` object
+///
+/// **Warning!** Dropping this struct calls automatically `SDL_GameControllerClose` on [GameController::drop] which means you must keep
+/// the [GameController] instance alive in order to keep the controller functional and connected.
 pub struct GameController {
     subsystem: GameControllerSubsystem,
     raw: *mut sys::SDL_GameController,
