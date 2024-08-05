@@ -15,6 +15,8 @@ fn main() -> Result<(), String> {
     println!("{} joysticks available", available);
 
     // Iterate over all available joysticks and look for game controllers.
+    // Notice that the opened game controller instance must be kept alive because
+    // the controller gets automatically closed on drop.
     let mut controller = (0..available)
         .find_map(|id| {
             if !game_controller_subsystem.is_game_controller(id) {
