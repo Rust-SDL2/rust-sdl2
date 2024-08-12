@@ -133,7 +133,7 @@ impl Sdl {
         GameControllerSubsystem::new(self)
     }
 
-    /// Initializes the game controller subsystem.
+    /// Initializes the sensor subsystem.
     #[inline]
     pub fn sensor(&self) -> Result<SensorSubsystem, String> {
         SensorSubsystem::new(self)
