@@ -11,10 +11,10 @@ use crate::sensor::SensorType;
 #[cfg(feature = "hidapi")]
 use std::convert::TryInto;
 
-use crate::common::{validate_int, IntegerOrSdlError};
-use crate::get_error;
+use crate::common::validate_int;
 use crate::joystick;
 use crate::GameControllerSubsystem;
+use crate::{get_error, Error};
 use std::mem::transmute;
 
 use crate::sys;
@@ -78,13 +78,12 @@ impl GameControllerSubsystem {
     /// Controller IDs are the same as joystick IDs and the maximum number can
     /// be retrieved using the `SDL_NumJoysticks` function.
     #[doc(alias = "SDL_GameControllerOpen")]
-    pub fn open(&self, joystick_index: u32) -> Result<GameController, IntegerOrSdlError> {
-        use crate::common::IntegerOrSdlError::*;
+    pub fn open(&self, joystick_index: u32) -> Result<GameController, Error> {
         let joystick_index = validate_int(joystick_index, "joystick_index")?;
         let controller = unsafe { sys::SDL_GameControllerOpen(joystick_index) };
 
         if controller.is_null() {
-            Err(SdlError(get_error()))
+            Err(Error::from_sdl_error())
         } else {
             Ok(GameController {
                 subsystem: self.clone(),
@@ -95,13 +94,12 @@ impl GameControllerSubsystem {
 
     /// Return the name of the controller at index `joystick_index`.
     #[doc(alias = "SDL_GameControllerNameForIndex")]
-    pub fn name_for_index(&self, joystick_index: u32) -> Result<String, IntegerOrSdlError> {
-        use crate::common::IntegerOrSdlError::*;
+    pub fn name_for_index(&self, joystick_index: u32) -> Result<String, Error> {
         let joystick_index = validate_int(joystick_index, "joystick_index")?;
         let c_str = unsafe { sys::SDL_GameControllerNameForIndex(joystick_index) };
 
         if c_str.is_null() {
-            Err(SdlError(get_error()))
+            Err(Error::from_sdl_error())
         } else {
             Ok(unsafe {
                 CStr::from_ptr(c_str as *const _)
@@ -170,9 +168,10 @@ impl GameControllerSubsystem {
         use self::AddMappingError::*;
 
         let result = unsafe { sys::SDL_GameControllerAddMappingsFromRW(rw.raw(), 0) };
-        match result {
-            -1 => Err(SdlError(get_error())),
-            _ => Ok(result),
+        if result == -1 {
+            Err(SdlError(get_error()))
+        } else {
+            Ok(result)
         }
     }
 
@@ -509,7 +508,7 @@ impl GameController {
         low_frequency_rumble: u16,
         high_frequency_rumble: u16,
         duration_ms: u32,
-    ) -> Result<(), IntegerOrSdlError> {
+    ) -> Result<(), Error> {
         let result = unsafe {
             sys::SDL_GameControllerRumble(
                 self.raw,
@@ -520,7 +519,7 @@ impl GameController {
         };
 
         if result != 0 {
-            Err(IntegerOrSdlError::SdlError(get_error()))
+            Err(Error::from_sdl_error())
         } else {
             Ok(())
         }
@@ -533,13 +532,13 @@ impl GameController {
         left_rumble: u16,
         right_rumble: u16,
         duration_ms: u32,
-    ) -> Result<(), IntegerOrSdlError> {
+    ) -> Result<(), Error> {
         let result = unsafe {
             sys::SDL_GameControllerRumbleTriggers(self.raw, left_rumble, right_rumble, duration_ms)
         };
 
         if result != 0 {
-            Err(IntegerOrSdlError::SdlError(get_error()))
+            Err(Error::from_sdl_error())
         } else {
             Ok(())
         }
@@ -580,11 +579,11 @@ impl GameController {
 
     /// Update a game controller's LED color.
     #[doc(alias = "SDL_GameControllerSetLED")]
-    pub fn set_led(&mut self, red: u8, green: u8, blue: u8) -> Result<(), IntegerOrSdlError> {
+    pub fn set_led(&mut self, red: u8, green: u8, blue: u8) -> Result<(), Error> {
         let result = unsafe { sys::SDL_GameControllerSetLED(self.raw, red, green, blue) };
 
         if result != 0 {
-            Err(IntegerOrSdlError::SdlError(get_error()))
+            Err(Error::from_sdl_error())
         } else {
             Ok(())
         }
@@ -637,7 +636,7 @@ impl GameController {
         &self,
         sensor_type: crate::sensor::SensorType,
         enabled: bool,
-    ) -> Result<(), IntegerOrSdlError> {
+    ) -> Result<(), Error> {
         let result = unsafe {
             sys::SDL_GameControllerSetSensorEnabled(
                 self.raw,
@@ -651,7 +650,7 @@ impl GameController {
         };
 
         if result != 0 {
-            Err(IntegerOrSdlError::SdlError(get_error()))
+            Err(Error::from_sdl_error())
         } else {
             Ok(())
         }
@@ -668,11 +667,7 @@ impl GameController {
     /// The number of data points depends on the sensor. Both Gyroscope and
     /// Accelerometer return 3 values, one for each axis.
     #[doc(alias = "SDL_GameControllerGetSensorData")]
-    pub fn sensor_get_data(
-        &self,
-        sensor_type: SensorType,
-        data: &mut [f32],
-    ) -> Result<(), IntegerOrSdlError> {
+    pub fn sensor_get_data(&self, sensor_type: SensorType, data: &mut [f32]) -> Result<(), Error> {
         let result = unsafe {
             sys::SDL_GameControllerGetSensorData(
                 self.raw,
@@ -683,7 +678,7 @@ impl GameController {
         };
 
         if result != 0 {
-            Err(IntegerOrSdlError::SdlError(get_error()))
+            Err(Error::from_sdl_error())
         } else {
             Ok(())
         }

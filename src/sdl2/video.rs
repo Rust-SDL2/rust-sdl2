@@ -1,12 +1,11 @@
 use libc::{c_char, c_float, c_int, c_uint};
 use std::convert::TryFrom;
-use std::error::Error;
-use std::ffi::{CStr, CString, NulError};
+use std::ffi::{CStr, CString};
 use std::ops::{Deref, DerefMut};
 use std::rc::Rc;
-use std::{fmt, mem, ptr};
+use std::{mem, ptr};
 
-use crate::common::{validate_int, IntegerOrSdlError};
+use crate::common::{validate_int, validate_string, Error};
 use crate::pixels::PixelFormatEnum;
 use crate::rect::Rect;
 use crate::render::CanvasBuilder;
@@ -1071,36 +1070,6 @@ impl VideoSubsystem {
     }
 }
 
-#[derive(Debug, Clone)]
-pub enum WindowBuildError {
-    HeightOverflows(u32),
-    WidthOverflows(u32),
-    InvalidTitle(NulError),
-    SdlError(String),
-}
-
-impl fmt::Display for WindowBuildError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use self::WindowBuildError::*;
-
-        match *self {
-            HeightOverflows(h) => write!(f, "Window height ({}) is too high.", h),
-            WidthOverflows(w) => write!(f, "Window width ({}) is too high.", w),
-            InvalidTitle(ref e) => write!(f, "Invalid window title: {}", e),
-            SdlError(ref e) => write!(f, "SDL error: {}", e),
-        }
-    }
-}
-
-impl Error for WindowBuildError {
-    fn source(&self) -> Option<&(dyn Error + 'static)> {
-        match self {
-            Self::InvalidTitle(err) => Some(err),
-            Self::HeightOverflows(_) | Self::WidthOverflows(_) | Self::SdlError(_) => None,
-        }
-    }
-}
-
 /// The type that allows you to build windows.
 #[derive(Debug)]
 pub struct WindowBuilder {
@@ -1135,21 +1104,11 @@ impl WindowBuilder {
 
     /// Builds the window.
     #[doc(alias = "SDL_CreateWindow")]
-    pub fn build(&self) -> Result<Window, WindowBuildError> {
-        use self::WindowBuildError::*;
-        let title = match CString::new(self.title.as_bytes()) {
-            Ok(t) => t,
-            Err(err) => return Err(InvalidTitle(err)),
-        };
-        if self.width >= (1 << 31) {
-            return Err(WidthOverflows(self.width));
-        }
-        if self.height >= (1 << 31) {
-            return Err(HeightOverflows(self.width));
-        }
+    pub fn build(&self) -> Result<Window, Error> {
+        let title = validate_string(self.title.as_bytes(), "title")?;
+        let raw_width = validate_int(self.width, "width")?;
+        let raw_height = validate_int(self.height, "height")?;
 
-        let raw_width = self.width as c_int;
-        let raw_height = self.height as c_int;
         unsafe {
             let raw = if self.shaped {
                 sys::SDL_CreateShapedWindow(
@@ -1172,7 +1131,7 @@ impl WindowBuilder {
             };
 
             if raw.is_null() {
-                Err(SdlError(get_error()))
+                Err(Error::from_sdl_error())
             } else {
                 let metal_view = match self.create_metal_view {
                     #[cfg(target_os = "macos")]
@@ -1545,8 +1504,8 @@ impl Window {
     }
 
     #[doc(alias = "SDL_SetWindowTitle")]
-    pub fn set_title(&mut self, title: &str) -> Result<(), NulError> {
-        let title = CString::new(title)?;
+    pub fn set_title(&mut self, title: &str) -> Result<(), Error> {
+        let title = as_cstring!(title)?;
         unsafe {
             sys::SDL_SetWindowTitle(self.context.raw, title.as_ptr() as *const c_char);
         }
@@ -1661,7 +1620,7 @@ impl Window {
     }
 
     #[doc(alias = "SDL_SetWindowSize")]
-    pub fn set_size(&mut self, width: u32, height: u32) -> Result<(), IntegerOrSdlError> {
+    pub fn set_size(&mut self, width: u32, height: u32) -> Result<(), Error> {
         let w = validate_int(width, "width")?;
         let h = validate_int(height, "height")?;
         unsafe {
@@ -1695,7 +1654,7 @@ impl Window {
     }
 
     #[doc(alias = "SDL_SetWindowMinimumSize")]
-    pub fn set_minimum_size(&mut self, width: u32, height: u32) -> Result<(), IntegerOrSdlError> {
+    pub fn set_minimum_size(&mut self, width: u32, height: u32) -> Result<(), Error> {
         let w = validate_int(width, "width")?;
         let h = validate_int(height, "height")?;
         unsafe {
@@ -1713,7 +1672,7 @@ impl Window {
     }
 
     #[doc(alias = "SDL_SetWindowMaximumSize")]
-    pub fn set_maximum_size(&mut self, width: u32, height: u32) -> Result<(), IntegerOrSdlError> {
+    pub fn set_maximum_size(&mut self, width: u32, height: u32) -> Result<(), Error> {
         let w = validate_int(width, "width")?;
         let h = validate_int(height, "height")?;
         unsafe {
