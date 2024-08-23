@@ -9,7 +9,7 @@ when upgrading from a version of rust-sdl2 to another.
 
 [PR #1407](https://github.com/Rust-SDL2/rust-sdl2/pull/1407) Add new use_ios_framework for linking to SDL2.framework on iOS
 
-
+[PR #1427](https://github.com/Rust-SDL2/rust-sdl2/pull/1427) Add system locale support
 
 ### v0.37.0
 
