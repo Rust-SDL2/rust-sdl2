@@ -1,8 +1,9 @@
-use crate::sys;
+use crate::{locale::Locale, sys};
 use libc::c_char;
 use std::ffi::{CStr, CString};
 
 const VIDEO_MINIMIZE_ON_FOCUS_LOSS: &str = "SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS";
+const PREFERRED_LOCALES: &str = "SDL_PREFERRED_LOCALES";
 
 pub enum Hint {
     Default,
@@ -74,6 +75,39 @@ pub fn get_video_minimize_on_focus_loss() -> bool {
     )
 }
 
+/// A hint that overrides the user's locale settings.
+///
+/// [Official SDL documentation](https://wiki.libsdl.org/SDL2/SDL_HINT_PREFERRED_LOCALES)
+///
+/// # Default
+/// This is disabled by default.
+///
+/// # Example
+///
+/// See [`crate::locale::get_preferred_locales`].
+pub fn set_preferred_locales<T: std::borrow::Borrow<Locale>>(
+    locales: impl IntoIterator<Item = T>,
+) -> bool {
+    set(PREFERRED_LOCALES, &format_locale_hint(locales))
+}
+
+fn format_locale_hint<T: std::borrow::Borrow<Locale>>(
+    locales: impl IntoIterator<Item = T>,
+) -> String {
+    let mut hint = String::new();
+
+    for locale in locales {
+        let locale = locale.borrow();
+        hint.push_str(&locale.lang);
+        if let Some(region) = &locale.country {
+            hint.push('_');
+            hint.push_str(&region);
+        }
+    }
+
+    hint
+}
+
 #[doc(alias = "SDL_SetHint")]
 pub fn set(name: &str, value: &str) -> bool {
     let name = CString::new(name).unwrap();
@@ -124,5 +158,20 @@ pub fn set_with_priority(name: &str, value: &str, priority: &Hint) -> bool {
             value.as_ptr() as *const c_char,
             priority_val,
         ) == sys::SDL_bool::SDL_TRUE
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn locale() {
+        let locales = vec![Locale {
+            lang: "en".to_string(),
+            country: Some("US".to_string()),
+        }];
+        set_preferred_locales(&locales);
+        set_preferred_locales(locales);
     }
 }
