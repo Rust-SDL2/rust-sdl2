@@ -25,9 +25,8 @@ pub struct Locale {
 /// ```
 pub fn get_preferred_locales() -> LocaleIterator {
     unsafe {
-        let current = sys::SDL_GetPreferredLocales();
         LocaleIterator {
-            raw: current,
+            raw: sys::SDL_GetPreferredLocales(),
             index: 0,
         }
     }
