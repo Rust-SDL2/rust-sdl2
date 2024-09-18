@@ -1145,7 +1145,7 @@ impl WindowBuilder {
             return Err(WidthOverflows(self.width));
         }
         if self.height >= (1 << 31) {
-            return Err(HeightOverflows(self.width));
+            return Err(HeightOverflows(self.height));
         }
 
         let raw_width = self.width as c_int;
