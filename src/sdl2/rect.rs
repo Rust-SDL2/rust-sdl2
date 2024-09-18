@@ -1360,7 +1360,7 @@ impl FRect {
     }
 
     pub fn raw_mut(&mut self) -> *mut sys::SDL_FRect {
-        self.raw() as *mut _
+        &mut self.raw
     }
 
     #[doc(alias = "SDL_FRect")]
