@@ -1,5 +1,4 @@
 use crate::get_error;
-use libc::c_char;
 use libc::c_void;
 use std::error;
 use std::ffi::{CStr, CString, NulError};
@@ -9,17 +8,15 @@ use crate::sys;
 
 #[doc(alias = "SDL_GetBasePath")]
 pub fn base_path() -> Result<String, String> {
-    let result = unsafe {
+    unsafe {
         let buf = sys::SDL_GetBasePath();
-        let s = CStr::from_ptr(buf as *const _).to_str().unwrap().to_owned();
-        sys::SDL_free(buf as *mut c_void);
-        s
-    };
-
-    if result.is_empty() {
-        Err(get_error())
-    } else {
-        Ok(result)
+        if buf.is_null() {
+            Err(get_error())
+        } else {
+            let s = CStr::from_ptr(buf).to_str().unwrap().to_owned();
+            sys::SDL_free(buf as *mut c_void);
+            Ok(s)
+        }
     }
 }
 
@@ -58,23 +55,18 @@ impl error::Error for PrefPathError {
 #[doc(alias = "SDL_GetPrefPath")]
 pub fn pref_path(org_name: &str, app_name: &str) -> Result<String, PrefPathError> {
     use self::PrefPathError::*;
-    let result = unsafe {
-        let org = match CString::new(org_name) {
-            Ok(s) => s,
-            Err(err) => return Err(InvalidOrganizationName(err)),
-        };
-        let app = match CString::new(app_name) {
-            Ok(s) => s,
-            Err(err) => return Err(InvalidApplicationName(err)),
-        };
-        let buf =
-            sys::SDL_GetPrefPath(org.as_ptr() as *const c_char, app.as_ptr() as *const c_char);
-        CStr::from_ptr(buf as *const _).to_str().unwrap().to_owned()
-    };
 
-    if result.is_empty() {
-        Err(SdlError(get_error()))
-    } else {
-        Ok(result)
+    let org = CString::new(org_name).map_err(InvalidOrganizationName)?;
+    let app = CString::new(app_name).map_err(InvalidApplicationName)?;
+
+    unsafe {
+        let buf = sys::SDL_GetPrefPath(org.as_ptr(), app.as_ptr());
+        if buf.is_null() {
+            Err(SdlError(get_error()))
+        } else {
+            let ret = CStr::from_ptr(buf).to_str().unwrap().to_owned();
+            sys::SDL_free(buf as *mut c_void);
+            Ok(ret)
+        }
     }
 }
