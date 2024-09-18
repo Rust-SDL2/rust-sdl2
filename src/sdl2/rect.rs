@@ -984,6 +984,9 @@ impl std::iter::Sum for Point {
 /// recommended to use `Option<FRect>`, with `None` representing an empty
 /// rectangle (see, for example, the output of the
 /// [`intersection`](#method.intersection) method).
+// Uses repr(transparent) to allow pointer casting between FRect and SDL_FRect (see
+// `FRect::raw_slice`)
+#[repr(transparent)]
 #[derive(Clone, Copy)]
 pub struct FRect {
     raw: sys::SDL_FRect,
@@ -1600,6 +1603,9 @@ impl BitOr<FRect> for FRect {
 }
 
 /// Immutable point type with float precision, consisting of x and y.
+// Uses repr(transparent) to allow pointer casting between FPoint and SDL_FPoint (see
+// `FPoint::raw_slice`)
+#[repr(transparent)]
 #[derive(Copy, Clone)]
 pub struct FPoint {
     raw: sys::SDL_FPoint,
