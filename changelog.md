@@ -3,6 +3,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### Next
 
+[PR #1435](https://github.com/Rust-SDL2/rust-sdl2/pull/1435) **BREAKING CHANGE** Fix some undefined behavior. Breaking changes: `mixer::Chunk`'s fields are now private and callbacks to `TimerSubsystem::add_timer` must now live for `'static`, also allowing some lifetime parameters to be removed.
+
 [PR #1416](https://github.com/Rust-SDL2/rust-sdl2/pull/1416) Apply clippy fixes, fix deprecations and other code quality improvements.
 
 [PR #1408](https://github.com/Rust-SDL2/rust-sdl2/pull/1408) Allow comparing `Version`s, add constant with the version the bindings were compiled with.

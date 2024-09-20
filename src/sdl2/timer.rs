@@ -1,7 +1,8 @@
 use crate::sys;
 use libc::c_void;
 use std::marker::PhantomData;
-use std::mem;
+use std::panic::catch_unwind;
+use std::process::abort;
 
 use crate::TimerSubsystem;
 
@@ -14,16 +15,16 @@ impl TimerSubsystem {
     /// * or when the callback returns a non-positive continuation interval
     ///
     /// The callback is run in a thread that is created and managed internally
-    /// by SDL2 from C. The callback *must* not panic!
+    /// by SDL2 from C. If the callback panics, the process will be [aborted][abort].
     #[must_use = "if unused the Timer will be dropped immediately"]
     #[doc(alias = "SDL_AddTimer")]
-    pub fn add_timer<'b, 'c>(&'b self, delay: u32, callback: TimerCallback<'c>) -> Timer<'b, 'c> {
+    pub fn add_timer(&self, delay: u32, callback: TimerCallback) -> Timer<'_> {
         unsafe {
-            let callback = Box::new(callback);
+            let mut callback = Box::new(callback);
             let timer_id = sys::SDL_AddTimer(
                 delay,
                 Some(c_timer_callback),
-                mem::transmute_copy(&callback),
+                &mut *callback as *mut TimerCallback as *mut c_void,
             );
 
             Timer {
@@ -90,23 +91,23 @@ impl TimerSubsystem {
     }
 }
 
-pub type TimerCallback<'a> = Box<dyn FnMut() -> u32 + 'a + Send>;
+pub type TimerCallback = Box<dyn FnMut() -> u32 + 'static + Send>;
 
-pub struct Timer<'b, 'a> {
-    callback: Option<Box<TimerCallback<'a>>>,
+pub struct Timer<'a> {
+    callback: Option<Box<TimerCallback>>,
     raw: sys::SDL_TimerID,
-    _marker: PhantomData<&'b ()>,
+    _marker: PhantomData<&'a ()>,
 }
 
-impl<'b, 'a> Timer<'b, 'a> {
+impl<'a> Timer<'a> {
     /// Returns the closure as a trait-object and cancels the timer
     /// by consuming it...
-    pub fn into_inner(mut self) -> TimerCallback<'a> {
+    pub fn into_inner(mut self) -> TimerCallback {
         *self.callback.take().unwrap()
     }
 }
 
-impl<'b, 'a> Drop for Timer<'b, 'a> {
+impl<'a> Drop for Timer<'a> {
     #[inline]
     #[doc(alias = "SDL_RemoveTimer")]
     fn drop(&mut self) {
@@ -117,16 +118,14 @@ impl<'b, 'a> Drop for Timer<'b, 'a> {
     }
 }
 
-extern "C" fn c_timer_callback(_interval: u32, param: *mut c_void) -> u32 {
-    // FIXME: This is UB if the callback panics! (But will realistically
-    // crash on stack underflow.)
-    //
-    // I tried using `std::panic::catch_unwind()` here and it compiled but
-    // would not catch. Maybe wait for `c_unwind` to stabilize? Then the behavior
-    // will automatically abort the process when panicking over an `extern "C"`
-    // function.
-    let f = param as *mut TimerCallback<'_>;
-    unsafe { (*f)() }
+unsafe extern "C" fn c_timer_callback(_interval: u32, param: *mut c_void) -> u32 {
+    match catch_unwind(|| {
+        let f = param.cast::<TimerCallback>();
+        unsafe { (*f)() }
+    }) {
+        Ok(ret) => ret,
+        Err(_) => abort(),
+    }
 }
 
 #[cfg(not(target_os = "macos"))]
@@ -151,7 +150,7 @@ mod test {
 
         let _timer = timer_subsystem.add_timer(
             20,
-            Box::new(|| {
+            Box::new(move || {
                 // increment up to 10 times (0 -> 9)
                 // tick again in 100ms after each increment
                 //
@@ -180,7 +179,7 @@ mod test {
 
         let _timer = timer_subsystem.add_timer(
             20,
-            Box::new(|| {
+            Box::new(move || {
                 let mut flag = timer_flag.lock().unwrap();
                 *flag = true;
                 0

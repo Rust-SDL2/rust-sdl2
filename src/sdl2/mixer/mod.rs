@@ -212,8 +212,8 @@ pub fn get_chunk_decoder(index: i32) -> String {
 /// The internal format for an audio chunk.
 #[derive(PartialEq)]
 pub struct Chunk {
-    pub raw: *mut mixer::Mix_Chunk,
-    pub owned: bool,
+    raw: *mut mixer::Mix_Chunk,
+    owned: bool,
 }
 
 impl Drop for Chunk {
