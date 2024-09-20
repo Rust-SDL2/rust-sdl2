@@ -94,18 +94,11 @@ pub fn set_preferred_locales<T: std::borrow::Borrow<Locale>>(
 fn format_locale_hint<T: std::borrow::Borrow<Locale>>(
     locales: impl IntoIterator<Item = T>,
 ) -> String {
-    let mut hint = String::new();
-
-    for locale in locales {
-        let locale = locale.borrow();
-        hint.push_str(&locale.lang);
-        if let Some(region) = &locale.country {
-            hint.push('_');
-            hint.push_str(&region);
-        }
-    }
-
-    hint
+    locales
+        .into_iter()
+        .map(|locale| locale.borrow().to_string())
+        .collect::<Vec<_>>()
+        .join(",")
 }
 
 #[doc(alias = "SDL_SetHint")]
@@ -167,11 +160,31 @@ mod test {
 
     #[test]
     fn locale() {
+        // Test set_preferred_locales
         let locales = vec![Locale {
             lang: "en".to_string(),
             country: Some("US".to_string()),
         }];
         set_preferred_locales(&locales);
         set_preferred_locales(locales);
+
+        // Test hint formatting
+        let locales = vec![Locale {
+            lang: "en".to_string(),
+            country: Some("US".to_string()),
+        }];
+        assert_eq!(format_locale_hint(&locales), "en_US");
+
+        let locales = [
+            Locale {
+                lang: "en".to_string(),
+                country: Some("US".to_string()),
+            },
+            Locale {
+                lang: "fr".to_string(),
+                country: Some("FR".to_string()),
+            },
+        ];
+        assert_eq!(format_locale_hint(locales), "en_US,fr_FR");
     }
 }

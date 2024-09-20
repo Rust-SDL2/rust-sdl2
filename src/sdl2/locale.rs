@@ -7,6 +7,19 @@ pub struct Locale {
     pub country: Option<String>,
 }
 
+impl ToString for Locale {
+    fn to_string(&self) -> String {
+        let mut hint = self.lang.to_string();
+
+        if let Some(region) = &self.country {
+            hint.push('_');
+            hint.push_str(&region);
+        }
+
+        hint
+    }
+}
+
 /// Get the user's preferred locales.
 ///
 /// [Official SDL documentation](https://wiki.libsdl.org/SDL_GetPreferredLocales)
