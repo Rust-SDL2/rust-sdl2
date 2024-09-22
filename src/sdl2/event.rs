@@ -320,6 +320,8 @@ pub enum EventType {
     RenderTargetsReset = SDL_EventType::SDL_RENDER_TARGETS_RESET as u32,
     RenderDeviceReset = SDL_EventType::SDL_RENDER_DEVICE_RESET as u32,
 
+    LocaleChanged = SDL_EventType::SDL_LOCALECHANGED as u32,
+
     User = SDL_EventType::SDL_USEREVENT as u32,
     Last = SDL_EventType::SDL_LASTEVENT as u32,
 }
@@ -894,6 +896,10 @@ pub enum Event {
         timestamp: u32,
     },
     RenderDeviceReset {
+        timestamp: u32,
+    },
+
+    LocaleChanged {
         timestamp: u32,
     },
 
@@ -1975,6 +1981,10 @@ impl Event {
                     timestamp: raw.common.timestamp,
                 },
 
+                EventType::LocaleChanged => Event::LocaleChanged {
+                    timestamp: raw.common.timestamp,
+                },
+
                 EventType::First => panic!("Unused event, EventType::First, was encountered"),
                 EventType::Last => panic!("Unusable event, EventType::Last, was encountered"),
 
@@ -2180,6 +2190,7 @@ impl Event {
             Self::AudioDeviceRemoved { timestamp, .. } => timestamp,
             Self::RenderTargetsReset { timestamp, .. } => timestamp,
             Self::RenderDeviceReset { timestamp, .. } => timestamp,
+            Self::LocaleChanged { timestamp, .. } => timestamp,
             Self::User { timestamp, .. } => timestamp,
             Self::Unknown { timestamp, .. } => timestamp,
         }
@@ -2571,6 +2582,27 @@ impl Event {
             self,
             Self::RenderTargetsReset { .. } | Self::RenderDeviceReset { .. }
         )
+    }
+
+    /// Returns `true` if this is a locale event.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sdl2::event::Event;
+    ///
+    /// let ev = Event::LocaleChanged {
+    ///    timestamp: 0,
+    /// };
+    /// assert!(ev.is_locale());
+    ///
+    /// let another_ev = Event::Quit {
+    ///   timestamp: 0,
+    /// };
+    /// assert!(another_ev.is_locale() == false); // Not a locale event!
+    /// ```
+    pub fn is_locale(&self) -> bool {
+        matches!(self, Self::LocaleChanged { .. })
     }
 
     /// Returns `true` if this is a user event.
