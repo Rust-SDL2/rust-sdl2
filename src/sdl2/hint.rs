@@ -88,15 +88,12 @@ pub fn get_video_minimize_on_focus_loss() -> bool {
 pub fn set_preferred_locales<T: std::borrow::Borrow<Locale>>(
     locales: impl IntoIterator<Item = T>,
 ) -> bool {
-    let Ok(formatted) = format_locale_hint(locales) else {
-        return false;
-    };
-    set(PREFERRED_LOCALES, &formatted)
+    set(PREFERRED_LOCALES, &format_locale_hint(locales))
 }
 
 fn format_locale_hint<T: std::borrow::Borrow<Locale>>(
     locales: impl IntoIterator<Item = T>,
-) -> Result<String, std::fmt::Error> {
+) -> String {
     use std::fmt::Write;
 
     let mut iter = locales.into_iter();
@@ -106,14 +103,14 @@ fn format_locale_hint<T: std::borrow::Borrow<Locale>>(
     let mut formatted = String::with_capacity(reserve * 6);
 
     if let Some(first) = iter.next() {
-        write!(formatted, "{}", first.borrow())?;
+        write!(formatted, "{}", first.borrow()).ok();
     }
 
     for locale in iter {
-        write!(formatted, ",{}", locale.borrow())?;
+        write!(formatted, ",{}", locale.borrow()).ok();
     }
 
-    Ok(formatted)
+    formatted
 }
 
 #[doc(alias = "SDL_SetHint")]
@@ -184,14 +181,14 @@ mod test {
         set_preferred_locales(locales);
 
         // Test hint formatting
-        assert_eq!(format_locale_hint(&[]), Ok(String::new()));
+        assert_eq!(format_locale_hint(&[]), "");
 
         assert_eq!(
             format_locale_hint([Locale {
                 lang: "en".to_string(),
                 country: None,
             }]),
-            Ok("en".to_string())
+            "en"
         );
 
         assert_eq!(
@@ -199,7 +196,7 @@ mod test {
                 lang: "en".to_string(),
                 country: Some("US".to_string()),
             }]),
-            Ok("en_US".to_string())
+            "en_US"
         );
 
         assert_eq!(
@@ -213,7 +210,7 @@ mod test {
                     country: Some("FR".to_string()),
                 },
             ]),
-            Ok("en_US,fr_FR".to_string())
+            "en_US,fr_FR"
         );
     }
 }
