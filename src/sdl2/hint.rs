@@ -88,17 +88,32 @@ pub fn get_video_minimize_on_focus_loss() -> bool {
 pub fn set_preferred_locales<T: std::borrow::Borrow<Locale>>(
     locales: impl IntoIterator<Item = T>,
 ) -> bool {
-    set(PREFERRED_LOCALES, &format_locale_hint(locales))
+    let Ok(formatted) = format_locale_hint(locales) else {
+        return false;
+    };
+    set(PREFERRED_LOCALES, &formatted)
 }
 
 fn format_locale_hint<T: std::borrow::Borrow<Locale>>(
     locales: impl IntoIterator<Item = T>,
-) -> String {
-    locales
-        .into_iter()
-        .map(|locale| locale.borrow().to_string())
-        .collect::<Vec<_>>()
-        .join(",")
+) -> Result<String, std::fmt::Error> {
+    use std::fmt::Write;
+
+    let mut iter = locales.into_iter();
+    let (reserve, _) = iter.size_hint();
+    // Assuming that most locales will be of the form "xx_yy",
+    // plus 1 char for the comma.
+    let mut formatted = String::with_capacity(reserve * 6);
+
+    if let Some(first) = iter.next() {
+        write!(formatted, "{}", first.borrow())?;
+    }
+
+    for locale in iter {
+        write!(formatted, ",{}", locale.borrow())?;
+    }
+
+    Ok(formatted)
 }
 
 #[doc(alias = "SDL_SetHint")]
@@ -161,7 +176,7 @@ mod test {
     #[test]
     fn locale() {
         // Test set_preferred_locales
-        let locales = vec![Locale {
+        let locales = [Locale {
             lang: "en".to_string(),
             country: Some("US".to_string()),
         }];
@@ -169,22 +184,36 @@ mod test {
         set_preferred_locales(locales);
 
         // Test hint formatting
-        let locales = vec![Locale {
-            lang: "en".to_string(),
-            country: Some("US".to_string()),
-        }];
-        assert_eq!(format_locale_hint(&locales), "en_US");
+        assert_eq!(format_locale_hint(&[]), Ok(String::new()));
 
-        let locales = [
-            Locale {
+        assert_eq!(
+            format_locale_hint([Locale {
+                lang: "en".to_string(),
+                country: None,
+            }]),
+            Ok("en".to_string())
+        );
+
+        assert_eq!(
+            format_locale_hint([Locale {
                 lang: "en".to_string(),
                 country: Some("US".to_string()),
-            },
-            Locale {
-                lang: "fr".to_string(),
-                country: Some("FR".to_string()),
-            },
-        ];
-        assert_eq!(format_locale_hint(locales), "en_US,fr_FR");
+            }]),
+            Ok("en_US".to_string())
+        );
+
+        assert_eq!(
+            format_locale_hint([
+                Locale {
+                    lang: "en".to_string(),
+                    country: Some("US".to_string()),
+                },
+                Locale {
+                    lang: "fr".to_string(),
+                    country: Some("FR".to_string()),
+                },
+            ]),
+            Ok("en_US,fr_FR".to_string())
+        );
     }
 }

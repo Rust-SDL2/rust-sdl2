@@ -7,16 +7,15 @@ pub struct Locale {
     pub country: Option<String>,
 }
 
-impl ToString for Locale {
-    fn to_string(&self) -> String {
-        let mut hint = self.lang.to_string();
+impl std::fmt::Display for Locale {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.lang)?;
 
         if let Some(region) = &self.country {
-            hint.push('_');
-            hint.push_str(&region);
+            write!(f, "_{}", region)?;
         }
 
-        hint
+        Ok(())
     }
 }
 
@@ -26,7 +25,7 @@ impl ToString for Locale {
 ///
 /// # Example
 /// ```
-/// let locales = vec![sdl2::locale::Locale {
+/// let locales = [sdl2::locale::Locale {
 ///   lang: "en".to_string(),
 ///   country: Some("US".to_string()),
 /// }];
