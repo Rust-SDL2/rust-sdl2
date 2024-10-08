@@ -23,9 +23,7 @@
 mod context;
 mod font;
 
-pub use self::context::{
-    get_linked_version, has_been_initialized, init, InitError, Sdl2TtfContext,
-};
+pub use self::context::{get_linked_version, has_been_initialized, init, Sdl2TtfContext};
 pub use self::font::{
     Font, FontError, FontResult, FontStyle, GlyphMetrics, Hinting, PartialRendering,
 };

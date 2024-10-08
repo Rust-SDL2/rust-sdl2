@@ -91,41 +91,14 @@ pub fn get_linked_version() -> Version {
     Version::from_ll(unsafe { *ttf::TTF_Linked_Version() })
 }
 
-/// An error for when `sdl2_ttf` is attempted initialized twice
-/// Necessary for context management, unless we find a way to have a singleton
-#[derive(Debug)]
-pub enum InitError {
-    InitializationError(String),
-    AlreadyInitializedError,
-}
-
-impl error::Error for InitError {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        match *self {
-            InitError::InitializationError(_) | InitError::AlreadyInitializedError => None,
-        }
-    }
-}
-
-impl fmt::Display for InitError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::AlreadyInitializedError => {
-                write!(f, "SDL2_TTF has already been initialized")
-            }
-            Self::InitializationError(error) => write!(f, "SDL2_TTF initialization error: {error}"),
-        }
-    }
-}
-
 /// Initializes the truetype font API and returns a context manager which will
 /// clean up the library once it goes out of scope.
 #[doc(alias = "TTF_Init")]
-pub fn init() -> Result<Sdl2TtfContext, InitError> {
+pub fn init() -> Result<Sdl2TtfContext, String> {
     if unsafe { ttf::TTF_Init() } == 0 {
         Ok(Sdl2TtfContext(()))
     } else {
-        Err(InitError::InitializationError(get_error()))
+        Err(get_error())
     }
 }
 
