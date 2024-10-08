@@ -2,7 +2,6 @@ use get_error;
 use rwops::RWops;
 use std::error;
 use std::fmt;
-use std::io;
 use std::os::raw::{c_int, c_long};
 use std::path::Path;
 use sys::ttf;
@@ -14,7 +13,14 @@ use super::font::{
 
 /// A context manager for `SDL2_TTF` to manage C code initialization and clean-up.
 #[must_use]
-pub struct Sdl2TtfContext;
+pub struct Sdl2TtfContext(());
+
+impl Clone for Sdl2TtfContext {
+    fn clone(&self) -> Self {
+        // This should not return an error because SDL_ttf is already initialized
+        init().unwrap()
+    }
+}
 
 // Clean up the context once it goes out of scope
 impl Drop for Sdl2TtfContext {
@@ -54,7 +60,7 @@ impl Sdl2TtfContext {
         point_size: u16,
     ) -> Result<Font<'ttf, 'r>, String> {
         let raw = unsafe { ttf::TTF_OpenFontRW(rwops.raw(), 0, point_size as c_int) };
-        if (raw as *mut ()).is_null() {
+        if raw.is_null() {
             Err(get_error())
         } else {
             Ok(internal_load_font_from_ll(raw, Some(rwops)))
@@ -72,7 +78,7 @@ impl Sdl2TtfContext {
         let raw = unsafe {
             ttf::TTF_OpenFontIndexRW(rwops.raw(), 0, point_size as c_int, index as c_long)
         };
-        if (raw as *mut ()).is_null() {
+        if raw.is_null() {
             Err(get_error())
         } else {
             Ok(internal_load_font_from_ll(raw, Some(rwops)))
@@ -82,22 +88,21 @@ impl Sdl2TtfContext {
 
 /// Returns the version of the dynamically linked `SDL_TTF` library
 pub fn get_linked_version() -> Version {
-    unsafe { Version::from_ll(*ttf::TTF_Linked_Version()) }
+    Version::from_ll(unsafe { *ttf::TTF_Linked_Version() })
 }
 
 /// An error for when `sdl2_ttf` is attempted initialized twice
 /// Necessary for context management, unless we find a way to have a singleton
 #[derive(Debug)]
 pub enum InitError {
-    InitializationError(io::Error),
+    InitializationError(String),
     AlreadyInitializedError,
 }
 
 impl error::Error for InitError {
     fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match *self {
-            InitError::AlreadyInitializedError => None,
-            InitError::InitializationError(ref error) => Some(error),
+            InitError::InitializationError(_) | InitError::AlreadyInitializedError => None,
         }
     }
 }
@@ -115,19 +120,20 @@ impl fmt::Display for InitError {
 
 /// Initializes the truetype font API and returns a context manager which will
 /// clean up the library once it goes out of scope.
+#[doc(alias = "TTF_Init")]
 pub fn init() -> Result<Sdl2TtfContext, InitError> {
-    unsafe {
-        if ttf::TTF_WasInit() == 1 {
-            Err(InitError::AlreadyInitializedError)
-        } else if ttf::TTF_Init() == 0 {
-            Ok(Sdl2TtfContext)
-        } else {
-            Err(InitError::InitializationError(io::Error::last_os_error()))
-        }
+    if unsafe { ttf::TTF_Init() } == 0 {
+        Ok(Sdl2TtfContext(()))
+    } else {
+        Err(InitError::InitializationError(get_error()))
     }
 }
 
 /// Returns whether library has been initialized already.
 pub fn has_been_initialized() -> bool {
-    unsafe { ttf::TTF_WasInit() == 1 }
+    amount_of_times_initialized() != 0
+}
+
+fn amount_of_times_initialized() -> c_int {
+    unsafe { ttf::TTF_WasInit() }
 }
