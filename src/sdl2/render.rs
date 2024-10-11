@@ -1,6 +1,6 @@
 //! 2D accelerated rendering
 //!
-//! Official C documentation: https://wiki.libsdl.org/CategoryRender
+//! Official C documentation: <https://wiki.libsdl.org/SDL2/CategoryRender>
 //! # Introduction
 //!
 //! This module contains functions for 2D accelerated rendering.
@@ -56,6 +56,9 @@ use std::rc::Rc;
 use crate::sys;
 use crate::sys::SDL_BlendMode;
 use crate::sys::SDL_TextureAccess;
+
+pub use sys::BlendFactor;
+pub use sys::BlendOp;
 
 /// Contains the description of an error returned by SDL
 #[derive(Debug, Clone)]
@@ -129,49 +132,176 @@ pub struct RendererInfo {
     pub max_texture_height: u32,
 }
 
-/// Blend mode for `Canvas`, `Texture` or `Surface`.
-#[repr(i32)]
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
-pub enum BlendMode {
-    /// no blending (replace destination with source).
-    None = SDL_BlendMode::SDL_BLENDMODE_NONE as i32,
-    /// Alpha blending
-    ///
-    /// dstRGB = (srcRGB * srcA) + (dstRGB * (1-srcA))
-    ///
-    /// dstA = srcA + (dstA * (1-srcA))
-    Blend = SDL_BlendMode::SDL_BLENDMODE_BLEND as i32,
-    /// Additive blending
-    ///
-    /// dstRGB = (srcRGB * srcA) + dstRGB
-    ///
-    /// dstA = dstA (keep original alpha)
-    Add = SDL_BlendMode::SDL_BLENDMODE_ADD as i32,
-    /// Color modulate
-    ///
-    /// dstRGB = srcRGB * dstRGB
-    Mod = SDL_BlendMode::SDL_BLENDMODE_MOD as i32,
-    /// Color multiply
-    Mul = SDL_BlendMode::SDL_BLENDMODE_MUL as i32,
-    /// Invalid blending mode (indicates error)
-    Invalid = SDL_BlendMode::SDL_BLENDMODE_INVALID as i32,
+/// The intermediary builder type for composing custom blend modes.
+#[derive(Clone, Copy, Eq, PartialEq, Debug)]
+pub struct BlendModeBuilder {
+    src_col: BlendFactor,
+    dst_col: BlendFactor,
+    src_alpha: BlendFactor,
+    dst_alpha: BlendFactor,
+    col_op: BlendOp,
+    alpha_op: BlendOp,
 }
 
-impl TryFrom<u32> for BlendMode {
-    type Error = ();
+impl BlendModeBuilder {
+    /// Instantiate a new `BlendModeBuilder`.
+    ///
+    /// The builder has the same values set on instantiation
+    /// that would produce the effect equivalent to [`BlendMode::None`]
+    /// when built and used.
+    ///
+    /// However, `BlendModeBuilder` only ever outputs [`BlendMode::Custom`]
+    /// when built, even if the produced blend mode was functionally
+    /// identical to any of the predefined blend modes.
+    ///
+    /// ```
+    /// use sdl2::render::{BlendModeBuilder,BlendMode,BlendFactor,BlendOp};
+    ///
+    /// // The following two are equal
+    /// // and produce equal results when composed
+    /// let bmb1 = BlendModeBuilder::new();
+    /// let bmb2 = BlendModeBuilder::new()
+    ///     .src_dst_col(BlendFactor::One,BlendFactor::Zero)
+    ///     .src_dst_alpha(BlendFactor::One,BlendFactor::Zero)
+    ///     .col_op(BlendOp::Add)
+    ///     .alpha_op(BlendOp::Add);
+    ///
+    /// assert_eq!(bmb1,bmb2);
+    /// assert_eq!(bmb1.build(),bmb2.build());
+    /// ```
+    pub fn new() -> BlendModeBuilder {
+        BlendModeBuilder {
+            src_col: BlendFactor::One,
+            dst_col: BlendFactor::Zero,
+            src_alpha: BlendFactor::One,
+            dst_alpha: BlendFactor::Zero,
+            col_op: BlendOp::Add,
+            alpha_op: BlendOp::Add,
+        }
+    }
 
-    fn try_from(n: u32) -> Result<Self, Self::Error> {
+    /// Set source color and destination color blend factors.
+    pub fn src_dst_col(mut self, src: BlendFactor, dst: BlendFactor) -> BlendModeBuilder {
+        self.src_col = src;
+        self.dst_col = dst;
+        self
+    }
+
+    /// Set source alpha and destination alpha blend factors.
+    pub fn src_dst_alpha(mut self, src: BlendFactor, dst: BlendFactor) -> BlendModeBuilder {
+        self.src_alpha = src;
+        self.dst_alpha = dst;
+        self
+    }
+
+    /// Set color blend operation.
+    pub fn col_op(mut self, col: BlendOp) -> BlendModeBuilder {
+        self.col_op = col;
+        self
+    }
+
+    /// Set alpha blend operation.
+    pub fn alpha_op(mut self, alpha: BlendOp) -> BlendModeBuilder {
+        self.alpha_op = alpha;
+        self
+    }
+
+    /// Compose the custom blend mode.
+    ///
+    /// The composed blend mode is always of the enum variant [`BlendMode::Custom`],
+    /// even if its parameters corresponded to any of the predefined blend modes.
+    pub fn build(&self) -> BlendMode {
+        let BlendModeBuilder {
+            src_col,
+            dst_col,
+            src_alpha,
+            dst_alpha,
+            col_op,
+            alpha_op,
+        } = self;
+        BlendMode::Custom(BlendValue(unsafe {
+            sys::SDL_ComposeCustomBlendMode(
+                *src_col, *dst_col, *col_op, *src_alpha, *dst_alpha, *alpha_op,
+            )
+        }))
+    }
+}
+
+/// An opaque type to represent bit flags for custom blend modes.
+///
+/// Only exists as part of [`BlendMode::Custom`].
+/// Cannot be instantiated separately.
+#[derive(Clone, Copy, Eq, PartialEq, Debug, Hash)]
+pub struct BlendValue(u32);
+
+/// Blend mode for `Canvas`, `Texture` or `Surface`.
+#[derive(Clone, Copy, Eq, PartialEq, Debug, Hash)]
+pub enum BlendMode {
+    /// No blending (replace destination with source):
+    ///
+    /// `dstRGBA = srcRGBA`
+    None,
+    /// Alpha blending:
+    ///
+    /// `dstRGB = (srcRGB * srcA) + (dstRGB * (1 - srcA))`
+    ///
+    /// `dstA = srcA + (dstA * (1 - srcA))`
+    Blend,
+    /// Additive blending:
+    ///
+    /// `dstRGB = (srcRGB * srcA) + dstRGB`
+    ///
+    /// `dstA = dstA`
+    Add,
+    /// Color modulation:
+    ///
+    /// `dstRGB = srcRGB * dstRGB`
+    ///
+    /// `dstA = dstA`
+    Mod,
+    /// Color multiplication:
+    ///
+    /// `dstRGB = (srcRGB * dstRGB) + (dstRGB * (1 - srcA))`
+    ///
+    /// `dstA = dstA`
+    Mul,
+    /// Invalid blending mode, indicates error.
+    Invalid,
+    /// Custom blend mode, composed using [`BlendModeBuilder::build`].
+    Custom(BlendValue),
+}
+
+impl Into<u32> for BlendMode {
+    fn into(self) -> u32 {
         use self::BlendMode::*;
-        use crate::sys::SDL_BlendMode::*;
+        use sys::blend_modes::*;
 
-        Ok(match unsafe { transmute(n) } {
-            SDL_BLENDMODE_NONE => None,
-            SDL_BLENDMODE_BLEND => Blend,
-            SDL_BLENDMODE_ADD => Add,
-            SDL_BLENDMODE_MOD => Mod,
-            SDL_BLENDMODE_MUL => Mul,
-            SDL_BLENDMODE_INVALID => Invalid,
-        })
+        match self {
+            None => NONE,
+            Blend => BLEND,
+            Add => ADD,
+            Mod => MOD,
+            Mul => MUL,
+            Invalid => INVALID,
+            Custom(BlendValue(x)) => x,
+        }
+    }
+}
+
+impl From<u32> for BlendMode {
+    fn from(n: u32) -> BlendMode {
+        use self::BlendMode::*;
+        use sys::blend_modes::*;
+
+        match n {
+            NONE => None,
+            BLEND => Blend,
+            ADD => Add,
+            MOD => Mod,
+            MUL => Mul,
+            INVALID => Invalid,
+            x => Custom(BlendValue(x)),
+        }
     }
 }
 
@@ -995,7 +1125,7 @@ impl<T: RenderTarget> Canvas<T> {
     #[doc(alias = "SDL_SetRenderDrawBlendMode")]
     pub fn set_blend_mode(&mut self, blend: BlendMode) {
         let ret =
-            unsafe { sys::SDL_SetRenderDrawBlendMode(self.context.raw, transmute(blend as u32)) };
+            unsafe { sys::SDL_SetRenderDrawBlendMode(self.context.raw, Into::<u32>::into(blend)) };
         // Should only fail on an invalid renderer
         if ret != 0 {
             panic!("{}", get_error())
@@ -1012,7 +1142,7 @@ impl<T: RenderTarget> Canvas<T> {
             panic!("{}", get_error())
         } else {
             let blend = unsafe { blend.assume_init() };
-            BlendMode::try_from(blend as u32).unwrap()
+            BlendMode::from(blend)
         }
     }
 
@@ -2121,7 +2251,7 @@ impl InternalTexture {
 
     #[doc(alias = "SDL_SetTextureBlendMode")]
     pub fn set_blend_mode(&mut self, blend: BlendMode) {
-        let ret = unsafe { sys::SDL_SetTextureBlendMode(self.raw, transmute(blend as u32)) };
+        let ret = unsafe { sys::SDL_SetTextureBlendMode(self.raw, Into::<u32>::into(blend)) };
 
         if ret != 0 {
             panic!("Error setting blend: {}", get_error())
@@ -2138,7 +2268,7 @@ impl InternalTexture {
             panic!("{}", get_error())
         } else {
             let blend = unsafe { blend.assume_init() };
-            BlendMode::try_from(blend as u32).unwrap()
+            BlendMode::from(blend)
         }
     }
 
