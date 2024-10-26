@@ -56,8 +56,8 @@ impl Category {
             Category::Input => sys::SDL_LogCategory::SDL_LOG_CATEGORY_INPUT as u32,
             Category::Test => sys::SDL_LogCategory::SDL_LOG_CATEGORY_TEST as u32,
             Category::Custom => sys::SDL_LogCategory::SDL_LOG_CATEGORY_CUSTOM as u32,
-            Category::Unknown => sys::SDL_LogCategory::SDL_LOG_CATEGORY_APPLICATION as u32
-        }
+            Category::Unknown => sys::SDL_LogCategory::SDL_LOG_CATEGORY_APPLICATION as u32,
+        };
     }
 }
 
@@ -125,75 +125,78 @@ pub fn log(message: &str) {
 /// Critical log function which takes as priority CRITICAL
 #[doc(alias = "SDL_LogCritical")]
 pub fn log_critical(message: &str, category: Category) {
-    log_with_category(message, category, sdl_log_critical);
+    unsafe {
+        log_with_category(message, category, |category, fmt| {
+            crate::sys::SDL_LogCritical(category, fmt)
+        });
+    }
 }
 
 /// Debug log function which takes as priority DEBUG
 #[doc(alias = "SDL_LogDebug")]
 pub fn log_debug(message: &str, category: Category) {
-    log_with_category(message, category, sdl_log_debug);
+    unsafe {
+        log_with_category(message, category, |category, fmt| {
+            crate::sys::SDL_LogDebug(category, fmt)
+        });
+    }
 }
 
 /// Error log function which takes as priority ERROR
 #[doc(alias = "SDL_LogError")]
 pub fn log_error(message: &str, category: Category) {
-    log_with_category(message, category, sdl_log_error);
+    unsafe {
+        log_with_category(message, category, |category, fmt| {
+            crate::sys::SDL_LogError(category, fmt)
+        });
+    }
 }
 
 /// Info log function which takes as priority INFO
 #[doc(alias = "SDL_LogInfo")]
 pub fn log_info(message: &str, category: Category) {
-    log_with_category(message, category, sdl_log_info);
+    unsafe {
+        log_with_category(message, category, |category, fmt| {
+            crate::sys::SDL_LogInfo(category, fmt)
+        });
+    }
 }
 
 /// Verbose log function which takes as priority VERBOSE
 #[doc(alias = "SDL_LogVerbose")]
 pub fn log_verbose(message: &str, category: Category) {
-    log_with_category(message, category, sdl_log_verbose);
+    unsafe {
+        log_with_category(message, category, |category, fmt| {
+            crate::sys::SDL_LogVerbose(category, fmt)
+        });
+    }
 }
 
 /// Warn log function which takes as priority WARN
 #[doc(alias = "SDL_LogWarn")]
 pub fn log_warn(message: &str, category: Category) {
-    log_with_category(message, category, sdl_log_warn);
+    unsafe {
+        log_with_category(message, category, |category, fmt| {
+            crate::sys::SDL_LogWarn(category, fmt)
+        });
+    }
 }
 
 /// uses the sdl_log_func to log the message, when category cannot be converted, then Category: Application will be used
-fn log_with_category(message: &str, category: Category, sdl_log_func: unsafe fn(category: libc::c_int, fmt: *const libc::c_char)) {
+fn log_with_category(
+    message: &str,
+    category: Category,
+    sdl_log_func: unsafe fn(category: libc::c_int, fmt: *const libc::c_char),
+) {
     let message = message.replace('%', "%%");
     let message = CString::new(message).unwrap();
-    let uccategory =  Category::into_ll(category).try_into();
+    let uccategory = Category::into_ll(category).try_into();
     let ccategory = match uccategory {
         Err(_) => Category::into_ll(Category::Application).try_into().unwrap(),
-        Ok(success) => success
+        Ok(success) => success,
     };
 
     unsafe {
         sdl_log_func(ccategory, message.as_ptr());
     }
-}
-
-unsafe fn sdl_log_critical(category: libc::c_int, fmt: *const libc::c_char){
-    crate::sys::SDL_LogCritical(category,fmt);
-}
-
-unsafe fn sdl_log_debug(category: libc::c_int, fmt: *const libc::c_char){
-    crate::sys::SDL_LogDebug(category,fmt);
-}
-
-unsafe fn sdl_log_error(category: libc::c_int, fmt: *const libc::c_char){
-    crate::sys::SDL_LogError(category,fmt);
-}
-
-unsafe fn sdl_log_info(category: libc::c_int, fmt: *const libc::c_char){
-    crate::sys::SDL_LogInfo(category,fmt);
-}
-
-
-unsafe fn sdl_log_verbose(category: libc::c_int, fmt: *const libc::c_char){
-    crate::sys::SDL_LogVerbose(category,fmt);
-}
-
-unsafe fn sdl_log_warn(category: libc::c_int, fmt: *const libc::c_char){
-    crate::sys::SDL_LogWarn(category,fmt);
 }
