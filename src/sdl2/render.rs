@@ -2123,8 +2123,7 @@ impl InternalTexture {
 
     #[doc(alias = "SDL_SetTextureScaleMode")]
     pub fn set_scale_mode(&mut self, scale: ScaleMode) {
-        let ret =
-            unsafe { sys::SDL_SetTextureScaleMode(self.raw, transmute(scale as u32)) };
+        let ret = unsafe { sys::SDL_SetTextureScaleMode(self.raw, transmute(scale as u32)) };
         if ret != 0 {
             panic!("Error setting scale mode: {}", get_error())
         }
