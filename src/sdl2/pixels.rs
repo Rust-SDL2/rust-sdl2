@@ -1,6 +1,5 @@
 use crate::sys;
 use std::convert::TryFrom;
-use std::mem::transmute;
 
 use crate::get_error;
 
@@ -453,47 +452,49 @@ impl TryFrom<u32> for PixelFormatEnum {
     fn try_from(n: u32) -> Result<Self, Self::Error> {
         use self::PixelFormatEnum::*;
 
-        Ok(match unsafe { transmute(n) } {
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_UNKNOWN => Unknown,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_INDEX1LSB => Index1LSB,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_INDEX1MSB => Index1MSB,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_INDEX4LSB => Index4LSB,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_INDEX4MSB => Index4MSB,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_INDEX8 => Index8,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGB332 => RGB332,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGB444 => RGB444,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGB555 => RGB555,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_BGR555 => BGR555,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_ARGB4444 => ARGB4444,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGBA4444 => RGBA4444,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_ABGR4444 => ABGR4444,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_BGRA4444 => BGRA4444,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_ARGB1555 => ARGB1555,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGBA5551 => RGBA5551,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_ABGR1555 => ABGR1555,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_BGRA5551 => BGRA5551,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGB565 => RGB565,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_BGR565 => BGR565,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGB24 => RGB24,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_BGR24 => BGR24,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGB888 => RGB888,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGBX8888 => RGBX8888,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_BGR888 => BGR888,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_BGRX8888 => BGRX8888,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_ARGB8888 => ARGB8888,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGBA8888 => RGBA8888,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_ABGR8888 => ABGR8888,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_BGRA8888 => BGRA8888,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_ARGB2101010 => ARGB2101010,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_YV12 => YV12,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_IYUV => IYUV,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_YUY2 => YUY2,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_UYVY => UYVY,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_YVYU => YVYU,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_NV12 => NV12,
-            sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_NV21 => NV21,
-            _ => return Err(()),
-        })
+        match n {
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_UNKNOWN as u32 => Ok(Unknown),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_INDEX1LSB as u32 => Ok(Index1LSB),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_INDEX1MSB as u32 => Ok(Index1MSB),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_INDEX4LSB as u32 => Ok(Index4LSB),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_INDEX4MSB as u32 => Ok(Index4MSB),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_INDEX8 as u32 => Ok(Index8),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGB332 as u32 => Ok(RGB332),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGB444 as u32 => Ok(RGB444),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGB555 as u32 => Ok(RGB555),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_BGR555 as u32 => Ok(BGR555),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_ARGB4444 as u32 => Ok(ARGB4444),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGBA4444 as u32 => Ok(RGBA4444),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_ABGR4444 as u32 => Ok(ABGR4444),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_BGRA4444 as u32 => Ok(BGRA4444),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_ARGB1555 as u32 => Ok(ARGB1555),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGBA5551 as u32 => Ok(RGBA5551),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_ABGR1555 as u32 => Ok(ABGR1555),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_BGRA5551 as u32 => Ok(BGRA5551),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGB565 as u32 => Ok(RGB565),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_BGR565 as u32 => Ok(BGR565),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGB24 as u32 => Ok(RGB24),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_BGR24 as u32 => Ok(BGR24),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGB888 as u32 => Ok(RGB888),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGBX8888 as u32 => Ok(RGBX8888),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_BGR888 as u32 => Ok(BGR888),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_BGRX8888 as u32 => Ok(BGRX8888),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_ARGB8888 as u32 => Ok(ARGB8888),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGBA8888 as u32 => Ok(RGBA8888),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_ABGR8888 as u32 => Ok(ABGR8888),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_BGRA8888 as u32 => Ok(BGRA8888),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_ARGB2101010 as u32 => {
+                Ok(ARGB2101010)
+            }
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_YV12 as u32 => Ok(YV12),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_IYUV as u32 => Ok(IYUV),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_YUY2 as u32 => Ok(YUY2),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_UYVY as u32 => Ok(UYVY),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_YVYU as u32 => Ok(YVYU),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_NV12 as u32 => Ok(NV12),
+            x if x == sys::SDL_PixelFormatEnum::SDL_PIXELFORMAT_NV21 as u32 => Ok(NV21),
+            _ => Err(()),
+        }
     }
 }
 

@@ -111,11 +111,12 @@ impl TryFrom<u32> for TextureAccess {
         use self::TextureAccess::*;
         use crate::sys::SDL_TextureAccess::*;
 
-        Ok(match unsafe { transmute(n) } {
-            SDL_TEXTUREACCESS_STATIC => Static,
-            SDL_TEXTUREACCESS_STREAMING => Streaming,
-            SDL_TEXTUREACCESS_TARGET => Target,
-        })
+        match n {
+            x if x == SDL_TEXTUREACCESS_STATIC as u32 => Ok(Static),
+            x if x == SDL_TEXTUREACCESS_STREAMING as u32 => Ok(Streaming),
+            x if x == SDL_TEXTUREACCESS_TARGET as u32 => Ok(Target),
+            _ => Err(()),
+        }
     }
 }
 
@@ -165,14 +166,15 @@ impl TryFrom<u32> for BlendMode {
         use self::BlendMode::*;
         use crate::sys::SDL_BlendMode::*;
 
-        Ok(match unsafe { transmute(n) } {
-            SDL_BLENDMODE_NONE => None,
-            SDL_BLENDMODE_BLEND => Blend,
-            SDL_BLENDMODE_ADD => Add,
-            SDL_BLENDMODE_MOD => Mod,
-            SDL_BLENDMODE_MUL => Mul,
-            SDL_BLENDMODE_INVALID => Invalid,
-        })
+        match n {
+            x if x == SDL_BLENDMODE_NONE as u32 => Ok(None),
+            x if x == SDL_BLENDMODE_BLEND as u32 => Ok(Blend),
+            x if x == SDL_BLENDMODE_ADD as u32 => Ok(Add),
+            x if x == SDL_BLENDMODE_MOD as u32 => Ok(Mod),
+            x if x == SDL_BLENDMODE_MUL as u32 => Ok(Mul),
+            x if x == SDL_BLENDMODE_INVALID as u32 => Ok(Invalid),
+            _ => Err(()),
+        }
     }
 }
 
@@ -191,11 +193,12 @@ impl TryFrom<u32> for ScaleMode {
     type Error = ();
 
     fn try_from(n: u32) -> Result<Self, Self::Error> {
-        Ok(match unsafe { transmute(n) } {
-            crate::sys::SDL_ScaleMode::SDL_ScaleModeNearest => self::ScaleMode::Nearest,
-            crate::sys::SDL_ScaleMode::SDL_ScaleModeLinear => self::ScaleMode::Linear,
-            crate::sys::SDL_ScaleMode::SDL_ScaleModeBest => self::ScaleMode::Best,
-        })
+        match n {
+            x if x == crate::sys::SDL_ScaleMode::SDL_ScaleModeNearest as u32 => Ok(ScaleMode::Nearest),
+            x if x == crate::sys::SDL_ScaleMode::SDL_ScaleModeLinear as u32 => Ok(ScaleMode::Linear),
+            x if x == crate::sys::SDL_ScaleMode::SDL_ScaleModeBest as u32 => Ok(ScaleMode::Best),
+            _ => Err(()),
+        }
     }
 }
 
