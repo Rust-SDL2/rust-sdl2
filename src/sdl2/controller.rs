@@ -112,6 +112,30 @@ impl GameControllerSubsystem {
         }
     }
 
+    /// Return the instance ID of the controller with player index `player_index`.
+    #[doc(alias = "SDL_GameControllerFromPlayerIndex")]
+    pub fn instance_id_for_player_index(&self, player_index: u32) -> Result<Option<u32>, IntegerOrSdlError> {
+        let player_index = validate_int(player_index, "player_index")?;
+
+        let controller = unsafe { sys::SDL_GameControllerFromPlayerIndex(player_index) };
+
+        if controller.is_null() {
+            Ok(None)
+        } else {
+            let result = unsafe {
+                let joystick = sys::SDL_GameControllerGetJoystick(controller);
+                sys::SDL_JoystickInstanceID(joystick)
+            };
+    
+            if result < 0 {
+                // Should only fail if the joystick is NULL.
+                panic!("{}", get_error())
+            } else {
+                Ok(Some(result as u32))
+            }
+        }
+    }
+
     /// If state is `true` controller events are processed, otherwise
     /// they're ignored.
     #[doc(alias = "SDL_GameControllerEventState")]
@@ -542,6 +566,32 @@ impl GameController {
             Err(IntegerOrSdlError::SdlError(get_error()))
         } else {
             Ok(())
+        }
+    }
+
+    /// Set player index for game controller or `None` to clear the player index and turn off player LEDs.
+    #[doc(alias = "SDL_GameControllerSetPlayerIndex")]
+    pub fn set_player_index(&mut self, player_index: Option<u32>) -> Result<(), IntegerOrSdlError> {
+        let player_index = match player_index {
+            None => -1,
+            Some(player_index) => validate_int(player_index, "player_index")?,
+        };
+
+        unsafe { sys::SDL_GameControllerSetPlayerIndex(self.raw, player_index) };
+
+        Ok(())
+    }
+
+    /// Get player index for game controller or `None` if it's not available.
+    #[doc(alias = "SDL_GameControllerGetPlayerIndex")]
+    pub fn get_player_index(&self) -> Option<u32> {
+        let player_index = unsafe { sys::SDL_GameControllerGetPlayerIndex(self.raw) };
+
+        // if index is -1, controller has no player 
+        if player_index == -1 {
+            None
+        } else {
+            Some(player_index as u32)
         }
     }
 
