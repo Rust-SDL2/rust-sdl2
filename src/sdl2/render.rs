@@ -194,8 +194,12 @@ impl TryFrom<u32> for ScaleMode {
 
     fn try_from(n: u32) -> Result<Self, Self::Error> {
         match n {
-            x if x == crate::sys::SDL_ScaleMode::SDL_ScaleModeNearest as u32 => Ok(ScaleMode::Nearest),
-            x if x == crate::sys::SDL_ScaleMode::SDL_ScaleModeLinear as u32 => Ok(ScaleMode::Linear),
+            x if x == crate::sys::SDL_ScaleMode::SDL_ScaleModeNearest as u32 => {
+                Ok(ScaleMode::Nearest)
+            }
+            x if x == crate::sys::SDL_ScaleMode::SDL_ScaleModeLinear as u32 => {
+                Ok(ScaleMode::Linear)
+            }
             x if x == crate::sys::SDL_ScaleMode::SDL_ScaleModeBest as u32 => Ok(ScaleMode::Best),
             _ => Err(()),
         }
