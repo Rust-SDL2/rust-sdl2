@@ -1112,9 +1112,9 @@ impl<T: RenderTarget> Canvas<T> {
     #[doc(alias = "SDL_RenderSetClipRect")]
     pub fn set_clip_rect(&mut self, arg: ClippingRect) {
         let ret = match arg {
-            ClippingRect::Some(r) => {
-                unsafe { sys::SDL_RenderSetClipRect(self.context.raw, r.raw()) }
-            }
+            ClippingRect::Some(r) => unsafe {
+                sys::SDL_RenderSetClipRect(self.context.raw, r.raw())
+            },
             ClippingRect::Zero => {
                 let r = sys::SDL_Rect {
                     x: 0,
@@ -1125,9 +1125,9 @@ impl<T: RenderTarget> Canvas<T> {
                 let r: *const sys::SDL_Rect = &r;
                 unsafe { sys::SDL_RenderSetClipRect(self.context.raw, r) }
             }
-            ClippingRect::None => {
-                unsafe { sys::SDL_RenderSetClipRect(self.context.raw, ptr::null()) }
-            }
+            ClippingRect::None => unsafe {
+                sys::SDL_RenderSetClipRect(self.context.raw, ptr::null())
+            },
         };
         if ret != 0 {
             panic!("Could not set clip rect: {}", get_error())
