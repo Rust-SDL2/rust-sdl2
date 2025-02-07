@@ -1986,13 +1986,17 @@ impl Window {
 
     #[doc(alias = "SDL_GetWindowGammaRamp")]
     pub fn gamma_ramp_arrays(&self) -> Result<[[u16; 256]; 3], String> {
-        let mut ret = mem::MaybeUninit::<[[u16; 256]; 3]>::uninit();
-        let ptr = ret.as_mut_ptr().cast::<u16>();
+        let [mut red, mut green, mut blue] = [mem::MaybeUninit::<[u16; 256]>::uninit(); 3];
         let result = unsafe {
-            sys::SDL_GetWindowGammaRamp(self.context.raw, ptr, ptr.add(256), ptr.add(512))
+            sys::SDL_GetWindowGammaRamp(
+                self.context.raw,
+                red.as_mut_ptr().cast::<u16>(),
+                green.as_mut_ptr().cast::<u16>(),
+                blue.as_mut_ptr().cast::<u16>(),
+            )
         };
         if result == 0 {
-            Ok(unsafe { ret.assume_init() })
+            Ok(unsafe { [red.assume_init(), green.assume_init(), blue.assume_init()] })
         } else {
             Err(get_error())
         }
