@@ -416,6 +416,65 @@ pub enum ClippingRect {
     None,
 }
 
+impl Into<ClippingRect> for Rect {
+    fn into(self) -> ClippingRect {
+        ClippingRect::Some(self)
+    }
+}
+
+impl Into<ClippingRect> for Option<Rect> {
+    fn into(self) -> ClippingRect {
+        match self {
+            Some(v) => v.into(),
+            None => ClippingRect::None,
+        }
+    }
+}
+
+impl ClippingRect {
+    pub fn intersection(&self, other: ClippingRect) -> ClippingRect {
+        match self {
+            ClippingRect::Zero => ClippingRect::Zero,
+            ClippingRect::None => other,
+            ClippingRect::Some(self_rect) => match other {
+                ClippingRect::Zero => ClippingRect::Zero,
+                ClippingRect::None => *self,
+                ClippingRect::Some(rect) => match self_rect.intersection(rect) {
+                    Some(v) => ClippingRect::Some(v),
+                    None => ClippingRect::Zero,
+                },
+            },
+        }
+    }
+
+    /// shrink the clipping rect to the part which contains the position
+    pub fn intersect_rect<R>(&self, position: R) -> ClippingRect
+    where
+        R: Into<Option<Rect>>,
+    {
+        let position: Option<Rect> = position.into();
+        match position {
+            Some(position) => {
+                match self {
+                    ClippingRect::Some(rect) => match rect.intersection(position) {
+                        Some(v) => ClippingRect::Some(v),
+                        None => ClippingRect::Zero,
+                    },
+                    ClippingRect::Zero => ClippingRect::Zero,
+                    ClippingRect::None => {
+                        // clipping rect has infinite area, so it's just whatever position is
+                        ClippingRect::Some(position)
+                    }
+                }
+            }
+            None => {
+                // position is zero area so intersection result is zero
+                ClippingRect::Zero
+            }
+        }
+    }
+}
+
 /// Methods for the `WindowCanvas`.
 impl Canvas<Window> {
     /// Gets a reference to the associated window of the Canvas
@@ -1110,7 +1169,11 @@ impl<T: RenderTarget> Canvas<T> {
 
     /// Sets the clip rectangle for rendering on the specified target.
     #[doc(alias = "SDL_RenderSetClipRect")]
-    pub fn set_clip_rect(&mut self, arg: ClippingRect) {
+    pub fn set_clip_rect<R>(&mut self, arg: R)
+    where
+        R: Into<ClippingRect>,
+    {
+        let arg: ClippingRect = arg.into();
         let ret = match arg {
             ClippingRect::Some(r) => unsafe {
                 sys::SDL_RenderSetClipRect(self.context.raw, r.raw())
