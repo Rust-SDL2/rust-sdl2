@@ -178,15 +178,14 @@ impl TryFrom<u32> for BlendMode {
     }
 }
 
-#[repr(i32)]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum ScaleMode {
     /// nearest pixel sampling. default
-    Nearest = SDL_ScaleMode::SDL_ScaleModeNearest as i32,
+    Nearest = SDL_ScaleMode::SDL_ScaleModeNearest as isize,
     /// linear filtering
-    Linear = SDL_ScaleMode::SDL_ScaleModeLinear as i32,
+    Linear = SDL_ScaleMode::SDL_ScaleModeLinear as isize,
     /// anisotropic filtering
-    Best = SDL_ScaleMode::SDL_ScaleModeBest as i32,
+    Best = SDL_ScaleMode::SDL_ScaleModeBest as isize,
 }
 
 impl TryFrom<u32> for ScaleMode {
