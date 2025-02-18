@@ -1984,6 +1984,24 @@ impl Window {
         }
     }
 
+    #[doc(alias = "SDL_GetWindowGammaRamp")]
+    pub fn gamma_ramp_arrays(&self) -> Result<[[u16; 256]; 3], String> {
+        let [mut red, mut green, mut blue] = [mem::MaybeUninit::<[u16; 256]>::uninit(); 3];
+        let result = unsafe {
+            sys::SDL_GetWindowGammaRamp(
+                self.context.raw,
+                red.as_mut_ptr().cast::<u16>(),
+                green.as_mut_ptr().cast::<u16>(),
+                blue.as_mut_ptr().cast::<u16>(),
+            )
+        };
+        if result == 0 {
+            Ok(unsafe { [red.assume_init(), green.assume_init(), blue.assume_init()] })
+        } else {
+            Err(get_error())
+        }
+    }
+
     /// Set the transparency of the window. The given value will be clamped internally between
     /// `0.0` (fully transparent), and `1.0` (fully opaque).
     ///
@@ -2136,5 +2154,14 @@ pub fn drivers() -> DriverIterator {
     DriverIterator {
         length: unsafe { sys::SDL_GetNumVideoDrivers() },
         index: 0,
+    }
+}
+
+#[doc(alias = "SDL_CalculateGammaRamp")]
+pub fn calculate_gamma_ramp(gamma: f32) -> [u16; 256] {
+    unsafe {
+        let mut ret = mem::MaybeUninit::<[u16; 256]>::uninit();
+        sys::SDL_CalculateGammaRamp(gamma as c_float, ret.as_mut_ptr().cast::<u16>());
+        ret.assume_init()
     }
 }
