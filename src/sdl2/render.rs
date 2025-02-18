@@ -1202,7 +1202,7 @@ impl<T: RenderTarget> Canvas<T> {
     pub fn clip_rect(&self) -> ClippingRect {
         let clip_enabled = unsafe { sys::SDL_RenderIsClipEnabled(self.context.raw) };
 
-        if let sys::SDL_bool::SDL_FALSE = clip_enabled {
+        if sys::SDL_bool::SDL_FALSE == clip_enabled {
             return ClippingRect::None;
         }
 
