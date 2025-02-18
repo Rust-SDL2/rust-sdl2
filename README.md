@@ -180,12 +180,12 @@ Instructions to generate a static binary on macOS and other operating systems us
 
   Where current toolchain is likely `stable-x86_64-pc-windows-msvc`.
 
-4. Copy SDL2.dll from
+4. Copy `SDL2.lib` and `SDL2.dll` from
     > SDL2-devel-2.0.x-VC\SDL2-2.0.x\lib\x64\
 
     into your cargo project, right next to your Cargo.toml.
 
- 5. When you're shipping your game make sure to copy SDL2.dll to the same directory that your compiled exe is in, otherwise the game won't launch.
+5. When you're shipping your game make sure to copy `SDL2.dll` to the same directory that your compiled exe is in, otherwise the game won't launch.
 
 #### Static linking with MSVC
 
