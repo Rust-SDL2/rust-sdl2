@@ -576,7 +576,7 @@ impl WindowContext {
         metal_view: sys::SDL_MetalView,
     ) -> WindowContext {
         WindowContext {
-            subsystem: subsystem.clone(),
+            subsystem,
             raw,
             metal_view,
         }
