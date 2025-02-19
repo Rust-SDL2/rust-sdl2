@@ -55,6 +55,7 @@ use std::rc::Rc;
 
 use crate::sys;
 use crate::sys::SDL_BlendMode;
+use crate::sys::SDL_ScaleMode;
 use crate::sys::SDL_TextureAccess;
 
 /// Contains the description of an error returned by SDL
@@ -110,11 +111,12 @@ impl TryFrom<u32> for TextureAccess {
         use self::TextureAccess::*;
         use crate::sys::SDL_TextureAccess::*;
 
-        Ok(match unsafe { transmute(n) } {
-            SDL_TEXTUREACCESS_STATIC => Static,
-            SDL_TEXTUREACCESS_STREAMING => Streaming,
-            SDL_TEXTUREACCESS_TARGET => Target,
-        })
+        match n {
+            x if x == SDL_TEXTUREACCESS_STATIC as u32 => Ok(Static),
+            x if x == SDL_TEXTUREACCESS_STREAMING as u32 => Ok(Streaming),
+            x if x == SDL_TEXTUREACCESS_TARGET as u32 => Ok(Target),
+            _ => Err(()),
+        }
     }
 }
 
@@ -164,14 +166,42 @@ impl TryFrom<u32> for BlendMode {
         use self::BlendMode::*;
         use crate::sys::SDL_BlendMode::*;
 
-        Ok(match unsafe { transmute(n) } {
-            SDL_BLENDMODE_NONE => None,
-            SDL_BLENDMODE_BLEND => Blend,
-            SDL_BLENDMODE_ADD => Add,
-            SDL_BLENDMODE_MOD => Mod,
-            SDL_BLENDMODE_MUL => Mul,
-            SDL_BLENDMODE_INVALID => Invalid,
-        })
+        match n {
+            x if x == SDL_BLENDMODE_NONE as u32 => Ok(None),
+            x if x == SDL_BLENDMODE_BLEND as u32 => Ok(Blend),
+            x if x == SDL_BLENDMODE_ADD as u32 => Ok(Add),
+            x if x == SDL_BLENDMODE_MOD as u32 => Ok(Mod),
+            x if x == SDL_BLENDMODE_MUL as u32 => Ok(Mul),
+            x if x == SDL_BLENDMODE_INVALID as u32 => Ok(Invalid),
+            _ => Err(()),
+        }
+    }
+}
+
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+pub enum ScaleMode {
+    /// nearest pixel sampling. default
+    Nearest = SDL_ScaleMode::SDL_ScaleModeNearest as isize,
+    /// linear filtering
+    Linear = SDL_ScaleMode::SDL_ScaleModeLinear as isize,
+    /// anisotropic filtering
+    Best = SDL_ScaleMode::SDL_ScaleModeBest as isize,
+}
+
+impl TryFrom<u32> for ScaleMode {
+    type Error = ();
+
+    fn try_from(n: u32) -> Result<Self, Self::Error> {
+        match n {
+            x if x == crate::sys::SDL_ScaleMode::SDL_ScaleModeNearest as u32 => {
+                Ok(ScaleMode::Nearest)
+            }
+            x if x == crate::sys::SDL_ScaleMode::SDL_ScaleModeLinear as u32 => {
+                Ok(ScaleMode::Linear)
+            }
+            x if x == crate::sys::SDL_ScaleMode::SDL_ScaleModeBest as u32 => Ok(ScaleMode::Best),
+            _ => Err(()),
+        }
     }
 }
 
@@ -2186,6 +2216,26 @@ impl InternalTexture {
         }
     }
 
+    #[doc(alias = "SDL_SetTextureScaleMode")]
+    pub fn set_scale_mode(&mut self, scale: ScaleMode) {
+        let ret = unsafe { sys::SDL_SetTextureScaleMode(self.raw, transmute(scale as u32)) };
+        if ret != 0 {
+            panic!("Error setting scale mode: {}", get_error())
+        }
+    }
+
+    #[doc(alias = "SDL_GetTextureScaleMode")]
+    pub fn scale_mode(&self) -> ScaleMode {
+        let mut scale: MaybeUninit<SDL_ScaleMode> = mem::MaybeUninit::uninit();
+        let ret = unsafe { sys::SDL_GetTextureScaleMode(self.raw, scale.as_mut_ptr()) };
+        if ret != 0 {
+            panic!("{}", get_error())
+        } else {
+            let scale = unsafe { scale.assume_init() };
+            ScaleMode::try_from(scale as u32).unwrap()
+        }
+    }
+
     #[doc(alias = "SDL_SetTextureAlphaMod")]
     pub fn set_alpha_mod(&mut self, alpha: u8) {
         let ret = unsafe { sys::SDL_SetTextureAlphaMod(self.raw, alpha) };
@@ -2527,6 +2577,18 @@ impl<'r> Texture<'r> {
     #[inline]
     pub fn color_mod(&self) -> (u8, u8, u8) {
         InternalTexture { raw: self.raw }.color_mod()
+    }
+
+    /// Sets the scale mode for use when rendered.
+    #[inline]
+    pub fn set_scale_mode(&mut self, scale: ScaleMode) {
+        InternalTexture { raw: self.raw }.set_scale_mode(scale)
+    }
+
+    /// Gets the scale mode for use when rendered.
+    #[inline]
+    pub fn scale_mode(&self) -> ScaleMode {
+        InternalTexture { raw: self.raw }.scale_mode()
     }
 
     /// Sets an additional alpha value multiplied into render copy operations.
