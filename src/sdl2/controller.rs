@@ -587,8 +587,8 @@ impl GameController {
     pub fn get_player_index(&self) -> Option<u32> {
         let player_index = unsafe { sys::SDL_GameControllerGetPlayerIndex(self.raw) };
 
-        // if index is -1, controller has no player 
-        if player_index == -1 {
+        // if index is -1 (or less than 0), controller has no player 
+        if player_index < 0 {
             None
         } else {
             Some(player_index as u32)
