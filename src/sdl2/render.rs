@@ -436,6 +436,75 @@ impl RenderTarget for Window {
     type Context = WindowContext;
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ClippingRect {
+    /// a non-zero area clipping rect
+    Some(Rect),
+    /// a clipping rect with zero area
+    Zero,
+    /// the absence of a clipping rect
+    None,
+}
+
+impl Into<ClippingRect> for Rect {
+    fn into(self) -> ClippingRect {
+        ClippingRect::Some(self)
+    }
+}
+
+impl Into<ClippingRect> for Option<Rect> {
+    fn into(self) -> ClippingRect {
+        match self {
+            Some(v) => v.into(),
+            None => ClippingRect::None,
+        }
+    }
+}
+
+impl ClippingRect {
+    pub fn intersection(&self, other: ClippingRect) -> ClippingRect {
+        match self {
+            ClippingRect::Zero => ClippingRect::Zero,
+            ClippingRect::None => other,
+            ClippingRect::Some(self_rect) => match other {
+                ClippingRect::Zero => ClippingRect::Zero,
+                ClippingRect::None => *self,
+                ClippingRect::Some(rect) => match self_rect.intersection(rect) {
+                    Some(v) => ClippingRect::Some(v),
+                    None => ClippingRect::Zero,
+                },
+            },
+        }
+    }
+
+    /// shrink the clipping rect to the part which contains the position
+    pub fn intersect_rect<R>(&self, position: R) -> ClippingRect
+    where
+        R: Into<Option<Rect>>,
+    {
+        let position: Option<Rect> = position.into();
+        match position {
+            Some(position) => {
+                match self {
+                    ClippingRect::Some(rect) => match rect.intersection(position) {
+                        Some(v) => ClippingRect::Some(v),
+                        None => ClippingRect::Zero,
+                    },
+                    ClippingRect::Zero => ClippingRect::Zero,
+                    ClippingRect::None => {
+                        // clipping rect has infinite area, so it's just whatever position is
+                        ClippingRect::Some(position)
+                    }
+                }
+            }
+            None => {
+                // position is zero area so intersection result is zero
+                ClippingRect::Zero
+            }
+        }
+    }
+}
+
 /// Methods for the `WindowCanvas`.
 impl Canvas<Window> {
     /// Gets a reference to the associated window of the Canvas
@@ -1129,31 +1198,51 @@ impl<T: RenderTarget> Canvas<T> {
     }
 
     /// Sets the clip rectangle for rendering on the specified target.
-    ///
-    /// If the rectangle is `None`, clipping will be disabled.
     #[doc(alias = "SDL_RenderSetClipRect")]
-    pub fn set_clip_rect<R: Into<Option<Rect>>>(&mut self, rect: R) {
-        let rect = rect.into();
-        // as_ref is important because we need rect to live until the end of the FFI call, but map_or consumes an Option<T>
-        let ptr = rect.as_ref().map_or(ptr::null(), |rect| rect.raw());
-        let ret = unsafe { sys::SDL_RenderSetClipRect(self.context.raw, ptr) };
+    pub fn set_clip_rect<R>(&mut self, arg: R)
+    where
+        R: Into<ClippingRect>,
+    {
+        let arg: ClippingRect = arg.into();
+        let ret = match arg {
+            ClippingRect::Some(r) => unsafe {
+                sys::SDL_RenderSetClipRect(self.context.raw, r.raw())
+            },
+            ClippingRect::Zero => {
+                let r = sys::SDL_Rect {
+                    x: 0,
+                    y: 0,
+                    w: 0,
+                    h: 0,
+                };
+                let r: *const sys::SDL_Rect = &r;
+                unsafe { sys::SDL_RenderSetClipRect(self.context.raw, r) }
+            }
+            ClippingRect::None => unsafe {
+                sys::SDL_RenderSetClipRect(self.context.raw, ptr::null())
+            },
+        };
         if ret != 0 {
             panic!("Could not set clip rect: {}", get_error())
         }
     }
 
     /// Gets the clip rectangle for the current target.
-    ///
-    /// Returns `None` if clipping is disabled.
     #[doc(alias = "SDL_RenderGetClipRect")]
-    pub fn clip_rect(&self) -> Option<Rect> {
+    pub fn clip_rect(&self) -> ClippingRect {
+        let clip_enabled = unsafe { sys::SDL_RenderIsClipEnabled(self.context.raw) };
+
+        if sys::SDL_bool::SDL_FALSE == clip_enabled {
+            return ClippingRect::None;
+        }
+
         let mut raw = mem::MaybeUninit::uninit();
         unsafe { sys::SDL_RenderGetClipRect(self.context.raw, raw.as_mut_ptr()) };
         let raw = unsafe { raw.assume_init() };
         if raw.w == 0 || raw.h == 0 {
-            None
+            ClippingRect::Zero
         } else {
-            Some(Rect::from_ll(raw))
+            ClippingRect::Some(Rect::from_ll(raw))
         }
     }
 
