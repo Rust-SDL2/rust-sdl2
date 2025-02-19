@@ -67,8 +67,8 @@ impl JoystickSubsystem {
 
         let player_index = unsafe { sys::SDL_JoystickGetDevicePlayerIndex(device_index) };
 
-        // if index is -1, joystick has no player 
-        if player_index == -1 {
+        // if index is -1, joystick has no player (treat other negative numbers as no player, just in case)
+        if player_index < 0 {
             Ok(None)
         } else {
             Ok(Some(player_index as u32))
