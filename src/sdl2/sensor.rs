@@ -69,14 +69,22 @@ impl SensorSubsystem {
 pub enum SensorType {
     Unknown,
     Gyroscope,
+    LeftGyroscope,
+    RightGyroscope,
     Accelerometer,
+    LeftAccelerometer,
+    RightAccelerometer,
 }
 
 impl SensorType {
     pub fn from_ll(raw: i32) -> Self {
         match raw {
             x if x == SDL_SensorType::SDL_SENSOR_GYRO as i32 => SensorType::Gyroscope,
+            x if x == SDL_SensorType::SDL_SENSOR_GYRO_L as i32 => SensorType::LeftGyroscope,
+            x if x == SDL_SensorType::SDL_SENSOR_GYRO_R as i32 => SensorType::RightGyroscope,
             x if x == SDL_SensorType::SDL_SENSOR_ACCEL as i32 => SensorType::Accelerometer,
+            x if x == SDL_SensorType::SDL_SENSOR_ACCEL_L as i32 => SensorType::LeftAccelerometer,
+            x if x == SDL_SensorType::SDL_SENSOR_ACCEL_R as i32 => SensorType::RightAccelerometer,
             _ => SensorType::Unknown,
         }
     }
@@ -87,7 +95,11 @@ impl From<SensorType> for SDL_SensorType {
         match val {
             SensorType::Unknown => SDL_SensorType::SDL_SENSOR_UNKNOWN,
             SensorType::Gyroscope => SDL_SensorType::SDL_SENSOR_GYRO,
+            SensorType::LeftGyroscope => SDL_SensorType::SDL_SENSOR_GYRO_L,
+            SensorType::RightGyroscope => SDL_SensorType::SDL_SENSOR_GYRO_R,
             SensorType::Accelerometer => SDL_SensorType::SDL_SENSOR_ACCEL,
+            SensorType::LeftAccelerometer => SDL_SensorType::SDL_SENSOR_ACCEL_L,
+            SensorType::RightAccelerometer => SDL_SensorType::SDL_SENSOR_ACCEL_R,
         }
     }
 }
@@ -136,7 +148,11 @@ impl Sensor {
             }
             sys::SDL_SensorType::SDL_SENSOR_UNKNOWN => SensorType::Unknown,
             sys::SDL_SensorType::SDL_SENSOR_ACCEL => SensorType::Accelerometer,
+            sys::SDL_SensorType::SDL_SENSOR_ACCEL_L => SensorType::LeftAccelerometer,
+            sys::SDL_SensorType::SDL_SENSOR_ACCEL_R => SensorType::RightAccelerometer,
             sys::SDL_SensorType::SDL_SENSOR_GYRO => SensorType::Gyroscope,
+            sys::SDL_SensorType::SDL_SENSOR_GYRO_L => SensorType::LeftGyroscope,
+            sys::SDL_SensorType::SDL_SENSOR_GYRO_R => SensorType::RightGyroscope,
         }
     }
 
@@ -153,7 +169,11 @@ impl Sensor {
         } else {
             Ok(match self.sensor_type() {
                 SensorType::Gyroscope => SensorData::Gyro([data[0], data[1], data[2]]),
+                SensorType::LeftGyroscope => SensorData::Gyro([data[0], data[1], data[2]]),
+                SensorType::RightGyroscope => SensorData::Gyro([data[0], data[1], data[2]]),
                 SensorType::Accelerometer => SensorData::Accel([data[0], data[1], data[2]]),
+                SensorType::LeftAccelerometer => SensorData::Accel([data[0], data[1], data[2]]),
+                SensorType::RightAccelerometer => SensorData::Accel([data[0], data[1], data[2]]),
                 SensorType::Unknown => SensorData::Unknown(data),
             })
         }
