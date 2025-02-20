@@ -152,7 +152,7 @@ impl Sensor {
             Err(IntegerOrSdlError::SdlError(get_error()))
         } else {
             Ok(match self.sensor_type() {
-                SensorType::Gyroscope => SensorData::Accel([data[0], data[1], data[2]]),
+                SensorType::Gyroscope => SensorData::Gyro([data[0], data[1], data[2]]),
                 SensorType::Accelerometer => SensorData::Accel([data[0], data[1], data[2]]),
                 SensorType::Unknown => SensorData::Unknown(data),
             })
