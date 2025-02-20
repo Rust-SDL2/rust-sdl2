@@ -11,8 +11,6 @@ use crate::render::{BlendMode, Canvas};
 use crate::render::{Texture, TextureCreator, TextureValueError};
 use crate::rwops::RWops;
 use libc::c_int;
-use std::convert::TryFrom;
-use std::mem::transmute;
 use std::ptr;
 
 use crate::sys;
@@ -596,7 +594,7 @@ impl SurfaceRef {
     /// The function will fail if the blend mode is not supported by SDL.
     #[doc(alias = "SDL_SetSurfaceBlendMode")]
     pub fn set_blend_mode(&mut self, mode: BlendMode) -> Result<(), String> {
-        let result = unsafe { sys::SDL_SetSurfaceBlendMode(self.raw(), transmute(mode)) };
+        let result = unsafe { sys::SDL_SetSurfaceBlendMode(self.raw(), Into::<u32>::into(mode)) };
 
         match result {
             0 => Ok(()),
@@ -606,11 +604,11 @@ impl SurfaceRef {
 
     #[doc(alias = "SDL_GetSurfaceBlendMode")]
     pub fn blend_mode(&self) -> BlendMode {
-        let mut mode = sys::SDL_BlendMode::SDL_BLENDMODE_NONE;
+        let mut mode = sys::blend_modes::NONE;
         let result = unsafe { sys::SDL_GetSurfaceBlendMode(self.raw(), &mut mode) };
 
         match result {
-            0 => BlendMode::try_from(mode as u32).unwrap(),
+            0 => BlendMode::from(mode),
             // Should only fail on a null Surface
             _ => panic!("{}", get_error()),
         }
