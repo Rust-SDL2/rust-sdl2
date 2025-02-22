@@ -1,11 +1,10 @@
 // 0 should not be used in bitflags, but here it is. Removing it will break existing code.
 #![allow(clippy::bad_bit_mask)]
 
-use get_error;
+use crate::Error;
 use pixels::Color;
 use rwops::RWops;
 use std::error;
-use std::ffi::NulError;
 use std::ffi::{CStr, CString};
 use std::fmt;
 use std::marker::PhantomData;
@@ -47,40 +46,6 @@ pub struct GlyphMetrics {
     pub advance: i32,
 }
 
-/// The result of an `SDL2_TTF` font operation.
-pub type FontResult<T> = Result<T, FontError>;
-
-/// A font-related error.
-#[derive(Debug, Clone)]
-pub enum FontError {
-    /// A Latin-1 encoded byte string is invalid.
-    InvalidLatin1Text(NulError),
-    /// A SDL2-related error occured.
-    SdlError(String),
-}
-
-impl error::Error for FontError {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        match *self {
-            FontError::InvalidLatin1Text(ref error) => Some(error),
-            FontError::SdlError(_) => None,
-        }
-    }
-}
-
-impl fmt::Display for FontError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        match *self {
-            FontError::InvalidLatin1Text(ref err) => {
-                write!(f, "Invalid Latin-1 bytes: {}", err)
-            }
-            FontError::SdlError(ref msg) => {
-                write!(f, "SDL2 error: {}", msg)
-            }
-        }
-    }
-}
-
 /// A renderable piece of text in the UTF8 or Latin-1 format.
 enum RenderableText<'a> {
     Utf8(&'a str),
@@ -89,12 +54,10 @@ enum RenderableText<'a> {
 }
 impl<'a> RenderableText<'a> {
     /// Converts the given text to a c-style string if possible.
-    fn convert(&self) -> FontResult<CString> {
+    fn convert(&self) -> Result<CString, Error> {
         match *self {
             RenderableText::Utf8(text) => Ok(CString::new(text).unwrap()),
-            RenderableText::Latin1(bytes) => {
-                CString::new(bytes).map_err(FontError::InvalidLatin1Text)
-            }
+            RenderableText::Latin1(text) => as_cstring!(text),
             RenderableText::Char(ch) => {
                 Ok(CString::new(ch.encode_utf8(&mut [0; 4]).as_bytes()).unwrap())
             }
@@ -110,9 +73,9 @@ pub struct PartialRendering<'f, 'text> {
 }
 
 /// Converts the given raw pointer to a surface.
-fn convert_to_surface<'a>(raw: *mut SDL_Surface) -> FontResult<Surface<'a>> {
+fn convert_to_surface<'a>(raw: *mut SDL_Surface) -> Result<Surface<'a>, Error> {
     if (raw as *mut ()).is_null() {
-        Err(FontError::SdlError(get_error()))
+        Err(Error::from_sdl_error())
     } else {
         Ok(unsafe { Surface::from_ll(raw) })
     }
@@ -122,7 +85,7 @@ impl<'f, 'text> PartialRendering<'f, 'text> {
     /// Renders the text in *solid* mode.
     /// See [the SDL2_TTF docs](https://www.libsdl.org/projects/SDL_ttf/docs/SDL_ttf.html#SEC42)
     /// for an explanation.
-    pub fn solid<'b, T>(self, color: T) -> FontResult<Surface<'b>>
+    pub fn solid<'b, T>(self, color: T) -> Result<Surface<'b>, Error>
     where
         T: Into<Color>,
     {
@@ -144,7 +107,7 @@ impl<'f, 'text> PartialRendering<'f, 'text> {
     /// Renders the text in *shaded* mode.
     /// See [the SDL2_TTF docs](https://www.libsdl.org/projects/SDL_ttf/docs/SDL_ttf.html#SEC42)
     /// for an explanation.
-    pub fn shaded<'b, T>(self, color: T, background: T) -> FontResult<Surface<'b>>
+    pub fn shaded<'b, T>(self, color: T, background: T) -> Result<Surface<'b>, Error>
     where
         T: Into<Color>,
     {
@@ -173,7 +136,7 @@ impl<'f, 'text> PartialRendering<'f, 'text> {
     /// Renders the text in *blended* mode.
     /// See [the SDL2_TTF docs](https://www.libsdl.org/projects/SDL_ttf/docs/SDL_ttf.html#SEC42)
     /// for an explanation.
-    pub fn blended<'b, T>(self, color: T) -> FontResult<Surface<'b>>
+    pub fn blended<'b, T>(self, color: T) -> Result<Surface<'b>, Error>
     where
         T: Into<Color>,
     {
@@ -196,7 +159,7 @@ impl<'f, 'text> PartialRendering<'f, 'text> {
     /// exceeds the given maximum width.
     /// See [the SDL2_TTF docs](https://www.libsdl.org/projects/SDL_ttf/docs/SDL_ttf.html#SEC42)
     /// for an explanation of the mode.
-    pub fn blended_wrapped<'b, T>(self, color: T, wrap_max_width: u32) -> FontResult<Surface<'b>>
+    pub fn blended_wrapped<'b, T>(self, color: T, wrap_max_width: u32) -> Result<Surface<'b>, Error>
     where
         T: Into<Color>,
     {
@@ -338,7 +301,7 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
 
     /// Returns the width and height of the given text when rendered using this
     /// font.
-    pub fn size_of(&self, text: &str) -> FontResult<(u32, u32)> {
+    pub fn size_of(&self, text: &str) -> Result<(u32, u32), Error> {
         let c_string = RenderableText::Utf8(text).convert()?;
         let (res, size) = unsafe {
             let mut w = 0; // mutated by C code
@@ -349,13 +312,13 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
         if res == 0 {
             Ok(size)
         } else {
-            Err(FontError::SdlError(get_error()))
+            Err(Error::from_sdl_error())
         }
     }
 
     /// Returns the width and height of the given text when rendered using this
     /// font.
-    pub fn size_of_latin1(&self, text: &[u8]) -> FontResult<(u32, u32)> {
+    pub fn size_of_latin1(&self, text: &[u8]) -> Result<(u32, u32), Error> {
         let c_string = RenderableText::Latin1(text).convert()?;
         let (res, size) = unsafe {
             let mut w: i32 = 0;
@@ -366,13 +329,13 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
         if res == 0 {
             Ok(size)
         } else {
-            Err(FontError::SdlError(get_error()))
+            Err(Error::from_sdl_error())
         }
     }
 
     /// Returns the width and height of the given text when rendered using this
     /// font.
-    pub fn size_of_char(&self, ch: char) -> FontResult<(u32, u32)> {
+    pub fn size_of_char(&self, ch: char) -> Result<(u32, u32), Error> {
         self.size_of(ch.encode_utf8(&mut [0; 4]))
     }
 

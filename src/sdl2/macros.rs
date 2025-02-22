@@ -24,3 +24,9 @@ macro_rules! impl_raw_constructor(
         )+
     )
 );
+
+macro_rules! as_cstring {
+    ($i:ident) => {
+        $crate::common::validate_string($i, stringify!($i))
+    };
+}

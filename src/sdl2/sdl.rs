@@ -1,39 +1,10 @@
 use libc::c_char;
 use std::cell::Cell;
-use std::error;
 use std::ffi::{CStr, CString, NulError};
-use std::fmt;
 use std::marker::PhantomData;
-use std::mem::transmute;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 
-use crate::sys;
-
-#[repr(i32)]
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
-pub enum Error {
-    NoMemError = sys::SDL_errorcode::SDL_ENOMEM as i32,
-    ReadError = sys::SDL_errorcode::SDL_EFREAD as i32,
-    WriteError = sys::SDL_errorcode::SDL_EFWRITE as i32,
-    SeekError = sys::SDL_errorcode::SDL_EFSEEK as i32,
-    UnsupportedError = sys::SDL_errorcode::SDL_UNSUPPORTED as i32,
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use self::Error::*;
-
-        match *self {
-            NoMemError => write!(f, "Out of memory"),
-            ReadError => write!(f, "Error reading from datastream"),
-            WriteError => write!(f, "Error writing to datastream"),
-            SeekError => write!(f, "Error seeking in datastream"),
-            UnsupportedError => write!(f, "Unknown SDL error"),
-        }
-    }
-}
-
-impl error::Error for Error {}
+use crate::{sys, Error};
 
 /// True if the main thread has been declared. The main thread is declared when
 /// SDL is first initialized.
@@ -383,19 +354,12 @@ pub fn get_error() -> String {
 }
 
 #[doc(alias = "SDL_SetError")]
-pub fn set_error(err: &str) -> Result<(), NulError> {
-    let c_string = CString::new(err)?;
+pub fn set_error(err: &str) -> Result<(), Error> {
+    let err = as_cstring!(err)?;
     unsafe {
-        sys::SDL_SetError(b"%s\0".as_ptr() as *const c_char, c_string.as_ptr());
+        sys::SDL_SetError(b"%s\0".as_ptr() as *const c_char, err.as_ptr());
     }
     Ok(())
-}
-
-#[doc(alias = "SDL_Error")]
-pub fn set_error_from_code(err: Error) {
-    unsafe {
-        sys::SDL_Error(transmute::<Error, sys::SDL_errorcode>(err));
-    }
 }
 
 #[doc(alias = "SDL_ClearError")]
