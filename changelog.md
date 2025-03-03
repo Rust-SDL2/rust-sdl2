@@ -3,6 +3,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### Next
 
+[PR #1464](https://github.com/Rust-SDL2/rust-sdl2/pull/1464) Added binding for `Mix_OpenAudioDevice`
+
 [PR #1450](https://github.com/Rust-SDL2/rust-sdl2/pull/1450) **BREAKING CHANGE** Create ClippingRect type, to disambiguate between no and zero area clipping rect.
 
 [PR #1416](https://github.com/Rust-SDL2/rust-sdl2/pull/1416) Apply clippy fixes, fix deprecations and other code quality improvements.
