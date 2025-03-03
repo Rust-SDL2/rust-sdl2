@@ -27,12 +27,12 @@ use libc::{c_double, c_int, c_uint};
 use rwops::RWops;
 use std::borrow::ToOwned;
 use std::convert::TryInto;
-use std::default;
 use std::ffi::{CStr, CString};
 use std::fmt;
 use std::marker::PhantomData;
 use std::path::Path;
 use std::str::from_utf8;
+use std::{default, ptr};
 use sys;
 use sys::mixer;
 use version::Version;
@@ -106,6 +106,18 @@ bitflags!(
     }
 );
 
+bitflags!(
+    /// Which audio format changes are allowed when opening a device ([`open_audio_device`]).
+    pub struct AllowChangeFlag: u32 {
+        const NONE = 0;
+        const FREQUENCY = sys::SDL_AUDIO_ALLOW_FREQUENCY_CHANGE;
+        const FORMAT = sys::SDL_AUDIO_ALLOW_FORMAT_CHANGE;
+        const CHANNELS = sys::SDL_AUDIO_ALLOW_CHANNELS_CHANGE;
+        const SAMPLES = sys::SDL_AUDIO_ALLOW_SAMPLES_CHANGE;
+        const ANY = sys::SDL_AUDIO_ALLOW_ANY_CHANGE;
+    }
+);
+
 impl fmt::Display for InitFlag {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         <Self as fmt::Debug>::fmt(self, f)
@@ -146,7 +158,8 @@ pub fn init(flags: InitFlag) -> Result<Sdl2MixerContext, String> {
     }
 }
 
-/// Open the mixer with a certain audio format.
+/// Opens the default audio device for playback. If you need to select a specific audio device
+/// or require more fine-grained control over the device configuration, use [`open_audio_device`].
 ///
 /// * `chunksize`: It is recommended to choose values between 256 and 1024, depending on whether
 ///                you prefer latency or compatibility. Small values reduce latency but may not
@@ -165,6 +178,59 @@ pub fn open_audio(
             format,
             channels as c_int,
             chunksize as c_int,
+        )
+    };
+    if ret == 0 {
+        Ok(())
+    } else {
+        Err(get_error())
+    }
+}
+
+/// Open a specific audio device for playback.
+///
+/// (A slightly simpler version of this function is available in [`open_audio`], which still might
+/// meet most applications' needs.)
+///
+/// The `allowed_changes` parameter specifies what settings are flexible. These tell `SDL_mixer`
+/// that the  app doesn't mind if a specific setting changes. For example, the app might need stereo
+/// data in [`i16`] format, but if the sample rate or chunk size changes, the app can handle that.
+/// In that case, the app would specify `AllowChangeFlag::FORMAT | AllowChangeFlag::SAMPLES`. In
+/// this case, if the system's hardware requires something other than the requested format,
+/// `SDL_mixer` can select what the hardware demands instead of the app. For a given
+/// [`AllowChangeFlag`], If it is not specified, `SDL_mixer` must convert data behind the scenes
+/// between what the app demands and what the hardware requires. If your app needs precisely what
+/// is requested, specify [`AllowChangeFlag::NONE`].
+///
+/// * `frequency`: The frequency to playback audio at (in Hz).
+/// * `format`: Audio format ([`AudioFormat`]).
+/// * `channels`: Number of channels (1 is mono, 2 is stereo, etc).
+/// * `chunksize`: Audio buffer size in sample FRAMES (total samples divided by channel count).
+///                The lower the number, the lower the latency, but you risk dropouts if it gets
+///                too low.
+/// * `device`: The device name to open, or [`None`] to choose a reasonable default.
+/// * `allowed_changes`: Allow change flags ([`AllowChangeFlag`]).
+///
+pub fn open_audio_device<D>(
+    frequency: i32,
+    format: AudioFormat,
+    channels: i32,
+    chunksize: i32,
+    device: D,
+    allowed_changes: AllowChangeFlag,
+) -> Result<(), String> where
+    D: Into<Option<&str>>,
+{
+    let ret = unsafe {
+        let device = device.into().map(|device| CString::new(device).unwrap());
+        let device_ptr = device.as_ref().map_or(ptr::null(), |s| s.as_ptr());
+        mixer::Mix_OpenAudioDevice(
+            frequency as c_int,
+            format,
+            channels as c_int,
+            chunksize as c_int,
+            device_ptr,
+            allowed_changes.bits() as c_int,
         )
     };
     if ret == 0 {
