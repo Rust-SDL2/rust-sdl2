@@ -3,6 +3,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### Next
 
+[PR #1415](https://github.com/Rust-SDL2/rust-sdl2/pull/1415) Store `gfx::framerate::FPSmanager` directly in `FPSManager` instead of on the heap.
+
 [PR #1450](https://github.com/Rust-SDL2/rust-sdl2/pull/1450) **BREAKING CHANGE** Create ClippingRect type, to disambiguate between no and zero area clipping rect.
 
 [PR #1416](https://github.com/Rust-SDL2/rust-sdl2/pull/1416) Apply clippy fixes, fix deprecations and other code quality improvements.
