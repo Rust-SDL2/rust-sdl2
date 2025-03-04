@@ -55,6 +55,7 @@ use std::rc::Rc;
 
 use crate::sys;
 use crate::sys::SDL_BlendMode;
+use crate::sys::SDL_ScaleMode;
 use crate::sys::SDL_TextureAccess;
 
 /// Contains the description of an error returned by SDL
@@ -110,11 +111,12 @@ impl TryFrom<u32> for TextureAccess {
         use self::TextureAccess::*;
         use crate::sys::SDL_TextureAccess::*;
 
-        Ok(match unsafe { transmute(n) } {
-            SDL_TEXTUREACCESS_STATIC => Static,
-            SDL_TEXTUREACCESS_STREAMING => Streaming,
-            SDL_TEXTUREACCESS_TARGET => Target,
-        })
+        match n {
+            x if x == SDL_TEXTUREACCESS_STATIC as u32 => Ok(Static),
+            x if x == SDL_TEXTUREACCESS_STREAMING as u32 => Ok(Streaming),
+            x if x == SDL_TEXTUREACCESS_TARGET as u32 => Ok(Target),
+            _ => Err(()),
+        }
     }
 }
 
@@ -164,14 +166,42 @@ impl TryFrom<u32> for BlendMode {
         use self::BlendMode::*;
         use crate::sys::SDL_BlendMode::*;
 
-        Ok(match unsafe { transmute(n) } {
-            SDL_BLENDMODE_NONE => None,
-            SDL_BLENDMODE_BLEND => Blend,
-            SDL_BLENDMODE_ADD => Add,
-            SDL_BLENDMODE_MOD => Mod,
-            SDL_BLENDMODE_MUL => Mul,
-            SDL_BLENDMODE_INVALID => Invalid,
-        })
+        match n {
+            x if x == SDL_BLENDMODE_NONE as u32 => Ok(None),
+            x if x == SDL_BLENDMODE_BLEND as u32 => Ok(Blend),
+            x if x == SDL_BLENDMODE_ADD as u32 => Ok(Add),
+            x if x == SDL_BLENDMODE_MOD as u32 => Ok(Mod),
+            x if x == SDL_BLENDMODE_MUL as u32 => Ok(Mul),
+            x if x == SDL_BLENDMODE_INVALID as u32 => Ok(Invalid),
+            _ => Err(()),
+        }
+    }
+}
+
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+pub enum ScaleMode {
+    /// nearest pixel sampling. default
+    Nearest = SDL_ScaleMode::SDL_ScaleModeNearest as isize,
+    /// linear filtering
+    Linear = SDL_ScaleMode::SDL_ScaleModeLinear as isize,
+    /// anisotropic filtering
+    Best = SDL_ScaleMode::SDL_ScaleModeBest as isize,
+}
+
+impl TryFrom<u32> for ScaleMode {
+    type Error = ();
+
+    fn try_from(n: u32) -> Result<Self, Self::Error> {
+        match n {
+            x if x == crate::sys::SDL_ScaleMode::SDL_ScaleModeNearest as u32 => {
+                Ok(ScaleMode::Nearest)
+            }
+            x if x == crate::sys::SDL_ScaleMode::SDL_ScaleModeLinear as u32 => {
+                Ok(ScaleMode::Linear)
+            }
+            x if x == crate::sys::SDL_ScaleMode::SDL_ScaleModeBest as u32 => Ok(ScaleMode::Best),
+            _ => Err(()),
+        }
     }
 }
 
@@ -404,6 +434,75 @@ pub type WindowCanvas = Canvas<Window>;
 
 impl RenderTarget for Window {
     type Context = WindowContext;
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ClippingRect {
+    /// a non-zero area clipping rect
+    Some(Rect),
+    /// a clipping rect with zero area
+    Zero,
+    /// the absence of a clipping rect
+    None,
+}
+
+impl Into<ClippingRect> for Rect {
+    fn into(self) -> ClippingRect {
+        ClippingRect::Some(self)
+    }
+}
+
+impl Into<ClippingRect> for Option<Rect> {
+    fn into(self) -> ClippingRect {
+        match self {
+            Some(v) => v.into(),
+            None => ClippingRect::None,
+        }
+    }
+}
+
+impl ClippingRect {
+    pub fn intersection(&self, other: ClippingRect) -> ClippingRect {
+        match self {
+            ClippingRect::Zero => ClippingRect::Zero,
+            ClippingRect::None => other,
+            ClippingRect::Some(self_rect) => match other {
+                ClippingRect::Zero => ClippingRect::Zero,
+                ClippingRect::None => *self,
+                ClippingRect::Some(rect) => match self_rect.intersection(rect) {
+                    Some(v) => ClippingRect::Some(v),
+                    None => ClippingRect::Zero,
+                },
+            },
+        }
+    }
+
+    /// shrink the clipping rect to the part which contains the position
+    pub fn intersect_rect<R>(&self, position: R) -> ClippingRect
+    where
+        R: Into<Option<Rect>>,
+    {
+        let position: Option<Rect> = position.into();
+        match position {
+            Some(position) => {
+                match self {
+                    ClippingRect::Some(rect) => match rect.intersection(position) {
+                        Some(v) => ClippingRect::Some(v),
+                        None => ClippingRect::Zero,
+                    },
+                    ClippingRect::Zero => ClippingRect::Zero,
+                    ClippingRect::None => {
+                        // clipping rect has infinite area, so it's just whatever position is
+                        ClippingRect::Some(position)
+                    }
+                }
+            }
+            None => {
+                // position is zero area so intersection result is zero
+                ClippingRect::Zero
+            }
+        }
+    }
 }
 
 /// Methods for the `WindowCanvas`.
@@ -1099,31 +1198,51 @@ impl<T: RenderTarget> Canvas<T> {
     }
 
     /// Sets the clip rectangle for rendering on the specified target.
-    ///
-    /// If the rectangle is `None`, clipping will be disabled.
     #[doc(alias = "SDL_RenderSetClipRect")]
-    pub fn set_clip_rect<R: Into<Option<Rect>>>(&mut self, rect: R) {
-        let rect = rect.into();
-        // as_ref is important because we need rect to live until the end of the FFI call, but map_or consumes an Option<T>
-        let ptr = rect.as_ref().map_or(ptr::null(), |rect| rect.raw());
-        let ret = unsafe { sys::SDL_RenderSetClipRect(self.context.raw, ptr) };
+    pub fn set_clip_rect<R>(&mut self, arg: R)
+    where
+        R: Into<ClippingRect>,
+    {
+        let arg: ClippingRect = arg.into();
+        let ret = match arg {
+            ClippingRect::Some(r) => unsafe {
+                sys::SDL_RenderSetClipRect(self.context.raw, r.raw())
+            },
+            ClippingRect::Zero => {
+                let r = sys::SDL_Rect {
+                    x: 0,
+                    y: 0,
+                    w: 0,
+                    h: 0,
+                };
+                let r: *const sys::SDL_Rect = &r;
+                unsafe { sys::SDL_RenderSetClipRect(self.context.raw, r) }
+            }
+            ClippingRect::None => unsafe {
+                sys::SDL_RenderSetClipRect(self.context.raw, ptr::null())
+            },
+        };
         if ret != 0 {
             panic!("Could not set clip rect: {}", get_error())
         }
     }
 
     /// Gets the clip rectangle for the current target.
-    ///
-    /// Returns `None` if clipping is disabled.
     #[doc(alias = "SDL_RenderGetClipRect")]
-    pub fn clip_rect(&self) -> Option<Rect> {
+    pub fn clip_rect(&self) -> ClippingRect {
+        let clip_enabled = unsafe { sys::SDL_RenderIsClipEnabled(self.context.raw) };
+
+        if sys::SDL_bool::SDL_FALSE == clip_enabled {
+            return ClippingRect::None;
+        }
+
         let mut raw = mem::MaybeUninit::uninit();
         unsafe { sys::SDL_RenderGetClipRect(self.context.raw, raw.as_mut_ptr()) };
         let raw = unsafe { raw.assume_init() };
         if raw.w == 0 || raw.h == 0 {
-            None
+            ClippingRect::Zero
         } else {
-            Some(Rect::from_ll(raw))
+            ClippingRect::Some(Rect::from_ll(raw))
         }
     }
 
@@ -2097,6 +2216,26 @@ impl InternalTexture {
         }
     }
 
+    #[doc(alias = "SDL_SetTextureScaleMode")]
+    pub fn set_scale_mode(&mut self, scale: ScaleMode) {
+        let ret = unsafe { sys::SDL_SetTextureScaleMode(self.raw, transmute(scale as u32)) };
+        if ret != 0 {
+            panic!("Error setting scale mode: {}", get_error())
+        }
+    }
+
+    #[doc(alias = "SDL_GetTextureScaleMode")]
+    pub fn scale_mode(&self) -> ScaleMode {
+        let mut scale: MaybeUninit<SDL_ScaleMode> = mem::MaybeUninit::uninit();
+        let ret = unsafe { sys::SDL_GetTextureScaleMode(self.raw, scale.as_mut_ptr()) };
+        if ret != 0 {
+            panic!("{}", get_error())
+        } else {
+            let scale = unsafe { scale.assume_init() };
+            ScaleMode::try_from(scale as u32).unwrap()
+        }
+    }
+
     #[doc(alias = "SDL_SetTextureAlphaMod")]
     pub fn set_alpha_mod(&mut self, alpha: u8) {
         let ret = unsafe { sys::SDL_SetTextureAlphaMod(self.raw, alpha) };
@@ -2438,6 +2577,18 @@ impl<'r> Texture<'r> {
     #[inline]
     pub fn color_mod(&self) -> (u8, u8, u8) {
         InternalTexture { raw: self.raw }.color_mod()
+    }
+
+    /// Sets the scale mode for use when rendered.
+    #[inline]
+    pub fn set_scale_mode(&mut self, scale: ScaleMode) {
+        InternalTexture { raw: self.raw }.set_scale_mode(scale)
+    }
+
+    /// Gets the scale mode for use when rendered.
+    #[inline]
+    pub fn scale_mode(&self) -> ScaleMode {
+        InternalTexture { raw: self.raw }.scale_mode()
     }
 
     /// Sets an additional alpha value multiplied into render copy operations.
