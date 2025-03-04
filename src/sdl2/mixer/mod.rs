@@ -124,25 +124,26 @@ impl Drop for Sdl2MixerContext {
     }
 }
 
-/// Loads dynamic libraries and prepares them for use.  Flags should be
-/// one or more flags from `InitFlag`.
+/// Loads dynamic libraries and prepares them for use.  Flags should be one or
+/// more flags from `InitFlag`. Returns error if any of the requested flags
+/// failed
 pub fn init(flags: InitFlag) -> Result<Sdl2MixerContext, String> {
     let return_flags = unsafe {
         let ret = mixer::Mix_Init(flags.bits() as c_int);
         InitFlag::from_bits_truncate(ret as u32)
     };
-    // Check if all init flags were set
-    if flags.intersects(return_flags) {
-        Ok(Sdl2MixerContext)
-    } else {
-        // Flags not matching won't always set the error message text
-        // according to sdl docs
-        if get_error().is_empty() {
-            let un_init_flags = return_flags ^ flags;
-            let error_str = &("Could not init: ".to_string() + &un_init_flags.to_string());
-            let _ = ::set_error(error_str);
+
+    if return_flags & flags != flags {
+        // According to docs, error message text is not always set
+        let mut error = get_error();
+        if error.is_empty() {
+            let failed_libs = flags - return_flags;
+            error = format!("Could not init: {}", failed_libs);
+            let _ = ::set_error(&error);
         }
-        Err(get_error())
+        Err(error)
+    } else {
+        Ok(Sdl2MixerContext)
     }
 }
 
