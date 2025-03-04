@@ -179,18 +179,19 @@ impl Drop for Sdl2ImageContext {
 }
 
 /// Initializes `SDL2_image` with `InitFlags`.
-/// If not every flag is set it returns an error
+/// Returns error if any of the requested flags failed
 pub fn init(flags: InitFlag) -> Result<Sdl2ImageContext, String> {
     let return_flags = unsafe {
         let used = image::IMG_Init(flags.bits() as c_int);
         InitFlag::from_bits_truncate(used as u32)
     };
-    if !flags.intersects(return_flags) {
+
+    if return_flags & flags != flags {
         // According to docs, error message text is not always set
         let mut error = get_error();
         if error.is_empty() {
-            let un_init_flags = return_flags ^ flags;
-            error = format!("Could not init: {}", un_init_flags);
+            let failed_libs = flags - return_flags;
+            error = format!("Could not init: {}", failed_libs);
             let _ = ::set_error(&error);
         }
         Err(error)
