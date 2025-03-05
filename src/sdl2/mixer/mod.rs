@@ -109,12 +109,10 @@ bitflags!(
 bitflags!(
     /// Which audio format changes are allowed when opening a device ([`open_audio_device`]).
     pub struct AllowChangeFlag: u32 {
-        const NONE = 0;
         const FREQUENCY = sys::SDL_AUDIO_ALLOW_FREQUENCY_CHANGE;
         const FORMAT = sys::SDL_AUDIO_ALLOW_FORMAT_CHANGE;
         const CHANNELS = sys::SDL_AUDIO_ALLOW_CHANNELS_CHANGE;
         const SAMPLES = sys::SDL_AUDIO_ALLOW_SAMPLES_CHANGE;
-        const ANY = sys::SDL_AUDIO_ALLOW_ANY_CHANGE;
     }
 );
 
@@ -201,7 +199,7 @@ pub fn open_audio(
 /// `SDL_mixer` can select what the hardware demands instead of the app. For a given
 /// [`AllowChangeFlag`], If it is not specified, `SDL_mixer` must convert data behind the scenes
 /// between what the app demands and what the hardware requires. If your app needs precisely what
-/// is requested, specify [`AllowChangeFlag::NONE`].
+/// is requested, specify [`AllowChangeFlag::empty`].
 ///
 /// * `frequency`: The frequency to playback audio at (in Hz).
 /// * `format`: Audio format ([`AudioFormat`]).
@@ -212,15 +210,16 @@ pub fn open_audio(
 /// * `device`: The device name to open, or [`None`] to choose a reasonable default.
 /// * `allowed_changes`: Allow change flags ([`AllowChangeFlag`]).
 ///
-pub fn open_audio_device<D>(
+pub fn open_audio_device<'a, D>(
     frequency: i32,
     format: AudioFormat,
     channels: i32,
     chunksize: i32,
     device: D,
     allowed_changes: AllowChangeFlag,
-) -> Result<(), String> where
-    D: Into<Option<&str>>,
+) -> Result<(), String>
+where
+    D: Into<Option<&'a str>>,
 {
     let ret = unsafe {
         let device = device.into().map(|device| CString::new(device).unwrap());
