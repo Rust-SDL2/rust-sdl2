@@ -2788,6 +2788,18 @@ impl Texture {
         InternalTexture { raw: self.raw }.color_mod()
     }
 
+    /// Sets the scale mode for use when rendered.
+    #[inline]
+    pub fn set_scale_mode(&mut self, scale: ScaleMode) {
+        InternalTexture { raw: self.raw }.set_scale_mode(scale)
+    }
+
+    /// Gets the scale mode for use when rendered.
+    #[inline]
+    pub fn scale_mode(&self) -> ScaleMode {
+        InternalTexture { raw: self.raw }.scale_mode()
+    }
+
     /// Sets an additional alpha value multiplied into render copy operations.
     #[inline]
     pub fn set_alpha_mod(&mut self, alpha: u8) {
