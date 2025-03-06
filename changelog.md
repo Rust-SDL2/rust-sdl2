@@ -3,6 +3,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### Next
 
+[PR #1464](https://github.com/Rust-SDL2/rust-sdl2/pull/1464) Added binding for `Mix_OpenAudioDevice`
+
 [PR #1451](https://github.com/Rust-SDL2/rust-sdl2/pull/1451) Add `gamma_ramp_arrays` and `calculate_gamma_ramp`.
 
 [PR #1459](https://github.com/Rust-SDL2/rust-sdl2/pull/1459) Fix image and mixer init flag logic
