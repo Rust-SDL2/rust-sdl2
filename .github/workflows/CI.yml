@@ -16,6 +16,11 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install cargo-vcpkg
         run: cargo install cargo-vcpkg
+      - name: Install extra build dependencies (Linux only)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y autoconf automake libtool pkg-config libltdl-dev
       - name: Install dependencies
         run: cargo vcpkg -v build
       - name: Build SDL2
