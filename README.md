@@ -56,7 +56,7 @@ println!("cargo:rustc-link-arg=-Wl,-rpath,@loader_path");
 println!("cargo:rustc-link-arg=-Wl,-rpath,$ORIGIN");
 ```
 
-**This ONLY works with SDL2, NOT SDL2_image, SDL2_mixer, SDL2_ttf, SDL2_gfx`
+**This ONLY works with SDL2, NOT SDL2_image, SDL2_mixer, SDL2_ttf, SDL2_gfx**
 
 ### Linux
 Install these through your favourite package management tool, or via
