@@ -74,6 +74,7 @@ pub mod haptic;
 pub mod hint;
 pub mod joystick;
 pub mod keyboard;
+pub mod locale;
 pub mod log;
 pub mod messagebox;
 pub mod mouse;
