@@ -29,6 +29,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 [PR #1427](https://github.com/Rust-SDL2/rust-sdl2/pull/1427) **BREAKING CHANGE** Add system locale support. A new event type `Event::LocaleChanged` has been added.
 
+[PR #1468](https://github.com/Rust-SDL2/rust-sdl2/pull/1468) **BREAKING CHANGE** Big-endian targets behave as-if the `use-bindgen` were always enabled.
+
 ### v0.37.0
 
 [PR #1406](https://github.com/Rust-SDL2/rust-sdl2/pull/1406) Update bindings to SDL 2.0.26, add Event.is\_touch() for mouse events, upgrade wgpu to 0.20 in examples

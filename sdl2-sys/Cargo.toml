@@ -19,9 +19,12 @@ path = "src/lib.rs"
 [dependencies]
 libc = "^0.2"
 
-[build-dependencies.bindgen]
+[target.'cfg(target_endian = "little")'.build-dependencies.bindgen]
 version = "^0.69"
 optional = true
+
+[target.'cfg(not(target_endian = "little"))'.build-dependencies.bindgen]
+version = "^0.69"
 
 [build-dependencies.pkg-config]
 version = "^0.3"
