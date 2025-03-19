@@ -3,6 +3,10 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### Next
 
+[PR #1461](https://github.com/Rust-SDL2/rust-sdl2/pull/1461) **BREAKING CHANGE** Added new SensorType variants: LeftGyroscope, RightGyroscope, LeftAccelerometer, RightAccelerometer
+
+[PR #1461](https://github.com/Rust-SDL2/rust-sdl2/pull/1461) **BREAKING CHANGE** Sensor::get_data now returns correct SensorData::Gyro enum
+
 [PR #1437](https://github.com/Rust-SDL2/rust-sdl2/pull/1437) **BREAKING CHANGE** Prevent users from creating `Sdl2TtfContext` out of nothing and use SDL's reference counting init/quit
 
 [PR #1464](https://github.com/Rust-SDL2/rust-sdl2/pull/1464) Added binding for `Mix_OpenAudioDevice`
