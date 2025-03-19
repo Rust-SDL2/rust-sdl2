@@ -136,12 +136,13 @@ fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
     }
 
     if target_os == "android" {
-        cfg.define(
-            "ANDROID_NDK",
-            env::var("ANDROID_NDK_HOME").expect(
-                "ANDROID_NDK_HOME environment variable must be set when compiling for Android",
-            ),
-        );
+        let ndk_home = env::var("ANDROID_NDK_HOME")
+            .expect("ANDROID_NDK_HOME environment variable must be set when compiling for Android");
+
+        #[cfg(target_os = "windows")]
+        let ndk_home = ndk_home.replace("\\", "/");
+
+        cfg.define("ANDROID_NDK", ndk_home);
     }
 
     if cfg!(feature = "static-link") {
