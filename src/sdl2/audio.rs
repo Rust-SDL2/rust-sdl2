@@ -337,10 +337,15 @@ impl TryFrom<u32> for AudioStatus {
         use self::AudioStatus::*;
         use crate::sys::SDL_AudioStatus::*;
 
-        Ok(match unsafe { mem::transmute(n) } {
-            SDL_AUDIO_STOPPED => Stopped,
-            SDL_AUDIO_PLAYING => Playing,
-            SDL_AUDIO_PAUSED => Paused,
+        const STOPPED: u32 = SDL_AUDIO_STOPPED as u32;
+        const PLAYING: u32 = SDL_AUDIO_PLAYING as u32;
+        const PAUSED: u32 = SDL_AUDIO_PAUSED as u32;
+
+        Ok(match n {
+            STOPPED => Stopped,
+            PLAYING => Playing,
+            PAUSED => Paused,
+            _ => return Err(()),
         })
     }
 }
