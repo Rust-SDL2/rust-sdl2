@@ -60,6 +60,42 @@ impl JoystickSubsystem {
         }
     }
 
+    /// Return the player index of the joystick with index `device_index`.
+    #[doc(alias = "SDL_JoystickGetDevicePlayerIndex")]
+    pub fn player_index_for_device_id(&self, device_index: u32) -> Result<Option<u32>, IntegerOrSdlError> {
+        let device_index = validate_int(device_index, "device_index")?;
+
+        let player_index = unsafe { sys::SDL_JoystickGetDevicePlayerIndex(device_index) };
+
+        // if index is -1 (or less than 0), joystick has no player
+        if player_index < 0 {
+            Ok(None)
+        } else {
+            Ok(Some(player_index as u32))
+        }
+    }
+
+    /// Return the instance ID of the joystick with player index `player_index`.
+    #[doc(alias = "SDL_JoystickFromPlayerIndex")]
+    pub fn instance_id_for_player_index(&self, player_index: u32) -> Result<Option<u32>, IntegerOrSdlError> {
+        let player_index = validate_int(player_index, "player_index")?;
+
+        let joystick = unsafe { sys::SDL_JoystickFromPlayerIndex(player_index) };
+
+        if joystick.is_null() {
+            Ok(None)
+        } else {
+            let result = unsafe { sys::SDL_JoystickInstanceID(joystick) };
+    
+            if result < 0 {
+                // Should only fail if the joystick is NULL.
+                panic!("{}", get_error())
+            } else {
+                Ok(Some(result as u32))
+            }
+        }
+    }
+
     /// Get the GUID for the joystick at index `joystick_index`
     #[doc(alias = "SDL_JoystickGetDeviceGUID")]
     pub fn device_guid(&self, joystick_index: u32) -> Result<Guid, IntegerOrSdlError> {
@@ -480,6 +516,32 @@ impl Joystick {
             Err(IntegerOrSdlError::SdlError(get_error()))
         } else {
             Ok(())
+        }
+    }
+
+    /// Set player index for joystick or `None` to clear the player index and turn off player LEDs.
+    #[doc(alias = "SDL_JoystickSetPlayerIndex")]
+    pub fn set_player_index(&mut self, player_index: Option<u32>) -> Result<(), IntegerOrSdlError> {
+        let player_index = match player_index {
+            None => -1,
+            Some(player_index) => validate_int(player_index, "player_index")?,
+        };
+
+        unsafe { sys::SDL_JoystickSetPlayerIndex(self.raw, player_index) };
+
+        Ok(())
+    }
+
+    /// Get player index for joystick or `None` if it's not available.
+    #[doc(alias = "SDL_JoystickGetPlayerIndex")]
+    pub fn get_player_index(&self) -> Option<u32> {
+        let player_index = unsafe { sys::SDL_JoystickGetPlayerIndex(self.raw) };
+
+        // if index is -1 (or less than 0), joystick has no player 
+        if player_index < 0 {
+            None
+        } else {
+            Some(player_index as u32)
         }
     }
 }
