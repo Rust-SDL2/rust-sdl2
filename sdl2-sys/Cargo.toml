@@ -20,7 +20,7 @@ path = "src/lib.rs"
 libc = "^0.2"
 
 [build-dependencies.bindgen]
-version = "^0.69"
+version = "^0.70"
 optional = true
 
 [build-dependencies.pkg-config]
@@ -40,7 +40,7 @@ version = "^1"
 optional = true
 
 [build-dependencies]
-version-compare = "0.1"
+version-compare = "0.2"
 cfg-if = "^1.0"
 
 [features]
@@ -57,3 +57,7 @@ mixer = []
 image = []
 ttf = []
 gfx = []
+
+[lints.rust.unexpected_cfgs]
+level = "warn"
+check-cfg = ['cfg(mac_framework)', 'cfg(ios_framework)']
