@@ -57,3 +57,6 @@ mixer = []
 image = []
 ttf = []
 gfx = []
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(mac_framework)','cfg(ios_framework)'] }
