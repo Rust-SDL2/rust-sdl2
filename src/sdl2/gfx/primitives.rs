@@ -7,7 +7,6 @@ use pixels;
 use render::Canvas;
 use std::convert::TryFrom;
 use std::ffi::CString;
-use std::mem;
 use std::ptr;
 use surface::Surface;
 use sys::gfx::primitives;
@@ -18,7 +17,8 @@ pub trait ToColor {
 
     #[inline]
     fn as_u32(&self) -> u32 {
-        unsafe { mem::transmute(self.as_rgba()) }
+        let (r, g, b, a) = self.as_rgba();
+        u32::from_be_bytes([r, g, b, a])
     }
 }
 
@@ -34,17 +34,13 @@ impl ToColor for (u8, u8, u8, u8) {
     fn as_rgba(&self) -> (u8, u8, u8, u8) {
         *self
     }
-
-    #[inline]
-    fn as_u32(&self) -> u32 {
-        unsafe { mem::transmute(*self) }
-    }
 }
 
 impl ToColor for u32 {
     #[inline]
     fn as_rgba(&self) -> (u8, u8, u8, u8) {
-        unsafe { mem::transmute(*self) }
+        let [r, g, b, a] = self.to_be_bytes();
+        (r, g, b, a)
     }
 
     #[inline]
@@ -57,7 +53,10 @@ impl ToColor for u32 {
 impl ToColor for isize {
     #[inline]
     fn as_rgba(&self) -> (u8, u8, u8, u8) {
-        unsafe { mem::transmute(u32::try_from(*self).expect("Can't convert to Color Type")) }
+        let [r, g, b, a] = u32::try_from(*self)
+            .expect("Can't convert to Color Type")
+            .to_be_bytes();
+        (r, g, b, a)
     }
 
     #[inline]
