@@ -10,6 +10,7 @@ keywords = ["SDL", "windowing", "graphics", "api", "engine"]
 categories = ["rendering","api-bindings","game-engines","multimedia"]
 readme = "README.md"
 resolver = "2"
+edition = "2015"
 
 [lib]
 name = "sdl2"
