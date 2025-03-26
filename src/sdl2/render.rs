@@ -1971,7 +1971,8 @@ impl<T: RenderTarget> Canvas<T> {
 ///
 /// The implementation of `as_vertex_position` must
 /// - be pure (have no side effects) and
-/// - return a reference to an [`FPoint`] that is borrowed from `self`.
+/// - return a reference to an [`FPoint`] that is borrowed from the same allocated object as `self`
+///   and has an offset from `self` that is constant (does not change between calls).
 pub unsafe trait AsVertexPosition {
     fn as_vertex_position(&self) -> &FPoint;
 }
@@ -1987,9 +1988,8 @@ unsafe impl AsVertexPosition for FPoint {
 ///
 /// # Safety
 ///
-/// The implementation of `as_vertex_color` must
-/// - be pure (have no side effects) and
-/// - return a reference to a [`Color`][pixels::Color] that is borrowed from `self`.
+/// See [`AsVertexPosition`], but read `as_vertex_position` as `as_vertex_color` and `FPoint` as
+/// `Color`.
 pub unsafe trait AsVertexColor {
     fn as_vertex_color(&self) -> &pixels::Color;
 }
@@ -2004,9 +2004,7 @@ unsafe impl AsVertexColor for pixels::Color {
 ///
 /// # Safety
 ///
-/// The implementation of `as_vertex_tex_coord` must
-/// - be pure (have no side effects) and
-/// - return a reference to an [`FPoint`] that is borrowed from `self`.
+/// See [`AsVertexPosition`], but read `as_vertex_position` as `as_vertex_tex_coord`.
 pub unsafe trait AsVertexTexCoord {
     fn as_vertex_tex_coord(&self) -> &FPoint;
 }
