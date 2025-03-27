@@ -5,7 +5,6 @@ use libc::c_void;
 use libc::{c_char, c_int};
 use pixels;
 use render::Canvas;
-use std::convert::TryFrom;
 use std::ffi::CString;
 use std::ptr;
 use surface::Surface;
@@ -36,6 +35,7 @@ impl ToColor for (u8, u8, u8, u8) {
     }
 }
 
+// for 0xXXXXXXXX
 impl ToColor for u32 {
     #[inline]
     fn as_rgba(&self) -> (u8, u8, u8, u8) {
@@ -46,22 +46,6 @@ impl ToColor for u32 {
     #[inline]
     fn as_u32(&self) -> u32 {
         *self
-    }
-}
-
-// for 0xXXXXXXXX
-impl ToColor for isize {
-    #[inline]
-    fn as_rgba(&self) -> (u8, u8, u8, u8) {
-        let [r, g, b, a] = u32::try_from(*self)
-            .expect("Can't convert to Color Type")
-            .to_be_bytes();
-        (r, g, b, a)
-    }
-
-    #[inline]
-    fn as_u32(&self) -> u32 {
-        u32::try_from(*self).expect("Can't convert to Color Type")
     }
 }
 
