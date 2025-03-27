@@ -3,6 +3,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### Next
 
+[PR #1473](https://github.com/Rust-SDL2/rust-sdl2/pull/1473) **BREAKING CHANGE** Fix UB in `ToColor` implementations and remove implementation for `isize`.
+
 [PR #1414](https://github.com/Rust-SDL2/rust-sdl2/pull/1414) Use `TTF_GlyphIsProvided32` and `TTF_GlyphMetrics32` instead of the 16 bit ones.
 
 [PR #1435](https://github.com/Rust-SDL2/rust-sdl2/pull/1435) **BREAKING CHANGE** Fix some undefined behavior. Breaking changes: `mixer::Chunk`'s fields are now private and callbacks to `TimerSubsystem::add_timer` must now live for `'static`, also allowing some lifetime parameters to be removed.
