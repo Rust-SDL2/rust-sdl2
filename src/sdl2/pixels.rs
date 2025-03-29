@@ -48,9 +48,14 @@ impl Palette {
         // Already validated, so don't check again
         let ncolors = colors.len() as ::libc::c_int;
 
-        let colors = colors.iter().map(|color| color.raw()).collect::<Vec<_>>();
-
-        let result = unsafe { sys::SDL_SetPaletteColors(pal.raw, colors.as_ptr(), 0, ncolors) };
+        let result = unsafe {
+            sys::SDL_SetPaletteColors(
+                pal.raw,
+                colors.as_ptr().cast::<sys::SDL_Color>(),
+                0,
+                ncolors,
+            )
+        };
 
         if result < 0 {
             Err(get_error())
@@ -88,6 +93,7 @@ fn create_palette() {
     assert!(palette.len() == 255);
 }
 
+#[repr(C)]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub struct Color {
     pub r: u8,
