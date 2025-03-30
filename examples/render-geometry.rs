@@ -4,7 +4,7 @@ use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
 use sdl2::rect::FPoint;
-use sdl2::render::{RenderGeometryTextureParams, VertexIndices};
+use sdl2::render::{RenderGeometryTextureParams, Vertex, VertexIndices};
 use std::mem::offset_of;
 use std::thread;
 use std::time::Duration;
@@ -43,6 +43,29 @@ fn main() {
         canvas.set_draw_color(Color::BLACK);
         canvas.clear();
 
+        // First, draw a triangle using `render_geometry`. The `tex_coord` fields are unused but
+        // must be provided, `render_geometry` only supports `sdl2::render::Vertex`.
+        let vertices = [
+            Vertex {
+                position: FPoint::new(100.0, 200.0),
+                color: Color::RED,
+                tex_coord: FPoint::new(0.0, 0.0),
+            },
+            Vertex {
+                position: FPoint::new(200.0, 200.0),
+                color: Color::GREEN,
+                tex_coord: FPoint::new(0.0, 0.0),
+            },
+            Vertex {
+                position: FPoint::new(150.0, 100.0),
+                color: Color::BLUE,
+                tex_coord: FPoint::new(0.0, 0.0),
+            },
+        ];
+        canvas
+            .render_geometry(&vertices, None, VertexIndices::Sequential)
+            .expect("render_geometry failed (probably unsupported, see error message)");
+
         // `render_geometry_raw` supports any custom struct as long as it contains the needed data
         // (or other layout compatible of the needed data).
         // The struct does not need to be `repr(C)` or `Copy` for example.
@@ -59,26 +82,31 @@ fn main() {
             pos: FPoint,
         }
 
-        // Define the triangles
+        // Define the vertices of a square
         let vertices = [
             MyVertex {
-                color: [0xff, 0, 0, 0xff],
+                color: [0, 0, 0, 0xff],
                 foo: b"some".to_vec(),
-                pos: FPoint::new(100.0, 500.0),
+                pos: FPoint::new(300.0, 100.0),
             },
             MyVertex {
                 color: [0, 0xff, 0, 0xff],
                 foo: b"unrelated".to_vec(),
-                pos: FPoint::new(700.0, 500.0),
+                pos: FPoint::new(400.0, 100.0),
             },
             MyVertex {
-                color: [0, 0, 0xff, 0xff],
+                color: [0xff, 0, 0, 0xff],
                 foo: b"data".to_vec(),
-                pos: FPoint::new(400.0, 100.0),
+                pos: FPoint::new(300.0, 200.0),
+            },
+            MyVertex {
+                color: [0xff, 0xff, 0, 0xff],
+                foo: b"!".to_vec(),
+                pos: FPoint::new(400.0, 200.0),
             },
         ];
 
-        // Actually render
+        // A square is rendered as two triangles (see indices)
         // SAFETY: core::mem::offset_of makes sure the offsets are right.
         unsafe {
             canvas.render_geometry_raw(
@@ -87,10 +115,30 @@ fn main() {
                 &vertices,
                 offset_of!(MyVertex, color),
                 None::<RenderGeometryTextureParams<()>>,
-                VertexIndices::Sequential,
+                &[[0, 1, 2], [1, 2, 3]],
             )
         }
-        .expect("render_geometry failed (probably unsupported, see error message)");
+        .expect("render_geometry_raw failed (probably unsupported, see error message)");
+
+        // Parameters can be reused, here only the positions are swapped out for new ones.
+        // SAFETY: core::mem::offset_of makes sure the offsets are right.
+        //         The offset 0 is correct because the element type of positions is `[f32; 2]`.
+        unsafe {
+            canvas.render_geometry_raw(
+                &[
+                    [500.0f32, 100.0],
+                    [600.0, 100.0],
+                    [500.0, 200.0],
+                    [600.0, 200.0],
+                ],
+                0,
+                &vertices,
+                offset_of!(MyVertex, color),
+                None::<RenderGeometryTextureParams<()>>,
+                &[[0, 1, 2], [1, 2, 3]],
+            )
+        }
+        .expect("render_geometry_raw failed (probably unsupported, see error message)");
 
         canvas.present();
         thread::sleep(Duration::from_millis(16));
