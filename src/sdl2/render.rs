@@ -2047,6 +2047,20 @@ impl<'a> From<&'a [[i32; 3]]> for VertexIndices<'a> {
     }
 }
 
+macro_rules! impl_vec_ref_into_vertex_indices {
+    ($($ty:ty)*) => {
+        $(
+            impl<'a> From<&'a Vec<$ty>> for VertexIndices<'a> {
+                fn from(value: &'a Vec<$ty>) -> Self {
+                    Self::from(value.as_slice())
+                }
+            }
+        )*
+    };
+}
+
+impl_vec_ref_into_vertex_indices!(u8 u16 u32 i32 [u8; 3] [u16; 3] [u32; 3] [i32; 3]);
+
 #[derive(Clone, Copy)]
 pub struct RenderGeometryTextureParams<'a, TexCoordVertex> {
     #[cfg(not(feature = "unsafe_textures"))]
