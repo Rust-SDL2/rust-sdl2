@@ -1,11 +1,11 @@
 extern crate sdl2;
 
 use sdl2::event::Event;
-use sdl2::impl_as_vertex_traits;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
 use sdl2::rect::FPoint;
-use sdl2::render::{AsVertexColor, VertexIndices};
+use sdl2::render::{RenderGeometryTextureParams, VertexIndices};
+use std::mem::offset_of;
 use std::thread;
 use std::time::Duration;
 
@@ -43,7 +43,7 @@ fn main() {
         canvas.set_draw_color(Color::BLACK);
         canvas.clear();
 
-        // `render_geometry` supports any custom struct as long as it contains the needed data
+        // `render_geometry_raw` supports any custom struct as long as it contains the needed data
         // (or other layout compatible of the needed data).
         // The struct does not need to be `repr(C)` or `Copy` for example.
         struct MyVertex {
@@ -54,24 +54,9 @@ fn main() {
             #[expect(dead_code)]
             foo: Vec<u8>,
             // When defining your own vertex struct, using `FPoint` for position and tex_coord
-            // (and `Color` for color) is the easiest way (see the trait impls below)
+            // (and `Color` for color) is the easiest way. These are obviously layout-compatible
+            // with `FPoint` and `Color`, respectively.
             pos: FPoint,
-        }
-
-        // The unsafe trait to get the vertex position can simply be generated with a macro.
-        // This macro makes sure the implementation is sound, this is only possible when the field
-        // has the exact right type.
-        impl_as_vertex_traits!(impl AsVertexPosition(self.pos) for MyVertex);
-
-        // The unsafe trait to get the vertex color must be implementated manually because the type
-        // of the `color` field is not `sdl2::pixels::Color`.
-        // Also make sure to not violate the contract of this unsafe trait!
-        // SAFETY: `as_vertex_color` only returns a borrow of a field of `self`.
-        unsafe impl AsVertexColor for MyVertex {
-            fn as_vertex_color(&self) -> &Color {
-                // SAFETY: [u8; 4] has the same layout as Color
-                unsafe { &*(&self.color as *const [u8; 4] as *const Color) }
-            }
         }
 
         // Define the triangles
@@ -94,14 +79,18 @@ fn main() {
         ];
 
         // Actually render
-        canvas
-            .render_geometry(
+        // SAFETY: core::mem::offset_of makes sure the offsets are right.
+        unsafe {
+            canvas.render_geometry_raw(
                 &vertices,
+                offset_of!(MyVertex, pos),
                 &vertices,
-                None::<(&sdl2::render::Texture<'_>, &[sdl2::render::Vertex])>,
+                offset_of!(MyVertex, color),
+                None::<RenderGeometryTextureParams<()>>,
                 VertexIndices::Sequential,
             )
-            .expect("render_geometry failed");
+        }
+        .expect("render_geometry failed (probably unsupported, see error message)");
 
         canvas.present();
         thread::sleep(Duration::from_millis(16));

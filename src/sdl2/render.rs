@@ -41,7 +41,7 @@ use crate::surface::{Surface, SurfaceContext, SurfaceRef};
 use crate::video::{Window, WindowContext};
 use libc::c_void;
 use libc::{c_double, c_int};
-use std::convert::TryFrom;
+use std::convert::{TryFrom, TryInto};
 use std::error::Error;
 use std::ffi::CStr;
 use std::fmt;
@@ -1965,123 +1965,9 @@ impl<T: RenderTarget> Canvas<T> {
     }
 }
 
-/// Get a reference to an [`FPoint`] inside `Self`. This is used by [`Canvas::render_geometry`].
-///
-/// # Safety
-///
-/// The implementation of `as_vertex_position` must
-/// - be pure (have no side effects) and
-/// - return a reference to an [`FPoint`] that is borrowed from the same allocated object as `self`
-///   and has an offset from `self` that is constant (does not change between calls).
-pub unsafe trait AsVertexPosition {
-    fn as_vertex_position(&self) -> &FPoint;
-}
-
-unsafe impl AsVertexPosition for FPoint {
-    fn as_vertex_position(&self) -> &FPoint {
-        self
-    }
-}
-
-/// Get a reference to a [`Color`][pixels::Color] inside `Self`. This is used by
-/// [`Canvas::render_geometry`].
-///
-/// # Safety
-///
-/// See [`AsVertexPosition`], but read `as_vertex_position` as `as_vertex_color` and `FPoint` as
-/// `Color`.
-pub unsafe trait AsVertexColor {
-    fn as_vertex_color(&self) -> &pixels::Color;
-}
-
-unsafe impl AsVertexColor for pixels::Color {
-    fn as_vertex_color(&self) -> &pixels::Color {
-        self
-    }
-}
-
-/// Get a reference to an [`FPoint`] inside `Self`. This is used by [`Canvas::render_geometry`].
-///
-/// # Safety
-///
-/// See [`AsVertexPosition`], but read `as_vertex_position` as `as_vertex_tex_coord`.
-pub unsafe trait AsVertexTexCoord {
-    fn as_vertex_tex_coord(&self) -> &FPoint;
-}
-
-unsafe impl AsVertexTexCoord for FPoint {
-    fn as_vertex_tex_coord(&self) -> &FPoint {
-        self
-    }
-}
-
-/// Generates implementations of [`AsVertexPosition`], [`AsVertexColor`] and/or
-/// [`AsVertexTexCoord`].
-///
-/// # Usage examples
-///
-/// Generate all three trait impls for a [`Vertex`]-like struct.
-///
-/// ```
-/// # use sdl2::impl_as_vertex_traits;
-/// # use sdl2::pixels::Color;
-/// # use sdl2::rect::FPoint;
-///
-/// pub struct Vertex {
-///     pub position: FPoint,
-///     pub color: Color,
-///     pub tex_coord: FPoint,
-/// }
-///
-/// impl_as_vertex_traits!(
-///     impl
-///         AsVertexPosition(self.position),
-///         AsVertexColor(self.color),
-///         AsVertexTexCoord(self.tex_coord),
-///     for Vertex
-/// );
-/// ```
-///
-/// [examples/render-geometry.rs](https://github.com/Rust-SDL2/rust-sdl2/blob/master/examples/render-geometry.rs)
-/// contains an example for a different use case.
-#[macro_export]
-macro_rules! impl_as_vertex_traits {
-    (
-        impl
-            $(AsVertexPosition(self.$position:ident) $(,)?)?
-            $(AsVertexColor(self.$color:ident) $(,)?)?
-            $(AsVertexTexCoord(self.$tex_coord:ident) $(,)?)?
-        for $self_ty:ident
-    ) => {
-        $(
-            unsafe impl $crate::render::AsVertexPosition for $self_ty {
-                fn as_vertex_position(&self) -> &$crate::rect::FPoint {
-                    let $self_ty { $position: ret, .. } = self;
-                    ret
-                }
-            }
-        )?
-
-        $(
-            unsafe impl $crate::render::AsVertexColor for $self_ty {
-                fn as_vertex_color(&self) -> &$crate::pixels::Color {
-                    let $self_ty { $color: ret, .. } = self;
-                    ret
-                }
-            }
-        )?
-
-        $(
-            unsafe impl $crate::render::AsVertexTexCoord for $self_ty {
-                fn as_vertex_tex_coord(&self) -> &$crate::rect::FPoint {
-                    let $self_ty { $tex_coord: ret, .. } = self;
-                    ret
-                }
-            }
-        )?
-    };
-}
-
+// `repr(C)` is not needed for soundness in this crate, but users may expect it to be
+// layout-compatible with `sys::SDL_Vertex`.
+#[repr(C)]
 #[derive(Debug, Clone, Copy)]
 pub struct Vertex {
     pub position: FPoint,
@@ -2089,25 +1975,16 @@ pub struct Vertex {
     pub tex_coord: FPoint,
 }
 
-impl_as_vertex_traits!(
-    impl
-        AsVertexPosition(self.position),
-        AsVertexColor(self.color),
-        AsVertexTexCoord(self.tex_coord),
-    for Vertex
-);
-
 #[derive(Debug, Clone, Copy)]
 pub enum VertexIndices<'a> {
     /// Vertices are rendered in sequential order.
     Sequential,
     /// [`u8`] vertex indices.
-    U8(&'a [[u8; 3]]),
+    U8(&'a [u8]),
     /// [`u16`] vertex indices.
-    U16(&'a [[u16; 3]]),
-    /// [`u32`] vertex indices. If any number in the slice is larger than [`i32::MAX`], SDL will
-    /// return an error when using this in [`Canvas::render_geometry`].
-    U32(&'a [[u32; 3]]),
+    U16(&'a [u16]),
+    /// [`u32`] vertex indices. If any index is larger than [`i32::MAX`], SDL will return an error.
+    U32(&'a [u32]),
 }
 
 impl VertexIndices<'_> {
@@ -2115,184 +1992,208 @@ impl VertexIndices<'_> {
     fn into_raw(self) -> (*const c_void, c_int, c_int) {
         match self {
             Self::Sequential => (ptr::null(), 0, 0),
-            Self::U8(indices) => (
-                indices.as_ptr().cast::<c_void>(),
-                (indices.len() * 3) as c_int,
-                1,
-            ),
-            Self::U16(indices) => (
-                indices.as_ptr().cast::<c_void>(),
-                (indices.len() * 3) as c_int,
-                2,
-            ),
-            Self::U32(indices) => (
-                indices.as_ptr().cast::<c_void>(),
-                (indices.len() * 3) as c_int,
-                4,
-            ),
+            Self::U8(indices) => (indices.as_ptr().cast::<c_void>(), indices.len() as c_int, 1),
+            Self::U16(indices) => (indices.as_ptr().cast::<c_void>(), indices.len() as c_int, 2),
+            Self::U32(indices) => (indices.as_ptr().cast::<c_void>(), indices.len() as c_int, 4),
         }
+    }
+}
+
+impl<'a> From<&'a [u8]> for VertexIndices<'a> {
+    fn from(value: &'a [u8]) -> Self {
+        Self::U8(value)
+    }
+}
+
+impl<'a> From<&'a [u16]> for VertexIndices<'a> {
+    fn from(value: &'a [u16]) -> Self {
+        Self::U16(value)
+    }
+}
+
+impl<'a> From<&'a [u32]> for VertexIndices<'a> {
+    fn from(value: &'a [u32]) -> Self {
+        Self::U32(value)
+    }
+}
+
+impl<'a> From<&'a [i32]> for VertexIndices<'a> {
+    fn from(value: &'a [i32]) -> Self {
+        Self::U32(unsafe { slice::from_raw_parts(value.as_ptr().cast::<u32>(), value.len()) })
     }
 }
 
 impl<'a> From<&'a [[u8; 3]]> for VertexIndices<'a> {
     fn from(value: &'a [[u8; 3]]) -> Self {
-        Self::U8(value)
+        Self::U8(unsafe { slice::from_raw_parts(value.as_ptr().cast::<u8>(), value.len() * 3) })
     }
 }
 
 impl<'a> From<&'a [[u16; 3]]> for VertexIndices<'a> {
     fn from(value: &'a [[u16; 3]]) -> Self {
-        Self::U16(value)
+        Self::U16(unsafe { slice::from_raw_parts(value.as_ptr().cast::<u16>(), value.len() * 3) })
     }
 }
 
 impl<'a> From<&'a [[u32; 3]]> for VertexIndices<'a> {
     fn from(value: &'a [[u32; 3]]) -> Self {
-        Self::U32(value)
+        Self::U32(unsafe { slice::from_raw_parts(value.as_ptr().cast::<u32>(), value.len() * 3) })
     }
 }
 
 impl<'a> From<&'a [[i32; 3]]> for VertexIndices<'a> {
     fn from(value: &'a [[i32; 3]]) -> Self {
-        Self::U32(unsafe { slice::from_raw_parts(value.as_ptr().cast::<[u32; 3]>(), value.len()) })
+        Self::U32(unsafe { slice::from_raw_parts(value.as_ptr().cast::<u32>(), value.len() * 3) })
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct InvalidLengthError(());
-
-impl fmt::Display for InvalidLengthError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "slice length must be a multiple of 3")
-    }
+#[derive(Clone, Copy)]
+pub struct RenderGeometryTextureParams<'a, TexCoordVertex> {
+    #[cfg(not(feature = "unsafe_textures"))]
+    pub texture: &'a Texture<'a>,
+    #[cfg(feature = "unsafe_textures")]
+    pub texture: &'a Texture,
+    pub tex_coords: &'a [TexCoordVertex],
+    pub tex_coord_offset: usize,
 }
-
-impl std::error::Error for InvalidLengthError {}
-
-macro_rules! vertex_indices_try_from {
-    ($($ty:ty)*) => {
-        $(
-            impl<'a> TryFrom<&'a [$ty]> for VertexIndices<'a> {
-                type Error = InvalidLengthError;
-
-                fn try_from(value: &'a [$ty]) -> Result<Self, Self::Error> {
-                    let new_len = value.len() / 3;
-                    if value.len() % 3 == 0 {
-                        Ok(Self::from(unsafe {
-                            slice::from_raw_parts(value.as_ptr().cast::<[$ty; 3]>(), new_len)
-                        }))
-                    } else {
-                        Err(InvalidLengthError(()))
-                    }
-                }
-            }
-        )*
-    };
-}
-
-vertex_indices_try_from!(u8 u16 u32 i32);
 
 impl<T: RenderTarget> Canvas<T> {
-    /// Render triangles optionally using a texture.
+    /// Render triangles, optionally using a texture.
     ///
-    /// If you have vertices or indices in a different format, [`Canvas::render_geometry`] (the
-    /// advanced version of this function) might allow you to do the same as this function without
+    /// If you have vertices in a different format, [`Canvas::render_geometry_raw`] (the advanced
+    /// version of this function) might allow you to do the same as this function without
     /// converting the parameters.
     ///
-    /// # Panics
-    ///
-    /// This function panics if `indices.len()` is not a multiple of 3
+    /// `indices` can be of any of the following:
+    /// - [`VertexIndices::Sequential`]: Vertices are rendered in sequential order. The number of
+    ///   *vertices* must be divisible by 3, when using a list of indices, the number of *indices*
+    ///   must be divisible by 3. SDL will check this and return an error if this is not the case.
+    /// - `&[u8]`: Indices of the type [`u8`], note that this only works when using [`u8::MAX`]
+    ///   (255) or less vertices.
+    /// - `&[u16]`: Indices of the type [`u16`], note that this only works when using [`u16::MAX`]
+    ///   (65535) or less vertices.
+    /// - `&[u32]` or `&[i32]`: Indices of the type [`i32`], possibly represented using [`u32`].
+    ///   Note that regardless of the type, indices must be positive and fit in [`i32`].
+    /// - `&[[u8; 3]]`, `&[[u16; 3]]`, `&[[u32; 3]]` or `&[[i32; 3]]`, which work like `&[u8]`,
+    ///   `&[u16]`, `&[u32]` or `&[i32]` but ensure at compile time that the number of indices is
+    ///   divisible by 3.
+    /// - Any other (possibly user defined) type that implements `Into<VertexIndices<'_>>`.
     #[doc(alias = "SDL_RenderGeometry")]
-    pub fn render_geometry_simple(
+    pub fn render_geometry<'a>(
         &mut self,
         vertices: &[Vertex],
         texture: Option<&Texture>,
-        indices: Option<&[u32]>,
+        indices: impl Into<VertexIndices<'a>>,
     ) -> Result<(), String> {
-        self.render_geometry(
-            vertices,
-            vertices,
-            texture.map(|texture| (texture, vertices)),
-            match indices {
-                None => VertexIndices::Sequential,
-                Some(indices) => VertexIndices::try_from(indices).unwrap(),
-            },
-        )
+        unsafe {
+            self.render_geometry_raw(
+                vertices,
+                mem::offset_of!(Vertex, position),
+                vertices,
+                mem::offset_of!(Vertex, color),
+                texture.map(|texture| RenderGeometryTextureParams {
+                    texture,
+                    tex_coords: vertices,
+                    tex_coord_offset: mem::offset_of!(Vertex, tex_coord),
+                }),
+                indices,
+            )
+        }
     }
 
-    /// Render triangles optionally using a texture.
+    /// Render triangles, optionally using a texture.
     ///
-    /// This function allows its parameters to be passed in a variety of ways including one list of
-    /// vertices (like [`Canvas::render_geometry_simple`] accepts) and separate lists of positions,
-    /// colors and texture coordinates.
+    /// In the documentation of this function field names of [`RenderGeometryTextureParams`] are
+    /// used as if they are parameters. When they are used it only applies when a texture is used
+    /// (`texture_params` is [`Some(_)`][Some]).
+    ///
+    /// Vertices may be passed as up to 3 separate lists. Elements of the lists may contain
+    /// anything, but must contain the valid values at the given offset (in bytes).
+    /// Using [`offset_of`][core::mem::offset_of] is advised to get the right offset of a field,
+    /// especially when the element type does not have a stable layout.
+    ///
+    /// See the documentation of [`Canvas::render_geometry`] for usage of the `indices` parameter.
+    ///
+    /// # Safety
+    ///
+    /// It must be sound to [create references to](core::ptr#pointer-to-reference-conversion):
+    /// - `positions` offset by `position_offset` bytes, of type [`FPoint`] (or `[f32; 2]`),
+    /// - `colors` offset by `color_offset` bytes, of type [`Color`][pixels::Color] (or `[u8; 4]`)
+    /// - `tex_coords` offset by `tex_coord_offset` bytes, of type [`FPoint`] (or `[f32; 2]`).
+    ///
+    /// For the above to hold, make sure that the hypothetical references are properly aligned and
+    /// point to valid values ([`f32`] and [`u8`] allow any bit pattern, but not
+    /// uninitialized/padding bytes).
     ///
     /// # Panics
     ///
-    /// - This function panic if the slices `positions`, `colors` and if applicable, "texcoords"
-    ///   (`texture.unwrap().1`) have different lengths.
-    /// - This function does its best to check if the unsafe trait contracts
-    ///   (of [`AsVertexPosition`], [`AsVertexColor`] and [`AsVertexTexCoord`]) are upheld. These
-    ///   checks should not affect performance in release builds and may panic if a contract is
-    ///   violated.
-    #[doc(alias = "SDL_RenderGeometry")]
+    /// The following conditions are checked. All must hold or the function panics.
+    ///
+    /// Vertices are passed as separate lists, all lists must have the same length.
+    /// - `positions.len() == colors.len()`
+    /// - `positions.len() == tex_coords.len()`
+    ///
+    /// Offsets must be correct.
+    /// - `position_offset + size_of::<FPoint>() <= size_of::<PosVertex>()`: an [`FPoint`] must fit in `PosVertex` at `position_offset` bytes from the start.
+    /// - `color_offset + size_of::<Color>() <= size_of::<ColorVertex>()`: a [`Color`][pixels::Color] must fit in `ColorVertex` at `color_offset` bytes from the start.
+    /// - `tex_coord_offset + size_of::<FPoint>() <= size_of::<TexCoordVertex>()`: an [`FPoint`] must fit in `TexCoordVertex` at `tex_coord_offset` bytes from the start.
+    ///
+    /// Various sizes must fit in a [C `int`][c_int].
+    /// - `positions.len() <= c_int::MAX`
+    /// - `size_of::<PosVertex>() <= c_int::MAX`
+    /// - `size_of::<ColorVertex>() <= c_int::MAX`
+    /// - `size_of::<TexCoordVertex>() <= c_int::MAX`
+    #[inline]
     #[doc(alias = "SDL_RenderGeometryRaw")]
-    pub fn render_geometry(
+    pub unsafe fn render_geometry_raw<'a, PosVertex, ColorVertex, TexCoordVertex>(
         &mut self,
-        positions: &[impl AsVertexPosition],
-        colors: &[impl AsVertexColor],
-        texture: Option<(&Texture, &[impl AsVertexTexCoord])>,
-        indices: VertexIndices<'_>,
+        positions: &[PosVertex],
+        position_offset: usize,
+        colors: &[ColorVertex],
+        color_offset: usize,
+        texture_params: Option<RenderGeometryTextureParams<TexCoordVertex>>,
+        indices: impl Into<VertexIndices<'a>>,
     ) -> Result<(), String> {
         let num_vertices = positions.len();
-
-        assert!(num_vertices <= c_int::MAX as usize);
         assert_eq!(num_vertices, colors.len());
-        if let Some((_, texcoords)) = texture {
-            assert_eq!(num_vertices, texcoords.len());
-        };
 
-        if num_vertices < 3 {
-            // SDL also does this, but now we know the slices have at least one element
-            return Ok(());
-        }
-
-        // If no unsafe trait contract is broken (then the assertions here do not fail) this
-        // function can be optimized to return (slice + constant, constant).
-        // The constants are dependent on type sizes and field offset.
-        #[inline(always)]
-        unsafe fn ptr_and_stride<E, F, R>(
-            slice: *const [E],
-            element_field: *const F,
-        ) -> (*const R, c_int) {
-            let offset = element_field.cast::<u8>().offset_from(slice.cast::<u8>());
-
-            assert!(offset >= 0);
-            assert!(size_of::<F>() <= size_of::<E>());
-            assert!(size_of::<E>() <= c_int::MAX as usize);
-            assert!(offset as usize <= size_of::<E>() - size_of::<F>());
-
-            (slice.byte_offset(offset).cast(), size_of::<E>() as c_int)
-        }
-
-        let ret = unsafe {
-            let (xy, xy_stride) =
-                ptr_and_stride::<_, FPoint, f32>(positions, positions[0].as_vertex_position());
-            let (color, color_stride) = ptr_and_stride::<_, pixels::Color, sys::SDL_Color>(
-                colors,
-                colors[0].as_vertex_color(),
+        assert!(position_offset + size_of::<FPoint>() <= size_of::<PosVertex>());
+        assert!(color_offset + size_of::<pixels::Color>() <= size_of::<ColorVertex>());
+        let (texture, uv, uv_stride) = if let Some(texture_params) = texture_params {
+            assert_eq!(num_vertices, texture_params.tex_coords.len());
+            assert!(
+                texture_params.tex_coord_offset + size_of::<FPoint>()
+                    <= size_of::<TexCoordVertex>(),
             );
 
-            let (texture, (uv, uv_stride)) = if let Some((texture, texcoords)) = texture {
-                (
-                    texture.raw,
-                    ptr_and_stride::<_, FPoint, f32>(texcoords, texcoords[0].as_vertex_tex_coord()),
-                )
-            } else {
-                (ptr::null_mut(), (ptr::null(), 0))
-            };
+            (
+                texture_params.texture.raw,
+                texture_params
+                    .tex_coords
+                    .as_ptr()
+                    .cast::<f32>()
+                    .byte_offset(texture_params.tex_coord_offset.try_into().unwrap()),
+                size_of::<TexCoordVertex>().try_into().unwrap(),
+            )
+        } else {
+            (ptr::null_mut(), ptr::null(), 0)
+        };
 
-            let (indices, num_indices, size_indices) = indices.into_raw();
+        let xy = positions
+            .as_ptr()
+            .cast::<f32>()
+            .byte_offset(position_offset.try_into().unwrap());
+        let xy_stride = size_of::<PosVertex>().try_into().unwrap();
 
+        let color = colors
+            .as_ptr()
+            .cast::<sys::SDL_Color>()
+            .byte_offset(color_offset.try_into().unwrap());
+        let color_stride = size_of::<ColorVertex>().try_into().unwrap();
+
+        let (indices, num_indices, size_indices) = indices.into().into_raw();
+
+        let ret = unsafe {
             sys::SDL_RenderGeometryRaw(
                 self.context.raw,
                 texture,
@@ -2302,7 +2203,7 @@ impl<T: RenderTarget> Canvas<T> {
                 color_stride,
                 uv,
                 uv_stride,
-                num_vertices as c_int,
+                num_vertices.try_into().unwrap(),
                 indices,
                 num_indices,
                 size_indices,
