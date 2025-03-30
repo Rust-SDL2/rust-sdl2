@@ -2081,8 +2081,8 @@ impl<T: RenderTarget> Canvas<T> {
     /// Render triangles, optionally using a texture.
     ///
     /// If you have vertices in a different format, [`Canvas::render_geometry_raw`] (the advanced
-    /// version of this function) might allow you to do the same as this function without
-    /// converting the parameters.
+    /// version of this function) might allow you to do the same as this function without having to
+    /// convert the parameters to use [`Vertex`].
     ///
     /// `indices` can be of any of the following:
     /// - [`VertexIndices::Sequential`]: Vertices are rendered in sequential order. The number of
@@ -2097,7 +2097,8 @@ impl<T: RenderTarget> Canvas<T> {
     /// - `&[[u8; 3]]`, `&[[u16; 3]]`, `&[[u32; 3]]` or `&[[i32; 3]]`, which work like `&[u8]`,
     ///   `&[u16]`, `&[u32]` or `&[i32]` but ensure at compile time that the number of indices is
     ///   divisible by 3.
-    /// - Any other (possibly user defined) type that implements `Into<VertexIndices<'_>>`.
+    /// - Any other (possibly user defined) type that implements
+    ///   [`Into<VertexIndices<'_>>`][VertexIndices#trait-implementations].
     #[doc(alias = "SDL_RenderGeometry")]
     pub fn render_geometry<'a>(
         &mut self,
@@ -2134,6 +2135,10 @@ impl<T: RenderTarget> Canvas<T> {
     ///
     /// See the documentation of [`Canvas::render_geometry`] for usage of the `indices` parameter.
     ///
+    /// When a texture is not used, the vertex type must still be specified (because of a Rust
+    /// limitation, more info [here](https://github.com/rust-lang/rust/issues/36887)). This can be
+    /// done with turbofish syntax after `None` like so: `None::<RenderGeometryTextureParams<()>>`.
+    ///
     /// # Safety
     ///
     /// It must be sound to [create references to](core::ptr#pointer-to-reference-conversion):
@@ -2154,9 +2159,13 @@ impl<T: RenderTarget> Canvas<T> {
     /// - `positions.len() == tex_coords.len()`
     ///
     /// Offsets must be correct.
-    /// - `position_offset + size_of::<FPoint>() <= size_of::<PosVertex>()`: an [`FPoint`] must fit in `PosVertex` at `position_offset` bytes from the start.
-    /// - `color_offset + size_of::<Color>() <= size_of::<ColorVertex>()`: a [`Color`][pixels::Color] must fit in `ColorVertex` at `color_offset` bytes from the start.
-    /// - `tex_coord_offset + size_of::<FPoint>() <= size_of::<TexCoordVertex>()`: an [`FPoint`] must fit in `TexCoordVertex` at `tex_coord_offset` bytes from the start.
+    /// - `position_offset + size_of::<FPoint>() <= size_of::<PosVertex>()`: an [`FPoint`] must fit
+    ///   in `PosVertex` at `position_offset` bytes from the start.
+    /// - `color_offset + size_of::<Color>() <= size_of::<ColorVertex>()`: a
+    ///   [`Color`][pixels::Color] must fit in `ColorVertex` at `color_offset` bytes from the
+    ///   start.
+    /// - `tex_coord_offset + size_of::<FPoint>() <= size_of::<TexCoordVertex>()`: an [`FPoint`]
+    ///   must fit in `TexCoordVertex` at `tex_coord_offset` bytes from the start.
     ///
     /// Various sizes must fit in a [C `int`][c_int].
     /// - `positions.len() <= c_int::MAX`
