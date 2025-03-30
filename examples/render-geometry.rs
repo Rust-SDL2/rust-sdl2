@@ -107,7 +107,7 @@ fn main() {
         ];
 
         // A square is rendered as two triangles (see indices)
-        // SAFETY: core::mem::offset_of makes sure the offsets are right.
+        // SAFETY: core::mem::offset_of makes sure the offsets are right and alignment is respected.
         unsafe {
             canvas.render_geometry_raw(
                 &vertices,
@@ -121,7 +121,7 @@ fn main() {
         .expect("render_geometry_raw failed (probably unsupported, see error message)");
 
         // Parameters can be reused, here only the positions are swapped out for new ones.
-        // SAFETY: core::mem::offset_of makes sure the offsets are right.
+        // SAFETY: core::mem::offset_of makes sure the offsets are right and alignment is respected.
         //         The offset 0 is correct because the element type of positions is `[f32; 2]`.
         unsafe {
             canvas.render_geometry_raw(
