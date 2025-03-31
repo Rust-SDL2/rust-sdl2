@@ -136,6 +136,9 @@ name = "renderer-target"
 name = "events"
 
 [[example]]
+name = "render-geometry"
+
+[[example]]
 name = "renderer-texture"
 
 [[example]]
