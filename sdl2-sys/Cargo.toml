@@ -32,7 +32,7 @@ version = "^0.2.12"
 optional = true
 
 [build-dependencies.cmake]
-version = "^0.1.47"
+version = "^0.1.54"
 optional = true
 
 [build-dependencies.flate2]
