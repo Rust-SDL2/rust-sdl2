@@ -84,7 +84,6 @@ unsafe fn get_locale(ptr: *const sys::SDL_Locale) -> Option<Locale> {
                 .into_owned(),
         )
     };
-    // let region = try_get_string(sdl_locale.country);
 
     Some(Locale {
         lang,
