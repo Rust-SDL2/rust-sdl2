@@ -75,18 +75,19 @@ unsafe fn get_locale(ptr: *const sys::SDL_Locale) -> Option<Locale> {
         .to_string_lossy()
         .into_owned();
 
-    let region = try_get_string(sdl_locale.country);
+    let region = if sdl_locale.country.is_null() {
+        None
+    } else {
+        Some(
+            std::ffi::CStr::from_ptr(sdl_locale.country)
+                .to_string_lossy()
+                .into_owned(),
+        )
+    };
+    // let region = try_get_string(sdl_locale.country);
 
     Some(Locale {
         lang,
         country: region,
     })
-}
-
-unsafe fn try_get_string(ptr: *const i8) -> Option<String> {
-    if ptr.is_null() {
-        None
-    } else {
-        Some(std::ffi::CStr::from_ptr(ptr).to_string_lossy().into_owned())
-    }
 }
