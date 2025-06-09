@@ -1,8 +1,7 @@
 /// Demonstrates the simultaneous mixing of music and sound effects.
 extern crate sdl2;
 
-use sdl2::mixer::{InitFlag, LoaderRWops, AUDIO_S16LSB, DEFAULT_CHANNELS};
-use sdl2::rwops::RWops;
+use sdl2::mixer::{InitFlag, AUDIO_S16LSB, DEFAULT_CHANNELS};
 use std::env;
 use std::path::Path;
 
