@@ -2,9 +2,9 @@
 extern crate sdl2;
 
 use sdl2::mixer::{InitFlag, LoaderRWops, AUDIO_S16LSB, DEFAULT_CHANNELS};
+use sdl2::rwops::RWops;
 use std::env;
 use std::path::Path;
-use sdl2::rwops::RWops;
 
 fn main() -> Result<(), String> {
     let args: Vec<_> = env::args().collect();
@@ -37,7 +37,6 @@ fn demo(music_file: &Path, sound_file: Option<&Path>) -> Result<(), String> {
     // Number of mixing channels available for sound effect `Chunk`s to play
     // simultaneously.
     sdl2::mixer::allocate_channels(4);
-
 
     {
         let n = sdl2::mixer::get_chunk_decoders_number();
@@ -111,25 +110,24 @@ fn demo(music_file: &Path, sound_file: Option<&Path>) -> Result<(), String> {
         music.fade_in_from_pos(1, 10_000, 100.0)
     );
 
-   timer.delay(5_000);
-   sdl2::mixer::Music::halt();
+    timer.delay(5_000);
+    sdl2::mixer::Music::halt();
 
+    println!("playing sound from memory...");
+    let sound_as_bytes = include_bytes!("../assets/sine.wav");
+    let chunk = sdl2::mixer::Chunk::from_bytes(sound_as_bytes)?;
+    sdl2::mixer::Channel::all().play(&chunk, 0)?;
+    timer.delay(1_000);
 
-   println!("playing sound from memory...");
-   let sound_as_bytes = include_bytes!("../assets/sine.wav");
-   let chunk = sdl2::mixer::Chunk::from_bytes(sound_as_bytes)?;
-   sdl2::mixer::Channel::all().play(&chunk, 0)?;
-   timer.delay(1_000);
+    println!("playing music from memory...");
+    let mus = include_bytes!("../assets/sine.wav");
+    let mus = sdl2::mixer::Music::from_bytes(mus)?;
+    mus.play(-1);
+    timer.delay(1_000);
 
-   println!("playing music from memory...");
-   let mus = include_bytes!("../assets/sine.wav");
-   let mus = sdl2::mixer::Music::from_bytes(mus)?;
-   mus.play(-1);
-   timer.delay(1_000);
+    sdl2::mixer::Music::halt();
 
-   sdl2::mixer::Music::halt();
-
-   timer.delay(1_000);
+    timer.delay(1_000);
 
     println!("quitting sdl");
 

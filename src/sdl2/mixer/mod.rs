@@ -299,17 +299,16 @@ impl Drop for Chunk {
 }
 
 impl Chunk {
-
-   /// Load a sample from memory directly. 
-   ///
-   /// This works the same way as [Chunk::from_file] except with bytes instead of a file path.
-   /// If you have read your sound files (.wav, .ogg, etc...) from
-   /// disk to memory as bytes you can use this function 
-   /// to create [Chunk]s from their bytes.
-   pub fn from_bytes(path: &[u8]) -> Result<Chunk, String> {
-      let b = RWops::from_bytes(path)?;
-      b.load_wav()
-   }
+    /// Load a sample from memory directly.
+    ///
+    /// This works the same way as [Chunk::from_file] except with bytes instead of a file path.
+    /// If you have read your sound files (.wav, .ogg, etc...) from
+    /// disk to memory as bytes you can use this function
+    /// to create [Chunk]s from their bytes.
+    pub fn from_bytes(path: &[u8]) -> Result<Chunk, String> {
+        let b = RWops::from_bytes(path)?;
+        b.load_wav()
+    }
 
     /// Load file for use as a sample.
     pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Chunk, String> {
@@ -847,25 +846,25 @@ impl<'a> Music<'a> {
         }
     }
 
-   /// Load music from a byte buffer.
-   #[doc(alias = "SDL_RWFromConstMem")]
-   pub fn from_bytes(buf: &[u8]) -> Result<Music<'static>, String> {
-      let rw =
-         unsafe { sys::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int) };
-      if rw.is_null() {
-         return Err(get_error());
-      }
-      let raw = unsafe { mixer::Mix_LoadMUS_RW(rw, 0) };
-      if raw.is_null() {
-         Err(get_error())
-      } else {
-         Ok(Music {
-            raw,
-            owned: true,
-            _marker: PhantomData,
-         })
-      }
-   }
+    /// Load music from a byte buffer.
+    #[doc(alias = "SDL_RWFromConstMem")]
+    pub fn from_bytes(buf: &[u8]) -> Result<Music<'static>, String> {
+        let rw =
+            unsafe { sys::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int) };
+        if rw.is_null() {
+            return Err(get_error());
+        }
+        let raw = unsafe { mixer::Mix_LoadMUS_RW(rw, 0) };
+        if raw.is_null() {
+            Err(get_error())
+        } else {
+            Ok(Music {
+                raw,
+                owned: true,
+                _marker: PhantomData,
+            })
+        }
+    }
 
     /// The file format encoding of the music.
     pub fn get_type(&self) -> MusicType {
