@@ -23,7 +23,7 @@ lazy_static = "1.4.0"
 
 [dependencies.sdl2-sys]
 path = "sdl2-sys"
-version = "^0.37.0"
+version = "^0.38.0"
 
 [dependencies.c_vec]
 # allow both 1.* and 2.0 versions
