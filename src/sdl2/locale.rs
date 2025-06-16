@@ -83,7 +83,7 @@ unsafe fn get_locale(ptr: *const sys::SDL_Locale) -> Option<Locale> {
     })
 }
 
-unsafe fn try_get_string(ptr: *const i8) -> Option<String> {
+unsafe fn try_get_string(ptr: *const libc::c_char) -> Option<String> {
     if ptr.is_null() {
         None
     } else {
