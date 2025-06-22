@@ -875,27 +875,6 @@ impl<'a> Music<'a> {
         }
     }
 
-    /// Load music from a static byte buffer.
-    #[doc(alias = "SDL_RWFromConstMem")]
-    pub fn from_static_bytes(buf: &'static [u8]) -> Result<Music<'static>, String> {
-        let rw =
-            unsafe { sys::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int) };
-        if rw.is_null() {
-            return Err(get_error());
-        }
-        let raw = unsafe { mixer::Mix_LoadMUS_RW(rw, 0) };
-        if raw.is_null() {
-            Err(get_error())
-        } else {
-            Ok(Music {
-                raw,
-                owned: true,
-                owned_data: None,
-                _marker: PhantomData,
-            })
-        }
-    }
-
     /// Load music from an owned byte buffer.
     ///
     /// The returned [Music] instance takes ownership of the given buffer
