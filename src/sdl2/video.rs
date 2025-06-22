@@ -714,7 +714,6 @@ impl VideoSubsystem {
     }
 
     /// Get the name of the currently initialized video driver.
-    ///
     #[doc(alias = "SDL_GetCurrentVideoDriver")]
     pub fn current_video_driver(&self) -> &'static str {
         use std::str;
@@ -728,7 +727,6 @@ impl VideoSubsystem {
     }
 
     /// Get the number of available video displays.
-    ///
     #[doc(alias = "SDL_GetNumVideoDisplays")]
     pub fn num_video_displays(&self) -> Result<i32, String> {
         let result = unsafe { sys::SDL_GetNumVideoDisplays() };
@@ -761,7 +759,6 @@ impl VideoSubsystem {
     /// Get the desktop area represented by a display.
     ///
     /// The primary display (`display_index = 0`) is always located at 0,0.
-    ///
     #[doc(alias = "SDL_GetDisplayBounds")]
     pub fn display_bounds(&self, display_index: i32) -> Result<Rect, String> {
         let mut out = mem::MaybeUninit::uninit();
@@ -785,7 +782,6 @@ impl VideoSubsystem {
     /// For example, on Apple's macOS, this subtracts the area occupied by the menu bar and dock.
     /// Setting a window to be fullscreen generally bypasses these unusable areas,
     /// so these are good guidelines for the maximum space available to a non-fullscreen window.
-    ///
     #[doc(alias = "SDL_GetDisplayUsableBounds")]
     pub fn display_usable_bounds(&self, display_index: i32) -> Result<Rect, String> {
         let mut out = mem::MaybeUninit::uninit();
@@ -800,7 +796,6 @@ impl VideoSubsystem {
     }
 
     /// Get the number of available display modes.
-    ///
     #[doc(alias = "SDL_GetNumDisplayModes")]
     pub fn num_display_modes(&self, display_index: i32) -> Result<i32, String> {
         let result = unsafe { sys::SDL_GetNumDisplayModes(display_index as c_int) };
@@ -819,7 +814,6 @@ impl VideoSubsystem {
     /// - bits per pixel -> more colors to fewer colors
     /// - packed pixel layout -> largest to smallest
     /// - refresh rate -> highest to lowest
-    ///
     #[doc(alias = "SDL_GetDisplayMode")]
     pub fn display_mode(&self, display_index: i32, mode_index: i32) -> Result<DisplayMode, String> {
         let mut dm = mem::MaybeUninit::uninit();
@@ -842,7 +836,6 @@ impl VideoSubsystem {
     /// when SDL runs fullscreen and has changed the resolution.
     /// In that case this function will return the previous  native display mode,
     /// and not the current display mode.
-    ///
     #[doc(alias = "SDL_GetDesktopDisplayMode")]
     pub fn desktop_display_mode(&self, display_index: i32) -> Result<DisplayMode, String> {
         let mut dm = mem::MaybeUninit::uninit();
@@ -863,7 +856,6 @@ impl VideoSubsystem {
     /// when SDL runs fullscreen and has changed the resolution.
     /// In that case this function will return the current display mode,
     /// and not the previous native display mode.
-    ///
     #[doc(alias = "SDL_GetCurrentDisplayMode")]
     pub fn current_display_mode(&self, display_index: i32) -> Result<DisplayMode, String> {
         let mut dm = mem::MaybeUninit::uninit();
@@ -932,21 +924,18 @@ impl VideoSubsystem {
     }
 
     /// Check whether the screensaver is currently enabled.
-    ///
     #[doc(alias = "SDL_IsScreenSaverEnabled")]
     pub fn is_screen_saver_enabled(&self) -> bool {
         unsafe { sys::SDL_IsScreenSaverEnabled() == sys::SDL_bool::SDL_TRUE }
     }
 
     /// Allow the screen to be blanked by a screen saver.
-    ///
     #[doc(alias = "SDL_EnableScreenSaver")]
     pub fn enable_screen_saver(&self) {
         unsafe { sys::SDL_EnableScreenSaver() }
     }
 
     /// Prevent the screen from being blanked by a screen saver.
-    ///
     #[doc(alias = "SDL_DisableScreenSaver")]
     pub fn disable_screen_saver(&self) {
         unsafe { sys::SDL_DisableScreenSaver() }
@@ -1022,7 +1011,6 @@ impl VideoSubsystem {
     /// While it's probably not a massive overhead, this function is not an O(1) operation.
     /// Check the extensions you care about after creating the GL context and save that information
     /// somewhere instead of calling the function every time you need to know.
-    ///
     #[doc(alias = "SDL_GL_ExtensionSupported")]
     pub fn gl_extension_supported(&self, extension: &str) -> bool {
         match CString::new(extension) {
@@ -1036,7 +1024,6 @@ impl VideoSubsystem {
     }
 
     /// Get the currently active OpenGL window.
-    ///
     #[doc(alias = "SDL_GL_GetCurrentWindow")]
     pub fn gl_get_current_window_id(&self) -> Result<u32, String> {
         let raw = unsafe { sys::SDL_GL_GetCurrentWindow() };
@@ -1061,7 +1048,6 @@ impl VideoSubsystem {
     }
 
     /// Set the swap interval for the current OpenGL context.
-    ///
     #[doc(alias = "SDL_GL_SetSwapInterval")]
     pub fn gl_set_swap_interval<S: Into<SwapInterval>>(&self, interval: S) -> Result<(), String> {
         let result = unsafe { sys::SDL_GL_SetSwapInterval(interval.into() as c_int) };
@@ -1325,7 +1311,7 @@ impl WindowBuilder {
         self
     }
 
-    /// Minimizes the window.
+    /// Minimizes the window (minimizes the window to its iconic representation).
     pub fn minimized(&mut self) -> &mut WindowBuilder {
         self.window_flags |= sys::SDL_WindowFlags::SDL_WINDOW_MINIMIZED as u32;
         self
@@ -1402,7 +1388,6 @@ impl Window {
     }
 
     /// Returns this context's video system.
-    ///
     #[inline]
     pub fn subsystem(&self) -> &VideoSubsystem {
         &self.context.subsystem
@@ -1414,20 +1399,17 @@ impl Window {
     }
 
     /// Returns the window context.
-    ///
     pub fn context(&self) -> Rc<WindowContext> {
         self.context.clone()
     }
 
     /// Get the numeric ID of a window.
-    ///
     #[doc(alias = "SDL_GetWindowID")]
     pub fn id(&self) -> u32 {
         unsafe { sys::SDL_GetWindowID(self.context.raw) }
     }
 
     /// Create an OpenGL context for an OpenGL window, and make it current.
-    ///
     #[doc(alias = "SDL_GL_CreateContext")]
     pub fn gl_create_context(&self) -> Result<GLContext, String> {
         let result = unsafe { sys::SDL_GL_CreateContext(self.context.raw) };
@@ -1439,7 +1421,6 @@ impl Window {
     }
 
     /// Get the currently active OpenGL context.
-    ///
     #[doc(alias = "SDL_GL_GetCurrentContext")]
     pub unsafe fn gl_get_current_context(&self) -> Option<GLContext> {
         let context_raw = sys::SDL_GL_GetCurrentContext();
@@ -1452,7 +1433,6 @@ impl Window {
     }
 
     /// Set the window's OpenGL context to the current context on the thread.
-    ///
     #[doc(alias = "SDL_GL_MakeCurrent")]
     pub fn gl_set_context_to_current(&self) -> Result<(), String> {
         unsafe {
@@ -1470,7 +1450,6 @@ impl Window {
     /// Set up an OpenGL context for rendering into an OpenGL window.
     ///
     /// The context must have been created with a compatible window.
-    ///
     #[doc(alias = "SDL_GL_MakeCurrent")]
     pub fn gl_make_current(&self, context: &GLContext) -> Result<(), String> {
         unsafe {
@@ -1489,7 +1468,6 @@ impl Window {
     /// otherwise nothing will happen.
     /// If you aren't using glBindFramebuffer(),
     /// this is the default, and you won't have to do anything extra.
-    ///
     #[doc(alias = "SDL_GL_SwapWindow")]
     pub fn gl_swap_window(&self) {
         unsafe { sys::SDL_GL_SwapWindow(self.context.raw) }
@@ -1536,7 +1514,6 @@ impl Window {
     }
 
     /// Get the index of the display associated with a window.
-    ///
     #[doc(alias = "SDL_GetWindowDisplayIndex")]
     pub fn display_index(&self) -> Result<i32, String> {
         let result = unsafe { sys::SDL_GetWindowDisplayIndex(self.context.raw) };
@@ -1551,7 +1528,6 @@ impl Window {
     ///
     /// This only affects the display mode used when the window is fullscreen.
     /// To change the window size when the window is not fullscreen, use `set_size`.
-    ///
     #[doc(alias = "SDL_SetWindowDisplayMode")]
     pub fn set_display_mode<D>(&mut self, display_mode: D) -> Result<(), String>
     where
@@ -1574,7 +1550,6 @@ impl Window {
     }
 
     /// Query the display mode to use when a window is visible at fullscreen.
-    ///
     #[doc(alias = "SDL_GetWindowDisplayMode")]
     pub fn display_mode(&self) -> Result<DisplayMode, String> {
         let mut dm = mem::MaybeUninit::uninit();
@@ -1591,7 +1566,6 @@ impl Window {
     }
 
     /// Get the raw ICC profile data for the screen the window is currently on.
-    ///
     #[doc(alias = "SDL_GetWindowICCProfile")]
     pub fn icc_profile(&self) -> Result<Vec<u8>, String> {
         unsafe {
@@ -1608,7 +1582,6 @@ impl Window {
     }
 
     /// Get the pixel format associated with the window.
-    ///
     #[doc(alias = "SDL_GetWindowPixelFormat")]
     pub fn window_pixel_format(&self) -> PixelFormatEnum {
         unsafe {
@@ -1653,7 +1626,6 @@ impl Window {
     }
 
     /// Set the user-resizable state of a window - `true` to allow resizing and `false` to forbid.
-    ///
     #[doc(alias = "SDL_SetWindowResizable")]
     pub fn set_resizable(&mut self, resizable: bool) {
         let resizable = if resizable {
@@ -1693,7 +1665,6 @@ impl Window {
     }
 
     /// Set the title of a window.
-    ///
     #[doc(alias = "SDL_SetWindowTitle")]
     pub fn set_title(&mut self, title: &str) -> Result<(), NulError> {
         let title = CString::new(title)?;
@@ -1703,7 +1674,6 @@ impl Window {
         Ok(())
     }
     /// Get the title of a window.
-    ///
     #[doc(alias = "SDL_GetWindowTitle")]
     pub fn title(&self) -> &str {
         unsafe {
@@ -1744,7 +1714,6 @@ impl Window {
         }
     }
     /// Get the position of a window.
-    ///
     #[doc(alias = "SDL_GetWindowPosition")]
     pub fn position(&self) -> (i32, i32) {
         let mut x: c_int = 0;
@@ -1780,7 +1749,6 @@ impl Window {
     }
 
     /// Set the size of a window's client area.
-    ///
     #[doc(alias = "SDL_SetWindowSize")]
     pub fn set_size(&mut self, width: u32, height: u32) -> Result<(), IntegerOrSdlError> {
         let w = validate_int(width, "width")?;
@@ -1792,7 +1760,6 @@ impl Window {
     }
 
     /// Get the size of a window's client area.
-    ///
     #[doc(alias = "SDL_GetWindowSize")]
     pub fn size(&self) -> (u32, u32) {
         let mut w: c_int = 0;
@@ -1805,7 +1772,6 @@ impl Window {
     ///
     /// Note that the size could differ from `Window::size` - that would be if we're rendering
     /// to a high-DPI drawable (Apple's Retina is an example of that).
-    ///
     #[doc(alias = "SDL_GL_GetDrawableSize")]
     pub fn drawable_size(&self) -> (u32, u32) {
         let mut w: c_int = 0;
@@ -1818,7 +1784,6 @@ impl Window {
     ///
     /// Note that the size could differ from `Window::size` - that would be if we're rendering
     /// to a high-DPI drawable (Apple's Retina is an example of that).
-    ///
     #[doc(alias = "SDL_Vulkan_GetDrawableSize")]
     pub fn vulkan_drawable_size(&self) -> (u32, u32) {
         let mut w: c_int = 0;
@@ -1828,7 +1793,6 @@ impl Window {
     }
 
     /// Set the minimum size of a window's client area.
-    ///
     #[doc(alias = "SDL_SetWindowMinimumSize")]
     pub fn set_minimum_size(&mut self, width: u32, height: u32) -> Result<(), IntegerOrSdlError> {
         let w = validate_int(width, "width")?;
@@ -1840,7 +1804,6 @@ impl Window {
     }
 
     /// Get the minimum size of a window's client area.
-    ///
     #[doc(alias = "SDL_GetWindowMinimumSize")]
     pub fn minimum_size(&self) -> (u32, u32) {
         let mut w: c_int = 0;
@@ -1850,7 +1813,6 @@ impl Window {
     }
 
     /// Set the maximum size of a window's client area.
-    ///
     #[doc(alias = "SDL_SetWindowMaximumSize")]
     pub fn set_maximum_size(&mut self, width: u32, height: u32) -> Result<(), IntegerOrSdlError> {
         let w = validate_int(width, "width")?;
@@ -1862,7 +1824,6 @@ impl Window {
     }
 
     /// Get the maximum size of a window's client area.
-    ///
     #[doc(alias = "SDL_GetWindowMaximumSize")]
     pub fn maximum_size(&self) -> (u32, u32) {
         let mut w: c_int = 0;
@@ -1874,7 +1835,6 @@ impl Window {
     /// Set the border state of a window - `true` adds border and `false` removes it.
     ///
     /// The border state of a fullscreen window cannot be changed.
-    ///
     #[doc(alias = "SDL_SetWindowBordered")]
     pub fn set_bordered(&mut self, bordered: bool) {
         unsafe {
@@ -1890,55 +1850,47 @@ impl Window {
     }
 
     /// Shows the window that was hidden by `hide`.
-    ///
     #[doc(alias = "SDL_ShowWindow")]
     pub fn show(&mut self) {
         unsafe { sys::SDL_ShowWindow(self.context.raw) }
     }
 
     /// Hides the window, so it won't even show in the taskbar.
-    ///
     #[doc(alias = "SDL_HideWindow")]
     pub fn hide(&mut self) {
         unsafe { sys::SDL_HideWindow(self.context.raw) }
     }
 
     /// Raise a window above other windows and set the input focus.
-    ///
     #[doc(alias = "SDL_RaiseWindow")]
     pub fn raise(&mut self) {
         unsafe { sys::SDL_RaiseWindow(self.context.raw) }
     }
 
     /// Sets window size to be as large as possible.
-    ///
     #[doc(alias = "SDL_MaximizeWindow")]
     pub fn maximize(&mut self) {
         unsafe { sys::SDL_MaximizeWindow(self.context.raw) }
     }
 
     /// Minimize a window to an iconic representation (will show up in taskbar).
-    ///
     #[doc(alias = "SDL_MinimizeWindow")]
     pub fn minimize(&mut self) {
         unsafe { sys::SDL_MinimizeWindow(self.context.raw) }
     }
 
     /// Restores the size and position of a minimized or maximized window.
-    ///
     #[doc(alias = "SDL_RestoreWindow")]
     pub fn restore(&mut self) {
         unsafe { sys::SDL_RestoreWindow(self.context.raw) }
     }
 
     /// Returns the type of fullscreen that the window is currently using.
-    ///
     pub fn fullscreen_state(&self) -> FullscreenType {
         FullscreenType::from_window_flags(self.window_flags())
     }
 
     /// Sets new fullscreen type for the window.
-    ///
     #[doc(alias = "SDL_SetWindowFullscreen")]
     pub fn set_fullscreen(&mut self, fullscreen_type: FullscreenType) -> Result<(), String> {
         unsafe {
@@ -1976,7 +1928,6 @@ impl Window {
     }
 
     /// When input is grabbed, the mouse is confined to the window.
-    ///
     #[doc(alias = "SDL_SetWindowGrab")]
     pub fn set_grab(&mut self, grabbed: bool) {
         unsafe {
@@ -1996,7 +1947,6 @@ impl Window {
     ///
     /// If the caller enables a grab while another window is currently grabbed,
     /// the other window loses its grab in favor of the caller's window.
-    ///
     #[doc(alias = "SDL_SetWindowKeyboardGrab")]
     pub fn set_keyboard_grab(&mut self, grabbed: bool) {
         unsafe {
@@ -2012,7 +1962,6 @@ impl Window {
     }
 
     /// Mouse grab confines the mouse cursor to the window.
-    ///
     #[doc(alias = "SDL_SetWindowMouseGrab")]
     pub fn set_mouse_grab(&mut self, grabbed: bool) {
         unsafe {
@@ -2028,21 +1977,18 @@ impl Window {
     }
 
     /// Returns whether the window was grabbed by `set_grab` or not.
-    ///
     #[doc(alias = "SDL_GetWindowGrab")]
     pub fn grab(&self) -> bool {
         unsafe { sys::SDL_GetWindowGrab(self.context.raw) == sys::SDL_bool::SDL_TRUE }
     }
 
     /// Returns whether the keyboard was grabbed by `set_keyboard_grab` or not.
-    ///
     #[doc(alias = "SDL_GetWindowKeyboardGrab")]
     pub fn keyboard_grab(&self) -> bool {
         unsafe { sys::SDL_GetWindowKeyboardGrab(self.context.raw) == sys::SDL_bool::SDL_TRUE }
     }
 
     /// Returns whether the mouse was grabbed by `set_mouse_grab` or not.
-    ///
     #[doc(alias = "SDL_GetWindowMouseGrab")]
     pub fn mouse_grab(&self) -> bool {
         unsafe { sys::SDL_GetWindowMouseGrab(self.context.raw) == sys::SDL_bool::SDL_TRUE }
@@ -2051,7 +1997,6 @@ impl Window {
     /// Confines the cursor to the specified area of a window.
     /// Note that this does NOT grab the cursor,
     /// it only defines the area a cursor is restricted to when the window has mouse focus.
-    ///
     #[doc(alias = "SDL_SetWindowMouseRect")]
     pub fn set_mouse_rect<R>(&self, rect: R) -> Result<(), String>
     where
@@ -2075,7 +2020,6 @@ impl Window {
     /// Returns `Rect` to which the mouse is currently confined by `set_mouse_rect` function.
     ///
     /// Returns `None` if mouse was not confined.
-    ///
     #[doc(alias = "SDL_GetWindowMouseRect")]
     pub fn mouse_rect(&self) -> Option<Rect> {
         unsafe {
@@ -2099,7 +2043,6 @@ impl Window {
     /// not an individual window.
     /// A window is considered to be owned by the display that contains the window's center pixel.
     /// So, if the window was moved to another display, it will not retain set brightness.
-    ///
     #[doc(alias = "SDL_SetWindowBrightness")]
     pub fn set_brightness(&mut self, brightness: f64) -> Result<(), String> {
         unsafe {
@@ -2122,7 +2065,6 @@ impl Window {
     /// Set the gamma translation table for the red, green, and blue channels of the video hardware.
     /// Each table is an array of 256 16-bit quantities, representing a mapping
     /// between the input and output for that channel.
-    ///
     #[doc(alias = "SDL_SetWindowGammaRamp")]
     pub fn set_gamma_ramp<'a, 'b, 'c, R, G, B>(
         &mut self,
@@ -2167,7 +2109,6 @@ impl Window {
     /// This method retrieves the gamma ramp of the entire display,
     /// not an individual window.
     /// A window is considered to be owned by the display that contains the window's center pixel.
-    ///
     #[allow(clippy::type_complexity)]
     #[doc(alias = "SDL_GetWindowGammaRamp")]
     pub fn gamma_ramp(&self) -> Result<(Vec<u16>, Vec<u16>, Vec<u16>), String> {
@@ -2194,7 +2135,6 @@ impl Window {
     /// Despite the name and signature, this method retrieves the gamma ramp of the entire display,
     /// not an individual window.
     /// A window is considered to be owned by the display that contains the window's center pixel.
-    ///
     #[doc(alias = "SDL_GetWindowGammaRamp")]
     pub fn gamma_ramp_arrays(&self) -> Result<[[u16; 256]; 3], String> {
         let [mut red, mut green, mut blue] = [mem::MaybeUninit::<[u16; 256]>::uninit(); 3];
@@ -2255,7 +2195,6 @@ impl Window {
     }
 
     /// Makes window appear on top of others.
-    ///
     #[doc(alias = "SDL_SetWindowAlwaysOnTop")]
     pub fn set_always_on_top(&mut self, on_top: bool) {
         unsafe {
