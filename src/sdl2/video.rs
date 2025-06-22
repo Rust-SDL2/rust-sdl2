@@ -967,7 +967,6 @@ impl VideoSubsystem {
     #[doc(alias = "SDL_GL_LoadLibrary")]
     pub fn gl_load_library<P: AsRef<std::path::Path>>(&self, path: P) -> Result<(), String> {
         unsafe {
-            // TODO: use OsStr::to_cstring() once it's stable
             let path = CString::new(path.as_ref().to_str().unwrap()).unwrap();
             if sys::SDL_GL_LoadLibrary(path.as_ptr() as *const c_char) == 0 {
                 Ok(())
@@ -1093,7 +1092,6 @@ impl VideoSubsystem {
     #[doc(alias = "SDL_Vulkan_LoadLibrary")]
     pub fn vulkan_load_library<P: AsRef<std::path::Path>>(&self, path: P) -> Result<(), String> {
         unsafe {
-            // TODO: use OsStr::to_cstring() once it's stable
             let path = CString::new(path.as_ref().to_str().unwrap()).unwrap();
             if sys::SDL_Vulkan_LoadLibrary(path.as_ptr() as *const c_char) == 0 {
                 Ok(())
@@ -1700,11 +1698,8 @@ impl Window {
     }
 
     // Those functions allow to store pointer to an arbitrary data (`userdata`) within the window
-    // (similar to hashmap) and to access it through the window.
-    // I don't think that it is possible to safely implement using those functions -
-    // there is no way to tell the exact type of value that is returned by `SDL_GetWindowData`.
-    //
-    //pub fn SDL_SetWindowData(window: *SDL_Window, name: *c_char, userdata: *c_void) -> *c_void; //TODO: Figure out what this does
+    // (similar to hashmap) and to access it through the window. TODO
+    //pub fn SDL_SetWindowData(window: *SDL_Window, name: *c_char, userdata: *c_void) -> *c_void;
     //pub fn SDL_GetWindowData(window: *SDL_Window, name: *c_char) -> *c_void;
 
     #[doc(alias = "SDL_SetWindowPosition")]
@@ -1713,6 +1708,7 @@ impl Window {
             sys::SDL_SetWindowPosition(self.context.raw, to_ll_windowpos(x), to_ll_windowpos(y))
         }
     }
+
     /// Get the position of a window.
     #[doc(alias = "SDL_GetWindowPosition")]
     pub fn position(&self) -> (i32, i32) {
