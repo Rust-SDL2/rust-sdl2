@@ -118,10 +118,10 @@ fn demo(music_file: &Path, sound_file: Option<&Path>) -> Result<(), String> {
     sdl2::mixer::Channel::all().play(&chunk, 0)?;
     timer.delay(1_000);
 
-    println!("playing music from borrowed memory...");
+    println!("playing music from static memory...");
     let music_as_bytes = include_bytes!("../assets/sine.wav");
 
-    let mus = sdl2::mixer::Music::from_bytes(music_as_bytes)?;
+    let mus = sdl2::mixer::Music::from_static_bytes(music_as_bytes)?;
     mus.play(-1);
     timer.delay(1_000);
     sdl2::mixer::Music::halt();
