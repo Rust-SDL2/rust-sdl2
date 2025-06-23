@@ -128,6 +128,8 @@ fn compile_sdl2(sdl2_build_path: &Path, target_os: &str) -> PathBuf {
                     cfg.cflag("-fcommon");
                 }
             }
+            // The bundled SDL uses `bool`, `false`, and `true` which are reserved keywords in c23
+            cfg.define("CMAKE_C_STANDARD", "99");
         }
     }
 
