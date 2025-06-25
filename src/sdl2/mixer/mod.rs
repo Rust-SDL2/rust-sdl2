@@ -31,6 +31,7 @@ use std::ffi::{CStr, CString};
 use std::fmt;
 use std::marker::PhantomData;
 use std::path::Path;
+use std::ptr::NonNull;
 use std::str::from_utf8;
 use std::{default, ptr};
 use sys;
@@ -373,7 +374,6 @@ impl<'a> LoaderRWops<'a> for RWops<'a> {
         } else {
             Ok(Music {
                 raw,
-                owned: true,
                 owned_data: None,
                 _marker: PhantomData,
             })
@@ -809,16 +809,19 @@ extern "C" fn c_music_finished_hook() {
 /// This is an opaque data type used for Music data.
 #[derive(PartialEq)]
 pub struct Music<'a> {
-    pub raw: *mut mixer::Mix_Music,
-    pub owned: bool,
-    pub owned_data: Option<Box<[u8]>>,
+    raw: *mut mixer::Mix_Music,
+    owned_data: Option<NonNull<[u8]>>,
     _marker: PhantomData<&'a ()>,
 }
 
 impl<'a> Drop for Music<'a> {
     fn drop(&mut self) {
-        if self.owned {
-            unsafe { mixer::Mix_FreeMusic(self.raw) };
+        unsafe {
+            mixer::Mix_FreeMusic(self.raw);
+            if let Some(t) = self.owned_data.take() {
+                let b = Box::from_raw(t.as_ptr());
+                drop(b);
+            }
         }
     }
 }
@@ -831,9 +834,12 @@ impl<'a> fmt::Debug for Music<'a> {
 }
 
 impl<'a> Music<'a> {
-    pub fn from_static_bytes(buf: &'static [u8]) -> Result<Music<'static>, String> {
-        let rw =
-            unsafe { sys::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int) };
+    fn load_bytes(
+        buf: *const u8,
+        len: usize,
+        owned: Option<NonNull<[u8]>>,
+    ) -> Result<Music<'static>, String> {
+        let rw = unsafe { sys::SDL_RWFromConstMem(buf as *const c_void, len as c_int) };
         if rw.is_null() {
             return Err(get_error());
         }
@@ -842,12 +848,16 @@ impl<'a> Music<'a> {
             Err(get_error())
         } else {
             Ok(Music {
-                raw,
-                owned: true,
-                owned_data: None,
+                raw: raw,
+                owned_data: owned,
                 _marker: PhantomData,
             })
         }
+    }
+
+    /// Load music from a static byte buffer.
+    pub fn from_static_bytes(buf: &'static [u8]) -> Result<Music<'static>, String> {
+        Self::load_bytes(buf.as_ptr(), buf.len(), None)
     }
 
     /// Load music file to use.
@@ -863,7 +873,6 @@ impl<'a> Music<'a> {
         } else {
             Ok(Music {
                 raw,
-                owned: true,
                 owned_data: None,
                 _marker: PhantomData,
             })
@@ -879,22 +888,10 @@ impl<'a> Music<'a> {
     /// a file instead. Consider using [Music::from_file] when possible.
     #[doc(alias = "SDL_RWFromConstMem")]
     pub fn from_owned_bytes(mut buf: Box<[u8]>) -> Result<Music<'static>, String> {
-        let rw =
-            unsafe { sys::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int) };
-        if rw.is_null() {
-            return Err(get_error());
-        }
-        let raw = unsafe { mixer::Mix_LoadMUS_RW(rw, 0) };
-        if raw.is_null() {
-            Err(get_error())
-        } else {
-            Ok(Music {
-                raw,
-                owned: true,
-                owned_data: Some(buf),
-                _marker: PhantomData,
-            })
-        }
+        let len = buf.len();
+        let raw_ptr = Box::into_raw(buf);
+        let nn = NonNull::from(unsafe { &*raw_ptr });
+        Self::load_bytes(unsafe { nn.as_ref().as_ptr() }, len, Some(nn))
     }
 
     /// The file format encoding of the music.
