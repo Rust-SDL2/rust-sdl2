@@ -411,6 +411,7 @@ pub enum DisplayEvent {
     Orientation(Orientation),
     Connected,
     Disconnected,
+    Moved,
 }
 
 impl DisplayEvent {
@@ -433,6 +434,7 @@ impl DisplayEvent {
             }
             sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_CONNECTED => DisplayEvent::Connected,
             sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_DISCONNECTED => DisplayEvent::Disconnected,
+            sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_MOVED => DisplayEvent::Moved,
         }
     }
 
@@ -450,6 +452,7 @@ impl DisplayEvent {
                 sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_DISCONNECTED as u8,
                 0,
             ),
+            DisplayEvent::Moved => (sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_MOVED as u8, 0),
         }
     }
 
@@ -650,7 +653,7 @@ pub enum Event {
         precise_y: f32,
         /// The X position of the mouse from the window's origin
         mouse_x: i32,
-        /// The X position of the mouse from the window's origin
+        /// The Y position of the mouse from the window's origin
         mouse_y: i32,
     },
 
