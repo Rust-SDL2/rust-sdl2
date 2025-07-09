@@ -236,6 +236,15 @@ impl Rect {
     pub fn bottom(&self) -> i32 {
         self.raw.y + self.raw.h
     }
+    /// Returns the origin of the rectangle (Top Left)
+    ///
+    /// ```
+    /// use sdl2::rect::Rect;
+    /// assert_eq!(Rect::new(5, 5, 10, 10).origin(), (5,5));
+    /// ```
+    pub fn origin(&self) -> (i32, i32) {
+        (self.left(), self.top())
+    }
     /// Shifts this rectangle to the left by `offset`.
     ///
     /// # Example
