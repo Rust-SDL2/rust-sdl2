@@ -115,7 +115,7 @@ impl Hash for Rect {
 }
 
 impl Rect {
-    /// Creates a new rectangle from the given values.
+    /// Creates a new rectangle from the given values with an origin in the Upper Left.
     ///
     /// The width and height are clamped to ensure that the right and bottom
     /// sides of the rectangle does not exceed i32::MAX (the value
@@ -236,7 +236,6 @@ impl Rect {
     pub fn bottom(&self) -> i32 {
         self.raw.y + self.raw.h
     }
-
     /// Shifts this rectangle to the left by `offset`.
     ///
     /// # Example
