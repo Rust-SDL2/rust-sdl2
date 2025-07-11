@@ -12,7 +12,7 @@ use std::ptr;
 
 /// The maximal integer value that can be used for rectangles.
 ///
-/// This value is smaller than st isrictly needed, but is useful in ensuring that
+/// This value is smaller than is strictly needed, but is useful in ensuring that
 /// rect sizes will never have to be truncated when clamping.
 pub fn max_int_value() -> u32 {
     i32::MAX as u32 / 2
