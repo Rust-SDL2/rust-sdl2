@@ -3,6 +3,7 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### Next
 [PR #1493](https://github.com/Rust-SDL2/rust-sdl2/pull/1493) Add `Rect::origin` and specifies origin location in `Rect::new`.
+
 [PR #1472](https://github.com/Rust-SDL2/rust-sdl2/pull/1472) Add `Canvas::render_geometry`, `Canvas::render_geometry_raw` and an example that uses them both. Both these bindings use `SDL_RenderGeometryRaw`.
 
 [PR #1473](https://github.com/Rust-SDL2/rust-sdl2/pull/1473) **BREAKING CHANGE** Fix UB in `ToColor` implementations and remove implementation for `isize`.
