@@ -114,7 +114,10 @@ impl GameControllerSubsystem {
 
     /// Return the instance ID of the controller with player index `player_index`.
     #[doc(alias = "SDL_GameControllerFromPlayerIndex")]
-    pub fn instance_id_for_player_index(&self, player_index: u32) -> Result<Option<u32>, IntegerOrSdlError> {
+    pub fn instance_id_for_player_index(
+        &self,
+        player_index: u32,
+    ) -> Result<Option<u32>, IntegerOrSdlError> {
         let player_index = validate_int(player_index, "player_index")?;
 
         let controller = unsafe { sys::SDL_GameControllerFromPlayerIndex(player_index) };
@@ -126,7 +129,7 @@ impl GameControllerSubsystem {
                 let joystick = sys::SDL_GameControllerGetJoystick(controller);
                 sys::SDL_JoystickInstanceID(joystick)
             };
-    
+
             if result < 0 {
                 // Should only fail if the joystick is NULL.
                 panic!("{}", get_error())
@@ -587,7 +590,7 @@ impl GameController {
     pub fn get_player_index(&self) -> Option<u32> {
         let player_index = unsafe { sys::SDL_GameControllerGetPlayerIndex(self.raw) };
 
-        // if index is -1 (or less than 0), controller has no player 
+        // if index is -1 (or less than 0), controller has no player
         if player_index < 0 {
             None
         } else {

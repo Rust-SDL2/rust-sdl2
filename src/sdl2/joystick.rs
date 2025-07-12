@@ -62,7 +62,10 @@ impl JoystickSubsystem {
 
     /// Return the player index of the joystick with index `device_index`.
     #[doc(alias = "SDL_JoystickGetDevicePlayerIndex")]
-    pub fn player_index_for_device_id(&self, device_index: u32) -> Result<Option<u32>, IntegerOrSdlError> {
+    pub fn player_index_for_device_id(
+        &self,
+        device_index: u32,
+    ) -> Result<Option<u32>, IntegerOrSdlError> {
         let device_index = validate_int(device_index, "device_index")?;
 
         let player_index = unsafe { sys::SDL_JoystickGetDevicePlayerIndex(device_index) };
@@ -77,7 +80,10 @@ impl JoystickSubsystem {
 
     /// Return the instance ID of the joystick with player index `player_index`.
     #[doc(alias = "SDL_JoystickFromPlayerIndex")]
-    pub fn instance_id_for_player_index(&self, player_index: u32) -> Result<Option<u32>, IntegerOrSdlError> {
+    pub fn instance_id_for_player_index(
+        &self,
+        player_index: u32,
+    ) -> Result<Option<u32>, IntegerOrSdlError> {
         let player_index = validate_int(player_index, "player_index")?;
 
         let joystick = unsafe { sys::SDL_JoystickFromPlayerIndex(player_index) };
@@ -86,7 +92,7 @@ impl JoystickSubsystem {
             Ok(None)
         } else {
             let result = unsafe { sys::SDL_JoystickInstanceID(joystick) };
-    
+
             if result < 0 {
                 // Should only fail if the joystick is NULL.
                 panic!("{}", get_error())
@@ -537,7 +543,7 @@ impl Joystick {
     pub fn get_player_index(&self) -> Option<u32> {
         let player_index = unsafe { sys::SDL_JoystickGetPlayerIndex(self.raw) };
 
-        // if index is -1 (or less than 0), joystick has no player 
+        // if index is -1 (or less than 0), joystick has no player
         if player_index < 0 {
             None
         } else {
