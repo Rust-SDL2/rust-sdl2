@@ -12,7 +12,7 @@ use std::ptr;
 
 /// The maximal integer value that can be used for rectangles.
 ///
-/// This value is smaller than strictly needed, but is useful in ensuring that
+/// This value is smaller than is strictly needed, but is useful in ensuring that
 /// rect sizes will never have to be truncated when clamping.
 pub fn max_int_value() -> u32 {
     i32::MAX as u32 / 2
@@ -115,7 +115,7 @@ impl Hash for Rect {
 }
 
 impl Rect {
-    /// Creates a new rectangle from the given values.
+    /// Creates a new rectangle from the given values with an origin in the Upper Left.
     ///
     /// The width and height are clamped to ensure that the right and bottom
     /// sides of the rectangle does not exceed i32::MAX (the value
@@ -236,7 +236,17 @@ impl Rect {
     pub fn bottom(&self) -> i32 {
         self.raw.y + self.raw.h
     }
-
+    
+    /// Returns the origin of the rectangle (Top Left)
+    ///
+    /// ```
+    /// use sdl2::rect::Rect;
+    /// assert_eq!(Rect::new(5, 5, 10, 10).origin(), (5,5));
+    /// ```
+    pub fn origin(&self) -> (i32, i32) {
+        (self.left(), self.top())
+    }
+    
     /// Shifts this rectangle to the left by `offset`.
     ///
     /// # Example
