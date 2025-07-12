@@ -299,6 +299,17 @@ impl Drop for Chunk {
 }
 
 impl Chunk {
+    /// Load a sample from memory directly.
+    ///
+    /// This works the same way as [Chunk::from_file] except with bytes instead of a file path.
+    /// If you have read your sound files (.wav, .ogg, etc...) from
+    /// disk to memory as bytes you can use this function
+    /// to create [Chunk]s from their bytes.
+    pub fn from_bytes(path: &[u8]) -> Result<Chunk, String> {
+        let b = RWops::from_bytes(path)?;
+        b.load_wav()
+    }
+
     /// Load file for use as a sample.
     pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Chunk, String> {
         let raw = unsafe { mixer::Mix_LoadWAV_RW(RWops::from_file(path, "rb")?.raw(), 0) };
@@ -363,6 +374,7 @@ impl<'a> LoaderRWops<'a> for RWops<'a> {
             Ok(Music {
                 raw,
                 owned: true,
+                owned_data: None,
                 _marker: PhantomData,
             })
         }
@@ -799,6 +811,7 @@ extern "C" fn c_music_finished_hook() {
 pub struct Music<'a> {
     pub raw: *mut mixer::Mix_Music,
     pub owned: bool,
+    pub owned_data: Option<Box<[u8]>>,
     _marker: PhantomData<&'a ()>,
 }
 
@@ -818,7 +831,28 @@ impl<'a> fmt::Debug for Music<'a> {
 }
 
 impl<'a> Music<'a> {
+    pub fn from_static_bytes(buf: &'static [u8]) -> Result<Music<'static>, String> {
+        let rw =
+            unsafe { sys::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int) };
+        if rw.is_null() {
+            return Err(get_error());
+        }
+        let raw = unsafe { mixer::Mix_LoadMUS_RW(rw, 0) };
+        if raw.is_null() {
+            Err(get_error())
+        } else {
+            Ok(Music {
+                raw,
+                owned: true,
+                owned_data: None,
+                _marker: PhantomData,
+            })
+        }
+    }
+
     /// Load music file to use.
+    ///
+    /// The music is streamed directly from the file when played.
     pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Music<'static>, String> {
         let raw = unsafe {
             let c_path = CString::new(path.as_ref().to_str().unwrap()).unwrap();
@@ -830,21 +864,26 @@ impl<'a> Music<'a> {
             Ok(Music {
                 raw,
                 owned: true,
+                owned_data: None,
                 _marker: PhantomData,
             })
         }
     }
 
-    /// Load music from a static byte buffer.
+    /// Load music from an owned byte buffer.
+    ///
+    /// The returned [Music] instance takes ownership of the given buffer
+    /// and drops it along with itself.
+    ///
+    /// Loading the whole music data to memory can be wasteful if the music can be streamed directly from
+    /// a file instead. Consider using [Music::from_file] when possible.
     #[doc(alias = "SDL_RWFromConstMem")]
-    pub fn from_static_bytes(buf: &'static [u8]) -> Result<Music<'static>, String> {
+    pub fn from_owned_bytes(mut buf: Box<[u8]>) -> Result<Music<'static>, String> {
         let rw =
             unsafe { sys::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int) };
-
         if rw.is_null() {
             return Err(get_error());
         }
-
         let raw = unsafe { mixer::Mix_LoadMUS_RW(rw, 0) };
         if raw.is_null() {
             Err(get_error())
@@ -852,6 +891,7 @@ impl<'a> Music<'a> {
             Ok(Music {
                 raw,
                 owned: true,
+                owned_data: Some(buf),
                 _marker: PhantomData,
             })
         }
