@@ -34,6 +34,7 @@ use version::Version;
 bitflags! {
     /// InitFlags are passed to init() to control which subsystem
     /// functionality to load.
+    #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
     pub struct InitFlag : u32 {
         const JPG  = image::IMG_InitFlags_IMG_INIT_JPG;
         const PNG  = image::IMG_InitFlags_IMG_INIT_PNG;
