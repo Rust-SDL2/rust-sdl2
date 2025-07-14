@@ -17,7 +17,7 @@ name = "sdl2"
 path = "src/sdl2/lib.rs"
 
 [dependencies]
-bitflags = "1.2.1"
+bitflags = "2.9.1"
 libc = "0.2.92"
 lazy_static = "1.4.0"
 
@@ -31,9 +31,9 @@ version = ">= 1.0"
 optional = true
 
 [dev-dependencies]
-rand = "0.7"
-wgpu = { version = "0.20", features = ["spirv"] }
-pollster = "0.2.4"
+rand = "0.9.1"
+wgpu = { version = "26.0.1", features = ["spirv"] }
+pollster = "0.4.0"
 env_logger = "0.11.0"
 
 [dependencies.raw-window-handle]
