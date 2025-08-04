@@ -888,10 +888,10 @@ impl<'a> Music<'a> {
     /// a file instead. Consider using [Music::from_file] when possible.
     #[doc(alias = "SDL_RWFromConstMem")]
     pub fn from_owned_bytes(mut buf: Box<[u8]>) -> Result<Music<'static>, String> {
-        let len = buf.len();
-        let raw_ptr = Box::into_raw(buf);
-        let nn = NonNull::from(unsafe { &*raw_ptr });
-        Self::load_bytes(unsafe { nn.as_ref().as_ptr() }, len, Some(nn))
+       let len = buf.len();
+       let raw_ptr = Box::into_raw(buf);
+       let non_null = unsafe { NonNull::new_unchecked(raw_ptr) };
+       Self::load_bytes(non_null.cast::<u8>().as_ptr(), len, Some(non_null))
     }
 
     /// The file format encoding of the music.
