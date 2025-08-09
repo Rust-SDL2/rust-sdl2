@@ -856,6 +856,7 @@ impl<'a> Music<'a> {
     }
 
     /// Load music from a static byte buffer.
+    #[doc(alias = "SDL_RWFromConstMem")]
     pub fn from_static_bytes(buf: &'static [u8]) -> Result<Music<'static>, String> {
         Self::load_bytes(buf.as_ptr(), buf.len(), None)
     }
