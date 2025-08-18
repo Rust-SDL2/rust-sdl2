@@ -22,6 +22,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 [PR #1451](https://github.com/Rust-SDL2/rust-sdl2/pull/1451) Add `gamma_ramp_arrays` and `calculate_gamma_ramp`.
 
+[PR #1413](https://github.com/Rust-SDL2/rust-sdl2/pull/1413) Deprecate `From` implementation of `SwapInterval` that could panic, add `TryFrom`-like inherent function.
+
 [PR #1459](https://github.com/Rust-SDL2/rust-sdl2/pull/1459) Fix image and mixer init flag logic
 
 [PR #1444](https://github.com/Rust-SDL2/rust-sdl2/pull/1444) Add texture scale mode api + fix unsafe
