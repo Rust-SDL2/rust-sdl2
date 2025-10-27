@@ -96,6 +96,7 @@ pub fn get_linked_version() -> Version {
 }
 
 bitflags!(
+    #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
     pub struct InitFlag : u32 {
         const FLAC = mixer::MIX_InitFlags_MIX_INIT_FLAC;
         const MOD  = mixer::MIX_InitFlags_MIX_INIT_MOD;

@@ -2204,6 +2204,23 @@ impl Window {
             )
         };
     }
+
+    /// Returns whether the window has a surface.
+    #[doc(alias = "SDL_HasWindowSurface")]
+    pub fn has_surface(&self) -> bool {
+        unsafe { sys::SDL_HasWindowSurface(self.context.raw) == sys::SDL_bool::SDL_TRUE }
+    }
+
+    /// Destroys the window's surface.
+    #[doc(alias = "SDL_DestroyWindowSurface")]
+    pub fn destroy_surface(&mut self) -> Result<(), String> {
+        let result = unsafe { sys::SDL_DestroyWindowSurface(self.context.raw) };
+        if result < 0 {
+            Err(get_error())
+        } else {
+            Ok(())
+        }
+    }
 }
 
 #[derive(Copy, Clone)]
