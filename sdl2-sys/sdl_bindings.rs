@@ -15494,6 +15494,8 @@ pub enum SDL_RendererFlip {
     SDL_FLIP_HORIZONTAL = 1,
     #[doc = "< flip vertically"]
     SDL_FLIP_VERTICAL = 2,
+    #[doc = "< flip vertically and horizontally"]
+    SDL_FLIP_BOTH = 3,
 }
 #[doc = " A structure representing rendering state"]
 #[repr(C)]
