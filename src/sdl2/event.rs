@@ -2133,7 +2133,10 @@ impl Event {
             | (Self::ControllerDeviceAdded { .. }, Self::ControllerDeviceAdded { .. })
             | (Self::ControllerDeviceRemoved { .. }, Self::ControllerDeviceRemoved { .. })
             | (Self::ControllerDeviceRemapped { .. }, Self::ControllerDeviceRemapped { .. })
-            | (Self::ControllerSteamHandleUpdate { .. }, Self::ControllerSteamHandleUpdate { .. })
+            | (
+                Self::ControllerSteamHandleUpdate { .. },
+                Self::ControllerSteamHandleUpdate { .. },
+            )
             | (Self::FingerDown { .. }, Self::FingerDown { .. })
             | (Self::FingerUp { .. }, Self::FingerUp { .. })
             | (Self::FingerMotion { .. }, Self::FingerMotion { .. })
