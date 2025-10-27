@@ -7,7 +7,6 @@ use crate::EventPump;
 
 use std::fmt;
 use std::iter::FilterMap;
-use std::mem::transmute;
 
 use crate::sys;
 
@@ -17,20 +16,33 @@ pub use self::keycode::Keycode;
 pub use self::scancode::Scancode;
 
 bitflags! {
-    pub struct Mod: u16 {
-        const NOMOD = 0x0000;
-        const LSHIFTMOD = 0x0001;
-        const RSHIFTMOD = 0x0002;
-        const LCTRLMOD = 0x0040;
-        const RCTRLMOD = 0x0080;
-        const LALTMOD = 0x0100;
-        const RALTMOD = 0x0200;
-        const LGUIMOD = 0x0400;
-        const RGUIMOD = 0x0800;
-        const NUMMOD = 0x1000;
-        const CAPSMOD = 0x2000;
-        const MODEMOD = 0x4000;
-        const RESERVEDMOD = 0x8000;
+    pub struct Mod: libc::c_uint {
+        const NOMOD      = crate::sys::SDL_Keymod_KMOD_NONE;
+        const LSHIFTMOD    = crate::sys::SDL_Keymod_KMOD_LSHIFT;
+        const RSHIFTMOD    = crate::sys::SDL_Keymod_KMOD_RSHIFT;
+        const LCTRLMOD     = crate::sys::SDL_Keymod_KMOD_LCTRL;
+        const RCTRLMOD     = crate::sys::SDL_Keymod_KMOD_RCTRL;
+        const LALTMOD      = crate::sys::SDL_Keymod_KMOD_LALT;
+        const RALTMOD      = crate::sys::SDL_Keymod_KMOD_RALT;
+        const LGUIMOD      = crate::sys::SDL_Keymod_KMOD_LGUI;
+        const RGUIMOD      = crate::sys::SDL_Keymod_KMOD_RGUI;
+        const NUMMOD       = crate::sys::SDL_Keymod_KMOD_NUM;
+        const CAPSMOD      = crate::sys::SDL_Keymod_KMOD_CAPS;
+        const MODEMOD      = crate::sys::SDL_Keymod_KMOD_MODE;
+        const RESERVEDMOD  = crate::sys::SDL_Keymod_KMOD_RESERVED;
+    }
+}
+
+impl Mod {
+    #[inline]
+    pub fn to_sdl_keymod(self) -> sys::SDL_Keymod {
+        // Mod and SDL_Keymod are both  libc::c_uint and same value mapping
+        self.bits()
+    }
+
+    #[inline]
+    pub fn from_sdl_keymod(raw: sys::SDL_Keymod) -> Self {
+        Mod::from_bits_truncate(raw)
     }
 }
 
@@ -186,13 +198,15 @@ impl KeyboardUtil {
 
     #[doc(alias = "SDL_GetModState")]
     pub fn mod_state(&self) -> Mod {
-        unsafe { Mod::from_bits(sys::SDL_GetModState() as u16).unwrap() }
+        let m = unsafe { sys::SDL_GetModState() };
+        Mod::from_sdl_keymod(m)
     }
 
     #[doc(alias = "SDL_SetModState")]
     pub fn set_mod_state(&self, flags: Mod) {
+        let flags = flags.to_sdl_keymod();
         unsafe {
-            sys::SDL_SetModState(transmute::<u32, sys::SDL_Keymod>(flags.bits() as u32));
+            sys::SDL_SetModState(flags);
         }
     }
 }
