@@ -1637,16 +1637,13 @@ impl<T: RenderTarget> Canvas<T> {
         R2: Into<Option<FRect>>,
         P: Into<Option<FPoint>>,
     {
-        use crate::sys::SDL_RendererFlip::*;
-        let flip = unsafe {
-            match (flip_horizontal, flip_vertical) {
-                (false, false) => SDL_FLIP_NONE,
-                (true, false) => SDL_FLIP_HORIZONTAL,
-                (false, true) => SDL_FLIP_VERTICAL,
-                (true, true) => transmute::<u32, sys::SDL_RendererFlip>(
-                    transmute::<sys::SDL_RendererFlip, u32>(SDL_FLIP_HORIZONTAL)
-                        | transmute::<sys::SDL_RendererFlip, u32>(SDL_FLIP_VERTICAL),
-                ),
+        let flip = match (flip_horizontal, flip_vertical) {
+            (false, false) => crate::sys::SDL_RendererFlip::SDL_FLIP_NONE,
+            (true, false) => crate::sys::SDL_RendererFlip::SDL_FLIP_HORIZONTAL,
+            (false, true) => crate::sys::SDL_RendererFlip::SDL_FLIP_VERTICAL,
+            (true, true) => {
+                crate::sys::SDL_RendererFlip::SDL_FLIP_HORIZONTAL
+                    | crate::sys::SDL_RendererFlip::SDL_FLIP_VERTICAL
             }
         };
 
@@ -1743,16 +1740,13 @@ impl<T: RenderTarget> Canvas<T> {
         R2: Into<Option<Rect>>,
         P: Into<Option<Point>>,
     {
-        use crate::sys::SDL_RendererFlip::*;
-        let flip = unsafe {
-            match (flip_horizontal, flip_vertical) {
-                (false, false) => SDL_FLIP_NONE,
-                (true, false) => SDL_FLIP_HORIZONTAL,
-                (false, true) => SDL_FLIP_VERTICAL,
-                (true, true) => transmute::<u32, sys::SDL_RendererFlip>(
-                    transmute::<sys::SDL_RendererFlip, u32>(SDL_FLIP_HORIZONTAL)
-                        | transmute::<sys::SDL_RendererFlip, u32>(SDL_FLIP_VERTICAL),
-                ),
+        let flip = match (flip_horizontal, flip_vertical) {
+            (false, false) => crate::sys::SDL_RendererFlip::SDL_FLIP_NONE,
+            (true, false) => crate::sys::SDL_RendererFlip::SDL_FLIP_HORIZONTAL,
+            (false, true) => crate::sys::SDL_RendererFlip::SDL_FLIP_VERTICAL,
+            (true, true) => {
+                crate::sys::SDL_RendererFlip::SDL_FLIP_HORIZONTAL
+                    | crate::sys::SDL_RendererFlip::SDL_FLIP_VERTICAL
             }
         };
 
