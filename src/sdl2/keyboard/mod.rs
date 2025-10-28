@@ -7,7 +7,6 @@ use crate::EventPump;
 
 use std::fmt;
 use std::iter::FilterMap;
-use std::mem::transmute;
 
 use crate::sys;
 
@@ -191,8 +190,9 @@ impl KeyboardUtil {
 
     #[doc(alias = "SDL_SetModState")]
     pub fn set_mod_state(&self, flags: Mod) {
+        let arg = sys::SDL_Keymod(flags.bits() as u32);
         unsafe {
-            sys::SDL_SetModState(transmute::<u32, sys::SDL_Keymod>(flags.bits() as u32));
+            sys::SDL_SetModState(arg);
         }
     }
 }
