@@ -18,19 +18,19 @@ pub use self::scancode::Scancode;
 
 bitflags! {
     pub struct Mod: u16 {
-        const NOMOD      = crate::sys::SDL_Keymod_KMOD_NONE as u16;
-        const LSHIFTMOD    = crate::sys::SDL_Keymod_KMOD_LSHIFT as u16;
-        const RSHIFTMOD    = crate::sys::SDL_Keymod_KMOD_RSHIFT as u16;
-        const LCTRLMOD     = crate::sys::SDL_Keymod_KMOD_LCTRL as u16;
-        const RCTRLMOD     = crate::sys::SDL_Keymod_KMOD_RCTRL as u16;
-        const LALTMOD      = crate::sys::SDL_Keymod_KMOD_LALT as u16;
-        const RALTMOD      = crate::sys::SDL_Keymod_KMOD_RALT as u16;
-        const LGUIMOD      = crate::sys::SDL_Keymod_KMOD_LGUI as u16;
-        const RGUIMOD      = crate::sys::SDL_Keymod_KMOD_RGUI as u16;
-        const NUMMOD       = crate::sys::SDL_Keymod_KMOD_NUM as u16;
-        const CAPSMOD      = crate::sys::SDL_Keymod_KMOD_CAPS as u16;
-        const MODEMOD      = crate::sys::SDL_Keymod_KMOD_MODE as u16;
-        const RESERVEDMOD  = crate::sys::SDL_Keymod_KMOD_RESERVED as u16;
+        const NOMOD      = crate::sys::SDL_Keymod::KMOD_NONE.0 as u16;
+        const LSHIFTMOD    = crate::sys::SDL_Keymod::KMOD_LSHIFT.0 as u16;
+        const RSHIFTMOD    = crate::sys::SDL_Keymod::KMOD_RSHIFT.0 as u16;
+        const LCTRLMOD     = crate::sys::SDL_Keymod::KMOD_LCTRL.0 as u16;
+        const RCTRLMOD     = crate::sys::SDL_Keymod::KMOD_RCTRL.0 as u16;
+        const LALTMOD      = crate::sys::SDL_Keymod::KMOD_LALT.0 as u16;
+        const RALTMOD      = crate::sys::SDL_Keymod::KMOD_RALT.0 as u16;
+        const LGUIMOD      = crate::sys::SDL_Keymod::KMOD_LGUI.0 as u16;
+        const RGUIMOD      = crate::sys::SDL_Keymod::KMOD_RGUI.0 as u16;
+        const NUMMOD       = crate::sys::SDL_Keymod::KMOD_NUM.0 as u16;
+        const CAPSMOD      = crate::sys::SDL_Keymod::KMOD_CAPS.0 as u16;
+        const MODEMOD      = crate::sys::SDL_Keymod::KMOD_MODE.0 as u16;
+        const RESERVEDMOD  = crate::sys::SDL_Keymod::KMOD_RESERVED.0 as u16;
     }
 }
 
@@ -186,7 +186,7 @@ impl KeyboardUtil {
 
     #[doc(alias = "SDL_GetModState")]
     pub fn mod_state(&self) -> Mod {
-        unsafe { Mod::from_bits(sys::SDL_GetModState() as u16).unwrap() }
+        unsafe { Mod::from_bits(sys::SDL_GetModState().0 as u16).unwrap() }
     }
 
     #[doc(alias = "SDL_SetModState")]

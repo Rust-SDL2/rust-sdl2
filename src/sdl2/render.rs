@@ -1638,12 +1638,12 @@ impl<T: RenderTarget> Canvas<T> {
         P: Into<Option<FPoint>>,
     {
         let flip = match (flip_horizontal, flip_vertical) {
-            (false, false) => crate::sys::SDL_RendererFlip_SDL_FLIP_NONE,
-            (true, false) => crate::sys::SDL_RendererFlip_SDL_FLIP_HORIZONTAL,
-            (false, true) => crate::sys::SDL_RendererFlip_SDL_FLIP_VERTICAL,
+            (false, false) => crate::sys::SDL_RendererFlip::SDL_FLIP_NONE,
+            (true, false) => crate::sys::SDL_RendererFlip::SDL_FLIP_HORIZONTAL,
+            (false, true) => crate::sys::SDL_RendererFlip::SDL_FLIP_VERTICAL,
             (true, true) => {
-                crate::sys::SDL_RendererFlip_SDL_FLIP_HORIZONTAL
-                    | crate::sys::SDL_RendererFlip_SDL_FLIP_VERTICAL
+                crate::sys::SDL_RendererFlip::SDL_FLIP_HORIZONTAL
+                    | crate::sys::SDL_RendererFlip::SDL_FLIP_VERTICAL
             }
         };
 
@@ -1741,12 +1741,12 @@ impl<T: RenderTarget> Canvas<T> {
         P: Into<Option<Point>>,
     {
         let flip = match (flip_horizontal, flip_vertical) {
-            (false, false) => crate::sys::SDL_RendererFlip_SDL_FLIP_NONE,
-            (true, false) => crate::sys::SDL_RendererFlip_SDL_FLIP_HORIZONTAL,
-            (false, true) => crate::sys::SDL_RendererFlip_SDL_FLIP_VERTICAL,
+            (false, false) => crate::sys::SDL_RendererFlip::SDL_FLIP_NONE,
+            (true, false) => crate::sys::SDL_RendererFlip::SDL_FLIP_HORIZONTAL,
+            (false, true) => crate::sys::SDL_RendererFlip::SDL_FLIP_VERTICAL,
             (true, true) => {
-                crate::sys::SDL_RendererFlip_SDL_FLIP_HORIZONTAL
-                    | crate::sys::SDL_RendererFlip_SDL_FLIP_VERTICAL
+                crate::sys::SDL_RendererFlip::SDL_FLIP_HORIZONTAL
+                    | crate::sys::SDL_RendererFlip::SDL_FLIP_VERTICAL
             }
         };
 

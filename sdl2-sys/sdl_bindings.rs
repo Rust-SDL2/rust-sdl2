@@ -7929,26 +7929,64 @@ pub enum SDL_KeyCode {
     SDLK_CALL = 1073742113,
     SDLK_ENDCALL = 1073742114,
 }
-pub const SDL_Keymod_KMOD_NONE: SDL_Keymod = 0;
-pub const SDL_Keymod_KMOD_LSHIFT: SDL_Keymod = 1;
-pub const SDL_Keymod_KMOD_RSHIFT: SDL_Keymod = 2;
-pub const SDL_Keymod_KMOD_LCTRL: SDL_Keymod = 64;
-pub const SDL_Keymod_KMOD_RCTRL: SDL_Keymod = 128;
-pub const SDL_Keymod_KMOD_LALT: SDL_Keymod = 256;
-pub const SDL_Keymod_KMOD_RALT: SDL_Keymod = 512;
-pub const SDL_Keymod_KMOD_LGUI: SDL_Keymod = 1024;
-pub const SDL_Keymod_KMOD_RGUI: SDL_Keymod = 2048;
-pub const SDL_Keymod_KMOD_NUM: SDL_Keymod = 4096;
-pub const SDL_Keymod_KMOD_CAPS: SDL_Keymod = 8192;
-pub const SDL_Keymod_KMOD_MODE: SDL_Keymod = 16384;
-pub const SDL_Keymod_KMOD_SCROLL: SDL_Keymod = 32768;
-pub const SDL_Keymod_KMOD_CTRL: SDL_Keymod = 192;
-pub const SDL_Keymod_KMOD_SHIFT: SDL_Keymod = 3;
-pub const SDL_Keymod_KMOD_ALT: SDL_Keymod = 768;
-pub const SDL_Keymod_KMOD_GUI: SDL_Keymod = 3072;
-pub const SDL_Keymod_KMOD_RESERVED: SDL_Keymod = 32768;
+impl SDL_Keymod {
+    pub const KMOD_NONE: SDL_Keymod = SDL_Keymod(0);
+}
+impl SDL_Keymod {
+    pub const KMOD_LSHIFT: SDL_Keymod = SDL_Keymod(1);
+}
+impl SDL_Keymod {
+    pub const KMOD_RSHIFT: SDL_Keymod = SDL_Keymod(2);
+}
+impl SDL_Keymod {
+    pub const KMOD_LCTRL: SDL_Keymod = SDL_Keymod(64);
+}
+impl SDL_Keymod {
+    pub const KMOD_RCTRL: SDL_Keymod = SDL_Keymod(128);
+}
+impl SDL_Keymod {
+    pub const KMOD_LALT: SDL_Keymod = SDL_Keymod(256);
+}
+impl SDL_Keymod {
+    pub const KMOD_RALT: SDL_Keymod = SDL_Keymod(512);
+}
+impl SDL_Keymod {
+    pub const KMOD_LGUI: SDL_Keymod = SDL_Keymod(1024);
+}
+impl SDL_Keymod {
+    pub const KMOD_RGUI: SDL_Keymod = SDL_Keymod(2048);
+}
+impl SDL_Keymod {
+    pub const KMOD_NUM: SDL_Keymod = SDL_Keymod(4096);
+}
+impl SDL_Keymod {
+    pub const KMOD_CAPS: SDL_Keymod = SDL_Keymod(8192);
+}
+impl SDL_Keymod {
+    pub const KMOD_MODE: SDL_Keymod = SDL_Keymod(16384);
+}
+impl SDL_Keymod {
+    pub const KMOD_SCROLL: SDL_Keymod = SDL_Keymod(32768);
+}
+impl SDL_Keymod {
+    pub const KMOD_CTRL: SDL_Keymod = SDL_Keymod(192);
+}
+impl SDL_Keymod {
+    pub const KMOD_SHIFT: SDL_Keymod = SDL_Keymod(3);
+}
+impl SDL_Keymod {
+    pub const KMOD_ALT: SDL_Keymod = SDL_Keymod(768);
+}
+impl SDL_Keymod {
+    pub const KMOD_GUI: SDL_Keymod = SDL_Keymod(3072);
+}
+impl SDL_Keymod {
+    pub const KMOD_RESERVED: SDL_Keymod = SDL_Keymod(32768);
+}
+#[repr(transparent)]
 #[doc = " \\brief Enumeration of valid key mods (possibly OR'd together)."]
-pub type SDL_Keymod = libc::c_uint;
+#[derive(Copy, Clone, Hash, PartialEq, Eq)]
+pub struct SDL_Keymod(pub libc::c_uint);
 #[doc = "  \\brief The SDL keysym structure, used in key events.\n\n  \\note  If you are looking for translated character input, see the ::SDL_TEXTINPUT event."]
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -15506,14 +15544,48 @@ pub enum SDL_TextureModulate {
     #[doc = "< srcA = srcA * alpha"]
     SDL_TEXTUREMODULATE_ALPHA = 2,
 }
-#[doc = "< Do not flip"]
-pub const SDL_RendererFlip_SDL_FLIP_NONE: SDL_RendererFlip = 0;
-#[doc = "< flip horizontally"]
-pub const SDL_RendererFlip_SDL_FLIP_HORIZONTAL: SDL_RendererFlip = 1;
-#[doc = "< flip vertically"]
-pub const SDL_RendererFlip_SDL_FLIP_VERTICAL: SDL_RendererFlip = 2;
+impl SDL_RendererFlip {
+    #[doc = "< Do not flip"]
+    pub const SDL_FLIP_NONE: SDL_RendererFlip = SDL_RendererFlip(0);
+}
+impl SDL_RendererFlip {
+    #[doc = "< flip horizontally"]
+    pub const SDL_FLIP_HORIZONTAL: SDL_RendererFlip = SDL_RendererFlip(1);
+}
+impl SDL_RendererFlip {
+    #[doc = "< flip vertically"]
+    pub const SDL_FLIP_VERTICAL: SDL_RendererFlip = SDL_RendererFlip(2);
+}
+impl ::core::ops::BitOr<SDL_RendererFlip> for SDL_RendererFlip {
+    type Output = Self;
+    #[inline]
+    fn bitor(self, other: Self) -> Self {
+        SDL_RendererFlip(self.0 | other.0)
+    }
+}
+impl ::core::ops::BitOrAssign for SDL_RendererFlip {
+    #[inline]
+    fn bitor_assign(&mut self, rhs: SDL_RendererFlip) {
+        self.0 |= rhs.0;
+    }
+}
+impl ::core::ops::BitAnd<SDL_RendererFlip> for SDL_RendererFlip {
+    type Output = Self;
+    #[inline]
+    fn bitand(self, other: Self) -> Self {
+        SDL_RendererFlip(self.0 & other.0)
+    }
+}
+impl ::core::ops::BitAndAssign for SDL_RendererFlip {
+    #[inline]
+    fn bitand_assign(&mut self, rhs: SDL_RendererFlip) {
+        self.0 &= rhs.0;
+    }
+}
+#[repr(transparent)]
 #[doc = " Flip constants for SDL_RenderCopyEx"]
-pub type SDL_RendererFlip = libc::c_uint;
+#[derive(Copy, Clone, Hash, PartialEq, Eq)]
+pub struct SDL_RendererFlip(pub libc::c_uint);
 #[doc = " A structure representing rendering state"]
 #[repr(C)]
 #[derive(Copy, Clone)]
