@@ -660,6 +660,7 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
         .allowlist_item("(SDL|AUDIO|RW)_.*")
         .bitfield_enum("SDL_RendererFlip")
         .newtype_enum("SDL_Keymod")
+        .newtype_enum("SDL_BlendMode")
         .default_enum_style(bindgen::EnumVariation::Rust {
             non_exhaustive: false,
         })
