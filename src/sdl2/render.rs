@@ -785,12 +785,18 @@ impl CanvasBuilder {
 
     /// Builds the renderer.
     #[doc(alias = "SDL_CreateRenderer")]
-    pub fn build(self) -> Result<WindowCanvas, IntegerOrSdlError> {
+    pub fn build(mut self) -> Result<WindowCanvas, IntegerOrSdlError> {
         use crate::common::IntegerOrSdlError::*;
         let index = match self.index {
             None => -1,
             Some(index) => validate_int(index, "index")?,
         };
+        if self.window.has_surface() {
+            // If the window has a surface, we need to destroy it before creating a renderer.
+            self.window
+                .destroy_surface()
+                .map_err(|e| IntegerOrSdlError::SdlError(e))?;
+        }
         let raw = unsafe { sys::SDL_CreateRenderer(self.window.raw(), index, self.renderer_flags) };
 
         if raw.is_null() {

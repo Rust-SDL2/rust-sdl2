@@ -13,6 +13,7 @@ use crate::video::Window;
 use crate::sys;
 
 bitflags! {
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
     pub struct MessageBoxFlag: u32 {
         const ERROR =
             sys::SDL_MessageBoxFlags::SDL_MESSAGEBOX_ERROR as u32;
@@ -24,6 +25,7 @@ bitflags! {
 }
 
 bitflags! {
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
     pub struct MessageBoxButtonFlag: u32 {
         const ESCAPEKEY_DEFAULT =
             sys::SDL_MessageBoxButtonFlags::SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT as u32;
@@ -33,7 +35,7 @@ bitflags! {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct MessageBoxColorScheme {
     pub background: (u8, u8, u8),
     pub text: (u8, u8, u8),

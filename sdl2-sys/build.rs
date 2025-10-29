@@ -657,6 +657,7 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
     let mut bindings = bindgen::Builder::default()
         // enable no_std-friendly output by only using core definitions
         .use_core()
+        .allowlist_item("(SDL|AUDIO|RW)_.*")
         .bitfield_enum("SDL_RendererFlip")
         .newtype_enum("SDL_Keymod")
         .default_enum_style(bindgen::EnumVariation::Rust {

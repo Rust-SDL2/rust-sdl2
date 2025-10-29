@@ -96,7 +96,8 @@ pub fn get_linked_version() -> Version {
 }
 
 bitflags!(
-    pub struct InitFlag : u32 {
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+    pub struct InitFlag: u32 {
         const FLAC = mixer::MIX_InitFlags_MIX_INIT_FLAC;
         const MOD  = mixer::MIX_InitFlags_MIX_INIT_MOD;
         const MP3  = mixer::MIX_InitFlags_MIX_INIT_MP3;
@@ -108,6 +109,7 @@ bitflags!(
 
 bitflags!(
     /// Which audio format changes are allowed when opening a device ([`open_audio_device`]).
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
     pub struct AllowChangeFlag: u32 {
         const FREQUENCY = sys::SDL_AUDIO_ALLOW_FREQUENCY_CHANGE;
         const FORMAT = sys::SDL_AUDIO_ALLOW_FORMAT_CHANGE;
