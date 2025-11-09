@@ -2917,7 +2917,7 @@ impl EventSender {
 }
 
 /// A callback trait for [`EventSubsystem::add_event_watch`].
-pub trait EventWatchCallback {
+pub trait EventWatchCallback: Send + Sync {
     fn callback(&mut self, event: Event);
 }
 
@@ -2999,7 +2999,7 @@ extern "C" fn event_callback_marshall<CB: EventWatchCallback>(
     0
 }
 
-impl<F: FnMut(Event)> EventWatchCallback for F {
+impl<F: FnMut(Event) + Send + Sync> EventWatchCallback for F {
     fn callback(&mut self, event: Event) {
         self(event)
     }
