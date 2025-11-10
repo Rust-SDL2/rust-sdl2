@@ -295,6 +295,7 @@ pub enum EventType {
     ControllerDeviceAdded = SDL_EventType::SDL_CONTROLLERDEVICEADDED as u32,
     ControllerDeviceRemoved = SDL_EventType::SDL_CONTROLLERDEVICEREMOVED as u32,
     ControllerDeviceRemapped = SDL_EventType::SDL_CONTROLLERDEVICEREMAPPED as u32,
+    ControllerSteamHandleUpdate = SDL_EventType::SDL_CONTROLLERSTEAMHANDLEUPDATED as u32,
     ControllerTouchpadDown = SDL_EventType::SDL_CONTROLLERTOUCHPADDOWN as u32,
     ControllerTouchpadMotion = SDL_EventType::SDL_CONTROLLERTOUCHPADMOTION as u32,
     ControllerTouchpadUp = SDL_EventType::SDL_CONTROLLERTOUCHPADUP as u32,
@@ -411,6 +412,7 @@ pub enum DisplayEvent {
     Orientation(Orientation),
     Connected,
     Disconnected,
+    Moved,
 }
 
 impl DisplayEvent {
@@ -433,6 +435,7 @@ impl DisplayEvent {
             }
             sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_CONNECTED => DisplayEvent::Connected,
             sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_DISCONNECTED => DisplayEvent::Disconnected,
+            sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_MOVED => DisplayEvent::Moved,
         }
     }
 
@@ -450,6 +453,7 @@ impl DisplayEvent {
                 sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_DISCONNECTED as u8,
                 0,
             ),
+            DisplayEvent::Moved => (sys::SDL_DisplayEventID::SDL_DISPLAYEVENT_MOVED as u8, 0),
         }
     }
 
@@ -735,6 +739,11 @@ pub enum Event {
         which: u32,
     },
     ControllerDeviceRemapped {
+        timestamp: u32,
+        /// The controller's joystick `id`
+        which: u32,
+    },
+    ControllerSteamHandleUpdate {
         timestamp: u32,
         /// The controller's joystick `id`
         which: u32,
@@ -1464,6 +1473,22 @@ impl Event {
                 }
             }
 
+            Event::ControllerSteamHandleUpdate { timestamp, which } => {
+                let event = sys::SDL_ControllerDeviceEvent {
+                    type_: SDL_EventType::SDL_CONTROLLERSTEAMHANDLEUPDATED as u32,
+                    timestamp,
+                    which: which as i32,
+                };
+                unsafe {
+                    ptr::copy(
+                        &event,
+                        ret.as_mut_ptr() as *mut sys::SDL_ControllerDeviceEvent,
+                        1,
+                    );
+                    Some(ret.assume_init())
+                }
+            }
+
             Event::FingerDown { .. }
             | Event::FingerUp { .. }
             | Event::FingerMotion { .. }
@@ -1780,6 +1805,13 @@ impl Event {
                 EventType::ControllerDeviceRemapped => {
                     let event = raw.cdevice;
                     Event::ControllerDeviceRemapped {
+                        timestamp: event.timestamp,
+                        which: event.which as u32,
+                    }
+                }
+                EventType::ControllerSteamHandleUpdate => {
+                    let event = raw.cdevice;
+                    Event::ControllerSteamHandleUpdate {
                         timestamp: event.timestamp,
                         which: event.which as u32,
                     }
@@ -2101,6 +2133,10 @@ impl Event {
             | (Self::ControllerDeviceAdded { .. }, Self::ControllerDeviceAdded { .. })
             | (Self::ControllerDeviceRemoved { .. }, Self::ControllerDeviceRemoved { .. })
             | (Self::ControllerDeviceRemapped { .. }, Self::ControllerDeviceRemapped { .. })
+            | (
+                Self::ControllerSteamHandleUpdate { .. },
+                Self::ControllerSteamHandleUpdate { .. },
+            )
             | (Self::FingerDown { .. }, Self::FingerDown { .. })
             | (Self::FingerUp { .. }, Self::FingerUp { .. })
             | (Self::FingerMotion { .. }, Self::FingerMotion { .. })
@@ -2170,6 +2206,7 @@ impl Event {
             Self::ControllerDeviceAdded { timestamp, .. } => timestamp,
             Self::ControllerDeviceRemoved { timestamp, .. } => timestamp,
             Self::ControllerDeviceRemapped { timestamp, .. } => timestamp,
+            Self::ControllerSteamHandleUpdate { timestamp, .. } => timestamp,
             Self::ControllerTouchpadDown { timestamp, .. } => timestamp,
             Self::ControllerTouchpadMotion { timestamp, .. } => timestamp,
             Self::ControllerTouchpadUp { timestamp, .. } => timestamp,
@@ -2413,6 +2450,7 @@ impl Event {
                 | Self::ControllerDeviceAdded { .. }
                 | Self::ControllerDeviceRemoved { .. }
                 | Self::ControllerDeviceRemapped { .. }
+                | Self::ControllerSteamHandleUpdate { .. }
         )
     }
 
