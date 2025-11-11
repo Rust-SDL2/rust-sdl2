@@ -3,7 +3,7 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### v0.39.0
 
-[PR #1509](https://github.com/Rust-SDL2/rust-sdl2/pull/1509) **BREAKING CHANGE** Add Send + Sync + 'static bounds for EventWatchCallback to avoid soundness hole.
+[PR #1509](https://github.com/Rust-SDL2/rust-sdl2/pull/1509) **BREAKING CHANGE** Add Send + 'static bounds for EventWatchCallback to avoid soundness hole.
 
 [PR #1506](https://github.com/Rust-SDL2/rust-sdl2/pull/1506) **BREAKING CHANGE** Update crates.io dependencies, update bundled SDL2 to 2.32.10, add whitelist to bindgen to only emit SDL related items, and specifically no platform (or compiler, etc) specific items. Implement the same set of useful derived traits on bitflags types.
 
