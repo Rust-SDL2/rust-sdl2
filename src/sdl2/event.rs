@@ -246,10 +246,7 @@ impl crate::EventSubsystem {
     ///     dbg!(event);
     /// });
     /// ```
-    pub fn add_event_watch<CB: EventWatchCallback>(
-        &self,
-        callback: CB,
-    ) -> EventWatch<CB> {
+    pub fn add_event_watch<CB: EventWatchCallback>(&self, callback: CB) -> EventWatch<CB> {
         EventWatch::add(callback)
     }
 }
