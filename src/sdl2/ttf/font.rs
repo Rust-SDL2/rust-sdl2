@@ -17,6 +17,7 @@ use sys::SDL_Surface;
 
 bitflags! {
     /// The styling of a font.
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
     pub struct FontStyle: i32 {
         const NORMAL        = ttf::TTF_STYLE_NORMAL as i32;
         const BOLD          = ttf::TTF_STYLE_BOLD as i32;
