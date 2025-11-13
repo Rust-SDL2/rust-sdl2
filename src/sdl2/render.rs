@@ -447,15 +447,15 @@ pub enum ClippingRect {
     None,
 }
 
-impl Into<ClippingRect> for Rect {
-    fn into(self) -> ClippingRect {
-        ClippingRect::Some(self)
+impl From<Rect> for ClippingRect {
+    fn from(val: Rect) -> Self {
+        ClippingRect::Some(val)
     }
 }
 
-impl Into<ClippingRect> for Option<Rect> {
-    fn into(self) -> ClippingRect {
-        match self {
+impl From<Option<Rect>> for ClippingRect {
+    fn from(val: Option<Rect>) -> Self {
+        match val {
             Some(v) => v.into(),
             None => ClippingRect::None,
         }
@@ -585,7 +585,7 @@ impl<T: RenderTarget> Canvas<T> {
     /// # Errors
     ///
     /// * returns `TargetRenderError::NotSupported`
-    /// if the renderer does not support the use of render targets
+    ///   if the renderer does not support the use of render targets
     /// * returns `TargetRenderError::SdlError` if SDL2 returned with an error code.
     ///
     /// The texture *must* be created with the texture access:
@@ -615,8 +615,6 @@ impl<T: RenderTarget> Canvas<T> {
     ///     texture_canvas.fill_rect(Rect::new(50, 50, 50, 50)).unwrap();
     /// });
     /// ```
-    ///
-
     pub fn with_texture_canvas<F>(
         &mut self,
         texture: &mut Texture,
@@ -795,7 +793,7 @@ impl CanvasBuilder {
             // If the window has a surface, we need to destroy it before creating a renderer.
             self.window
                 .destroy_surface()
-                .map_err(|e| IntegerOrSdlError::SdlError(e))?;
+                .map_err(IntegerOrSdlError::SdlError)?;
         }
         let raw = unsafe { sys::SDL_CreateRenderer(self.window.raw(), index, self.renderer_flags) };
 
@@ -944,7 +942,7 @@ impl<T> TextureCreator<T> {
         access: TextureAccess,
         width: u32,
         height: u32,
-    ) -> Result<Texture, TextureValueError>
+    ) -> Result<Texture<'_>, TextureValueError>
     where
         F: Into<Option<PixelFormatEnum>>,
     {
@@ -965,7 +963,7 @@ impl<T> TextureCreator<T> {
         format: F,
         width: u32,
         height: u32,
-    ) -> Result<Texture, TextureValueError>
+    ) -> Result<Texture<'_>, TextureValueError>
     where
         F: Into<Option<PixelFormatEnum>>,
     {
@@ -979,7 +977,7 @@ impl<T> TextureCreator<T> {
         format: F,
         width: u32,
         height: u32,
-    ) -> Result<Texture, TextureValueError>
+    ) -> Result<Texture<'_>, TextureValueError>
     where
         F: Into<Option<PixelFormatEnum>>,
     {
@@ -993,7 +991,7 @@ impl<T> TextureCreator<T> {
         format: F,
         width: u32,
         height: u32,
-    ) -> Result<Texture, TextureValueError>
+    ) -> Result<Texture<'_>, TextureValueError>
     where
         F: Into<Option<PixelFormatEnum>>,
     {
@@ -1034,7 +1032,7 @@ impl<T> TextureCreator<T> {
     pub fn create_texture_from_surface<S: AsRef<SurfaceRef>>(
         &self,
         surface: S,
-    ) -> Result<Texture, TextureValueError> {
+    ) -> Result<Texture<'_>, TextureValueError> {
         use self::TextureValueError::*;
         let result =
             unsafe { sys::SDL_CreateTextureFromSurface(self.context.raw, surface.as_ref().raw()) };
@@ -1048,7 +1046,7 @@ impl<T> TextureCreator<T> {
     /// Create a texture from its raw `SDL_Texture`.
     #[cfg(not(feature = "unsafe_textures"))]
     #[inline]
-    pub const unsafe fn raw_create_texture(&self, raw: *mut sys::SDL_Texture) -> Texture {
+    pub const unsafe fn raw_create_texture(&self, raw: *mut sys::SDL_Texture) -> Texture<'_> {
         Texture {
             raw,
             _marker: PhantomData,
@@ -2601,7 +2599,7 @@ impl InternalTexture {
                         return Err(HeightMustBeMultipleOfTwoForFormat(r.height(), format));
                     }
                 };
-                if pitch % 2 != 0 {
+                if !pitch.is_multiple_of(2) {
                     return Err(PitchMustBeMultipleOfTwoForFormat(pitch, format));
                 }
             }

@@ -111,14 +111,14 @@ pub enum MouseWheelDirection {
 // 0 and 1 are not fixed values in the SDL source code.  This value is defined as an enum which is then cast to a Uint32.
 // The enum in C is defined as such:
 
-/**
- * \brief Scroll direction types for the Scroll event
- */
-//typedef enum
-//{
-//    SDL_MOUSEWHEEL_NORMAL,    /**< The scroll direction is normal */
-//    SDL_MOUSEWHEEL_FLIPPED    /**< The scroll direction is flipped / natural */
-//} SDL_MouseWheelDirection;
+// /**
+//  * \brief Scroll direction types for the Scroll event
+//  */
+// typedef enum
+// {
+//     SDL_MOUSEWHEEL_NORMAL,    /**< The scroll direction is normal */
+//     SDL_MOUSEWHEEL_FLIPPED    /**< The scroll direction is flipped / natural */
+// } SDL_MouseWheelDirection;
 
 // Since no value is given in the enum definition these values are auto assigned by the C compiler starting at 0.
 // Normally I would prefer to use the enum rather than hard code what it is implied to represent however
@@ -279,7 +279,7 @@ impl MouseState {
     /// }
     ///
     /// ```
-    pub fn mouse_buttons(&self) -> MouseButtonIterator {
+    pub fn mouse_buttons(&self) -> MouseButtonIterator<'_> {
         MouseButtonIterator {
             cur_button: 1,
             mouse_state: &self.mouse_state,
@@ -302,7 +302,7 @@ impl MouseState {
     ///     // sugar for: new.difference(old).collect()
     /// }
     /// ```
-    pub fn pressed_mouse_buttons(&self) -> PressedMouseButtonIterator {
+    pub fn pressed_mouse_buttons(&self) -> PressedMouseButtonIterator<'_> {
         self.mouse_buttons().into_pressed_buttons_iter()
     }
 }

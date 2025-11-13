@@ -117,7 +117,7 @@ impl RelativeMouseState {
     /// }
     ///
     /// ```
-    pub fn mouse_buttons(&self) -> MouseButtonIterator {
+    pub fn mouse_buttons(&self) -> MouseButtonIterator<'_> {
         MouseButtonIterator {
             cur_button: 1,
             mouse_state: &self.mouse_state,
@@ -140,7 +140,7 @@ impl RelativeMouseState {
     ///     // sugar for: new.difference(old).collect()
     /// }
     /// ```
-    pub fn pressed_mouse_buttons(&self) -> PressedMouseButtonIterator {
+    pub fn pressed_mouse_buttons(&self) -> PressedMouseButtonIterator<'_> {
         self.mouse_buttons().into_pressed_buttons_iter()
     }
 }

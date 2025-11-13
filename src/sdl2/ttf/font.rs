@@ -410,7 +410,7 @@ impl<'ttf, 'r> Font<'ttf, 'r> {
                 ttf::TTF_HINTING_NORMAL => Hinting::Normal,
                 ttf::TTF_HINTING_LIGHT => Hinting::Light,
                 ttf::TTF_HINTING_MONO => Hinting::Mono,
-                ttf::TTF_HINTING_NONE | _ => Hinting::None,
+                _ /* | ttf::TTF_HINTING_NONE */ => Hinting::None,
             }
         }
     }

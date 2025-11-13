@@ -163,10 +163,10 @@ pub fn init(flags: InitFlag) -> Result<Sdl2MixerContext, String> {
 /// or require more fine-grained control over the device configuration, use [`open_audio_device`].
 ///
 /// * `chunksize`: It is recommended to choose values between 256 and 1024, depending on whether
-///                you prefer latency or compatibility. Small values reduce latency but may not
-///                work very well on older systems. For instance, a chunk size of 256 will give
-///                you a latency of 6ms, while a chunk size of 1024 will give you a latency of 23ms
-///                for a frequency of 44100kHz.
+///   you prefer latency or compatibility. Small values reduce latency but may not
+///   work very well on older systems. For instance, a chunk size of 256 will give
+///   you a latency of 6ms, while a chunk size of 1024 will give you a latency of 23ms
+///   for a frequency of 44100kHz.
 pub fn open_audio(
     frequency: i32,
     format: AudioFormat,
@@ -207,8 +207,8 @@ pub fn open_audio(
 /// * `format`: Audio format ([`AudioFormat`]).
 /// * `channels`: Number of channels (1 is mono, 2 is stereo, etc).
 /// * `chunksize`: Audio buffer size in sample FRAMES (total samples divided by channel count).
-///                The lower the number, the lower the latency, but you risk dropouts if it gets
-///                too low.
+///   The lower the number, the lower the latency, but you risk dropouts if it gets
+///   too low.
 /// * `device`: The device name to open, or [`None`] to choose a reasonable default.
 /// * `allowed_changes`: Allow change flags ([`AllowChangeFlag`]).
 ///
@@ -545,7 +545,7 @@ impl Channel {
         match ret {
             mixer::Mix_Fading_MIX_FADING_OUT => Fading::FadingOut,
             mixer::Mix_Fading_MIX_FADING_IN => Fading::FadingIn,
-            mixer::Mix_Fading_MIX_NO_FADING | _ => Fading::NoFading,
+            _ /* | mixer::Mix_Fading_MIX_NO_FADING */ => Fading::NoFading,
         }
     }
 
@@ -872,7 +872,7 @@ impl<'a> Music<'a> {
             mixer::Mix_MusicType_MUS_MP3_MAD_UNUSED => MusicType::MusicMp3Mad,
             mixer::Mix_MusicType_MUS_FLAC => MusicType::MusicFlac,
             mixer::Mix_MusicType_MUS_MODPLUG_UNUSED => MusicType::MusicModPlug,
-            mixer::Mix_MusicType_MUS_NONE | _ => MusicType::MusicNone,
+            _ /* | mixer::Mix_MusicType_MUS_NONE */ => MusicType::MusicNone,
         }
     }
 
@@ -1029,7 +1029,7 @@ impl<'a> Music<'a> {
         match ret {
             mixer::Mix_Fading_MIX_FADING_OUT => Fading::FadingOut,
             mixer::Mix_Fading_MIX_FADING_IN => Fading::FadingIn,
-            mixer::Mix_Fading_MIX_NO_FADING | _ => Fading::NoFading,
+            _ /* | mixer::Mix_Fading_MIX_NO_FADING */ => Fading::NoFading,
         }
     }
 }
