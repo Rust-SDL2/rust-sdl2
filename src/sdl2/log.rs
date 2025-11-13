@@ -45,7 +45,7 @@ impl Category {
     }
 
     fn into_ll(value: Category) -> u32 {
-        return match value {
+        match value {
             Category::Application => sys::SDL_LogCategory::SDL_LOG_CATEGORY_APPLICATION as u32,
             Category::Error => sys::SDL_LogCategory::SDL_LOG_CATEGORY_ERROR as u32,
             Category::Assert => sys::SDL_LogCategory::SDL_LOG_CATEGORY_ASSERT as u32,
@@ -57,7 +57,7 @@ impl Category {
             Category::Test => sys::SDL_LogCategory::SDL_LOG_CATEGORY_TEST as u32,
             Category::Custom => sys::SDL_LogCategory::SDL_LOG_CATEGORY_CUSTOM as u32,
             Category::Unknown => sys::SDL_LogCategory::SDL_LOG_CATEGORY_APPLICATION as u32,
-        };
+        }
     }
 }
 
@@ -80,7 +80,7 @@ impl Priority {
             SDL_LOG_PRIORITY_INFO => Priority::Info,
             SDL_LOG_PRIORITY_WARN => Priority::Warn,
             SDL_LOG_PRIORITY_ERROR => Priority::Error,
-            SDL_LOG_PRIORITY_CRITICAL | _ => Priority::Critical,
+            _ /* | SDL_LOG_PRIORITY_CRITICAL */ => Priority::Critical,
         }
     }
 }

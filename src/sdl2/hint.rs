@@ -25,7 +25,7 @@ pub enum Hint {
 /// ```
 ///
 /// * `value`: `true` to enable minimizing of the Window if it loses key focus when in fullscreen mode,
-///            `false` to disable this feature.
+///   `false` to disable this feature.
 pub fn set_video_minimize_on_focus_loss(value: bool) -> bool {
     set(VIDEO_MINIMIZE_ON_FOCUS_LOSS, if value { "1" } else { "0" })
 }
@@ -41,10 +41,10 @@ pub fn set_video_minimize_on_focus_loss(value: bool) -> bool {
 /// ```
 ///
 /// * `value`: `true` to enable minimizing of the Window if it loses key focus when in fullscreen mode,
-///            `false` to disable this feature.
+///   `false` to disable this feature.
 /// * `priority`: The priority controls the behavior when setting a hint that already has a value.
-///               Hints will replace existing hints of their priority and lower.
-///               Environment variables are considered to have override priority.
+///   Hints will replace existing hints of their priority and lower.
+///   Environment variables are considered to have override priority.
 pub fn set_video_minimize_on_focus_loss_with_priority(value: bool, priority: &Hint) -> bool {
     set_with_priority(
         VIDEO_MINIMIZE_ON_FOCUS_LOSS,

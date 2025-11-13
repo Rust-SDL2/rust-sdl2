@@ -72,7 +72,7 @@ impl<'a> KeyboardState<'a> {
     }
 
     /// Returns an iterator all scancodes with a boolean indicating if the scancode is pressed.
-    pub fn scancodes(&self) -> ScancodeIterator {
+    pub fn scancodes(&self) -> ScancodeIterator<'_> {
         ScancodeIterator {
             index: 0,
             keyboard_state: self.keyboard_state,
@@ -102,7 +102,7 @@ impl<'a> KeyboardState<'a> {
     ///     // sugar for: new.difference(old).collect()
     /// }
     /// ```
-    pub fn pressed_scancodes(&self) -> PressedScancodeIterator {
+    pub fn pressed_scancodes(&self) -> PressedScancodeIterator<'_> {
         self.scancodes().into_pressed_scancode_iter()
     }
 }

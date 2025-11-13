@@ -736,12 +736,11 @@ impl SurfaceRef {
         let src_rect = src_rect.into();
         let dst_rect = dst_rect.into();
 
-        match {
-            // The rectangles don't change, but the function requires mutable pointers.
-            let src_rect_ptr = src_rect.as_ref().map(|r| r.raw()).unwrap_or(ptr::null()) as *mut _;
-            let dst_rect_ptr = dst_rect.as_ref().map(|r| r.raw()).unwrap_or(ptr::null()) as *mut _;
-            sys::SDL_LowerBlit(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
-        } {
+        // The rectangles don't change, but the function requires mutable pointers.
+        let src_rect_ptr = src_rect.as_ref().map(|r| r.raw()).unwrap_or(ptr::null()) as *mut _;
+        let dst_rect_ptr = dst_rect.as_ref().map(|r| r.raw()).unwrap_or(ptr::null()) as *mut _;
+        let res = sys::SDL_LowerBlit(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr);
+        match res {
             0 => Ok(()),
             _ => Err(get_error()),
         }
@@ -764,18 +763,17 @@ impl SurfaceRef {
         let src_rect = src_rect.into();
         let dst_rect = dst_rect.into();
 
-        match {
-            let src_rect_ptr = src_rect.as_ref().map(|r| r.raw()).unwrap_or(ptr::null());
+        let src_rect_ptr = src_rect.as_ref().map(|r| r.raw()).unwrap_or(ptr::null());
 
-            // Copy the rect here to make a mutable copy without requiring
-            // a mutable argument
-            let mut dst_rect = dst_rect;
-            let dst_rect_ptr = dst_rect
-                .as_mut()
-                .map(|r| r.raw_mut())
-                .unwrap_or(ptr::null_mut());
-            sys::SDL_SoftStretchLinear(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
-        } {
+        // Copy the rect here to make a mutable copy without requiring
+        // a mutable argument
+        let mut dst_rect = dst_rect;
+        let dst_rect_ptr = dst_rect
+            .as_mut()
+            .map(|r| r.raw_mut())
+            .unwrap_or(ptr::null_mut());
+        let res = sys::SDL_SoftStretchLinear(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr);
+        match res {
             0 => Ok(dst_rect),
             _ => Err(get_error()),
         }
@@ -830,20 +828,19 @@ impl SurfaceRef {
         R1: Into<Option<Rect>>,
         R2: Into<Option<Rect>>,
     {
-        match {
-            // The rectangles don't change, but the function requires mutable pointers.
-            let src_rect_ptr = src_rect
-                .into()
-                .as_ref()
-                .map(|r| r.raw())
-                .unwrap_or(ptr::null()) as *mut _;
-            let dst_rect_ptr = dst_rect
-                .into()
-                .as_ref()
-                .map(|r| r.raw())
-                .unwrap_or(ptr::null()) as *mut _;
-            sys::SDL_LowerBlitScaled(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr)
-        } {
+        // The rectangles don't change, but the function requires mutable pointers.
+        let src_rect_ptr = src_rect
+            .into()
+            .as_ref()
+            .map(|r| r.raw())
+            .unwrap_or(ptr::null()) as *mut _;
+        let dst_rect_ptr = dst_rect
+            .into()
+            .as_ref()
+            .map(|r| r.raw())
+            .unwrap_or(ptr::null()) as *mut _;
+        let res = sys::SDL_LowerBlitScaled(self.raw(), src_rect_ptr, dst.raw(), dst_rect_ptr);
+        match res {
             0 => Ok(()),
             _ => Err(get_error()),
         }

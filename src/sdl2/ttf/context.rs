@@ -1,7 +1,5 @@
 use get_error;
 use rwops::RWops;
-use std::error;
-use std::fmt;
 use std::os::raw::{c_int, c_long};
 use std::path::Path;
 use sys::ttf;

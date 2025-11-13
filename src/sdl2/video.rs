@@ -212,7 +212,7 @@ pub mod gl_attr {
 
     impl crate::VideoSubsystem {
         /// Obtains access to the OpenGL window attributes.
-        pub fn gl_attr(&self) -> GLAttr {
+        pub fn gl_attr(&self) -> GLAttr<'_> {
             GLAttr {
                 _marker: PhantomData,
             }
@@ -415,7 +415,7 @@ pub mod gl_attr {
         /// // Sets the GL context into debug mode.
         /// gl_attr.set_context_flags().debug().set();
         /// ```
-        pub fn set_context_flags(&self) -> ContextFlagsBuilder {
+        pub fn set_context_flags(&self) -> ContextFlagsBuilder<'_> {
             ContextFlagsBuilder {
                 flags: 0,
                 _marker: PhantomData,
