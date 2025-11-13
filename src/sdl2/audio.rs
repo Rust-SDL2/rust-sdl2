@@ -512,7 +512,7 @@ impl Drop for AudioSpecWAV {
     }
 }
 
-pub trait AudioCallback: Send
+pub trait AudioCallback: Send + 'static
 where
     Self::Channel: AudioFormatNum + 'static,
 {
