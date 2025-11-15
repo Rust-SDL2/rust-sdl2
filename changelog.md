@@ -3,7 +3,7 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### v0.39.0
 
-[PR #1507](https://github.com/Rust-SDL2/rust-sdl2/pull/1507) Add binding for `SDL_ComposeCustomBlendMode`.
+[PR #1507](https://github.com/Rust-SDL2/rust-sdl2/pull/1507) **BREAKING CHANGE** Add binding for `SDL_ComposeCustomBlendMode`. This should only be a breaking change for users relying on internal details of `BlendMode` and `SDL_BlendMode`.
 
 [PR #1510](https://github.com/Rust-SDL2/rust-sdl2/pull/1510) Fix clippy warnings.
 
