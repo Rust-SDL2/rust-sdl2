@@ -3,6 +3,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### v0.39.0
 
+[PR #1507](https://github.com/Rust-SDL2/rust-sdl2/pull/1507) Add binding for `SDL_ComposeCustomBlendMode`.
+
 [PR #1510](https://github.com/Rust-SDL2/rust-sdl2/pull/1510) Fix clippy warnings.
 
 [PR #1509](https://github.com/Rust-SDL2/rust-sdl2/pull/1509) **BREAKING CHANGE** Add Send + 'static bounds for EventWatchCallback and 'static bound to AudioCallback to avoid soundness hole.
