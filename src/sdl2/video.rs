@@ -592,17 +592,37 @@ pub enum SwapInterval {
     LateSwapTearing = -1,
 }
 
-impl From<i32> for SwapInterval {
-    fn from(i: i32) -> Self {
-        match i {
+impl SwapInterval {
+    /// This function will be replaced with a [`TryFrom`] implementation later.
+    pub fn try_from(value: i32) -> Result<Self, SwapIntervalConversionError> {
+        Ok(match value {
             -1 => SwapInterval::LateSwapTearing,
             0 => SwapInterval::Immediate,
             1 => SwapInterval::VSync,
-            other => panic!(
-                "Invalid value for SwapInterval: {}; valid values are -1, 0, 1",
-                other
-            ),
-        }
+            _ => return Err(SwapIntervalConversionError(value)),
+        })
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct SwapIntervalConversionError(pub i32);
+
+impl fmt::Display for SwapIntervalConversionError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "Invalid value for SwapInterval: {}; valid values are -1, 0, 1",
+            self.0
+        )
+    }
+}
+
+impl Error for SwapIntervalConversionError {}
+
+impl From<i32> for SwapInterval {
+    /// This function is deprecated, use [`SwapInterval::try_from`] instead and handle the error.
+    fn from(i: i32) -> Self {
+        Self::try_from(i).unwrap()
     }
 }
 
