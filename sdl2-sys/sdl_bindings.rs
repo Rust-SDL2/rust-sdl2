@@ -2495,22 +2495,23 @@ unsafe extern "C" {
         Y2: *mut f32,
     ) -> SDL_bool;
 }
-#[repr(u32)]
+impl SDL_BlendMode {
+    #[doc = "< no blending\ndstRGBA = srcRGBA"]
+    pub const SDL_BLENDMODE_NONE: SDL_BlendMode = SDL_BlendMode(0);
+    #[doc = "< alpha blending\ndstRGB = (srcRGB * srcA) + (dstRGB * (1-srcA))\ndstA = srcA + (dstA * (1-srcA))"]
+    pub const SDL_BLENDMODE_BLEND: SDL_BlendMode = SDL_BlendMode(1);
+    #[doc = "< additive blending\ndstRGB = (srcRGB * srcA) + dstRGB\ndstA = dstA"]
+    pub const SDL_BLENDMODE_ADD: SDL_BlendMode = SDL_BlendMode(2);
+    #[doc = "< color modulate\ndstRGB = srcRGB * dstRGB\ndstA = dstA"]
+    pub const SDL_BLENDMODE_MOD: SDL_BlendMode = SDL_BlendMode(4);
+    #[doc = "< color multiply\ndstRGB = (srcRGB * dstRGB) + (dstRGB * (1-srcA))\ndstA = dstA"]
+    pub const SDL_BLENDMODE_MUL: SDL_BlendMode = SDL_BlendMode(8);
+    pub const SDL_BLENDMODE_INVALID: SDL_BlendMode = SDL_BlendMode(2147483647);
+}
+#[repr(transparent)]
 #[doc = " The blend mode used in SDL_RenderCopy() and drawing operations."]
 #[derive(Copy, Clone, Hash, PartialEq, Eq)]
-pub enum SDL_BlendMode {
-    #[doc = "< no blending\ndstRGBA = srcRGBA"]
-    SDL_BLENDMODE_NONE = 0,
-    #[doc = "< alpha blending\ndstRGB = (srcRGB * srcA) + (dstRGB * (1-srcA))\ndstA = srcA + (dstA * (1-srcA))"]
-    SDL_BLENDMODE_BLEND = 1,
-    #[doc = "< additive blending\ndstRGB = (srcRGB * srcA) + dstRGB\ndstA = dstA"]
-    SDL_BLENDMODE_ADD = 2,
-    #[doc = "< color modulate\ndstRGB = srcRGB * dstRGB\ndstA = dstA"]
-    SDL_BLENDMODE_MOD = 4,
-    #[doc = "< color multiply\ndstRGB = (srcRGB * dstRGB) + (dstRGB * (1-srcA))\ndstA = dstA"]
-    SDL_BLENDMODE_MUL = 8,
-    SDL_BLENDMODE_INVALID = 2147483647,
-}
+pub struct SDL_BlendMode(pub libc::c_uint);
 #[repr(u32)]
 #[doc = " The blend operation used when combining source and destination pixel\n components"]
 #[derive(Copy, Clone, Hash, PartialEq, Eq)]
