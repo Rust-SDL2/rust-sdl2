@@ -559,15 +559,11 @@ fn main() {
 
     #[cfg(feature = "bindgen")]
     {
-        let include_paths: Vec<String>;
-        #[cfg(feature = "bundled")]
-        {
-            include_paths = vec![sdl2_includes];
-        }
-        #[cfg(not(feature = "bundled"))]
-        {
-            include_paths = compute_include_paths(sdl2_includes)
-        }
+        let include_paths: Vec<String> = if cfg!(feature = "bundled") {
+            vec![sdl2_includes]
+        } else {
+            compute_include_paths(sdl2_includes)
+        };
         generate_bindings(target.as_str(), host.as_str(), include_paths.as_slice());
         println!("cargo:include={}", include_paths.join(":"));
     }
@@ -671,26 +667,14 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
         .raw_line("use crate::*;")
         .ctypes_prefix("libc");
 
-    let mut ttf_bindings = bindgen::Builder::default()
-        .use_core()
-        .raw_line("use crate::*;")
-        .ctypes_prefix("libc");
+    let mut ttf_bindings = image_bindings.clone();
 
-    let mut mixer_bindings = bindgen::Builder::default()
-        .use_core()
-        .raw_line("use crate::*;")
-        .ctypes_prefix("libc");
+    let mut mixer_bindings = image_bindings.clone();
 
     let mut gfx_framerate_bindings = bindgen::Builder::default().use_core().ctypes_prefix("libc");
-    let mut gfx_primitives_bindings = bindgen::Builder::default()
-        .use_core()
-        .raw_line("use crate::*;")
-        .ctypes_prefix("libc");
-    let mut gfx_imagefilter_bindings = bindgen::Builder::default().use_core().ctypes_prefix("libc");
-    let mut gfx_rotozoom_bindings = bindgen::Builder::default()
-        .use_core()
-        .raw_line("use crate::*;")
-        .ctypes_prefix("libc");
+    let mut gfx_primitives_bindings = image_bindings.clone();
+    let mut gfx_imagefilter_bindings = gfx_framerate_bindings.clone();
+    let mut gfx_rotozoom_bindings = gfx_primitives_bindings.clone();
 
     // Set correct target triple for bindgen when cross-compiling
     if target != host {
