@@ -191,7 +191,7 @@ impl KeyboardUtil {
 
     #[doc(alias = "SDL_SetModState")]
     pub fn set_mod_state(&self, flags: Mod) {
-        let arg = sys::SDL_Keymod(flags.bits() as u32);
+        let arg = sys::SDL_Keymod(flags.bits() as i32);
         unsafe {
             sys::SDL_SetModState(arg);
         }
