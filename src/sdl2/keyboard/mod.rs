@@ -191,7 +191,10 @@ impl KeyboardUtil {
 
     #[doc(alias = "SDL_SetModState")]
     pub fn set_mod_state(&self, flags: Mod) {
-        let arg = sys::SDL_Keymod(flags.bits() as u32);
+        // Note: Clang (and therefore bindgen) generates different integer types
+        // for C-style enums on different platforms. On Windows, the underlying
+        // type is `i32`, while on Linux it is `u32`.
+        let arg = sys::SDL_Keymod(flags.bits().into());
         unsafe {
             sys::SDL_SetModState(arg);
         }
