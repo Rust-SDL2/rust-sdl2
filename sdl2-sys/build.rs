@@ -593,6 +593,11 @@ fn copy_pregenerated_bindings() {
     for path in paths {
         let from = crate_path.join(path);
         let to = out_path.join(path);
+
+        // Copy from OUT_DIR to the crate root when updating the pregenerated bindings
+        #[cfg(update_pregenerated_bindings)]
+        let (from, to) = (to, from);
+
         if let Err(err) = fs::copy(&from, &to) {
             panic!(
                 "unable to copy {} to {}: {err}",
@@ -609,16 +614,7 @@ fn copy_pregenerated_bindings() {
 fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
     let target_os = get_os_from_triple(target).unwrap();
 
-    #[cfg(not(update_pregenerated_bindings))]
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
-    #[cfg(update_pregenerated_bindings)]
-    let out_path = PathBuf::from(".");
-
-    #[cfg(update_pregenerated_bindings)]
-    match fs::create_dir(&out_path) {
-        Err(err) if err.kind() == io::ErrorKind::AlreadyExists => {}
-        res => res.expect("unable to create bindings dir"),
-    }
 
     let mut all_bindings = bindgen::builder()
         // enable no_std-friendly output by only using core definitions
