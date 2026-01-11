@@ -307,6 +307,12 @@ impl Chunk {
         Self::from_owned_raw(raw)
     }
 
+    /// Load from `RWOps` for use as a sample.
+    pub fn from_rwops(rwops: RWops) -> Result<Chunk, String> {
+        let raw = unsafe { mixer::Mix_LoadWAV_RW(rwops.raw(), 0) };
+        Self::from_owned_raw(raw)
+    }
+
     /// Load chunk from a buffer containing raw audio data in the mixer format. The length of the
     /// buffer has to fit in 32-bit unsigned integer. The chunk takes ownership of the buffer.
     ///
