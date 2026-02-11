@@ -17,7 +17,7 @@ pub trait ToColor {
     #[inline]
     fn as_u32(&self) -> u32 {
         let (r, g, b, a) = self.as_rgba();
-        u32::from_be_bytes([r, g, b, a])
+        u32::from_ne_bytes([r, g, b, a])
     }
 }
 
@@ -39,7 +39,7 @@ impl ToColor for (u8, u8, u8, u8) {
 impl ToColor for u32 {
     #[inline]
     fn as_rgba(&self) -> (u8, u8, u8, u8) {
-        let [r, g, b, a] = self.to_be_bytes();
+        let [r, g, b, a] = self.to_ne_bytes();
         (r, g, b, a)
     }
 
