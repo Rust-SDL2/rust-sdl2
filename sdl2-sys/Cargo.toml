@@ -10,7 +10,7 @@ categories = ["rendering","external-ffi-bindings","game-engines","multimedia"]
 license = "MIT AND Zlib"
 links = "SDL2"
 build = "build.rs"
-edition = "2018"
+edition = "2021"
 
 [lib]
 name = "sdl2_sys"
@@ -41,7 +41,6 @@ optional = true
 
 [build-dependencies]
 version-compare = "0.1"
-cfg-if = "^1.0"
 
 [features]
 
@@ -59,4 +58,4 @@ ttf = []
 gfx = []
 
 [lints.rust]
-unexpected_cfgs = { level = "warn", check-cfg = ['cfg(mac_framework)','cfg(ios_framework)'] }
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(mac_framework)','cfg(ios_framework)','cfg(update_pregenerated_bindings)'] }
