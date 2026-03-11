@@ -9,7 +9,7 @@ use std::marker::PhantomData;
 use std::mem;
 use std::mem::transmute;
 use std::ptr;
-use std::sync::Mutex;
+use std::sync::{LazyLock, Mutex};
 
 use libc::c_int;
 use libc::c_void;
@@ -44,10 +44,8 @@ impl CustomEventTypeMaps {
     }
 }
 
-lazy_static! {
-    static ref CUSTOM_EVENT_TYPES: Mutex<CustomEventTypeMaps> =
-        Mutex::new(CustomEventTypeMaps::new());
-}
+static CUSTOM_EVENT_TYPES: LazyLock<Mutex<CustomEventTypeMaps>> =
+    LazyLock::new(|| Mutex::new(CustomEventTypeMaps::new()));
 
 impl crate::EventSubsystem {
     /// Removes all events in the event queue that match the specified event type.
