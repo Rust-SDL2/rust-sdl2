@@ -3,6 +3,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 ### v0.39.0
 
+[PR #1516](https://github.com/Rust-SDL2/rust-sdl2/pull/1516) **BREAKING CHANGE** Remove X11 and Wayland specific items from pregenerated bindings. Use bindgen (`use-bindgen` feature flag) if those bindings are needed. Remove unused aliases to integer types and update bindings.
+
 [PR #1413](https://github.com/Rust-SDL2/rust-sdl2/pull/1413) Deprecate `From` implementation of `SwapInterval` that could panic, add `TryFrom`-like inherent function.
 
 [PR #1507](https://github.com/Rust-SDL2/rust-sdl2/pull/1507) **BREAKING CHANGE** Add binding for `SDL_ComposeCustomBlendMode`. This should only be a breaking change for users relying on internal details of `BlendMode` and `SDL_BlendMode`.
