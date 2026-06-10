@@ -19,10 +19,13 @@ pub fn main() -> Result<(), String> {
     let mut canvas = window.into_canvas().build().map_err(|e| e.to_string())?;
 
     canvas.set_draw_color(Color::RGB(255, 0, 0));
-    canvas.clear();
-    canvas.present();
+    
     let mut event_pump = sdl_context.event_pump()?;
 
+    // Present an initial frame before entering the main loop
+    canvas.clear();
+    canvas.present();
+    
     'running: loop {
         for event in event_pump.poll_iter() {
             match event {
@@ -34,11 +37,15 @@ pub fn main() -> Result<(), String> {
                 _ => {}
             }
         }
+        
+        /*
+            This is where the game loop should happen.
+            Updating and rendering last we prevent any delay.
+        */
 
         canvas.clear();
         canvas.present();
         ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 30));
-        // The rest of the game loop goes here...
     }
 
     Ok(())
