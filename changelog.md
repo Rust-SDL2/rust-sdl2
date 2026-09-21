@@ -13,6 +13,8 @@ when upgrading from a version of rust-sdl2 to another.
 
 [PR #1506](https://github.com/Rust-SDL2/rust-sdl2/pull/1506) **BREAKING CHANGE** Update crates.io dependencies, update bundled SDL2 to 2.32.10, add whitelist to bindgen to only emit SDL related items, and specifically no platform (or compiler, etc) specific items. Implement the same set of useful derived traits on bitflags types.
 
+[PR #1508](https://github.com/Rust-SDL2/rust-sdl2/pull/1508) Add `Chunk::from_rwops` to bind `Mix_LoadWAV_RW`.
+
 ### v0.38.0
 
 [PR #1493](https://github.com/Rust-SDL2/rust-sdl2/pull/1493) Add `Rect::origin` and specifies origin location in `Rect::new`.
