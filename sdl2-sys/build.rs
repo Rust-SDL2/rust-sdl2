@@ -472,6 +472,11 @@ fn copy_library_file(src_path: &Path, target_path: &Path) {
     //    otherwise and fails.
     let deps_path = target_path.join("deps");
     for path in &[target_path, &deps_path] {
+        if *path == &deps_path && !deps_path.is_dir() {
+            // Cargo's newer build-dir layout since 1.100 no longer creates this
+            // directory (tests live elsewhere), so it is skipped when missing.
+            continue;
+        }
         let dst_path = path.join(src_path.file_name().expect("Path missing filename"));
 
         fs::copy(src_path, &dst_path).unwrap_or_else(|_| {
