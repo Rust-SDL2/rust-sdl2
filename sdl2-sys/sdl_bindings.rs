@@ -25,32 +25,52 @@ pub const SDL_LIL_ENDIAN: u32 = 1234;
 pub const SDL_BIG_ENDIAN: u32 = 4321;
 pub const SDL_BYTEORDER: u32 = 1234;
 pub const SDL_FLOATWORDORDER: u32 = 1234;
+#[doc = " Synchronization functions which can time out return this value if they time\n out."]
 pub const SDL_MUTEX_TIMEDOUT: u32 = 1;
+#[doc = "< Unknown stream type"]
 pub const SDL_RWOPS_UNKNOWN: u32 = 0;
+#[doc = "< Win32 file"]
 pub const SDL_RWOPS_WINFILE: u32 = 1;
+#[doc = "< Stdio file"]
 pub const SDL_RWOPS_STDFILE: u32 = 2;
+#[doc = "< Android asset"]
 pub const SDL_RWOPS_JNIFILE: u32 = 3;
+#[doc = "< Memory stream"]
 pub const SDL_RWOPS_MEMORY: u32 = 4;
+#[doc = "< Read-Only memory stream"]
 pub const SDL_RWOPS_MEMORY_RO: u32 = 5;
+#[doc = "< Seek from the beginning of data"]
 pub const RW_SEEK_SET: u32 = 0;
+#[doc = "< Seek relative to current read point"]
 pub const RW_SEEK_CUR: u32 = 1;
+#[doc = "< Seek relative to the end of data"]
 pub const RW_SEEK_END: u32 = 2;
 pub const SDL_AUDIO_MASK_BITSIZE: u32 = 255;
 pub const SDL_AUDIO_MASK_DATATYPE: u32 = 256;
 pub const SDL_AUDIO_MASK_ENDIAN: u32 = 4096;
 pub const SDL_AUDIO_MASK_SIGNED: u32 = 32768;
+#[doc = "< Unsigned 8-bit samples"]
 pub const AUDIO_U8: u32 = 8;
+#[doc = "< Signed 8-bit samples"]
 pub const AUDIO_S8: u32 = 32776;
+#[doc = "< Unsigned 16-bit samples"]
 pub const AUDIO_U16LSB: u32 = 16;
+#[doc = "< Signed 16-bit samples"]
 pub const AUDIO_S16LSB: u32 = 32784;
+#[doc = "< As above, but big-endian byte order"]
 pub const AUDIO_U16MSB: u32 = 4112;
+#[doc = "< As above, but big-endian byte order"]
 pub const AUDIO_S16MSB: u32 = 36880;
 pub const AUDIO_U16: u32 = 16;
 pub const AUDIO_S16: u32 = 32784;
+#[doc = "< 32-bit integer samples"]
 pub const AUDIO_S32LSB: u32 = 32800;
+#[doc = "< As above, but big-endian byte order"]
 pub const AUDIO_S32MSB: u32 = 36896;
 pub const AUDIO_S32: u32 = 32800;
+#[doc = "< 32-bit floating point samples"]
 pub const AUDIO_F32LSB: u32 = 33056;
+#[doc = "< As above, but big-endian byte order"]
 pub const AUDIO_F32MSB: u32 = 37152;
 pub const AUDIO_F32: u32 = 33056;
 pub const AUDIO_U16SYS: u32 = 16;
@@ -62,17 +82,26 @@ pub const SDL_AUDIO_ALLOW_FORMAT_CHANGE: u32 = 2;
 pub const SDL_AUDIO_ALLOW_CHANNELS_CHANGE: u32 = 4;
 pub const SDL_AUDIO_ALLOW_SAMPLES_CHANGE: u32 = 8;
 pub const SDL_AUDIO_ALLOW_ANY_CHANGE: u32 = 15;
+#[doc = " Upper limit of filters in SDL_AudioCVT\n\n The maximum number of SDL_AudioFilter functions in SDL_AudioCVT is\n currently limited to 9. The SDL_AudioCVT.filters array has 10 pointers, one\n of which is the terminating NULL pointer."]
 pub const SDL_AUDIOCVT_MAX_FILTERS: u32 = 9;
+#[doc = " Maximum volume allowed in calls to SDL_MixAudio and SDL_MixAudioFormat."]
 pub const SDL_MIX_MAXVOLUME: u32 = 128;
 pub const SDL_CACHELINE_SIZE: u32 = 128;
 pub const SDL_ALPHA_OPAQUE: u32 = 255;
 pub const SDL_ALPHA_TRANSPARENT: u32 = 0;
+#[doc = "< Just here for compatibility"]
 pub const SDL_SWSURFACE: u32 = 0;
+#[doc = "< Surface uses preallocated memory"]
 pub const SDL_PREALLOC: u32 = 1;
+#[doc = "< Surface is RLE encoded"]
 pub const SDL_RLEACCEL: u32 = 2;
+#[doc = "< Surface is referenced internally"]
 pub const SDL_DONTFREE: u32 = 4;
+#[doc = "< Surface uses aligned memory"]
 pub const SDL_SIMD_ALIGNED: u32 = 8;
+#[doc = " Used to indicate that you don't care what the window position is."]
 pub const SDL_WINDOWPOS_UNDEFINED_MASK: u32 = 536805376;
+#[doc = " Used to indicate that the window position should be centered."]
 pub const SDL_WINDOWPOS_CENTERED_MASK: u32 = 805240832;
 pub const SDL_BUTTON_LEFT: u32 = 1;
 pub const SDL_BUTTON_MIDDLE: u32 = 2;
@@ -80,6 +109,7 @@ pub const SDL_BUTTON_RIGHT: u32 = 3;
 pub const SDL_BUTTON_X1: u32 = 4;
 pub const SDL_BUTTON_X2: u32 = 5;
 pub const SDL_IPHONE_MAX_GFORCE: f64 = 5.0;
+#[doc = " The current version of the SDL_VirtualJoystickDesc structure"]
 pub const SDL_VIRTUAL_JOYSTICK_DESC_VERSION: u32 = 1;
 pub const SDL_JOYSTICK_AXIS_MAX: u32 = 32767;
 pub const SDL_JOYSTICK_AXIS_MIN: i32 = -32768;
@@ -92,283 +122,506 @@ pub const SDL_HAT_RIGHTUP: u32 = 3;
 pub const SDL_HAT_RIGHTDOWN: u32 = 6;
 pub const SDL_HAT_LEFTUP: u32 = 9;
 pub const SDL_HAT_LEFTDOWN: u32 = 12;
+#[doc = " A constant to represent standard gravity for accelerometer sensors.\n\n The accelerometer returns the current acceleration in SI meters per second\n squared. This measurement includes the force of gravity, so a device at\n rest will have an value of SDL_STANDARD_GRAVITY away from the center of the\n earth, which is a positive Y value."]
 pub const SDL_STANDARD_GRAVITY: f64 = 9.80665;
 pub const SDL_RELEASED: u32 = 0;
 pub const SDL_PRESSED: u32 = 1;
 pub const SDL_TEXTEDITINGEVENT_TEXT_SIZE: u32 = 32;
+#[doc = " The maximum bytes of text that can be supplied in an SDL_TextInputEvent."]
 pub const SDL_TEXTINPUTEVENT_TEXT_SIZE: u32 = 32;
 pub const SDL_QUERY: i32 = -1;
 pub const SDL_IGNORE: u32 = 0;
 pub const SDL_DISABLE: u32 = 0;
 pub const SDL_ENABLE: u32 = 1;
+#[doc = " Constant effect supported.\n\n Constant haptic effect.\n\n \\sa SDL_HapticCondition"]
 pub const SDL_HAPTIC_CONSTANT: u32 = 1;
+#[doc = " Sine wave effect supported.\n\n Periodic haptic effect that simulates sine waves.\n\n \\sa SDL_HapticPeriodic"]
 pub const SDL_HAPTIC_SINE: u32 = 2;
+#[doc = " Left/Right effect supported.\n\n Haptic effect for direct control over high/low frequency motors.\n\n \\sa SDL_HapticLeftRight"]
 pub const SDL_HAPTIC_LEFTRIGHT: u32 = 4;
+#[doc = " Triangle wave effect supported.\n\n Periodic haptic effect that simulates triangular waves.\n\n \\sa SDL_HapticPeriodic"]
 pub const SDL_HAPTIC_TRIANGLE: u32 = 8;
+#[doc = " Sawtoothup wave effect supported.\n\n Periodic haptic effect that simulates saw tooth up waves.\n\n \\sa SDL_HapticPeriodic"]
 pub const SDL_HAPTIC_SAWTOOTHUP: u32 = 16;
+#[doc = " Sawtoothdown wave effect supported.\n\n Periodic haptic effect that simulates saw tooth down waves.\n\n \\sa SDL_HapticPeriodic"]
 pub const SDL_HAPTIC_SAWTOOTHDOWN: u32 = 32;
+#[doc = " Ramp effect supported.\n\n Ramp haptic effect.\n\n \\sa SDL_HapticRamp"]
 pub const SDL_HAPTIC_RAMP: u32 = 64;
+#[doc = " Spring effect supported - uses axes position.\n\n Condition haptic effect that simulates a spring. Effect is based on the\n axes position.\n\n \\sa SDL_HapticCondition"]
 pub const SDL_HAPTIC_SPRING: u32 = 128;
+#[doc = " Damper effect supported - uses axes velocity.\n\n Condition haptic effect that simulates dampening. Effect is based on the\n axes velocity.\n\n \\sa SDL_HapticCondition"]
 pub const SDL_HAPTIC_DAMPER: u32 = 256;
+#[doc = " Inertia effect supported - uses axes acceleration.\n\n Condition haptic effect that simulates inertia. Effect is based on the axes\n acceleration.\n\n \\sa SDL_HapticCondition"]
 pub const SDL_HAPTIC_INERTIA: u32 = 512;
+#[doc = " Friction effect supported - uses axes movement.\n\n Condition haptic effect that simulates friction. Effect is based on the\n axes movement.\n\n \\sa SDL_HapticCondition"]
 pub const SDL_HAPTIC_FRICTION: u32 = 1024;
+#[doc = " Custom effect is supported.\n\n User defined custom haptic effect."]
 pub const SDL_HAPTIC_CUSTOM: u32 = 2048;
+#[doc = " Device can set global gain.\n\n Device supports setting the global gain.\n\n \\sa SDL_HapticSetGain"]
 pub const SDL_HAPTIC_GAIN: u32 = 4096;
+#[doc = " Device can set autocenter.\n\n Device supports setting autocenter.\n\n \\sa SDL_HapticSetAutocenter"]
 pub const SDL_HAPTIC_AUTOCENTER: u32 = 8192;
+#[doc = " Device can be queried for effect status.\n\n Device supports querying effect status.\n\n \\sa SDL_HapticGetEffectStatus"]
 pub const SDL_HAPTIC_STATUS: u32 = 16384;
+#[doc = " Device can be paused.\n\n Devices supports being paused.\n\n \\sa SDL_HapticPause\n \\sa SDL_HapticUnpause"]
 pub const SDL_HAPTIC_PAUSE: u32 = 32768;
+#[doc = " Uses polar coordinates for the direction.\n\n \\sa SDL_HapticDirection"]
 pub const SDL_HAPTIC_POLAR: u32 = 0;
+#[doc = " Uses cartesian coordinates for the direction.\n\n \\sa SDL_HapticDirection"]
 pub const SDL_HAPTIC_CARTESIAN: u32 = 1;
+#[doc = " Uses spherical coordinates for the direction.\n\n \\sa SDL_HapticDirection"]
 pub const SDL_HAPTIC_SPHERICAL: u32 = 2;
+#[doc = " Use this value to play an effect on the steering wheel axis.\n\n This provides better compatibility across platforms and devices as SDL will\n guess the correct axis.\n\n \\sa SDL_HapticDirection"]
 pub const SDL_HAPTIC_STEERING_AXIS: u32 = 3;
+#[doc = " Used to play a device an infinite number of times.\n\n \\sa SDL_HapticRunEffect"]
 pub const SDL_HAPTIC_INFINITY: u32 = 4294967295;
+#[doc = " A variable controlling whether the Android / iOS built-in accelerometer\n should be listed as a joystick device.\n\n This variable can be set to the following values:\n\n - \"0\": The accelerometer is not listed as a joystick\n - \"1\": The accelerometer is available as a 3 axis joystick (the default)."]
 pub const SDL_HINT_ACCELEROMETER_AS_JOYSTICK: &[u8; 30] = b"SDL_ACCELEROMETER_AS_JOYSTICK\0";
+#[doc = " Specify the behavior of Alt+Tab while the keyboard is grabbed.\n\n By default, SDL emulates Alt+Tab functionality while the keyboard is\n grabbed and your window is full-screen. This prevents the user from getting\n stuck in your application if you've enabled keyboard grab.\n\n The variable can be set to the following values:\n\n - \"0\": SDL will not handle Alt+Tab. Your application is responsible for\n   handling Alt+Tab while the keyboard is grabbed.\n - \"1\": SDL will minimize your window when Alt+Tab is pressed (default)"]
 pub const SDL_HINT_ALLOW_ALT_TAB_WHILE_GRABBED: &[u8; 32] = b"SDL_ALLOW_ALT_TAB_WHILE_GRABBED\0";
+#[doc = " If set to \"0\" then never set the top most bit on a SDL Window, even if the\n video mode expects it.\n\n This is a debugging aid for developers and not expected to be used by end\n users. The default is \"1\"\n\n This variable can be set to the following values:\n\n - \"0\": don't allow topmost\n - \"1\": allow topmost"]
 pub const SDL_HINT_ALLOW_TOPMOST: &[u8; 18] = b"SDL_ALLOW_TOPMOST\0";
+#[doc = " Android APK expansion main file version.\n\n Should be a string number like \"1\", \"2\" etc.\n\n Must be set together with\n SDL_HINT_ANDROID_APK_EXPANSION_PATCH_FILE_VERSION.\n\n If both hints were set then SDL_RWFromFile() will look into expansion files\n after a given relative path was not found in the internal storage and\n assets.\n\n By default this hint is not set and the APK expansion files are not\n searched."]
 pub const SDL_HINT_ANDROID_APK_EXPANSION_MAIN_FILE_VERSION: &[u8; 44] =
     b"SDL_ANDROID_APK_EXPANSION_MAIN_FILE_VERSION\0";
+#[doc = " Android APK expansion patch file version.\n\n Should be a string number like \"1\", \"2\" etc.\n\n Must be set together with SDL_HINT_ANDROID_APK_EXPANSION_MAIN_FILE_VERSION.\n\n If both hints were set then SDL_RWFromFile() will look into expansion files\n after a given relative path was not found in the internal storage and\n assets.\n\n By default this hint is not set and the APK expansion files are not\n searched."]
 pub const SDL_HINT_ANDROID_APK_EXPANSION_PATCH_FILE_VERSION: &[u8; 45] =
     b"SDL_ANDROID_APK_EXPANSION_PATCH_FILE_VERSION\0";
+#[doc = " A variable to control whether the event loop will block itself when the app\n is paused.\n\n The variable can be set to the following values:\n\n - \"0\": Non blocking.\n - \"1\": Blocking. (default)\n\n The value should be set before SDL is initialized."]
 pub const SDL_HINT_ANDROID_BLOCK_ON_PAUSE: &[u8; 27] = b"SDL_ANDROID_BLOCK_ON_PAUSE\0";
+#[doc = " A variable to control whether SDL will pause audio in background (Requires\n SDL_ANDROID_BLOCK_ON_PAUSE as \"Non blocking\")\n\n The variable can be set to the following values:\n\n - \"0\": Non paused.\n - \"1\": Paused. (default)\n\n The value should be set before SDL is initialized."]
 pub const SDL_HINT_ANDROID_BLOCK_ON_PAUSE_PAUSEAUDIO: &[u8; 38] =
     b"SDL_ANDROID_BLOCK_ON_PAUSE_PAUSEAUDIO\0";
+#[doc = " A variable to control whether we trap the Android back button to handle it\n manually.\n\n This is necessary for the right mouse button to work on some Android\n devices, or to be able to trap the back button for use in your code\n reliably. If set to true, the back button will show up as an SDL_KEYDOWN /\n SDL_KEYUP pair with a keycode of SDL_SCANCODE_AC_BACK.\n\n The variable can be set to the following values:\n\n - \"0\": Back button will be handled as usual for system. (default)\n - \"1\": Back button will be trapped, allowing you to handle the key press\n   manually. (This will also let right mouse click work on systems where the\n   right mouse button functions as back.)\n\n The value of this hint is used at runtime, so it can be changed at any\n time."]
 pub const SDL_HINT_ANDROID_TRAP_BACK_BUTTON: &[u8; 29] = b"SDL_ANDROID_TRAP_BACK_BUTTON\0";
+#[doc = " Specify an application name.\n\n This hint lets you specify the application name sent to the OS when\n required. For example, this will often appear in volume control applets for\n audio streams, and in lists of applications which are inhibiting the\n screensaver. You should use a string that describes your program (\"My Game\n 2: The Revenge\")\n\n Setting this to \"\" or leaving it unset will have SDL use a reasonable\n default: probably the application's name or \"SDL Application\" if SDL\n doesn't have any better information.\n\n Note that, for audio streams, this can be overridden with\n SDL_HINT_AUDIO_DEVICE_APP_NAME.\n\n On targets where this is not supported, this hint does nothing."]
 pub const SDL_HINT_APP_NAME: &[u8; 13] = b"SDL_APP_NAME\0";
+#[doc = " A variable controlling whether controllers used with the Apple TV generate\n UI events.\n\n When UI events are generated by controller input, the app will be\n backgrounded when the Apple TV remote's menu button is pressed, and when\n the pause or B buttons on gamepads are pressed.\n\n More information about properly making use of controllers for the Apple TV\n can be found here:\n https://developer.apple.com/tvos/human-interface-guidelines/remote-and-controllers/\n\n This variable can be set to the following values:\n\n - \"0\": Controller input does not generate UI events (the default).\n - \"1\": Controller input generates UI events."]
 pub const SDL_HINT_APPLE_TV_CONTROLLER_UI_EVENTS: &[u8; 34] =
     b"SDL_APPLE_TV_CONTROLLER_UI_EVENTS\0";
+#[doc = " A variable controlling whether the Apple TV remote's joystick axes will\n automatically match the rotation of the remote.\n\n This variable can be set to the following values:\n\n - \"0\": Remote orientation does not affect joystick axes (the default).\n - \"1\": Joystick axes are based on the orientation of the remote."]
 pub const SDL_HINT_APPLE_TV_REMOTE_ALLOW_ROTATION: &[u8; 35] =
     b"SDL_APPLE_TV_REMOTE_ALLOW_ROTATION\0";
+#[doc = " A variable controlling the audio category on iOS and Mac OS X\n\n This variable can be set to the following values:\n\n - \"ambient\": Use the AVAudioSessionCategoryAmbient audio category, will be\n   muted by the phone mute switch (default)\n - \"playback\": Use the AVAudioSessionCategoryPlayback category\n\n For more information, see Apple's documentation:\n https://developer.apple.com/library/content/documentation/Audio/Conceptual/AudioSessionProgrammingGuide/AudioSessionCategoriesandModes/AudioSessionCategoriesandModes.html"]
 pub const SDL_HINT_AUDIO_CATEGORY: &[u8; 19] = b"SDL_AUDIO_CATEGORY\0";
+#[doc = " Specify an application name for an audio device.\n\n Some audio backends (such as PulseAudio) allow you to describe your audio\n stream. Among other things, this description might show up in a system\n control panel that lets the user adjust the volume on specific audio\n streams instead of using one giant master volume slider.\n\n This hints lets you transmit that information to the OS. The contents of\n this hint are used while opening an audio device. You should use a string\n that describes your program (\"My Game 2: The Revenge\")\n\n Setting this to \"\" or leaving it unset will have SDL use a reasonable\n default: this will be the name set with SDL_HINT_APP_NAME, if that hint is\n set. Otherwise, it'll probably the application's name or \"SDL Application\"\n if SDL doesn't have any better information.\n\n On targets where this is not supported, this hint does nothing."]
 pub const SDL_HINT_AUDIO_DEVICE_APP_NAME: &[u8; 26] = b"SDL_AUDIO_DEVICE_APP_NAME\0";
+#[doc = " Specify an application name for an audio device.\n\n Some audio backends (such as PulseAudio) allow you to describe your audio\n stream. Among other things, this description might show up in a system\n control panel that lets the user adjust the volume on specific audio\n streams instead of using one giant master volume slider.\n\n This hints lets you transmit that information to the OS. The contents of\n this hint are used while opening an audio device. You should use a string\n that describes your what your program is playing (\"audio stream\" is\n probably sufficient in many cases, but this could be useful for something\n like \"team chat\" if you have a headset playing VoIP audio separately).\n\n Setting this to \"\" or leaving it unset will have SDL use a reasonable\n default: \"audio stream\" or something similar.\n\n On targets where this is not supported, this hint does nothing."]
 pub const SDL_HINT_AUDIO_DEVICE_STREAM_NAME: &[u8; 29] = b"SDL_AUDIO_DEVICE_STREAM_NAME\0";
+#[doc = " Specify an application role for an audio device.\n\n Some audio backends (such as Pipewire) allow you to describe the role of\n your audio stream. Among other things, this description might show up in a\n system control panel or software for displaying and manipulating media\n playback/capture graphs.\n\n This hints lets you transmit that information to the OS. The contents of\n this hint are used while opening an audio device. You should use a string\n that describes your what your program is playing (Game, Music, Movie,\n etc...).\n\n Setting this to \"\" or leaving it unset will have SDL use a reasonable\n default: \"Game\" or something similar.\n\n On targets where this is not supported, this hint does nothing."]
 pub const SDL_HINT_AUDIO_DEVICE_STREAM_ROLE: &[u8; 29] = b"SDL_AUDIO_DEVICE_STREAM_ROLE\0";
+#[doc = " A variable controlling speed/quality tradeoff of audio resampling.\n\n If available, SDL can use libsamplerate ( http://www.mega-nerd.com/SRC/ )\n to handle audio resampling. There are different resampling modes available\n that produce different levels of quality, using more CPU.\n\n If this hint isn't specified to a valid setting, or libsamplerate isn't\n available, SDL will use the default, internal resampling algorithm.\n\n As of SDL 2.26, SDL_ConvertAudio() respects this hint when libsamplerate is\n available.\n\n This hint is currently only checked at audio subsystem initialization.\n\n This variable can be set to the following values:\n\n - \"0\" or \"default\": Use SDL's internal resampling (Default when not set -\n   low quality, fast)\n - \"1\" or \"fast\": Use fast, slightly higher quality resampling, if available\n - \"2\" or \"medium\": Use medium quality resampling, if available\n - \"3\" or \"best\": Use high quality resampling, if available"]
 pub const SDL_HINT_AUDIO_RESAMPLING_MODE: &[u8; 26] = b"SDL_AUDIO_RESAMPLING_MODE\0";
+#[doc = " A variable controlling whether SDL updates joystick state when getting\n input events\n\n This variable can be set to the following values:\n\n - \"0\": You'll call SDL_JoystickUpdate() manually\n - \"1\": SDL will automatically call SDL_JoystickUpdate() (default)\n\n This hint can be toggled on and off at runtime."]
 pub const SDL_HINT_AUTO_UPDATE_JOYSTICKS: &[u8; 26] = b"SDL_AUTO_UPDATE_JOYSTICKS\0";
+#[doc = " A variable controlling whether SDL updates sensor state when getting input\n events\n\n This variable can be set to the following values:\n\n - \"0\": You'll call SDL_SensorUpdate() manually\n - \"1\": SDL will automatically call SDL_SensorUpdate() (default)\n\n This hint can be toggled on and off at runtime."]
 pub const SDL_HINT_AUTO_UPDATE_SENSORS: &[u8; 24] = b"SDL_AUTO_UPDATE_SENSORS\0";
+#[doc = " Prevent SDL from using version 4 of the bitmap header when saving BMPs.\n\n The bitmap header version 4 is required for proper alpha channel support\n and SDL will use it when required. Should this not be desired, this hint\n can force the use of the 40 byte header version which is supported\n everywhere.\n\n The variable can be set to the following values:\n\n - \"0\": Surfaces with a colorkey or an alpha channel are saved to a 32-bit\n   BMP file with an alpha mask. SDL will use the bitmap header version 4 and\n   set the alpha mask accordingly.\n - \"1\": Surfaces with a colorkey or an alpha channel are saved to a 32-bit\n   BMP file without an alpha mask. The alpha channel data will be in the\n   file, but applications are going to ignore it.\n\n The default value is \"0\"."]
 pub const SDL_HINT_BMP_SAVE_LEGACY_FORMAT: &[u8; 27] = b"SDL_BMP_SAVE_LEGACY_FORMAT\0";
+#[doc = " Override for SDL_GetDisplayUsableBounds()\n\n If set, this hint will override the expected results for\n SDL_GetDisplayUsableBounds() for display index 0. Generally you don't want\n to do this, but this allows an embedded system to request that some of the\n screen be reserved for other uses when paired with a well-behaved\n application.\n\n The contents of this hint must be 4 comma-separated integers, the first is\n the bounds x, then y, width and height, in that order."]
 pub const SDL_HINT_DISPLAY_USABLE_BOUNDS: &[u8; 26] = b"SDL_DISPLAY_USABLE_BOUNDS\0";
+#[doc = " Disable giving back control to the browser automatically when running with\n asyncify\n\n With -s ASYNCIFY, SDL2 calls emscripten_sleep during operations such as\n refreshing the screen or polling events.\n\n This hint only applies to the emscripten platform\n\n The variable can be set to the following values:\n\n - \"0\": Disable emscripten_sleep calls (if you give back browser control\n   manually or use asyncify for other purposes)\n - \"1\": Enable emscripten_sleep calls (the default)"]
 pub const SDL_HINT_EMSCRIPTEN_ASYNCIFY: &[u8; 24] = b"SDL_EMSCRIPTEN_ASYNCIFY\0";
+#[doc = " override the binding element for keyboard inputs for Emscripten builds\n\n This hint only applies to the emscripten platform.\n\n The variable can be one of:\n\n - \"#window\": the javascript window object (this is the default)\n - \"#document\": the javascript document object\n - \"#screen\": the javascript window.screen object\n - \"#canvas\": the WebGL canvas element\n\n Any other string without a leading # sign applies to the element on the\n page with that ID."]
 pub const SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT: &[u8; 32] = b"SDL_EMSCRIPTEN_KEYBOARD_ELEMENT\0";
+#[doc = " A variable that controls whether the on-screen keyboard should be shown\n when text input is active\n\n The variable can be set to the following values:\n\n - \"0\": Do not show the on-screen keyboard\n - \"1\": Show the on-screen keyboard\n\n The default value is \"1\". This hint must be set before text input is\n activated."]
 pub const SDL_HINT_ENABLE_SCREEN_KEYBOARD: &[u8; 27] = b"SDL_ENABLE_SCREEN_KEYBOARD\0";
+#[doc = " A variable controlling verbosity of the logging of SDL events pushed onto\n the internal queue.\n\n This variable can be set to the following values, from least to most\n verbose:\n\n - \"0\": Don't log any events (default)\n - \"1\": Log most events (other than the really spammy ones).\n - \"2\": Include mouse and finger motion events.\n - \"3\": Include SDL_SysWMEvent events.\n\n This is generally meant to be used to debug SDL itself, but can be useful\n for application developers that need better visibility into what is going\n on in the event queue. Logged events are sent through SDL_Log(), which\n means by default they appear on stdout on most platforms or maybe\n OutputDebugString() on Windows, and can be funneled by the app with\n SDL_LogSetOutputFunction(), etc.\n\n This hint can be toggled on and off at runtime, if you only need to log\n events for a small subset of program execution."]
 pub const SDL_HINT_EVENT_LOGGING: &[u8; 18] = b"SDL_EVENT_LOGGING\0";
+#[doc = " A variable controlling whether raising the window should be done more\n forcefully\n\n This variable can be set to the following values:\n\n - \"0\": No forcing (the default)\n - \"1\": Extra level of forcing\n\n At present, this is only an issue under MS Windows, which makes it nearly\n impossible to programmatically move a window to the foreground, for\n \"security\" reasons. See http://stackoverflow.com/a/34414846 for a\n discussion."]
 pub const SDL_HINT_FORCE_RAISEWINDOW: &[u8; 27] = b"SDL_HINT_FORCE_RAISEWINDOW\0";
+#[doc = " A variable controlling how 3D acceleration is used to accelerate the SDL\n screen surface.\n\n SDL can try to accelerate the SDL screen surface by using streaming\n textures with a 3D rendering engine. This variable controls whether and how\n this is done.\n\n This variable can be set to the following values:\n\n - \"0\": Disable 3D acceleration\n - \"1\": Enable 3D acceleration, using the default renderer.\n - \"X\": Enable 3D acceleration, using X where X is one of the valid\n   rendering drivers. (e.g. \"direct3d\", \"opengl\", etc.)\n\n By default SDL tries to make a best guess for each platform whether to use\n acceleration or not."]
 pub const SDL_HINT_FRAMEBUFFER_ACCELERATION: &[u8; 29] = b"SDL_FRAMEBUFFER_ACCELERATION\0";
+#[doc = " A variable that lets you manually hint extra gamecontroller db entries.\n\n The variable should be newline delimited rows of gamecontroller config\n data, see SDL_gamecontroller.h\n\n This hint must be set before calling SDL_Init(SDL_INIT_GAMECONTROLLER) You\n can update mappings after the system is initialized with\n SDL_GameControllerMappingForGUID() and SDL_GameControllerAddMapping()"]
 pub const SDL_HINT_GAMECONTROLLERCONFIG: &[u8; 25] = b"SDL_GAMECONTROLLERCONFIG\0";
+#[doc = " A variable that lets you provide a file with extra gamecontroller db\n entries.\n\n The file should contain lines of gamecontroller config data, see\n SDL_gamecontroller.h\n\n This hint must be set before calling SDL_Init(SDL_INIT_GAMECONTROLLER) You\n can update mappings after the system is initialized with\n SDL_GameControllerMappingForGUID() and SDL_GameControllerAddMapping()"]
 pub const SDL_HINT_GAMECONTROLLERCONFIG_FILE: &[u8; 30] = b"SDL_GAMECONTROLLERCONFIG_FILE\0";
+#[doc = " A variable that overrides the automatic controller type detection\n\n The variable should be comma separated entries, in the form: VID/PID=type\n\n The VID and PID should be hexadecimal with exactly 4 digits, e.g. 0x00fd\n\n The type should be one of: Xbox360 XboxOne PS3 PS4 PS5 SwitchPro\n\n This hint affects what driver is used, and must be set before calling\n SDL_Init(SDL_INIT_GAMECONTROLLER)"]
 pub const SDL_HINT_GAMECONTROLLERTYPE: &[u8; 23] = b"SDL_GAMECONTROLLERTYPE\0";
+#[doc = " A variable containing a list of devices to skip when scanning for game\n controllers.\n\n The format of the string is a comma separated list of USB VID/PID pairs in\n hexadecimal form, e.g.\n\n 0xAAAA/0xBBBB,0xCCCC/0xDDDD\n\n The variable can also take the form of @file, in which case the named file\n will be loaded and interpreted as the value of the variable."]
 pub const SDL_HINT_GAMECONTROLLER_IGNORE_DEVICES: &[u8; 34] =
     b"SDL_GAMECONTROLLER_IGNORE_DEVICES\0";
+#[doc = " If set, all devices will be skipped when scanning for game controllers\n except for the ones listed in this variable.\n\n The format of the string is a comma separated list of USB VID/PID pairs in\n hexadecimal form, e.g.\n\n 0xAAAA/0xBBBB,0xCCCC/0xDDDD\n\n The variable can also take the form of @file, in which case the named file\n will be loaded and interpreted as the value of the variable."]
 pub const SDL_HINT_GAMECONTROLLER_IGNORE_DEVICES_EXCEPT: &[u8; 41] =
     b"SDL_GAMECONTROLLER_IGNORE_DEVICES_EXCEPT\0";
+#[doc = " If set, game controller face buttons report their values according to their\n labels instead of their positional layout.\n\n For example, on Nintendo Switch controllers, normally you'd get:\n\n ```\n      (Y)\n  (X)     (B)\n      (A)\n ```\n\n but if this hint is set, you'll get:\n\n ```\n      (X)\n  (Y)     (A)\n      (B)\n ```\n\n The variable can be set to the following values:\n\n - \"0\": Report the face buttons by position, as though they were on an Xbox\n   controller.\n - \"1\": Report the face buttons by label instead of position\n\n The default value is \"1\". This hint may be set at any time."]
 pub const SDL_HINT_GAMECONTROLLER_USE_BUTTON_LABELS: &[u8; 37] =
     b"SDL_GAMECONTROLLER_USE_BUTTON_LABELS\0";
+#[doc = " A variable controlling whether grabbing input grabs the keyboard\n\n This variable can be set to the following values:\n\n - \"0\": Grab will affect only the mouse\n - \"1\": Grab will affect mouse and keyboard\n\n By default SDL will not grab the keyboard so system shortcuts still work."]
 pub const SDL_HINT_GRAB_KEYBOARD: &[u8; 18] = b"SDL_GRAB_KEYBOARD\0";
+#[doc = " A variable containing a list of devices to ignore in SDL_hid_enumerate()\n\n For example, to ignore the Shanwan DS3 controller and any Valve controller,\n you might have the string \"0x2563/0x0523,0x28de/0x0000\""]
 pub const SDL_HINT_HIDAPI_IGNORE_DEVICES: &[u8; 26] = b"SDL_HIDAPI_IGNORE_DEVICES\0";
+#[doc = " A variable controlling whether the idle timer is disabled on iOS.\n\n When an iOS app does not receive touches for some time, the screen is\n dimmed automatically. For games where the accelerometer is the only input\n this is problematic. This functionality can be disabled by setting this\n hint.\n\n As of SDL 2.0.4, SDL_EnableScreenSaver() and SDL_DisableScreenSaver()\n accomplish the same thing on iOS. They should be preferred over this hint.\n\n This variable can be set to the following values:\n\n - \"0\": Enable idle timer\n - \"1\": Disable idle timer"]
 pub const SDL_HINT_IDLE_TIMER_DISABLED: &[u8; 28] = b"SDL_IOS_IDLE_TIMER_DISABLED\0";
+#[doc = " A variable to control whether certain IMEs should handle text editing\n internally instead of sending SDL_TEXTEDITING events.\n\n The variable can be set to the following values:\n\n - \"0\": SDL_TEXTEDITING events are sent, and it is the application's\n   responsibility to render the text from these events and differentiate it\n   somehow from committed text. (default)\n - \"1\": If supported by the IME then SDL_TEXTEDITING events are not sent,\n   and text that is being composed will be rendered in its own UI."]
 pub const SDL_HINT_IME_INTERNAL_EDITING: &[u8; 25] = b"SDL_IME_INTERNAL_EDITING\0";
+#[doc = " A variable to control whether certain IMEs should show native UI components\n (such as the Candidate List) instead of suppressing them.\n\n The variable can be set to the following values:\n\n - \"0\": Native UI components are not display. (default)\n - \"1\": Native UI components are displayed."]
 pub const SDL_HINT_IME_SHOW_UI: &[u8; 16] = b"SDL_IME_SHOW_UI\0";
+#[doc = " A variable to control if extended IME text support is enabled.\n\n If enabled then SDL_TextEditingExtEvent will be issued if the text would be\n truncated otherwise. Additionally SDL_TextInputEvent will be dispatched\n multiple times so that it is not truncated.\n\n The variable can be set to the following values:\n\n - \"0\": Legacy behavior. Text can be truncated, no heap allocations.\n   (default)\n - \"1\": Modern behavior."]
 pub const SDL_HINT_IME_SUPPORT_EXTENDED_TEXT: &[u8; 30] = b"SDL_IME_SUPPORT_EXTENDED_TEXT\0";
+#[doc = " A variable controlling whether the home indicator bar on iPhone X should be\n hidden.\n\n This variable can be set to the following values:\n\n - \"0\": The indicator bar is not hidden (default for windowed applications)\n - \"1\": The indicator bar is hidden and is shown when the screen is touched\n   (useful for movie playback applications)\n - \"2\": The indicator bar is dim and the first swipe makes it visible and\n   the second swipe performs the \"home\" action (default for fullscreen\n   applications)"]
 pub const SDL_HINT_IOS_HIDE_HOME_INDICATOR: &[u8; 28] = b"SDL_IOS_HIDE_HOME_INDICATOR\0";
+#[doc = " A variable that lets you enable joystick (and gamecontroller) events even\n when your app is in the background.\n\n The variable can be set to the following values:\n\n - \"0\": Disable joystick & gamecontroller input events when the application\n   is in the background.\n - \"1\": Enable joystick & gamecontroller input events when the application\n   is in the background.\n\n The default value is \"0\". This hint may be set at any time."]
 pub const SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS: &[u8; 37] =
     b"SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS\0";
+#[doc = " A variable containing a list of arcade stick style controllers.\n\n The format of the string is a comma separated list of USB VID/PID pairs in\n hexadecimal form, e.g.\n\n 0xAAAA/0xBBBB,0xCCCC/0xDDDD\n\n The variable can also take the form of @file, in which case the named file\n will be loaded and interpreted as the value of the variable."]
 pub const SDL_HINT_JOYSTICK_ARCADESTICK_DEVICES: &[u8; 33] = b"SDL_JOYSTICK_ARCADESTICK_DEVICES\0";
+#[doc = " A variable containing a list of devices that are not arcade stick style\n controllers.\n\n This will override SDL_HINT_JOYSTICK_ARCADESTICK_DEVICES and the built in\n device list.\n\n The format of the string is a comma separated list of USB VID/PID pairs in\n hexadecimal form, e.g.\n\n 0xAAAA/0xBBBB,0xCCCC/0xDDDD\n\n The variable can also take the form of @file, in which case the named file\n will be loaded and interpreted as the value of the variable."]
 pub const SDL_HINT_JOYSTICK_ARCADESTICK_DEVICES_EXCLUDED: &[u8; 42] =
     b"SDL_JOYSTICK_ARCADESTICK_DEVICES_EXCLUDED\0";
+#[doc = " A variable containing a list of devices that should not be considerd\n joysticks.\n\n The format of the string is a comma separated list of USB VID/PID pairs in\n hexadecimal form, e.g.\n\n 0xAAAA/0xBBBB,0xCCCC/0xDDDD\n\n The variable can also take the form of @file, in which case the named file\n will be loaded and interpreted as the value of the variable."]
 pub const SDL_HINT_JOYSTICK_BLACKLIST_DEVICES: &[u8; 31] = b"SDL_JOYSTICK_BLACKLIST_DEVICES\0";
+#[doc = " A variable containing a list of devices that should be considered\n joysticks.\n\n This will override SDL_HINT_JOYSTICK_BLACKLIST_DEVICES and the built in\n device list.\n\n The format of the string is a comma separated list of USB VID/PID pairs in\n hexadecimal form, e.g.\n\n 0xAAAA/0xBBBB,0xCCCC/0xDDDD\n\n The variable can also take the form of @file, in which case the named file\n will be loaded and interpreted as the value of the variable."]
 pub const SDL_HINT_JOYSTICK_BLACKLIST_DEVICES_EXCLUDED: &[u8; 40] =
     b"SDL_JOYSTICK_BLACKLIST_DEVICES_EXCLUDED\0";
+#[doc = " A variable containing a list of flightstick style controllers.\n\n The format of the string is a comma separated list of USB VID/PID pairs in\n hexadecimal form, e.g.\n\n 0xAAAA/0xBBBB,0xCCCC/0xDDDD\n\n The variable can also take the form of @file, in which case the named file\n will be loaded and interpreted as the value of the variable."]
 pub const SDL_HINT_JOYSTICK_FLIGHTSTICK_DEVICES: &[u8; 33] = b"SDL_JOYSTICK_FLIGHTSTICK_DEVICES\0";
+#[doc = " A variable containing a list of devices that are not flightstick style\n controllers.\n\n This will override SDL_HINT_JOYSTICK_FLIGHTSTICK_DEVICES and the built in\n device list.\n\n The format of the string is a comma separated list of USB VID/PID pairs in\n hexadecimal form, e.g.\n\n 0xAAAA/0xBBBB,0xCCCC/0xDDDD\n\n The variable can also take the form of @file, in which case the named file\n will be loaded and interpreted as the value of the variable."]
 pub const SDL_HINT_JOYSTICK_FLIGHTSTICK_DEVICES_EXCLUDED: &[u8; 42] =
     b"SDL_JOYSTICK_FLIGHTSTICK_DEVICES_EXCLUDED\0";
+#[doc = " A variable containing a list of devices known to have a GameCube form\n factor.\n\n The format of the string is a comma separated list of USB VID/PID pairs in\n hexadecimal form, e.g.\n\n 0xAAAA/0xBBBB,0xCCCC/0xDDDD\n\n The variable can also take the form of @file, in which case the named file\n will be loaded and interpreted as the value of the variable."]
 pub const SDL_HINT_JOYSTICK_GAMECUBE_DEVICES: &[u8; 30] = b"SDL_JOYSTICK_GAMECUBE_DEVICES\0";
+#[doc = " A variable containing a list of devices known not to have a GameCube form\n factor.\n\n This will override SDL_HINT_JOYSTICK_GAMECUBE_DEVICES and the built in\n device list.\n\n The format of the string is a comma separated list of USB VID/PID pairs in\n hexadecimal form, e.g.\n\n 0xAAAA/0xBBBB,0xCCCC/0xDDDD\n\n The variable can also take the form of @file, in which case the named file\n will be loaded and interpreted as the value of the variable."]
 pub const SDL_HINT_JOYSTICK_GAMECUBE_DEVICES_EXCLUDED: &[u8; 39] =
     b"SDL_JOYSTICK_GAMECUBE_DEVICES_EXCLUDED\0";
+#[doc = " A variable controlling whether the HIDAPI joystick drivers should be used.\n\n This variable can be set to the following values:\n\n - \"0\": HIDAPI drivers are not used\n - \"1\": HIDAPI drivers are used (the default)\n\n This variable is the default for all drivers, but can be overridden by the\n hints for specific drivers below."]
 pub const SDL_HINT_JOYSTICK_HIDAPI: &[u8; 20] = b"SDL_JOYSTICK_HIDAPI\0";
+#[doc = " A variable controlling whether the HIDAPI driver for Nintendo GameCube\n controllers should be used.\n\n This variable can be set to the following values:\n\n - \"0\": HIDAPI driver is not used\n - \"1\": HIDAPI driver is used\n\n The default is the value of SDL_HINT_JOYSTICK_HIDAPI"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_GAMECUBE: &[u8; 29] = b"SDL_JOYSTICK_HIDAPI_GAMECUBE\0";
+#[doc = " A variable controlling whether \"low_frequency_rumble\" and\n \"high_frequency_rumble\" is used to implement the GameCube controller's 3\n rumble modes, Stop(0), Rumble(1), and StopHard(2) this is useful for\n applications that need full compatibility for things like ADSR envelopes.\n\n Stop is implemented by setting \"low_frequency_rumble\" to \"0\" and\n \"high_frequency_rumble\" \">0\" Rumble is both at any arbitrary value,\n StopHard is implemented by setting both \"low_frequency_rumble\" and\n \"high_frequency_rumble\" to \"0\"\n\n This variable can be set to the following values:\n\n - \"0\": Normal rumble behavior is behavior is used (default)\n - \"1\": Proper GameCube controller rumble behavior is used"]
 pub const SDL_HINT_JOYSTICK_GAMECUBE_RUMBLE_BRAKE: &[u8; 35] =
     b"SDL_JOYSTICK_GAMECUBE_RUMBLE_BRAKE\0";
+#[doc = " A variable controlling whether the HIDAPI driver for Nintendo Switch\n Joy-Cons should be used.\n\n This variable can be set to the following values:\n\n - \"0\": HIDAPI driver is not used\n - \"1\": HIDAPI driver is used\n\n The default is the value of SDL_HINT_JOYSTICK_HIDAPI"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_JOY_CONS: &[u8; 29] = b"SDL_JOYSTICK_HIDAPI_JOY_CONS\0";
+#[doc = " A variable controlling whether Nintendo Switch Joy-Con controllers will be\n combined into a single Pro-like controller when using the HIDAPI driver\n\n This variable can be set to the following values:\n\n - \"0\": Left and right Joy-Con controllers will not be combined and each\n   will be a mini-gamepad\n - \"1\": Left and right Joy-Con controllers will be combined into a single\n   controller (the default)"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_COMBINE_JOY_CONS: &[u8; 37] =
     b"SDL_JOYSTICK_HIDAPI_COMBINE_JOY_CONS\0";
+#[doc = " A variable controlling whether Nintendo Switch Joy-Con controllers will be\n in vertical mode when using the HIDAPI driver\n\n This variable can be set to the following values:\n\n - \"0\": Left and right Joy-Con controllers will not be in vertical mode (the\n   default)\n - \"1\": Left and right Joy-Con controllers will be in vertical mode\n\n This hint must be set before calling SDL_Init(SDL_INIT_GAMECONTROLLER)"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_VERTICAL_JOY_CONS: &[u8; 38] =
     b"SDL_JOYSTICK_HIDAPI_VERTICAL_JOY_CONS\0";
+#[doc = " A variable controlling whether the HIDAPI driver for Amazon Luna\n controllers connected via Bluetooth should be used.\n\n This variable can be set to the following values:\n\n - \"0\": HIDAPI driver is not used\n - \"1\": HIDAPI driver is used\n\n The default is the value of SDL_HINT_JOYSTICK_HIDAPI"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_LUNA: &[u8; 25] = b"SDL_JOYSTICK_HIDAPI_LUNA\0";
+#[doc = " A variable controlling whether the HIDAPI driver for Nintendo Online\n classic controllers should be used.\n\n This variable can be set to the following values:\n\n - \"0\": HIDAPI driver is not used\n - \"1\": HIDAPI driver is used\n\n The default is the value of SDL_HINT_JOYSTICK_HIDAPI"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_NINTENDO_CLASSIC: &[u8; 37] =
     b"SDL_JOYSTICK_HIDAPI_NINTENDO_CLASSIC\0";
+#[doc = " A variable controlling whether the HIDAPI driver for NVIDIA SHIELD\n controllers should be used.\n\n This variable can be set to the following values:\n\n - \"0\": HIDAPI driver is not used\n - \"1\": HIDAPI driver is used\n\n The default is the value of SDL_HINT_JOYSTICK_HIDAPI"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_SHIELD: &[u8; 27] = b"SDL_JOYSTICK_HIDAPI_SHIELD\0";
+#[doc = " A variable controlling whether the HIDAPI driver for PS3 controllers should\n be used.\n\n This variable can be set to the following values:\n\n - \"0\": HIDAPI driver is not used\n - \"1\": HIDAPI driver is used\n\n The default is the value of SDL_HINT_JOYSTICK_HIDAPI on macOS, and \"0\" on\n other platforms.\n\n It is not possible to use this driver on Windows, due to limitations in the\n default drivers installed. See https://github.com/ViGEm/DsHidMini for an\n alternative driver on Windows."]
 pub const SDL_HINT_JOYSTICK_HIDAPI_PS3: &[u8; 24] = b"SDL_JOYSTICK_HIDAPI_PS3\0";
+#[doc = " A variable controlling whether the HIDAPI driver for PS4 controllers should\n be used.\n\n This variable can be set to the following values:\n\n - \"0\": HIDAPI driver is not used\n - \"1\": HIDAPI driver is used\n\n The default is the value of SDL_HINT_JOYSTICK_HIDAPI"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_PS4: &[u8; 24] = b"SDL_JOYSTICK_HIDAPI_PS4\0";
+#[doc = " A variable controlling whether extended input reports should be used for\n PS4 controllers when using the HIDAPI driver.\n\n This variable can be set to the following values:\n\n - \"0\": extended reports are not enabled (the default)\n - \"1\": extended reports\n\n Extended input reports allow rumble on Bluetooth PS4 controllers, but break\n DirectInput handling for applications that don't use SDL.\n\n Once extended reports are enabled, they can not be disabled without power\n cycling the controller.\n\n For compatibility with applications written for versions of SDL prior to\n the introduction of PS5 controller support, this value will also control\n the state of extended reports on PS5 controllers when the\n SDL_HINT_JOYSTICK_HIDAPI_PS5_RUMBLE hint is not explicitly set."]
 pub const SDL_HINT_JOYSTICK_HIDAPI_PS4_RUMBLE: &[u8; 31] = b"SDL_JOYSTICK_HIDAPI_PS4_RUMBLE\0";
+#[doc = " A variable controlling whether the HIDAPI driver for PS5 controllers should\n be used.\n\n This variable can be set to the following values:\n\n - \"0\": HIDAPI driver is not used\n - \"1\": HIDAPI driver is used\n\n The default is the value of SDL_HINT_JOYSTICK_HIDAPI"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_PS5: &[u8; 24] = b"SDL_JOYSTICK_HIDAPI_PS5\0";
+#[doc = " A variable controlling whether the player LEDs should be lit to indicate\n which player is associated with a PS5 controller.\n\n This variable can be set to the following values:\n\n - \"0\": player LEDs are not enabled\n - \"1\": player LEDs are enabled (the default)"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_PS5_PLAYER_LED: &[u8; 35] =
     b"SDL_JOYSTICK_HIDAPI_PS5_PLAYER_LED\0";
+#[doc = " A variable controlling whether extended input reports should be used for\n PS5 controllers when using the HIDAPI driver.\n\n This variable can be set to the following values:\n\n - \"0\": extended reports are not enabled (the default)\n - \"1\": extended reports\n\n Extended input reports allow rumble on Bluetooth PS5 controllers, but break\n DirectInput handling for applications that don't use SDL.\n\n Once extended reports are enabled, they can not be disabled without power\n cycling the controller.\n\n For compatibility with applications written for versions of SDL prior to\n the introduction of PS5 controller support, this value defaults to the\n value of SDL_HINT_JOYSTICK_HIDAPI_PS4_RUMBLE."]
 pub const SDL_HINT_JOYSTICK_HIDAPI_PS5_RUMBLE: &[u8; 31] = b"SDL_JOYSTICK_HIDAPI_PS5_RUMBLE\0";
+#[doc = " A variable controlling whether the HIDAPI driver for Google Stadia\n controllers should be used.\n\n This variable can be set to the following values:\n\n - \"0\": HIDAPI driver is not used\n - \"1\": HIDAPI driver is used\n\n The default is the value of SDL_HINT_JOYSTICK_HIDAPI"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_STADIA: &[u8; 27] = b"SDL_JOYSTICK_HIDAPI_STADIA\0";
+#[doc = " A variable controlling whether the HIDAPI driver for Bluetooth Steam\n Controllers should be used.\n\n This variable can be set to the following values:\n\n - \"0\": HIDAPI driver is not used\n - \"1\": HIDAPI driver is used for Steam Controllers, which requires\n   Bluetooth access and may prompt the user for permission on iOS and\n   Android.\n\n The default is \"0\""]
 pub const SDL_HINT_JOYSTICK_HIDAPI_STEAM: &[u8; 26] = b"SDL_JOYSTICK_HIDAPI_STEAM\0";
+#[doc = " A variable controlling whether the HIDAPI driver for the Steam Deck builtin\n controller should be used.\n\n This variable can be set to the following values:\n\n - \"0\": HIDAPI driver is not used\n - \"1\": HIDAPI driver is used\n\n The default is the value of SDL_HINT_JOYSTICK_HIDAPI"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_STEAMDECK: &[u8; 30] = b"SDL_JOYSTICK_HIDAPI_STEAMDECK\0";
+#[doc = " A variable controlling whether the HIDAPI driver for Nintendo Switch\n controllers should be used.\n\n This variable can be set to the following values:\n\n - \"0\": HIDAPI driver is not used\n - \"1\": HIDAPI driver is used\n\n The default is the value of SDL_HINT_JOYSTICK_HIDAPI"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_SWITCH: &[u8; 27] = b"SDL_JOYSTICK_HIDAPI_SWITCH\0";
+#[doc = " A variable controlling whether the Home button LED should be turned on when\n a Nintendo Switch Pro controller is opened\n\n This variable can be set to the following values:\n\n - \"0\": home button LED is turned off\n - \"1\": home button LED is turned on\n\n By default the Home button LED state is not changed. This hint can also be\n set to a floating point value between 0.0 and 1.0 which controls the\n brightness of the Home button LED."]
 pub const SDL_HINT_JOYSTICK_HIDAPI_SWITCH_HOME_LED: &[u8; 36] =
     b"SDL_JOYSTICK_HIDAPI_SWITCH_HOME_LED\0";
+#[doc = " A variable controlling whether the Home button LED should be turned on when\n a Nintendo Switch Joy-Con controller is opened\n\n This variable can be set to the following values:\n\n - \"0\": home button LED is turned off\n - \"1\": home button LED is turned on\n\n By default the Home button LED state is not changed. This hint can also be\n set to a floating point value between 0.0 and 1.0 which controls the\n brightness of the Home button LED."]
 pub const SDL_HINT_JOYSTICK_HIDAPI_JOYCON_HOME_LED: &[u8; 36] =
     b"SDL_JOYSTICK_HIDAPI_JOYCON_HOME_LED\0";
+#[doc = " A variable controlling whether the player LEDs should be lit to indicate\n which player is associated with a Nintendo Switch controller.\n\n This variable can be set to the following values:\n\n - \"0\": player LEDs are not enabled\n - \"1\": player LEDs are enabled (the default)"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_SWITCH_PLAYER_LED: &[u8; 38] =
     b"SDL_JOYSTICK_HIDAPI_SWITCH_PLAYER_LED\0";
+#[doc = " A variable controlling whether the HIDAPI driver for Nintendo Wii and Wii U\n controllers should be used.\n\n This variable can be set to the following values:\n\n - \"0\": HIDAPI driver is not used\n - \"1\": HIDAPI driver is used\n\n This driver doesn't work with the dolphinbar, so the default is SDL_FALSE\n for now."]
 pub const SDL_HINT_JOYSTICK_HIDAPI_WII: &[u8; 24] = b"SDL_JOYSTICK_HIDAPI_WII\0";
+#[doc = " A variable controlling whether the player LEDs should be lit to indicate\n which player is associated with a Wii controller.\n\n This variable can be set to the following values:\n\n - \"0\": player LEDs are not enabled\n - \"1\": player LEDs are enabled (the default)"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_WII_PLAYER_LED: &[u8; 35] =
     b"SDL_JOYSTICK_HIDAPI_WII_PLAYER_LED\0";
+#[doc = " A variable controlling whether the HIDAPI driver for XBox controllers\n should be used.\n\n This variable can be set to the following values:\n\n - \"0\": HIDAPI driver is not used\n - \"1\": HIDAPI driver is used\n\n The default is \"0\" on Windows, otherwise the value of\n SDL_HINT_JOYSTICK_HIDAPI"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_XBOX: &[u8; 25] = b"SDL_JOYSTICK_HIDAPI_XBOX\0";
+#[doc = " A variable controlling whether the HIDAPI driver for XBox 360 controllers\n should be used.\n\n This variable can be set to the following values:\n\n - \"0\": HIDAPI driver is not used\n - \"1\": HIDAPI driver is used\n\n The default is the value of SDL_HINT_JOYSTICK_HIDAPI_XBOX"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_XBOX_360: &[u8; 29] = b"SDL_JOYSTICK_HIDAPI_XBOX_360\0";
+#[doc = " A variable controlling whether the player LEDs should be lit to indicate\n which player is associated with an Xbox 360 controller.\n\n This variable can be set to the following values:\n\n - \"0\": player LEDs are not enabled\n - \"1\": player LEDs are enabled (the default)"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_XBOX_360_PLAYER_LED: &[u8; 40] =
     b"SDL_JOYSTICK_HIDAPI_XBOX_360_PLAYER_LED\0";
+#[doc = " A variable controlling whether the HIDAPI driver for XBox 360 wireless\n controllers should be used.\n\n This variable can be set to the following values:\n\n - \"0\": HIDAPI driver is not used\n - \"1\": HIDAPI driver is used\n\n The default is the value of SDL_HINT_JOYSTICK_HIDAPI_XBOX_360"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_XBOX_360_WIRELESS: &[u8; 38] =
     b"SDL_JOYSTICK_HIDAPI_XBOX_360_WIRELESS\0";
+#[doc = " A variable controlling whether the HIDAPI driver for XBox One controllers\n should be used.\n\n This variable can be set to the following values:\n\n - \"0\": HIDAPI driver is not used\n - \"1\": HIDAPI driver is used\n\n The default is the value of SDL_HINT_JOYSTICK_HIDAPI_XBOX"]
 pub const SDL_HINT_JOYSTICK_HIDAPI_XBOX_ONE: &[u8; 29] = b"SDL_JOYSTICK_HIDAPI_XBOX_ONE\0";
+#[doc = " A variable controlling whether the Home button LED should be turned on when\n an Xbox One controller is opened\n\n This variable can be set to the following values:\n\n - \"0\": home button LED is turned off\n - \"1\": home button LED is turned on\n\n By default the Home button LED state is not changed. This hint can also be\n set to a floating point value between 0.0 and 1.0 which controls the\n brightness of the Home button LED. The default brightness is 0.4."]
 pub const SDL_HINT_JOYSTICK_HIDAPI_XBOX_ONE_HOME_LED: &[u8; 38] =
     b"SDL_JOYSTICK_HIDAPI_XBOX_ONE_HOME_LED\0";
+#[doc = " A variable controlling whether IOKit should be used for controller\n handling.\n\n This variable can be set to the following values:\n\n - \"0\": IOKit is not used\n - \"1\": IOKit is used (the default)"]
 pub const SDL_HINT_JOYSTICK_IOKIT: &[u8; 19] = b"SDL_JOYSTICK_IOKIT\0";
+#[doc = " A variable controlling whether GCController should be used for controller\n handling.\n\n This variable can be set to the following values:\n\n - \"0\": GCController is not used\n - \"1\": GCController is used (the default)"]
 pub const SDL_HINT_JOYSTICK_MFI: &[u8; 17] = b"SDL_JOYSTICK_MFI\0";
+#[doc = " A variable controlling whether the RAWINPUT joystick drivers should be used\n for better handling XInput-capable devices.\n\n This variable can be set to the following values:\n\n - \"0\": RAWINPUT drivers are not used\n - \"1\": RAWINPUT drivers are used (the default)"]
 pub const SDL_HINT_JOYSTICK_RAWINPUT: &[u8; 22] = b"SDL_JOYSTICK_RAWINPUT\0";
+#[doc = " A variable controlling whether the RAWINPUT driver should pull correlated\n data from XInput.\n\n This variable can be set to the following values:\n\n - \"0\": RAWINPUT driver will only use data from raw input APIs\n - \"1\": RAWINPUT driver will also pull data from XInput, providing better\n   trigger axes, guide button presses, and rumble support for Xbox\n   controllers\n\n The default is \"1\". This hint applies to any joysticks opened after setting\n the hint."]
 pub const SDL_HINT_JOYSTICK_RAWINPUT_CORRELATE_XINPUT: &[u8; 39] =
     b"SDL_JOYSTICK_RAWINPUT_CORRELATE_XINPUT\0";
+#[doc = " A variable controlling whether the ROG Chakram mice should show up as\n joysticks\n\n This variable can be set to the following values:\n\n - \"0\": ROG Chakram mice do not show up as joysticks (the default)\n - \"1\": ROG Chakram mice show up as joysticks"]
 pub const SDL_HINT_JOYSTICK_ROG_CHAKRAM: &[u8; 25] = b"SDL_JOYSTICK_ROG_CHAKRAM\0";
+#[doc = " A variable controlling whether a separate thread should be used for\n handling joystick detection and raw input messages on Windows\n\n This variable can be set to the following values:\n\n - \"0\": A separate thread is not used (the default)\n - \"1\": A separate thread is used for handling raw input messages"]
 pub const SDL_HINT_JOYSTICK_THREAD: &[u8; 20] = b"SDL_JOYSTICK_THREAD\0";
+#[doc = " A variable containing a list of throttle style controllers.\n\n The format of the string is a comma separated list of USB VID/PID pairs in\n hexadecimal form, e.g.\n\n 0xAAAA/0xBBBB,0xCCCC/0xDDDD\n\n The variable can also take the form of @file, in which case the named file\n will be loaded and interpreted as the value of the variable."]
 pub const SDL_HINT_JOYSTICK_THROTTLE_DEVICES: &[u8; 30] = b"SDL_JOYSTICK_THROTTLE_DEVICES\0";
+#[doc = " A variable containing a list of devices that are not throttle style\n controllers.\n\n This will override SDL_HINT_JOYSTICK_THROTTLE_DEVICES and the built in\n device list.\n\n The format of the string is a comma separated list of USB VID/PID pairs in\n hexadecimal form, e.g.\n\n 0xAAAA/0xBBBB,0xCCCC/0xDDDD\n\n The variable can also take the form of @file, in which case the named file\n will be loaded and interpreted as the value of the variable."]
 pub const SDL_HINT_JOYSTICK_THROTTLE_DEVICES_EXCLUDED: &[u8; 39] =
     b"SDL_JOYSTICK_THROTTLE_DEVICES_EXCLUDED\0";
+#[doc = " A variable controlling whether Windows.Gaming.Input should be used for\n controller handling.\n\n This variable can be set to the following values:\n\n - \"0\": WGI is not used\n - \"1\": WGI is used (the default)"]
 pub const SDL_HINT_JOYSTICK_WGI: &[u8; 17] = b"SDL_JOYSTICK_WGI\0";
+#[doc = " A variable containing a list of wheel style controllers.\n\n The format of the string is a comma separated list of USB VID/PID pairs in\n hexadecimal form, e.g.\n\n 0xAAAA/0xBBBB,0xCCCC/0xDDDD\n\n The variable can also take the form of @file, in which case the named file\n will be loaded and interpreted as the value of the variable."]
 pub const SDL_HINT_JOYSTICK_WHEEL_DEVICES: &[u8; 27] = b"SDL_JOYSTICK_WHEEL_DEVICES\0";
+#[doc = " A variable containing a list of devices that are not wheel style\n controllers.\n\n This will override SDL_HINT_JOYSTICK_WHEEL_DEVICES and the built in device\n list.\n\n The format of the string is a comma separated list of USB VID/PID pairs in\n hexadecimal form, e.g.\n\n 0xAAAA/0xBBBB,0xCCCC/0xDDDD\n\n The variable can also take the form of @file, in which case the named file\n will be loaded and interpreted as the value of the variable."]
 pub const SDL_HINT_JOYSTICK_WHEEL_DEVICES_EXCLUDED: &[u8; 36] =
     b"SDL_JOYSTICK_WHEEL_DEVICES_EXCLUDED\0";
+#[doc = " A variable containing a list of devices known to have all axes centered at\n zero.\n\n The format of the string is a comma separated list of USB VID/PID pairs in\n hexadecimal form, e.g.\n\n 0xAAAA/0xBBBB,0xCCCC/0xDDDD\n\n The variable can also take the form of @file, in which case the named file\n will be loaded and interpreted as the value of the variable."]
 pub const SDL_HINT_JOYSTICK_ZERO_CENTERED_DEVICES: &[u8; 35] =
     b"SDL_JOYSTICK_ZERO_CENTERED_DEVICES\0";
+#[doc = " Determines whether SDL enforces that DRM master is required in order to\n initialize the KMSDRM video backend.\n\n The DRM subsystem has a concept of a \"DRM master\" which is a DRM client\n that has the ability to set planes, set cursor, etc. When SDL is DRM\n master, it can draw to the screen using the SDL rendering APIs. Without DRM\n master, SDL is still able to process input and query attributes of attached\n displays, but it cannot change display state or draw to the screen\n directly.\n\n In some cases, it can be useful to have the KMSDRM backend even if it\n cannot be used for rendering. An app may want to use SDL for input\n processing while using another rendering API (such as an MMAL overlay on\n Raspberry Pi) or using its own code to render to DRM overlays that SDL\n doesn't support.\n\n This hint must be set before initializing the video subsystem.\n\n This variable can be set to the following values:\n\n - \"0\": SDL will allow usage of the KMSDRM backend without DRM master\n - \"1\": SDL Will require DRM master to use the KMSDRM backend (default)"]
 pub const SDL_HINT_KMSDRM_REQUIRE_DRM_MASTER: &[u8; 30] = b"SDL_KMSDRM_REQUIRE_DRM_MASTER\0";
+#[doc = " A comma separated list of devices to open as joysticks\n\n This variable is currently only used by the Linux joystick driver."]
 pub const SDL_HINT_JOYSTICK_DEVICE: &[u8; 20] = b"SDL_JOYSTICK_DEVICE\0";
+#[doc = " A variable containing a list of devices and their desired number of haptic\n (force feedback) enabled axis.\n\n The format of the string is a comma separated list of USB VID/PID pairs in\n hexadecimal form plus the number of desired axes, e.g.\n\n `0xAAAA/0xBBBB/1,0xCCCC/0xDDDD/3`\n\n This hint supports a \"wildcard\" device that will set the number of haptic\n axes on all initialized haptic devices which were not defined explicitly in\n this hint.\n\n `0xFFFF/0xFFFF/1`\n\n This hint should be set before a controller is opened. The number of haptic\n axes won't exceed the number of real axes found on the device."]
 pub const SDL_HINT_JOYSTICK_HAPTIC_AXES: &[u8; 25] = b"SDL_JOYSTICK_HAPTIC_AXES\0";
+#[doc = " A variable controlling whether joysticks on Linux will always treat 'hat'\n axis inputs (ABS_HAT0X - ABS_HAT3Y) as 8-way digital hats without checking\n whether they may be analog.\n\n This variable can be set to the following values:\n\n - \"0\": Only map hat axis inputs to digital hat outputs if the input axes\n   appear to actually be digital (the default)\n - \"1\": Always handle the input axes numbered ABS_HAT0X to ABS_HAT3Y as\n   digital hats"]
 pub const SDL_HINT_LINUX_DIGITAL_HATS: &[u8; 23] = b"SDL_LINUX_DIGITAL_HATS\0";
+#[doc = " A variable controlling whether digital hats on Linux will apply deadzones\n to their underlying input axes or use unfiltered values.\n\n This variable can be set to the following values:\n\n - \"0\": Return digital hat values based on unfiltered input axis values\n - \"1\": Return digital hat values with deadzones on the input axes taken\n   into account (the default)"]
 pub const SDL_HINT_LINUX_HAT_DEADZONES: &[u8; 24] = b"SDL_LINUX_HAT_DEADZONES\0";
+#[doc = " A variable controlling whether to use the classic /dev/input/js* joystick\n interface or the newer /dev/input/event* joystick interface on Linux\n\n This variable can be set to the following values:\n\n - \"0\": Use /dev/input/event*\n - \"1\": Use /dev/input/js*\n\n By default the /dev/input/event* interfaces are used"]
 pub const SDL_HINT_LINUX_JOYSTICK_CLASSIC: &[u8; 27] = b"SDL_LINUX_JOYSTICK_CLASSIC\0";
+#[doc = " A variable controlling whether joysticks on Linux adhere to their\n HID-defined deadzones or return unfiltered values.\n\n This variable can be set to the following values:\n\n - \"0\": Return unfiltered joystick axis values (the default)\n - \"1\": Return axis values with deadzones taken into account"]
 pub const SDL_HINT_LINUX_JOYSTICK_DEADZONES: &[u8; 29] = b"SDL_LINUX_JOYSTICK_DEADZONES\0";
+#[doc = " A variable controlling the default SDL log levels.\n\n This variable is a comma separated set of category=level tokens that define\n the default logging levels for SDL applications.\n\n The category can be a numeric category, one of \"app\", \"error\", \"assert\",\n \"system\", \"audio\", \"video\", \"render\", \"input\", \"test\", or `*` for any\n unspecified category.\n\n The level can be a numeric level, one of \"verbose\", \"debug\", \"info\",\n \"warn\", \"error\", \"critical\", or \"quiet\" to disable that category.\n\n You can omit the category if you want to set the logging level for all\n categories.\n\n If this hint isn't set, the default log levels are equivalent to:\n \"app=info,assert=warn,test=verbose,*=error\""]
 pub const SDL_HINT_LOGGING: &[u8; 12] = b"SDL_LOGGING\0";
+#[doc = " When set don't force the SDL app to become a foreground process\n\n This hint only applies to Mac OS X."]
 pub const SDL_HINT_MAC_BACKGROUND_APP: &[u8; 23] = b"SDL_MAC_BACKGROUND_APP\0";
+#[doc = " A variable that determines whether ctrl+click should generate a right-click\n event on Mac\n\n If present, holding ctrl while left clicking will generate a right click\n event when on Mac."]
 pub const SDL_HINT_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK: &[u8; 39] =
     b"SDL_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK\0";
+#[doc = " A variable controlling whether dispatching OpenGL context updates should\n block the dispatching thread until the main thread finishes processing\n\n This variable can be set to the following values:\n\n - \"0\": Dispatching OpenGL context updates will block the dispatching thread\n   until the main thread finishes processing (default).\n - \"1\": Dispatching OpenGL context updates will allow the dispatching thread\n   to continue execution.\n\n Generally you want the default, but if you have OpenGL code in a background\n thread on a Mac, and the main thread hangs because it's waiting for that\n background thread, but that background thread is also hanging because it's\n waiting for the main thread to do an update, this might fix your issue.\n\n This hint only applies to macOS.\n\n This hint is available since SDL 2.24.0."]
 pub const SDL_HINT_MAC_OPENGL_ASYNC_DISPATCH: &[u8; 30] = b"SDL_MAC_OPENGL_ASYNC_DISPATCH\0";
+#[doc = " A variable setting the double click radius, in pixels."]
 pub const SDL_HINT_MOUSE_DOUBLE_CLICK_RADIUS: &[u8; 30] = b"SDL_MOUSE_DOUBLE_CLICK_RADIUS\0";
+#[doc = " A variable setting the double click time, in milliseconds."]
 pub const SDL_HINT_MOUSE_DOUBLE_CLICK_TIME: &[u8; 28] = b"SDL_MOUSE_DOUBLE_CLICK_TIME\0";
+#[doc = " Allow mouse click events when clicking to focus an SDL window\n\n This variable can be set to the following values:\n\n - \"0\": Ignore mouse clicks that activate a window\n - \"1\": Generate events for mouse clicks that activate a window\n\n By default SDL will ignore mouse clicks that activate a window"]
 pub const SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH: &[u8; 29] = b"SDL_MOUSE_FOCUS_CLICKTHROUGH\0";
+#[doc = " A variable setting the speed scale for mouse motion, in floating point,\n when the mouse is not in relative mode"]
 pub const SDL_HINT_MOUSE_NORMAL_SPEED_SCALE: &[u8; 29] = b"SDL_MOUSE_NORMAL_SPEED_SCALE\0";
+#[doc = " A variable controlling whether relative mouse mode constrains the mouse to\n the center of the window\n\n This variable can be set to the following values:\n\n - \"0\": Relative mouse mode constrains the mouse to the window\n - \"1\": Relative mouse mode constrains the mouse to the center of the window\n\n Constraining to the center of the window works better for FPS games and\n when the application is running over RDP. Constraining to the whole window\n works better for 2D games and increases the chance that the mouse will be\n in the correct position when using high DPI mice.\n\n By default SDL will constrain the mouse to the center of the window"]
 pub const SDL_HINT_MOUSE_RELATIVE_MODE_CENTER: &[u8; 31] = b"SDL_MOUSE_RELATIVE_MODE_CENTER\0";
+#[doc = " A variable controlling whether relative mouse mode is implemented using\n mouse warping\n\n This variable can be set to the following values:\n\n - \"0\": Relative mouse mode uses raw input\n - \"1\": Relative mouse mode uses mouse warping\n\n By default SDL will use raw input for relative mouse mode"]
 pub const SDL_HINT_MOUSE_RELATIVE_MODE_WARP: &[u8; 29] = b"SDL_MOUSE_RELATIVE_MODE_WARP\0";
+#[doc = " A variable controlling whether relative mouse motion is affected by\n renderer scaling\n\n This variable can be set to the following values:\n\n - \"0\": Relative motion is unaffected by DPI or renderer's logical size\n - \"1\": Relative motion is scaled according to DPI scaling and logical size\n\n By default relative mouse deltas are affected by DPI and renderer scaling"]
 pub const SDL_HINT_MOUSE_RELATIVE_SCALING: &[u8; 27] = b"SDL_MOUSE_RELATIVE_SCALING\0";
+#[doc = " A variable setting the scale for mouse motion, in floating point, when the\n mouse is in relative mode"]
 pub const SDL_HINT_MOUSE_RELATIVE_SPEED_SCALE: &[u8; 31] = b"SDL_MOUSE_RELATIVE_SPEED_SCALE\0";
+#[doc = " A variable controlling whether the system mouse acceleration curve is used\n for relative mouse motion.\n\n This variable can be set to the following values:\n\n - \"0\": Relative mouse motion will be unscaled (the default)\n - \"1\": Relative mouse motion will be scaled using the system mouse\n   acceleration curve.\n\n If SDL_HINT_MOUSE_RELATIVE_SPEED_SCALE is set, that will override the\n system speed scale."]
 pub const SDL_HINT_MOUSE_RELATIVE_SYSTEM_SCALE: &[u8; 32] = b"SDL_MOUSE_RELATIVE_SYSTEM_SCALE\0";
+#[doc = " A variable controlling whether a motion event should be generated for mouse\n warping in relative mode.\n\n This variable can be set to the following values:\n\n - \"0\": Warping the mouse will not generate a motion event in relative mode\n - \"1\": Warping the mouse will generate a motion event in relative mode\n\n By default warping the mouse will not generate motion events in relative\n mode. This avoids the application having to filter out large relative\n motion due to warping."]
 pub const SDL_HINT_MOUSE_RELATIVE_WARP_MOTION: &[u8; 31] = b"SDL_MOUSE_RELATIVE_WARP_MOTION\0";
+#[doc = " A variable controlling whether the hardware cursor stays visible when\n relative mode is active.\n\n This variable can be set to the following values: \"0\" - The cursor will be\n hidden while relative mode is active (default) \"1\" - The cursor will remain\n visible while relative mode is active\n\n Note that for systems without raw hardware inputs, relative mode is\n implemented using warping, so the hardware cursor will visibly warp between\n frames if this is enabled on those systems."]
 pub const SDL_HINT_MOUSE_RELATIVE_CURSOR_VISIBLE: &[u8; 34] =
     b"SDL_MOUSE_RELATIVE_CURSOR_VISIBLE\0";
+#[doc = " A variable controlling whether mouse events should generate synthetic touch\n events\n\n This variable can be set to the following values:\n\n - \"0\": Mouse events will not generate touch events (default for desktop\n   platforms)\n - \"1\": Mouse events will generate touch events (default for mobile\n   platforms, such as Android and iOS)"]
 pub const SDL_HINT_MOUSE_TOUCH_EVENTS: &[u8; 23] = b"SDL_MOUSE_TOUCH_EVENTS\0";
+#[doc = " A variable controlling whether the mouse is captured while mouse buttons\n are pressed\n\n This variable can be set to the following values:\n\n - \"0\": The mouse is not captured while mouse buttons are pressed\n - \"1\": The mouse is captured while mouse buttons are pressed\n\n By default the mouse is captured while mouse buttons are pressed so if the\n mouse is dragged outside the window, the application continues to receive\n mouse events until the button is released."]
 pub const SDL_HINT_MOUSE_AUTO_CAPTURE: &[u8; 23] = b"SDL_MOUSE_AUTO_CAPTURE\0";
+#[doc = " Tell SDL not to catch the SIGINT or SIGTERM signals.\n\n This hint only applies to Unix-like platforms, and should set before any\n calls to SDL_Init()\n\n The variable can be set to the following values:\n\n - \"0\": SDL will install a SIGINT and SIGTERM handler, and when it catches a\n   signal, convert it into an SDL_QUIT event.\n - \"1\": SDL will not install a signal handler at all."]
 pub const SDL_HINT_NO_SIGNAL_HANDLERS: &[u8; 23] = b"SDL_NO_SIGNAL_HANDLERS\0";
+#[doc = " A variable controlling what driver to use for OpenGL ES contexts.\n\n On some platforms, currently Windows and X11, OpenGL drivers may support\n creating contexts with an OpenGL ES profile. By default SDL uses these\n profiles, when available, otherwise it attempts to load an OpenGL ES\n library, e.g. that provided by the ANGLE project. This variable controls\n whether SDL follows this default behaviour or will always load an OpenGL ES\n library.\n\n Circumstances where this is useful include - Testing an app with a\n particular OpenGL ES implementation, e.g ANGLE, or emulator, e.g. those\n from ARM, Imagination or Qualcomm. - Resolving OpenGL ES function addresses\n at link time by linking with the OpenGL ES library instead of querying them\n at run time with SDL_GL_GetProcAddress().\n\n Caution: for an application to work with the default behaviour across\n different OpenGL drivers it must query the OpenGL ES function addresses at\n run time using SDL_GL_GetProcAddress().\n\n This variable is ignored on most platforms because OpenGL ES is native or\n not supported.\n\n This variable can be set to the following values:\n\n - \"0\": Use ES profile of OpenGL, if available. (Default when not set.)\n - \"1\": Load OpenGL ES library using the default library names."]
 pub const SDL_HINT_OPENGL_ES_DRIVER: &[u8; 21] = b"SDL_OPENGL_ES_DRIVER\0";
+#[doc = " A variable controlling which orientations are allowed on iOS/Android.\n\n In some circumstances it is necessary to be able to explicitly control\n which UI orientations are allowed.\n\n This variable is a space delimited list of the following values:\n\n - \"LandscapeLeft\"\n - \"LandscapeRight\"\n - \"Portrait\"\n - \"PortraitUpsideDown\""]
 pub const SDL_HINT_ORIENTATIONS: &[u8; 21] = b"SDL_IOS_ORIENTATIONS\0";
+#[doc = " A variable controlling the use of a sentinel event when polling the event\n queue\n\n This variable can be set to the following values:\n\n - \"0\": Disable poll sentinels\n - \"1\": Enable poll sentinels\n\n When polling for events, SDL_PumpEvents is used to gather new events from\n devices. If a device keeps producing new events between calls to\n SDL_PumpEvents, a poll loop will become stuck until the new events stop.\n This is most noticeable when moving a high frequency mouse.\n\n By default, poll sentinels are enabled."]
 pub const SDL_HINT_POLL_SENTINEL: &[u8; 18] = b"SDL_POLL_SENTINEL\0";
+#[doc = " Override for SDL_GetPreferredLocales()\n\n If set, this will be favored over anything the OS might report for the\n user's preferred locales. Changing this hint at runtime will not generate a\n SDL_LOCALECHANGED event (but if you can change the hint, you can push your\n own event, if you want).\n\n The format of this hint is a comma-separated list of language and locale,\n combined with an underscore, as is a common format: \"en_GB\". Locale is\n optional: \"en\". So you might have a list like this: \"en_GB,jp,es_PT\""]
 pub const SDL_HINT_PREFERRED_LOCALES: &[u8; 22] = b"SDL_PREFERRED_LOCALES\0";
+#[doc = " A variable describing the content orientation on QtWayland-based platforms.\n\n On QtWayland platforms, windows are rotated client-side to allow for custom\n transitions. In order to correctly position overlays (e.g. volume bar) and\n gestures (e.g. events view, close/minimize gestures), the system needs to\n know in which orientation the application is currently drawing its\n contents.\n\n This does not cause the window to be rotated or resized, the application\n needs to take care of drawing the content in the right orientation (the\n framebuffer is always in portrait mode).\n\n This variable can be one of the following values:\n\n - \"primary\" (default)\n - \"portrait\"\n - \"landscape\"\n - \"inverted-portrait\"\n - \"inverted-landscape\"\n\n Since SDL 2.0.22 this variable accepts a comma-separated list of values\n above."]
 pub const SDL_HINT_QTWAYLAND_CONTENT_ORIENTATION: &[u8; 34] =
     b"SDL_QTWAYLAND_CONTENT_ORIENTATION\0";
+#[doc = " Flags to set on QtWayland windows to integrate with the native window\n manager.\n\n On QtWayland platforms, this hint controls the flags to set on the windows.\n For example, on Sailfish OS \"OverridesSystemGestures\" disables swipe\n gestures.\n\n This variable is a space-separated list of the following values (empty = no\n flags):\n\n - \"OverridesSystemGestures\"\n - \"StaysOnTop\"\n - \"BypassWindowManager\""]
 pub const SDL_HINT_QTWAYLAND_WINDOW_FLAGS: &[u8; 27] = b"SDL_QTWAYLAND_WINDOW_FLAGS\0";
+#[doc = " A variable controlling whether the 2D render API is compatible or\n efficient.\n\n This variable can be set to the following values:\n\n - \"0\": Don't use batching to make rendering more efficient.\n - \"1\": Use batching, but might cause problems if app makes its own direct\n   OpenGL calls.\n\n Up to SDL 2.0.9, the render API would draw immediately when requested. Now\n it batches up draw requests and sends them all to the GPU only when forced\n to (during SDL_RenderPresent, when changing render targets, by updating a\n texture that the batch needs, etc). This is significantly more efficient,\n but it can cause problems for apps that expect to render on top of the\n render API's output. As such, SDL will disable batching if a specific\n render backend is requested (since this might indicate that the app is\n planning to use the underlying graphics API directly). This hint can be\n used to explicitly request batching in this instance. It is a contract that\n you will either never use the underlying graphics API directly, or if you\n do, you will call SDL_RenderFlush() before you do so any current batch goes\n to the GPU before your work begins. Not following this contract will result\n in undefined behavior."]
 pub const SDL_HINT_RENDER_BATCHING: &[u8; 20] = b"SDL_RENDER_BATCHING\0";
+#[doc = " A variable controlling how the 2D render API renders lines\n\n This variable can be set to the following values:\n\n - \"0\": Use the default line drawing method (Bresenham's line algorithm as\n   of SDL 2.0.20)\n - \"1\": Use the driver point API using Bresenham's line algorithm (correct,\n   draws many points)\n - \"2\": Use the driver line API (occasionally misses line endpoints based on\n   hardware driver quirks, was the default before 2.0.20)\n - \"3\": Use the driver geometry API (correct, draws thicker diagonal lines)\n\n This variable should be set when the renderer is created."]
 pub const SDL_HINT_RENDER_LINE_METHOD: &[u8; 23] = b"SDL_RENDER_LINE_METHOD\0";
+#[doc = " A variable controlling whether to enable Direct3D 11+'s Debug Layer.\n\n This variable does not have any effect on the Direct3D 9 based renderer.\n\n This variable can be set to the following values:\n\n - \"0\": Disable Debug Layer use\n - \"1\": Enable Debug Layer use\n\n By default, SDL does not use Direct3D Debug Layer."]
 pub const SDL_HINT_RENDER_DIRECT3D11_DEBUG: &[u8; 28] = b"SDL_RENDER_DIRECT3D11_DEBUG\0";
+#[doc = " A variable controlling whether the Direct3D device is initialized for\n thread-safe operations.\n\n This variable can be set to the following values:\n\n - \"0\": Thread-safety is not enabled (faster)\n - \"1\": Thread-safety is enabled\n\n By default the Direct3D device is created with thread-safety disabled."]
 pub const SDL_HINT_RENDER_DIRECT3D_THREADSAFE: &[u8; 31] = b"SDL_RENDER_DIRECT3D_THREADSAFE\0";
+#[doc = " A variable specifying which render driver to use.\n\n If the application doesn't pick a specific renderer to use, this variable\n specifies the name of the preferred renderer. If the preferred renderer\n can't be initialized, the normal default renderer is used.\n\n This variable is case insensitive and can be set to the following values:\n\n - \"direct3d\"\n - \"direct3d11\"\n - \"direct3d12\"\n - \"opengl\"\n - \"opengles2\"\n - \"opengles\"\n - \"metal\"\n - \"software\"\n\n The default varies by platform, but it's the first one in the list that is\n available on the current platform."]
 pub const SDL_HINT_RENDER_DRIVER: &[u8; 18] = b"SDL_RENDER_DRIVER\0";
+#[doc = " A variable controlling the scaling policy for SDL_RenderSetLogicalSize.\n\n This variable can be set to the following values:\n\n \"0\" or \"letterbox\" - Uses letterbox/sidebars to fit the entire rendering on\n screen \"1\" or \"overscan\" - Will zoom the rendering so it fills the entire\n screen, allowing edges to be drawn offscreen\n\n By default letterbox is used"]
 pub const SDL_HINT_RENDER_LOGICAL_SIZE_MODE: &[u8; 29] = b"SDL_RENDER_LOGICAL_SIZE_MODE\0";
+#[doc = " A variable controlling whether the OpenGL render driver uses shaders if\n they are available.\n\n This variable can be set to the following values:\n\n - \"0\": Disable shaders\n - \"1\": Enable shaders\n\n By default shaders are used if OpenGL supports them."]
 pub const SDL_HINT_RENDER_OPENGL_SHADERS: &[u8; 26] = b"SDL_RENDER_OPENGL_SHADERS\0";
+#[doc = " A variable controlling the scaling quality\n\n This variable can be set to the following values:\n\n - \"0\" or \"nearest\": Nearest pixel sampling\n - \"1\" or \"linear\": Linear filtering (supported by OpenGL and Direct3D)\n - \"2\" or \"best\": Currently this is the same as \"linear\"\n\n By default nearest pixel sampling is used"]
 pub const SDL_HINT_RENDER_SCALE_QUALITY: &[u8; 25] = b"SDL_RENDER_SCALE_QUALITY\0";
+#[doc = " A variable controlling whether updates to the SDL screen surface should be\n synchronized with the vertical refresh, to avoid tearing.\n\n This variable can be set to the following values:\n\n - \"0\": Disable vsync\n - \"1\": Enable vsync\n\n By default SDL does not sync screen surface updates with vertical refresh."]
 pub const SDL_HINT_RENDER_VSYNC: &[u8; 17] = b"SDL_RENDER_VSYNC\0";
+#[doc = " A variable controlling whether the Metal render driver select low power\n device over default one\n\n This variable can be set to the following values:\n\n - \"0\": Use the prefered OS device\n - \"1\": Select a low power one\n\n By default the prefered OS device is used."]
 pub const SDL_HINT_RENDER_METAL_PREFER_LOW_POWER_DEVICE: &[u8; 41] =
     b"SDL_RENDER_METAL_PREFER_LOW_POWER_DEVICE\0";
+#[doc = " A variable containing a list of ROG gamepad capable mice.\n\n The format of the string is a comma separated list of USB VID/PID pairs in\n hexadecimal form, e.g.\n\n 0xAAAA/0xBBBB,0xCCCC/0xDDDD\n\n The variable can also take the form of @file, in which case the named file\n will be loaded and interpreted as the value of the variable."]
 pub const SDL_HINT_ROG_GAMEPAD_MICE: &[u8; 21] = b"SDL_ROG_GAMEPAD_MICE\0";
+#[doc = " A variable containing a list of devices that are not ROG gamepad capable\n mice.\n\n This will override SDL_HINT_ROG_GAMEPAD_MICE and the built in device list.\n\n The format of the string is a comma separated list of USB VID/PID pairs in\n hexadecimal form, e.g.\n\n 0xAAAA/0xBBBB,0xCCCC/0xDDDD\n\n The variable can also take the form of @file, in which case the named file\n will be loaded and interpreted as the value of the variable."]
 pub const SDL_HINT_ROG_GAMEPAD_MICE_EXCLUDED: &[u8; 30] = b"SDL_ROG_GAMEPAD_MICE_EXCLUDED\0";
+#[doc = " A variable controlling if VSYNC is automatically disable if doesn't reach\n the enough FPS\n\n This variable can be set to the following values:\n\n - \"0\": It will be using VSYNC as defined in the main flag. Default\n - \"1\": If VSYNC was previously enabled, then it will disable VSYNC if\n   doesn't reach enough speed\n\n By default SDL does not enable the automatic VSYNC"]
 pub const SDL_HINT_PS2_DYNAMIC_VSYNC: &[u8; 22] = b"SDL_PS2_DYNAMIC_VSYNC\0";
+#[doc = " A variable to control whether the return key on the soft keyboard should\n hide the soft keyboard on Android and iOS.\n\n The variable can be set to the following values:\n\n - \"0\": The return key will be handled as a key event. This is the behaviour\n   of SDL <= 2.0.3. (default)\n - \"1\": The return key will hide the keyboard.\n\n The value of this hint is used at runtime, so it can be changed at any\n time."]
 pub const SDL_HINT_RETURN_KEY_HIDES_IME: &[u8; 25] = b"SDL_RETURN_KEY_HIDES_IME\0";
+#[doc = " Tell SDL which Dispmanx layer to use on a Raspberry PI\n\n Also known as Z-order. The variable can take a negative or positive value.\n The default is 10000."]
 pub const SDL_HINT_RPI_VIDEO_LAYER: &[u8; 20] = b"SDL_RPI_VIDEO_LAYER\0";
+#[doc = " Specify an \"activity name\" for screensaver inhibition.\n\n Some platforms, notably Linux desktops, list the applications which are\n inhibiting the screensaver or other power-saving features.\n\n This hint lets you specify the \"activity name\" sent to the OS when\n SDL_DisableScreenSaver() is used (or the screensaver is automatically\n disabled). The contents of this hint are used when the screensaver is\n disabled. You should use a string that describes what your program is doing\n (and, therefore, why the screensaver is disabled). For example, \"Playing a\n game\" or \"Watching a video\".\n\n Setting this to \"\" or leaving it unset will have SDL use a reasonable\n default: \"Playing a game\" or something similar.\n\n On targets where this is not supported, this hint does nothing."]
 pub const SDL_HINT_SCREENSAVER_INHIBIT_ACTIVITY_NAME: &[u8; 38] =
     b"SDL_SCREENSAVER_INHIBIT_ACTIVITY_NAME\0";
+#[doc = " Specifies whether SDL_THREAD_PRIORITY_TIME_CRITICAL should be treated as\n realtime.\n\n On some platforms, like Linux, a realtime priority thread may be subject to\n restrictions that require special handling by the application. This hint\n exists to let SDL know that the app is prepared to handle said\n restrictions.\n\n On Linux, SDL will apply the following configuration to any thread that\n becomes realtime:\n\n - The SCHED_RESET_ON_FORK bit will be set on the scheduling policy.\n - An RLIMIT_RTTIME budget will be configured to the rtkit specified limit.\n - Exceeding this limit will result in the kernel sending SIGKILL to the\n   app.\n\n Refer to the man pages for more information.\n\n This variable can be set to the following values:\n\n - \"0\": default platform specific behaviour\n - \"1\": Force SDL_THREAD_PRIORITY_TIME_CRITICAL to a realtime scheduling\n   policy"]
 pub const SDL_HINT_THREAD_FORCE_REALTIME_TIME_CRITICAL: &[u8; 40] =
     b"SDL_THREAD_FORCE_REALTIME_TIME_CRITICAL\0";
+#[doc = " A string specifying additional information to use with\n SDL_SetThreadPriority.\n\n By default SDL_SetThreadPriority will make appropriate system changes in\n order to apply a thread priority. For example on systems using pthreads the\n scheduler policy is changed automatically to a policy that works well with\n a given priority. Code which has specific requirements can override SDL's\n default behavior with this hint.\n\n pthread hint values are \"current\", \"other\", \"fifo\" and \"rr\". Currently no\n other platform hint values are defined but may be in the future."]
 pub const SDL_HINT_THREAD_PRIORITY_POLICY: &[u8; 27] = b"SDL_THREAD_PRIORITY_POLICY\0";
+#[doc = " A string specifying SDL's threads stack size in bytes or \"0\" for the\n backend's default size\n\n Use this hint in case you need to set SDL's threads stack size to other\n than the default. This is specially useful if you build SDL against a non\n glibc libc library (such as musl) which provides a relatively small default\n thread stack size (a few kilobytes versus the default 8MB glibc uses).\n Support for this hint is currently available only in the pthread, Windows,\n and PSP backend.\n\n Instead of this hint, in 2.0.9 and later, you can use\n SDL_CreateThreadWithStackSize(). This hint only works with the classic\n SDL_CreateThread()."]
 pub const SDL_HINT_THREAD_STACK_SIZE: &[u8; 22] = b"SDL_THREAD_STACK_SIZE\0";
+#[doc = " A variable that controls the timer resolution, in milliseconds.\n\n The higher resolution the timer, the more frequently the CPU services timer\n interrupts, and the more precise delays are, but this takes up power and\n CPU time. This hint is only used on Windows.\n\n See this blog post for more information:\n http://randomascii.wordpress.com/2013/07/08/windows-timer-resolution-megawatts-wasted/\n\n If this variable is set to \"0\", the system timer resolution is not set.\n\n The default value is \"1\". This hint may be set at any time."]
 pub const SDL_HINT_TIMER_RESOLUTION: &[u8; 21] = b"SDL_TIMER_RESOLUTION\0";
+#[doc = " A variable controlling whether touch events should generate synthetic mouse\n events\n\n This variable can be set to the following values:\n\n - \"0\": Touch events will not generate mouse events\n - \"1\": Touch events will generate mouse events\n\n By default SDL will generate mouse events for touch events"]
 pub const SDL_HINT_TOUCH_MOUSE_EVENTS: &[u8; 23] = b"SDL_TOUCH_MOUSE_EVENTS\0";
+#[doc = " A variable controlling which touchpad should generate synthetic mouse\n events\n\n This variable can be set to the following values:\n\n - \"0\": Only front touchpad should generate mouse events. Default\n - \"1\": Only back touchpad should generate mouse events.\n - \"2\": Both touchpads should generate mouse events.\n\n By default SDL will generate mouse events for all touch devices"]
 pub const SDL_HINT_VITA_TOUCH_MOUSE_DEVICE: &[u8; 33] = b"SDL_HINT_VITA_TOUCH_MOUSE_DEVICE\0";
+#[doc = " A variable controlling whether the Android / tvOS remotes should be listed\n as joystick devices, instead of sending keyboard events.\n\n This variable can be set to the following values:\n\n - \"0\": Remotes send enter/escape/arrow key events\n - \"1\": Remotes are available as 2 axis, 2 button joysticks (the default)."]
 pub const SDL_HINT_TV_REMOTE_AS_JOYSTICK: &[u8; 26] = b"SDL_TV_REMOTE_AS_JOYSTICK\0";
+#[doc = " A variable controlling whether the screensaver is enabled.\n\n This variable can be set to the following values:\n\n - \"0\": Disable screensaver\n - \"1\": Enable screensaver\n\n By default SDL will disable the screensaver."]
 pub const SDL_HINT_VIDEO_ALLOW_SCREENSAVER: &[u8; 28] = b"SDL_VIDEO_ALLOW_SCREENSAVER\0";
+#[doc = " Tell the video driver that we only want a double buffer.\n\n By default, most lowlevel 2D APIs will use a triple buffer scheme that\n wastes no CPU time on waiting for vsync after issuing a flip, but\n introduces a frame of latency. On the other hand, using a double buffer\n scheme instead is recommended for cases where low latency is an important\n factor because we save a whole frame of latency. We do so by waiting for\n vsync immediately after issuing a flip, usually just after eglSwapBuffers\n call in the backend's *_SwapWindow function.\n\n Since it's driver-specific, it's only supported where possible and\n implemented. Currently supported the following drivers:\n\n - Wayland (wayland)\n - KMSDRM (kmsdrm)\n - Raspberry Pi (raspberrypi)"]
 pub const SDL_HINT_VIDEO_DOUBLE_BUFFER: &[u8; 24] = b"SDL_VIDEO_DOUBLE_BUFFER\0";
+#[doc = " A variable controlling whether the EGL window is allowed to be composited\n as transparent, rather than opaque.\n\n Most window systems will always render windows opaque, even if the surface\n format has an alpha channel. This is not always true, however, so by\n default SDL will try to enforce opaque composition. To override this\n behavior, you can set this hint to \"1\"."]
 pub const SDL_HINT_VIDEO_EGL_ALLOW_TRANSPARENCY: &[u8; 33] = b"SDL_VIDEO_EGL_ALLOW_TRANSPARENCY\0";
+#[doc = " A variable controlling whether the graphics context is externally managed.\n\n This variable can be set to the following values:\n\n - \"0\": SDL will manage graphics contexts that are attached to windows.\n - \"1\": Disable graphics context management on windows.\n\n By default SDL will manage OpenGL contexts in certain situations. For\n example, on Android the context will be automatically saved and restored\n when pausing the application. Additionally, some platforms will assume\n usage of OpenGL if Vulkan isn't used. Setting this to \"1\" will prevent this\n behavior, which is desireable when the application manages the graphics\n context, such as an externally managed OpenGL context or attaching a Vulkan\n surface to the window."]
 pub const SDL_HINT_VIDEO_EXTERNAL_CONTEXT: &[u8; 27] = b"SDL_VIDEO_EXTERNAL_CONTEXT\0";
+#[doc = " If set to 1, then do not allow high-DPI windows.\n\n (\"Retina\" on Mac and iOS)"]
 pub const SDL_HINT_VIDEO_HIGHDPI_DISABLED: &[u8; 27] = b"SDL_VIDEO_HIGHDPI_DISABLED\0";
+#[doc = " A variable that dictates policy for fullscreen Spaces on Mac OS X.\n\n This hint only applies to Mac OS X.\n\n The variable can be set to the following values:\n\n - \"0\": Disable Spaces support (FULLSCREEN_DESKTOP won't use them and\n   SDL_WINDOW_RESIZABLE windows won't offer the \"fullscreen\" button on their\n   titlebars).\n - \"1\": Enable Spaces support (FULLSCREEN_DESKTOP will use them and\n   SDL_WINDOW_RESIZABLE windows will offer the \"fullscreen\" button on their\n   titlebars).\n\n The default value is \"1\". This hint must be set before any windows are\n created."]
 pub const SDL_HINT_VIDEO_MAC_FULLSCREEN_SPACES: &[u8; 32] = b"SDL_VIDEO_MAC_FULLSCREEN_SPACES\0";
+#[doc = " Minimize your SDL_Window if it loses key focus when in fullscreen mode.\n\n Defaults to false."]
 pub const SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS: &[u8; 33] = b"SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS\0";
+#[doc = " A variable controlling whether the libdecor Wayland backend is allowed to\n be used.\n\n This variable can be set to the following values:\n\n - \"0\": libdecor use is disabled.\n - \"1\": libdecor use is enabled (default).\n\n libdecor is used over xdg-shell when xdg-decoration protocol is\n unavailable."]
 pub const SDL_HINT_VIDEO_WAYLAND_ALLOW_LIBDECOR: &[u8; 33] = b"SDL_VIDEO_WAYLAND_ALLOW_LIBDECOR\0";
+#[doc = " A variable controlling whether the libdecor Wayland backend is preferred\n over native decorations.\n\n When this hint is set, libdecor will be used to provide window decorations,\n even if xdg-decoration is available. (Note that, by default, libdecor will\n use xdg-decoration itself if available).\n\n This variable can be set to the following values:\n\n - \"0\": libdecor is enabled only if server-side decorations are unavailable.\n - \"1\": libdecor is always enabled if available.\n\n libdecor is used over xdg-shell when xdg-decoration protocol is\n unavailable."]
 pub const SDL_HINT_VIDEO_WAYLAND_PREFER_LIBDECOR: &[u8; 34] =
     b"SDL_VIDEO_WAYLAND_PREFER_LIBDECOR\0";
+#[doc = " A variable controlling whether video mode emulation is enabled under\n Wayland.\n\n When this hint is set, a standard set of emulated CVT video modes will be\n exposed for use by the application. If it is disabled, the only modes\n exposed will be the logical desktop size and, in the case of a scaled\n desktop, the native display resolution.\n\n This variable can be set to the following values:\n\n - \"0\": Video mode emulation is disabled.\n - \"1\": Video mode emulation is enabled.\n\n By default video mode emulation is enabled."]
 pub const SDL_HINT_VIDEO_WAYLAND_MODE_EMULATION: &[u8; 33] = b"SDL_VIDEO_WAYLAND_MODE_EMULATION\0";
+#[doc = " Enable or disable mouse pointer warp emulation, needed by some older games.\n\n When this hint is set, any SDL will emulate mouse warps using relative\n mouse mode. This is required for some older games (such as Source engine\n games), which warp the mouse to the centre of the screen rather than using\n relative mouse motion. Note that relative mouse mode may have different\n mouse acceleration behaviour than pointer warps.\n\n This variable can be set to the following values:\n\n - \"0\": All mouse warps fail, as mouse warping is not available under\n   wayland.\n - \"1\": Some mouse warps will be emulated by forcing relative mouse mode.\n\n If not set, this is automatically enabled unless an application uses\n relative mouse mode directly."]
 pub const SDL_HINT_VIDEO_WAYLAND_EMULATE_MOUSE_WARP: &[u8; 37] =
     b"SDL_VIDEO_WAYLAND_EMULATE_MOUSE_WARP\0";
+#[doc = " A variable that is the address of another SDL_Window* (as a hex string\n formatted with \"%p\").\n\n If this hint is set before SDL_CreateWindowFrom() and the SDL_Window* it is\n set to has SDL_WINDOW_OPENGL set (and running on WGL only, currently), then\n two things will occur on the newly created SDL_Window:\n\n 1. Its pixel format will be set to the same pixel format as this\n SDL_Window. This is needed for example when sharing an OpenGL context\n across multiple windows.\n\n 2. The flag SDL_WINDOW_OPENGL will be set on the new window so it can be\n used for OpenGL rendering.\n\n This variable can be set to the following values: The address (as a string\n \"%p\") of the SDL_Window* that new windows created with\n SDL_CreateWindowFrom() should share a pixel format with."]
 pub const SDL_HINT_VIDEO_WINDOW_SHARE_PIXEL_FORMAT: &[u8; 36] =
     b"SDL_VIDEO_WINDOW_SHARE_PIXEL_FORMAT\0";
+#[doc = " When calling SDL_CreateWindowFrom(), make the window compatible with\n OpenGL.\n\n This variable can be set to the following values:\n\n - \"0\": Don't add any graphics flags to the SDL_WindowFlags\n - \"1\": Add SDL_WINDOW_OPENGL to the SDL_WindowFlags\n\n By default SDL will not make the foreign window compatible with OpenGL."]
 pub const SDL_HINT_VIDEO_FOREIGN_WINDOW_OPENGL: &[u8; 32] = b"SDL_VIDEO_FOREIGN_WINDOW_OPENGL\0";
+#[doc = " When calling SDL_CreateWindowFrom(), make the window compatible with\n Vulkan.\n\n This variable can be set to the following values:\n\n - \"0\": Don't add any graphics flags to the SDL_WindowFlags\n - \"1\": Add SDL_WINDOW_VULKAN to the SDL_WindowFlags\n\n By default SDL will not make the foreign window compatible with Vulkan."]
 pub const SDL_HINT_VIDEO_FOREIGN_WINDOW_VULKAN: &[u8; 32] = b"SDL_VIDEO_FOREIGN_WINDOW_VULKAN\0";
+#[doc = " A variable specifying which shader compiler to preload when using the\n Chrome ANGLE binaries\n\n SDL has EGL and OpenGL ES2 support on Windows via the ANGLE project. It can\n use two different sets of binaries, those compiled by the user from source\n or those provided by the Chrome browser. In the later case, these binaries\n require that SDL loads a DLL providing the shader compiler.\n\n This variable can be set to the following values:\n\n - \"d3dcompiler_46.dll: default, best for Vista or later.\n - \"d3dcompiler_43.dll: for XP support.\n - \"none\": do not load any library, useful if you compiled ANGLE from source\n   and included the compiler in your binaries."]
 pub const SDL_HINT_VIDEO_WIN_D3DCOMPILER: &[u8; 26] = b"SDL_VIDEO_WIN_D3DCOMPILER\0";
+#[doc = " A variable controlling whether X11 should use GLX or EGL by default\n\n This variable can be set to the following values:\n\n - \"0\": Use GLX\n - \"1\": Use EGL\n\n By default SDL will use GLX when both are present."]
 pub const SDL_HINT_VIDEO_X11_FORCE_EGL: &[u8; 24] = b"SDL_VIDEO_X11_FORCE_EGL\0";
+#[doc = " A variable controlling whether the X11 _NET_WM_BYPASS_COMPOSITOR hint\n should be used.\n\n This variable can be set to the following values:\n\n - \"0\": Disable _NET_WM_BYPASS_COMPOSITOR\n - \"1\": Enable _NET_WM_BYPASS_COMPOSITOR\n\n By default SDL will use _NET_WM_BYPASS_COMPOSITOR"]
 pub const SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR: &[u8; 39] =
     b"SDL_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR\0";
+#[doc = " A variable controlling whether the X11 _NET_WM_PING protocol should be\n supported.\n\n This variable can be set to the following values:\n\n - \"0\": Disable _NET_WM_PING\n - \"1\": Enable _NET_WM_PING\n\n By default SDL will use _NET_WM_PING, but for applications that know they\n will not always be able to respond to ping requests in a timely manner they\n can turn it off to avoid the window manager thinking the app is hung. The\n hint is checked in CreateWindow."]
 pub const SDL_HINT_VIDEO_X11_NET_WM_PING: &[u8; 26] = b"SDL_VIDEO_X11_NET_WM_PING\0";
+#[doc = " A variable forcing the visual ID chosen for new X11 windows"]
 pub const SDL_HINT_VIDEO_X11_WINDOW_VISUALID: &[u8; 30] = b"SDL_VIDEO_X11_WINDOW_VISUALID\0";
+#[doc = " A no-longer-used variable controlling whether the X11 Xinerama extension\n should be used.\n\n Before SDL 2.0.24, this would let apps and users disable Xinerama support\n on X11. Now SDL never uses Xinerama, and does not check for this hint at\n all. The preprocessor define is left here for source compatibility."]
 pub const SDL_HINT_VIDEO_X11_XINERAMA: &[u8; 23] = b"SDL_VIDEO_X11_XINERAMA\0";
+#[doc = " A variable controlling whether the X11 XRandR extension should be used.\n\n This variable can be set to the following values:\n\n - \"0\": Disable XRandR\n - \"1\": Enable XRandR\n\n By default SDL will use XRandR."]
 pub const SDL_HINT_VIDEO_X11_XRANDR: &[u8; 21] = b"SDL_VIDEO_X11_XRANDR\0";
+#[doc = " A no-longer-used variable controlling whether the X11 VidMode extension\n should be used.\n\n Before SDL 2.0.24, this would let apps and users disable XVidMode support\n on X11. Now SDL never uses XVidMode, and does not check for this hint at\n all. The preprocessor define is left here for source compatibility."]
 pub const SDL_HINT_VIDEO_X11_XVIDMODE: &[u8; 23] = b"SDL_VIDEO_X11_XVIDMODE\0";
+#[doc = " Controls how the fact chunk affects the loading of a WAVE file.\n\n The fact chunk stores information about the number of samples of a WAVE\n file. The Standards Update from Microsoft notes that this value can be used\n to 'determine the length of the data in seconds'. This is especially useful\n for compressed formats (for which this is a mandatory chunk) if they\n produce multiple sample frames per block and truncating the block is not\n allowed. The fact chunk can exactly specify how many sample frames there\n should be in this case.\n\n Unfortunately, most application seem to ignore the fact chunk and so SDL\n ignores it by default as well.\n\n This variable can be set to the following values:\n\n - \"truncate\": Use the number of samples to truncate the wave data if the\n   fact chunk is present and valid\n - \"strict\": Like \"truncate\", but raise an error if the fact chunk is\n   invalid, not present for non-PCM formats, or if the data chunk doesn't\n   have that many samples\n - \"ignorezero\": Like \"truncate\", but ignore fact chunk if the number of\n   samples is zero\n - \"ignore\": Ignore fact chunk entirely (default)"]
 pub const SDL_HINT_WAVE_FACT_CHUNK: &[u8; 20] = b"SDL_WAVE_FACT_CHUNK\0";
+#[doc = " Controls how the size of the RIFF chunk affects the loading of a WAVE file.\n\n The size of the RIFF chunk (which includes all the sub-chunks of the WAVE\n file) is not always reliable. In case the size is wrong, it's possible to\n just ignore it and step through the chunks until a fixed limit is reached.\n\n Note that files that have trailing data unrelated to the WAVE file or\n corrupt files may slow down the loading process without a reliable\n boundary. By default, SDL stops after 10000 chunks to prevent wasting time.\n Use the environment variable SDL_WAVE_CHUNK_LIMIT to adjust this value.\n\n This variable can be set to the following values:\n\n - \"force\": Always use the RIFF chunk size as a boundary for the chunk\n   search\n - \"ignorezero\": Like \"force\", but a zero size searches up to 4 GiB\n   (default)\n - \"ignore\": Ignore the RIFF chunk size and always search up to 4 GiB\n - \"maximum\": Search for chunks until the end of file (not recommended)"]
 pub const SDL_HINT_WAVE_RIFF_CHUNK_SIZE: &[u8; 25] = b"SDL_WAVE_RIFF_CHUNK_SIZE\0";
+#[doc = " Controls how a truncated WAVE file is handled.\n\n A WAVE file is considered truncated if any of the chunks are incomplete or\n the data chunk size is not a multiple of the block size. By default, SDL\n decodes until the first incomplete block, as most applications seem to do.\n\n This variable can be set to the following values:\n\n - \"verystrict\": Raise an error if the file is truncated\n - \"strict\": Like \"verystrict\", but the size of the RIFF chunk is ignored\n - \"dropframe\": Decode until the first incomplete sample frame\n - \"dropblock\": Decode until the first incomplete block (default)"]
 pub const SDL_HINT_WAVE_TRUNCATION: &[u8; 20] = b"SDL_WAVE_TRUNCATION\0";
+#[doc = " Tell SDL not to name threads on Windows with the 0x406D1388 Exception.\n\n The 0x406D1388 Exception is a trick used to inform Visual Studio of a\n thread's name, but it tends to cause problems with other debuggers, and the\n .NET runtime. Note that SDL 2.0.6 and later will still use the (safer)\n SetThreadDescription API, introduced in the Windows 10 Creators Update, if\n available.\n\n The variable can be set to the following values:\n\n - \"0\": SDL will raise the 0x406D1388 Exception to name threads. This is the\n   default behavior of SDL <= 2.0.4.\n - \"1\": SDL will not raise this exception, and threads will be unnamed.\n   (default) This is necessary with .NET languages or debuggers that aren't\n   Visual Studio."]
 pub const SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING: &[u8; 34] =
     b"SDL_WINDOWS_DISABLE_THREAD_NAMING\0";
+#[doc = " Controls whether menus can be opened with their keyboard shortcut\n (Alt+mnemonic).\n\n If the mnemonics are enabled, then menus can be opened by pressing the Alt\n key and the corresponding mnemonic (for example, Alt+F opens the File\n menu). However, in case an invalid mnemonic is pressed, Windows makes an\n audible beep to convey that nothing happened. This is true even if the\n window has no menu at all!\n\n Because most SDL applications don't have menus, and some want to use the\n Alt key for other purposes, SDL disables mnemonics (and the beeping) by\n default.\n\n Note: This also affects keyboard events: with mnemonics enabled, when a\n menu is opened from the keyboard, you will not receive a KEYUP event for\n the mnemonic key, and *might* not receive one for Alt.\n\n This variable can be set to the following values:\n\n - \"0\": Alt+mnemonic does nothing, no beeping. (default)\n - \"1\": Alt+mnemonic opens menus, invalid mnemonics produce a beep."]
 pub const SDL_HINT_WINDOWS_ENABLE_MENU_MNEMONICS: &[u8; 34] =
     b"SDL_WINDOWS_ENABLE_MENU_MNEMONICS\0";
+#[doc = " A variable controlling whether the windows message loop is processed by SDL\n\n This variable can be set to the following values:\n\n - \"0\": The window message loop is not run\n - \"1\": The window message loop is processed in SDL_PumpEvents()\n\n By default SDL will process the windows message loop"]
 pub const SDL_HINT_WINDOWS_ENABLE_MESSAGELOOP: &[u8; 31] = b"SDL_WINDOWS_ENABLE_MESSAGELOOP\0";
+#[doc = " Force SDL to use Critical Sections for mutexes on Windows.\n\n On Windows 7 and newer, Slim Reader/Writer Locks are available. They offer\n better performance, allocate no kernel resources and use less memory. SDL\n will fall back to Critical Sections on older OS versions or if forced to by\n this hint.\n\n This variable can be set to the following values:\n\n - \"0\": Use SRW Locks when available. If not, fall back to Critical\n   Sections. (default)\n - \"1\": Force the use of Critical Sections in all cases."]
 pub const SDL_HINT_WINDOWS_FORCE_MUTEX_CRITICAL_SECTIONS: &[u8; 42] =
     b"SDL_WINDOWS_FORCE_MUTEX_CRITICAL_SECTIONS\0";
+#[doc = " Force SDL to use Kernel Semaphores on Windows.\n\n Kernel Semaphores are inter-process and require a context switch on every\n interaction. On Windows 8 and newer, the WaitOnAddress API is available.\n Using that and atomics to implement semaphores increases performance. SDL\n will fall back to Kernel Objects on older OS versions or if forced to by\n this hint.\n\n This variable can be set to the following values:\n\n - \"0\": Use Atomics and WaitOnAddress API when available. If not, fall back\n   to Kernel Objects. (default)\n - \"1\": Force the use of Kernel Objects in all cases."]
 pub const SDL_HINT_WINDOWS_FORCE_SEMAPHORE_KERNEL: &[u8; 35] =
     b"SDL_WINDOWS_FORCE_SEMAPHORE_KERNEL\0";
+#[doc = " A variable to specify custom icon resource id from RC file on Windows\n platform"]
 pub const SDL_HINT_WINDOWS_INTRESOURCE_ICON: &[u8; 29] = b"SDL_WINDOWS_INTRESOURCE_ICON\0";
+#[doc = " A variable to specify custom icon resource id from RC file on Windows\n platform"]
 pub const SDL_HINT_WINDOWS_INTRESOURCE_ICON_SMALL: &[u8; 35] =
     b"SDL_WINDOWS_INTRESOURCE_ICON_SMALL\0";
+#[doc = " Tell SDL not to generate window-close events for Alt+F4 on Windows.\n\n The variable can be set to the following values:\n\n - \"0\": SDL will generate a window-close event when it sees Alt+F4.\n - \"1\": SDL will only do normal key handling for Alt+F4."]
 pub const SDL_HINT_WINDOWS_NO_CLOSE_ON_ALT_F4: &[u8; 31] = b"SDL_WINDOWS_NO_CLOSE_ON_ALT_F4\0";
+#[doc = " Use the D3D9Ex API introduced in Windows Vista, instead of normal D3D9.\n\n Direct3D 9Ex contains changes to state management that can eliminate device\n loss errors during scenarios like Alt+Tab or UAC prompts. D3D9Ex may\n require some changes to your application to cope with the new behavior, so\n this is disabled by default.\n\n This hint must be set before initializing the video subsystem.\n\n For more information on Direct3D 9Ex, see: -\n https://docs.microsoft.com/en-us/windows/win32/direct3darticles/graphics-apis-in-windows-vista#direct3d-9ex\n -\n https://docs.microsoft.com/en-us/windows/win32/direct3darticles/direct3d-9ex-improvements\n\n This variable can be set to the following values:\n\n - \"0\": Use the original Direct3D 9 API (default)\n - \"1\": Use the Direct3D 9Ex API on Vista and later (and fall back if D3D9Ex\n   is unavailable)"]
 pub const SDL_HINT_WINDOWS_USE_D3D9EX: &[u8; 23] = b"SDL_WINDOWS_USE_D3D9EX\0";
+#[doc = " Controls whether SDL will declare the process to be DPI aware.\n\n This hint must be set before initializing the video subsystem.\n\n The main purpose of declaring DPI awareness is to disable OS bitmap scaling\n of SDL windows on monitors with a DPI scale factor.\n\n This hint is equivalent to requesting DPI awareness via external means\n (e.g. calling SetProcessDpiAwarenessContext) and does not cause SDL to use\n a virtualized coordinate system, so it will generally give you 1 SDL\n coordinate = 1 pixel even on high-DPI displays.\n\n For more information, see:\n https://docs.microsoft.com/en-us/windows/win32/hidpi/high-dpi-desktop-application-development-on-windows\n\n This variable can be set to the following values:\n\n - \"\": Do not change the DPI awareness (default).\n - \"unaware\": Declare the process as DPI unaware. (Windows 8.1 and later).\n - \"system\": Request system DPI awareness. (Vista and later).\n - \"permonitor\": Request per-monitor DPI awareness. (Windows 8.1 and later).\n - \"permonitorv2\": Request per-monitor V2 DPI awareness. (Windows 10,\n   version 1607 and later). The most visible difference from \"permonitor\" is\n   that window title bar will be scaled to the visually correct size when\n   dragging between monitors with different scale factors. This is the\n   preferred DPI awareness level.\n\n If the requested DPI awareness is not available on the currently running\n OS, SDL will try to request the best available match."]
 pub const SDL_HINT_WINDOWS_DPI_AWARENESS: &[u8; 26] = b"SDL_WINDOWS_DPI_AWARENESS\0";
+#[doc = " Uses DPI-scaled points as the SDL coordinate system on Windows.\n\n This changes the SDL coordinate system units to be DPI-scaled points,\n rather than pixels everywhere. This means windows will be appropriately\n sized, even when created on high-DPI displays with scaling.\n\n e.g. requesting a 640x480 window from SDL, on a display with 125% scaling\n in Windows display settings, will create a window with an 800x600 client\n area (in pixels).\n\n Setting this to \"1\" implicitly requests process DPI awareness (setting\n SDL_WINDOWS_DPI_AWARENESS is unnecessary), and forces\n SDL_WINDOW_ALLOW_HIGHDPI on all windows.\n\n This variable can be set to the following values:\n\n - \"0\": SDL coordinates equal Windows coordinates. No automatic window\n   resizing when dragging between monitors with different scale factors\n   (unless this is performed by Windows itself, which is the case when the\n   process is DPI unaware).\n - \"1\": SDL coordinates are in DPI-scaled points. Automatically resize\n   windows as needed on displays with non-100% scale factors."]
 pub const SDL_HINT_WINDOWS_DPI_SCALING: &[u8; 24] = b"SDL_WINDOWS_DPI_SCALING\0";
+#[doc = " A variable controlling whether the window frame and title bar are\n interactive when the cursor is hidden\n\n This variable can be set to the following values:\n\n - \"0\": The window frame is not interactive when the cursor is hidden (no\n   move, resize, etc)\n - \"1\": The window frame is interactive when the cursor is hidden\n\n By default SDL will allow interaction with the window frame when the cursor\n is hidden"]
 pub const SDL_HINT_WINDOW_FRAME_USABLE_WHILE_CURSOR_HIDDEN: &[u8; 44] =
     b"SDL_WINDOW_FRAME_USABLE_WHILE_CURSOR_HIDDEN\0";
+#[doc = " A variable controlling whether the window is activated when the\n SDL_ShowWindow function is called\n\n This variable can be set to the following values:\n\n - \"0\": The window is activated when the SDL_ShowWindow function is called\n - \"1\": The window is not activated when the SDL_ShowWindow function is\n   called\n\n By default SDL will activate the window when the SDL_ShowWindow function is\n called"]
 pub const SDL_HINT_WINDOW_NO_ACTIVATION_WHEN_SHOWN: &[u8; 36] =
     b"SDL_WINDOW_NO_ACTIVATION_WHEN_SHOWN\0";
+#[doc = " Allows back-button-press events on Windows Phone to be marked as handled\n\n  Windows Phone devices typically feature a Back button.  When pressed,\n  the OS will emit back-button-press events, which apps are expected to\n  handle in an appropriate manner.  If apps do not explicitly mark these\n  events as 'Handled', then the OS will invoke its default behavior for\n  unhandled back-button-press events, which on Windows Phone 8 and 8.1 is to\n  terminate the app (and attempt to switch to the previous app, or to the\n  device's home screen).\n\n  Setting the SDL_HINT_WINRT_HANDLE_BACK_BUTTON hint to \"1\" will cause SDL\n  to mark back-button-press events as Handled, if and when one is sent to\n  the app.\n\n  Internally, Windows Phone sends back button events as parameters to\n  special back-button-press callback functions.  Apps that need to respond\n  to back-button-press events are expected to register one or more\n  callback functions for such, shortly after being launched (during the\n  app's initialization phase).  After the back button is pressed, the OS\n  will invoke these callbacks.  If the app's callback(s) do not explicitly\n  mark the event as handled by the time they return, or if the app never\n  registers one of these callback, the OS will consider the event\n  un-handled, and it will apply its default back button behavior (terminate\n  the app).\n\n  SDL registers its own back-button-press callback with the Windows Phone\n  OS.  This callback will emit a pair of SDL key-press events (SDL_KEYDOWN\n  and SDL_KEYUP), each with a scancode of SDL_SCANCODE_AC_BACK, after which\n  it will check the contents of the hint, SDL_HINT_WINRT_HANDLE_BACK_BUTTON.\n  If the hint's value is set to \"1\", the back button event's Handled\n  property will get set to 'true'.  If the hint's value is set to something\n  else, or if it is unset, SDL will leave the event's Handled property\n  alone.  (By default, the OS sets this property to 'false', to note.)\n\n  SDL apps can either set SDL_HINT_WINRT_HANDLE_BACK_BUTTON well before a\n  back button is pressed, or can set it in direct-response to a back button\n  being pressed.\n\n  In order to get notified when a back button is pressed, SDL apps should\n  register a callback function with SDL_AddEventWatch(), and have it listen\n  for SDL_KEYDOWN events that have a scancode of SDL_SCANCODE_AC_BACK.\n  (Alternatively, SDL_KEYUP events can be listened-for.  Listening for\n  either event type is suitable.)  Any value of SDL_HINT_WINRT_HANDLE_BACK_BUTTON\n  set by such a callback, will be applied to the OS' current\n  back-button-press event.\n\n  More details on back button behavior in Windows Phone apps can be found\n  at the following page, on Microsoft's developer site:\n\n  http://msdn.microsoft.com/en-us/library/windowsphone/develop/jj247550(v=vs.105).aspx"]
 pub const SDL_HINT_WINRT_HANDLE_BACK_BUTTON: &[u8; 29] = b"SDL_WINRT_HANDLE_BACK_BUTTON\0";
+#[doc = " Label text for a WinRT app's privacy policy link\n\n  Network-enabled WinRT apps must include a privacy policy.  On Windows 8, 8.1, and RT,\n  Microsoft mandates that this policy be available via the Windows Settings charm.\n  SDL provides code to add a link there, with its label text being set via the\n  optional hint, SDL_HINT_WINRT_PRIVACY_POLICY_LABEL.\n\n  Please note that a privacy policy's contents are not set via this hint.  A separate\n  hint, SDL_HINT_WINRT_PRIVACY_POLICY_URL, is used to link to the actual text of the\n  policy.\n\n  The contents of this hint should be encoded as a UTF8 string.\n\n  The default value is \"Privacy Policy\".  This hint should only be set during app\n  initialization, preferably before any calls to SDL_Init().\n\n  For additional information on linking to a privacy policy, see the documentation for\n  SDL_HINT_WINRT_PRIVACY_POLICY_URL."]
 pub const SDL_HINT_WINRT_PRIVACY_POLICY_LABEL: &[u8; 31] = b"SDL_WINRT_PRIVACY_POLICY_LABEL\0";
+#[doc = " A URL to a WinRT app's privacy policy\n\n All network-enabled WinRT apps must make a privacy policy available to its\n users. On Windows 8, 8.1, and RT, Microsoft mandates that this policy be be\n available in the Windows Settings charm, as accessed from within the app.\n SDL provides code to add a URL-based link there, which can point to the\n app's privacy policy.\n\n To setup a URL to an app's privacy policy, set\n SDL_HINT_WINRT_PRIVACY_POLICY_URL before calling any SDL_Init() functions.\n The contents of the hint should be a valid URL. For example,\n \"http://www.example.com\".\n\n The default value is \"\", which will prevent SDL from adding a privacy\n policy link to the Settings charm. This hint should only be set during app\n init.\n\n The label text of an app's \"Privacy Policy\" link may be customized via\n another hint, SDL_HINT_WINRT_PRIVACY_POLICY_LABEL.\n\n Please note that on Windows Phone, Microsoft does not provide standard UI\n for displaying a privacy policy link, and as such,\n SDL_HINT_WINRT_PRIVACY_POLICY_URL will not get used on that platform.\n Network-enabled phone apps should display their privacy policy through some\n other, in-app means."]
 pub const SDL_HINT_WINRT_PRIVACY_POLICY_URL: &[u8; 29] = b"SDL_WINRT_PRIVACY_POLICY_URL\0";
+#[doc = " Mark X11 windows as override-redirect.\n\n If set, this _might_ increase framerate at the expense of the desktop not\n working as expected. Override-redirect windows aren't noticed by the window\n manager at all.\n\n You should probably only use this for fullscreen windows, and you probably\n shouldn't even use it for that. But it's here if you want to try!"]
 pub const SDL_HINT_X11_FORCE_OVERRIDE_REDIRECT: &[u8; 32] = b"SDL_X11_FORCE_OVERRIDE_REDIRECT\0";
+#[doc = " A variable that lets you disable the detection and use of Xinput gamepad\n devices\n\n The variable can be set to the following values:\n\n - \"0\": Disable XInput detection (only uses direct input)\n - \"1\": Enable XInput detection (the default)"]
 pub const SDL_HINT_XINPUT_ENABLED: &[u8; 19] = b"SDL_XINPUT_ENABLED\0";
+#[doc = " A variable that lets you disable the detection and use of DirectInput\n gamepad devices\n\n The variable can be set to the following values:\n\n - \"0\": Disable DirectInput detection (only uses XInput)\n - \"1\": Enable DirectInput detection (the default)"]
 pub const SDL_HINT_DIRECTINPUT_ENABLED: &[u8; 24] = b"SDL_DIRECTINPUT_ENABLED\0";
+#[doc = " A variable that causes SDL to use the old axis and button mapping for\n XInput devices.\n\n This hint is for backwards compatibility only and will be removed in SDL\n 2.1\n\n The default value is \"0\". This hint must be set before SDL_Init()"]
 pub const SDL_HINT_XINPUT_USE_OLD_JOYSTICK_MAPPING: &[u8; 36] =
     b"SDL_XINPUT_USE_OLD_JOYSTICK_MAPPING\0";
+#[doc = " A variable that causes SDL to not ignore audio \"monitors\"\n\n This is currently only used for PulseAudio and ignored elsewhere.\n\n By default, SDL ignores audio devices that aren't associated with physical\n hardware. Changing this hint to \"1\" will expose anything SDL sees that\n appears to be an audio source or sink. This will add \"devices\" to the list\n that the user probably doesn't want or need, but it can be useful in\n scenarios where you want to hook up SDL to some sort of virtual device,\n etc.\n\n The default value is \"0\". This hint must be set before SDL_Init().\n\n This hint is available since SDL 2.0.16. Before then, virtual devices are\n always ignored."]
 pub const SDL_HINT_AUDIO_INCLUDE_MONITORS: &[u8; 27] = b"SDL_AUDIO_INCLUDE_MONITORS\0";
+#[doc = " A variable that forces X11 windows to create as a custom type.\n\n This is currently only used for X11 and ignored elsewhere.\n\n During SDL_CreateWindow, SDL uses the _NET_WM_WINDOW_TYPE X11 property to\n report to the window manager the type of window it wants to create. This\n might be set to various things if SDL_WINDOW_TOOLTIP or\n SDL_WINDOW_POPUP_MENU, etc, were specified. For \"normal\" windows that\n haven't set a specific type, this hint can be used to specify a custom\n type. For example, a dock window might set this to\n \"_NET_WM_WINDOW_TYPE_DOCK\".\n\n If not set or set to \"\", this hint is ignored. This hint must be set before\n the SDL_CreateWindow() call that it is intended to affect.\n\n This hint is available since SDL 2.0.22."]
 pub const SDL_HINT_X11_WINDOW_TYPE: &[u8; 20] = b"SDL_X11_WINDOW_TYPE\0";
+#[doc = " A variable that decides whether to send SDL_QUIT when closing the final\n window.\n\n By default, SDL sends an SDL_QUIT event when there is only one window and\n it receives an SDL_WINDOWEVENT_CLOSE event, under the assumption most apps\n would also take the loss of this window as a signal to terminate the\n program.\n\n However, it's not unreasonable in some cases to have the program continue\n to live on, perhaps to create new windows later.\n\n Changing this hint to \"0\" will cause SDL to not send an SDL_QUIT event when\n the final window is requesting to close. Note that in this case, there are\n still other legitimate reasons one might get an SDL_QUIT event: choosing\n \"Quit\" from the macOS menu bar, sending a SIGINT (ctrl-c) on Unix, etc.\n\n The default value is \"1\". This hint can be changed at any time.\n\n This hint is available since SDL 2.0.22. Before then, you always get an\n SDL_QUIT event when closing the final window."]
 pub const SDL_HINT_QUIT_ON_LAST_WINDOW_CLOSE: &[u8; 30] = b"SDL_QUIT_ON_LAST_WINDOW_CLOSE\0";
+#[doc = " A variable that decides what video backend to use.\n\n By default, SDL will try all available video backends in a reasonable order\n until it finds one that can work, but this hint allows the app or user to\n force a specific target, such as \"x11\" if, say, you are on Wayland but want\n to try talking to the X server instead.\n\n This functionality has existed since SDL 2.0.0 (indeed, before that) but\n before 2.0.22 this was an environment variable only. In 2.0.22, it was\n upgraded to a full SDL hint, so you can set the environment variable as\n usual or programatically set the hint with SDL_SetHint, which won't\n propagate to child processes.\n\n The default value is unset, in which case SDL will try to figure out the\n best video backend on your behalf. This hint needs to be set before\n SDL_Init() is called to be useful.\n\n This hint is available since SDL 2.0.22. Before then, you could set the\n environment variable to get the same effect."]
 pub const SDL_HINT_VIDEODRIVER: &[u8; 16] = b"SDL_VIDEODRIVER\0";
+#[doc = " A variable that decides what audio backend to use.\n\n By default, SDL will try all available audio backends in a reasonable order\n until it finds one that can work, but this hint allows the app or user to\n force a specific target, such as \"alsa\" if, say, you are on PulseAudio but\n want to try talking to the lower level instead.\n\n This functionality has existed since SDL 2.0.0 (indeed, before that) but\n before 2.0.22 this was an environment variable only. In 2.0.22, it was\n upgraded to a full SDL hint, so you can set the environment variable as\n usual or programatically set the hint with SDL_SetHint, which won't\n propagate to child processes.\n\n The default value is unset, in which case SDL will try to figure out the\n best audio backend on your behalf. This hint needs to be set before\n SDL_Init() is called to be useful.\n\n This hint is available since SDL 2.0.22. Before then, you could set the\n environment variable to get the same effect."]
 pub const SDL_HINT_AUDIODRIVER: &[u8; 16] = b"SDL_AUDIODRIVER\0";
+#[doc = " A variable that decides what KMSDRM device to use.\n\n Internally, SDL might open something like \"/dev/dri/cardNN\" to access\n KMSDRM functionality, where \"NN\" is a device index number.\n\n SDL makes a guess at the best index to use (usually zero), but the app or\n user can set this hint to a number between 0 and 99 to force selection.\n\n This hint is available since SDL 2.24.0."]
 pub const SDL_HINT_KMSDRM_DEVICE_INDEX: &[u8; 24] = b"SDL_KMSDRM_DEVICE_INDEX\0";
+#[doc = " A variable that treats trackpads as touch devices.\n\n On macOS (and possibly other platforms in the future), SDL will report\n touches on a trackpad as mouse input, which is generally what users expect\n from this device; however, these are often actually full multitouch-capable\n touch devices, so it might be preferable to some apps to treat them as\n such.\n\n Setting this hint to true will make the trackpad input report as a\n multitouch device instead of a mouse. The default is false.\n\n Note that most platforms don't support this hint. As of 2.24.0, it only\n supports MacBooks' trackpads on macOS. Others may follow later.\n\n This hint is checked during SDL_Init and can not be changed after.\n\n This hint is available since SDL 2.24.0."]
 pub const SDL_HINT_TRACKPAD_IS_TOUCH_ONLY: &[u8; 27] = b"SDL_TRACKPAD_IS_TOUCH_ONLY\0";
+#[doc = " Cause SDL to call dbus_shutdown() on quit.\n\n This is useful as a debug tool to validate memory leaks, but shouldn't ever\n be set in production applications, as other libraries used by the\n application might use dbus under the hood and this cause cause crashes if\n they continue after SDL_Quit().\n\n This variable can be set to the following values:\n\n - \"0\": SDL will not call dbus_shutdown() on quit (default)\n - \"1\": SDL will call dbus_shutdown() on quit\n\n This hint is available since SDL 2.30.0."]
 pub const SDL_HINT_SHUTDOWN_DBUS_ON_QUIT: &[u8; 26] = b"SDL_SHUTDOWN_DBUS_ON_QUIT\0";
+#[doc = " Specify if SDL_RWFromFile should use the resource dir on Apple platforms.\n\n SDL2 has always done this on Apple platforms, but it can be surprising to\n try opening a path to discover that SDL adjusts the path to elsewhere, so\n this hint allows that behavior to be disabled.\n\n If running from a App Bundle, this will be MyApp.app/Contents/Resources. If\n running as a normal Unix-like process, this will be the directory where the\n running binary lives. Setting this hint to 0 avoids this and just uses the\n requested path as-is.\n\n This variable can be set to the following values:\n\n - \"0\": SDL will not use the app resource directory.\n - \"1\": SDL will use the app's resource directory (default).\n\n This hint is available since SDL 2.32.0."]
 pub const SDL_HINT_APPLE_RWFROMFILE_USE_RESOURCES: &[u8; 35] =
     b"SDL_APPLE_RWFROMFILE_USE_RESOURCES\0";
+#[doc = " The maximum size of a log message prior to SDL 2.0.24\n\n As of 2.0.24 there is no limit to the length of SDL log messages."]
 pub const SDL_MAX_LOG_MESSAGE: u32 = 4096;
+#[doc = " \\file SDL_shape.h\n\n Header file for the shaped window API."]
 pub const SDL_NONSHAPEABLE_WINDOW: i32 = -1;
 pub const SDL_INVALID_SHAPE_ARGUMENT: i32 = -2;
 pub const SDL_WINDOW_LACKS_SHAPE: i32 = -3;
@@ -377,12 +630,16 @@ pub const SDL_MINOR_VERSION: u32 = 32;
 pub const SDL_PATCHLEVEL: u32 = 10;
 pub const SDL_INIT_TIMER: u32 = 1;
 pub const SDL_INIT_AUDIO: u32 = 16;
+#[doc = "< SDL_INIT_VIDEO implies SDL_INIT_EVENTS"]
 pub const SDL_INIT_VIDEO: u32 = 32;
+#[doc = "< SDL_INIT_JOYSTICK implies SDL_INIT_EVENTS"]
 pub const SDL_INIT_JOYSTICK: u32 = 512;
 pub const SDL_INIT_HAPTIC: u32 = 4096;
+#[doc = "< SDL_INIT_GAMECONTROLLER implies SDL_INIT_JOYSTICK"]
 pub const SDL_INIT_GAMECONTROLLER: u32 = 8192;
 pub const SDL_INIT_EVENTS: u32 = 16384;
 pub const SDL_INIT_SENSOR: u32 = 32768;
+#[doc = "< compatibility; this flag is ignored."]
 pub const SDL_INIT_NOPARACHUTE: u32 = 1048576;
 pub const SDL_INIT_EVERYTHING: u32 = 62001;
 unsafe extern "C" {
@@ -9019,1275 +9276,12 @@ unsafe extern "C" {
     #[doc = " Clean up all initialized subsystems.\n\n You should call this function even if you have already shutdown each\n initialized subsystem with SDL_QuitSubSystem(). It is safe to call this\n function even in the case of errors in initialization.\n\n If you start a subsystem using a call to that subsystem's init function\n (for example SDL_VideoInit()) instead of SDL_Init() or SDL_InitSubSystem(),\n then you must use that subsystem's quit function (SDL_VideoQuit()) to shut\n it down before calling SDL_Quit(). But generally, you should not be using\n those functions directly anyhow; use SDL_Init() instead.\n\n You can use this function with atexit() to ensure that it is run when your\n application is shutdown, but it is not wise to do this from a library or\n other dynamically loaded code.\n\n \\since This function is available since SDL 2.0.0.\n\n \\sa SDL_Init\n \\sa SDL_QuitSubSystem"]
     pub fn SDL_Quit();
 }
-pub type XID = libc::c_ulong;
-pub type Atom = libc::c_ulong;
-pub type Time = libc::c_ulong;
-pub type Window = XID;
-pub type Drawable = XID;
-pub type Colormap = XID;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct _XDisplay {
     _unused: [u8; 0],
 }
 pub type Display = _XDisplay;
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XKeyEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub window: Window,
-    pub root: Window,
-    pub subwindow: Window,
-    pub time: Time,
-    pub x: libc::c_int,
-    pub y: libc::c_int,
-    pub x_root: libc::c_int,
-    pub y_root: libc::c_int,
-    pub state: libc::c_uint,
-    pub keycode: libc::c_uint,
-    pub same_screen: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XKeyEvent"][::core::mem::size_of::<XKeyEvent>() - 96usize];
-    ["Alignment of XKeyEvent"][::core::mem::align_of::<XKeyEvent>() - 8usize];
-    ["Offset of field: XKeyEvent::type_"][::core::mem::offset_of!(XKeyEvent, type_) - 0usize];
-    ["Offset of field: XKeyEvent::serial"][::core::mem::offset_of!(XKeyEvent, serial) - 8usize];
-    ["Offset of field: XKeyEvent::send_event"]
-        [::core::mem::offset_of!(XKeyEvent, send_event) - 16usize];
-    ["Offset of field: XKeyEvent::display"][::core::mem::offset_of!(XKeyEvent, display) - 24usize];
-    ["Offset of field: XKeyEvent::window"][::core::mem::offset_of!(XKeyEvent, window) - 32usize];
-    ["Offset of field: XKeyEvent::root"][::core::mem::offset_of!(XKeyEvent, root) - 40usize];
-    ["Offset of field: XKeyEvent::subwindow"]
-        [::core::mem::offset_of!(XKeyEvent, subwindow) - 48usize];
-    ["Offset of field: XKeyEvent::time"][::core::mem::offset_of!(XKeyEvent, time) - 56usize];
-    ["Offset of field: XKeyEvent::x"][::core::mem::offset_of!(XKeyEvent, x) - 64usize];
-    ["Offset of field: XKeyEvent::y"][::core::mem::offset_of!(XKeyEvent, y) - 68usize];
-    ["Offset of field: XKeyEvent::x_root"][::core::mem::offset_of!(XKeyEvent, x_root) - 72usize];
-    ["Offset of field: XKeyEvent::y_root"][::core::mem::offset_of!(XKeyEvent, y_root) - 76usize];
-    ["Offset of field: XKeyEvent::state"][::core::mem::offset_of!(XKeyEvent, state) - 80usize];
-    ["Offset of field: XKeyEvent::keycode"][::core::mem::offset_of!(XKeyEvent, keycode) - 84usize];
-    ["Offset of field: XKeyEvent::same_screen"]
-        [::core::mem::offset_of!(XKeyEvent, same_screen) - 88usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XButtonEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub window: Window,
-    pub root: Window,
-    pub subwindow: Window,
-    pub time: Time,
-    pub x: libc::c_int,
-    pub y: libc::c_int,
-    pub x_root: libc::c_int,
-    pub y_root: libc::c_int,
-    pub state: libc::c_uint,
-    pub button: libc::c_uint,
-    pub same_screen: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XButtonEvent"][::core::mem::size_of::<XButtonEvent>() - 96usize];
-    ["Alignment of XButtonEvent"][::core::mem::align_of::<XButtonEvent>() - 8usize];
-    ["Offset of field: XButtonEvent::type_"][::core::mem::offset_of!(XButtonEvent, type_) - 0usize];
-    ["Offset of field: XButtonEvent::serial"]
-        [::core::mem::offset_of!(XButtonEvent, serial) - 8usize];
-    ["Offset of field: XButtonEvent::send_event"]
-        [::core::mem::offset_of!(XButtonEvent, send_event) - 16usize];
-    ["Offset of field: XButtonEvent::display"]
-        [::core::mem::offset_of!(XButtonEvent, display) - 24usize];
-    ["Offset of field: XButtonEvent::window"]
-        [::core::mem::offset_of!(XButtonEvent, window) - 32usize];
-    ["Offset of field: XButtonEvent::root"][::core::mem::offset_of!(XButtonEvent, root) - 40usize];
-    ["Offset of field: XButtonEvent::subwindow"]
-        [::core::mem::offset_of!(XButtonEvent, subwindow) - 48usize];
-    ["Offset of field: XButtonEvent::time"][::core::mem::offset_of!(XButtonEvent, time) - 56usize];
-    ["Offset of field: XButtonEvent::x"][::core::mem::offset_of!(XButtonEvent, x) - 64usize];
-    ["Offset of field: XButtonEvent::y"][::core::mem::offset_of!(XButtonEvent, y) - 68usize];
-    ["Offset of field: XButtonEvent::x_root"]
-        [::core::mem::offset_of!(XButtonEvent, x_root) - 72usize];
-    ["Offset of field: XButtonEvent::y_root"]
-        [::core::mem::offset_of!(XButtonEvent, y_root) - 76usize];
-    ["Offset of field: XButtonEvent::state"]
-        [::core::mem::offset_of!(XButtonEvent, state) - 80usize];
-    ["Offset of field: XButtonEvent::button"]
-        [::core::mem::offset_of!(XButtonEvent, button) - 84usize];
-    ["Offset of field: XButtonEvent::same_screen"]
-        [::core::mem::offset_of!(XButtonEvent, same_screen) - 88usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XMotionEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub window: Window,
-    pub root: Window,
-    pub subwindow: Window,
-    pub time: Time,
-    pub x: libc::c_int,
-    pub y: libc::c_int,
-    pub x_root: libc::c_int,
-    pub y_root: libc::c_int,
-    pub state: libc::c_uint,
-    pub is_hint: libc::c_char,
-    pub same_screen: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XMotionEvent"][::core::mem::size_of::<XMotionEvent>() - 96usize];
-    ["Alignment of XMotionEvent"][::core::mem::align_of::<XMotionEvent>() - 8usize];
-    ["Offset of field: XMotionEvent::type_"][::core::mem::offset_of!(XMotionEvent, type_) - 0usize];
-    ["Offset of field: XMotionEvent::serial"]
-        [::core::mem::offset_of!(XMotionEvent, serial) - 8usize];
-    ["Offset of field: XMotionEvent::send_event"]
-        [::core::mem::offset_of!(XMotionEvent, send_event) - 16usize];
-    ["Offset of field: XMotionEvent::display"]
-        [::core::mem::offset_of!(XMotionEvent, display) - 24usize];
-    ["Offset of field: XMotionEvent::window"]
-        [::core::mem::offset_of!(XMotionEvent, window) - 32usize];
-    ["Offset of field: XMotionEvent::root"][::core::mem::offset_of!(XMotionEvent, root) - 40usize];
-    ["Offset of field: XMotionEvent::subwindow"]
-        [::core::mem::offset_of!(XMotionEvent, subwindow) - 48usize];
-    ["Offset of field: XMotionEvent::time"][::core::mem::offset_of!(XMotionEvent, time) - 56usize];
-    ["Offset of field: XMotionEvent::x"][::core::mem::offset_of!(XMotionEvent, x) - 64usize];
-    ["Offset of field: XMotionEvent::y"][::core::mem::offset_of!(XMotionEvent, y) - 68usize];
-    ["Offset of field: XMotionEvent::x_root"]
-        [::core::mem::offset_of!(XMotionEvent, x_root) - 72usize];
-    ["Offset of field: XMotionEvent::y_root"]
-        [::core::mem::offset_of!(XMotionEvent, y_root) - 76usize];
-    ["Offset of field: XMotionEvent::state"]
-        [::core::mem::offset_of!(XMotionEvent, state) - 80usize];
-    ["Offset of field: XMotionEvent::is_hint"]
-        [::core::mem::offset_of!(XMotionEvent, is_hint) - 84usize];
-    ["Offset of field: XMotionEvent::same_screen"]
-        [::core::mem::offset_of!(XMotionEvent, same_screen) - 88usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XCrossingEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub window: Window,
-    pub root: Window,
-    pub subwindow: Window,
-    pub time: Time,
-    pub x: libc::c_int,
-    pub y: libc::c_int,
-    pub x_root: libc::c_int,
-    pub y_root: libc::c_int,
-    pub mode: libc::c_int,
-    pub detail: libc::c_int,
-    pub same_screen: libc::c_int,
-    pub focus: libc::c_int,
-    pub state: libc::c_uint,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XCrossingEvent"][::core::mem::size_of::<XCrossingEvent>() - 104usize];
-    ["Alignment of XCrossingEvent"][::core::mem::align_of::<XCrossingEvent>() - 8usize];
-    ["Offset of field: XCrossingEvent::type_"]
-        [::core::mem::offset_of!(XCrossingEvent, type_) - 0usize];
-    ["Offset of field: XCrossingEvent::serial"]
-        [::core::mem::offset_of!(XCrossingEvent, serial) - 8usize];
-    ["Offset of field: XCrossingEvent::send_event"]
-        [::core::mem::offset_of!(XCrossingEvent, send_event) - 16usize];
-    ["Offset of field: XCrossingEvent::display"]
-        [::core::mem::offset_of!(XCrossingEvent, display) - 24usize];
-    ["Offset of field: XCrossingEvent::window"]
-        [::core::mem::offset_of!(XCrossingEvent, window) - 32usize];
-    ["Offset of field: XCrossingEvent::root"]
-        [::core::mem::offset_of!(XCrossingEvent, root) - 40usize];
-    ["Offset of field: XCrossingEvent::subwindow"]
-        [::core::mem::offset_of!(XCrossingEvent, subwindow) - 48usize];
-    ["Offset of field: XCrossingEvent::time"]
-        [::core::mem::offset_of!(XCrossingEvent, time) - 56usize];
-    ["Offset of field: XCrossingEvent::x"][::core::mem::offset_of!(XCrossingEvent, x) - 64usize];
-    ["Offset of field: XCrossingEvent::y"][::core::mem::offset_of!(XCrossingEvent, y) - 68usize];
-    ["Offset of field: XCrossingEvent::x_root"]
-        [::core::mem::offset_of!(XCrossingEvent, x_root) - 72usize];
-    ["Offset of field: XCrossingEvent::y_root"]
-        [::core::mem::offset_of!(XCrossingEvent, y_root) - 76usize];
-    ["Offset of field: XCrossingEvent::mode"]
-        [::core::mem::offset_of!(XCrossingEvent, mode) - 80usize];
-    ["Offset of field: XCrossingEvent::detail"]
-        [::core::mem::offset_of!(XCrossingEvent, detail) - 84usize];
-    ["Offset of field: XCrossingEvent::same_screen"]
-        [::core::mem::offset_of!(XCrossingEvent, same_screen) - 88usize];
-    ["Offset of field: XCrossingEvent::focus"]
-        [::core::mem::offset_of!(XCrossingEvent, focus) - 92usize];
-    ["Offset of field: XCrossingEvent::state"]
-        [::core::mem::offset_of!(XCrossingEvent, state) - 96usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XFocusChangeEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub window: Window,
-    pub mode: libc::c_int,
-    pub detail: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XFocusChangeEvent"][::core::mem::size_of::<XFocusChangeEvent>() - 48usize];
-    ["Alignment of XFocusChangeEvent"][::core::mem::align_of::<XFocusChangeEvent>() - 8usize];
-    ["Offset of field: XFocusChangeEvent::type_"]
-        [::core::mem::offset_of!(XFocusChangeEvent, type_) - 0usize];
-    ["Offset of field: XFocusChangeEvent::serial"]
-        [::core::mem::offset_of!(XFocusChangeEvent, serial) - 8usize];
-    ["Offset of field: XFocusChangeEvent::send_event"]
-        [::core::mem::offset_of!(XFocusChangeEvent, send_event) - 16usize];
-    ["Offset of field: XFocusChangeEvent::display"]
-        [::core::mem::offset_of!(XFocusChangeEvent, display) - 24usize];
-    ["Offset of field: XFocusChangeEvent::window"]
-        [::core::mem::offset_of!(XFocusChangeEvent, window) - 32usize];
-    ["Offset of field: XFocusChangeEvent::mode"]
-        [::core::mem::offset_of!(XFocusChangeEvent, mode) - 40usize];
-    ["Offset of field: XFocusChangeEvent::detail"]
-        [::core::mem::offset_of!(XFocusChangeEvent, detail) - 44usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XKeymapEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub window: Window,
-    pub key_vector: [libc::c_char; 32usize],
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XKeymapEvent"][::core::mem::size_of::<XKeymapEvent>() - 72usize];
-    ["Alignment of XKeymapEvent"][::core::mem::align_of::<XKeymapEvent>() - 8usize];
-    ["Offset of field: XKeymapEvent::type_"][::core::mem::offset_of!(XKeymapEvent, type_) - 0usize];
-    ["Offset of field: XKeymapEvent::serial"]
-        [::core::mem::offset_of!(XKeymapEvent, serial) - 8usize];
-    ["Offset of field: XKeymapEvent::send_event"]
-        [::core::mem::offset_of!(XKeymapEvent, send_event) - 16usize];
-    ["Offset of field: XKeymapEvent::display"]
-        [::core::mem::offset_of!(XKeymapEvent, display) - 24usize];
-    ["Offset of field: XKeymapEvent::window"]
-        [::core::mem::offset_of!(XKeymapEvent, window) - 32usize];
-    ["Offset of field: XKeymapEvent::key_vector"]
-        [::core::mem::offset_of!(XKeymapEvent, key_vector) - 40usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XExposeEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub window: Window,
-    pub x: libc::c_int,
-    pub y: libc::c_int,
-    pub width: libc::c_int,
-    pub height: libc::c_int,
-    pub count: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XExposeEvent"][::core::mem::size_of::<XExposeEvent>() - 64usize];
-    ["Alignment of XExposeEvent"][::core::mem::align_of::<XExposeEvent>() - 8usize];
-    ["Offset of field: XExposeEvent::type_"][::core::mem::offset_of!(XExposeEvent, type_) - 0usize];
-    ["Offset of field: XExposeEvent::serial"]
-        [::core::mem::offset_of!(XExposeEvent, serial) - 8usize];
-    ["Offset of field: XExposeEvent::send_event"]
-        [::core::mem::offset_of!(XExposeEvent, send_event) - 16usize];
-    ["Offset of field: XExposeEvent::display"]
-        [::core::mem::offset_of!(XExposeEvent, display) - 24usize];
-    ["Offset of field: XExposeEvent::window"]
-        [::core::mem::offset_of!(XExposeEvent, window) - 32usize];
-    ["Offset of field: XExposeEvent::x"][::core::mem::offset_of!(XExposeEvent, x) - 40usize];
-    ["Offset of field: XExposeEvent::y"][::core::mem::offset_of!(XExposeEvent, y) - 44usize];
-    ["Offset of field: XExposeEvent::width"]
-        [::core::mem::offset_of!(XExposeEvent, width) - 48usize];
-    ["Offset of field: XExposeEvent::height"]
-        [::core::mem::offset_of!(XExposeEvent, height) - 52usize];
-    ["Offset of field: XExposeEvent::count"]
-        [::core::mem::offset_of!(XExposeEvent, count) - 56usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XGraphicsExposeEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub drawable: Drawable,
-    pub x: libc::c_int,
-    pub y: libc::c_int,
-    pub width: libc::c_int,
-    pub height: libc::c_int,
-    pub count: libc::c_int,
-    pub major_code: libc::c_int,
-    pub minor_code: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XGraphicsExposeEvent"][::core::mem::size_of::<XGraphicsExposeEvent>() - 72usize];
-    ["Alignment of XGraphicsExposeEvent"][::core::mem::align_of::<XGraphicsExposeEvent>() - 8usize];
-    ["Offset of field: XGraphicsExposeEvent::type_"]
-        [::core::mem::offset_of!(XGraphicsExposeEvent, type_) - 0usize];
-    ["Offset of field: XGraphicsExposeEvent::serial"]
-        [::core::mem::offset_of!(XGraphicsExposeEvent, serial) - 8usize];
-    ["Offset of field: XGraphicsExposeEvent::send_event"]
-        [::core::mem::offset_of!(XGraphicsExposeEvent, send_event) - 16usize];
-    ["Offset of field: XGraphicsExposeEvent::display"]
-        [::core::mem::offset_of!(XGraphicsExposeEvent, display) - 24usize];
-    ["Offset of field: XGraphicsExposeEvent::drawable"]
-        [::core::mem::offset_of!(XGraphicsExposeEvent, drawable) - 32usize];
-    ["Offset of field: XGraphicsExposeEvent::x"]
-        [::core::mem::offset_of!(XGraphicsExposeEvent, x) - 40usize];
-    ["Offset of field: XGraphicsExposeEvent::y"]
-        [::core::mem::offset_of!(XGraphicsExposeEvent, y) - 44usize];
-    ["Offset of field: XGraphicsExposeEvent::width"]
-        [::core::mem::offset_of!(XGraphicsExposeEvent, width) - 48usize];
-    ["Offset of field: XGraphicsExposeEvent::height"]
-        [::core::mem::offset_of!(XGraphicsExposeEvent, height) - 52usize];
-    ["Offset of field: XGraphicsExposeEvent::count"]
-        [::core::mem::offset_of!(XGraphicsExposeEvent, count) - 56usize];
-    ["Offset of field: XGraphicsExposeEvent::major_code"]
-        [::core::mem::offset_of!(XGraphicsExposeEvent, major_code) - 60usize];
-    ["Offset of field: XGraphicsExposeEvent::minor_code"]
-        [::core::mem::offset_of!(XGraphicsExposeEvent, minor_code) - 64usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XNoExposeEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub drawable: Drawable,
-    pub major_code: libc::c_int,
-    pub minor_code: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XNoExposeEvent"][::core::mem::size_of::<XNoExposeEvent>() - 48usize];
-    ["Alignment of XNoExposeEvent"][::core::mem::align_of::<XNoExposeEvent>() - 8usize];
-    ["Offset of field: XNoExposeEvent::type_"]
-        [::core::mem::offset_of!(XNoExposeEvent, type_) - 0usize];
-    ["Offset of field: XNoExposeEvent::serial"]
-        [::core::mem::offset_of!(XNoExposeEvent, serial) - 8usize];
-    ["Offset of field: XNoExposeEvent::send_event"]
-        [::core::mem::offset_of!(XNoExposeEvent, send_event) - 16usize];
-    ["Offset of field: XNoExposeEvent::display"]
-        [::core::mem::offset_of!(XNoExposeEvent, display) - 24usize];
-    ["Offset of field: XNoExposeEvent::drawable"]
-        [::core::mem::offset_of!(XNoExposeEvent, drawable) - 32usize];
-    ["Offset of field: XNoExposeEvent::major_code"]
-        [::core::mem::offset_of!(XNoExposeEvent, major_code) - 40usize];
-    ["Offset of field: XNoExposeEvent::minor_code"]
-        [::core::mem::offset_of!(XNoExposeEvent, minor_code) - 44usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XVisibilityEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub window: Window,
-    pub state: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XVisibilityEvent"][::core::mem::size_of::<XVisibilityEvent>() - 48usize];
-    ["Alignment of XVisibilityEvent"][::core::mem::align_of::<XVisibilityEvent>() - 8usize];
-    ["Offset of field: XVisibilityEvent::type_"]
-        [::core::mem::offset_of!(XVisibilityEvent, type_) - 0usize];
-    ["Offset of field: XVisibilityEvent::serial"]
-        [::core::mem::offset_of!(XVisibilityEvent, serial) - 8usize];
-    ["Offset of field: XVisibilityEvent::send_event"]
-        [::core::mem::offset_of!(XVisibilityEvent, send_event) - 16usize];
-    ["Offset of field: XVisibilityEvent::display"]
-        [::core::mem::offset_of!(XVisibilityEvent, display) - 24usize];
-    ["Offset of field: XVisibilityEvent::window"]
-        [::core::mem::offset_of!(XVisibilityEvent, window) - 32usize];
-    ["Offset of field: XVisibilityEvent::state"]
-        [::core::mem::offset_of!(XVisibilityEvent, state) - 40usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XCreateWindowEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub parent: Window,
-    pub window: Window,
-    pub x: libc::c_int,
-    pub y: libc::c_int,
-    pub width: libc::c_int,
-    pub height: libc::c_int,
-    pub border_width: libc::c_int,
-    pub override_redirect: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XCreateWindowEvent"][::core::mem::size_of::<XCreateWindowEvent>() - 72usize];
-    ["Alignment of XCreateWindowEvent"][::core::mem::align_of::<XCreateWindowEvent>() - 8usize];
-    ["Offset of field: XCreateWindowEvent::type_"]
-        [::core::mem::offset_of!(XCreateWindowEvent, type_) - 0usize];
-    ["Offset of field: XCreateWindowEvent::serial"]
-        [::core::mem::offset_of!(XCreateWindowEvent, serial) - 8usize];
-    ["Offset of field: XCreateWindowEvent::send_event"]
-        [::core::mem::offset_of!(XCreateWindowEvent, send_event) - 16usize];
-    ["Offset of field: XCreateWindowEvent::display"]
-        [::core::mem::offset_of!(XCreateWindowEvent, display) - 24usize];
-    ["Offset of field: XCreateWindowEvent::parent"]
-        [::core::mem::offset_of!(XCreateWindowEvent, parent) - 32usize];
-    ["Offset of field: XCreateWindowEvent::window"]
-        [::core::mem::offset_of!(XCreateWindowEvent, window) - 40usize];
-    ["Offset of field: XCreateWindowEvent::x"]
-        [::core::mem::offset_of!(XCreateWindowEvent, x) - 48usize];
-    ["Offset of field: XCreateWindowEvent::y"]
-        [::core::mem::offset_of!(XCreateWindowEvent, y) - 52usize];
-    ["Offset of field: XCreateWindowEvent::width"]
-        [::core::mem::offset_of!(XCreateWindowEvent, width) - 56usize];
-    ["Offset of field: XCreateWindowEvent::height"]
-        [::core::mem::offset_of!(XCreateWindowEvent, height) - 60usize];
-    ["Offset of field: XCreateWindowEvent::border_width"]
-        [::core::mem::offset_of!(XCreateWindowEvent, border_width) - 64usize];
-    ["Offset of field: XCreateWindowEvent::override_redirect"]
-        [::core::mem::offset_of!(XCreateWindowEvent, override_redirect) - 68usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XDestroyWindowEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub event: Window,
-    pub window: Window,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XDestroyWindowEvent"][::core::mem::size_of::<XDestroyWindowEvent>() - 48usize];
-    ["Alignment of XDestroyWindowEvent"][::core::mem::align_of::<XDestroyWindowEvent>() - 8usize];
-    ["Offset of field: XDestroyWindowEvent::type_"]
-        [::core::mem::offset_of!(XDestroyWindowEvent, type_) - 0usize];
-    ["Offset of field: XDestroyWindowEvent::serial"]
-        [::core::mem::offset_of!(XDestroyWindowEvent, serial) - 8usize];
-    ["Offset of field: XDestroyWindowEvent::send_event"]
-        [::core::mem::offset_of!(XDestroyWindowEvent, send_event) - 16usize];
-    ["Offset of field: XDestroyWindowEvent::display"]
-        [::core::mem::offset_of!(XDestroyWindowEvent, display) - 24usize];
-    ["Offset of field: XDestroyWindowEvent::event"]
-        [::core::mem::offset_of!(XDestroyWindowEvent, event) - 32usize];
-    ["Offset of field: XDestroyWindowEvent::window"]
-        [::core::mem::offset_of!(XDestroyWindowEvent, window) - 40usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XUnmapEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub event: Window,
-    pub window: Window,
-    pub from_configure: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XUnmapEvent"][::core::mem::size_of::<XUnmapEvent>() - 56usize];
-    ["Alignment of XUnmapEvent"][::core::mem::align_of::<XUnmapEvent>() - 8usize];
-    ["Offset of field: XUnmapEvent::type_"][::core::mem::offset_of!(XUnmapEvent, type_) - 0usize];
-    ["Offset of field: XUnmapEvent::serial"][::core::mem::offset_of!(XUnmapEvent, serial) - 8usize];
-    ["Offset of field: XUnmapEvent::send_event"]
-        [::core::mem::offset_of!(XUnmapEvent, send_event) - 16usize];
-    ["Offset of field: XUnmapEvent::display"]
-        [::core::mem::offset_of!(XUnmapEvent, display) - 24usize];
-    ["Offset of field: XUnmapEvent::event"][::core::mem::offset_of!(XUnmapEvent, event) - 32usize];
-    ["Offset of field: XUnmapEvent::window"]
-        [::core::mem::offset_of!(XUnmapEvent, window) - 40usize];
-    ["Offset of field: XUnmapEvent::from_configure"]
-        [::core::mem::offset_of!(XUnmapEvent, from_configure) - 48usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XMapEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub event: Window,
-    pub window: Window,
-    pub override_redirect: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XMapEvent"][::core::mem::size_of::<XMapEvent>() - 56usize];
-    ["Alignment of XMapEvent"][::core::mem::align_of::<XMapEvent>() - 8usize];
-    ["Offset of field: XMapEvent::type_"][::core::mem::offset_of!(XMapEvent, type_) - 0usize];
-    ["Offset of field: XMapEvent::serial"][::core::mem::offset_of!(XMapEvent, serial) - 8usize];
-    ["Offset of field: XMapEvent::send_event"]
-        [::core::mem::offset_of!(XMapEvent, send_event) - 16usize];
-    ["Offset of field: XMapEvent::display"][::core::mem::offset_of!(XMapEvent, display) - 24usize];
-    ["Offset of field: XMapEvent::event"][::core::mem::offset_of!(XMapEvent, event) - 32usize];
-    ["Offset of field: XMapEvent::window"][::core::mem::offset_of!(XMapEvent, window) - 40usize];
-    ["Offset of field: XMapEvent::override_redirect"]
-        [::core::mem::offset_of!(XMapEvent, override_redirect) - 48usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XMapRequestEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub parent: Window,
-    pub window: Window,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XMapRequestEvent"][::core::mem::size_of::<XMapRequestEvent>() - 48usize];
-    ["Alignment of XMapRequestEvent"][::core::mem::align_of::<XMapRequestEvent>() - 8usize];
-    ["Offset of field: XMapRequestEvent::type_"]
-        [::core::mem::offset_of!(XMapRequestEvent, type_) - 0usize];
-    ["Offset of field: XMapRequestEvent::serial"]
-        [::core::mem::offset_of!(XMapRequestEvent, serial) - 8usize];
-    ["Offset of field: XMapRequestEvent::send_event"]
-        [::core::mem::offset_of!(XMapRequestEvent, send_event) - 16usize];
-    ["Offset of field: XMapRequestEvent::display"]
-        [::core::mem::offset_of!(XMapRequestEvent, display) - 24usize];
-    ["Offset of field: XMapRequestEvent::parent"]
-        [::core::mem::offset_of!(XMapRequestEvent, parent) - 32usize];
-    ["Offset of field: XMapRequestEvent::window"]
-        [::core::mem::offset_of!(XMapRequestEvent, window) - 40usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XReparentEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub event: Window,
-    pub window: Window,
-    pub parent: Window,
-    pub x: libc::c_int,
-    pub y: libc::c_int,
-    pub override_redirect: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XReparentEvent"][::core::mem::size_of::<XReparentEvent>() - 72usize];
-    ["Alignment of XReparentEvent"][::core::mem::align_of::<XReparentEvent>() - 8usize];
-    ["Offset of field: XReparentEvent::type_"]
-        [::core::mem::offset_of!(XReparentEvent, type_) - 0usize];
-    ["Offset of field: XReparentEvent::serial"]
-        [::core::mem::offset_of!(XReparentEvent, serial) - 8usize];
-    ["Offset of field: XReparentEvent::send_event"]
-        [::core::mem::offset_of!(XReparentEvent, send_event) - 16usize];
-    ["Offset of field: XReparentEvent::display"]
-        [::core::mem::offset_of!(XReparentEvent, display) - 24usize];
-    ["Offset of field: XReparentEvent::event"]
-        [::core::mem::offset_of!(XReparentEvent, event) - 32usize];
-    ["Offset of field: XReparentEvent::window"]
-        [::core::mem::offset_of!(XReparentEvent, window) - 40usize];
-    ["Offset of field: XReparentEvent::parent"]
-        [::core::mem::offset_of!(XReparentEvent, parent) - 48usize];
-    ["Offset of field: XReparentEvent::x"][::core::mem::offset_of!(XReparentEvent, x) - 56usize];
-    ["Offset of field: XReparentEvent::y"][::core::mem::offset_of!(XReparentEvent, y) - 60usize];
-    ["Offset of field: XReparentEvent::override_redirect"]
-        [::core::mem::offset_of!(XReparentEvent, override_redirect) - 64usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XConfigureEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub event: Window,
-    pub window: Window,
-    pub x: libc::c_int,
-    pub y: libc::c_int,
-    pub width: libc::c_int,
-    pub height: libc::c_int,
-    pub border_width: libc::c_int,
-    pub above: Window,
-    pub override_redirect: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XConfigureEvent"][::core::mem::size_of::<XConfigureEvent>() - 88usize];
-    ["Alignment of XConfigureEvent"][::core::mem::align_of::<XConfigureEvent>() - 8usize];
-    ["Offset of field: XConfigureEvent::type_"]
-        [::core::mem::offset_of!(XConfigureEvent, type_) - 0usize];
-    ["Offset of field: XConfigureEvent::serial"]
-        [::core::mem::offset_of!(XConfigureEvent, serial) - 8usize];
-    ["Offset of field: XConfigureEvent::send_event"]
-        [::core::mem::offset_of!(XConfigureEvent, send_event) - 16usize];
-    ["Offset of field: XConfigureEvent::display"]
-        [::core::mem::offset_of!(XConfigureEvent, display) - 24usize];
-    ["Offset of field: XConfigureEvent::event"]
-        [::core::mem::offset_of!(XConfigureEvent, event) - 32usize];
-    ["Offset of field: XConfigureEvent::window"]
-        [::core::mem::offset_of!(XConfigureEvent, window) - 40usize];
-    ["Offset of field: XConfigureEvent::x"][::core::mem::offset_of!(XConfigureEvent, x) - 48usize];
-    ["Offset of field: XConfigureEvent::y"][::core::mem::offset_of!(XConfigureEvent, y) - 52usize];
-    ["Offset of field: XConfigureEvent::width"]
-        [::core::mem::offset_of!(XConfigureEvent, width) - 56usize];
-    ["Offset of field: XConfigureEvent::height"]
-        [::core::mem::offset_of!(XConfigureEvent, height) - 60usize];
-    ["Offset of field: XConfigureEvent::border_width"]
-        [::core::mem::offset_of!(XConfigureEvent, border_width) - 64usize];
-    ["Offset of field: XConfigureEvent::above"]
-        [::core::mem::offset_of!(XConfigureEvent, above) - 72usize];
-    ["Offset of field: XConfigureEvent::override_redirect"]
-        [::core::mem::offset_of!(XConfigureEvent, override_redirect) - 80usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XGravityEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub event: Window,
-    pub window: Window,
-    pub x: libc::c_int,
-    pub y: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XGravityEvent"][::core::mem::size_of::<XGravityEvent>() - 56usize];
-    ["Alignment of XGravityEvent"][::core::mem::align_of::<XGravityEvent>() - 8usize];
-    ["Offset of field: XGravityEvent::type_"]
-        [::core::mem::offset_of!(XGravityEvent, type_) - 0usize];
-    ["Offset of field: XGravityEvent::serial"]
-        [::core::mem::offset_of!(XGravityEvent, serial) - 8usize];
-    ["Offset of field: XGravityEvent::send_event"]
-        [::core::mem::offset_of!(XGravityEvent, send_event) - 16usize];
-    ["Offset of field: XGravityEvent::display"]
-        [::core::mem::offset_of!(XGravityEvent, display) - 24usize];
-    ["Offset of field: XGravityEvent::event"]
-        [::core::mem::offset_of!(XGravityEvent, event) - 32usize];
-    ["Offset of field: XGravityEvent::window"]
-        [::core::mem::offset_of!(XGravityEvent, window) - 40usize];
-    ["Offset of field: XGravityEvent::x"][::core::mem::offset_of!(XGravityEvent, x) - 48usize];
-    ["Offset of field: XGravityEvent::y"][::core::mem::offset_of!(XGravityEvent, y) - 52usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XResizeRequestEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub window: Window,
-    pub width: libc::c_int,
-    pub height: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XResizeRequestEvent"][::core::mem::size_of::<XResizeRequestEvent>() - 48usize];
-    ["Alignment of XResizeRequestEvent"][::core::mem::align_of::<XResizeRequestEvent>() - 8usize];
-    ["Offset of field: XResizeRequestEvent::type_"]
-        [::core::mem::offset_of!(XResizeRequestEvent, type_) - 0usize];
-    ["Offset of field: XResizeRequestEvent::serial"]
-        [::core::mem::offset_of!(XResizeRequestEvent, serial) - 8usize];
-    ["Offset of field: XResizeRequestEvent::send_event"]
-        [::core::mem::offset_of!(XResizeRequestEvent, send_event) - 16usize];
-    ["Offset of field: XResizeRequestEvent::display"]
-        [::core::mem::offset_of!(XResizeRequestEvent, display) - 24usize];
-    ["Offset of field: XResizeRequestEvent::window"]
-        [::core::mem::offset_of!(XResizeRequestEvent, window) - 32usize];
-    ["Offset of field: XResizeRequestEvent::width"]
-        [::core::mem::offset_of!(XResizeRequestEvent, width) - 40usize];
-    ["Offset of field: XResizeRequestEvent::height"]
-        [::core::mem::offset_of!(XResizeRequestEvent, height) - 44usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XConfigureRequestEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub parent: Window,
-    pub window: Window,
-    pub x: libc::c_int,
-    pub y: libc::c_int,
-    pub width: libc::c_int,
-    pub height: libc::c_int,
-    pub border_width: libc::c_int,
-    pub above: Window,
-    pub detail: libc::c_int,
-    pub value_mask: libc::c_ulong,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XConfigureRequestEvent"][::core::mem::size_of::<XConfigureRequestEvent>() - 96usize];
-    ["Alignment of XConfigureRequestEvent"]
-        [::core::mem::align_of::<XConfigureRequestEvent>() - 8usize];
-    ["Offset of field: XConfigureRequestEvent::type_"]
-        [::core::mem::offset_of!(XConfigureRequestEvent, type_) - 0usize];
-    ["Offset of field: XConfigureRequestEvent::serial"]
-        [::core::mem::offset_of!(XConfigureRequestEvent, serial) - 8usize];
-    ["Offset of field: XConfigureRequestEvent::send_event"]
-        [::core::mem::offset_of!(XConfigureRequestEvent, send_event) - 16usize];
-    ["Offset of field: XConfigureRequestEvent::display"]
-        [::core::mem::offset_of!(XConfigureRequestEvent, display) - 24usize];
-    ["Offset of field: XConfigureRequestEvent::parent"]
-        [::core::mem::offset_of!(XConfigureRequestEvent, parent) - 32usize];
-    ["Offset of field: XConfigureRequestEvent::window"]
-        [::core::mem::offset_of!(XConfigureRequestEvent, window) - 40usize];
-    ["Offset of field: XConfigureRequestEvent::x"]
-        [::core::mem::offset_of!(XConfigureRequestEvent, x) - 48usize];
-    ["Offset of field: XConfigureRequestEvent::y"]
-        [::core::mem::offset_of!(XConfigureRequestEvent, y) - 52usize];
-    ["Offset of field: XConfigureRequestEvent::width"]
-        [::core::mem::offset_of!(XConfigureRequestEvent, width) - 56usize];
-    ["Offset of field: XConfigureRequestEvent::height"]
-        [::core::mem::offset_of!(XConfigureRequestEvent, height) - 60usize];
-    ["Offset of field: XConfigureRequestEvent::border_width"]
-        [::core::mem::offset_of!(XConfigureRequestEvent, border_width) - 64usize];
-    ["Offset of field: XConfigureRequestEvent::above"]
-        [::core::mem::offset_of!(XConfigureRequestEvent, above) - 72usize];
-    ["Offset of field: XConfigureRequestEvent::detail"]
-        [::core::mem::offset_of!(XConfigureRequestEvent, detail) - 80usize];
-    ["Offset of field: XConfigureRequestEvent::value_mask"]
-        [::core::mem::offset_of!(XConfigureRequestEvent, value_mask) - 88usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XCirculateEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub event: Window,
-    pub window: Window,
-    pub place: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XCirculateEvent"][::core::mem::size_of::<XCirculateEvent>() - 56usize];
-    ["Alignment of XCirculateEvent"][::core::mem::align_of::<XCirculateEvent>() - 8usize];
-    ["Offset of field: XCirculateEvent::type_"]
-        [::core::mem::offset_of!(XCirculateEvent, type_) - 0usize];
-    ["Offset of field: XCirculateEvent::serial"]
-        [::core::mem::offset_of!(XCirculateEvent, serial) - 8usize];
-    ["Offset of field: XCirculateEvent::send_event"]
-        [::core::mem::offset_of!(XCirculateEvent, send_event) - 16usize];
-    ["Offset of field: XCirculateEvent::display"]
-        [::core::mem::offset_of!(XCirculateEvent, display) - 24usize];
-    ["Offset of field: XCirculateEvent::event"]
-        [::core::mem::offset_of!(XCirculateEvent, event) - 32usize];
-    ["Offset of field: XCirculateEvent::window"]
-        [::core::mem::offset_of!(XCirculateEvent, window) - 40usize];
-    ["Offset of field: XCirculateEvent::place"]
-        [::core::mem::offset_of!(XCirculateEvent, place) - 48usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XCirculateRequestEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub parent: Window,
-    pub window: Window,
-    pub place: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XCirculateRequestEvent"][::core::mem::size_of::<XCirculateRequestEvent>() - 56usize];
-    ["Alignment of XCirculateRequestEvent"]
-        [::core::mem::align_of::<XCirculateRequestEvent>() - 8usize];
-    ["Offset of field: XCirculateRequestEvent::type_"]
-        [::core::mem::offset_of!(XCirculateRequestEvent, type_) - 0usize];
-    ["Offset of field: XCirculateRequestEvent::serial"]
-        [::core::mem::offset_of!(XCirculateRequestEvent, serial) - 8usize];
-    ["Offset of field: XCirculateRequestEvent::send_event"]
-        [::core::mem::offset_of!(XCirculateRequestEvent, send_event) - 16usize];
-    ["Offset of field: XCirculateRequestEvent::display"]
-        [::core::mem::offset_of!(XCirculateRequestEvent, display) - 24usize];
-    ["Offset of field: XCirculateRequestEvent::parent"]
-        [::core::mem::offset_of!(XCirculateRequestEvent, parent) - 32usize];
-    ["Offset of field: XCirculateRequestEvent::window"]
-        [::core::mem::offset_of!(XCirculateRequestEvent, window) - 40usize];
-    ["Offset of field: XCirculateRequestEvent::place"]
-        [::core::mem::offset_of!(XCirculateRequestEvent, place) - 48usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XPropertyEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub window: Window,
-    pub atom: Atom,
-    pub time: Time,
-    pub state: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XPropertyEvent"][::core::mem::size_of::<XPropertyEvent>() - 64usize];
-    ["Alignment of XPropertyEvent"][::core::mem::align_of::<XPropertyEvent>() - 8usize];
-    ["Offset of field: XPropertyEvent::type_"]
-        [::core::mem::offset_of!(XPropertyEvent, type_) - 0usize];
-    ["Offset of field: XPropertyEvent::serial"]
-        [::core::mem::offset_of!(XPropertyEvent, serial) - 8usize];
-    ["Offset of field: XPropertyEvent::send_event"]
-        [::core::mem::offset_of!(XPropertyEvent, send_event) - 16usize];
-    ["Offset of field: XPropertyEvent::display"]
-        [::core::mem::offset_of!(XPropertyEvent, display) - 24usize];
-    ["Offset of field: XPropertyEvent::window"]
-        [::core::mem::offset_of!(XPropertyEvent, window) - 32usize];
-    ["Offset of field: XPropertyEvent::atom"]
-        [::core::mem::offset_of!(XPropertyEvent, atom) - 40usize];
-    ["Offset of field: XPropertyEvent::time"]
-        [::core::mem::offset_of!(XPropertyEvent, time) - 48usize];
-    ["Offset of field: XPropertyEvent::state"]
-        [::core::mem::offset_of!(XPropertyEvent, state) - 56usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XSelectionClearEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub window: Window,
-    pub selection: Atom,
-    pub time: Time,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XSelectionClearEvent"][::core::mem::size_of::<XSelectionClearEvent>() - 56usize];
-    ["Alignment of XSelectionClearEvent"][::core::mem::align_of::<XSelectionClearEvent>() - 8usize];
-    ["Offset of field: XSelectionClearEvent::type_"]
-        [::core::mem::offset_of!(XSelectionClearEvent, type_) - 0usize];
-    ["Offset of field: XSelectionClearEvent::serial"]
-        [::core::mem::offset_of!(XSelectionClearEvent, serial) - 8usize];
-    ["Offset of field: XSelectionClearEvent::send_event"]
-        [::core::mem::offset_of!(XSelectionClearEvent, send_event) - 16usize];
-    ["Offset of field: XSelectionClearEvent::display"]
-        [::core::mem::offset_of!(XSelectionClearEvent, display) - 24usize];
-    ["Offset of field: XSelectionClearEvent::window"]
-        [::core::mem::offset_of!(XSelectionClearEvent, window) - 32usize];
-    ["Offset of field: XSelectionClearEvent::selection"]
-        [::core::mem::offset_of!(XSelectionClearEvent, selection) - 40usize];
-    ["Offset of field: XSelectionClearEvent::time"]
-        [::core::mem::offset_of!(XSelectionClearEvent, time) - 48usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XSelectionRequestEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub owner: Window,
-    pub requestor: Window,
-    pub selection: Atom,
-    pub target: Atom,
-    pub property: Atom,
-    pub time: Time,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XSelectionRequestEvent"][::core::mem::size_of::<XSelectionRequestEvent>() - 80usize];
-    ["Alignment of XSelectionRequestEvent"]
-        [::core::mem::align_of::<XSelectionRequestEvent>() - 8usize];
-    ["Offset of field: XSelectionRequestEvent::type_"]
-        [::core::mem::offset_of!(XSelectionRequestEvent, type_) - 0usize];
-    ["Offset of field: XSelectionRequestEvent::serial"]
-        [::core::mem::offset_of!(XSelectionRequestEvent, serial) - 8usize];
-    ["Offset of field: XSelectionRequestEvent::send_event"]
-        [::core::mem::offset_of!(XSelectionRequestEvent, send_event) - 16usize];
-    ["Offset of field: XSelectionRequestEvent::display"]
-        [::core::mem::offset_of!(XSelectionRequestEvent, display) - 24usize];
-    ["Offset of field: XSelectionRequestEvent::owner"]
-        [::core::mem::offset_of!(XSelectionRequestEvent, owner) - 32usize];
-    ["Offset of field: XSelectionRequestEvent::requestor"]
-        [::core::mem::offset_of!(XSelectionRequestEvent, requestor) - 40usize];
-    ["Offset of field: XSelectionRequestEvent::selection"]
-        [::core::mem::offset_of!(XSelectionRequestEvent, selection) - 48usize];
-    ["Offset of field: XSelectionRequestEvent::target"]
-        [::core::mem::offset_of!(XSelectionRequestEvent, target) - 56usize];
-    ["Offset of field: XSelectionRequestEvent::property"]
-        [::core::mem::offset_of!(XSelectionRequestEvent, property) - 64usize];
-    ["Offset of field: XSelectionRequestEvent::time"]
-        [::core::mem::offset_of!(XSelectionRequestEvent, time) - 72usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XSelectionEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub requestor: Window,
-    pub selection: Atom,
-    pub target: Atom,
-    pub property: Atom,
-    pub time: Time,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XSelectionEvent"][::core::mem::size_of::<XSelectionEvent>() - 72usize];
-    ["Alignment of XSelectionEvent"][::core::mem::align_of::<XSelectionEvent>() - 8usize];
-    ["Offset of field: XSelectionEvent::type_"]
-        [::core::mem::offset_of!(XSelectionEvent, type_) - 0usize];
-    ["Offset of field: XSelectionEvent::serial"]
-        [::core::mem::offset_of!(XSelectionEvent, serial) - 8usize];
-    ["Offset of field: XSelectionEvent::send_event"]
-        [::core::mem::offset_of!(XSelectionEvent, send_event) - 16usize];
-    ["Offset of field: XSelectionEvent::display"]
-        [::core::mem::offset_of!(XSelectionEvent, display) - 24usize];
-    ["Offset of field: XSelectionEvent::requestor"]
-        [::core::mem::offset_of!(XSelectionEvent, requestor) - 32usize];
-    ["Offset of field: XSelectionEvent::selection"]
-        [::core::mem::offset_of!(XSelectionEvent, selection) - 40usize];
-    ["Offset of field: XSelectionEvent::target"]
-        [::core::mem::offset_of!(XSelectionEvent, target) - 48usize];
-    ["Offset of field: XSelectionEvent::property"]
-        [::core::mem::offset_of!(XSelectionEvent, property) - 56usize];
-    ["Offset of field: XSelectionEvent::time"]
-        [::core::mem::offset_of!(XSelectionEvent, time) - 64usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XColormapEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub window: Window,
-    pub colormap: Colormap,
-    pub new: libc::c_int,
-    pub state: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XColormapEvent"][::core::mem::size_of::<XColormapEvent>() - 56usize];
-    ["Alignment of XColormapEvent"][::core::mem::align_of::<XColormapEvent>() - 8usize];
-    ["Offset of field: XColormapEvent::type_"]
-        [::core::mem::offset_of!(XColormapEvent, type_) - 0usize];
-    ["Offset of field: XColormapEvent::serial"]
-        [::core::mem::offset_of!(XColormapEvent, serial) - 8usize];
-    ["Offset of field: XColormapEvent::send_event"]
-        [::core::mem::offset_of!(XColormapEvent, send_event) - 16usize];
-    ["Offset of field: XColormapEvent::display"]
-        [::core::mem::offset_of!(XColormapEvent, display) - 24usize];
-    ["Offset of field: XColormapEvent::window"]
-        [::core::mem::offset_of!(XColormapEvent, window) - 32usize];
-    ["Offset of field: XColormapEvent::colormap"]
-        [::core::mem::offset_of!(XColormapEvent, colormap) - 40usize];
-    ["Offset of field: XColormapEvent::new"]
-        [::core::mem::offset_of!(XColormapEvent, new) - 48usize];
-    ["Offset of field: XColormapEvent::state"]
-        [::core::mem::offset_of!(XColormapEvent, state) - 52usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XClientMessageEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub window: Window,
-    pub message_type: Atom,
-    pub format: libc::c_int,
-    pub data: XClientMessageEvent__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union XClientMessageEvent__bindgen_ty_1 {
-    pub b: [libc::c_char; 20usize],
-    pub s: [libc::c_short; 10usize],
-    pub l: [libc::c_long; 5usize],
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XClientMessageEvent__bindgen_ty_1"]
-        [::core::mem::size_of::<XClientMessageEvent__bindgen_ty_1>() - 40usize];
-    ["Alignment of XClientMessageEvent__bindgen_ty_1"]
-        [::core::mem::align_of::<XClientMessageEvent__bindgen_ty_1>() - 8usize];
-    ["Offset of field: XClientMessageEvent__bindgen_ty_1::b"]
-        [::core::mem::offset_of!(XClientMessageEvent__bindgen_ty_1, b) - 0usize];
-    ["Offset of field: XClientMessageEvent__bindgen_ty_1::s"]
-        [::core::mem::offset_of!(XClientMessageEvent__bindgen_ty_1, s) - 0usize];
-    ["Offset of field: XClientMessageEvent__bindgen_ty_1::l"]
-        [::core::mem::offset_of!(XClientMessageEvent__bindgen_ty_1, l) - 0usize];
-};
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XClientMessageEvent"][::core::mem::size_of::<XClientMessageEvent>() - 96usize];
-    ["Alignment of XClientMessageEvent"][::core::mem::align_of::<XClientMessageEvent>() - 8usize];
-    ["Offset of field: XClientMessageEvent::type_"]
-        [::core::mem::offset_of!(XClientMessageEvent, type_) - 0usize];
-    ["Offset of field: XClientMessageEvent::serial"]
-        [::core::mem::offset_of!(XClientMessageEvent, serial) - 8usize];
-    ["Offset of field: XClientMessageEvent::send_event"]
-        [::core::mem::offset_of!(XClientMessageEvent, send_event) - 16usize];
-    ["Offset of field: XClientMessageEvent::display"]
-        [::core::mem::offset_of!(XClientMessageEvent, display) - 24usize];
-    ["Offset of field: XClientMessageEvent::window"]
-        [::core::mem::offset_of!(XClientMessageEvent, window) - 32usize];
-    ["Offset of field: XClientMessageEvent::message_type"]
-        [::core::mem::offset_of!(XClientMessageEvent, message_type) - 40usize];
-    ["Offset of field: XClientMessageEvent::format"]
-        [::core::mem::offset_of!(XClientMessageEvent, format) - 48usize];
-    ["Offset of field: XClientMessageEvent::data"]
-        [::core::mem::offset_of!(XClientMessageEvent, data) - 56usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XMappingEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub window: Window,
-    pub request: libc::c_int,
-    pub first_keycode: libc::c_int,
-    pub count: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XMappingEvent"][::core::mem::size_of::<XMappingEvent>() - 56usize];
-    ["Alignment of XMappingEvent"][::core::mem::align_of::<XMappingEvent>() - 8usize];
-    ["Offset of field: XMappingEvent::type_"]
-        [::core::mem::offset_of!(XMappingEvent, type_) - 0usize];
-    ["Offset of field: XMappingEvent::serial"]
-        [::core::mem::offset_of!(XMappingEvent, serial) - 8usize];
-    ["Offset of field: XMappingEvent::send_event"]
-        [::core::mem::offset_of!(XMappingEvent, send_event) - 16usize];
-    ["Offset of field: XMappingEvent::display"]
-        [::core::mem::offset_of!(XMappingEvent, display) - 24usize];
-    ["Offset of field: XMappingEvent::window"]
-        [::core::mem::offset_of!(XMappingEvent, window) - 32usize];
-    ["Offset of field: XMappingEvent::request"]
-        [::core::mem::offset_of!(XMappingEvent, request) - 40usize];
-    ["Offset of field: XMappingEvent::first_keycode"]
-        [::core::mem::offset_of!(XMappingEvent, first_keycode) - 44usize];
-    ["Offset of field: XMappingEvent::count"]
-        [::core::mem::offset_of!(XMappingEvent, count) - 48usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XErrorEvent {
-    pub type_: libc::c_int,
-    pub display: *mut Display,
-    pub resourceid: XID,
-    pub serial: libc::c_ulong,
-    pub error_code: libc::c_uchar,
-    pub request_code: libc::c_uchar,
-    pub minor_code: libc::c_uchar,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XErrorEvent"][::core::mem::size_of::<XErrorEvent>() - 40usize];
-    ["Alignment of XErrorEvent"][::core::mem::align_of::<XErrorEvent>() - 8usize];
-    ["Offset of field: XErrorEvent::type_"][::core::mem::offset_of!(XErrorEvent, type_) - 0usize];
-    ["Offset of field: XErrorEvent::display"]
-        [::core::mem::offset_of!(XErrorEvent, display) - 8usize];
-    ["Offset of field: XErrorEvent::resourceid"]
-        [::core::mem::offset_of!(XErrorEvent, resourceid) - 16usize];
-    ["Offset of field: XErrorEvent::serial"]
-        [::core::mem::offset_of!(XErrorEvent, serial) - 24usize];
-    ["Offset of field: XErrorEvent::error_code"]
-        [::core::mem::offset_of!(XErrorEvent, error_code) - 32usize];
-    ["Offset of field: XErrorEvent::request_code"]
-        [::core::mem::offset_of!(XErrorEvent, request_code) - 33usize];
-    ["Offset of field: XErrorEvent::minor_code"]
-        [::core::mem::offset_of!(XErrorEvent, minor_code) - 34usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XAnyEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub window: Window,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XAnyEvent"][::core::mem::size_of::<XAnyEvent>() - 40usize];
-    ["Alignment of XAnyEvent"][::core::mem::align_of::<XAnyEvent>() - 8usize];
-    ["Offset of field: XAnyEvent::type_"][::core::mem::offset_of!(XAnyEvent, type_) - 0usize];
-    ["Offset of field: XAnyEvent::serial"][::core::mem::offset_of!(XAnyEvent, serial) - 8usize];
-    ["Offset of field: XAnyEvent::send_event"]
-        [::core::mem::offset_of!(XAnyEvent, send_event) - 16usize];
-    ["Offset of field: XAnyEvent::display"][::core::mem::offset_of!(XAnyEvent, display) - 24usize];
-    ["Offset of field: XAnyEvent::window"][::core::mem::offset_of!(XAnyEvent, window) - 32usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XGenericEvent {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub extension: libc::c_int,
-    pub evtype: libc::c_int,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XGenericEvent"][::core::mem::size_of::<XGenericEvent>() - 40usize];
-    ["Alignment of XGenericEvent"][::core::mem::align_of::<XGenericEvent>() - 8usize];
-    ["Offset of field: XGenericEvent::type_"]
-        [::core::mem::offset_of!(XGenericEvent, type_) - 0usize];
-    ["Offset of field: XGenericEvent::serial"]
-        [::core::mem::offset_of!(XGenericEvent, serial) - 8usize];
-    ["Offset of field: XGenericEvent::send_event"]
-        [::core::mem::offset_of!(XGenericEvent, send_event) - 16usize];
-    ["Offset of field: XGenericEvent::display"]
-        [::core::mem::offset_of!(XGenericEvent, display) - 24usize];
-    ["Offset of field: XGenericEvent::extension"]
-        [::core::mem::offset_of!(XGenericEvent, extension) - 32usize];
-    ["Offset of field: XGenericEvent::evtype"]
-        [::core::mem::offset_of!(XGenericEvent, evtype) - 36usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct XGenericEventCookie {
-    pub type_: libc::c_int,
-    pub serial: libc::c_ulong,
-    pub send_event: libc::c_int,
-    pub display: *mut Display,
-    pub extension: libc::c_int,
-    pub evtype: libc::c_int,
-    pub cookie: libc::c_uint,
-    pub data: *mut libc::c_void,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of XGenericEventCookie"][::core::mem::size_of::<XGenericEventCookie>() - 56usize];
-    ["Alignment of XGenericEventCookie"][::core::mem::align_of::<XGenericEventCookie>() - 8usize];
-    ["Offset of field: XGenericEventCookie::type_"]
-        [::core::mem::offset_of!(XGenericEventCookie, type_) - 0usize];
-    ["Offset of field: XGenericEventCookie::serial"]
-        [::core::mem::offset_of!(XGenericEventCookie, serial) - 8usize];
-    ["Offset of field: XGenericEventCookie::send_event"]
-        [::core::mem::offset_of!(XGenericEventCookie, send_event) - 16usize];
-    ["Offset of field: XGenericEventCookie::display"]
-        [::core::mem::offset_of!(XGenericEventCookie, display) - 24usize];
-    ["Offset of field: XGenericEventCookie::extension"]
-        [::core::mem::offset_of!(XGenericEventCookie, extension) - 32usize];
-    ["Offset of field: XGenericEventCookie::evtype"]
-        [::core::mem::offset_of!(XGenericEventCookie, evtype) - 36usize];
-    ["Offset of field: XGenericEventCookie::cookie"]
-        [::core::mem::offset_of!(XGenericEventCookie, cookie) - 40usize];
-    ["Offset of field: XGenericEventCookie::data"]
-        [::core::mem::offset_of!(XGenericEventCookie, data) - 48usize];
-};
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union _XEvent {
-    pub type_: libc::c_int,
-    pub xany: XAnyEvent,
-    pub xkey: XKeyEvent,
-    pub xbutton: XButtonEvent,
-    pub xmotion: XMotionEvent,
-    pub xcrossing: XCrossingEvent,
-    pub xfocus: XFocusChangeEvent,
-    pub xexpose: XExposeEvent,
-    pub xgraphicsexpose: XGraphicsExposeEvent,
-    pub xnoexpose: XNoExposeEvent,
-    pub xvisibility: XVisibilityEvent,
-    pub xcreatewindow: XCreateWindowEvent,
-    pub xdestroywindow: XDestroyWindowEvent,
-    pub xunmap: XUnmapEvent,
-    pub xmap: XMapEvent,
-    pub xmaprequest: XMapRequestEvent,
-    pub xreparent: XReparentEvent,
-    pub xconfigure: XConfigureEvent,
-    pub xgravity: XGravityEvent,
-    pub xresizerequest: XResizeRequestEvent,
-    pub xconfigurerequest: XConfigureRequestEvent,
-    pub xcirculate: XCirculateEvent,
-    pub xcirculaterequest: XCirculateRequestEvent,
-    pub xproperty: XPropertyEvent,
-    pub xselectionclear: XSelectionClearEvent,
-    pub xselectionrequest: XSelectionRequestEvent,
-    pub xselection: XSelectionEvent,
-    pub xcolormap: XColormapEvent,
-    pub xclient: XClientMessageEvent,
-    pub xmapping: XMappingEvent,
-    pub xerror: XErrorEvent,
-    pub xkeymap: XKeymapEvent,
-    pub xgeneric: XGenericEvent,
-    pub xcookie: XGenericEventCookie,
-    pub pad: [libc::c_long; 24usize],
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of _XEvent"][::core::mem::size_of::<_XEvent>() - 192usize];
-    ["Alignment of _XEvent"][::core::mem::align_of::<_XEvent>() - 8usize];
-    ["Offset of field: _XEvent::type_"][::core::mem::offset_of!(_XEvent, type_) - 0usize];
-    ["Offset of field: _XEvent::xany"][::core::mem::offset_of!(_XEvent, xany) - 0usize];
-    ["Offset of field: _XEvent::xkey"][::core::mem::offset_of!(_XEvent, xkey) - 0usize];
-    ["Offset of field: _XEvent::xbutton"][::core::mem::offset_of!(_XEvent, xbutton) - 0usize];
-    ["Offset of field: _XEvent::xmotion"][::core::mem::offset_of!(_XEvent, xmotion) - 0usize];
-    ["Offset of field: _XEvent::xcrossing"][::core::mem::offset_of!(_XEvent, xcrossing) - 0usize];
-    ["Offset of field: _XEvent::xfocus"][::core::mem::offset_of!(_XEvent, xfocus) - 0usize];
-    ["Offset of field: _XEvent::xexpose"][::core::mem::offset_of!(_XEvent, xexpose) - 0usize];
-    ["Offset of field: _XEvent::xgraphicsexpose"]
-        [::core::mem::offset_of!(_XEvent, xgraphicsexpose) - 0usize];
-    ["Offset of field: _XEvent::xnoexpose"][::core::mem::offset_of!(_XEvent, xnoexpose) - 0usize];
-    ["Offset of field: _XEvent::xvisibility"]
-        [::core::mem::offset_of!(_XEvent, xvisibility) - 0usize];
-    ["Offset of field: _XEvent::xcreatewindow"]
-        [::core::mem::offset_of!(_XEvent, xcreatewindow) - 0usize];
-    ["Offset of field: _XEvent::xdestroywindow"]
-        [::core::mem::offset_of!(_XEvent, xdestroywindow) - 0usize];
-    ["Offset of field: _XEvent::xunmap"][::core::mem::offset_of!(_XEvent, xunmap) - 0usize];
-    ["Offset of field: _XEvent::xmap"][::core::mem::offset_of!(_XEvent, xmap) - 0usize];
-    ["Offset of field: _XEvent::xmaprequest"]
-        [::core::mem::offset_of!(_XEvent, xmaprequest) - 0usize];
-    ["Offset of field: _XEvent::xreparent"][::core::mem::offset_of!(_XEvent, xreparent) - 0usize];
-    ["Offset of field: _XEvent::xconfigure"][::core::mem::offset_of!(_XEvent, xconfigure) - 0usize];
-    ["Offset of field: _XEvent::xgravity"][::core::mem::offset_of!(_XEvent, xgravity) - 0usize];
-    ["Offset of field: _XEvent::xresizerequest"]
-        [::core::mem::offset_of!(_XEvent, xresizerequest) - 0usize];
-    ["Offset of field: _XEvent::xconfigurerequest"]
-        [::core::mem::offset_of!(_XEvent, xconfigurerequest) - 0usize];
-    ["Offset of field: _XEvent::xcirculate"][::core::mem::offset_of!(_XEvent, xcirculate) - 0usize];
-    ["Offset of field: _XEvent::xcirculaterequest"]
-        [::core::mem::offset_of!(_XEvent, xcirculaterequest) - 0usize];
-    ["Offset of field: _XEvent::xproperty"][::core::mem::offset_of!(_XEvent, xproperty) - 0usize];
-    ["Offset of field: _XEvent::xselectionclear"]
-        [::core::mem::offset_of!(_XEvent, xselectionclear) - 0usize];
-    ["Offset of field: _XEvent::xselectionrequest"]
-        [::core::mem::offset_of!(_XEvent, xselectionrequest) - 0usize];
-    ["Offset of field: _XEvent::xselection"][::core::mem::offset_of!(_XEvent, xselection) - 0usize];
-    ["Offset of field: _XEvent::xcolormap"][::core::mem::offset_of!(_XEvent, xcolormap) - 0usize];
-    ["Offset of field: _XEvent::xclient"][::core::mem::offset_of!(_XEvent, xclient) - 0usize];
-    ["Offset of field: _XEvent::xmapping"][::core::mem::offset_of!(_XEvent, xmapping) - 0usize];
-    ["Offset of field: _XEvent::xerror"][::core::mem::offset_of!(_XEvent, xerror) - 0usize];
-    ["Offset of field: _XEvent::xkeymap"][::core::mem::offset_of!(_XEvent, xkeymap) - 0usize];
-    ["Offset of field: _XEvent::xgeneric"][::core::mem::offset_of!(_XEvent, xgeneric) - 0usize];
-    ["Offset of field: _XEvent::xcookie"][::core::mem::offset_of!(_XEvent, xcookie) - 0usize];
-    ["Offset of field: _XEvent::pad"][::core::mem::offset_of!(_XEvent, pad) - 0usize];
-};
-pub type XEvent = _XEvent;
 #[repr(u32)]
 #[doc = " These are the various supported windowing subsystems"]
 #[derive(Copy, Clone, Hash, PartialEq, Eq)]
@@ -10310,22 +9304,22 @@ pub enum SDL_SYSWM_TYPE {
 }
 #[doc = " The custom event structure."]
 #[repr(C)]
+#[repr(align(8))]
 #[derive(Copy, Clone)]
 pub struct SDL_SysWMmsg {
-    pub version: SDL_version,
-    pub subsystem: SDL_SYSWM_TYPE,
-    pub msg: SDL_SysWMmsg__bindgen_ty_1,
+    pub _bindgen_opaque_blob: [u64; 25usize],
 }
 #[repr(C)]
+#[repr(align(8))]
 #[derive(Copy, Clone)]
 pub union SDL_SysWMmsg__bindgen_ty_1 {
-    pub x11: SDL_SysWMmsg__bindgen_ty_1__bindgen_ty_1,
-    pub dummy: libc::c_int,
+    pub _bindgen_opaque_blob: [u64; 24usize],
 }
 #[repr(C)]
+#[repr(align(8))]
 #[derive(Copy, Clone)]
 pub struct SDL_SysWMmsg__bindgen_ty_1__bindgen_ty_1 {
-    pub event: XEvent,
+    pub _bindgen_opaque_blob: [u64; 24usize],
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
@@ -10333,8 +9327,6 @@ const _: () = {
         [::core::mem::size_of::<SDL_SysWMmsg__bindgen_ty_1__bindgen_ty_1>() - 192usize];
     ["Alignment of SDL_SysWMmsg__bindgen_ty_1__bindgen_ty_1"]
         [::core::mem::align_of::<SDL_SysWMmsg__bindgen_ty_1__bindgen_ty_1>() - 8usize];
-    ["Offset of field: SDL_SysWMmsg__bindgen_ty_1__bindgen_ty_1::event"]
-        [::core::mem::offset_of!(SDL_SysWMmsg__bindgen_ty_1__bindgen_ty_1, event) - 0usize];
 };
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
@@ -10342,43 +9334,30 @@ const _: () = {
         [::core::mem::size_of::<SDL_SysWMmsg__bindgen_ty_1>() - 192usize];
     ["Alignment of SDL_SysWMmsg__bindgen_ty_1"]
         [::core::mem::align_of::<SDL_SysWMmsg__bindgen_ty_1>() - 8usize];
-    ["Offset of field: SDL_SysWMmsg__bindgen_ty_1::x11"]
-        [::core::mem::offset_of!(SDL_SysWMmsg__bindgen_ty_1, x11) - 0usize];
-    ["Offset of field: SDL_SysWMmsg__bindgen_ty_1::dummy"]
-        [::core::mem::offset_of!(SDL_SysWMmsg__bindgen_ty_1, dummy) - 0usize];
 };
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of SDL_SysWMmsg"][::core::mem::size_of::<SDL_SysWMmsg>() - 200usize];
     ["Alignment of SDL_SysWMmsg"][::core::mem::align_of::<SDL_SysWMmsg>() - 8usize];
-    ["Offset of field: SDL_SysWMmsg::version"]
-        [::core::mem::offset_of!(SDL_SysWMmsg, version) - 0usize];
-    ["Offset of field: SDL_SysWMmsg::subsystem"]
-        [::core::mem::offset_of!(SDL_SysWMmsg, subsystem) - 4usize];
-    ["Offset of field: SDL_SysWMmsg::msg"][::core::mem::offset_of!(SDL_SysWMmsg, msg) - 8usize];
 };
 #[doc = " The custom window manager information structure.\n\n When this structure is returned, it holds information about which low level\n system it is using, and will be one of SDL_SYSWM_TYPE."]
 #[repr(C)]
+#[repr(align(8))]
 #[derive(Copy, Clone)]
 pub struct SDL_SysWMinfo {
-    pub version: SDL_version,
-    pub subsystem: SDL_SYSWM_TYPE,
-    pub info: SDL_SysWMinfo__bindgen_ty_1,
+    pub _bindgen_opaque_blob: [u64; 9usize],
 }
 #[repr(C)]
+#[repr(align(8))]
 #[derive(Copy, Clone)]
-pub union SDL_SysWMinfo__bindgen_ty_1 {
-    pub x11: SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1,
-    pub wl: SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2,
-    pub dummy: [Uint8; 64usize],
+pub struct SDL_SysWMinfo__bindgen_ty_1 {
+    pub _bindgen_opaque_blob: [u64; 8usize],
 }
 #[repr(C)]
+#[repr(align(8))]
 #[derive(Copy, Clone)]
 pub struct SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1 {
-    #[doc = "< The X11 display"]
-    pub display: *mut Display,
-    #[doc = "< The X11 window"]
-    pub window: Window,
+    pub _bindgen_opaque_blob: [u64; 2usize],
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
@@ -10386,30 +9365,12 @@ const _: () = {
         [::core::mem::size_of::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1>() - 16usize];
     ["Alignment of SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1"]
         [::core::mem::align_of::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1>() - 8usize];
-    ["Offset of field: SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1::display"]
-        [::core::mem::offset_of!(SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1, display) - 0usize];
-    ["Offset of field: SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1::window"]
-        [::core::mem::offset_of!(SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_1, window) - 8usize];
 };
 #[repr(C)]
+#[repr(align(8))]
 #[derive(Copy, Clone)]
 pub struct SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2 {
-    #[doc = "< Wayland display"]
-    pub display: *mut wl_display,
-    #[doc = "< Wayland surface"]
-    pub surface: *mut wl_surface,
-    #[doc = "< DEPRECATED Wayland shell_surface (window manager handle)"]
-    pub shell_surface: *mut libc::c_void,
-    #[doc = "< Wayland EGL window (native window)"]
-    pub egl_window: *mut wl_egl_window,
-    #[doc = "< Wayland xdg surface (window manager handle)"]
-    pub xdg_surface: *mut xdg_surface,
-    #[doc = "< Wayland xdg toplevel role"]
-    pub xdg_toplevel: *mut xdg_toplevel,
-    #[doc = "< Wayland xdg popup role"]
-    pub xdg_popup: *mut xdg_popup,
-    #[doc = "< Wayland xdg positioner, for popup"]
-    pub xdg_positioner: *mut xdg_positioner,
+    pub _bindgen_opaque_blob: [u64; 8usize],
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
@@ -10417,28 +9378,6 @@ const _: () = {
         [::core::mem::size_of::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2>() - 64usize];
     ["Alignment of SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2"]
         [::core::mem::align_of::<SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2>() - 8usize];
-    ["Offset of field: SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2::display"]
-        [::core::mem::offset_of!(SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2, display) - 0usize];
-    ["Offset of field: SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2::surface"]
-        [::core::mem::offset_of!(SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2, surface) - 8usize];
-    ["Offset of field: SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2::shell_surface"][::core::mem::offset_of!(
-        SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2,
-        shell_surface
-    ) - 16usize];
-    ["Offset of field: SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2::egl_window"]
-        [::core::mem::offset_of!(SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2, egl_window) - 24usize];
-    ["Offset of field: SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2::xdg_surface"]
-        [::core::mem::offset_of!(SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2, xdg_surface) - 32usize];
-    ["Offset of field: SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2::xdg_toplevel"][::core::mem::offset_of!(
-        SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2,
-        xdg_toplevel
-    ) - 40usize];
-    ["Offset of field: SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2::xdg_popup"]
-        [::core::mem::offset_of!(SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2, xdg_popup) - 48usize];
-    ["Offset of field: SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2::xdg_positioner"][::core::mem::offset_of!(
-        SDL_SysWMinfo__bindgen_ty_1__bindgen_ty_2,
-        xdg_positioner
-    ) - 56usize];
 };
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
@@ -10446,22 +9385,11 @@ const _: () = {
         [::core::mem::size_of::<SDL_SysWMinfo__bindgen_ty_1>() - 64usize];
     ["Alignment of SDL_SysWMinfo__bindgen_ty_1"]
         [::core::mem::align_of::<SDL_SysWMinfo__bindgen_ty_1>() - 8usize];
-    ["Offset of field: SDL_SysWMinfo__bindgen_ty_1::x11"]
-        [::core::mem::offset_of!(SDL_SysWMinfo__bindgen_ty_1, x11) - 0usize];
-    ["Offset of field: SDL_SysWMinfo__bindgen_ty_1::wl"]
-        [::core::mem::offset_of!(SDL_SysWMinfo__bindgen_ty_1, wl) - 0usize];
-    ["Offset of field: SDL_SysWMinfo__bindgen_ty_1::dummy"]
-        [::core::mem::offset_of!(SDL_SysWMinfo__bindgen_ty_1, dummy) - 0usize];
 };
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of SDL_SysWMinfo"][::core::mem::size_of::<SDL_SysWMinfo>() - 72usize];
     ["Alignment of SDL_SysWMinfo"][::core::mem::align_of::<SDL_SysWMinfo>() - 8usize];
-    ["Offset of field: SDL_SysWMinfo::version"]
-        [::core::mem::offset_of!(SDL_SysWMinfo, version) - 0usize];
-    ["Offset of field: SDL_SysWMinfo::subsystem"]
-        [::core::mem::offset_of!(SDL_SysWMinfo, subsystem) - 4usize];
-    ["Offset of field: SDL_SysWMinfo::info"][::core::mem::offset_of!(SDL_SysWMinfo, info) - 8usize];
 };
 unsafe extern "C" {
     #[doc = " Get driver-specific information about a window.\n\n You must include SDL_syswm.h for the declaration of SDL_SysWMinfo.\n\n The caller must initialize the `info` structure's version by using\n `SDL_VERSION(&info.version)`, and then this function will fill in the rest\n of the structure with information about the given window.\n\n \\param window the window about which information is being requested.\n \\param info an SDL_SysWMinfo structure filled in with window information.\n \\returns SDL_TRUE if the function is implemented and the `version` member\n          of the `info` struct is valid, or SDL_FALSE if the information\n          could not be retrieved; call SDL_GetError() for more information.\n\n \\since This function is available since SDL 2.0.0."]

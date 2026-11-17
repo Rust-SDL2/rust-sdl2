@@ -666,6 +666,10 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
         .bitfield_enum("SDL_RendererFlip")
         .newtype_enum("SDL_Keymod")
         .newtype_enum("SDL_BlendMode")
+        // The window-system structs embed platform types (X11 uses c_ulong, which is
+        // 4 bytes on Windows), so keep them opaque to keep the pregenerated bindings
+        // valid on every platform.
+        .opaque_type("SDL_SysWM(msg|info).*")
         .default_enum_style(bindgen::EnumVariation::Rust {
             non_exhaustive: false,
         })
