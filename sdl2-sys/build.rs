@@ -1,36 +1,15 @@
 #![allow(unused_imports, dead_code, unused_variables)]
 
-#[cfg(feature = "bindgen")]
-extern crate bindgen;
-#[macro_use]
-extern crate cfg_if;
-#[cfg(feature = "bundled")]
-extern crate cmake;
-#[cfg(feature = "pkg-config")]
-extern crate pkg_config;
+#[cfg(all(
+    update_pregenerated_bindings,
+    not(feature = "bindgen"),
+    not(feature = "bundled"),
+))]
+compile_error!("Enable 'bindgen' and 'bundled' features when using update_pregenerated_bindings");
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::{env, fs, io};
-
-#[cfg(feature = "bindgen")]
-macro_rules! add_msvc_includes_to_bindings {
-    ($bindings:expr) => {
-        $bindings = $bindings.clang_arg(format!(
-            "-IC:/Program Files (x86)/Windows Kits/8.1/Include/shared"
-        ));
-        $bindings = $bindings.clang_arg(format!("-IC:/Program Files/LLVM/lib/clang/5.0.0/include"));
-        $bindings = $bindings.clang_arg(format!(
-            "-IC:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt"
-        ));
-        $bindings = $bindings.clang_arg(format!(
-            "-IC:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include"
-        ));
-        $bindings = $bindings.clang_arg(format!(
-            "-IC:/Program Files (x86)/Windows Kits/8.1/Include/um"
-        ));
-    };
-}
 
 #[cfg(feature = "bundled")]
 fn init_submodule(sdl_path: &Path) {
@@ -329,9 +308,8 @@ fn link_sdl2(target_os: &str) {
             if target_os.contains("linux")
                 || target_os.contains("freebsd")
                 || target_os.contains("openbsd")
+                || target_os.contains("windows")
             {
-                println!("cargo:rustc-flags=-l SDL2_mixer");
-            } else if target_os.contains("windows") {
                 println!("cargo:rustc-flags=-l SDL2_mixer");
             } else if target_os.contains("darwin") {
                 let use_framework = cfg!(any(mac_framework, feature = "use_mac_framework"));
@@ -353,9 +331,8 @@ fn link_sdl2(target_os: &str) {
             if target_os.contains("linux")
                 || target_os.contains("freebsd")
                 || target_os.contains("openbsd")
+                || target_os.contains("windows")
             {
-                println!("cargo:rustc-flags=-l SDL2_image");
-            } else if target_os.contains("windows") {
                 println!("cargo:rustc-flags=-l SDL2_image");
             } else if target_os.contains("darwin") {
                 let use_framework = cfg!(any(mac_framework, feature = "use_mac_framework"));
@@ -377,9 +354,8 @@ fn link_sdl2(target_os: &str) {
             if target_os.contains("linux")
                 || target_os.contains("freebsd")
                 || target_os.contains("openbsd")
+                || target_os.contains("windows")
             {
-                println!("cargo:rustc-flags=-l SDL2_ttf");
-            } else if target_os.contains("windows") {
                 println!("cargo:rustc-flags=-l SDL2_ttf");
             } else if target_os.contains("darwin") {
                 let use_framework = cfg!(any(mac_framework, feature = "use_mac_framework"));
@@ -401,9 +377,8 @@ fn link_sdl2(target_os: &str) {
             if target_os.contains("linux")
                 || target_os.contains("freebsd")
                 || target_os.contains("openbsd")
+                || target_os.contains("windows")
             {
-                println!("cargo:rustc-flags=-l SDL2_gfx");
-            } else if target_os.contains("windows") {
                 println!("cargo:rustc-flags=-l SDL2_gfx");
             } else if target_os.contains("darwin") {
                 let use_framework = cfg!(any(mac_framework, feature = "use_mac_framework"));
@@ -590,62 +565,46 @@ fn main() {
     }
 }
 
-#[cfg(not(feature = "bindgen"))]
+#[cfg(any(not(feature = "bindgen"), update_pregenerated_bindings))]
 fn copy_pregenerated_bindings() {
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
     let crate_path = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
-    fs::copy(
-        crate_path.join("sdl_bindings.rs"),
-        out_path.join("sdl_bindings.rs"),
-    )
-    .expect("Couldn't find pregenerated bindings!");
 
-    if cfg!(feature = "image") {
-        fs::copy(
-            crate_path.join("sdl_image_bindings.rs"),
-            out_path.join("sdl_image_bindings.rs"),
-        )
-        .expect("Couldn't find pregenerated SDL_image bindings!");
-    }
-    if cfg!(feature = "ttf") {
-        fs::copy(
-            crate_path.join("sdl_ttf_bindings.rs"),
-            out_path.join("sdl_ttf_bindings.rs"),
-        )
-        .expect("Couldn't find pregenerated SDL_ttf bindings!");
-    }
-    if cfg!(feature = "mixer") {
-        fs::copy(
-            crate_path.join("sdl_mixer_bindings.rs"),
-            out_path.join("sdl_mixer_bindings.rs"),
-        )
-        .expect("Couldn't find pregenerated SDL_mixer bindings!");
-    }
+    #[allow(unused_mut)]
+    let mut paths = vec!["sdl_bindings.rs"];
 
-    if cfg!(feature = "gfx") {
-        fs::copy(
-            crate_path.join("sdl_gfx_framerate_bindings.rs"),
-            out_path.join("sdl_gfx_framerate_bindings.rs"),
-        )
-        .expect("Couldn't find pregenerated SDL_gfx framerate bindings!");
+    #[cfg(feature = "image")]
+    paths.push("sdl_image_bindings.rs");
 
-        fs::copy(
-            crate_path.join("sdl_gfx_primitives_bindings.rs"),
-            out_path.join("sdl_gfx_primitives_bindings.rs"),
-        )
-        .expect("Couldn't find pregenerated SDL_gfx primitives bindings!");
+    #[cfg(feature = "ttf")]
+    paths.push("sdl_ttf_bindings.rs");
 
-        fs::copy(
-            crate_path.join("sdl_gfx_imagefilter_bindings.rs"),
-            out_path.join("sdl_gfx_imagefilter_bindings.rs"),
-        )
-        .expect("Couldn't find pregenerated SDL_gfx imagefilter bindings!");
+    #[cfg(feature = "mixer")]
+    paths.push("sdl_mixer_bindings.rs");
 
-        fs::copy(
-            crate_path.join("sdl_gfx_rotozoom_bindings.rs"),
-            out_path.join("sdl_gfx_rotozoom_bindings.rs"),
-        )
-        .expect("Couldn't find pregenerated SDL_gfx rotozoom bindings!");
+    #[cfg(feature = "gfx")]
+    paths.extend([
+        "sdl_gfx_framerate_bindings.rs",
+        "sdl_gfx_primitives_bindings.rs",
+        "sdl_gfx_imagefilter_bindings.rs",
+        "sdl_gfx_rotozoom_bindings.rs",
+    ]);
+
+    for path in paths {
+        let from = crate_path.join(path);
+        let to = out_path.join(path);
+
+        // Copy from OUT_DIR to the crate root when updating the pregenerated bindings
+        #[cfg(update_pregenerated_bindings)]
+        let (from, to) = (to, from);
+
+        if let Err(err) = fs::copy(&from, &to) {
+            panic!(
+                "unable to copy {} to {}: {err}",
+                from.display(),
+                to.display(),
+            );
+        }
     }
 }
 
@@ -654,9 +613,61 @@ fn copy_pregenerated_bindings() {
 // to be found by bindgen (should point to the include/ directories)
 fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
     let target_os = get_os_from_triple(target).unwrap();
-    let mut bindings = bindgen::Builder::default()
+
+    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+
+    let mut all_bindings = bindgen::builder()
         // enable no_std-friendly output by only using core definitions
         .use_core()
+        .ctypes_prefix("libc");
+
+    #[derive(Debug)]
+    struct ParseCallbacks;
+
+    impl bindgen::callbacks::ParseCallbacks for ParseCallbacks {
+        fn add_derives(&self, info: &bindgen::callbacks::DeriveInfo<'_>) -> Vec<String> {
+            // bindgen has too little information on these types to know they can derive these traits
+            // see https://github.com/rust-lang/rust-bindgen/issues/2079
+            if ["Mix_Chunk", "FPSmanager"].contains(&info.name) {
+                ["Debug", "Copy", "Clone"].map(Into::into).into()
+            } else {
+                vec![]
+            }
+        }
+    }
+
+    all_bindings = all_bindings.parse_callbacks(Box::new(ParseCallbacks));
+
+    // Set correct target triple for bindgen when cross-compiling
+    if target != host {
+        all_bindings = all_bindings.clang_args(["-target", target]);
+    }
+
+    for headers_path in headers_paths {
+        all_bindings = all_bindings.clang_arg(format!("-I{headers_path}"));
+    }
+
+    if target_os == "windows-msvc" {
+        all_bindings = all_bindings.clang_args([
+            "-IC:/Program Files (x86)/Windows Kits/8.1/Include/shared",
+            "-IC:/Program Files/LLVM/lib/clang/5.0.0/include",
+            "-IC:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt",
+            "-IC:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include",
+            "-IC:/Program Files (x86)/Windows Kits/8.1/Include/um",
+        ]);
+    }
+
+    // Don't put OS specific (X11 and Wayland related) items in the pregenerated bindings.
+    // This assumes you are on Linux when generating these.
+    #[cfg(not(update_pregenerated_bindings))]
+    // SDL2 doesn't have a default configuration for Linux
+    if target_os == "linux-gnu" {
+        all_bindings =
+            all_bindings.clang_args(["-DSDL_VIDEO_DRIVER_X11", "-DSDL_VIDEO_DRIVER_WAYLAND"]);
+    }
+
+    let bindings = all_bindings
+        .clone()
         .allowlist_item("(SDL|AUDIO|RW)_.*")
         .bitfield_enum("SDL_RendererFlip")
         .newtype_enum("SDL_Keymod")
@@ -664,174 +675,29 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
         .default_enum_style(bindgen::EnumVariation::Rust {
             non_exhaustive: false,
         })
-        .ctypes_prefix("libc");
-
-    let mut image_bindings = bindgen::Builder::default()
-        .use_core()
-        .raw_line("use crate::*;")
-        .ctypes_prefix("libc");
-
-    let mut ttf_bindings = bindgen::Builder::default()
-        .use_core()
-        .raw_line("use crate::*;")
-        .ctypes_prefix("libc");
-
-    let mut mixer_bindings = bindgen::Builder::default()
-        .use_core()
-        .raw_line("use crate::*;")
-        .ctypes_prefix("libc");
-
-    let mut gfx_framerate_bindings = bindgen::Builder::default().use_core().ctypes_prefix("libc");
-    let mut gfx_primitives_bindings = bindgen::Builder::default()
-        .use_core()
-        .raw_line("use crate::*;")
-        .ctypes_prefix("libc");
-    let mut gfx_imagefilter_bindings = bindgen::Builder::default().use_core().ctypes_prefix("libc");
-    let mut gfx_rotozoom_bindings = bindgen::Builder::default()
-        .use_core()
-        .raw_line("use crate::*;")
-        .ctypes_prefix("libc");
-
-    // Set correct target triple for bindgen when cross-compiling
-    if target != host {
-        bindings = bindings.clang_arg("-target");
-        bindings = bindings.clang_arg(target);
-
-        if cfg!(feature = "image") {
-            image_bindings = image_bindings.clang_arg("-target");
-            image_bindings = image_bindings.clang_arg(target);
-        }
-
-        if cfg!(feature = "ttf") {
-            ttf_bindings = ttf_bindings.clang_arg("-target");
-            ttf_bindings = ttf_bindings.clang_arg(target);
-        }
-
-        if cfg!(feature = "mixer") {
-            mixer_bindings = mixer_bindings.clang_arg("-target");
-            mixer_bindings = mixer_bindings.clang_arg(target);
-        }
-
-        if cfg!(feature = "gfx") {
-            gfx_framerate_bindings = gfx_framerate_bindings.clang_arg("-target");
-            gfx_framerate_bindings = gfx_framerate_bindings.clang_arg(target);
-
-            gfx_primitives_bindings = gfx_primitives_bindings.clang_arg("-target");
-            gfx_primitives_bindings = gfx_primitives_bindings.clang_arg(target);
-
-            gfx_imagefilter_bindings = gfx_imagefilter_bindings.clang_arg("-target");
-            gfx_imagefilter_bindings = gfx_imagefilter_bindings.clang_arg(target);
-
-            gfx_rotozoom_bindings = gfx_rotozoom_bindings.clang_arg("-target");
-            gfx_rotozoom_bindings = gfx_rotozoom_bindings.clang_arg(target);
-        }
-    }
-
-    for headers_path in headers_paths {
-        bindings = bindings.clang_arg(format!("-I{}", headers_path));
-        if cfg!(feature = "image") {
-            image_bindings = image_bindings.clang_arg(format!("-I{}", headers_path));
-        }
-        if cfg!(feature = "ttf") {
-            ttf_bindings = ttf_bindings.clang_arg(format!("-I{}", headers_path));
-        }
-        if cfg!(feature = "mixer") {
-            mixer_bindings = mixer_bindings.clang_arg(format!("-I{}", headers_path));
-        }
-        if cfg!(feature = "gfx") {
-            gfx_framerate_bindings =
-                gfx_framerate_bindings.clang_arg(format!("-I{}", headers_path));
-            gfx_primitives_bindings =
-                gfx_primitives_bindings.clang_arg(format!("-I{}", headers_path));
-            gfx_imagefilter_bindings =
-                gfx_imagefilter_bindings.clang_arg(format!("-I{}", headers_path));
-            gfx_rotozoom_bindings = gfx_rotozoom_bindings.clang_arg(format!("-I{}", headers_path));
-        }
-    }
-
-    if target_os == "windows-msvc" {
-        add_msvc_includes_to_bindings!(bindings);
-        if cfg!(feature = "image") {
-            add_msvc_includes_to_bindings!(image_bindings);
-        }
-        if cfg!(feature = "ttf") {
-            add_msvc_includes_to_bindings!(ttf_bindings);
-        }
-        if cfg!(feature = "mixer") {
-            add_msvc_includes_to_bindings!(mixer_bindings);
-        }
-        if cfg!(feature = "gfx") {
-            add_msvc_includes_to_bindings!(gfx_framerate_bindings);
-            add_msvc_includes_to_bindings!(gfx_primitives_bindings);
-            add_msvc_includes_to_bindings!(gfx_imagefilter_bindings);
-            add_msvc_includes_to_bindings!(gfx_rotozoom_bindings);
-        }
-    };
-
-    // SDL2 hasn't a default configuration for Linux
-    if target_os == "linux-gnu" {
-        bindings = bindings.clang_arg("-DSDL_VIDEO_DRIVER_X11");
-        bindings = bindings.clang_arg("-DSDL_VIDEO_DRIVER_WAYLAND");
-        if cfg!(feature = "image") {
-            image_bindings = image_bindings.clang_arg("-DSDL_VIDEO_DRIVER_X11");
-            image_bindings = image_bindings.clang_arg("-DSDL_VIDEO_DRIVER_WAYLAND");
-        }
-        if cfg!(feature = "ttf") {
-            ttf_bindings = ttf_bindings.clang_arg("-DSDL_VIDEO_DRIVER_X11");
-            ttf_bindings = ttf_bindings.clang_arg("-DSDL_VIDEO_DRIVER_WAYLAND");
-        }
-        if cfg!(feature = "mixer") {
-            mixer_bindings = mixer_bindings.clang_arg("-DSDL_VIDEO_DRIVER_X11");
-            mixer_bindings = mixer_bindings.clang_arg("-DSDL_VIDEO_DRIVER_WAYLAND");
-        }
-        if cfg!(feature = "gfx") {
-            gfx_framerate_bindings = gfx_framerate_bindings.clang_arg("-DSDL_VIDEO_DRIVER_X11");
-            gfx_framerate_bindings = gfx_framerate_bindings.clang_arg("-DSDL_VIDEO_DRIVER_WAYLAND");
-            gfx_primitives_bindings = gfx_primitives_bindings.clang_arg("-DSDL_VIDEO_DRIVER_X11");
-            gfx_primitives_bindings =
-                gfx_primitives_bindings.clang_arg("-DSDL_VIDEO_DRIVER_WAYLAND");
-            gfx_imagefilter_bindings = gfx_imagefilter_bindings.clang_arg("-DSDL_VIDEO_DRIVER_X11");
-            gfx_imagefilter_bindings =
-                gfx_imagefilter_bindings.clang_arg("-DSDL_VIDEO_DRIVER_WAYLAND");
-            gfx_rotozoom_bindings = gfx_rotozoom_bindings.clang_arg("-DSDL_VIDEO_DRIVER_X11");
-            gfx_rotozoom_bindings = gfx_rotozoom_bindings.clang_arg("-DSDL_VIDEO_DRIVER_WAYLAND");
-        }
-    }
-
-    let bindings = bindings
         .header("wrapper.h")
-        .blocklist_item("FP_NAN")
-        .blocklist_item("FP_INFINITE")
-        .blocklist_item("FP_ZERO")
-        .blocklist_item("FP_SUBNORMAL")
-        .blocklist_item("FP_NORMAL")
         .derive_debug(false)
         .generate()
         .expect("Unable to generate bindings!");
-
-    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
 
     bindings
         .write_to_file(out_path.join("sdl_bindings.rs"))
         .expect("Couldn't write bindings!");
 
+    let other_lib_bindings = all_bindings
+        .raw_line("#[allow(unused)]\nuse crate::*;")
+        .blocklist_item("__.*|_IO.*|FILE|((U|S)int\\d+)");
+
     if cfg!(feature = "image") {
-        let image_bindings = image_bindings
+        let image_bindings = other_lib_bindings
+            .clone()
             .header("wrapper_image.h")
-            .blocklist_item("FP_NAN")
-            .blocklist_item("FP_INFINITE")
-            .blocklist_item("FP_ZERO")
-            .blocklist_item("FP_SUBNORMAL")
-            .blocklist_item("FP_NORMAL")
             .allowlist_type("IMG.*")
             .allowlist_function("IMG.*")
             .allowlist_var("IMG.*")
             .blocklist_type("SDL_.*")
-            .blocklist_type("_IO.*|FILE")
             .generate()
             .expect("Unable to generate image_bindings!");
-
-        let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
 
         image_bindings
             .write_to_file(out_path.join("sdl_image_bindings.rs"))
@@ -839,22 +705,15 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
     }
 
     if cfg!(feature = "ttf") {
-        let ttf_bindings = ttf_bindings
+        let ttf_bindings = other_lib_bindings
+            .clone()
             .header("wrapper_ttf.h")
-            .blocklist_item("FP_NAN")
-            .blocklist_item("FP_INFINITE")
-            .blocklist_item("FP_ZERO")
-            .blocklist_item("FP_SUBNORMAL")
-            .blocklist_item("FP_NORMAL")
             .allowlist_type("TTF.*")
             .allowlist_function("TTF.*")
             .allowlist_var("TTF.*")
             .blocklist_type("SDL_.*")
-            .blocklist_type("_IO.*|FILE")
             .generate()
             .expect("Unable to generate ttf_bindings!");
-
-        let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
 
         ttf_bindings
             .write_to_file(out_path.join("sdl_ttf_bindings.rs"))
@@ -862,13 +721,9 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
     }
 
     if cfg!(feature = "mixer") {
-        let mixer_bindings = mixer_bindings
+        let mixer_bindings = other_lib_bindings
+            .clone()
             .header("wrapper_mixer.h")
-            .blocklist_item("FP_NAN")
-            .blocklist_item("FP_INFINITE")
-            .blocklist_item("FP_ZERO")
-            .blocklist_item("FP_SUBNORMAL")
-            .blocklist_item("FP_NORMAL")
             .allowlist_type("MIX.*")
             .allowlist_type("Mix.*")
             .allowlist_type("MUS.*")
@@ -876,11 +731,8 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
             .allowlist_var("MIX.*")
             .allowlist_var("MUS.*")
             .blocklist_type("SDL_.*")
-            .blocklist_type("_IO.*|FILE")
             .generate()
             .expect("Unable to generate mixer_bindings!");
-
-        let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
 
         mixer_bindings
             .write_to_file(out_path.join("sdl_mixer_bindings.rs"))
@@ -888,33 +740,22 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
     }
 
     if cfg!(feature = "gfx") {
-        let gfx_framerate_bindings = gfx_framerate_bindings
+        let gfx_framerate_bindings = other_lib_bindings
+            .clone()
             .header("wrapper_gfx_framerate.h")
-            .blocklist_item("FP_NAN")
-            .blocklist_item("FP_INFINITE")
-            .blocklist_item("FP_ZERO")
-            .blocklist_item("FP_SUBNORMAL")
-            .blocklist_item("FP_NORMAL")
             .allowlist_type("FPS.*")
             .allowlist_function("SDL_.*rame.*")
             .allowlist_var("FPS.*")
-            .blocklist_type("_IO.*|FILE")
             .generate()
             .expect("Unable to generate gfx_framerate_bindings!");
-
-        let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
 
         gfx_framerate_bindings
             .write_to_file(out_path.join("sdl_gfx_framerate_bindings.rs"))
             .expect("Couldn't write gfx_framerate_bindings!");
 
-        let gfx_primitives_bindings = gfx_primitives_bindings
+        let gfx_primitives_bindings = other_lib_bindings
+            .clone()
             .header("wrapper_gfx_primitives.h")
-            .blocklist_item("FP_NAN")
-            .blocklist_item("FP_INFINITE")
-            .blocklist_item("FP_ZERO")
-            .blocklist_item("FP_SUBNORMAL")
-            .blocklist_item("FP_NORMAL")
             .blocklist_type("SDL_.*")
             .allowlist_function("pixel.*")
             .allowlist_function("rectangle.*")
@@ -924,6 +765,7 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
             .allowlist_function("thick.*")
             .allowlist_function(".*circle.*")
             .allowlist_function("arc.*")
+            .blocklist_function("arc4random.*")
             .allowlist_function("filled.*")
             .allowlist_function(".*ellipse.*")
             .allowlist_function("pie.*")
@@ -934,56 +776,42 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
             .allowlist_function("character.*")
             .allowlist_function("string.*")
             .allowlist_function("gfx.*")
-            .blocklist_type("_IO.*|FILE")
             .generate()
             .expect("Unable to generate gfx_primitives_bindings!");
-
-        let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
 
         gfx_primitives_bindings
             .write_to_file(out_path.join("sdl_gfx_primitives_bindings.rs"))
             .expect("Couldn't write gfx_primitives_bindings!");
 
-        let gfx_imagefilter_bindings = gfx_imagefilter_bindings
+        let gfx_imagefilter_bindings = other_lib_bindings
+            .clone()
             .header("wrapper_gfx_imagefilter.h")
             .allowlist_function("SDL_image.*")
-            .blocklist_item("FP_NAN")
-            .blocklist_item("FP_INFINITE")
-            .blocklist_item("FP_ZERO")
-            .blocklist_item("FP_SUBNORMAL")
-            .blocklist_item("FP_NORMAL")
-            .blocklist_type("_IO.*|FILE")
             .generate()
             .expect("Unable to generate gfx_imagefilter_bindings!");
-
-        let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
 
         gfx_imagefilter_bindings
             .write_to_file(out_path.join("sdl_gfx_imagefilter_bindings.rs"))
             .expect("Couldn't write gfx_imagefilter_bindings!");
 
-        let gfx_rotozoom_bindings = gfx_rotozoom_bindings
+        let gfx_rotozoom_bindings = other_lib_bindings
+            .clone()
             .header("wrapper_gfx_rotozoom.h")
             .blocklist_type("SDL_.*")
             .allowlist_function("rotozoom.*")
             .allowlist_function("zoom.*")
             .allowlist_function("shrink.*")
             .allowlist_function("rotate.*")
-            .blocklist_item("FP_NAN")
-            .blocklist_item("FP_INFINITE")
-            .blocklist_item("FP_ZERO")
-            .blocklist_item("FP_SUBNORMAL")
-            .blocklist_item("FP_NORMAL")
-            .blocklist_type("_IO.*|FILE")
             .generate()
             .expect("Unable to generate gfx_rotozoom_bindings!");
-
-        let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
 
         gfx_rotozoom_bindings
             .write_to_file(out_path.join("sdl_gfx_rotozoom_bindings.rs"))
             .expect("Couldn't write gfx_rotozoom_bindings!");
     }
+
+    #[cfg(update_pregenerated_bindings)]
+    copy_pregenerated_bindings();
 }
 
 fn get_os_from_triple(triple: &str) -> Option<&str> {
