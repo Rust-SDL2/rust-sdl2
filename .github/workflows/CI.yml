@@ -20,7 +20,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y autoconf automake libtool pkg-config libltdl-dev
+          sudo apt-get install -y autoconf autoconf-archive automake libtool pkg-config libltdl-dev
       - name: Install dependencies
         run: cargo vcpkg -v build
       - name: Build SDL2

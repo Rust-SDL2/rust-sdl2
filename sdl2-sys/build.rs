@@ -472,6 +472,11 @@ fn copy_library_file(src_path: &Path, target_path: &Path) {
     //    otherwise and fails.
     let deps_path = target_path.join("deps");
     for path in &[target_path, &deps_path] {
+        if *path == &deps_path && !deps_path.is_dir() {
+            // Cargo's newer build-dir layout since 1.100 no longer creates this
+            // directory (tests live elsewhere), so it is skipped when missing.
+            continue;
+        }
         let dst_path = path.join(src_path.file_name().expect("Path missing filename"));
 
         fs::copy(src_path, &dst_path).unwrap_or_else(|_| {
@@ -661,6 +666,10 @@ fn generate_bindings(target: &str, host: &str, headers_paths: &[String]) {
         .bitfield_enum("SDL_RendererFlip")
         .newtype_enum("SDL_Keymod")
         .newtype_enum("SDL_BlendMode")
+        // The window-system structs embed platform types (X11 uses c_ulong, which is
+        // 4 bytes on Windows), so keep them opaque to keep the pregenerated bindings
+        // valid on every platform.
+        .opaque_type("SDL_SysWM(msg|info).*")
         .default_enum_style(bindgen::EnumVariation::Rust {
             non_exhaustive: false,
         })
