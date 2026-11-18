@@ -3,7 +3,7 @@ name = "sdl2"
 description = "SDL2 bindings for Rust"
 repository = "https://github.com/Rust-SDL2/rust-sdl2"
 documentation = "https://docs.rs/sdl2"
-version = "0.38.0"
+version = "0.39.0"
 license = "MIT"
 authors = [ "Tony Aldridge <tony@angry-lawyer.com>", "Cobrand <cobrandw@gmail.com>"]
 keywords = ["SDL", "windowing", "graphics", "api", "engine"]
@@ -11,6 +11,7 @@ categories = ["rendering","api-bindings","game-engines","multimedia"]
 readme = "README.md"
 resolver = "2"
 edition = "2015"
+rust-version = "1.80"
 
 [lib]
 name = "sdl2"
@@ -22,7 +23,7 @@ libc = "0.2.92"
 
 [dependencies.sdl2-sys]
 path = "sdl2-sys"
-version = "^0.38.0"
+version = "^0.39.0"
 
 [dependencies.c_vec]
 # allow both 1.* and 2.0 versions

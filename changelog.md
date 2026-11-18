@@ -13,6 +13,18 @@ when upgrading from a version of rust-sdl2 to another.
 
 [PR #1506](https://github.com/Rust-SDL2/rust-sdl2/pull/1506) **BREAKING CHANGE** Update crates.io dependencies, update bundled SDL2 to 2.32.10, add whitelist to bindgen to only emit SDL related items, and specifically no platform (or compiler, etc) specific items. Implement the same set of useful derived traits on bitflags types.
 
+[PR #1503](https://github.com/Rust-SDL2/rust-sdl2/pull/1503) Fix UB in `Scancode::from_i32`, which transmuted arbitrary integers into `SDL_Scancode`.
+
+[PR #1505](https://github.com/Rust-SDL2/rust-sdl2/pull/1505) **BREAKING CHANGE** Fix panic in `Canvas::copy_ex` and `Canvas::copy_ex_f` when flipping both horizontally and vertically. In `sdl2-sys`, `SDL_RendererFlip` is now a bitfield type and `SDL_Keymod` a newtype instead of Rust enums.
+
+[PR #1512](https://github.com/Rust-SDL2/rust-sdl2/pull/1512) Fix Windows builds with `--features use-bindgen`.
+
+[PR #1522](https://github.com/Rust-SDL2/rust-sdl2/pull/1522) Fix color channel byte order in `gfx::primitives` (regression in 0.38.0 from #1470), and swap bytes correctly on big endian systems.
+
+[PR #1524](https://github.com/Rust-SDL2/rust-sdl2/pull/1524) Replace `lazy_static` with `std::sync::LazyLock`. This requires Rust 1.80 or later.
+
+[PR #1529](https://github.com/Rust-SDL2/rust-sdl2/pull/1529) **BREAKING CHANGE** Fix `bundled` builds with Rust 1.100's new Cargo build-dir layout. Fix Windows builds with the pregenerated bindings. In `sdl2-sys`: `SDL_SysWMmsg` and `SDL_SysWMinfo` are now opaque, use the `raw-window-handle` feature to get native window handles if you need them.
+
 ### v0.38.0
 
 [PR #1493](https://github.com/Rust-SDL2/rust-sdl2/pull/1493) Add `Rect::origin` and specifies origin location in `Rect::new`.
