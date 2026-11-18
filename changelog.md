@@ -1,6 +1,16 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
+### v0.38.1
+
+[PR #1503](https://github.com/Rust-SDL2/rust-sdl2/pull/1503) Fix UB in `Scancode::from_i32`, which transmuted arbitrary integers into `SDL_Scancode`.
+
+[PR #1522](https://github.com/Rust-SDL2/rust-sdl2/pull/1522) Fix color channel byte order in `gfx::primitives` (regression in 0.38.0 from #1470), and swap bytes correctly on big endian systems.
+
+[PR #1529](https://github.com/Rust-SDL2/rust-sdl2/pull/1529):
+* Fix `bundled` builds with Rust 1.100's new Cargo build-dir layout.
+* Bump the pinned vcpkg release to 2026.10.16 to fix an issue with CMake 4
+
 ### v0.38.0
 [PR #1493](https://github.com/Rust-SDL2/rust-sdl2/pull/1493) Add `Rect::origin` and specifies origin location in `Rect::new`.
 
