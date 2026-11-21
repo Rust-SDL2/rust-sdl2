@@ -31,6 +31,7 @@ use std::ffi::{CStr, CString};
 use std::fmt;
 use std::marker::PhantomData;
 use std::path::Path;
+use std::ptr::NonNull;
 use std::str::from_utf8;
 use std::{default, ptr};
 use sys;
@@ -301,6 +302,17 @@ impl Drop for Chunk {
 }
 
 impl Chunk {
+    /// Load a sample from memory directly.
+    ///
+    /// This works the same way as [Chunk::from_file] except with bytes instead of a file path.
+    /// If you have read your sound files (.wav, .ogg, etc...) from
+    /// disk to memory as bytes you can use this function
+    /// to create [Chunk]s from their bytes.
+    pub fn from_bytes(path: &[u8]) -> Result<Chunk, String> {
+        let b = RWops::from_bytes(path)?;
+        b.load_wav()
+    }
+
     /// Load file for use as a sample.
     pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Chunk, String> {
         let raw = unsafe { mixer::Mix_LoadWAV_RW(RWops::from_file(path, "rb")?.raw(), 0) };
@@ -364,7 +376,7 @@ impl<'a> LoaderRWops<'a> for RWops<'a> {
         } else {
             Ok(Music {
                 raw,
-                owned: true,
+                owned_data: None,
                 _marker: PhantomData,
             })
         }
@@ -799,15 +811,19 @@ extern "C" fn c_music_finished_hook() {
 /// This is an opaque data type used for Music data.
 #[derive(PartialEq)]
 pub struct Music<'a> {
-    pub raw: *mut mixer::Mix_Music,
-    pub owned: bool,
+    raw: *mut mixer::Mix_Music,
+    owned_data: Option<NonNull<[u8]>>,
     _marker: PhantomData<&'a ()>,
 }
 
 impl<'a> Drop for Music<'a> {
     fn drop(&mut self) {
-        if self.owned {
-            unsafe { mixer::Mix_FreeMusic(self.raw) };
+        unsafe {
+            mixer::Mix_FreeMusic(self.raw);
+            if let Some(t) = self.owned_data.take() {
+                let b = Box::from_raw(t.as_ptr());
+                drop(b);
+            }
         }
     }
 }
@@ -820,7 +836,36 @@ impl<'a> fmt::Debug for Music<'a> {
 }
 
 impl<'a> Music<'a> {
+    fn load_bytes(
+        buf: *const u8,
+        len: usize,
+        owned: Option<NonNull<[u8]>>,
+    ) -> Result<Music<'static>, String> {
+        let rw = unsafe { sys::SDL_RWFromConstMem(buf as *const c_void, len as c_int) };
+        if rw.is_null() {
+            return Err(get_error());
+        }
+        let raw = unsafe { mixer::Mix_LoadMUS_RW(rw, 0) };
+        if raw.is_null() {
+            Err(get_error())
+        } else {
+            Ok(Music {
+                raw: raw,
+                owned_data: owned,
+                _marker: PhantomData,
+            })
+        }
+    }
+
+    /// Load music from a static byte buffer.
+    #[doc(alias = "SDL_RWFromConstMem")]
+    pub fn from_static_bytes(buf: &'static [u8]) -> Result<Music<'static>, String> {
+        Self::load_bytes(buf.as_ptr(), buf.len(), None)
+    }
+
     /// Load music file to use.
+    ///
+    /// The music is streamed directly from the file when played.
     pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Music<'static>, String> {
         let raw = unsafe {
             let c_path = CString::new(path.as_ref().to_str().unwrap()).unwrap();
@@ -831,32 +876,25 @@ impl<'a> Music<'a> {
         } else {
             Ok(Music {
                 raw,
-                owned: true,
+                owned_data: None,
                 _marker: PhantomData,
             })
         }
     }
 
-    /// Load music from a static byte buffer.
+    /// Load music from an owned byte buffer.
+    ///
+    /// The returned [Music] instance takes ownership of the given buffer
+    /// and drops it along with itself.
+    ///
+    /// Loading the whole music data to memory can be wasteful if the music can be streamed directly from
+    /// a file instead. Consider using [Music::from_file] when possible.
     #[doc(alias = "SDL_RWFromConstMem")]
-    pub fn from_static_bytes(buf: &'static [u8]) -> Result<Music<'static>, String> {
-        let rw =
-            unsafe { sys::SDL_RWFromConstMem(buf.as_ptr() as *const c_void, buf.len() as c_int) };
-
-        if rw.is_null() {
-            return Err(get_error());
-        }
-
-        let raw = unsafe { mixer::Mix_LoadMUS_RW(rw, 0) };
-        if raw.is_null() {
-            Err(get_error())
-        } else {
-            Ok(Music {
-                raw,
-                owned: true,
-                _marker: PhantomData,
-            })
-        }
+    pub fn from_owned_bytes(mut buf: Box<[u8]>) -> Result<Music<'static>, String> {
+        let len = buf.len();
+        let raw_ptr = Box::into_raw(buf);
+        let non_null = unsafe { NonNull::new_unchecked(raw_ptr) };
+        Self::load_bytes(non_null.cast::<u8>().as_ptr(), len, Some(non_null))
     }
 
     /// The file format encoding of the music.
