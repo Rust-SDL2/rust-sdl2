@@ -1,6 +1,10 @@
 In this file will be listed the changes, especially the breaking ones that one should be careful of
 when upgrading from a version of rust-sdl2 to another.
 
+### v0.39.1
+
+[PR #1530](https://github.com/Rust-SDL2/rust-sdl2/pull/1530) Fix build with the `unsafe_textures` feature (regression in 0.39.0 from #1510).
+
 ### v0.39.0
 
 [PR #1413](https://github.com/Rust-SDL2/rust-sdl2/pull/1413) Deprecate `From` implementation of `SwapInterval` that could panic, add `TryFrom`-like inherent function.
