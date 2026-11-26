@@ -82,3 +82,5 @@ jobs:
           # SDL 2.0.10 so no hidapi
           cargo build --no-default-features --features "${CI_BUILD_FEATURES}"
           cargo test --no-default-features --features "${CI_BUILD_FEATURES}"
+          # unsafe_textures swaps in a Texture type without a lifetime.
+          cargo build --no-default-features --features "${CI_BUILD_FEATURES} unsafe_textures"
