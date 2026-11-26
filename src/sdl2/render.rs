@@ -1124,7 +1124,7 @@ impl<T> TextureCreator<T> {
         access: TextureAccess,
         width: u32,
         height: u32,
-    ) -> Result<Texture<'_>, TextureValueError>
+    ) -> Result<CreatedTexture<'_>, TextureValueError>
     where
         F: Into<Option<PixelFormatEnum>>,
     {
@@ -1145,7 +1145,7 @@ impl<T> TextureCreator<T> {
         format: F,
         width: u32,
         height: u32,
-    ) -> Result<Texture<'_>, TextureValueError>
+    ) -> Result<CreatedTexture<'_>, TextureValueError>
     where
         F: Into<Option<PixelFormatEnum>>,
     {
@@ -1159,7 +1159,7 @@ impl<T> TextureCreator<T> {
         format: F,
         width: u32,
         height: u32,
-    ) -> Result<Texture<'_>, TextureValueError>
+    ) -> Result<CreatedTexture<'_>, TextureValueError>
     where
         F: Into<Option<PixelFormatEnum>>,
     {
@@ -1173,7 +1173,7 @@ impl<T> TextureCreator<T> {
         format: F,
         width: u32,
         height: u32,
-    ) -> Result<Texture<'_>, TextureValueError>
+    ) -> Result<CreatedTexture<'_>, TextureValueError>
     where
         F: Into<Option<PixelFormatEnum>>,
     {
@@ -1214,7 +1214,7 @@ impl<T> TextureCreator<T> {
     pub fn create_texture_from_surface<S: AsRef<SurfaceRef>>(
         &self,
         surface: S,
-    ) -> Result<Texture<'_>, TextureValueError> {
+    ) -> Result<CreatedTexture<'_>, TextureValueError> {
         use self::TextureValueError::*;
         let result =
             unsafe { sys::SDL_CreateTextureFromSurface(self.context.raw, surface.as_ref().raw()) };
@@ -2463,6 +2463,13 @@ pub struct TextureQuery {
 pub struct Texture {
     raw: *mut sys::SDL_Texture,
 }
+
+/// A texture handed out by a `TextureCreator`: it borrows the creator unless
+/// `unsafe_textures` drops the lifetime.
+#[cfg(feature = "unsafe_textures")]
+pub(crate) type CreatedTexture<'r> = Texture;
+#[cfg(not(feature = "unsafe_textures"))]
+pub(crate) type CreatedTexture<'r> = Texture<'r>;
 
 /// A texture for a rendering context.
 ///
